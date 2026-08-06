@@ -1,0 +1,1264 @@
+:root {
+  --primary: #80b49e;
+  --primary-dark: #80b49e;
+  --secondary: #64748b;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* ألوان خاصة بالورقة */
+  --ink: #0a0a0a;
+  --muted: #666;
+  --deep-blue: #243a52;
+  --paper: #fff;
+  --divider: #cfd6dd;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--background);
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, system-ui, sans-serif;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.print-exam-container {
+  min-height: 100vh;
+  direction: rtl;
+}
+
+/* === الهيدر الرئيسي === */
+.main-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-title h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.header-title p {
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.branch-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* === منطقة التحكم === */
+.control-area {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+}
+
+/* === الفلاتر === */
+.filters-container {
+  background: var(--surface);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.filters-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.filters-header h3 {
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.filters-header p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.filter-select {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.filter-select:disabled {
+  background: #f8fafc;
+  color: var(--text-light);
+  cursor: not-allowed;
+}
+
+/* === لوحة التحكم === */
+.control-panel {
+  background: var(--surface);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.panel-section {
+  margin-bottom: 1.5rem;
+}
+
+.panel-section:last-child {
+  margin-bottom: 0;
+}
+
+.panel-section h4 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* === التبديل === */
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.slider {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: var(--border);
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  right: 3px;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch input:checked + .slider {
+  background: var(--success);
+}
+
+.toggle-switch input:checked + .slider:before {
+  transform: translateX(-24px);
+}
+
+.toggle-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* === الإدخال المخصص === */
+.custom-input-group {
+  margin-top: 1rem;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-hint {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+/* === الإحصائيات === */
+.stats-display {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-light);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinner.large {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.stat-value {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.error-message {
+  background: #fef2f2;
+  color: var(--error);
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* === الأزرار === */
+.actions-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.action-btn:not(.disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.print-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.print-btn:not(.disabled):hover {
+  background: var(--primary-dark);
+}
+
+.pdf-btn {
+  background: var(--success);
+  color: white;
+}
+
+.pdf-btn:not(.disabled):hover {
+  background: #059669;
+}
+
+.action-btn.disabled {
+  background: var(--border);
+  color: var(--text-light);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+/* === منطقة المعاينة === */
+.preview-area {
+  max-width: 1400px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-header h3 {
+  color: var(--text);
+  font-size: 1.5rem;
+}
+
+.preview-stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-badge.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.status-badge.loading {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.status-badge.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* === العناصر النائبة === */
+.preview-placeholder {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-light);
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+/* === تنسيقات الورقة الأساسية === */
+.print-area .page {
+  page-break-after: always;
+}
+
+.print-area .page:last-child {
+  page-break-after: auto;
+}
+
+.exam-paper {
+  counter-reset: page;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 14px auto;
+  background: var(--paper);
+  padding: 3mm 3mm;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eef1f4;
+  font-size: 15px;
+}
+
+.end-note {
+  margin-top: 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .2px;
+  color: var(--ink);
+}
+
+/* === هيدر الورقة === */
+.exam-header {
+  margin-bottom: 4px;
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  padding: 4px 6px;
+}
+
+.logos-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.logo {
+  height: 80px;
+  object-fit: contain;
+}
+
+.logo.left {
+  justify-self: start;
+}
+
+.logo.right {
+  justify-self: end;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 110px;
+  justify-content: center;
+  justify-items: center;
+  text-align: center;
+  margin: 0 auto;
+  width: fit-content;
+}
+
+.info-card {
+  padding: 2px 0;
+  border: none;
+  background: transparent;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  column-gap: 8px;
+  margin: 2px 0;
+  text-align: right;
+}
+
+.label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.value {
+  font-weight: 700;
+  white-space: nowrap;
+  flex: 1;
+  text-align: start;
+  padding-inline-start: 5px;
+}
+
+.header-divider {
+  height: 2px;
+  background: var(--ink);
+  margin: 4px 0 8px;
+}
+
+/* === عناوين الأقسام === */
+.section-title-with-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0 6px;
+  gap: 20px;
+}
+
+.section-score {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.section-title-with-score .section-title-center {
+  flex: 1;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.section-title-with-score .section-title-center::before,
+.section-title-with-score .section-title-center::after {
+  flex: 1;
+  height: 2px;
+  background: var(--deep-blue);
+  content: "";
+}
+
+.section-title-with-score .section-title-center span {
+  color: var(--deep-blue);
+  font-weight: 700;
+  font-size: 15px;
+  background: transparent;
+  padding: 0;
+}
+
+.english-direction.section-title-with-score {
+  flex-direction: row-reverse;
+}
+
+.section-title-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin: 8px 0 6px;
+}
+
+.section-title-center::before,
+.section-title-center::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--deep-blue);
+}
+
+.section-title-center span {
+  color: var(--deep-blue);
+  font-weight: 700;
+  font-size: 15px;
+  background: transparent;
+  padding: 0;
+}
+
+/* === الأسئلة === */
+.one-line {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  line-height: 1.7;
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+.qindex {
+  font-weight: 800;
+}
+
+.qtext {
+  flex: 1;
+}
+
+.tf-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 40px;
+  color: transparent;
+}
+
+.tf-inline::before,
+.tf-inline::after {
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.tf-inline::before {
+  content: "(";
+}
+
+.tf-inline::after {
+  content: ")";
+}
+
+/* === الأسئلة الاختيارية === */
+.mcq-block {
+  margin: 6px 0;
+  position: relative;
+}
+
+.mcq-options-row {
+  position: relative;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin: 4px 0 6px;
+  align-items: center;
+}
+
+.mcq-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border: 1px solid #000;
+  padding: 1px 6px;
+}
+
+/* === صندوق الدرجة === */
+.score-box {
+  width: 26mm;
+  height: 16mm;
+  border: 1px solid #000;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  background: #fff;
+  position: relative;
+}
+
+.score-box::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  left: 3mm;
+  right: 3mm;
+  height: 1px;
+  background: #000;
+}
+
+.score-top {
+  flex: 1;
+  width: 100%;
+}
+
+.score-bottom {
+  font-weight: 800;
+  font-size: 13px;
+  padding-top: 2px;
+}
+
+/* === التوقيعات === */
+.signatures {
+  display: flex;
+  gap: 28px;
+  justify-content: flex-start;
+  margin-top: 12px;
+  align-items: flex-start;
+}
+
+.signature {
+  width: 200px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  text-align: center;
+  row-gap: 8px;
+}
+
+.signature p {
+  margin: 0;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .2px;
+}
+
+.signature-line {
+  width: 100%;
+  height: 0;
+  border-bottom: 1.5px solid var(--ink);
+  margin: 0;
+  padding-top: 4px;
+  position: relative;
+}
+
+.signature-line::before {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  inset-inline-start: 0;
+  width: 10px;
+  border-bottom: 1.5px solid var(--ink);
+  opacity: .6;
+}
+
+.footer {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--muted);
+  position: relative;
+  height: 16px;
+}
+
+.footer .page-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* === التنسيقات الخاصة بالاختبارات الإنجليزية === */
+.english-direction {
+  direction: ltr;
+  text-align: left;
+}
+
+.english-exam .one-line {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.english-options {
+  gap: 48px !important;
+  margin: 6px 0 8px !important;
+  position: relative;
+}
+
+.english-exam .mcq-block {
+  margin-right: 0 !important;
+}
+
+.english-tf-section .one-line {
+  margin: 6px 0;
+}
+
+.english-options {
+  gap: 200px !important;
+}
+
+/* === تنسيقات خاصة لـ eng3 === */
+.english-exam.eng3-special .one-line,
+.english-exam.eng3-special .mcq-block,
+.english-exam.eng3-special .section-title-with-score,
+.english-exam.eng3-special .tf-section {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  direction: ltr !important;
+}
+
+.english-exam.eng3-special .qindex {
+  margin-right: 8px;
+  float: left;
+}
+
+.english-exam.eng3-special .qtext {
+  text-align: left;
+  margin-left: 0;
+  padding-left: 0;
+  flex: 1;
+}
+
+.english-exam.eng3-special .section-title-with-score .section-title-center {
+  justify-content: flex-start !important;
+  margin-right: 0 !important;
+  width: 100%;
+  text-align: left !important;
+}
+
+.english-exam.eng3-special .section-title-with-score .section-title-center::before,
+.english-exam.eng3-special .section-title-with-score .section-title-center::after {
+  display: none !important;
+}
+
+.english-exam.eng3-special .section-title-with-score .section-title-center span {
+  text-align: left;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.english-exam.eng3-special .mcq-options-row {
+  justify-content: flex-start !important;
+  text-align: left !important;
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  gap: 48px !important;
+}
+
+.english-exam.eng3-special .mcq-chip {
+  text-align: left;
+}
+
+.english-exam.eng3-special .tf-inline {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.english-exam.eng3-special .english-direction {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.english-exam.eng3-special .exam-header {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.english-exam.eng3-special .info-grid {
+  direction: rtl !important;
+}
+
+.english-exam.eng3-special .info-row {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.english-exam.eng3-special .label,
+.english-exam.eng3-special .value {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.english-exam.eng3-special .logos-row {
+  direction: rtl !important;
+}
+
+/* === تنسيقات الطباعة === */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .exam-paper {
+    width: auto;
+    min-height: auto;
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    padding: 1mm 1mm;
+    font-size: 14px;
+  }
+
+  .exam-paper.page {
+    page-break-after: always;
+  }
+
+  .end-note {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-top: 8px;
+  }
+
+  .score-box::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    content: "";
+    position: absolute;
+    top: 30px;
+    left: 3mm;
+    right: 3mm;
+    height: 1px;
+    background: #000 !important;
+    visibility: visible !important;
+  }
+
+  .section-title-center::before,
+  .section-title-center::after,
+  .section-title-center span,
+  .section-title-with-score .section-title-center::before,
+  .section-title-with-score .section-title-center::after,
+  .section-title-with-score .section-title-center span {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .exam-paper {
+    display: table;
+    width: 100%;
+  }
+
+  .paper-body {
+    display: table-row-group;
+  }
+
+  .footer {
+    display: table-footer-group;
+    height: auto;
+    margin: 0;
+    color: #000;
+  }
+
+  @page {
+    size: A4;
+    margin: 2mm 2mm;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  /* تعديلات خاصة بالانجليزي في الطباعة */
+  .english-exam .one-line {
+    margin: 2px 0;
+    line-height: 1.5;
+    font-size: 15px !important;
+  }
+
+  .english-options {
+    gap: 200px !important;
+    margin: 2px 0 4px !important;
+  }
+
+  .english-exam .score-box {
+    width: 20mm !important;
+    height: 12mm !important;
+  }
+
+  .english-exam .score-box::before {
+    top: 22px !important;
+    left: 2mm !important;
+    right: 2mm !important;
+  }
+
+  .english-exam .score-bottom {
+    font-size: 11px !important;
+    padding-top: 1px !important;
+  }
+
+  .english-exam .section-title-with-score {
+    margin: 4px 0 3px !important;
+    gap: 10px !important;
+  }
+
+  .english-exam {
+    font-size: 15px !important;
+  }
+
+  .english-exam .section-title-with-score .section-title-center span {
+    font-size: 15px !important;
+  }
+
+  .english-exam .mcq-block {
+    margin: 2px 0 !important;
+  }
+
+  .english-exam .mcq-options-row {
+    margin: 1px 0 2px !important;
+  }
+
+  .english-exam.exam-paper {
+    padding: 0.5mm 0.5mm !important;
+  }
+
+  .english-exam .exam-header {
+    margin-bottom: 1mm !important;
+    padding: 0.5mm 1mm !important;
+  }
+
+  .english-exam .end-note {
+    margin-top: 4px !important;
+    font-size: 12px !important;
+  }
+
+  /* تنسيق خاص لـ eng3 في الطباعة */
+  .english-exam.eng3-special .one-line,
+  .english-exam.eng3-special .mcq-block,
+  .english-exam.eng3-special .section-title-with-score,
+  .english-exam.eng3-special .tf-section {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    direction: ltr !important;
+  }
+
+  .english-exam.eng3-special .section-title-with-score .section-title-center {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .english-exam.eng3-special .mcq-options-row {
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 48px !important;
+  }
+
+  .english-exam.eng3-special {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  .english-exam.eng3-special .exam-header {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  .english-exam.eng3-special .info-grid {
+    direction: rtl !important;
+  }
+
+  .english-exam.eng3-special .info-row {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  .english-exam.eng3-special .label,
+  .english-exam.eng3-special .value {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  .english-exam.eng3-special .logos-row {
+    direction: rtl !important;
+  }
+
+  .english-exam.eng3-special {
+    font-size: 14px !important;
+  }
+
+  .english-exam.eng3-special .one-line {
+    margin: 6px 0 !important;
+    line-height: 1.6 !important;
+  }
+
+  .english-exam.eng3-special .score-box {
+    width: 22mm !important;
+    height: 14mm !important;
+  }
+
+  .english-exam.eng3-special .score-box::before {
+    top: 25px !important;
+  }
+}
+
+/* === حركة التمديد الذكي === */
+.tf-density-roomy .tf-section .one-line {
+  margin: 10px 0;
+  line-height: 1.8;
+}
+
+@media print {
+  .tf-density-roomy .tf-section .one-line {
+    margin: 10px 0;
+    line-height: 2.2;
+  }
+
+  .english-exam.tf-density-roomy .tf-section .one-line {
+    margin: 4px 0;
+    line-height: 1.4;
+  }
+}
+
+/* === التجاوب === */
+@media (max-width: 1200px) {
+  .control-area {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-header {
+    padding: 1rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .control-area,
+  .preview-area {
+    padding: 0 1rem;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .exam-paper {
+    margin: 10px auto;
+    padding: 2mm;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .filters-container,
+  .control-panel {
+    padding: 1rem;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-btn {
+    padding: 0.875rem 1rem;
+  }
+}
+
+/* === تحسينات إضافية للواجهة === */
+.no-print {
+  /* إبقاء العناصر غير المطبوعة مرئية على الشاشة */
+}
+
+.hint {
+  color: var(--text-light);
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* تحسين المظهر على الشاشة للانجليزي */
+@media screen {
+  .english-score-container {
+    right: 15mm;
+  }
+}
+
+/* === إخفاء العناصر غير الضرورية === */
+.score-inline,
+.english-score-container {
+  display: none !important;
+}
+
+.nav, .nav-active {
+  padding: 6px 10px;
+  border: 1px solid #243a52;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #243a52;
+  font-weight: 700;
+}
+
+.nav-active {
+  background: #243a52;
+  color: #fff;
+}
+
+/* تخطيط التطبيق مع Sidebar */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  direction: rtl;
+}
+
+.main-content-with-sidebar {
+  flex: 1;
+  margin-right: 280px; /* نفس عرض الـ Sidebar */
+  transition: margin-right 0.3s ease;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* إذا كان الـ Sidebar قابل للطي/التوسيع */
+.sidebar-collapsed .main-content-with-sidebar {
+  margin-right: 80px; /* أو أي عرض تريده للـ Sidebar المضغوط */
+}
+
+/* تحسينات للطباعة */
+@media print {
+  .app-layout {
+    display: block;
+  }
+  
+  .main-content-with-sidebar {
+    margin-right: 0;
+  }
+}
+
+/* تحسينات للاستجابة */
+@media (max-width: 768px) {
+  .main-content-with-sidebar {
+    margin-right: 0;
+    margin-top: 60px; /* إذا كان الـ Sidebar يصبح هيدر في الجوال */
+  }
+}

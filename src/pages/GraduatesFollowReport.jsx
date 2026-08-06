@@ -1,0 +1,2733 @@
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Menu,
+  MenuItem,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography
+} from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import SearchIcon from "@mui/icons-material/Search";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import PaymentIcon from "@mui/icons-material/Payment";
+import SchoolIcon from "@mui/icons-material/School";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import GroupsIcon from "@mui/icons-material/Groups";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+
+import Swal from "sweetalert2";
+import Sidebar from "../components/Sidebar";
+import StudentStatementDialog2 from "../components/StudentStatementDialog2";
+import StudentRegFeesDialog from "../components/StudentRegFeesDialog";
+import StudentPaymentOrderDialog from "../components/StudentPaymentOrderDialog";
+
+const SIDEBAR_WIDTH = 280;
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL ||
+  "https://api4.sstli.com";
+
+const pad2 = (value) =>
+  String(value).padStart(2, "0");
+
+const toIsoDate = (date) =>
+  `${date.getFullYear()}-${pad2(
+    date.getMonth() + 1
+  )}-${pad2(date.getDate())}`;
+
+const today = () => toIsoDate(new Date());
+
+const unwrap = (value) => {
+  if (value === null || value === undefined) return value;
+  if (typeof value !== "object") return value;
+
+  for (const key of [
+    "value", "Value", "data", "Data",
+    "amount", "Amount", "number", "Number",
+    "string", "String"
+  ]) {
+    if (
+      value[key] !== undefined &&
+      value[key] !== null &&
+      value[key] !== value
+    ) {
+      return unwrap(value[key]);
+    }
+  }
+
+  return "";
+};
+
+const pick = (row, names, fallback = "") => {
+  for (const name of names) {
+    const value = unwrap(row?.[name]);
+
+    if (
+      value !== undefined &&
+      value !== null &&
+      String(value).trim() !== ""
+    ) {
+      return value;
+    }
+  }
+
+  return fallback;
+};
+
+const toNumber = (value) => {
+  const result = Number(
+    String(unwrap(value) ?? "0")
+      .replace(/,/g, "")
+  );
+
+  return Number.isFinite(result)
+    ? result
+    : 0;
+};
+
+const money = (value) =>
+  toNumber(value).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+const readJson = async (response) => {
+  const text = await response.text();
+  let json = null;
+
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = null;
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      json?.message ||
+      json?.details ||
+      json?.title ||
+      text?.replace(/<[^>]*>/g, " ")
+        ?.replace(/\s+/g, " ")
+        ?.trim()
+        ?.slice(0, 700) ||
+      `تعذر تنفيذ الطلب - HTTP ${response.status}`
+    );
+  }
+
+  return json || {};
+};
+
+const showError = (message) =>
+  Swal.fire({
+    icon: "error",
+    title: "حدث خطأ",
+    text: message,
+    confirmButtonText: "حسنًا",
+    confirmButtonColor: "#ae1e21"
+  });
+
+const showSuccess = (message) =>
+  Swal.fire({
+    icon: "success",
+    title: "تم التنفيذ بنجاح",
+    text: message,
+    confirmButtonText: "حسنًا",
+    confirmButtonColor: "#057546"
+  });
+
+const TextCell = ({
+  value,
+  align = "center"
+}) => (
+  <Tooltip title={String(value || "")} arrow>
+    <Typography
+      sx={{
+        width: "100%",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        textAlign: align,
+        fontFamily: "Cairo",
+        fontSize: "0.76rem",
+        fontWeight: 700
+      }}
+    >
+      {value || "-"}
+    </Typography>
+  </Tooltip>
+);
+
+const MoneyCell = ({ value }) => (
+  <Typography
+    sx={{
+      width: "100%",
+      textAlign: "center",
+      fontFamily: "Cairo",
+      fontSize: "0.75rem",
+      fontWeight: 800
+    }}
+  >
+    {money(value)}
+  </Typography>
+);
+
+
+const MultiValueFilter = ({
+  label,
+  options,
+  value,
+  onChange
+}) => {
+  const selected =
+    Array.isArray(value)
+      ? value
+      : [];
+
+  const allSelected =
+    options.length > 0 &&
+    selected.length ===
+      options.length;
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 1.35,
+        borderRadius: 3,
+        border:
+          "1px solid #dce8e2",
+        background: "#fff"
+      }}
+    >
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        spacing={1}
+        sx={{ mb: 1 }}
+      >
+        <Typography
+          sx={{
+            fontFamily: "Cairo",
+            fontWeight: 900,
+            color: "#173b2b"
+          }}
+        >
+          {label}
+        </Typography>
+
+        <Stack
+          direction="row"
+          spacing={0.5}
+        >
+          <Button
+            size="small"
+            startIcon={
+              <DoneAllIcon />
+            }
+            onClick={() =>
+              onChange(
+                allSelected
+                  ? []
+                  : options
+              )
+            }
+            sx={{
+              minWidth: 0,
+              fontFamily: "Cairo",
+              fontWeight: 800
+            }}
+          >
+            {allSelected
+              ? "إلغاء الكل"
+              : "تحديد الكل"}
+          </Button>
+
+          {selected.length > 0 && (
+            <Button
+              size="small"
+              color="error"
+              onClick={() =>
+                onChange([])
+              }
+              sx={{
+                minWidth: 0,
+                fontFamily: "Cairo",
+                fontWeight: 800
+              }}
+            >
+              مسح
+            </Button>
+          )}
+        </Stack>
+      </Stack>
+
+      <Autocomplete
+        multiple
+        disableCloseOnSelect
+        options={options}
+        value={selected}
+        onChange={(
+          event,
+          newValue
+        ) =>
+          onChange(newValue)
+        }
+        limitTags={2}
+        noOptionsText="لا توجد نتائج"
+        renderOption={(
+          props,
+          option,
+          state
+        ) => (
+          <li {...props}>
+            <Checkbox
+              checked={
+                state.selected
+              }
+              sx={{
+                mr: 1,
+                color: "#6f8b7d",
+                "&.Mui-checked": {
+                  color: "#057546"
+                }
+              }}
+            />
+
+            <Typography
+              sx={{
+                fontFamily:
+                  "Cairo",
+                fontSize:
+                  "0.82rem",
+                fontWeight: 700
+              }}
+            >
+              {option}
+            </Typography>
+          </li>
+        )}
+        renderTags={(
+          tagValue,
+          getTagProps
+        ) =>
+          tagValue.map(
+            (option, index) => (
+              <Chip
+                {...getTagProps({
+                  index
+                })}
+                key={option}
+                label={option}
+                size="small"
+                sx={{
+                  fontFamily:
+                    "Cairo",
+                  fontWeight: 700
+                }}
+              />
+            )
+          )
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            size="small"
+            placeholder="ابحث وحدد أكثر من قيمة"
+            helperText={
+              selected.length
+                ? `تم اختيار ${selected.length} من ${options.length}`
+                : `الكل ظاهر (${options.length})`
+            }
+            sx={{
+              "& .MuiInputBase-root":
+                {
+                  fontFamily:
+                    "Cairo"
+                },
+              "& .MuiFormHelperText-root":
+                {
+                  fontFamily:
+                    "Cairo",
+                  textAlign:
+                    "right"
+                }
+            }}
+          />
+        )}
+      />
+    </Paper>
+  );
+};
+
+const GraduatesFollowReport = () => {
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(
+        localStorage.getItem("user") || "{}"
+      );
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const userGuid = String(
+    currentUser?.guid ||
+    currentUser?.Guid ||
+    currentUser?.userGuid ||
+    ""
+  ).trim();
+
+  const [fromDate, setFromDate] =
+    useState(today());
+
+  const [toDate, setToDate] =
+    useState(today());
+
+  const [branches, setBranches] =
+    useState([]);
+
+  const [trainers, setTrainers] =
+    useState([]);
+
+  const [branch, setBranch] =
+    useState(null);
+
+  const [rows, setRows] =
+    useState([]);
+
+  const [
+    filterDialogOpen,
+    setFilterDialogOpen
+  ] = useState(false);
+
+  const [
+    columnFilters,
+    setColumnFilters
+  ] = useState({
+    regTypeName: [],
+    diplomName: [],
+    trainerName: [],
+    studentType: []
+  });
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [menuAnchor, setMenuAnchor] =
+    useState(null);
+
+  const [menuRow, setMenuRow] =
+    useState(null);
+
+  const [statementOpen, setStatementOpen] =
+    useState(false);
+
+  const [feesOpen, setFeesOpen] =
+    useState(false);
+
+  const [paymentOpen, setPaymentOpen] =
+    useState(false);
+
+  const [
+    paymentContext,
+    setPaymentContext
+  ] = useState(null);
+
+  const [
+    paymentContextLoading,
+    setPaymentContextLoading
+  ] = useState(false);
+
+  const [trainerDialogOpen, setTrainerDialogOpen] =
+    useState(false);
+
+  const [selectedTrainer, setSelectedTrainer] =
+    useState(null);
+
+  /*
+   * التحديد الجماعي داخل الجريد.
+   * يحتفظ بمعرفات الصفوف المحددة فقط.
+   */
+  const [
+    selectedRowIds,
+    setSelectedRowIds
+  ] = useState([]);
+
+  const [
+    bulkTrainerDialogOpen,
+    setBulkTrainerDialogOpen
+  ] = useState(false);
+
+  const [
+    bulkSelectedTrainer,
+    setBulkSelectedTrainer
+  ] = useState(null);
+
+  const [
+    bulkActionLoading,
+    setBulkActionLoading
+  ] = useState(false);
+
+  const selectedStudent = menuRow || null;
+
+  const loadLookups = useCallback(async () => {
+    if (!userGuid) {
+      await showError(
+        "بيانات المستخدم غير موجودة، برجاء تسجيل الدخول مرة أخرى"
+      );
+      return;
+    }
+
+    try {
+      const branchesResponse =
+        await fetch(
+          `${API_BASE_URL}/api/graduates-follow/branches?userGuid=${encodeURIComponent(userGuid)}`
+        );
+
+      const branchesResult =
+        await readJson(
+          branchesResponse
+        );
+
+      const availableBranches =
+        Array.isArray(branchesResult?.data)
+          ? branchesResult.data
+          : [];
+
+      setBranches(availableBranches);
+      if (availableBranches.length === 1) {
+        setBranch(availableBranches[0]);
+      }
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر تحميل قوائم الشاشة"
+      );
+    }
+  }, [userGuid]);
+
+  const loadTrainers = useCallback(async () => {
+    if (!branch?.guid) {
+      setTrainers([]);
+      setSelectedTrainer(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/graduates-follow/trainers?userGuid=${encodeURIComponent(userGuid)}&branchGuid=${encodeURIComponent(branch.guid)}`
+      );
+
+      const result = await readJson(response);
+
+      setTrainers(
+        Array.isArray(result?.data)
+          ? result.data
+          : []
+      );
+    } catch (error) {
+      setTrainers([]);
+      await showError(
+        error?.message ||
+        "تعذر تحميل مسؤولي الاتصال"
+      );
+    }
+  }, [branch?.guid, userGuid]);
+
+  useEffect(() => {
+    loadLookups();
+  }, [loadLookups]);
+
+  useEffect(() => {
+    loadTrainers();
+  }, [loadTrainers]);
+
+  const loadData = useCallback(async () => {
+    if (!branch?.guid) {
+      await showError("برجاء اختيار الفرع");
+      return;
+    }
+
+    if (fromDate > toDate) {
+      await showError(
+        "تاريخ البداية يجب ألا يتجاوز تاريخ النهاية"
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const params = new URLSearchParams({
+        userGuid,
+        fromDate,
+        toDate,
+        branchGuid: branch.guid
+      });
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/graduates-follow/report?${params.toString()}`
+      );
+
+      const result = await readJson(response);
+
+      let data = Array.isArray(result?.data)
+        ? result.data
+        : [];
+
+      setRows(data);
+    } catch (error) {
+      setRows([]);
+      await showError(
+        error?.message ||
+        "تعذر تحميل متابعة الخريجين"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    userGuid,
+    fromDate,
+    toDate,
+    branch
+  ]);
+
+  const gridRows = useMemo(
+    () =>
+      rows.map((row, index) => ({
+        id: String(
+          pick(
+            row,
+            [
+              "StudentLevelGuid",
+              "studentLevelGuid",
+              "Guid",
+              "guid"
+            ],
+            `row-${index}`
+          )
+        ),
+
+        raw: row,
+
+        studentLevelGuid: String(
+          pick(row, [
+            "StudentLevelGuid",
+            "studentLevelGuid"
+          ])
+        ),
+
+        accountGuid: String(
+          pick(row, [
+            "AccountGuid",
+            "accountGuid"
+          ])
+        ),
+
+        regDocGuid: String(
+          pick(row, [
+            "RegDocGuid",
+            "regDocGuid"
+          ])
+        ),
+
+        diplomGuid: String(
+          pick(row, [
+            "DiplomGuid",
+            "diplomGuid"
+          ])
+        ),
+
+        branchGuid: String(
+          pick(
+            row,
+            ["BranchGuid", "branchGuid"],
+            branch?.guid || ""
+          )
+        ),
+
+        branchName: String(
+          pick(
+            row,
+            ["BrEName", "BranchName", "branchName"],
+            branch?.name || ""
+          )
+        ),
+
+        trainerGuid: String(
+          pick(row, [
+            "TrainerGuid",
+            "trainerGuid"
+          ])
+        ),
+
+        trainerName: String(
+          pick(row, [
+            "Name",
+            "TrainerName",
+            "trainerName"
+          ])
+        ),
+
+        regType: String(
+          pick(row, [
+            "RegType",
+            "regType"
+          ])
+        ),
+
+        regTypeName: String(
+          pick(row, [
+            "RegTypeName",
+            "regTypeName"
+          ])
+        ),
+
+        diplomName: String(
+          pick(row, [
+            "DiplomName",
+            "diplomName"
+          ])
+        ),
+
+        studentName: String(
+          pick(row, [
+            "StudentName",
+            "studentName"
+          ])
+        ),
+
+        studentTel: String(
+          pick(row, [
+            "StudentTel",
+            "studentTel"
+          ])
+        ),
+
+        nationalId: String(
+          pick(row, [
+            "NationalId",
+            "nationalId"
+          ])
+        ),
+
+        studentNational: String(
+          pick(row, [
+            "StudentNational",
+            "studentNational"
+          ])
+        ),
+
+        preBalance: toNumber(
+          pick(row, [
+            "PREBALANCE",
+            "preBalance"
+          ])
+        ),
+
+        debit: toNumber(
+          pick(row, [
+            "MADEN__",
+            "debit"
+          ])
+        ),
+
+        startPay: toNumber(
+          pick(row, [
+            "STARTPAY",
+            "startPay"
+          ])
+        ),
+
+        monthPay: toNumber(
+          pick(row, [
+            "MONTHPAY",
+            "monthPay"
+          ])
+        ),
+
+        feesPay: toNumber(
+          pick(row, [
+            "FESSPAY",
+            "feesPay"
+          ])
+        ),
+
+        mDaily: toNumber(
+          pick(row, [
+            "MDaily_",
+            "mDaily"
+          ])
+        ),
+
+        dDaily: toNumber(
+          pick(row, [
+            "DDaily_",
+            "dDaily"
+          ])
+        ),
+
+        balance: toNumber(
+          pick(row, [
+            "BALANCE",
+            "balance"
+          ])
+        ),
+
+        studentType: String(
+          pick(row, [
+            "TYPESTUDENT",
+            "studentType"
+          ])
+        )
+      })),
+    [rows, branch]
+  );
+
+
+  const filterOptions = useMemo(() => {
+    const makeOptions = (field) =>
+      Array.from(
+        new Set(
+          gridRows
+            .map((row) =>
+              String(
+                row[field] || ""
+              ).trim()
+            )
+            .filter(Boolean)
+        )
+      ).sort((first, second) =>
+        first.localeCompare(
+          second,
+          "ar",
+          { numeric: true }
+        )
+      );
+
+    return {
+      regTypeName:
+        makeOptions(
+          "regTypeName"
+        ),
+      diplomName:
+        makeOptions(
+          "diplomName"
+        ),
+      trainerName:
+        makeOptions(
+          "trainerName"
+        ),
+      studentType:
+        makeOptions(
+          "studentType"
+        )
+    };
+  }, [gridRows]);
+
+  const filteredGridRows =
+    useMemo(
+      () =>
+        gridRows.filter((row) =>
+          Object.entries(
+            columnFilters
+          ).every(
+            ([
+              field,
+              selectedValues
+            ]) =>
+              !selectedValues
+                .length ||
+              selectedValues
+                .includes(
+                  String(
+                    row[field] || ""
+                  ).trim()
+                )
+          )
+        ),
+      [
+        gridRows,
+        columnFilters
+      ]
+    );
+
+  const activeFilterCount =
+    useMemo(
+      () =>
+        Object.values(
+          columnFilters
+        ).filter(
+          (values) =>
+            values.length > 0
+        ).length,
+      [columnFilters]
+    );
+
+  const resetColumnFilters =
+    () =>
+      setColumnFilters({
+        regTypeName: [],
+        diplomName: [],
+        trainerName: [],
+        studentType: []
+      });
+
+  const updateColumnFilter =
+    (field, values) =>
+      setColumnFilters(
+        (current) => ({
+          ...current,
+          [field]: values
+        })
+      );
+
+  const columns = useMemo(
+    () => [
+      {
+        field: "actions",
+        headerName: "العمليات",
+        width: 54,
+        minWidth: 54,
+        maxWidth: 54,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        renderCell: (params) => (
+          <IconButton
+            size="small"
+            onClick={(event) => {
+              event.stopPropagation();
+              setMenuAnchor(event.currentTarget);
+              setMenuRow(params.row);
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        )
+      },
+      {
+        field: "regTypeName",
+        headerName: "نوع التسجيل",
+        flex: 0.75,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell value={params.value} />
+        )
+      },
+      {
+        field: "diplomName",
+        headerName: "الدبلوم/الدورة",
+        flex: 1.55,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell
+            value={params.value}
+            align="right"
+          />
+        )
+      },
+      {
+        field: "studentName",
+        headerName: "اسم الطالب",
+        flex: 1.45,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell
+            value={params.value}
+            align="right"
+          />
+        )
+      },
+      {
+        field: "studentTel",
+        headerName: "رقم الجوال",
+        flex: 0.9,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell value={params.value} />
+        )
+      },
+      {
+        field: "nationalId",
+        headerName: "رقم الهوية",
+        flex: 0.95,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell value={params.value} />
+        )
+      },
+      {
+        field: "preBalance",
+        headerName: "الرصيد السابق",
+        flex: 0.9,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "debit",
+        headerName: "مدين",
+        flex: 0.65,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "startPay",
+        headerName: "دفعة مقدمة",
+        flex: 0.75,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "monthPay",
+        headerName: "قسط شهري",
+        flex: 0.75,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "feesPay",
+        headerName: "سداد رسوم",
+        flex: 0.75,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "mDaily",
+        headerName: "قيد مدين",
+        flex: 0.7,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "dDaily",
+        headerName: "قيد دائن",
+        flex: 0.7,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "balance",
+        headerName: "الرصيد الحالي",
+        flex: 0.9,
+        minWidth: 0,
+        renderCell: (params) => (
+          <MoneyCell value={params.value} />
+        )
+      },
+      {
+        field: "trainerName",
+        headerName: "مسؤول الاتصال",
+        flex: 1.05,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell
+            value={params.value}
+            align="right"
+          />
+        )
+      },
+      {
+        field: "studentType",
+        headerName: "نوع الطالب",
+        flex: 0.75,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell value={params.value} />
+        )
+      }
+    ],
+    []
+  );
+
+  const closeMenu = () => {
+    setMenuAnchor(null);
+  };
+
+  /*
+   * في الديسكتوب يتم تشغيل:
+   * FormTypeGuid("salesinvoice")
+   * ثم AutoGetInvoiceType للنوع 1 والنوع 2.
+   *
+   * لذلك لا نفتح شاشة طلب السداد بالبيانات المختصرة
+   * القادمة من تقرير الخريجين فقط، بل نطلب Payment Context
+   * الكامل من الباك إند أولًا حتى تصل بيانات دفتر السداد:
+   * payDocGuid / payDocCode / payDocName
+   * payFeesDocGuid / payFeesDocCode / payFeesDocName
+   */
+  const openPaymentOrder = async (row) => {
+    if (!row?.accountGuid) {
+      await showError(
+        "لا يمكن قراءة حساب الطالب"
+      );
+      return;
+    }
+
+    if (!row?.branchGuid) {
+      await showError(
+        "لا يمكن قراءة فرع الطالب"
+      );
+      return;
+    }
+
+    if (!row?.diplomGuid) {
+      await showError(
+        "لا يمكن قراءة تخصص الطالب"
+      );
+      return;
+    }
+
+    try {
+      setPaymentContextLoading(true);
+      setPaymentContext(null);
+
+      const params = new URLSearchParams({
+        accountGuid:
+          row.accountGuid,
+        studentName:
+          row.studentName || "",
+        nationalId:
+          row.nationalId || "",
+        tel:
+          row.studentTel || "",
+        diplomName:
+          row.diplomName || "",
+        diplomGuid:
+          row.diplomGuid,
+        branchGuid:
+          row.branchGuid,
+        branchName:
+          row.branchName || "",
+        regDocGuid:
+          row.regDocGuid || ""
+      });
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/reception-office/payment/context?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            Accept:
+              "application/json"
+          },
+          cache: "no-store"
+        }
+      );
+
+      const result =
+        await readJson(response);
+
+      const readyContext = {
+        ...result,
+
+        accountGuid:
+          result?.accountGuid ||
+          row.accountGuid,
+
+        studentName:
+          result?.studentName ||
+          row.studentName,
+
+        nationalId:
+          result?.nationalId ||
+          row.nationalId,
+
+        tel:
+          result?.tel ||
+          row.studentTel,
+
+        studentNational:
+          row.studentNational ??
+          "0",
+
+        diplomName:
+          result?.diplomName ||
+          row.diplomName,
+
+        diplomGuid:
+          result?.diplomGuid ||
+          row.diplomGuid,
+
+        branchGuid:
+          result?.branchGuid ||
+          row.branchGuid,
+
+        branchName:
+          result?.branchName ||
+          row.branchName,
+
+        regDocGuid:
+          result?.regDocGuid ||
+          row.regDocGuid
+      };
+
+      if (
+        !readyContext.payDocGuid
+      ) {
+        throw new Error(
+          "لم يرجع الباك إند دفتر سداد القسط الشهري"
+        );
+      }
+
+      if (
+        !readyContext.payFeesDocGuid
+      ) {
+        throw new Error(
+          "لم يرجع الباك إند دفتر سداد الرسوم"
+        );
+      }
+
+      setPaymentContext(
+        readyContext
+      );
+
+      setPaymentOpen(true);
+    } catch (error) {
+      setPaymentContext(null);
+
+      await showError(
+        error?.message ||
+        "تعذر تجهيز بيانات طلب السداد"
+      );
+    } finally {
+      setPaymentContextLoading(false);
+    }
+  };
+
+  const openAction = async (action) => {
+    closeMenu();
+
+    if (!menuRow) return;
+
+    if (action === "statement") {
+      setStatementOpen(true);
+    } else if (action === "fees") {
+      setFeesOpen(true);
+    } else if (action === "payment") {
+      await openPaymentOrder(
+        menuRow
+      );
+    } else if (action === "assign") {
+      const current =
+        trainers.find(
+          (item) =>
+            String(item.guid).toLowerCase() ===
+            String(menuRow.trainerGuid).toLowerCase()
+        ) || null;
+
+      setSelectedTrainer(current);
+      setTrainerDialogOpen(true);
+    } else if (action === "clear") {
+      clearTrainer();
+    } else if (action === "graduate") {
+      finishStudy();
+    }
+  };
+
+  const postJson = async (path, body) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/graduates-follow/${path}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userGuid,
+          ...body
+        })
+      }
+    );
+
+    return readJson(response);
+  };
+
+  const saveTrainer = async () => {
+    if (!menuRow?.studentLevelGuid) {
+      await showError("بيانات الطالب غير مكتملة");
+      return;
+    }
+
+    if (!selectedTrainer?.guid) {
+      await showError(
+        "برجاء اختيار مسؤول الاتصال"
+      );
+      return;
+    }
+
+    try {
+      await postJson("assign-trainer", {
+        studentLevelGuid:
+          menuRow.studentLevelGuid,
+        trainerGuid:
+          selectedTrainer.guid,
+        nationalId:
+          menuRow.nationalId,
+        studentName:
+          menuRow.studentName
+      });
+
+      setTrainerDialogOpen(false);
+      await showSuccess(
+        "تم تعيين مسؤول الاتصال"
+      );
+      await loadData();
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر تعيين مسؤول الاتصال"
+      );
+    }
+  };
+
+  const clearTrainer = async () => {
+    if (!menuRow?.studentLevelGuid) {
+      await showError("بيانات الطالب غير مكتملة");
+      return;
+    }
+
+    const confirmation = await Swal.fire({
+      icon: "question",
+      title: "حذف مسؤول الاتصال",
+      text: `سيتم حذف مسؤول الاتصال من الطالب ${menuRow.studentName}`,
+      showCancelButton: true,
+      confirmButtonText: "تأكيد الحذف",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#ae1e21",
+      cancelButtonColor: "#6b7280",
+      reverseButtons: true
+    });
+
+    if (!confirmation.isConfirmed) return;
+
+    try {
+      await postJson("clear-trainer", {
+        studentLevelGuid:
+          menuRow.studentLevelGuid,
+        nationalId:
+          menuRow.nationalId,
+        studentName:
+          menuRow.studentName
+      });
+
+      await showSuccess(
+        "تم حذف مسؤول الاتصال"
+      );
+      await loadData();
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر حذف مسؤول الاتصال"
+      );
+    }
+  };
+
+  const finishStudy = async () => {
+    if (!menuRow?.studentLevelGuid) {
+      await showError("بيانات الطالب غير مكتملة");
+      return;
+    }
+
+    if (toNumber(menuRow.balance) > 0) {
+      await showError(
+        "توجد مبالغ مالية متبقية على المتدرب، يرجى التواصل مع إدارة الحسابات"
+      );
+      return;
+    }
+
+    const confirmation = await Swal.fire({
+      icon: "question",
+      title: "إنهاء دراسة المتدرب",
+      text: `هل تريد الاستمرار في إنهاء دراسة ${menuRow.studentName}؟`,
+      input: "textarea",
+      inputLabel: "ملاحظات الإنهاء",
+      inputPlaceholder:
+        "اكتب ملاحظة الإنهاء إن وجدت",
+      showCancelButton: true,
+      confirmButtonText: "تأكيد الإنهاء",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#057546",
+      cancelButtonColor: "#ae1e21",
+      reverseButtons: true
+    });
+
+    if (!confirmation.isConfirmed) return;
+
+    try {
+      await postJson("finish-study", {
+        studentLevelGuid:
+          menuRow.studentLevelGuid,
+        accountGuid:
+          menuRow.accountGuid,
+        nationalId:
+          menuRow.nationalId,
+        studentName:
+          menuRow.studentName,
+        balance:
+          menuRow.balance,
+        reason:
+          confirmation.value || ""
+      });
+
+      await showSuccess(
+        "تم إنهاء دراسة المتدرب"
+      );
+      await loadData();
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر إنهاء دراسة المتدرب"
+      );
+    }
+  };
+
+  const selectedRows = useMemo(
+    () => {
+      const selectedSet =
+        new Set(
+          selectedRowIds.map(
+            (value) =>
+              String(value)
+          )
+        );
+
+      return gridRows.filter(
+        (row) =>
+          selectedSet.has(
+            String(row.id)
+          )
+      );
+    },
+    [
+      selectedRowIds,
+      gridRows
+    ]
+  );
+
+  const clearGridSelection = () => {
+    setSelectedRowIds([]);
+  };
+
+  const openBulkAssignDialog = async () => {
+    if (selectedRows.length === 0) {
+      await showError(
+        "برجاء تحديد طالب واحد على الأقل"
+      );
+      return;
+    }
+
+    if (!branch?.guid) {
+      await showError(
+        "برجاء اختيار الفرع أولًا"
+      );
+      return;
+    }
+
+    setBulkSelectedTrainer(null);
+    setBulkTrainerDialogOpen(true);
+  };
+
+  const bulkAssignTrainer = async () => {
+    if (selectedRows.length === 0) {
+      await showError(
+        "لا توجد صفوف محددة"
+      );
+      return;
+    }
+
+    if (!bulkSelectedTrainer?.guid) {
+      await showError(
+        "برجاء اختيار مسؤول الاتصال"
+      );
+      return;
+    }
+
+    const invalidRows =
+      selectedRows.filter(
+        (row) =>
+          !row.studentLevelGuid
+      );
+
+    if (invalidRows.length > 0) {
+      await showError(
+        `يوجد ${invalidRows.length} طالب بياناته غير مكتملة`
+      );
+      return;
+    }
+
+    const confirmation =
+      await Swal.fire({
+        icon: "question",
+        title:
+          "تعيين مسؤول الاتصال جماعيًا",
+        html: `
+          <div style="
+            direction:rtl;
+            font-family:Cairo,Arial;
+            line-height:2;
+          ">
+            سيتم تعيين
+            <strong>
+              ${bulkSelectedTrainer.name || ""}
+            </strong>
+            لعدد
+            <strong>
+              ${selectedRows.length}
+            </strong>
+            طالب
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText:
+          "تأكيد التعيين",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor:
+          "#057546",
+        cancelButtonColor:
+          "#6b7280",
+        reverseButtons: true
+      });
+
+    if (!confirmation.isConfirmed) {
+      return;
+    }
+
+    try {
+      setBulkActionLoading(true);
+
+      /*
+       * نستخدم نفس Endpoint التعيين الفردي
+       * لكل طالب حتى تظل الصلاحيات وUser Actions
+       * مطبقة كما هي في الباك إند.
+       */
+      for (const row of selectedRows) {
+        await postJson(
+          "assign-trainer",
+          {
+            studentLevelGuid:
+              row.studentLevelGuid,
+            trainerGuid:
+              bulkSelectedTrainer.guid,
+            nationalId:
+              row.nationalId,
+            studentName:
+              row.studentName
+          }
+        );
+      }
+
+      setBulkTrainerDialogOpen(false);
+      setBulkSelectedTrainer(null);
+      clearGridSelection();
+
+      await showSuccess(
+        `تم تعيين مسؤول الاتصال لعدد ${selectedRows.length} طالب`
+      );
+
+      await loadData();
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر إتمام التعيين الجماعي"
+      );
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const bulkClearTrainer = async () => {
+    if (selectedRows.length === 0) {
+      await showError(
+        "برجاء تحديد طالب واحد على الأقل"
+      );
+      return;
+    }
+
+    const invalidRows =
+      selectedRows.filter(
+        (row) =>
+          !row.studentLevelGuid
+      );
+
+    if (invalidRows.length > 0) {
+      await showError(
+        `يوجد ${invalidRows.length} طالب بياناته غير مكتملة`
+      );
+      return;
+    }
+
+    const confirmation =
+      await Swal.fire({
+        icon: "warning",
+        title:
+          "حذف مسؤول الاتصال جماعيًا",
+        text:
+          `سيتم حذف مسؤول الاتصال من ${selectedRows.length} طالب`,
+        showCancelButton: true,
+        confirmButtonText:
+          "تأكيد الحذف",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor:
+          "#ae1e21",
+        cancelButtonColor:
+          "#6b7280",
+        reverseButtons: true
+      });
+
+    if (!confirmation.isConfirmed) {
+      return;
+    }
+
+    try {
+      setBulkActionLoading(true);
+
+      /*
+       * نستخدم نفس Endpoint الحذف الفردي
+       * لكل طالب حتى يتم تسجيل User Action
+       * مستقل لكل عملية.
+       */
+      for (const row of selectedRows) {
+        await postJson(
+          "clear-trainer",
+          {
+            studentLevelGuid:
+              row.studentLevelGuid,
+            nationalId:
+              row.nationalId,
+            studentName:
+              row.studentName
+          }
+        );
+      }
+
+      clearGridSelection();
+
+      await showSuccess(
+        `تم حذف مسؤول الاتصال من ${selectedRows.length} طالب`
+      );
+
+      await loadData();
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر إتمام الحذف الجماعي"
+      );
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const exportCsv = () => {
+    if (filteredGridRows.length === 0) {
+      showError("لا توجد بيانات للتصدير");
+      return;
+    }
+
+    const headers = [
+      "نوع التسجيل",
+      "الدبلوم/الدورة",
+      "اسم الطالب",
+      "رقم الجوال",
+      "رقم الهوية",
+      "الرصيد السابق",
+      "مدين",
+      "دفعة مقدمة",
+      "قسط شهري",
+      "سداد رسوم",
+      "قيد مدين",
+      "قيد دائن",
+      "الرصيد الحالي",
+      "مسؤول الاتصال",
+      "نوع الطالب"
+    ];
+
+    const values = filteredGridRows.map((row) => [
+      row.regTypeName,
+      row.diplomName,
+      row.studentName,
+      row.studentTel,
+      row.nationalId,
+      row.preBalance,
+      row.debit,
+      row.startPay,
+      row.monthPay,
+      row.feesPay,
+      row.mDaily,
+      row.dDaily,
+      row.balance,
+      row.trainerName,
+      row.studentType
+    ]);
+
+    const escape = (value) =>
+      `"${String(value ?? "")
+        .replace(/"/g, '""')}"`;
+
+    const csv =
+      "\uFEFF" +
+      [headers, ...values]
+        .map((row) =>
+          row.map(escape).join(",")
+        )
+        .join("\n");
+
+    const blob = new Blob([csv], {
+      type:
+        "text/csv;charset=utf-8;"
+    });
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const anchor =
+      document.createElement("a");
+
+    anchor.href = url;
+    anchor.download =
+      `متابعة-الخريجين-${today()}.csv`;
+
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
+        direction: "ltr"
+      }}
+    >
+      <Sidebar />
+
+      <Box
+        component="main"
+        sx={{
+          ml: {
+            xs: 0,
+            md: `${SIDEBAR_WIDTH}px`
+          },
+          p: {
+            xs: 1.2,
+            md: 2
+          }
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            mb: 1.5,
+            borderRadius: 4,
+            border:
+              "1px solid rgba(5,117,70,0.14)",
+            boxShadow:
+              "0 12px 30px rgba(5,117,70,0.08)"
+          }}
+        >
+          <Stack
+            direction={{
+              xs: "column",
+              lg: "row"
+            }}
+            spacing={1.2}
+            alignItems={{
+              xs: "stretch",
+              lg: "center"
+            }}
+          >
+            <Box sx={{ flex: 1 }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+              >
+                <GroupsIcon
+                  sx={{
+                    color: "#057546",
+                    fontSize: 34
+                  }}
+                />
+
+                <Box>
+                  <Typography
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontSize: "1.15rem",
+                      fontWeight: 900,
+                      color: "#173b2b"
+                    }}
+                  >
+                    متابعة الخريجين
+                  </Typography>
+                </Box>
+              </Stack>
+            </Box>
+
+            {selectedRows.length > 0 && (
+              <Chip
+                label={`تم تحديد ${selectedRows.length} طالب`}
+                onDelete={
+                  bulkActionLoading
+                    ? undefined
+                    : clearGridSelection
+                }
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  color: "#fff",
+                  backgroundColor:
+                    "#057546"
+                }}
+              />
+            )}
+
+            <Button
+              variant="contained"
+              startIcon={
+                bulkActionLoading
+                  ? (
+                    <CircularProgress
+                      size={17}
+                      color="inherit"
+                    />
+                  )
+                  : <GroupAddIcon />
+              }
+              onClick={
+                openBulkAssignDialog
+              }
+              disabled={
+                selectedRows.length === 0 ||
+                bulkActionLoading
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)"
+              }}
+            >
+              تعيين جماعي
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={
+                bulkActionLoading
+                  ? (
+                    <CircularProgress
+                      size={17}
+                      color="inherit"
+                    />
+                  )
+                  : <PersonRemoveIcon />
+              }
+              onClick={
+                bulkClearTrainer
+              }
+              disabled={
+                selectedRows.length === 0 ||
+                bulkActionLoading
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900
+              }}
+            >
+              حذف جماعي
+            </Button>
+
+            <Button
+              variant="outlined"
+              startIcon={<FileDownloadIcon />}
+              onClick={exportCsv}
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 800
+              }}
+            >
+              تصدير
+            </Button>
+
+            <Button
+              variant={
+                activeFilterCount > 0
+                  ? "contained"
+                  : "outlined"
+              }
+              startIcon={
+                <FilterAltIcon />
+              }
+              onClick={() =>
+                setFilterDialogOpen(
+                  true
+                )
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                ...(activeFilterCount >
+                0
+                  ? {
+                      background:
+                        "linear-gradient(135deg,#057546,#034d31)"
+                    }
+                  : {})
+              }}
+            >
+              فلاتر متقدمة
+              {activeFilterCount > 0
+                ? ` (${activeFilterCount})`
+                : ""}
+            </Button>
+
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={loadLookups}
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 800
+              }}
+            >
+              تحديث القوائم
+            </Button>
+          </Stack>
+        </Paper>
+
+        <Paper
+          elevation={0}
+          sx={{
+            p: 1.5,
+            mb: 1.5,
+            borderRadius: 3.5,
+            border:
+              "1px solid rgba(5,117,70,0.13)"
+          }}
+        >
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                md:
+                  "repeat(3,minmax(0,1fr)) auto"
+              },
+              gap: 1.2,
+              alignItems: "center"
+            }}
+          >
+            <TextField
+              type="date"
+              label="من تاريخ"
+              value={fromDate}
+              onChange={(event) =>
+                setFromDate(event.target.value)
+              }
+              InputLabelProps={{ shrink: true }}
+              size="small"
+            />
+
+            <TextField
+              type="date"
+              label="إلى تاريخ"
+              value={toDate}
+              onChange={(event) =>
+                setToDate(event.target.value)
+              }
+              InputLabelProps={{ shrink: true }}
+              size="small"
+            />
+
+            <Autocomplete
+              options={branches}
+              value={branch}
+              onChange={(_, value) => {
+                setBranch(value);
+                setRows([]);
+              }}
+              getOptionLabel={(option) =>
+                option?.name || ""
+              }
+              isOptionEqualToValue={(
+                option,
+                value
+              ) =>
+                String(option?.guid) ===
+                String(value?.guid)
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="الفرع"
+                  size="small"
+                />
+              )}
+            />
+
+            <Button
+              variant="contained"
+              startIcon={
+                loading
+                  ? (
+                    <CircularProgress
+                      size={18}
+                      color="inherit"
+                    />
+                  )
+                  : <SearchIcon />
+              }
+              onClick={loadData}
+              disabled={loading}
+              sx={{
+                minHeight: 40,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)"
+              }}
+            >
+              عرض
+            </Button>
+          </Box>
+        </Paper>
+
+        <Paper
+          elevation={0}
+          sx={{
+            width: "100%",
+            minWidth: 0,
+            height:
+              "calc(100vh - 245px)",
+            minHeight: 500,
+            borderRadius: 3.5,
+            overflow: "hidden",
+            border:
+              "1px solid rgba(5,117,70,0.13)"
+          }}
+        >
+          <DataGrid
+            rows={filteredGridRows}
+            columns={columns}
+            loading={loading}
+            checkboxSelection
+            disableRowSelectionOnClick
+            rowSelectionModel={
+              selectedRowIds
+            }
+            onRowSelectionModelChange={(
+              newSelection
+            ) =>
+              setSelectedRowIds(
+                Array.isArray(
+                  newSelection
+                )
+                  ? newSelection
+                  : Array.from(
+                      newSelection || []
+                    )
+              )
+            }
+            keepNonExistentRowsSelected
+            slots={{
+              toolbar: GridToolbar
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+                quickFilterProps: {
+                  debounceMs: 350
+                }
+              }
+            }}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 50,
+                  page: 0
+                }
+              }
+            }}
+            pageSizeOptions={[
+              25, 50, 100, 200
+            ]}
+            rowHeight={52}
+            columnHeaderHeight={54}
+            sx={{
+              border: 0,
+              direction: "ltr",
+              fontFamily: "Cairo",
+
+              /*
+               * لا نخفي الـVirtual Scroller بالقوة،
+               * لأن ده كان بيكسر حساب عرض الأعمدة
+               * ويعمل مساحة فاضية كبيرة ناحية الشمال.
+               *
+               * الأعمدة نفسها Flex ومجموعها يتمدد
+               * تلقائيًا على عرض الجريد بالكامل.
+               */
+              "& .MuiDataGrid-main": {
+                minWidth: 0
+              },
+
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor:
+                  "#eef8f3",
+                color: "#173b2b",
+                fontWeight: 900
+              },
+
+              "& .MuiDataGrid-columnHeaderTitleContainer":
+                {
+                  justifyContent:
+                    "center"
+                },
+
+              "& .MuiDataGrid-cell": {
+                borderColor:
+                  "rgba(5,117,70,0.08)"
+              },
+
+              "& .MuiCheckbox-root.Mui-checked":
+                {
+                  color: "#057546"
+                },
+
+              "& .MuiDataGrid-virtualScroller":
+                {
+                  direction: "ltr"
+                },
+
+              "& .MuiDataGrid-footerContainer":
+                {
+                  direction: "ltr"
+                }
+            }}
+          />
+        </Paper>
+
+
+        <Dialog
+          open={filterDialogOpen}
+          onClose={() =>
+            setFilterDialogOpen(
+              false
+            )
+          }
+          fullWidth
+          maxWidth="md"
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              direction: "ltr"
+            }
+          }}
+        >
+          <DialogTitle
+            sx={{
+              fontFamily: "Cairo",
+              fontWeight: 900,
+              color: "#173b2b",
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: 1
+            }}
+          >
+            <Box>
+              الفلاتر المتقدمة
+
+              <Typography
+                component="div"
+                sx={{
+                  mt: 0.35,
+                  fontFamily:
+                    "Cairo",
+                  fontSize:
+                    "0.72rem",
+                  color:
+                    "#708179",
+                  fontWeight: 700
+                }}
+              >
+                يمكنك تحديد أكثر من قيمة في كل فلتر أو تحديد الكل
+              </Typography>
+            </Box>
+
+            {activeFilterCount >
+              0 && (
+              <Chip
+                label={`${activeFilterCount} فلاتر نشطة`}
+                sx={{
+                  fontFamily:
+                    "Cairo",
+                  fontWeight: 800,
+                  color: "#fff",
+                  backgroundColor:
+                    "#057546"
+                }}
+              />
+            )}
+          </DialogTitle>
+
+          <DialogContent
+            dividers
+            sx={{
+              background:
+                "linear-gradient(135deg,#f7fbf9,#ffffff)"
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns:
+                  {
+                    xs: "1fr",
+                    md:
+                      "repeat(2,minmax(0,1fr))"
+                  },
+                gap: 1.25
+              }}
+            >
+              <MultiValueFilter
+                label="نوع التسجيل"
+                options={
+                  filterOptions
+                    .regTypeName
+                }
+                value={
+                  columnFilters
+                    .regTypeName
+                }
+                onChange={(values) =>
+                  updateColumnFilter(
+                    "regTypeName",
+                    values
+                  )
+                }
+              />
+
+              <MultiValueFilter
+                label="الدبلوم أو الدورة"
+                options={
+                  filterOptions
+                    .diplomName
+                }
+                value={
+                  columnFilters
+                    .diplomName
+                }
+                onChange={(values) =>
+                  updateColumnFilter(
+                    "diplomName",
+                    values
+                  )
+                }
+              />
+
+              <MultiValueFilter
+                label="مسؤول الاتصال"
+                options={
+                  filterOptions
+                    .trainerName
+                }
+                value={
+                  columnFilters
+                    .trainerName
+                }
+                onChange={(values) =>
+                  updateColumnFilter(
+                    "trainerName",
+                    values
+                  )
+                }
+              />
+
+              <MultiValueFilter
+                label="نوع الطالب"
+                options={
+                  filterOptions
+                    .studentType
+                }
+                value={
+                  columnFilters
+                    .studentType
+                }
+                onChange={(values) =>
+                  updateColumnFilter(
+                    "studentType",
+                    values
+                  )
+                }
+              />
+            </Box>
+          </DialogContent>
+
+          <DialogActions
+            sx={{
+              px: 2,
+              py: 1.4
+            }}
+          >
+            <Button
+              color="error"
+              startIcon={
+                <RestartAltIcon />
+              }
+              onClick={
+                resetColumnFilters
+              }
+              disabled={
+                activeFilterCount ===
+                0
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 800
+              }}
+            >
+              مسح الفلاتر
+            </Button>
+
+            <Box sx={{ flex: 1 }} />
+
+            <Button
+              variant="contained"
+              onClick={() =>
+                setFilterDialogOpen(
+                  false
+                )
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)"
+              }}
+            >
+              تطبيق وإغلاق
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Menu
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={closeMenu}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+        >
+          <MenuItem
+            onClick={() =>
+              openAction("statement")
+            }
+          >
+            <AccountBalanceWalletIcon
+              sx={{ ml: 1 }}
+            />
+            كشف حساب
+          </MenuItem>
+
+          <MenuItem
+            onClick={() =>
+              openAction("fees")
+            }
+          >
+            <ReceiptLongIcon sx={{ ml: 1 }} />
+            استمارة رسوم
+          </MenuItem>
+
+          <MenuItem
+            disabled={
+              paymentContextLoading
+            }
+            onClick={() =>
+              openAction("payment")
+            }
+          >
+            {paymentContextLoading
+              ? (
+                <CircularProgress
+                  size={18}
+                  sx={{ ml: 1 }}
+                />
+              )
+              : (
+                <PaymentIcon
+                  sx={{ ml: 1 }}
+                />
+              )}
+
+            {paymentContextLoading
+              ? "جاري تجهيز طلب السداد..."
+              : "طلب سداد"}
+          </MenuItem>
+
+          <MenuItem
+            onClick={() =>
+              openAction("graduate")
+            }
+          >
+            <SchoolIcon sx={{ ml: 1 }} />
+            إنهاء الدراسة
+          </MenuItem>
+
+          <MenuItem
+            onClick={() =>
+              openAction("assign")
+            }
+          >
+            <PersonAddAlt1Icon
+              sx={{ ml: 1 }}
+            />
+            تعيين مسؤول الاتصال
+          </MenuItem>
+
+          <MenuItem
+            onClick={() =>
+              openAction("clear")
+            }
+            sx={{ color: "#ae1e21" }}
+          >
+            <PersonRemoveIcon sx={{ ml: 1 }} />
+            حذف مسؤول الاتصال
+          </MenuItem>
+        </Menu>
+
+        <StudentStatementDialog2
+          open={statementOpen}
+          onClose={() =>
+            setStatementOpen(false)
+          }
+          student={selectedStudent}
+          apiBaseUrl={API_BASE_URL}
+        />
+
+        <StudentRegFeesDialog
+          open={feesOpen}
+          onClose={() =>
+            setFeesOpen(false)
+          }
+          student={selectedStudent}
+          apiBaseUrl={API_BASE_URL}
+          onSaved={async () => {
+            setFeesOpen(false);
+            await loadData();
+          }}
+        />
+
+        <StudentPaymentOrderDialog
+          open={paymentOpen}
+          onClose={() => {
+            setPaymentOpen(false);
+            setPaymentContext(null);
+          }}
+          context={paymentContext}
+          selectedStudent={selectedStudent}
+          apiBaseUrl={API_BASE_URL}
+          onSaved={async () => {
+            setPaymentOpen(false);
+            await loadData();
+          }}
+        />
+
+        <Dialog
+          open={
+            bulkTrainerDialogOpen
+          }
+          onClose={() => {
+            if (
+              bulkActionLoading
+            ) {
+              return;
+            }
+
+            setBulkTrainerDialogOpen(
+              false
+            );
+            setBulkSelectedTrainer(
+              null
+            );
+          }}
+          fullWidth
+          maxWidth="sm"
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              direction: "ltr"
+            }
+          }}
+        >
+          <DialogTitle
+            sx={{
+              fontFamily: "Cairo",
+              fontWeight: 900,
+              color: "#173b2b"
+            }}
+          >
+            تعيين مسؤول اتصال جماعي
+          </DialogTitle>
+
+          <DialogContent
+            dividers
+          >
+            <Stack
+              spacing={1.5}
+              sx={{ mt: 0.5 }}
+            >
+              <Chip
+                label={`عدد الطلاب المحددين: ${selectedRows.length}`}
+                sx={{
+                  alignSelf:
+                    "flex-start",
+                  fontFamily:
+                    "Cairo",
+                  fontWeight: 900,
+                  color: "#fff",
+                  backgroundColor:
+                    "#057546"
+                }}
+              />
+
+              <Autocomplete
+                options={trainers}
+                value={
+                  bulkSelectedTrainer
+                }
+                onChange={(
+                  _,
+                  value
+                ) =>
+                  setBulkSelectedTrainer(
+                    value
+                  )
+                }
+                getOptionLabel={(
+                  option
+                ) =>
+                  option?.name || ""
+                }
+                isOptionEqualToValue={(
+                  option,
+                  value
+                ) =>
+                  String(
+                    option?.guid
+                  ) ===
+                  String(
+                    value?.guid
+                  )
+                }
+                noOptionsText="لا يوجد مسؤولو اتصال"
+                renderInput={(
+                  params
+                ) => (
+                  <TextField
+                    {...params}
+                    label="مسؤول الاتصال"
+                    placeholder="اختر مسؤول الاتصال"
+                  />
+                )}
+              />
+
+              <Typography
+                sx={{
+                  fontFamily:
+                    "Cairo",
+                  fontSize:
+                    "0.78rem",
+                  color: "#708179",
+                  fontWeight: 700
+                }}
+              >
+                سيتم تطبيق المسؤول المختار على جميع الطلاب المحددين 
+              </Typography>
+            </Stack>
+          </DialogContent>
+
+          <DialogActions
+            sx={{
+              px: 2,
+              py: 1.4
+            }}
+          >
+            <Button
+              onClick={() => {
+                setBulkTrainerDialogOpen(
+                  false
+                );
+                setBulkSelectedTrainer(
+                  null
+                );
+              }}
+              disabled={
+                bulkActionLoading
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 800
+              }}
+            >
+              إلغاء
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={
+                bulkAssignTrainer
+              }
+              disabled={
+                bulkActionLoading ||
+                !bulkSelectedTrainer
+              }
+              startIcon={
+                bulkActionLoading
+                  ? (
+                    <CircularProgress
+                      size={17}
+                      color="inherit"
+                    />
+                  )
+                  : <GroupAddIcon />
+              }
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)"
+              }}
+            >
+              تنفيذ التعيين
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={trainerDialogOpen}
+          onClose={() =>
+            setTrainerDialogOpen(false)
+          }
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle
+            sx={{
+              fontFamily: "Cairo",
+              fontWeight: 900
+            }}
+          >
+            تعيين مسؤول الاتصال
+          </DialogTitle>
+
+          <DialogContent>
+            <Stack spacing={1.5} sx={{ mt: 1 }}>
+              <Chip
+                label={`الطالب: ${menuRow?.studentName || "-"}`}
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 800
+                }}
+              />
+
+              <Autocomplete
+                options={trainers}
+                value={selectedTrainer}
+                onChange={(_, value) =>
+                  setSelectedTrainer(value)
+                }
+                getOptionLabel={(option) =>
+                  option?.name || ""
+                }
+                isOptionEqualToValue={(
+                  option,
+                  value
+                ) =>
+                  String(option?.guid) ===
+                  String(value?.guid)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="مسؤول الاتصال"
+                  />
+                )}
+              />
+            </Stack>
+          </DialogContent>
+
+          <DialogActions>
+            <Button
+              onClick={() =>
+                setTrainerDialogOpen(false)
+              }
+            >
+              إلغاء
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={saveTrainer}
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                backgroundColor: "#057546"
+              }}
+            >
+              حفظ
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
+  );
+};
+
+export default GraduatesFollowReport;

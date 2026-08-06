@@ -1,0 +1,126 @@
+/* تنسيقات المواد المشتركة */
+.shared-courses-manager {
+  margin: 20px 0;
+}
+
+.shared-course-item {
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: white;
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.course-header h4 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.course-combinations {
+  margin-bottom: 10px;
+}
+
+.combination-tag {
+  display: inline-block;
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 2px 4px;
+  font-size: 12px;
+  border: 1px solid #eaeaea;
+}
+
+/* تنسيقات عرض الأسئلة */
+.exam-details {
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background: #f8f9fa;
+}
+
+.questions-preview {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 15px 0;
+}
+
+.question-preview {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border-right: 3px solid #3498db;
+}
+
+.question-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.question-type {
+  background: #3498db;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.options-preview {
+  margin-right: 20px;
+}
+
+.option-preview {
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  background: #f8f9fa;
+  border: 1px solid #eaeaea;
+  font-size: 13px;
+}
+
+.option-preview.correct {
+  background: #d5f4e6;
+  border-color: #27ae60;
+  font-weight: 500;
+}
+
+/* أزرار النسخ */
+.copy-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #eaeaea;
+}
+
+.copy-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.copy-buttons .btn {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  color: #2c3e50;
+}
+
+.copy-buttons .btn:hover:not(:disabled) {
+  background: #3498db;
+  color: white;
+}
+
+.copy-buttons .btn:disabled {
+  background: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+}

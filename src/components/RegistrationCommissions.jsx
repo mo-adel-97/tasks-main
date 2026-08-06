@@ -1,0 +1,1235 @@
+// RegistrationCommissions.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import { format, startOfMonth, endOfMonth } from "date-fns";
+import { arSA } from "date-fns/locale";
+import { styled } from "@mui/material/styles";
+
+// MUI
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CircularProgress,
+  Alert,
+  Grid,
+  Divider,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+  Stack,
+  Chip,
+  InputAdornment,
+  Tooltip,
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tabs,
+  Tab,
+  TextField,
+  Badge,
+} from "@mui/material";
+
+// Icons
+import {
+  AttachMoney as CommissionIcon,
+  School as DiplomaIcon,
+  MilitaryTech as MilitaryIcon,
+  AssignmentReturned as ReturnIcon,
+  Description as RegistrationIcon,
+  Event as CalendarIcon,
+  DateRange as DateRangeIcon,
+  TrendingUp as TrendingUpIcon,
+  Groups as GroupsIcon,
+  Refresh as RefreshIcon,
+  FilterAlt as FilterIcon,
+  RemoveCircleOutline as DiscountIcon,
+  AddCircleOutline as BonusIcon,
+  Visibility as ViewIcon,
+  Close as CloseIcon,
+  Search as SearchIcon,
+  Person as PersonIcon,
+  Badge as BadgeIcon,
+  AccessTime as TimeIcon,
+  SwapHoriz as SwapIcon,
+} from "@mui/icons-material";
+
+// Pickers
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+// Custom
+import Sidebar from "./Sidebar";
+
+/* ===================== Config ===================== */
+const API_BASE =
+  import.meta?.env?.VITE_API_BASE?.replace(/\/+$/, "") || "https://api1.sstli.com";
+
+/* ===================== Color Palette ===================== */
+const colorPalette = {
+  primary: "#80b49e",
+  primaryLight: "#a8c9bb",
+  primaryDark: "#5a8f7a",
+  primaryLighter: "#e1efe9",
+  textDark: "#2d4a3e",
+  textLight: "#5a7a6a",
+  background: "#f8fbf9",
+  success: "#4caf50",
+  warning: "#ff9800",
+  error: "#f44336",
+  info: "#2196f3",
+  secondary: "#9c27b0",
+};
+
+/* ===================== Styled ===================== */
+const DashboardContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  minHeight: "100vh",
+  backgroundColor: colorPalette.background,
+  fontFamily: "'Tajawal', sans-serif",
+  direction: "ltr",
+}));
+
+const ContentContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  padding: theme.spacing(4),
+  marginLeft: "280px",
+  transition: theme.transitions.create(["margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  [theme.breakpoints.down("lg")]: {
+    marginRight: 0,
+    padding: theme.spacing(3),
+  },
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
+  },
+}));
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: 16,
+  boxShadow: "0 6px 24px 0 rgba(128, 180, 158, 0.1)",
+  transition: "all 0.25s ease",
+  borderInlineStart: `5px solid ${colorPalette.primary}`,
+  backgroundColor: "white",
+  "&:hover": {
+    transform: "translateY(-3px)",
+    boxShadow: "0 10px 28px 0 rgba(128, 180, 158, 0.15)",
+  },
+}));
+
+const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) => {
+  const getColor = (c) => {
+    const colors = {
+      primary: colorPalette.primary,
+      success: colorPalette.success,
+      warning: colorPalette.warning,
+      error: colorPalette.error,
+      info: colorPalette.info,
+      secondary: colorPalette.secondary,
+    };
+    return colors[c] || colorPalette.primary;
+  };
+
+  return (
+    <StyledCard>
+      <CardContent sx={{ p: 3 }}>
+        <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2} gap={2}>
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: 2,
+                bgcolor: `${getColor(color)}20`,
+                color: getColor(color),
+                display: "grid",
+                placeItems: "center",
+                flex: "0 0 auto",
+              }}
+            >
+              {icon}
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight={700} sx={{ color: colorPalette.textDark }}>
+                {title}
+              </Typography>
+              {subtitle && (
+                <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                  {subtitle}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          {actions ? <Box>{actions}</Box> : null}
+        </Box>
+
+        <Divider sx={{ mb: 2, borderColor: colorPalette.primaryLighter }} />
+        {children}
+      </CardContent>
+    </StyledCard>
+  );
+};
+
+const StatCard = ({ title, value, icon, color, hint }) => {
+  const getColor = (c) => {
+    const colors = {
+      primary: colorPalette.primary,
+      success: colorPalette.success,
+      warning: colorPalette.warning,
+      error: colorPalette.error,
+      info: colorPalette.info,
+    };
+    return colors[c] || colorPalette.primary;
+  };
+
+  const colorValue = getColor(color);
+
+  return (
+    <StyledCard sx={{ height: "100%" }}>
+      <CardContent sx={{ p: 2.5 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: colorPalette.textLight }}>
+              {title}
+            </Typography>
+            <Typography variant="h4" fontWeight={800} sx={{ color: colorValue }}>
+              {value}
+            </Typography>
+            {hint && (
+              <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                {hint}
+              </Typography>
+            )}
+          </Box>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              bgcolor: `${colorValue}20`,
+              color: colorValue,
+              display: "grid",
+              placeItems: "center",
+            }}
+          >
+            {icon}
+          </Box>
+        </Box>
+      </CardContent>
+    </StyledCard>
+  );
+};
+
+const Row = ({ label, value, color, isCurrency }) => (
+  <Box display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
+    <Typography variant="body2" sx={{ color: colorPalette.textLight }}>
+      {label}
+    </Typography>
+    <Typography variant="subtitle1" fontWeight={600} sx={{ color: color || colorPalette.textDark }}>
+      {isCurrency ? `${Number(value || 0).toLocaleString()} ر.س` : Number(value ?? 0).toLocaleString()}
+    </Typography>
+  </Box>
+);
+
+const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
+  const tones = {
+    neutral: { fg: colorPalette.textDark, bg: "#ffffff" },
+    discount: { fg: colorPalette.error, bg: "rgba(244,67,54,0.08)" },
+    bonus: { fg: colorPalette.success, bg: "rgba(76,175,80,0.10)" },
+  };
+  const t = tones[tone] || tones.neutral;
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 1.2,
+        borderRadius: 2,
+        borderColor: colorPalette.primaryLighter,
+        bgcolor: t.bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 1,
+      }}
+    >
+      <Box display="flex" alignItems="center" gap={1}>
+        <Box
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: 2,
+            bgcolor: "rgba(128, 180, 158, 0.15)",
+            color: colorPalette.primaryDark,
+            display: "grid",
+            placeItems: "center",
+          }}
+        >
+          {icon}
+        </Box>
+        <Typography variant="body2" sx={{ color: colorPalette.textLight }}>
+          {label}
+        </Typography>
+      </Box>
+
+      <Typography variant="subtitle1" fontWeight={800} sx={{ color: t.fg }}>
+        {Number(value ?? 0).toLocaleString()}
+      </Typography>
+    </Paper>
+  );
+};
+
+/* ===================== Arabic Keys Map ===================== */
+const K = {
+  empName: "اسم الموظف",
+
+  civil: "دبلوم مدني",
+  civilNoContract: "بدون اتفاقية مدني",
+  civilReturn: "مرتجع مدني",
+  civilNet: "صافي مدني",
+  civilCommission: "عمولة مدني",
+
+  civilSharedDiscount: "مشترك مدني (خصم)",
+  civilSharedBonus: "مشترك مدني (إضافة)",
+
+  mil: "دبلوم عسكري",
+  milNoContract: "بدون اتفاقية عسكري",
+  milReturn: "مرتجع عسكري",
+  milNet: "صافي عسكري",
+  milCommission: "عمولة عسكري",
+
+  milSharedDiscount: "مشترك عسكري (خصم)",
+  milSharedBonus: "مشترك عسكري (إضافة)",
+
+  qual: "دورة تأهيلية",
+  qualReturn: "مرتجع تأهيلية",
+  qualCommission: "عمولة تأهيلية",
+
+  dev: "دورة تطويرية",
+  devReturn: "مرتجع تطويرية",
+  devCommission: "عمولة تطويرية",
+
+  total: "اجمالي التسجيل",
+};
+
+/* ===================== Helpers ===================== */
+const safeStr = (v) => (v == null ? "" : String(v));
+const normalizeName = (v) =>
+  safeStr(v).trim().toLowerCase().replace(/\s+/g, " ");
+
+const isHamzaName = (name) => {
+  const n = normalizeName(name);
+  return n === "hamza" || n === "حمزة";
+};
+
+const zeroizeForHamza = (row) => {
+  if (!row) return row;
+  if (!isHamzaName(row?.[K.empName])) return row;
+
+  return {
+    ...row,
+    [K.civil]: 0,
+    [K.civilNoContract]: 0,
+    [K.civilReturn]: 0,
+    [K.civilNet]: 0,
+    [K.civilSharedDiscount]: 0,
+    [K.civilSharedBonus]: 0,
+    [K.civilCommission]: 0,
+
+    [K.mil]: 0,
+    [K.milNoContract]: 0,
+    [K.milReturn]: 0,
+    [K.milNet]: 0,
+    [K.milSharedDiscount]: 0,
+    [K.milSharedBonus]: 0,
+    [K.milCommission]: 0,
+
+    [K.qual]: 0,
+    [K.qualReturn]: 0,
+    [K.qualCommission]: 0,
+
+    [K.dev]: 0,
+    [K.devReturn]: 0,
+    [K.devCommission]: 0,
+
+    [K.total]: 0,
+  };
+};
+
+const normalizeEffect = (v) => {
+  const s = safeStr(v).trim();
+  // نتعامل مع أي اختلاف في الهمزة/الكتابة
+  if (s.includes("خصم")) return "خصم";
+  if (s.includes("إضافة") || s.includes("اضافة") || s.includes("إضافه")) return "إضافة";
+  return s || "-";
+};
+const formatDateTime = (iso) => {
+  try {
+    const d = new Date(iso);
+    // عرض لطيف بدون تعقيد
+    return `${format(d, "yyyy/MM/dd")} - ${format(d, "HH:mm")}`;
+  } catch {
+    return safeStr(iso);
+  }
+};
+
+/* ===================== Component ===================== */
+const RegistrationCommissions = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [startDate, setStartDate] = useState(startOfMonth(new Date()));
+  const [endDate, setEndDate] = useState(endOfMonth(new Date()));
+
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState(null);
+
+  // Dialog state
+  const [openDetails, setOpenDetails] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsErr, setDetailsErr] = useState(null);
+  const [sharedDetails, setSharedDetails] = useState([]);
+
+  // Dialog filters
+  const [tab, setTab] = useState(0); // 0=الكل,1=خصم,2=إضافة
+  const [search, setSearch] = useState("");
+
+  const userGuid = useMemo(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      return user?.SellerGuid || user?.sellerGuid || user?.Guid || "6534bd86-aa89-4c8f-ac95-8f27be7a08ae";
+    } catch {
+      return "6534bd86-aa89-4c8f-ac95-8f27be7a08ae";
+    }
+  }, []);
+
+  const fetchData = async () => {
+    if (!startDate || !endDate) return;
+
+    setLoading(true);
+    setErr(null);
+
+    try {
+      const qs = new URLSearchParams({
+        regStartDate: format(startDate, "yyyy-MM-dd"),
+        regEndDate: format(endDate, "yyyy-MM-dd"),
+        userGuid,
+      }).toString();
+
+      const url = `${API_BASE}/api/UserInfo/sales-report?${qs}`;
+      const res = await fetch(url);
+
+      if (!res.ok) throw new Error("لا توجد بيانات للمعايير المحددة.");
+
+      const json = await res.json();
+      if (!Array.isArray(json) || json.length === 0) {
+        setData(null);
+        setErr("لا توجد بيانات للفترة المحددة.");
+        return;
+      }
+
+setData(zeroizeForHamza(json[0]));
+    } catch (e) {
+      setErr(e?.message || "خطأ غير متوقع.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSharedDetails = async () => {
+    setDetailsLoading(true);
+    setDetailsErr(null);
+
+    try {
+      const qs = new URLSearchParams({
+        regStartDate: format(startDate, "yyyy-MM-dd"),
+        regEndDate: format(endDate, "yyyy-MM-dd"),
+        sellerGuid: userGuid,
+      }).toString();
+
+      const url = `${API_BASE}/api/UserInfo/shared-details?${qs}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("فشل تحميل تفاصيل الخصم/الإضافة.");
+
+      const json = await res.json();
+      if (isHamzaName(data?.[K.empName])) {
+  setSharedDetails([]);
+  return;
+}
+
+      setSharedDetails(Array.isArray(json) ? json : []);
+    } catch (e) {
+      setSharedDetails([]);
+      setDetailsErr(e?.message || "خطأ غير متوقع.");
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line
+  }, [startDate, endDate]);
+
+  const totals = useMemo(() => {
+    if (!data) return null;
+
+    const civil = Number(data[K.civil] || 0);
+    const mil = Number(data[K.mil] || 0);
+    const totalDiplomas = civil + mil;
+
+    const returns = Number(data[K.civilReturn] || 0) + Number(data[K.milReturn] || 0);
+
+    const totalCommission =
+      Number(data[K.civilCommission] || 0) +
+      Number(data[K.milCommission] || 0) +
+      Number(data[K.qualCommission] || 0) +
+      Number(data[K.devCommission] || 0);
+
+    const totalRegistrations = Number(data[K.total] || 0);
+
+    const sharedDiscount = Number(data[K.civilSharedDiscount] || 0) + Number(data[K.milSharedDiscount] || 0);
+    const sharedBonus = Number(data[K.civilSharedBonus] || 0) + Number(data[K.milSharedBonus] || 0);
+
+    return { totalRegistrations, totalDiplomas, returns, totalCommission, sharedDiscount, sharedBonus };
+  }, [data]);
+
+  // Counters for dialog chips/tabs
+  const detailsCounts = useMemo(() => {
+    const rows = sharedDetails || [];
+    let discount = 0;
+    let bonus = 0;
+    for (const r of rows) {
+      const eff = normalizeEffect(r?.Effect);
+      if (eff === "خصم") discount++;
+      else if (eff === "إضافة") bonus++;
+    }
+    return { total: rows.length, discount, bonus };
+  }, [sharedDetails]);
+
+  const filteredDetails = useMemo(() => {
+    let rows = (sharedDetails || []).map((r) => ({
+      StudentName: r?.StudentName,
+      NationalId: r?.NationalId,
+      RegDate: r?.RegDate,
+      StudentSeller: r?.StudentSeller,
+      FormSeller: r?.FormSeller,
+      Effect: normalizeEffect(r?.Effect),
+    }));
+
+    if (tab === 1) rows = rows.filter((x) => x.Effect === "خصم");
+    if (tab === 2) rows = rows.filter((x) => x.Effect === "إضافة");
+
+    const q = search.trim().toLowerCase();
+    if (q) {
+      rows = rows.filter((x) => {
+        return (
+          safeStr(x.StudentName).toLowerCase().includes(q) ||
+          safeStr(x.NationalId).toLowerCase().includes(q) ||
+          safeStr(x.StudentSeller).toLowerCase().includes(q) ||
+          safeStr(x.FormSeller).toLowerCase().includes(q)
+        );
+      });
+    }
+
+    // ترتيب: الأحدث فوق
+    rows.sort((a, b) => new Date(b.RegDate).getTime() - new Date(a.RegDate).getTime());
+    return rows;
+  }, [sharedDetails, tab, search]);
+
+  const openDetailsDialog = async () => {
+    setOpenDetails(true);
+    setTab(0);
+    setSearch("");
+    // load on open
+    await fetchSharedDetails();
+  };
+
+  const closeDetailsDialog = () => {
+    setOpenDetails(false);
+    setDetailsErr(null);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "grid", placeItems: "center", height: "100vh", bgcolor: colorPalette.background }}>
+        <CircularProgress size={60} thickness={4} sx={{ color: colorPalette.primary }} />
+      </Box>
+    );
+  }
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
+      <DashboardContainer>
+        <Sidebar />
+        <ContentContainer sx={{ mb: 3 }}>
+          {/* Header */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              alignItems: isMobile ? "stretch" : "center",
+              justifyContent: "space-between",
+              gap: 2,
+              mb: 3,
+            }}
+          >
+            <Box>
+              <Typography variant="h4" fontWeight={800} sx={{ color: colorPalette.textDark }}>
+                لوحة العمولات والإحصائيات
+              </Typography>
+              <Typography variant="body2" sx={{ color: colorPalette.textLight }}>
+                نظرة مركزة على أداء التسجيلات وحساب العمولات للفترة المحددة
+              </Typography>
+            </Box>
+
+            {/* Filters */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                border: `1px solid ${colorPalette.primaryLighter}`,
+                bgcolor: "white",
+                minWidth: isMobile ? "100%" : 560,
+              }}
+            >
+              <Stack direction={isMobile ? "column" : "row"} gap={1.5} alignItems="center">
+                <DatePicker
+                  label="تاريخ البداية"
+                  value={startDate}
+                  onChange={(v) => setStartDate(v)}
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      fullWidth: true,
+                      InputProps: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarIcon fontSize="small" sx={{ color: colorPalette.primary }} />
+                          </InputAdornment>
+                        ),
+                      },
+                    },
+                  }}
+                />
+                <DatePicker
+                  label="تاريخ النهاية"
+                  value={endDate}
+                  onChange={(v) => setEndDate(v)}
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      fullWidth: true,
+                      InputProps: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarIcon fontSize="small" sx={{ color: colorPalette.primary }} />
+                          </InputAdornment>
+                        ),
+                      },
+                    },
+                  }}
+                />
+
+                <Tooltip title="تحديث البيانات">
+                  <span>
+                    <IconButton
+                      sx={{
+                        color: colorPalette.primary,
+                        border: `1px solid ${colorPalette.primaryLighter}`,
+                        "&:hover": { backgroundColor: colorPalette.primaryLighter },
+                      }}
+                      onClick={fetchData}
+                    >
+                      <RefreshIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+
+                <Tooltip title="عرض تفاصيل الخصم/الإضافة">
+                  <span>
+                    <Button
+                      onClick={openDetailsDialog}
+                      startIcon={<ViewIcon />}
+                      variant="contained"
+                      sx={{
+                        bgcolor: colorPalette.primary,
+                        "&:hover": { bgcolor: colorPalette.primaryDark },
+                        borderRadius: 2,
+                        whiteSpace: "nowrap",
+                      }}
+                      disabled={!startDate || !endDate}
+                    >
+                      عرض التفاصيل
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Stack>
+
+              {/* Quick Range */}
+              <Stack direction="row" gap={1} mt={1.5} flexWrap="wrap" alignItems="center">
+                <Chip
+                  icon={<FilterIcon sx={{ color: colorPalette.primary }} />}
+                  label="الشهر الحالي"
+                  onClick={() => {
+                    setStartDate(startOfMonth(new Date()));
+                    setEndDate(endOfMonth(new Date()));
+                  }}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    borderColor: colorPalette.primaryLight,
+                    color: colorPalette.primary,
+                    "&:hover": { backgroundColor: colorPalette.primaryLighter },
+                  }}
+                />
+                <Chip
+                  icon={<DateRangeIcon sx={{ color: colorPalette.textLight }} />}
+                  label={
+                    startDate && endDate
+                      ? `${format(startDate, "yyyy/MM/dd")} - ${format(endDate, "yyyy/MM/dd")}`
+                      : "—"
+                  }
+                  size="small"
+                  sx={{ borderColor: colorPalette.primaryLighter, color: colorPalette.textDark }}
+                />
+
+                {/* quick counters (optional) */}
+                {data && totals && (
+                  <>
+                    <Chip
+                      icon={<DiscountIcon sx={{ color: colorPalette.error }} />}
+                      label={`خصم: ${totals.sharedDiscount.toLocaleString()}`}
+                      size="small"
+                      sx={{ bgcolor: "rgba(244,67,54,0.08)", borderColor: "rgba(244,67,54,0.25)" }}
+                      variant="outlined"
+                    />
+                    <Chip
+                      icon={<BonusIcon sx={{ color: colorPalette.success }} />}
+                      label={`إضافة: ${totals.sharedBonus.toLocaleString()}`}
+                      size="small"
+                      sx={{ bgcolor: "rgba(76,175,80,0.10)", borderColor: "rgba(76,175,80,0.25)" }}
+                      variant="outlined"
+                    />
+                  </>
+                )}
+              </Stack>
+            </Paper>
+          </Box>
+
+          {/* Error */}
+          {err && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {err}
+            </Alert>
+          )}
+
+          {/* Empty State */}
+          {!data && !err && (
+            <Box sx={{ display: "grid", placeItems: "center", height: "40vh", textAlign: "center", borderRadius: 2 }}>
+              <Typography variant="h6" sx={{ color: colorPalette.textLight }}>
+                اختر نطاق التاريخ ثم اضغط تحديث لعرض البيانات.
+              </Typography>
+            </Box>
+          )}
+
+          {/* Content */}
+          {data && totals && (
+            <>
+              {/* Summary Cards */}
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <StatCard
+                    title="إجمالي التسجيل"
+                    value={totals.totalRegistrations.toLocaleString()}
+                    icon={<RegistrationIcon />}
+                    color="primary"
+                    hint={data[K.empName]}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <StatCard
+                    title="إجمالي الدبلومات"
+                    value={totals.totalDiplomas.toLocaleString()}
+                    icon={<DiplomaIcon />}
+                    color="success"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <StatCard
+                    title="إجمالي المرتجعات"
+                    value={totals.returns.toLocaleString()}
+                    icon={<ReturnIcon />}
+                    color="error"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <StatCard
+                    title="إجمالي العمولة"
+                    value={`${totals.totalCommission.toLocaleString()} ر.س`}
+                    icon={<CommissionIcon />}
+                    color="warning"
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Civil & Military */}
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                {/* Civil */}
+                <Grid item xs={12} md={6}>
+                  <Panel
+                    color="info"
+                    icon={<DiplomaIcon />}
+                    title="الدبلومات المدنية"
+                    subtitle="تفاصيل المدني + المشترك"
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <Row label="الإجمالي" value={data[K.civil]} />
+                        <Row label="المرتجعات" value={data[K.civilReturn]} color={colorPalette.error} />
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Row label="بدون اتفاقية" value={data[K.civilNoContract]} />
+                        <Row label="الصافي" value={data[K.civilNet]} color={colorPalette.success} />
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Typography variant="subtitle2" sx={{ color: colorPalette.textDark, mb: 1 }}>
+                          المشترك (مدني)
+                        </Typography>
+                        <Grid container spacing={1.5}>
+                          <Grid item xs={12} sm={6}>
+                            <MiniStat
+                              label="خصم"
+                              value={data[K.civilSharedDiscount]}
+                              icon={<DiscountIcon fontSize="small" />}
+                              tone="discount"
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={6}>
+                            <MiniStat
+                              label="إضافة"
+                              value={data[K.civilSharedBonus]}
+                              icon={<BonusIcon fontSize="small" />}
+                              tone="bonus"
+                            />
+                          </Grid>
+                        </Grid>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Row
+                          label="العمولة (بعد الخصم/الإضافة)"
+                          value={data[K.civilCommission]}
+                          color={colorPalette.primary}
+                          isCurrency
+                        />
+                      </Grid>
+                    </Grid>
+                  </Panel>
+                </Grid>
+
+                {/* Military */}
+                <Grid item xs={12} md={6}>
+                  <Panel
+                    color="warning"
+                    icon={<MilitaryIcon />}
+                    title="الدبلومات العسكرية"
+                    subtitle="تفاصيل العسكري + المشترك"
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <Row label="الإجمالي" value={data[K.mil]} />
+                        <Row label="المرتجعات" value={data[K.milReturn]} color={colorPalette.error} />
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Row label="بدون اتفاقية" value={data[K.milNoContract]} />
+                        <Row label="الصافي" value={data[K.milNet]} color={colorPalette.success} />
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Typography variant="subtitle2" sx={{ color: colorPalette.textDark, mb: 1 }}>
+                          المشترك (عسكري)
+                        </Typography>
+                        <Grid container spacing={1.5}>
+                          <Grid item xs={12} sm={6}>
+                            <MiniStat
+                              label="خصم"
+                              value={data[K.milSharedDiscount]}
+                              icon={<DiscountIcon fontSize="small" />}
+                              tone="discount"
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={6}>
+                            <MiniStat
+                              label="إضافة"
+                              value={data[K.milSharedBonus]}
+                              icon={<BonusIcon fontSize="small" />}
+                              tone="bonus"
+                            />
+                          </Grid>
+                        </Grid>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Row
+                          label="العمولة (بعد الخصم/الإضافة)"
+                          value={data[K.milCommission]}
+                          color={colorPalette.primary}
+                          isCurrency
+                        />
+                      </Grid>
+                    </Grid>
+                  </Panel>
+                </Grid>
+              </Grid>
+
+              {/* Courses */}
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Panel color="success" icon={<TrendingUpIcon />} title="الدورات التأهيلية" subtitle="عدد وعمولة">
+                    <Row label="عدد الدورات" value={data[K.qual]} />
+                    <Row label="المرتجع" value={data[K.qualReturn]} color={colorPalette.error} />
+                    <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                    <Row label="العمولة" value={data[K.qualCommission]} color={colorPalette.primary} isCurrency />
+                  </Panel>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Panel color="secondary" icon={<GroupsIcon />} title="الدورات التطويرية" subtitle="عدد وعمولة">
+                    <Row label="عدد الدورات" value={data[K.dev]} />
+                    <Row label="المرتجع" value={data[K.devReturn]} color={colorPalette.error} />
+                    <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                    <Row label="العمولة" value={data[K.devCommission]} color={colorPalette.primary} isCurrency />
+                  </Panel>
+                </Grid>
+              </Grid>
+            </>
+          )}
+
+          {/* ===================== Details Dialog ===================== */}
+          <Dialog
+            open={openDetails}
+            onClose={closeDetailsDialog}
+            fullWidth
+            maxWidth="lg"
+            PaperProps={{
+              sx: {
+                borderRadius: 3,
+                overflow: "hidden",
+                border: `1px solid ${colorPalette.primaryLighter}`,
+              },
+            }}
+          >
+            <DialogTitle
+              sx={{
+                bgcolor: "white",
+                borderBottom: `1px solid ${colorPalette.primaryLighter}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 2,
+              }}
+            >
+              <Box>
+                <Typography variant="h6" fontWeight={900} sx={{ color: colorPalette.textDark }}>
+                  تفاصيل الخصم / الإضافة
+                </Typography>
+                <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                  {startDate && endDate
+                    ? `الفترة: ${format(startDate, "yyyy/MM/dd")} - ${format(endDate, "yyyy/MM/dd")}`
+                    : ""}
+                </Typography>
+              </Box>
+
+              <IconButton onClick={closeDetailsDialog} sx={{ color: colorPalette.textLight }}>
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+
+            <DialogContent sx={{ bgcolor: "white" }}>
+              {/* top controls */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    alignItems: isMobile ? "stretch" : "center",
+                    justifyContent: "space-between",
+                    gap: 1.5,
+                  }}
+                >
+                  <TextField
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="بحث بالاسم / الهوية / مندوب الطالب / مندوب الاستمارة"
+                    size="small"
+                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                    }}
+                  />
+
+                  <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                    <Button
+                      onClick={fetchSharedDetails}
+                      startIcon={<RefreshIcon />}
+                      variant="outlined"
+                      sx={{
+                        borderRadius: 2,
+                        borderColor: colorPalette.primaryLight,
+                        color: colorPalette.primaryDark,
+                      }}
+                      disabled={detailsLoading}
+                    >
+                      تحديث
+                    </Button>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    alignItems: isMobile ? "stretch" : "center",
+                    justifyContent: "space-between",
+                    gap: 1.5,
+                  }}
+                >
+                  <Tabs
+                    value={tab}
+                    onChange={(_, v) => setTab(v)}
+                    variant={isMobile ? "scrollable" : "standard"}
+                    sx={{
+                      minHeight: 42,
+                      "& .MuiTab-root": { minHeight: 42, borderRadius: 2 },
+                    }}
+                  >
+                    <Tab
+                      label={
+                        <Badge badgeContent={detailsCounts.total} color="primary">
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <SwapIcon fontSize="small" />
+                            الكل
+                          </Box>
+                        </Badge>
+                      }
+                    />
+                    <Tab
+                      label={
+                        <Badge badgeContent={detailsCounts.discount} color="error">
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <DiscountIcon fontSize="small" />
+                            خصم
+                          </Box>
+                        </Badge>
+                      }
+                    />
+                    <Tab
+                      label={
+                        <Badge badgeContent={detailsCounts.bonus} color="success">
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <BonusIcon fontSize="small" />
+                            إضافة
+                          </Box>
+                        </Badge>
+                      }
+                    />
+                  </Tabs>
+
+                  <Box display="flex" gap={1} flexWrap="wrap" justifyContent="flex-end">
+                    <Chip
+                      icon={<DiscountIcon sx={{ color: colorPalette.error }} />}
+                      label={`خصم: ${detailsCounts.discount}`}
+                      size="small"
+                      variant="outlined"
+                      sx={{ bgcolor: "rgba(244,67,54,0.08)", borderColor: "rgba(244,67,54,0.25)" }}
+                    />
+                    <Chip
+                      icon={<BonusIcon sx={{ color: colorPalette.success }} />}
+                      label={`إضافة: ${detailsCounts.bonus}`}
+                      size="small"
+                      variant="outlined"
+                      sx={{ bgcolor: "rgba(76,175,80,0.10)", borderColor: "rgba(76,175,80,0.25)" }}
+                    />
+                  </Box>
+                </Box>
+
+                {detailsErr && (
+                  <Alert severity="error" sx={{ borderRadius: 2 }}>
+                    {detailsErr}
+                  </Alert>
+                )}
+
+                {detailsLoading && (
+                  <Box sx={{ display: "grid", placeItems: "center", py: 4 }}>
+                    <CircularProgress sx={{ color: colorPalette.primary }} />
+                    <Typography variant="body2" sx={{ mt: 1, color: colorPalette.textLight }}>
+                      جاري تحميل التفاصيل...
+                    </Typography>
+                  </Box>
+                )}
+
+                {!detailsLoading && filteredDetails.length === 0 && (
+                  <Box sx={{ display: "grid", placeItems: "center", py: 6 }}>
+                    <Typography variant="h6" sx={{ color: colorPalette.textLight }}>
+                      لا توجد تفاصيل مطابقة.
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                      جرّب تغيير الفلتر أو البحث.
+                    </Typography>
+                  </Box>
+                )}
+
+                {!detailsLoading && filteredDetails.length > 0 && (
+                  <TableContainer
+                    component={Paper}
+                    variant="outlined"
+                    sx={{
+                      mt: 1,
+                      borderRadius: 2,
+                      borderColor: colorPalette.primaryLighter,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow sx={{ bgcolor: colorPalette.primaryLighter }}>
+                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <PersonIcon fontSize="small" />
+                              الطالب
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <BadgeIcon fontSize="small" />
+                              الهوية
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <TimeIcon fontSize="small" />
+                              تاريخ التسجيل
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                            مندوب الطالب
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                            مندوب الاستمارة
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 900, color: colorPalette.textDark }}>
+                            التأثير
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredDetails.map((r, idx) => {
+                          const eff = r.Effect;
+                          const isDiscount = eff === "خصم";
+                          return (
+                            <TableRow key={`${r.NationalId}-${r.RegDate}-${idx}`} hover>
+                              <TableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>
+                                {safeStr(r.StudentName)}
+                              </TableCell>
+                              <TableCell sx={{ color: colorPalette.textLight }}>
+                                {safeStr(r.NationalId)}
+                              </TableCell>
+                              <TableCell sx={{ color: colorPalette.textLight }}>
+                                {formatDateTime(r.RegDate)}
+                              </TableCell>
+                              <TableCell sx={{ color: colorPalette.textDark }}>
+                                {safeStr(r.StudentSeller)}
+                              </TableCell>
+                              <TableCell sx={{ color: colorPalette.textDark }}>
+                                {safeStr(r.FormSeller)}
+                              </TableCell>
+                              <TableCell>
+                                <Chip
+                                  icon={isDiscount ? <DiscountIcon /> : <BonusIcon />}
+                                  label={eff}
+                                  size="small"
+                                  sx={{
+                                    fontWeight: 900,
+                                    bgcolor: isDiscount ? "rgba(244,67,54,0.10)" : "rgba(76,175,80,0.12)",
+                                    color: isDiscount ? colorPalette.error : colorPalette.success,
+                                    borderRadius: 2,
+                                  }}
+                                  variant="outlined"
+                                />
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </Box>
+            </DialogContent>
+
+            <DialogActions
+              sx={{
+                bgcolor: "white",
+                borderTop: `1px solid ${colorPalette.primaryLighter}`,
+                p: 2,
+                justifyContent: "space-between",
+                gap: 2,
+              }}
+            >
+              <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                عدد الصفوف المعروضة: {filteredDetails.length.toLocaleString()}
+              </Typography>
+
+              <Button
+                onClick={closeDetailsDialog}
+                variant="contained"
+                startIcon={<CloseIcon />}
+                sx={{
+                  bgcolor: colorPalette.primary,
+                  "&:hover": { bgcolor: colorPalette.primaryDark },
+                  borderRadius: 2,
+                }}
+              >
+                إغلاق
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </ContentContainer>
+      </DashboardContainer>
+    </LocalizationProvider>
+  );
+};
+
+export default RegistrationCommissions;
