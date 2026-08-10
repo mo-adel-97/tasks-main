@@ -31,7 +31,9 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Pagination,
-  Stack
+  Stack,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { Analytics } from '@mui/icons-material';
@@ -88,6 +90,9 @@ const taskStatusMap = {
 };
 
 function SentTasks() {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery('(min-width:1600px)', { noSsr: true });
+
   const [sentTasks, setSentTasks] = useState([]);
   const [externalModifiedTasks, setExternalModifiedTasks] = useState([]);
   const [taskUpdates, setTaskUpdates] = useState({});
@@ -549,19 +554,62 @@ const handleEditFormChange = (field, value) => {
   }
 
   return (
-    <Box sx={{ marginLeft: '280px', padding: '20px',marginBottom:"50px",marginTop:"20px", backgroundColor: colorPalette.background, minHeight: '100vh' }}>
-      <Typography variant="h4" gutterBottom fontWeight={700} sx={{ mb: 3, color: colorPalette.textDark }}>
+    <Box sx={{
+      marginLeft: isDesktop ? '280px' : 0,
+      padding: isDesktop ? '20px' : { xs: 0.6, sm: 1, md: 1.4 },
+      marginBottom: isDesktop ? '50px' : { xs: 20, md: 35 },
+      marginTop: isDesktop ? '20px' : { xs: 8, md: 14 },
+      backgroundColor: colorPalette.background,
+      minHeight: '100vh',
+      width: isDesktop ? 'auto' : '100%',
+      maxWidth: '100%',
+      minWidth: 0,
+      boxSizing: 'border-box',
+      overflowX: 'hidden',
+
+      '& .MuiTypography-h4': {
+        fontSize: isDesktop ? undefined : { xs: '0.82rem', sm: '0.94rem', md: '1.08rem' }
+      },
+      '& .MuiTypography-h6': {
+        fontSize: isDesktop ? undefined : { xs: '0.64rem', sm: '0.72rem', md: '0.82rem' }
+      },
+      '& .MuiTypography-body2': {
+        fontSize: isDesktop ? undefined : { xs: '0.54rem', sm: '0.61rem', md: '0.7rem' }
+      },
+      '& .MuiButton-root': {
+        fontSize: isDesktop ? undefined : { xs: '0.54rem', sm: '0.61rem', md: '0.7rem' },
+        minHeight: isDesktop ? undefined : { xs: 28, sm: 30, md: 34 }
+      },
+      '& .MuiChip-root': {
+        fontSize: isDesktop ? undefined : { xs: '0.5rem', sm: '0.56rem', md: '0.64rem' },
+        height: isDesktop ? undefined : { xs: 21, sm: 23, md: 26 }
+      },
+      '& .MuiInputBase-root, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
+        fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.63rem', md: '0.72rem' }
+      }
+    }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        fontWeight={700}
+        sx={{
+          mb: isDesktop ? 3 : { xs: 1, sm: 1.2, md: 1.5 },
+          color: colorPalette.textDark,
+          textAlign: { xs: 'left', md: 'left' }
+        }}
+      >
         المهام التي أرسلتها
       </Typography>
 
       {/* View Mode Toggle */}
       <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: 2, 
-        mb: 2,
+        display: 'flex',
+        flexDirection: isDesktop ? 'row' : { xs: 'column', md: 'row' },
+        alignItems: isDesktop ? 'center' : { xs: 'stretch', md: 'center' },
+        gap: isDesktop ? 2 : { xs: 0.45, sm: 0.6, md: 0.8 },
+        mb: isDesktop ? 2 : { xs: 0.8, sm: 1, md: 1.2 },
         backgroundColor: colorPalette.primaryLighter,
-        p: 2,
+        p: isDesktop ? 2 : { xs: 0.55, sm: 0.7, md: 1 },
         borderRadius: 2,
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
@@ -575,13 +623,25 @@ const handleEditFormChange = (field, value) => {
             }
           }}
           aria-label="view mode"
+          sx={{
+            width: isDesktop ? 'auto' : '100%',
+            '& .MuiToggleButton-root': {
+              flex: isDesktop ? 'initial' : 1,
+              minWidth: 0,
+              px: isDesktop ? 1.5 : { xs: 0.45, sm: 0.65, md: 0.9 },
+              py: isDesktop ? 1 : { xs: 0.45, sm: 0.55, md: 0.7 },
+              fontSize: isDesktop ? undefined : { xs: '0.5rem', sm: '0.56rem', md: '0.64rem' },
+              lineHeight: 1.35,
+              whiteSpace: 'normal'
+            }
+          }}
         >
           <ToggleButton value="filtered" aria-label="filtered view" sx={{ color: colorPalette.primary }}>
-            <FilterList sx={{ mr: 1 }} />
+            <FilterList sx={{ mr: 0.5, fontSize: isDesktop ? undefined : { xs: 16, sm: 17, md: 18 } }} />
             عرض المهام حسب التاريخ
           </ToggleButton>
           <ToggleButton value="all" aria-label="all tasks view" sx={{ color: colorPalette.primary }}>
-            <ViewList sx={{ mr: 1 }} />
+            <ViewList sx={{ mr: 0.5, fontSize: isDesktop ? undefined : { xs: 16, sm: 17, md: 18 } }} />
             عرض جميع المهام
           </ToggleButton>
         </ToggleButtonGroup>
@@ -602,7 +662,11 @@ const handleEditFormChange = (field, value) => {
                   sx: { 
                     backgroundColor: 'white',
                     borderRadius: 1,
-                    minWidth: 150
+                    minWidth: isDesktop ? 150 : 0,
+                    width: isDesktop ? 150 : '100%',
+                    '& .MuiInputBase-root': {
+                      minHeight: isDesktop ? undefined : { xs: 34, sm: 36, md: 38 }
+                    }
                   } 
                 } 
               }}
@@ -622,9 +686,22 @@ const handleEditFormChange = (field, value) => {
             />
           }
           label="عرض المهام المحدثة فقط"
+          sx={{
+            m: 0,
+            width: isDesktop ? 'auto' : '100%',
+            '& .MuiFormControlLabel-label': {
+              lineHeight: 1.3
+            }
+          }}
         />
 
-        <Typography sx={{ fontWeight: 700, fontSize: 16, color: colorPalette.textDark }}>
+        <Typography sx={{
+          fontWeight: 700,
+          fontSize: isDesktop ? 16 : { xs: '0.58rem', sm: '0.66rem', md: '0.74rem' },
+          color: colorPalette.textDark,
+          width: isDesktop ? 'auto' : '100%',
+          textAlign: isDesktop ? 'initial' : 'center'
+        }}>
           {viewMode === 'filtered' 
             ? `المهام بتاريخ: ${selectedDate.format('YYYY-MM-DD')}`
             : 'جميع المهام'}
@@ -636,12 +713,17 @@ const handleEditFormChange = (field, value) => {
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
-          height: '60vh',
+          height: isDesktop ? '60vh' : { xs: '34vh', sm: '40vh', md: '46vh' },
           backgroundColor: colorPalette.primaryLighter,
           borderRadius: 2,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <Typography variant="h6" sx={{ color: colorPalette.textLight }}>
+          <Typography variant="h6" sx={{
+            color: colorPalette.textLight,
+            fontSize: isDesktop ? undefined : { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' },
+            textAlign: 'center',
+            px: 1
+          }}>
             {showUpdatedOnly 
               ? 'لا توجد مهام محدثة' 
               : viewMode === 'filtered' 
@@ -651,7 +733,7 @@ const handleEditFormChange = (field, value) => {
         </Box>
       ) : (
         <>
-          <Grid container spacing={4}>
+          <Grid container spacing={isDesktop ? 4 : { xs: 1, sm: 1.5, md: 2 }}>
             {currentTasks.map((task) => {
               const { hours, mins, secs, ended } = getRemainingTime(task);
               const createdText = formatDate(task.createdAt);
@@ -709,7 +791,11 @@ const handleEditFormChange = (field, value) => {
                     border: ended ? `1px solid ${colorPalette.error}` : `1px solid ${colorPalette.primaryLighter}`,
                   }}>
 
-                    <CardContent sx={{ flexGrow: 1, position: 'relative',padding:"2rem"}}>
+                    <CardContent sx={{
+                      flexGrow: 1,
+                      position: 'relative',
+                      padding: isDesktop ? '2rem' : { xs: 1, sm: 1.4, md: 1.8 }
+                    }}>
                       <Box sx={{ 
                         position: 'absolute', 
                         top: 16, 
@@ -938,7 +1024,9 @@ const handleEditFormChange = (field, value) => {
                   page={currentPage} 
                   onChange={handlePageChange} 
                   color="primary" 
-                  size="large"
+                  size={isDesktop ? "large" : "small"}
+                  siblingCount={isDesktop ? 1 : 0}
+                  boundaryCount={1}
                   showFirstButton 
                   showLastButton
                   sx={{
@@ -967,8 +1055,13 @@ const handleEditFormChange = (field, value) => {
         maxWidth="md"
         PaperProps={{
           sx: {
-            borderRadius: 3,
-            boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+            borderRadius: isDesktop ? 3 : { xs: 2.2, sm: 2.5, md: 3 },
+            boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+            width: isDesktop ? 'auto' : { xs: 'calc(100vw - 20px)', sm: '88vw', md: '76vw' },
+            maxWidth: isDesktop ? undefined : { xs: 'calc(100vw - 20px)', sm: 620, md: 760 },
+            maxHeight: isDesktop ? '90vh' : { xs: '78dvh', sm: '82dvh', md: '86dvh' },
+            m: isDesktop ? 2 : { xs: 1.2, sm: 1.5, md: 2 },
+            overflow: 'hidden'
           }
         }}
       >
@@ -978,11 +1071,23 @@ const handleEditFormChange = (field, value) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          py: 2
+          gap: { xs: 0.6, sm: 1, md: 1.5 },
+          py: isDesktop ? 2 : { xs: 0.7, sm: 0.9, md: 1.2 },
+          px: isDesktop ? 3 : { xs: 1, sm: 1.3, md: 1.8 }
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Description sx={{ mr: 1 }} />
-            <Typography variant="h6" fontWeight={600}>
+          <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+            <Description sx={{ mr: { xs: 0.5, md: 1 }, fontSize: isDesktop ? undefined : { xs: 18, sm: 20, md: 22 } }} />
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              sx={{
+                minWidth: 0,
+                fontSize: isDesktop ? undefined : { xs: '0.78rem', sm: '0.9rem', md: '1rem' },
+                lineHeight: 1.35,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
               {currentTask?.taskName}
               {isTaskModifiedExternally(currentTask?.id) && (
                 <Chip
@@ -990,28 +1095,50 @@ const handleEditFormChange = (field, value) => {
                   label="معدلة"
                   color="secondary"
                   size="small"
-                  sx={{ ml: 1, color: 'white', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                  sx={{
+                    ml: 0.7,
+                    color: 'white',
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    height: isDesktop ? 22 : { xs: 18, sm: 20, md: 22 },
+                    fontSize: isDesktop ? '0.7rem' : { xs: '0.5rem', sm: '0.56rem', md: '0.64rem' }
+                  }}
                 />
               )}
             </Typography>
           </Box>
-          <IconButton onClick={handleCloseDialog} sx={{ color: 'white' }}>
-            <Close />
+
+          <IconButton
+            onClick={handleCloseDialog}
+            sx={{
+              color: 'white',
+              width: isDesktop ? 40 : { xs: 30, sm: 34, md: 36 },
+              height: isDesktop ? 40 : { xs: 30, sm: 34, md: 36 },
+              flexShrink: 0
+            }}
+          >
+            <Close sx={{ fontSize: isDesktop ? 24 : { xs: 18, sm: 20, md: 22 } }} />
           </IconButton>
         </DialogTitle>
-        
-        <DialogContent dividers sx={{ py: 2 }}>
+
+        <DialogContent
+          dividers
+          sx={{
+            py: isDesktop ? 2 : { xs: 0.6, sm: 0.8, md: 1.2 },
+            px: isDesktop ? 3 : { xs: 0.7, sm: 1, md: 1.4 },
+            overflowY: 'auto'
+          }}
+        >
           {updatesLoading[currentTask?.id] ? (
             <Box sx={{ 
               display: 'flex', 
               justifyContent: 'center', 
               alignItems: 'center', 
-              height: 200 
+              height: isDesktop ? 200 : { xs: 130, sm: 160, md: 180 }
             }}>
-              <CircularProgress sx={{ color: colorPalette.primary }} />
+              <CircularProgress size={isDesktop ? 40 : 28} sx={{ color: colorPalette.primary }} />
             </Box>
           ) : (
-            <List sx={{ width: '100%' }}>
+            <List sx={{ width: '100%', p: 0 }}>
               {taskUpdates[currentTask?.id]?.length > 0 ? (
                 taskUpdates[currentTask?.id].map((update, index) => {
                   const userDetails = getUserDetails(update.updatedBy);
@@ -1021,50 +1148,82 @@ const handleEditFormChange = (field, value) => {
 
                   return (
                     <React.Fragment key={index}>
-                      <ListItem alignItems="flex-start" sx={{
-                        backgroundColor: isFirstUpdate ? colorPalette.primaryLighter : 'transparent',
-                        borderRadius: 1,
-                        mb: 1,
-                        borderLeft: `4px solid ${
-                          update.status === 2 ? colorPalette.success : 
-                          update.status === 3 ? colorPalette.error : 
-                          update.status === 1 ? colorPalette.primary : colorPalette.warning
-                        }`
-                      }}>
-                        <ListItemAvatar>
+                      <ListItem
+                        alignItems="flex-start"
+                        sx={{
+                          backgroundColor: isFirstUpdate ? colorPalette.primaryLighter : 'transparent',
+                          borderRadius: isDesktop ? 1 : 1.5,
+                          mb: isDesktop ? 1 : { xs: 0.45, sm: 0.6, md: 0.8 },
+                          p: isDesktop ? 2 : { xs: 0.7, sm: 0.9, md: 1.2 },
+                          borderLeft: `${isDesktop ? 4 : 3}px solid ${
+                            update.status === 2 ? colorPalette.success : 
+                            update.status === 3 ? colorPalette.error : 
+                            update.status === 1 ? colorPalette.primary : colorPalette.warning
+                          }`
+                        }}
+                      >
+                        <ListItemAvatar
+                          sx={{
+                            minWidth: isDesktop ? 56 : { xs: 38, sm: 44, md: 48 }
+                          }}
+                        >
                           <Tooltip title={userDetails.name}>
                             <Avatar sx={{ 
                               bgcolor: isFirstUpdate ? colorPalette.primary : colorPalette.textLight,
-                              width: 36, 
-                              height: 36,
-                              fontSize: '0.9rem'
+                              width: isDesktop ? 36 : { xs: 28, sm: 32, md: 34 }, 
+                              height: isDesktop ? 36 : { xs: 28, sm: 32, md: 34 },
+                              fontSize: isDesktop ? '0.9rem' : { xs: '0.58rem', sm: '0.66rem', md: '0.74rem' }
                             }}>
                               {userDetails.avatar}
                             </Avatar>
                           </Tooltip>
                         </ListItemAvatar>
+
                         <ListItemText
+                          sx={{ m: 0, minWidth: 0 }}
                           primary={
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                              <Typography variant="subtitle1" fontWeight={600} sx={{ mr: 1, color: colorPalette.textDark }}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                flexWrap: 'wrap',
+                                gap: isDesktop ? 0.7 : { xs: 0.35, sm: 0.45, md: 0.6 },
+                                mb: isDesktop ? 0.5 : 0.3
+                              }}
+                            >
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={700}
+                                sx={{
+                                  color: colorPalette.textDark,
+                                  fontSize: isDesktop ? undefined : { xs: '0.66rem', sm: '0.74rem', md: '0.82rem' }
+                                }}
+                              >
                                 {userDetails.name}
                               </Typography>
+
                               <Chip
                                 label={statusInfo.text}
                                 size="small"
                                 color={statusInfo.color}
                                 icon={statusInfo.icon}
-                                sx={{ height: 22, fontSize: '0.7rem' }}
+                                sx={{
+                                  height: isDesktop ? 22 : { xs: 18, sm: 20, md: 22 },
+                                  fontSize: isDesktop ? '0.7rem' : { xs: '0.48rem', sm: '0.54rem', md: '0.61rem' },
+                                  '& .MuiChip-icon': {
+                                    fontSize: isDesktop ? undefined : { xs: 13, sm: 14, md: 15 }
+                                  }
+                                }}
                               />
+
                               {isFirstUpdate && (
                                 <Chip
                                   label="آخر تحديث"
                                   size="small"
                                   color="primary"
                                   sx={{ 
-                                    height: 22, 
-                                    fontSize: '0.7rem',
-                                    ml: 1
+                                    height: isDesktop ? 22 : { xs: 18, sm: 20, md: 22 }, 
+                                    fontSize: isDesktop ? '0.7rem' : { xs: '0.48rem', sm: '0.54rem', md: '0.61rem' }
                                   }}
                                 />
                               )}
@@ -1072,20 +1231,46 @@ const handleEditFormChange = (field, value) => {
                           }
                           secondary={
                             <React.Fragment>
-                              <Typography variant="body2" sx={{ mt: 0.5, color: colorPalette.textDark }}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  mt: 0.3,
+                                  color: colorPalette.textDark,
+                                  fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.63rem', md: '0.7rem' },
+                                  lineHeight: 1.5
+                                }}
+                              >
                                 {update.statusNote}
                               </Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                <Typography variant="caption" sx={{ mr: 1, color: colorPalette.textLight }}>
+
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  flexWrap: 'wrap',
+                                  gap: isDesktop ? 0.8 : { xs: 0.35, sm: 0.5 },
+                                  mt: isDesktop ? 1 : 0.45
+                                }}
+                              >
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    color: colorPalette.textLight,
+                                    fontSize: isDesktop ? undefined : { xs: '0.5rem', sm: '0.56rem', md: '0.62rem' }
+                                  }}
+                                >
                                   {formatDate(update.updatedAt)}
                                 </Typography>
+
                                 {fileName && fileName !== "fake.txt" ? (
                                   <Button
                                     size="small"
                                     startIcon={<AttachFile fontSize="small" />}
                                     onClick={() => handleDownloadAttachment(update.attachmentFilePath)}
                                     sx={{ 
-                                      fontSize: '0.7rem',
+                                      minHeight: isDesktop ? undefined : 24,
+                                      px: isDesktop ? undefined : 0.7,
+                                      fontSize: isDesktop ? '0.7rem' : { xs: '0.5rem', sm: '0.56rem', md: '0.62rem' },
                                       color: colorPalette.primary,
                                       textTransform: 'none'
                                     }}
@@ -1098,8 +1283,15 @@ const handleEditFormChange = (field, value) => {
                           }
                         />
                       </ListItem>
+
                       {index < taskUpdates[currentTask?.id].length - 1 && (
-                        <Divider variant="inset" component="li" sx={{ ml: 7 }} />
+                        <Divider
+                          component="li"
+                          sx={{
+                            my: isDesktop ? 0.5 : 0.25,
+                            ml: isDesktop ? 7 : 0
+                          }}
+                        />
                       )}
                     </React.Fragment>
                   );
@@ -1109,24 +1301,34 @@ const handleEditFormChange = (field, value) => {
                   display: 'flex', 
                   justifyContent: 'center', 
                   alignItems: 'center', 
-                  height: 100,
+                  height: isDesktop ? 100 : 80,
                   flexDirection: 'column',
                   color: colorPalette.textLight
                 }}>
-                  <CancelOutlined sx={{ fontSize: 40, mb: 1 }} />
-                  <Typography>لا توجد تحديثات لهذه المهمة بعد</Typography>
+                  <CancelOutlined sx={{ fontSize: isDesktop ? 40 : 28, mb: 0.6 }} />
+                  <Typography sx={{ fontSize: isDesktop ? undefined : '0.62rem' }}>
+                    لا توجد تحديثات لهذه المهمة بعد
+                  </Typography>
                 </Box>
               )}
             </List>
           )}
         </DialogContent>
-        
-        <DialogActions sx={{ px: 3, py: 2 }}>
+
+        <DialogActions
+          sx={{
+            px: isDesktop ? 3 : { xs: 1, sm: 1.3, md: 1.8 },
+            py: isDesktop ? 2 : { xs: 0.7, sm: 0.9, md: 1.2 }
+          }}
+        >
           <Button 
             onClick={handleCloseDialog}
             variant="contained"
             sx={{
               borderRadius: 2,
+              minHeight: isDesktop ? undefined : 30,
+              px: isDesktop ? undefined : { xs: 1.2, sm: 1.5, md: 2 },
+              fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
               backgroundColor: colorPalette.primary,
               '&:hover': {
                 backgroundColor: colorPalette.primaryDark

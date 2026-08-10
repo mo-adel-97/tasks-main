@@ -85,6 +85,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
   // user info
   // user info
@@ -591,7 +592,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
   }, [open]);
 
   // ===== Render =====
-  return (
+ return (
     <>
       {/* View Image Modal */}
       <Modal
@@ -657,30 +658,30 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
       >
         <Box sx={{
           position: 'relative',
-          width: isMobile ? '90vw' : '400px',
-          maxHeight: '70vh',
+          width: isMobile ? '94vw' : isTablet ? '72vw' : '400px',
+          maxHeight: isMobile ? '82vh' : isTablet ? '78vh' : '70vh',
           bgcolor: 'white',
           borderRadius: 4,
           boxShadow: '0 25px 50px rgba(0,0,0,0.3)',
           overflow: 'hidden'
         }}>
-          <Box sx={{ bgcolor: COLOR_SCHEME.primary, color: 'white', p: 3, textAlign: 'center' }}>
+          <Box sx={{ bgcolor: COLOR_SCHEME.primary, color: 'white', p: { xs: 1.2, sm: 1.6, md: 2.2 }, textAlign: 'center' }}>
             <Typography variant="h5" fontWeight="bold">
               الإعجابات ({likesModal.likes.length})
             </Typography>
           </Box>
 
-          <Box sx={{ maxHeight: '50vh', overflow: 'auto', p: 2 }}>
+          <Box sx={{ maxHeight: isMobile ? '62vh' : '50vh', overflow: 'auto', p: { xs: 1, sm: 1.4, md: 2 } }}>
             {likesModal.likes.length === 0 ? (
               <Typography textAlign="center" color="textSecondary" py={3}>
                 لا توجد إعجابات بعد
               </Typography>
             ) : (
               likesModal.likes.map((like, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 2, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, md: 1.5 }, p: { xs: 0.8, sm: 1, md: 1.4 }, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
                   <Avatar
                     src={like.user_image}
-                    sx={{ width: 45, height: 45, mr: 2, bgcolor: COLOR_SCHEME.primary }}
+                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, mr: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
                   >
                     {getInitials(like.user_full_name)}
                   </Avatar>
@@ -719,30 +720,30 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
       >
         <Box sx={{
           position: 'relative',
-          width: isMobile ? '90vw' : '400px',
-          maxHeight: '70vh',
+          width: isMobile ? '94vw' : isTablet ? '72vw' : '400px',
+          maxHeight: isMobile ? '82vh' : isTablet ? '78vh' : '70vh',
           bgcolor: 'white',
           borderRadius: 4,
           boxShadow: '0 25px 50px rgba(0,0,0,0.3)',
           overflow: 'hidden'
         }}>
-          <Box sx={{ bgcolor: COLOR_SCHEME.primary, color: 'white', p: 3, textAlign: 'center' }}>
+          <Box sx={{ bgcolor: COLOR_SCHEME.primary, color: 'white', p: { xs: 1.2, sm: 1.6, md: 2.2 }, textAlign: 'center' }}>
             <Typography variant="h5" fontWeight="bold">
               المشاهدات ({viewsModal.totalViews || 0})
             </Typography>
           </Box>
 
-          <Box sx={{ maxHeight: '50vh', overflow: 'auto', p: 2 }}>
+          <Box sx={{ maxHeight: isMobile ? '62vh' : '50vh', overflow: 'auto', p: { xs: 1, sm: 1.4, md: 2 } }}>
             {viewsModal.views.length === 0 ? (
               <Typography textAlign="center" color="textSecondary" py={3}>
                 لا توجد مشاهدات بعد
               </Typography>
             ) : (
               viewsModal.views.map((view, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 2, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, md: 1.5 }, p: { xs: 0.8, sm: 1, md: 1.4 }, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
                   <Avatar
                     src={view.user_image}
-                    sx={{ width: 45, height: 45, mr: 2, bgcolor: COLOR_SCHEME.primary }}
+                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, mr: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
                   >
                     {getInitials(view.user_full_name)}
                   </Avatar>
@@ -779,11 +780,46 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
         fullWidth
         fullScreen={isMobile}
         sx={{
+          // نزّل الـ Dialog كله تحت الهيدر الرئيسي في الموبايل والتابلت.
+          // التعديل هنا على الـ Paper نفسه، مش على DialogContent فقط.
+          '& .MuiDialog-container': {
+            pt: {
+              xs: '56px',
+              sm: '60px',
+              md: 0,
+            },
+            boxSizing: 'border-box',
+            alignItems: {
+              xs: 'flex-start',
+              sm: 'flex-start',
+              md: 'center',
+            },
+          },
+
           '& .MuiDialog-paper': {
             borderRadius: isMobile ? 0 : 4,
             background: `linear-gradient(135deg, ${COLOR_SCHEME.background} 0%, #ffffff 100%)`,
-            minHeight: isMobile ? '100vh' : '85vh',
-            maxHeight: isMobile ? '100vh' : '90vh',
+
+            // بما إننا نزلنا الديالوج كله، نقلل ارتفاعه بنفس المساحة
+            // حتى لا يتقص من أسفل الشاشة.
+            minHeight: isMobile
+              ? 'calc(100dvh - 56px)'
+              : isTablet
+                ? 'calc(100dvh - 60px)'
+                : '85vh',
+
+            maxHeight: isMobile
+              ? 'calc(100dvh - 56px)'
+              : isTablet
+                ? 'calc(100dvh - 60px)'
+                : '90vh',
+
+            m: {
+              xs: 0,
+              sm: 1,
+              md: 2,
+            },
+
             overflow: 'hidden',
             boxShadow: '0 30px 60px rgba(128, 180, 158, 0.3)',
             border: `1px solid ${COLOR_SCHEME.primaryLight}30`
@@ -796,10 +832,20 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
             background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 100%)`,
             borderRadius: isMobile ? '0' : '16px 16px 0 0',
             boxShadow: '0 4px 25px rgba(128, 180, 158, 0.4)',
-            py: 1
+            py: { xs: 0.25, sm: 0.4, md: 0.7 }
           }}
         >
-          <Toolbar sx={{ minHeight: '80px !important' }}>
+          <Toolbar
+            sx={{
+              minHeight: {
+                xs: '52px !important',
+                sm: '60px !important',
+                md: '68px !important'
+              },
+              px: { xs: 1, sm: 1.4, md: 2.2 },
+              gap: { xs: 0.5, sm: 0.8, md: 1.2 }
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
               <Badge
                 overlap="circular"
@@ -820,11 +866,11 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Avatar
                   src={userImage}
                   sx={{
-                    width: 56,
-                    height: 56,
+                    width: { xs: 34, sm: 42, md: 50 },
+                    height: { xs: 34, sm: 42, md: 50 },
                     bgcolor: COLOR_SCHEME.primaryLight,
                     fontWeight: 'bold',
-                    fontSize: '1.4rem',
+                    fontSize: { xs: '0.8rem', sm: '1rem', md: '1.2rem' },
                     border: '3px solid rgba(255,255,255,0.3)',
                     boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
                   }}
@@ -833,11 +879,11 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 </Avatar>
               </Badge>
 
-              <Box sx={{ ml: 3 }}>
-                <Typography variant="h5" fontWeight="bold" color="white" sx={{ mb: 0.5 }}>
+              <Box sx={{ ml: { xs: 1, sm: 1.5, md: 2.2 }, minWidth: 0 }}>
+                <Typography variant="h5" fontWeight="bold" color="white" sx={{ mb: 0.25, fontSize: { xs: "0.78rem", sm: "0.9rem", md: "1rem" }, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {userFullName}
                 </Typography>
-                <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ fontSize: '0.9rem' }}>
+                <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ fontSize: { xs: "0.58rem", sm: "0.68rem", md: "0.78rem" }, display: { xs: "none", sm: "block" } }}>
                   مرحباً بك في مجتمعنا ✨
                 </Typography>
               </Box>
@@ -858,12 +904,12 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
           boxShadow: '0 6px 20px rgba(255,255,255,0.3)'
         },
         transition: 'all 0.3s ease',
-        mr: 3,
-        px: 3,
-        py: 1.2,
+        mr: { xs: 0.5, sm: 1, md: 2 },
+        px: { xs: 1, sm: 1.4, md: 2 },
+        py: { xs: 0.55, sm: 0.7, md: 0.9 },
         borderRadius: 3,
         fontWeight: 'bold',
-        fontSize: '1rem',
+        fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.82rem' },
         boxShadow: '0 4px 15px rgba(255,255,255,0.2)'
       }}
     >
@@ -881,20 +927,41 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 bgcolor: 'rgba(255,255,255,0.15)',
                 '&:hover': { bgcolor: 'rgba(255,255,255,0.25)', transform: 'rotate(90deg)' },
                 transition: 'all 0.3s ease',
-                width: 50,
-                height: 50
+                width: { xs: 34, sm: 38, md: 44 },
+                height: { xs: 34, sm: 38, md: 44 }
               }}
             >
-              <Close sx={{ fontSize: '1.5rem' }} />
+              <Close sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.3rem' } }} />
             </IconButton>
           </Toolbar>
         </AppBar>
 
-        <DialogContent sx={{ p: 0, position: 'relative' }}>
+        <DialogContent
+          sx={{
+            p: 0,
+            position: 'relative',
+            '& .MuiTypography-root': {
+              overflowWrap: 'anywhere'
+            },
+            '& .MuiChip-root': {
+              fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
+              height: { xs: 23, sm: 25, md: 28 }
+            },
+            '& .MuiChip-icon': {
+              fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.05rem' }
+            },
+            '& .MuiButton-root': {
+              fontSize: { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' }
+            },
+            '& .MuiInputBase-root': {
+              fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' }
+            }
+          }}
+        >
           {error && (
             <Alert
               severity="error"
-              sx={{ m: 2, borderRadius: 3, boxShadow: '0 4px 15px rgba(244, 67, 54, 0.2)', border: `1px solid ${COLOR_SCHEME.error}30` }}
+              sx={{ m: { xs: 0.8, sm: 1.2, md: 1.5 }, borderRadius: 3, boxShadow: '0 4px 15px rgba(244, 67, 54, 0.2)', border: `1px solid ${COLOR_SCHEME.error}30` }}
               onClose={() => setError('')}
             >
               <Typography fontWeight="bold">{error}</Typography>
@@ -906,7 +973,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
             {showNewPostForm && (
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                 <Card sx={{
-                  m: 3,
+                  m: { xs: 0.8, sm: 1.2, md: 2 },
                   border: `2px solid ${COLOR_SCHEME.primaryLight}50`,
                   boxShadow: '0 10px 40px rgba(128, 180, 158, 0.2)',
                   borderRadius: 4,
@@ -914,17 +981,17 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                   backdropFilter: 'blur(20px)',
                   overflow: 'visible'
                 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+                  <CardContent sx={{ p: { xs: 1, sm: 1.5, md: 2.5 } }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: { xs: 1, sm: 1.5, md: 2 } }}>
                       <Avatar
                         src={userImage}
                         sx={{
-                          width: 60,
-                          height: 60,
-                          mr: 3,
+                          width: { xs: 36, sm: 44, md: 52 },
+                          height: { xs: 36, sm: 44, md: 52 },
+                          mr: { xs: 1, sm: 1.5, md: 2 },
                           bgcolor: COLOR_SCHEME.primary,
                           fontWeight: 'bold',
-                          fontSize: '1.5rem',
+                          fontSize: { xs: '0.8rem', sm: '1rem', md: '1.2rem' },
                           border: `3px solid ${COLOR_SCHEME.primaryLight}`,
                           boxShadow: '0 4px 15px rgba(128, 180, 158, 0.3)'
                         }}
@@ -932,10 +999,10 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         {getInitials(userFullName)}
                       </Avatar>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: 0.5 }}>
+                        <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: 0.2, fontSize: { xs: "0.72rem", sm: "0.82rem", md: "0.92rem" } }}>
                           {userFullName}
                         </Typography>
-                        <Typography variant="body2" color={COLOR_SCHEME.primary} sx={{ fontSize: '1rem' }}>
+                        <Typography variant="body2" color={COLOR_SCHEME.primary} sx={{ fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.82rem" } }}>
                           شارك أفكارك مع المجتمع... 🌟
                         </Typography>
                       </Box>
@@ -944,18 +1011,18 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                     <TextField
                       fullWidth
                       multiline
-                      rows={5}
+                      rows={isMobile ? 3 : isTablet ? 4 : 5}
                       placeholder="ما الذي يدور في ذهنك؟ شاركنا أفكارك وإبداعاتك..."
                       value={newPostContent}
                       onChange={(e) => setNewPostContent(e.target.value)}
-                      sx={{ mb: 3 }}
+                      sx={{ mb: { xs: 1, sm: 1.5, md: 2 } }}
                       variant="outlined"
                       InputProps={{
                         sx: {
                           borderRadius: 3,
-                          fontSize: '1.1rem',
-                          lineHeight: 1.7,
-                          p: 2,
+                          fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.92rem' },
+                          lineHeight: 1.6,
+                          p: { xs: 1, sm: 1.2, md: 1.5 },
                           border: `2px solid ${COLOR_SCHEME.primaryLight}30`,
                           '&:hover': { borderColor: COLOR_SCHEME.primaryLight },
                           '&.Mui-focused': { borderColor: COLOR_SCHEME.primary, boxShadow: `0 0 0 3px ${COLOR_SCHEME.primaryLight}50` }
@@ -964,11 +1031,11 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                     />
 
                     {selectedImages.length > 0 && (
-                      <Box sx={{ mb: 4 }}>
-                        <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: COLOR_SCHEME.text }}>
+                      <Box sx={{ mb: { xs: 1.2, md: 2.5 } }}>
+                        <Typography variant="h6" fontWeight="bold" sx={{ mb: { xs: 0.8, md: 1.5 }, color: COLOR_SCHEME.text, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.92rem' } }}>
                           الصور المختارة ({selectedImages.length})
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                        <Box sx={{ display: 'flex', gap: { xs: 0.8, md: 1.5 }, flexWrap: 'wrap' }}>
                           {selectedImages.map((image, index) => (
                             <Box
                               key={index}
@@ -979,8 +1046,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                 boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
                                 transition: 'all 0.3s ease',
                                 border: `3px solid ${COLOR_SCHEME.primaryLight}40`,
-                                width: '48%',
-                                minHeight: '200px',
+                                width: { xs: '100%', sm: '48%' },
+                                minHeight: { xs: '120px', sm: '160px', md: '190px' },
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -991,7 +1058,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               <img
                                 src={image.preview}
                                 alt={`معاينة ${index + 1}`}
-                                style={{ width: '100%', height: 'auto', maxHeight: '250px', objectFit: 'contain', display: 'block' }}
+                                style={{ width: '100%', height: 'auto', maxHeight: isMobile ? '180px' : isTablet ? '220px' : '250px', objectFit: 'contain', display: 'block' }}
                               />
                               <IconButton
                                 size="medium"
@@ -1017,8 +1084,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                       </Box>
                     )}
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
-                      <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', flexWrap: 'wrap', gap: { xs: 0.8, sm: 1 } }}>
+                      <Box sx={{ display: 'flex', gap: { xs: 0.6, sm: 1, md: 1.5 }, flexWrap: 'wrap' }}>
                         <Tooltip title="إضافة صورة" arrow>
                           <Button
                             variant="outlined"
@@ -1031,8 +1098,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               '&:hover': { bgcolor: `${COLOR_SCHEME.primaryLight}25`, borderColor: COLOR_SCHEME.primary, transform: 'translateY(-2px)' },
                               transition: 'all 0.3s ease',
                               borderRadius: 3,
-                              px: 3,
-                              py: 1
+                              px: { xs: 1, sm: 1.4, md: 2 },
+                              py: { xs: 0.5, sm: 0.65, md: 0.8 }
                             }}
                           >
                             صورة
@@ -1051,8 +1118,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               '&:hover': { bgcolor: `${COLOR_SCHEME.primaryLight}25`, borderColor: COLOR_SCHEME.primary, transform: 'translateY(-2px)' },
                               transition: 'all 0.3s ease',
                               borderRadius: 3,
-                              px: 3,
-                              py: 1
+                              px: { xs: 1, sm: 1.4, md: 2 },
+                              py: { xs: 0.5, sm: 0.65, md: 0.8 }
                             }}
                           >
                             ايموجي
@@ -1080,7 +1147,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         />
                       </Box>
 
-                      <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Box sx={{ display: 'flex', gap: { xs: 0.6, sm: 1, md: 1.5 }, flexWrap: 'wrap' }}>
                         <Button
                           onClick={() => {
                             setShowNewPostForm(false);
@@ -1092,9 +1159,9 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                           color="inherit"
                           sx={{
                             borderRadius: 3,
-                            px: 4,
-                            py: 1.2,
-                            fontSize: '1rem',
+                            px: { xs: 1.2, sm: 1.8, md: 2.5 },
+                            py: { xs: 0.6, sm: 0.75, md: 0.9 },
+                            fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.82rem' },
                             borderColor: COLOR_SCHEME.textSecondary,
                             color: COLOR_SCHEME.textSecondary,
                             '&:hover': { bgcolor: `${COLOR_SCHEME.textSecondary}10`, transform: 'translateY(-2px)' },
@@ -1110,11 +1177,11 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                           sx={{
                             bgcolor: COLOR_SCHEME.primary,
                             '&:hover': { bgcolor: COLOR_SCHEME.primaryDark, transform: 'translateY(-2px)', boxShadow: `0 8px 25px ${COLOR_SCHEME.primary}50` },
-                            px: 5,
-                            py: 1.2,
+                            px: { xs: 1.5, sm: 2.2, md: 3.2 },
+                            py: { xs: 0.6, sm: 0.75, md: 0.9 },
                             borderRadius: 3,
                             boxShadow: `0 4px 15px ${COLOR_SCHEME.primary}30`,
-                            fontSize: '1.1rem',
+                            fontSize: { xs: '0.64rem', sm: '0.75rem', md: '0.86rem' },
                             fontWeight: 'bold',
                             transition: 'all 0.3s ease'
                           }}
@@ -1131,32 +1198,32 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
 
           {/* Posts List */}
           <Box sx={{
-            p: 3,
-            maxHeight: 'calc(90vh - 100px)',
+            p: { xs: 0.7, sm: 1.1, md: 1.8 },
+            maxHeight: isMobile ? 'calc(100dvh - 52px)' : isTablet ? 'calc(92vh - 60px)' : 'calc(90vh - 100px)',
             overflow: 'auto',
             '&::-webkit-scrollbar': { width: '10px' },
             '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: '8px' },
             '&::-webkit-scrollbar-thumb': { background: COLOR_SCHEME.primaryLight, borderRadius: '8px', '&:hover': { background: COLOR_SCHEME.primary } }
           }}>
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 10 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: { xs: 4, sm: 6, md: 8 } }}>
                 <Box sx={{ textAlign: 'center' }}>
                   <CircularProgress sx={{ color: COLOR_SCHEME.primary, mb: 3 }} size={60} thickness={4} />
                   <Typography variant="h6" color={COLOR_SCHEME.text}>جاري تحميل المنشورات...</Typography>
                 </Box>
               </Box>
             ) : posts.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 10 }}>
+              <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6, md: 8 } }}>
                 <Box sx={{
-                  width: 120, height: 120, bgcolor: `${COLOR_SCHEME.primaryLight}20`, borderRadius: '50%',
+                  width: { xs: 72, sm: 90, md: 110 }, height: { xs: 72, sm: 90, md: 110 }, bgcolor: `${COLOR_SCHEME.primaryLight}20`, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 4
                 }}>
                   <Typography variant="h2" color={COLOR_SCHEME.primary}>🏜️</Typography>
                 </Box>
-                <Typography variant="h4" color={COLOR_SCHEME.text} gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+                <Typography variant="h4" color={COLOR_SCHEME.text} gutterBottom sx={{ mb: { xs: 1, md: 2 }, fontWeight: 'bold', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.35rem' } }}>
                   لا توجد منشورات حتى الآن
                 </Typography>
-                <Typography variant="h6" color={COLOR_SCHEME.textSecondary} sx={{ mb: 5, maxWidth: 500, mx: 'auto', lineHeight: 1.6 }}>
+                <Typography variant="h6" color={COLOR_SCHEME.textSecondary} sx={{ mb: { xs: 1.5, md: 3 }, maxWidth: 500, mx: 'auto', lineHeight: 1.6, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' } }}>
                   كن أول من يشارك أفكاره ويبدأ المحادثة في مجتمعنا
                 </Typography>
                     {canCreatePost && (
@@ -1190,7 +1257,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                     viewport={{ once: true, margin: '0px 0px -100px 0px' }}
                   >
                     <Card sx={{
-                      mb: 4,
+                      mb: { xs: 1.1, sm: 1.5, md: 2.5 },
                       border: `2px solid ${COLOR_SCHEME.primaryLight}20`,
                       boxShadow: '0 8px 30px rgba(128, 180, 158, 0.15)',
                       borderRadius: 4,
@@ -1200,9 +1267,9 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                       '&:hover': { boxShadow: '0 15px 40px rgba(128, 180, 158, 0.25)', transform: 'translateY(-5px)', borderColor: `${COLOR_SCHEME.primaryLight}40` },
                       transition: 'all 0.4s ease'
                     }}>
-                      <CardContent sx={{ p: 4 }}>
+                      <CardContent sx={{ p: { xs: 1, sm: 1.4, md: 2.2 } }}>
                         {/* Header */}
-                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: { xs: 1, md: 1.8 } }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                             <Badge
                               overlap="circular"
@@ -1212,7 +1279,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               <Avatar
                                 src={post.user_image}
                                 sx={{
-                                  width: 56, height: 56, mr: 3, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: '1.3rem',
+                                  width: { xs: 34, sm: 40, md: 48 }, height: { xs: 34, sm: 40, md: 48 }, mr: { xs: 1, sm: 1.4, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.76rem', sm: '0.9rem', md: '1.05rem' },
                                   border: `3px solid ${COLOR_SCHEME.primaryLight}50`, boxShadow: '0 4px 15px rgba(128, 180, 158, 0.3)'
                                 }}
                               >
@@ -1238,7 +1305,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                   bgcolor: `${COLOR_SCHEME.primaryLight}15`,
                                   '&:hover': { bgcolor: `${COLOR_SCHEME.primaryLight}25`, transform: 'scale(1.1)' },
                                   transition: 'all 0.3s ease',
-                                  width: 45, height: 45
+                                  width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }
                                 }}
                               >
                                 <MoreVert />
@@ -1275,7 +1342,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         {/* Content */}
                         {post.content && (
                           <Typography variant="body1" sx={{
-                            mb: 4, lineHeight: 1.8, fontSize: '1.1rem', color: COLOR_SCHEME.text, p: 2,
+                            mb: { xs: 1.2, md: 2.2 }, lineHeight: 1.7, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.92rem' }, color: COLOR_SCHEME.text, p: { xs: 0.8, sm: 1, md: 1.4 },
                             bgcolor: `${COLOR_SCHEME.primaryLight}08`, borderRadius: 3, border: `1px solid ${COLOR_SCHEME.primaryLight}20`
                           }}>
                             {post.content}
@@ -1285,7 +1352,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         {post.image_url && (
                           <Box
                             sx={{
-                              mb: 4,
+                              mb: { xs: 1.2, md: 2.2 },
                               borderRadius: 4,
                               overflow: 'hidden',
                               position: 'relative',
@@ -1297,7 +1364,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               justifyContent: 'center',
                               alignItems: 'center',
                               aspectRatio: '16 / 9',
-                              maxHeight: '500px'
+                              maxHeight: { xs: '260px', sm: '360px', md: '500px' }
                             }}
                           >
                             <img
@@ -1311,14 +1378,14 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             <Box
                               sx={{
                                 position: 'absolute',
-                                top: 16,
-                                right: 16,
+                                top: { xs: 8, md: 12 },
+                                right: { xs: 8, md: 12 },
                                 bgcolor: 'rgba(128, 180, 158, 0.9)',
                                 color: 'white',
-                                px: 2,
-                                py: 1,
+                                px: { xs: 0.8, md: 1.4 },
+                                py: { xs: 0.35, md: 0.7 },
                                 borderRadius: 3,
-                                fontSize: '0.9rem',
+                                fontSize: { xs: '0.56rem', sm: '0.66rem', md: '0.78rem' },
                                 fontWeight: 'bold',
                                 backdropFilter: 'blur(10px)',
                                 border: '2px solid rgba(255,255,255,0.3)'
@@ -1330,7 +1397,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         )}
 
                         {/* Stats */}
-                        <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                        <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 0.8, md: 1.2 }, mb: { xs: 1, md: 1.8 }, flexWrap: 'wrap' }}>
                           <Tooltip title="عرض الإعجابات" arrow>
                             <Chip
                               icon={<Favorite sx={{ fontSize: 18 }} />}
@@ -1383,10 +1450,10 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                           )}
                         </Box>
 
-                        <Divider sx={{ my: 3, borderColor: COLOR_SCHEME.primaryLight }} />
+                        <Divider sx={{ my: { xs: 1, sm: 1.3, md: 2 }, borderColor: COLOR_SCHEME.primaryLight }} />
 
                         {/* Actions */}
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: 'flex', gap: { xs: 0.6, sm: 0.8, md: 1.2 } }}>
                           <Button
                             fullWidth
                             startIcon={
@@ -1398,8 +1465,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             sx={{
                               color: post.user_has_liked ? COLOR_SCHEME.secondary : COLOR_SCHEME.textSecondary,
                               borderRadius: 3,
-                              py: 1.5,
-                              fontSize: '1.1rem',
+                              py: { xs: 0.6, sm: 0.8, md: 1 },
+                              fontSize: { xs: '0.64rem', sm: '0.74rem', md: '0.86rem' },
                               fontWeight: 'bold',
                               bgcolor: post.user_has_liked ? `${COLOR_SCHEME.secondary}10` : 'transparent',
                               border: `2px solid ${post.user_has_liked ? COLOR_SCHEME.secondary : COLOR_SCHEME.primaryLight}`,
@@ -1416,8 +1483,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)}
                             sx={{
                               borderRadius: 3,
-                              py: 1.5,
-                              fontSize: '1.1rem',
+                              py: { xs: 0.6, sm: 0.8, md: 1 },
+                              fontSize: { xs: '0.64rem', sm: '0.74rem', md: '0.86rem' },
                               fontWeight: 'bold',
                               color: COLOR_SCHEME.textSecondary,
                               border: `2px solid ${COLOR_SCHEME.primaryLight}`,
@@ -1434,8 +1501,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         <AnimatePresence>
                           {activeCommentPost === post.id && (
                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }}>
-                              <Box sx={{ mt: 4, position: 'relative' }}>
-                                <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: 3 }}>
+                              <Box sx={{ mt: { xs: 1.4, sm: 1.8, md: 2.5 }, position: 'relative' }}>
+                                <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: { xs: 1, md: 1.8 }, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.92rem' } }}>
                                   التعليقات ({post.comments_count})
                                 </Typography>
 
@@ -1444,8 +1511,8 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                     <Box
                                       sx={{
                                         display: 'flex',
-                                        mb: 3,
-                                        p: 3,
+                                        mb: { xs: 0.8, md: 1.4 },
+                                        p: { xs: 0.8, sm: 1, md: 1.4 },
                                         bgcolor: `${COLOR_SCHEME.primaryLight}08`,
                                         borderRadius: 3,
                                         border: `1px solid ${COLOR_SCHEME.primaryLight}20`,
@@ -1455,20 +1522,20 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                     >
                                       <Avatar
                                         src={comment.user_image}
-                                        sx={{ width: 44, height: 44, mr: 2, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: '1.1rem', border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
+                                        sx={{ width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }, mr: { xs: 1, md: 1.5 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' }, border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
                                       >
                                         {getInitials(comment.user_full_name)}
                                       </Avatar>
                                       <Box sx={{ flex: 1 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5, flexWrap: 'wrap' }}>
-                                          <Typography variant="subtitle1" fontWeight="bold" sx={{ mr: 2, color: COLOR_SCHEME.text }}>
+                                          <Typography variant="subtitle1" fontWeight="bold" sx={{ mr: { xs: 0.6, md: 1.2 }, color: COLOR_SCHEME.text, fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' } }}>
                                             {comment.user_full_name}
                                           </Typography>
-                                          <Typography variant="caption" color={COLOR_SCHEME.textSecondary} sx={{ fontSize: '0.8rem' }}>
+                                          <Typography variant="caption" color={COLOR_SCHEME.textSecondary} sx={{ fontSize: { xs: '0.54rem', sm: '0.62rem', md: '0.72rem' } }}>
                                             {formatDate(comment.created_at)}
                                           </Typography>
                                         </Box>
-                                        <Typography variant="body1" sx={{ lineHeight: 1.6, color: COLOR_SCHEME.text }}>
+                                        <Typography variant="body1" sx={{ lineHeight: 1.6, color: COLOR_SCHEME.text, fontSize: { xs: '0.66rem', sm: '0.74rem', md: '0.84rem' } }}>
                                           {comment.comment_text}
                                         </Typography>
                                       </Box>
@@ -1477,10 +1544,10 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                 ))}
 
                                 {/* Add comment */}
-                                <Box sx={{ display: 'flex', gap: 2, mt: 3, alignItems: 'flex-start' }}>
+                                <Box sx={{ display: 'flex', gap: { xs: 0.6, sm: 0.8, md: 1.2 }, mt: { xs: 1, md: 1.8 }, alignItems: 'flex-start' }}>
                                   <Avatar
                                     src={userImage}
-                                    sx={{ width: 44, height: 44, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
+                                    sx={{ width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
                                   >
                                     {getInitials(userFullName)}
                                   </Avatar>

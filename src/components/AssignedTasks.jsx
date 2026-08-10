@@ -9,14 +9,15 @@ import {
   CheckCircleOutline as CheckCircleOutlineIcon,
   CancelOutlined as CancelOutlinedIcon,
   AttachFile as AttachFileIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  MenuRounded as MenuRoundedIcon
 } from '@mui/icons-material';
 import {
   Box, Typography, CircularProgress, Grid, Card, CardContent, CardActions,
   Button, Chip, Dialog, DialogTitle, DialogContent, IconButton, FormControl,
   InputLabel, Select, MenuItem, Stack, Popover, TextField, Autocomplete,
   Snackbar, Alert, Avatar, CardHeader, Divider, Tooltip,
-  Pagination
+  Pagination, useMediaQuery, useTheme, AppBar, Toolbar
 } from '@mui/material';
 import axios from 'axios';
 import Sidebar from './Sidebar';
@@ -60,6 +61,16 @@ function getUserFromStorage() {
 }
 
 export default function AssignedTasks() {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery('(min-width:1600px)', { noSsr: true });
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const [tasks, setTasks] = useState([]);
   const [passedTasksData, setPassedTasksData] = useState([]);
   const [externalModifiedTasks, setExternalModifiedTasks] = useState([]);
@@ -563,13 +574,94 @@ const parseExternalAssignedTo = (assignedToData) => {
 if (loading || externalLoading) {
   return (
     <>
-      <Sidebar />
-      <Box style={{ marginRight: "280px", padding: "20px" }}>
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1401,
+            background: 'rgba(255,255,255,0.96)',
+            backdropFilter: 'blur(14px)',
+            color: '#17372b',
+            borderBottom: '1px solid rgba(5,117,70,0.12)',
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: {
+                xs: '50px !important',
+                sm: '56px !important',
+                md: '60px !important',
+              },
+              px: { xs: 0.8, sm: 1.2, md: 1.6 },
+              gap: 0.8,
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              aria-label={mobileSidebarOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+              aria-expanded={mobileSidebarOpen}
+              sx={{
+                width: { xs: 36, sm: 40, md: 42 },
+                height: { xs: 36, sm: 40, md: 42 },
+                flexShrink: 0,
+                color: '#fff',
+                background: 'linear-gradient(135deg, #057546, #034d31)',
+                boxShadow: '0 6px 16px rgba(5,117,70,0.22)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #034d31, #057546)',
+                },
+              }}
+            >
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' },
+                color: '#17372b',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              نظام الإدارة
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Box
+        sx={{
+          ml: isDesktop ? '280px' : 0,
+          mr: 0,
+          p: { xs: 1, sm: 1.25, md: 2 },
+          width: isDesktop ? 'calc(100% - 280px)' : '100%',
+          boxSizing: 'border-box',
+          minWidth: 0,
+          maxWidth: '100%',
+          overflowX: 'hidden'
+        }}
+      >
         <Box sx={{ 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
-          minHeight: '50vh' 
+          minHeight: isDesktop ? '50vh' : { xs: '38vh', sm: '42vh', md: '46vh' } 
         }}>
           <CircularProgress sx={{ color: colorPalette.primary }} />
         </Box>
@@ -580,15 +672,141 @@ if (loading || externalLoading) {
 
   return (
     <>
-      <Sidebar />
-      <Box style={{ marginRight: "280px", padding: "20px", backgroundColor: colorPalette.background}}>
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1401,
+            background: 'rgba(255,255,255,0.96)',
+            backdropFilter: 'blur(14px)',
+            color: '#17372b',
+            borderBottom: '1px solid rgba(5,117,70,0.12)',
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: {
+                xs: '50px !important',
+                sm: '56px !important',
+                md: '60px !important',
+              },
+              px: { xs: 0.8, sm: 1.2, md: 1.6 },
+              gap: 0.8,
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              aria-label={mobileSidebarOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+              aria-expanded={mobileSidebarOpen}
+              sx={{
+                width: { xs: 36, sm: 40, md: 42 },
+                height: { xs: 36, sm: 40, md: 42 },
+                flexShrink: 0,
+                color: '#fff',
+                background: 'linear-gradient(135deg, #057546, #034d31)',
+                boxShadow: '0 6px 16px rgba(5,117,70,0.22)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #034d31, #057546)',
+                },
+              }}
+            >
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' },
+                color: '#17372b',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              نظام الإدارة
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Box
+        sx={{
+          // حجز مساحة السايدبار في اتجاه المشروع الحالي.
+          ml: isDesktop ? '280px' : 0,
+          mr: 0,
+          width: isDesktop ? 'calc(100% - 280px)' : '100%',
+          p: isDesktop ? '20px' : { xs: 0.7, sm: 1, md: 1.35 },
+          pt: isDesktop ? '20px' : { xs: '64px', sm: '70px', md: '74px' },
+          pb: isDesktop ? '20px' : { xs: 1.5, sm: 2, md: 2.5 },
+          backgroundColor: colorPalette.background,
+          boxSizing: 'border-box',
+          minWidth: 0,
+          maxWidth: '100%',
+          overflowX: 'hidden',
+
+          // تصغير الموبايل/التابلت فقط
+          '& .MuiTypography-h4': {
+            fontSize: isDesktop ? undefined : { xs: '0.88rem', sm: '1rem', md: '1.12rem' }
+          },
+          '& .MuiTypography-h6': {
+            fontSize: isDesktop ? undefined : { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' }
+          },
+          '& .MuiTypography-body2': {
+            fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' }
+          },
+          '& .MuiButton-root': {
+            fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
+            minHeight: isDesktop ? undefined : { xs: 31, sm: 34, md: 36 }
+          },
+          '& .MuiChip-root': {
+            fontSize: isDesktop ? undefined : { xs: '0.52rem', sm: '0.58rem', md: '0.66rem' },
+            height: isDesktop ? undefined : { xs: 23, sm: 25, md: 28 }
+          },
+          '& .MuiInputBase-root, & .MuiInputLabel-root': {
+            fontSize: isDesktop ? undefined : { xs: '0.64rem', sm: '0.72rem', md: '0.8rem' }
+          }
+        }}
+      >
         {/* Header section */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: isDesktop ? 'center' : { xs: 'stretch', md: 'center' },
+          flexDirection: isDesktop ? 'row' : { xs: 'column', md: 'row' },
+          flexWrap: isDesktop ? 'nowrap' : 'wrap',
+          gap: isDesktop ? 0 : { xs: 0.8, sm: 1, md: 1.2 },
+          mb: isDesktop ? 3 : { xs: 0.9, sm: 1.2, md: 1.6 }
+        }}>
           <Typography variant="h4" gutterBottom fontWeight={700} sx={{ color: colorPalette.textDark }}>
             المهام الخاصة بك ({displayTasks.length})
           </Typography>
           
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: isDesktop ? 'center' : 'stretch',
+            flexDirection: isDesktop ? 'row' : { xs: 'column', sm: 'row' },
+            gap: isDesktop ? 2 : { xs: 0.5, sm: 0.75, md: 1 },
+            flexWrap: isDesktop ? 'nowrap' : 'wrap',
+            justifyContent: isDesktop ? 'flex-start' : { xs: 'center', md: 'flex-start' },
+            width: isDesktop ? 'auto' : { xs: '100%', md: 'auto' },
+            '& > *': {
+              width: isDesktop ? 'auto' : { xs: '100%', sm: 'auto' }
+            }
+          }}>
             {filterByDate ? (
               <>
                 <Chip 
@@ -620,7 +838,17 @@ if (loading || externalLoading) {
             </Button>
           </Box>
 
-          <NewTaskButton/>
+          <Box sx={{ width: isDesktop ? 'auto' : { xs: '100%', sm: 'auto' } }}>
+            <NewTaskButton
+              buttonProps={{
+                sx: {
+                  width: isDesktop ? 'auto' : { xs: '100%', sm: 'auto' },
+                  minHeight: isDesktop ? undefined : { xs: 32, sm: 34, md: 36 },
+                  fontSize: isDesktop ? undefined : { xs: '0.58rem', sm: '0.66rem', md: '0.74rem' },
+                }
+              }}
+            />
+          </Box>
         </Box>
 
         {/* Calendar popover */}
@@ -636,7 +864,7 @@ if (loading || externalLoading) {
               value={selectedDate}
               onChange={handleDateChange}
               views={['year', 'month', 'day']}
-              sx={{ width: 320 }}
+              sx={{ width: isDesktop ? 320 : { xs: 280, sm: 310, md: 320 }, maxWidth: isDesktop ? 320 : '92vw' }}
             />
           </LocalizationProvider>
         </Popover>
@@ -650,7 +878,7 @@ if (loading || externalLoading) {
           </Typography>
         ) : (
           <>
-            <Grid container spacing={3}>
+            <Grid container spacing={isDesktop ? 3 : { xs: 1, sm: 1.5, md: 2 }}>
               {currentTasks.map(task => {
                 const userUpdates = taskUpdates[task.id] || [];
                 const lastUserUpdate = userUpdates[userUpdates.length - 1];
@@ -699,9 +927,9 @@ if (loading || externalLoading) {
                         avatar={
                           <Avatar sx={{ 
                             bgcolor: ended ? colorPalette.error : task.isPassedTask ? '#9c27b0' : colorPalette.primary,
-                            width: 40,
-                            height: 40,
-                            fontSize: '0.875rem'
+                            width: isDesktop ? 40 : { xs: 30, sm: 34, md: 38 },
+                            height: isDesktop ? 40 : { xs: 30, sm: 34, md: 38 },
+                            fontSize: isDesktop ? '0.875rem' : { xs: '0.62rem', sm: '0.72rem', md: '0.82rem' }
                           }}>
                             {ended ? '!' : task.isPassedTask ? 'م' : 'ع'}
                           </Avatar>
@@ -750,7 +978,7 @@ if (loading || externalLoading) {
                       />
 
                       {/* Card content */}
-                      <CardContent sx={{ flexGrow: 1, py: 2 }}>
+                      <CardContent sx={{ flexGrow: 1, py: isDesktop ? 2 : { xs: 1, sm: 1.25, md: 1.5 }, px: isDesktop ? 2 : { xs: 1, sm: 1.25, md: 1.5 } }}>
                         {/* Task description */}
                         <Box sx={{
                           mb: 2,
@@ -923,9 +1151,12 @@ if (loading || externalLoading) {
                       </CardContent>
 
                       {/* Card actions */}
-                      <CardActions sx={{ 
+                      <CardActions sx={{
                         justifyContent: 'space-between',
-                        p: 2,
+                        flexDirection: isDesktop ? 'row' : { xs: 'column', sm: 'row' },
+                        alignItems: isDesktop ? 'center' : { xs: 'stretch', sm: 'center' },
+                        gap: isDesktop ? 0 : { xs: 0.7, sm: 1 },
+                        p: isDesktop ? 2 : { xs: 0.8, sm: 1.1, md: 1.4 },
                         borderTop: `1px solid ${colorPalette.primaryLighter}`,
                         backgroundColor: colorPalette.primaryLighter
                       }}>

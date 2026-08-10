@@ -81,6 +81,7 @@ export default function Login() {
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isShortScreen = useMediaQuery('(max-height: 760px)');
   const isVerySmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
@@ -181,7 +182,8 @@ export default function Login() {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        overflow: 'hidden',
+        overflowX: 'hidden',
+        overflowY: { xs: 'auto', md: 'hidden' },
         fontFamily: 'Cairo, Arial, sans-serif',
         background: `
           radial-gradient(circle at 15% 15%, rgba(255,255,255,0.18), transparent 28%),
@@ -254,8 +256,8 @@ export default function Login() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          py: { xs: 1, sm: 2.5, md: 5 },
-          px: { xs: 1, sm: 2, md: 3 }
+          py: { xs: 0.75, sm: 1.5, md: isShortScreen ? 1.5 : 4 },
+          px: { xs: 0.75, sm: 1.5, md: 3 }
         }}
       >
         <Fade in={animate} timeout={700}>
@@ -263,10 +265,11 @@ export default function Login() {
             elevation={0}
             sx={{
               width: '100%',
-              maxWidth: 1080,
-              minHeight: { md: 610 },
+              maxWidth: { xs: 520, sm: 680, md: 1080 },
+              minHeight: { md: isShortScreen ? 520 : 610 },
+              maxHeight: { md: isShortScreen ? 'calc(100dvh - 78px)' : 'none' },
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: '0.92fr 1.08fr' },
+              gridTemplateColumns: { xs: '1fr', md: '0.96fr 1.04fr' },
               overflow: 'hidden',
               borderRadius: { xs: 2.25, sm: 3.5, md: 5 },
               border: '1px solid rgba(255,255,255,0.28)',
@@ -282,7 +285,7 @@ export default function Login() {
             <Box
               sx={{
                 order: { xs: 1, md: 1 },
-                p: { xs: 1.4, sm: 3, md: 5.5 },
+                p: { xs: 1.15, sm: 2.25, md: isShortScreen ? 3.25 : 5.5 },
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -302,8 +305,8 @@ export default function Login() {
                     src={logo}
                     alt="شعار النظام"
                     sx={{
-                      width: { xs: 52, sm: 70, md: 78 },
-                      height: { xs: 52, sm: 70, md: 78 },
+                      width: { xs: 46, sm: 62, md: 78 },
+                      height: { xs: 46, sm: 62, md: 78 },
                       objectFit: 'contain',
                       borderRadius: { xs: 2, sm: 3 },
                       p: { xs: 0.45, sm: 0.7 },
@@ -319,7 +322,7 @@ export default function Login() {
                   sx={{
                     textAlign: 'center',
                     color: COLORS.text,
-                    fontSize: { xs: '1.18rem', sm: '1.65rem', md: '1.9rem' },
+                    fontSize: { xs: '1.02rem', sm: '1.4rem', md: '1.9rem' },
                     fontWeight: 800,
                     lineHeight: 1.35
                   }}
@@ -333,7 +336,7 @@ export default function Login() {
                     mb: { xs: 1.4, sm: 2.8, md: 3.5 },
                     textAlign: 'center',
                     color: COLORS.muted,
-                    fontSize: { xs: '0.72rem', sm: '0.88rem', md: '0.98rem' },
+                    fontSize: { xs: '0.66rem', sm: '0.8rem', md: '0.98rem' },
                     lineHeight: { xs: 1.65, sm: 1.8 }
                   }}
                 >
@@ -424,11 +427,11 @@ export default function Login() {
                         fullWidth
                         disabled={isLoading}
                         sx={{
-                          minHeight: { xs: 43, sm: 49, md: 52 },
+                          minHeight: { xs: 40, sm: 46, md: 52 },
                           borderRadius: { xs: 1.8, sm: 2.5 },
                           fontFamily: 'Cairo, Arial, sans-serif',
                           fontWeight: 800,
-                          fontSize: { xs: '0.82rem', sm: '0.92rem', md: '0.98rem' },
+                          fontSize: { xs: '0.76rem', sm: '0.86rem', md: '0.98rem' },
                           boxShadow: '0 10px 24px rgba(5,117,70,0.25)',
                           background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
                           '&:hover': {
@@ -456,11 +459,11 @@ export default function Login() {
                         onClick={handleAdminSubmit}
                         startIcon={<SecurityOutlined />}
                         sx={{
-                          minHeight: { xs: 43, sm: 49, md: 52 },
+                          minHeight: { xs: 40, sm: 46, md: 52 },
                           borderRadius: { xs: 1.8, sm: 2.5 },
                           fontFamily: 'Cairo, Arial, sans-serif',
                           fontWeight: 800,
-                          fontSize: { xs: '0.8rem', sm: '0.9rem', md: '0.95rem' },
+                          fontSize: { xs: '0.74rem', sm: '0.84rem', md: '0.95rem' },
                           borderWidth: 1.5,
                           borderColor: COLORS.primary,
                           color: COLORS.primary,
@@ -498,8 +501,8 @@ export default function Login() {
                 order: { xs: 2, md: 2 },
                 position: 'relative',
                 overflow: 'hidden',
-                minHeight: { xs: 150, sm: 230, md: 'auto' },
-                p: { xs: 1.35, sm: 2.8, md: 6 },
+                minHeight: { xs: 132, sm: 190, md: 'auto' },
+                p: { xs: 1.05, sm: 2, md: isShortScreen ? 3.25 : 6 },
                 color: COLORS.white,
                 display: 'flex',
                 flexDirection: 'column',
@@ -545,7 +548,7 @@ export default function Login() {
                   <Box>
                     <Typography
                       sx={{
-                        fontSize: { xs: '1.08rem', sm: '1.65rem', md: '2.25rem' },
+                        fontSize: { xs: '0.96rem', sm: '1.4rem', md: '2.25rem' },
                         fontWeight: 900,
                         letterSpacing: '0.01em',
                         lineHeight: 1.2
@@ -553,7 +556,7 @@ export default function Login() {
                     >
                       ERP System
                     </Typography>
-                    <Typography sx={{ mt: 0.2, opacity: 0.83, fontSize: { xs: '0.66rem', sm: '0.82rem', md: '1rem' } }}>
+                    <Typography sx={{ mt: 0.2, opacity: 0.83, fontSize: { xs: '0.6rem', sm: '0.76rem', md: '1rem' } }}>
                       نظام إدارة الموظفين والشؤون الإدارية
                     </Typography>
                   </Box>
@@ -583,6 +586,7 @@ export default function Login() {
                   display: 'grid',
                   gridTemplateColumns: {
                     xs: 'repeat(3, minmax(0, 1fr))',
+                    sm: 'repeat(3, minmax(0, 1fr))',
                     md: '1fr'
                   },
                   gap: { xs: 0.55, sm: 0.9, md: 1.5 }
@@ -620,7 +624,7 @@ export default function Login() {
                       <Typography
                         sx={{
                           fontWeight: 800,
-                          fontSize: { xs: '0.6rem', sm: '0.76rem', md: '0.95rem' },
+                          fontSize: { xs: '0.54rem', sm: '0.7rem', md: '0.95rem' },
                           lineHeight: 1.35
                         }}
                       >
@@ -652,10 +656,10 @@ export default function Login() {
           position: 'relative',
           zIndex: 1,
           px: 2,
-          py: { xs: 0.8, sm: 1.35, md: 1.8 },
+          py: { xs: 0.55, sm: 0.9, md: 1.4 },
           textAlign: 'center',
           color: 'rgba(255,255,255,0.88)',
-          fontSize: { xs: '0.61rem', sm: '0.75rem', md: '0.82rem' },
+          fontSize: { xs: '0.56rem', sm: '0.7rem', md: '0.82rem' },
           borderTop: '1px solid rgba(255,255,255,0.12)',
           backgroundColor: 'rgba(2,48,30,0.28)',
           backdropFilter: 'blur(10px)'
@@ -673,7 +677,7 @@ export default function Login() {
 
 const fieldStyles = {
   '& .MuiOutlinedInput-root': {
-    minHeight: { xs: 45, sm: 52, md: 56 },
+    minHeight: { xs: 41, sm: 48, md: 56 },
     borderRadius: { xs: 1.8, sm: 2.3, md: 2.5 },
     backgroundColor: '#fbfdfc',
     transition: 'border-color 180ms ease, box-shadow 180ms ease',
@@ -694,15 +698,15 @@ const fieldStyles = {
   },
   '& .MuiInputLabel-root': {
     fontFamily: 'Cairo, Arial, sans-serif',
-    fontSize: { xs: '0.76rem', sm: '0.88rem', md: '1rem' }
+    fontSize: { xs: '0.69rem', sm: '0.82rem', md: '1rem' }
   },
   '& .MuiInputLabel-root.Mui-focused': {
     color: COLORS.primary
   },
   '& input': {
     fontFamily: 'Cairo, Arial, sans-serif',
-    fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
-    py: { xs: 1.15, sm: 1.4 }
+    fontSize: { xs: '0.74rem', sm: '0.86rem', md: '1rem' },
+    py: { xs: 1, sm: 1.25 }
   },
   '& .MuiInputAdornment-root svg': {
     fontSize: { xs: '1.05rem', sm: '1.25rem' }

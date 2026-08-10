@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Box, Button, IconButton, Divider, TextField,
   Typography, Tooltip, Paper, MenuItem, Grid, Avatar, Chip, CircularProgress, Fade, Zoom, Grow,
-  Slide, Collapse, Autocomplete, ListItemAvatar, ListItemText
+  Slide, Collapse, Autocomplete, ListItemAvatar, ListItemText,
+  useMediaQuery, useTheme
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -46,13 +47,14 @@ const GroupCard = ({ group, selected, onClick }) => (
     <Paper
       onClick={onClick}
       sx={{
-        p: 3,
+        p: { xs: 1.2, sm: 1.8, md: 2.5 },
         cursor: "pointer",
         textAlign: "center",
         backgroundColor: selected ? "#e3f2fd" : "#f5f5f5",
         border: selected ? "2px solid #1976d2" : "1px solid rgba(0,0,0,0.1)",
         borderRadius: "12px",
-        minWidth: 150,
+        minWidth: 0,
+        width: '100%',
         height: "100%",
         transition: "all 0.3s cubic-bezier(.25,.8,.25,1)",
         boxShadow: selected ? "0 4px 8px rgba(25,118,210,0.2)" : "0 2px 4px rgba(0,0,0,0.05)",
@@ -62,14 +64,20 @@ const GroupCard = ({ group, selected, onClick }) => (
       }}
     >
       <Box sx={{ 
-        fontSize: "2.5rem",
-        mb: 1.5,
+        fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.9rem' },
+        mb: { xs: 0.6, sm: 0.9, md: 1.2 },
         transition: "transform 0.3s ease",
         transform: selected ? "scale(1.1)" : "scale(1)"
       }}>
         {group.icon}
       </Box>
-      <Typography variant="subtitle1" fontWeight={600}>{group.label}</Typography>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.84rem' } }}
+      >
+        {group.label}
+      </Typography>
     </Paper>
   </motion.div>
 );
@@ -103,11 +111,15 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
       <Box sx={{ 
         backgroundColor: getApprovalLevelColor(task.approveLevel),
         color: 'white',
-        p: 1.5,
+        p: { xs: 0.65, sm: 0.85, md: 1.2 },
         textAlign: 'center',
         position: 'relative'
       }}>
-        <Typography variant="subtitle2" fontWeight={600}>
+        <Typography
+          variant="subtitle2"
+          fontWeight={700}
+          sx={{ fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' } }}
+        >
           {task.approveLevel === 0 ? "الإدارة التنفيذية" :
            task.approveLevel === 1 ? "الإشراف العام" :
            task.approveLevel === 2 ? "مشرف الفرع" : "تنفذ مباشرة"}
@@ -117,8 +129,8 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
             position: 'absolute',
             top: -10,
             right: -10,
-            width: 30,
-            height: 30,
+            width: { xs: 22, sm: 25, md: 28 },
+            height: { xs: 22, sm: 25, md: 28 },
             backgroundColor: '#1976d2',
             borderRadius: '50%',
             display: 'flex',
@@ -133,26 +145,26 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
         )}
       </Box>
       
-      <Box sx={{ p: 2.5, flexGrow: 1 }}>
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+      <Box sx={{ p: { xs: 1, sm: 1.4, md: 2 }, flexGrow: 1 }}>
+        <Typography variant="h6" fontWeight={700} sx={{ mb: { xs: 1, md: 1.5 }, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.95rem' } }}>
           {task.name}
         </Typography>
         
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          mb: 2,
+          mb: { xs: 0.8, sm: 1, md: 1.5 },
           backgroundColor: 'rgba(25, 118, 210, 0.08)',
-          p: 1,
+          p: { xs: 0.6, sm: 0.8, md: 1 },
           borderRadius: '6px'
         }}>
           <Avatar sx={{ 
-            width: 32, 
-            height: 32, 
-            fontSize: '0.9rem',
+            width: { xs: 25, sm: 28, md: 32 }, 
+            height: { xs: 25, sm: 28, md: 32 }, 
+            fontSize: { xs: '0.58rem', sm: '0.68rem', md: '0.8rem' },
             backgroundColor: '#e3f2fd',
             color: '#1976d2',
-            mr: 2
+            mr: { xs: 0.7, sm: 1, md: 1.5 }
           }}>
             {task.timeForDone}
           </Avatar>
@@ -168,9 +180,9 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
           sx={{ 
             backgroundColor: '#e8f5e9',
             color: '#2e7d32',
-            mb: 2,
-            height: '28px',
-            fontSize: '0.8rem',
+            mb: { xs: 0.8, sm: 1, md: 1.5 },
+            height: { xs: 21, sm: 24, md: 27 },
+            fontSize: { xs: '0.52rem', sm: '0.6rem', md: '0.7rem' },
             fontWeight: 500
           }}
         />
@@ -203,6 +215,10 @@ export default function AddTaskDailog({
   currentBranch,
   taskGroups
 }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -472,9 +488,11 @@ export default function AddTaskDailog({
   fullWidth
   PaperProps={{ 
     sx: { 
-      maxWidth: "90%",
-      maxHeight: "90vh",
-      borderRadius: "12px",
+      width: { xs: 'calc(100vw - 12px)', sm: 'calc(100vw - 24px)', md: '88vw' },
+      maxWidth: { xs: 'calc(100vw - 12px)', sm: '760px', md: '1100px' },
+      maxHeight: { xs: '90dvh', sm: '88dvh', md: '90vh' },
+      m: { xs: 0.75, sm: 1.5, md: 2 },
+      borderRadius: { xs: '10px', sm: '12px' },
       overflow: "hidden",
       display: "flex",
       flexDirection: "column"
@@ -487,11 +505,11 @@ export default function AddTaskDailog({
     justifyContent: 'space-between',
     backgroundColor: '#f5f5f5',
     borderBottom: '1px solid #e0e0e0',
-    py: 2,
-    px: 3,
+    py: { xs: 0.7, sm: 0.9, md: 1.3 },
+    px: { xs: 0.8, sm: 1.2, md: 2 },
     flexShrink: 0
   }}>
-    <Typography variant="h6" fontWeight={600}>
+    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.78rem', sm: '0.9rem', md: '1rem' } }}>
       توزيع مهمة قسمك
     </Typography>
     <IconButton onClick={onClose} size="small" sx={{ color: '#757575' }}>
@@ -505,11 +523,32 @@ export default function AddTaskDailog({
     flexDirection: 'column',
     alignItems: 'center',
     overflow: 'auto',
-    flex: 1
+    flex: 1,
+
+    '& .MuiTypography-body1': {
+      fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' }
+    },
+    '& .MuiTypography-body2': {
+      fontSize: { xs: '0.55rem', sm: '0.63rem', md: '0.72rem' }
+    },
+    '& .MuiTypography-caption': {
+      fontSize: { xs: '0.5rem', sm: '0.57rem', md: '0.65rem' }
+    },
+    '& .MuiButton-root': {
+      fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.74rem' },
+      minHeight: { xs: 29, sm: 32, md: 35 }
+    },
+    '& .MuiInputBase-root, & .MuiInputLabel-root': {
+      fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' }
+    },
+    '& .MuiChip-root': {
+      fontSize: { xs: '0.5rem', sm: '0.58rem', md: '0.66rem' },
+      height: { xs: 21, sm: 23, md: 26 }
+    }
   }}>
     <Box sx={{
       width: '100%',
-      p: 4,
+      p: { xs: 0.7, sm: 1.1, md: 2 },
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center'
@@ -523,13 +562,13 @@ export default function AddTaskDailog({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <Typography variant="h5" fontWeight={700} sx={{ mb: 4 }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: { xs: 1.2, sm: 2, md: 3 }, fontSize: { xs: '0.72rem', sm: '0.84rem', md: '1rem' } }}>
             اختر نوع المهمة
           </Typography>
         </motion.div>
         
-        <Grid container spacing={3} justifyContent="center">
-          <Grid item xs={12} sm={6} md={3}>
+        <Grid container spacing={{ xs: 1, sm: 1.5, md: 2 }} justifyContent="center">
+          <Grid item xs={6} sm={6} md={3}>
             <motion.div
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
@@ -548,7 +587,7 @@ export default function AddTaskDailog({
               return tasks.some(task => task.taskGroup === group.value);
             })
             .map((group, index) => (
-              <Grid item xs={12} sm={6} md={3} key={group.value}>
+              <Grid item xs={6} sm={6} md={3} key={group.value}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -572,8 +611,8 @@ export default function AddTaskDailog({
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          mb: 4,
-          p: 2,
+          mb: { xs: 1, sm: 1.4, md: 2.2 },
+          p: { xs: 0.6, sm: 0.8, md: 1.2 },
           backgroundColor: 'rgba(25, 118, 210, 0.05)',
           borderRadius: '8px'
         }}>
@@ -585,7 +624,9 @@ export default function AddTaskDailog({
               }}
               size="medium"
               sx={{ 
-                mr: 2, 
+                mr: { xs: 0.5, sm: 0.8, md: 1.2 }, 
+                width: { xs: 28, sm: 32, md: 36 },
+                height: { xs: 28, sm: 32, md: 36 },
                 backgroundColor: 'primary.main',
                 color: 'white',
                 '&:hover': {
@@ -596,7 +637,12 @@ export default function AddTaskDailog({
               <ArrowBackIosNewIcon fontSize="small" />
             </IconButton>
           </motion.div>
-          <Typography variant="h5" fontWeight={700} color="primary">
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            color="primary"
+            sx={{ fontSize: { xs: '0.7rem', sm: '0.82rem', md: '0.95rem' } }}
+          >
             {selectedGroup ? taskGroups.find(g => g.value === selectedGroup)?.label : "الكل"}
           </Typography>
         </Box>
@@ -624,26 +670,27 @@ export default function AddTaskDailog({
             transition={{ duration: 0.3 }}
           >
             <Paper elevation={0} sx={{ 
-              p: 6, 
+              p: { xs: 2, sm: 3, md: 4.5 }, 
               textAlign: 'center', 
               backgroundColor: 'background.paper',
               borderRadius: '16px',
               maxWidth: '500px',
               mx: 'auto'
             }}>
-              <Box sx={{ fontSize: '3rem', mb: 2 }}>📭</Box>
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              <Box sx={{ fontSize: { xs: '1.7rem', sm: '2.2rem', md: '2.7rem' }, mb: { xs: 0.7, md: 1.2 } }}>📭</Box>
+              <Typography variant="h6" color="text.secondary" sx={{ mb: 0.6, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' } }}>
                 لا توجد مهام متاحة
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 1, md: 2 }, fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.74rem' } }}>
                 لا توجد مهام متاحة لهذا القسم أو المجموعة المحددة
               </Typography>
               <Button 
                 variant="contained"
                 onClick={() => setShowTasks(false)}
                 sx={{
-                  px: 4,
-                  py: 1.5,
+                  px: { xs: 1.1, sm: 1.5, md: 2.2 },
+                  py: { xs: 0.5, sm: 0.65, md: 0.85 },
+                  fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.74rem' },
                   borderRadius: '8px',
                   boxShadow: 'none'
                 }}
@@ -682,12 +729,13 @@ export default function AddTaskDailog({
               </motion.div>
             )}
 
-            <Grid container spacing={3} justifyContent="center" sx={{ width: '100%' }}>
+            <Grid container spacing={{ xs: 1, sm: 1.5, md: 2 }} justifyContent="center" sx={{ width: '100%', m: 0 }}>
               {filteredTasks.map((task, index) => (
                 <Grid item xs={12} sm={6} md={4} key={task.id} sx={{
                   display: selectedTask ? (selectedTask.id === task.id ? 'flex' : 'none') : 'flex',
-                  minWidth: '300px',
-                  maxWidth: '400px',
+                  minWidth: 0,
+                  width: '100%',
+                  maxWidth: { xs: '100%', sm: '420px' },
                   transition: 'all 0.3s ease'
                 }}>
                   <motion.div
@@ -736,28 +784,28 @@ export default function AddTaskDailog({
       <Slide direction="up" in={!!selectedTask} mountOnEnter unmountOnExit>
         <Box sx={{ 
           width: '100%',
-          mt: 4,
+          mt: { xs: 1.5, sm: 2.5, md: 3.5 },
           backgroundColor: 'background.paper',
           borderRadius: '16px',
           boxShadow: 3,
           overflow: 'hidden'
         }}>
-          <Box sx={{ p: 4 }}>
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 4, color: 'primary.main' }}>
+          <Box sx={{ p: { xs: 1, sm: 1.6, md: 2.5 } }}>
+            <Typography variant="h5" fontWeight={700} sx={{ mb: { xs: 1.2, md: 2.5 }, color: 'primary.main', fontSize: { xs: '0.84rem', sm: '1rem', md: '1.15rem' } }}>
               تفاصيل المهمة المختارة
             </Typography>
             
-            <Grid container spacing={4} sx={{ width: '100%' }}>
-              <Grid item xs={12} md={6} style={{maxWidth:"600px"}}>
+            <Grid container spacing={{ xs: 1, sm: 1.5, md: 2.5 }} sx={{ width: '100%', m: 0 }}>
+              <Grid item xs={12} md={6} sx={{ maxWidth: { xs: "100%", md: "600px" } }}>
                 <Box sx={{ 
-                  p: 3, 
+                  p: { xs: 0.75, sm: 1.1, md: 1.8 }, 
                   backgroundColor: 'background.default',
                   borderRadius: '12px',
                   border: '1px solid',
                   borderColor: 'divider',
                   height: '100%'
                 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, sm: 1.2, md: 1.8 } }}>
                     <Avatar sx={{ 
                       mr: 2,
                       backgroundColor: 'primary.light',
@@ -901,7 +949,7 @@ export default function AddTaskDailog({
                       size="small"
                       sx={{
                         borderRadius: '8px',
-                        minWidth: '120px',
+                        minWidth: { xs: '100%', sm: '120px' },
                         textTransform: 'none',
                         px: 2
                       }}
@@ -947,9 +995,9 @@ export default function AddTaskDailog({
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={6} sx={{ minWidth: "500px" }}>
+              <Grid item xs={12} md={6} sx={{ minWidth: 0, width: "100%" }}>
                 <Box sx={{ 
-                  p: 3, 
+                  p: { xs: 0.75, sm: 1.1, md: 1.8 }, 
                   backgroundColor: 'background.default',
                   borderRadius: '12px',
                   border: '1px solid',
@@ -961,7 +1009,7 @@ export default function AddTaskDailog({
                     إرسال المهمة
                   </Typography>
 
-                  <Box sx={{ mb: 4 }}>
+                  <Box sx={{ mb: { xs: 1.4, md: 2.5 } }}>
                     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
                       <PeopleIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
                       الموظفون المستلمون
@@ -1016,7 +1064,7 @@ export default function AddTaskDailog({
                     />
                   </Box>
 
-                  <Box sx={{ mb: 4 }}>
+                  <Box sx={{ mb: { xs: 1.4, md: 2.5 } }}>
                     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
                       <NotesIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
                       ملاحظات إضافية
@@ -1039,12 +1087,12 @@ export default function AddTaskDailog({
 
                   {/* Replace the existing execution time Box component with this conditional rendering */}
 {[0, 1, 2, 3, 9].includes(currentUser.userJop) && (
-  <Box sx={{ mb: 4 }}>
+  <Box sx={{ mb: { xs: 1.4, md: 2.5 } }}>
     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
       <ScheduleIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
       وقت التنفيذ المطلوب
     </Typography>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: { xs: 0.7, md: 1.5 } }}>
       <TextField
         type="number"
         value={requiredExecutionTime}
@@ -1079,7 +1127,7 @@ export default function AddTaskDailog({
                       onClick={onClose} 
                       variant="outlined"
                       sx={{ 
-                        minWidth: '120px',
+                        minWidth: { xs: '100%', sm: '120px' },
                         borderRadius: '8px',
                         borderWidth: '2px',
                         '&:hover': {

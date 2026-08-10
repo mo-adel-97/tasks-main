@@ -1,4 +1,4 @@
-import { Box, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip, Typography, Collapse } from '@mui/material';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip, Typography, Collapse, Drawer, useMediaQuery } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -56,6 +56,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 
 const primaryColor = '#057546';
@@ -68,9 +69,24 @@ const textColor = '#1f2d3d';
 const mutedTextColor = '#6f8a81';
 const softShadow = '0 14px 35px rgba(5,117,70,0.12)';
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // مهم: الديسكتوب فقط من 1600px وما فوق.
+  // أقل من ذلك = Drawer خفيف لا يحجز أي مساحة من الصفحة.
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  // اقفل القائمة تلقائياً بعد الانتقال لأي صفحة على الموبايل/التابلت.
+  useEffect(() => {
+    if (!isDesktop) {
+      onMobileClose();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, isDesktop]);
 
   const [permissionsLoading, setPermissionsLoading] =
   useState(true);
@@ -246,6 +262,14 @@ const branchManagementScreens =
   permissionData?.branchManagement?.screens || {};
 
   const [surveysOpen, setSurveysOpen] = useState(false);
+
+  // على الموبايل/التابلت: كل مرة الـ Drawer يفتح يبدأ جروب
+  // الاستبيانات مقفول، فلا يفتح بسبب click-through أو حالة قديمة.
+  useEffect(() => {
+    if (!isDesktop && mobileOpen) {
+      setSurveysOpen(false);
+    }
+  }, [mobileOpen, isDesktop]);
   const [salesOpen, setSalesOpen] = useState(
     location.pathname.startsWith("/dashboard/admission-requests") ||
     location.pathname.startsWith("/dashboard/online-registration") ||
@@ -483,8 +507,12 @@ const canShowReceptionOffice = allowedReceptionOfficeGuids.includes(
 );
 
 
-  const handleSurveysToggle = () => {
-    setSurveysOpen(!surveysOpen);
+  const handleSurveysToggle = (event) => {
+    // امنع أي click جاي من زر فتح/قفل السايدبار من الوصول للجروب بالغلط.
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    setSurveysOpen((current) => !current);
   };
 
   const handleSalesToggle = () => {
@@ -1133,49 +1161,65 @@ const studentFileMenu = [
     (item) => !groupedPaths.has(item.path)
   );
 
-  const childItemSx = (selected) => ({
-    mb: 0.35,
-    mx: { xs: 0.5, md: 1 },
-    ml: 3,
-    minHeight: 42,
-    px: 1,
-    py: 0.55,
-    borderRadius: 2.5,
-    color: selected ? whiteColor : textColor,
+const childItemSx = (selected) => ({
+  mb: isDesktop ? 0.25 : 0.18,
+
+  // نفس عرض التاب الرئيسي تقريبًا
+  mx: isDesktop ? 1 : 0.45,
+  ml: isDesktop ? 1 : 0.45,
+  mr: isDesktop ? 1 : 0.45,
+
+  minHeight: isDesktop ? 38 : 32,
+
+  px: isDesktop ? 1 : 0.65,
+  py: isDesktop ? 0.4 : 0.22,
+
+  borderRadius: isDesktop ? 2.5 : 1.8,
+
+  color: selected ? whiteColor : textColor,
+
+  background: selected
+    ? `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
+    : '#ffffff',
+
+  border: selected
+    ? '1px solid transparent'
+    : '1px solid rgba(5,117,70,0.09)',
+
+  boxShadow: selected
+    ? '0 7px 16px rgba(174,30,33,0.20)'
+    : '0 2px 8px rgba(31,45,61,0.035)',
+
+  position: 'relative',
+  overflow: 'hidden',
+
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    left: 0,
+    top: 7,
+    bottom: 7,
+    width: 3,
+    borderRadius: '0 999px 999px 0',
+    background: selected ? whiteColor : primaryColor
+  },
+
+  '&.Mui-selected': {
+    color: whiteColor,
+    background: `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
+  },
+
+  '&:hover': {
+    color: selected ? whiteColor : primaryDark,
     background: selected
       ? `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
-      : '#ffffff',
-    border: selected
-      ? '1px solid transparent'
-      : '1px solid rgba(5,117,70,0.09)',
-    boxShadow: selected
-      ? '0 7px 16px rgba(174,30,33,0.20)'
-      : '0 2px 8px rgba(31,45,61,0.035)',
-    position: 'relative',
-    overflow: 'hidden',
-    '&:before': {
-      content: '""',
-      position: 'absolute',
-      left: 0,
-      top: 8,
-      bottom: 8,
-      width: 3,
-      borderRadius: '0 999px 999px 0',
-      background: selected ? whiteColor : primaryColor
-    },
-    '&.Mui-selected': {
-      color: whiteColor,
-      background: `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
-    },
-    '&:hover': {
-      color: selected ? whiteColor : primaryDark,
-      background: selected
-        ? `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
-        : primaryLight,
-      transform: 'translateX(-4px)'
-    },
-    transition: 'all 0.2s ease'
-  });
+      : primaryLight,
+
+    transform: 'translateX(-2px)'
+  },
+
+  transition: 'all 0.2s ease'
+});
 
   const renderChildItem = (item) => {
     const selected = location.pathname === item.path;
@@ -1211,16 +1255,16 @@ const studentFileMenu = [
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
                   fontWeight: 700,
-                  fontSize: '0.7rem',
+                  fontSize: isDesktop ? '0.7rem' : '0.62rem',
                   textAlign: 'left',
-                  marginRight: '8px',
-                  lineHeight: 1.45
+                  marginRight: isDesktop ? '8px' : '5px',
+                  lineHeight: isDesktop ? 1.45 : 1.3
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: '0.66rem',
+                  fontSize: isDesktop ? '0.66rem' : '0.58rem',
                   textAlign: 'left',
-                  marginRight: '8px',
+                  marginRight: isDesktop ? '8px' : '5px',
                   color: selected
                     ? 'rgba(255,255,255,.78)'
                     : mutedTextColor
@@ -1230,9 +1274,9 @@ const studentFileMenu = [
 
             <ListItemIcon
               sx={{
-                minWidth: 26,
+                minWidth: isDesktop ? 26 : 22,
                 color: selected ? whiteColor : primaryColor,
-                '& svg': { fontSize: '1.08rem' }
+                '& svg': { fontSize: isDesktop ? '1.08rem' : '0.95rem' }
               }}
             >
               {item.icon}
@@ -1266,12 +1310,12 @@ const studentFileMenu = [
           button
           onClick={onToggle}
           sx={{
-            mb: 0.45,
-            mx: { xs: 0.5, md: 1 },
-            minHeight: 48,
-            px: 1.15,
-            py: 0.75,
-            borderRadius: 3,
+            mb: isDesktop ? 0.45 : 0.25,
+            mx: isDesktop ? 1 : 0.45,
+            minHeight: isDesktop ? 48 : 38,
+            px: isDesktop ? 1.15 : 0.72,
+            py: isDesktop ? 0.75 : 0.38,
+            borderRadius: isDesktop ? 3 : 2,
             color: open || active ? whiteColor : textColor,
             background: open || active
               ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`
@@ -1305,9 +1349,9 @@ const studentFileMenu = [
                 '.MuiTypography-root': {
                   fontFamily: 'Cairo',
                   fontWeight: 800,
-                  fontSize: '0.8rem',
+                  fontSize: isDesktop ? '0.8rem' : '0.68rem',
                   textAlign: 'left',
-                  marginRight: '8px'
+                  marginRight: isDesktop ? '8px' : '5px'
                 }
               }}
             />
@@ -1321,18 +1365,18 @@ const studentFileMenu = [
             >
               <ListItemIcon
                 sx={{
-                  minWidth: 26,
+                  minWidth: isDesktop ? 26 : 22,
                   color: 'inherit',
-                  '& svg': { fontSize: '1.18rem' }
+                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
                 }}
               >
                 {icon}
               </ListItemIcon>
 
               {open ? (
-                <ExpandLess sx={{ fontSize: '1.05rem' }} />
+                <ExpandLess sx={{ fontSize: isDesktop ? '1.05rem' : '0.9rem' }} />
               ) : (
-                <ExpandMore sx={{ fontSize: '1.05rem' }} />
+                <ExpandMore sx={{ fontSize: isDesktop ? '1.05rem' : '0.9rem' }} />
               )}
             </Box>
           </Box>
@@ -1345,14 +1389,14 @@ const studentFileMenu = [
             ) : (
               <Box
                 sx={{
-                  mx: 1,
-                  ml: 3,
-                  px: 1.2,
-                  py: 1.25,
-                  borderRadius: 2.5,
+                  mx: isDesktop ? 1 : 0.5,
+                  ml: isDesktop ? 3 : 1.2,
+                  px: isDesktop ? 1.2 : 0.7,
+                  py: isDesktop ? 1.25 : 0.7,
+                  borderRadius: isDesktop ? 2.5 : 1.8,
                   textAlign: 'center',
                   fontFamily: 'Cairo',
-                  fontSize: '0.76rem',
+                  fontSize: isDesktop ? '0.76rem' : '0.62rem',
                   color: mutedTextColor,
                   background: '#ffffff',
                   border: '1px solid rgba(5,117,70,0.09)'
@@ -1382,12 +1426,12 @@ const studentFileMenu = [
           to={supportItem.path}
           selected={selected}
           sx={{
-            mb: 0.6,
-            mx: { xs: 0.5, md: 1 },
-            minHeight: 48,
-            px: 1.15,
-            py: 0.75,
-            borderRadius: 3,
+            mb: isDesktop ? 0.6 : 0.3,
+            mx: isDesktop ? 1 : 0.45,
+            minHeight: isDesktop ? 48 : 38,
+            px: isDesktop ? 1.15 : 0.72,
+            py: isDesktop ? 0.75 : 0.38,
+            borderRadius: isDesktop ? 3 : 2,
             color: selected ? whiteColor : textColor,
             background: selected
               ? 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
@@ -1425,9 +1469,9 @@ const studentFileMenu = [
                 '.MuiTypography-root': {
                   fontFamily: 'Cairo',
                   fontWeight: 800,
-                  fontSize: '0.9rem',
+                  fontSize: isDesktop ? '0.9rem' : '0.69rem',
                   textAlign: 'left',
-                  marginRight: '8px'
+                  marginRight: isDesktop ? '8px' : '5px'
                 }
               }}
             />
@@ -1435,14 +1479,14 @@ const studentFileMenu = [
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
               <Box
                 sx={{
-                  px: 0.8,
-                  height: 20,
+                  px: isDesktop ? 0.8 : 0.55,
+                  height: isDesktop ? 20 : 17,
                   borderRadius: 999,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontFamily: 'Cairo',
-                  fontSize: '0.58rem',
+                  fontSize: isDesktop ? '0.58rem' : '0.5rem',
                   fontWeight: 900,
                   color: selected ? '#1976d2' : whiteColor,
                   background: selected
@@ -1456,9 +1500,9 @@ const studentFileMenu = [
 
               <ListItemIcon
                 sx={{
-                  minWidth: 26,
+                  minWidth: isDesktop ? 26 : 22,
                   color: selected ? whiteColor : '#1976d2',
-                  '& svg': { fontSize: '1.18rem' }
+                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
                 }}
               >
                 {supportItem.icon}
@@ -1470,15 +1514,18 @@ const studentFileMenu = [
     );
   };
 
-  return (
+  const sidebarContent = (
     <Box
+      onClick={(event) => event.stopPropagation()}
       sx={{
-        width: { xs: '100%', md: SIDEBAR_WIDTH },
-        height: { xs: 'auto', md: '100vh' },
+        // الديسكتوب يرجع لنفس العرض والشكل القديم 100%.
+        // الموبايل/التابلت Drawer صغير فقط بعرض التابات.
+        width: isDesktop ? SIDEBAR_WIDTH : { xs: 220, sm: 236, md: 248 },
+        maxWidth: isDesktop ? SIDEBAR_WIDTH : '74vw',
+        height: '100dvh',
         overflowY: 'auto',
         overflowX: 'hidden',
         boxSizing: 'border-box',
-        maxWidth: '100%',
         minWidth: 0,
         flexShrink: 0,
         '&, & *': {
@@ -1495,9 +1542,9 @@ const studentFileMenu = [
         },
         background: `linear-gradient(180deg, ${whiteColor} 0%, #f4fbf7 100%)`,
         color: textColor,
-        borderRight: { xs: 'none', md: `1px solid ${primaryLight}` },
+        borderRight: isDesktop ? `1px solid ${primaryLight}` : 'none',
         fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
-        position: { xs: 'relative', md: 'fixed' },
+        position: isDesktop ? 'fixed' : 'relative',
         left: 0,
         top: 0,
         zIndex: 1200,
@@ -1505,17 +1552,16 @@ const studentFileMenu = [
         flexDirection: 'column',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
-        boxShadow: {
-          xs: '0 8px 24px rgba(5,117,70,0.08)',
-          md: '8px 0 28px rgba(5,117,70,0.10)'
-        },
+        boxShadow: isDesktop
+          ? '8px 0 28px rgba(5,117,70,0.10)'
+          : 'none',
         transition: 'all 0.3s ease'
       }}
     >
       <Box sx={{ width: '100%' }}>
         <Box
           sx={{
-            display: 'flex',
+            display: isDesktop ? 'flex' : 'none',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
@@ -1581,7 +1627,19 @@ const studentFileMenu = [
             width: '100%',
             maxWidth: '100%',
             minWidth: 0,
-            py: 1.2,
+
+            // على الموبايل/التابلت نسيب مساحة تحت الهيدر الثابت
+            // عشان أول التابات ما تتغطاش.
+            pt: isDesktop
+              ? 1.2
+              : {
+                  xs: 6.6,
+                  sm: 7,
+                  md: 7.3,
+                },
+
+            pb: isDesktop ? 1.2 : 0.5,
+
             px: 0,
             overflowX: 'hidden'
           }}
@@ -1690,7 +1748,7 @@ const studentFileMenu = [
           maxWidth: '100%',
           minWidth: 0,
           boxSizing: 'border-box',
-          p: 2,
+          p: isDesktop ? 2 : 0.65,
           overflowX: 'hidden',
           borderTop: `1px solid ${primaryLight}`
         }}
@@ -1703,7 +1761,9 @@ const studentFileMenu = [
           sx={{
             borderRadius: 3,
             fontWeight: 'bold',
-            py: 1.2,
+            py: isDesktop ? 1.2 : 0.65,
+            fontSize: isDesktop ? '0.84rem' : '0.66rem',
+            minHeight: isDesktop ? 'auto' : 34,
             background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
             color: whiteColor,
             boxShadow: '0 4px 10px rgba(5,117,70,0.24)',
@@ -1719,6 +1779,45 @@ const studentFileMenu = [
         </Button>
       </Box>
     </Box>
+  );
+
+  // الديسكتوب: نفس السايدبار القديم بدون أي Drawer أو تغيير في المنطق.
+  if (isDesktop) {
+    return sidebarContent;
+  }
+
+  // الموبايل والتابلت: Drawer صغير، بدون لوجو/هيدر، ولا يحجز مساحة من الصفحة.
+  // anchor="right" مقصود هنا لأن المشروع RTL واتجاهاته معكوسة بصرياً.
+  return (
+    <Drawer
+      anchor="left"
+      open={mobileOpen}
+      onClose={onMobileClose}
+      transitionDuration={{ enter: 180, exit: 140 }}
+      ModalProps={{
+        keepMounted: true,
+      }}
+      slotProps={{
+        backdrop: {
+          sx: {
+            backgroundColor: 'rgba(0,0,0,0.42)',
+          },
+        },
+      }}
+      PaperProps={{
+        sx: {
+          width: { xs: 220, sm: 236, md: 248 },
+          maxWidth: '74vw',
+          height: '100dvh',
+          background: 'transparent',
+          boxShadow: '-14px 0 38px rgba(3,77,49,0.20)',
+          overflow: 'hidden',
+          borderRadius: 0,
+        },
+      }}
+    >
+      {sidebarContent}
+    </Drawer>
   );
 };
 

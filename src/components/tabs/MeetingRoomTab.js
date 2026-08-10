@@ -132,6 +132,8 @@ const MeetingRoomTab = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   // جلب بيانات المستخدم من localStorage
   useEffect(() => {
@@ -505,7 +507,27 @@ const copyToClipboard = (text) => {
   }
 
   return (
-    <Box sx={{ py: 3 }}>
+    <Box
+      sx={{
+        py: { xs: 0.8, sm: 1.2, md: 2.2 },
+        px: { xs: 0.15, sm: 0.4, md: 0 },
+        width: "100%",
+        minWidth: 0,
+        boxSizing: "border-box",
+        "& .MuiTypography-root": { overflowWrap: "anywhere" },
+        "& .MuiButton-root": {
+          fontSize: { xs: "0.64rem", sm: "0.72rem", md: "0.82rem" },
+          minHeight: { xs: 32, sm: 34, md: 38 },
+        },
+        "& .MuiChip-root": {
+          fontSize: { xs: "0.58rem", sm: "0.66rem", md: "0.72rem" },
+          height: { xs: 24, sm: 26, md: 28 },
+        },
+        "& .MuiInputBase-root, & .MuiInputLabel-root": {
+          fontSize: { xs: "0.68rem", sm: "0.75rem", md: "0.84rem" },
+        },
+      }}
+    >
       {/* Snackbar for notifications */}
       <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
@@ -519,12 +541,19 @@ const copyToClipboard = (text) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "center" },
+          mb: { xs: 1.5, sm: 2, md: 3 },
+          flexWrap: "wrap",
+          gap: { xs: 0.8, sm: 1.2, md: 2 }
+        }}>
           <Box>
-            <Typography variant="h4" fontWeight="bold" color={COLOR_SCHEME.text} gutterBottom>
+            <Typography variant="h4" fontWeight="bold" color={COLOR_SCHEME.text} gutterBottom sx={{ fontSize: { xs: "1rem", sm: "1.2rem", md: "1.55rem" }, mb: { xs: 0.25, md: 0.5 } }}>
               غرفة الاجتماعات الافتراضية
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: "0.66rem", sm: "0.74rem", md: "0.84rem" } }}>
               انضم إلى الاجتماعات أو أنشئ اجتماعات جديدة بضغطة زر
             </Typography>
           </Box>
@@ -539,11 +568,12 @@ const copyToClipboard = (text) => {
       '&:hover': {
         bgcolor: COLOR_SCHEME.primaryDark,
       },
-      px: 3,
-      py: 1.5,
+      px: { xs: 1.2, sm: 1.8, md: 2.5 },
+      py: { xs: 0.65, sm: 0.8, md: 1 },
       borderRadius: 2,
       fontWeight: 'bold',
-      fontSize: '1rem',
+      fontSize: { xs: "0.66rem", sm: "0.75rem", md: "0.86rem" },
+      width: { xs: "100%", sm: "auto" },
     }}
   >
     اجتماع جديد
@@ -555,27 +585,27 @@ const copyToClipboard = (text) => {
       </motion.div>
 
       {/* إحصائيات سريعة */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={{ xs: 1, sm: 1.5, md: 2.5 }} sx={{ mb: { xs: 1.5, sm: 2, md: 3 } }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ 
             background: `linear-gradient(135deg, ${alpha(COLOR_SCHEME.primary, 0.1)} 0%, ${alpha(COLOR_SCHEME.primary, 0.05)} 100%)`,
             border: `1px solid ${alpha(COLOR_SCHEME.primary, 0.2)}`,
             borderRadius: 3,
-            p: 2,
+            p: { xs: 0.7, sm: 1, md: 1.5 },
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-4px)',
               boxShadow: `0 8px 25px ${alpha(COLOR_SCHEME.primary, 0.15)}`,
             }
           }}>
-            <CardContent sx={{ textAlign: 'center' }}>
+            <CardContent sx={{ textAlign: "center", p: { xs: "6px !important", sm: "10px !important", md: "14px !important" } }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                <VideoCameraFront sx={{ color: COLOR_SCHEME.primary, fontSize: 40 }} />
+                <VideoCameraFront sx={{ color: COLOR_SCHEME.primary, fontSize: { xs: 24, sm: 30, md: 36 } }} />
               </Box>
-              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text}>
+              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.filter(m => m.status === "جاري").length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
                 اجتماعات نشطة
               </Typography>
             </CardContent>
@@ -587,21 +617,21 @@ const copyToClipboard = (text) => {
             background: `linear-gradient(135deg, ${alpha(COLOR_SCHEME.info, 0.1)} 0%, ${alpha(COLOR_SCHEME.info, 0.05)} 100%)`,
             border: `1px solid ${alpha(COLOR_SCHEME.info, 0.2)}`,
             borderRadius: 3,
-            p: 2,
+            p: { xs: 0.7, sm: 1, md: 1.5 },
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-4px)',
               boxShadow: `0 8px 25px ${alpha(COLOR_SCHEME.info, 0.15)}`,
             }
           }}>
-            <CardContent sx={{ textAlign: 'center' }}>
+            <CardContent sx={{ textAlign: "center", p: { xs: "6px !important", sm: "10px !important", md: "14px !important" } }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                <Schedule sx={{ color: COLOR_SCHEME.info, fontSize: 40 }} />
+                <Schedule sx={{ color: COLOR_SCHEME.info, fontSize: { xs: 24, sm: 30, md: 36 } }} />
               </Box>
-              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text}>
+              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.filter(m => m.status === "مخطط").length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
                 قادمة
               </Typography>
             </CardContent>
@@ -613,21 +643,21 @@ const copyToClipboard = (text) => {
             background: `linear-gradient(135deg, ${alpha(COLOR_SCHEME.success, 0.1)} 0%, ${alpha(COLOR_SCHEME.success, 0.05)} 100%)`,
             border: `1px solid ${alpha(COLOR_SCHEME.success, 0.2)}`,
             borderRadius: 3,
-            p: 2,
+            p: { xs: 0.7, sm: 1, md: 1.5 },
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-4px)',
               boxShadow: `0 8px 25px ${alpha(COLOR_SCHEME.success, 0.15)}`,
             }
           }}>
-            <CardContent sx={{ textAlign: 'center' }}>
+            <CardContent sx={{ textAlign: "center", p: { xs: "6px !important", sm: "10px !important", md: "14px !important" } }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                <Groups sx={{ color: COLOR_SCHEME.success, fontSize: 40 }} />
+                <Groups sx={{ color: COLOR_SCHEME.success, fontSize: { xs: 24, sm: 30, md: 36 } }} />
               </Box>
-              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text}>
+              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.reduce((acc, meeting) => acc + meeting.participants.length, 0)}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
                 مشاركين
               </Typography>
             </CardContent>
@@ -639,21 +669,21 @@ const copyToClipboard = (text) => {
             background: `linear-gradient(135deg, ${alpha(COLOR_SCHEME.warning, 0.1)} 0%, ${alpha(COLOR_SCHEME.warning, 0.05)} 100%)`,
             border: `1px solid ${alpha(COLOR_SCHEME.warning, 0.2)}`,
             borderRadius: 3,
-            p: 2,
+            p: { xs: 0.7, sm: 1, md: 1.5 },
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-4px)',
               boxShadow: `0 8px 25px ${alpha(COLOR_SCHEME.warning, 0.15)}`,
             }
           }}>
-            <CardContent sx={{ textAlign: 'center' }}>
+            <CardContent sx={{ textAlign: "center", p: { xs: "6px !important", sm: "10px !important", md: "14px !important" } }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                <MeetingRoomIcon sx={{ color: COLOR_SCHEME.warning, fontSize: 40 }} />
+                <MeetingRoomIcon sx={{ color: COLOR_SCHEME.warning, fontSize: { xs: 24, sm: 30, md: 36 } }} />
               </Box>
-              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text}>
+              <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
                 إجمالي الاجتماعات
               </Typography>
             </CardContent>
@@ -872,7 +902,7 @@ const copyToClipboard = (text) => {
         
         <form onSubmit={handleSubmit}>
           <DialogContent sx={{ p: 3 }}>
-            <Grid container spacing={3}>
+            <Grid container spacing={{ xs: 1, sm: 1.5, md: 2.5 }}>
               {/* معلومات الأساسية */}
               <Grid item xs={12}>
                 <TextField

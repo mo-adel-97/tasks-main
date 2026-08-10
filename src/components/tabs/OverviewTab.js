@@ -46,16 +46,17 @@ const MONTHS = [
 ];
 
 const selectSx = {
-  width: { xs: "100%", sm: 150 },
+  width: "100%",
   "& .MuiInputLabel-root": {
     fontWeight: 800,
     color: COLORS.muted,
   },
   "& .MuiOutlinedInput-root": {
-    height: 44,
+    height: { xs: 38, sm: 40, md: 42 },
     borderRadius: "13px",
     bgcolor: COLORS.white,
     fontWeight: 900,
+    fontSize: { xs: 12, sm: 13, md: 14 },
     "& fieldset": { borderColor: COLORS.border },
     "&:hover fieldset": { borderColor: COLORS.primary },
     "&.Mui-focused fieldset": {
@@ -66,10 +67,10 @@ const selectSx = {
 };
 
 const CARD_MIN_HEIGHT = {
-  xs: 150,
-  sm: 165,
-  md: 180,
-  lg: 190,
+  xs: 128,
+  sm: 142,
+  md: 158,
+  lg: 174,
 };
 
 function TaskMetricCard({ icon, title, stats, variant = "received" }) {
@@ -83,8 +84,8 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
       sx={{
         minHeight: CARD_MIN_HEIGHT,
         height: "100%",
-        p: { xs: 2, md: 2.4 },
-        borderRadius: "20px",
+        p: { xs: 1.25, sm: 1.5, md: 1.9 },
+        borderRadius: { xs: "14px", sm: "17px", md: "20px" },
         position: "relative",
         overflow: "hidden",
         color: COLORS.white,
@@ -128,18 +129,18 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
           }}
         >
           <Box>
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: 14, md: 16 } }}>
+            <Typography sx={{ fontWeight: 900, fontSize: { xs: 12, sm: 13, md: 15 } }}>
               {title}
             </Typography>
-            <Typography sx={{ mt: 0.35, opacity: 0.8, fontSize: 12 }}>
+            <Typography sx={{ mt: 0.35, opacity: 0.8, fontSize: { xs: 10, sm: 11, md: 12 } }}>
               خلال فترة التقييم المختارة
             </Typography>
           </Box>
 
           <Box
             sx={{
-              width: 46,
-              height: 46,
+              width: { xs: 34, sm: 39, md: 44 },
+              height: { xs: 34, sm: 39, md: 44 },
               borderRadius: "14px",
               display: "grid",
               placeItems: "center",
@@ -153,10 +154,10 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
         </Box>
 
         <Box sx={{ mt: 2.2, display: "flex", alignItems: "end", gap: 1 }}>
-          <Typography sx={{ fontSize: { xs: 32, md: 40 }, lineHeight: 1, fontWeight: 1000 }}>
+          <Typography sx={{ fontSize: { xs: 25, sm: 30, md: 36 }, lineHeight: 1, fontWeight: 1000 }}>
             {stats.total}
           </Typography>
-          <Typography sx={{ pb: 0.35, fontSize: 12.5, opacity: 0.86 }}>
+          <Typography sx={{ pb: 0.35, fontSize: { xs: 10, sm: 11.5, md: 12.5 }, opacity: 0.86 }}>
             مهمة
           </Typography>
         </Box>
@@ -182,10 +183,10 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
           />
         </Box>
         <Box sx={{ mt: 0.9, display: "flex", justifyContent: "space-between", gap: 1 }}>
-          <Typography sx={{ fontSize: 12, fontWeight: 800 }}>
+          <Typography sx={{ fontSize: { xs: 10, sm: 11, md: 12 }, fontWeight: 800 }}>
             نسبة الإنجاز {stats.completionRate}%
           </Typography>
-          <Typography sx={{ fontSize: 12, opacity: 0.78 }}>
+          <Typography sx={{ fontSize: { xs: 10, sm: 11, md: 12 }, opacity: 0.78 }}>
             مكتملة: {stats.completed}
           </Typography>
         </Box>
@@ -201,7 +202,7 @@ function LockedServiceCard({ title, description }) {
       sx={{
         minHeight: CARD_MIN_HEIGHT,
         height: "100%",
-        borderRadius: "20px",
+        borderRadius: { xs: "14px", sm: "17px", md: "20px" },
         position: "relative",
         overflow: "hidden",
         border: `1px solid ${COLORS.border}`,
@@ -213,7 +214,7 @@ function LockedServiceCard({ title, description }) {
         sx={{
           position: "absolute",
           inset: 0,
-          p: 2.2,
+          p: { xs: 1.2, sm: 1.6, md: 2 },
           filter: "blur(8px)",
           opacity: 0.28,
           transform: "scale(1.04)",
@@ -243,8 +244,8 @@ function LockedServiceCard({ title, description }) {
       >
         <Box
           sx={{
-            width: 48,
-            height: 48,
+            width: { xs: 36, sm: 42, md: 46 },
+            height: { xs: 36, sm: 42, md: 46 },
             borderRadius: "15px",
             display: "grid",
             placeItems: "center",
@@ -256,10 +257,10 @@ function LockedServiceCard({ title, description }) {
         >
           <LockRounded />
         </Box>
-        <Typography sx={{ color: COLORS.primaryDark, fontWeight: 1000, fontSize: 15 }}>
+        <Typography sx={{ color: COLORS.primaryDark, fontWeight: 1000, fontSize: { xs: 12.5, sm: 13.5, md: 15 } }}>
           {title}
         </Typography>
-        <Typography sx={{ mt: 0.5, color: COLORS.muted, fontSize: 12.5, lineHeight: 1.7 }}>
+        <Typography sx={{ mt: 0.5, color: COLORS.muted, fontSize: { xs: 10.5, sm: 11.5, md: 12.5 }, lineHeight: 1.65 }}>
           {description}
         </Typography>
         <Typography
@@ -270,7 +271,7 @@ function LockedServiceCard({ title, description }) {
             borderRadius: 99,
             bgcolor: alpha(COLORS.primary, 0.09),
             color: COLORS.primary,
-            fontSize: 11.5,
+            fontSize: { xs: 9.5, sm: 10.5, md: 11.5 },
             fontWeight: 900,
           }}
         >
@@ -352,9 +353,9 @@ export default function OverviewTab({
     >
       <Card
         sx={{
-          p: { xs: 1.2, sm: 1.5 },
+          p: { xs: 0.9, sm: 1.2, md: 1.4 },
           mb: { xs: 1.4, md: 1.8 },
-          borderRadius: "18px",
+          borderRadius: { xs: "13px", sm: "16px", md: "18px" },
           border: `1px solid ${COLORS.border}`,
           background: `linear-gradient(135deg, ${COLORS.white}, ${COLORS.soft})`,
           boxShadow: "0 9px 28px rgba(4, 90, 56, 0.07)",
@@ -362,11 +363,11 @@ export default function OverviewTab({
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: { xs: "stretch", sm: "center" },
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr 1fr", sm: "auto 140px 140px" },
+            alignItems: "center",
             justifyContent: "center",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 1,
+            gap: { xs: 0.7, sm: 0.9 },
           }}
         >
           <Typography
@@ -375,11 +376,12 @@ export default function OverviewTab({
               alignItems: "center",
               justifyContent: { xs: "center", sm: "flex-start" },
               gap: 0.8,
-              fontSize: { xs: 15, md: 17 },
+              fontSize: { xs: 12.5, sm: 14, md: 16 },
               fontWeight: 1000,
               color: COLORS.text,
               px: 0.5,
               whiteSpace: "nowrap",
+              gridColumn: { xs: "1 / -1", sm: "auto" },
             }}
           >
             <AnalyticsRounded sx={{ color: COLORS.primary }} />
@@ -429,7 +431,7 @@ export default function OverviewTab({
           justifyContent: "center",
           gap: 0.8,
           color: COLORS.text,
-          fontSize: { xs: 20, md: 25 },
+          fontSize: { xs: 16, sm: 19, md: 23 },
           fontWeight: 1000,
           textAlign: "center",
         }}
@@ -445,8 +447,8 @@ export default function OverviewTab({
             xs: "minmax(0, 1fr)",
             sm: "repeat(2, minmax(0, 1fr))",
           },
-          gap: { xs: 1.2, md: 1.6 },
-          mb: { xs: 1.2, md: 1.6 },
+          gap: { xs: 0.9, sm: 1.1, md: 1.4 },
+          mb: { xs: 0.9, sm: 1.1, md: 1.4 },
         }}
       >
         <TaskMetricCard
@@ -471,7 +473,7 @@ export default function OverviewTab({
             sm: "repeat(2, minmax(0, 1fr))",
             lg: "repeat(3, minmax(0, 1fr))",
           },
-          gap: { xs: 1.2, md: 1.6 },
+          gap: { xs: 0.9, sm: 1.1, md: 1.4 },
           alignItems: "stretch",
         }}
       >

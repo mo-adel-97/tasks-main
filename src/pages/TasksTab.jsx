@@ -143,16 +143,33 @@ export default function TasksTab() {
   const canShowPublicTask = [0, 1, 2, 3, 9].includes(userJop);
 
   return (
-    <Box sx={{ p: { xs: 0.5, sm: 1.5, md: 3 }, width: '100%', minWidth: 0 }}>
+    <Box
+      sx={{
+        p: { xs: 0.4, sm: 0.8, md: 1.4, lg: 2 },
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+        boxSizing: 'border-box',
+        overflowX: 'hidden',
+        '& .MuiTypography-root': { overflowWrap: 'anywhere' },
+        '& .MuiButton-root': {
+          fontSize: { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' }
+        },
+        '& .MuiChip-root': {
+          fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
+          height: { xs: 23, sm: 25, md: 28 }
+        }
+      }}
+    >
       <Box sx={{ 
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
         justifyContent: 'space-between',
         alignItems: { xs: 'stretch', sm: 'center' },
-        gap: 2,
-        mb: { xs: 2.5, md: 4 }
+        gap: { xs: 0.8, sm: 1.2, md: 1.8 },
+        mb: { xs: 1.2, sm: 1.8, md: 2.6 }
       }}>
-        <Typography variant="h4" fontWeight={800} color="primary.main" sx={{ fontSize: { xs: '1.15rem', sm: '1.5rem', md: '2rem' }, textAlign: { xs: 'center', sm: 'left' } }}>
+        <Typography variant="h4" fontWeight={800} color="primary.main" sx={{ fontSize: { xs: '0.98rem', sm: '1.2rem', md: '1.5rem' }, textAlign: { xs: 'center', sm: 'left' } }}>
           إدارة المهام
         </Typography>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -163,7 +180,7 @@ export default function TasksTab() {
             startIcon={<AddIcon />}
             sx={{
               px: { xs: 2, sm: 3, md: 4 },
-              py: 1.35,
+              py: { xs: 0.65, sm: 0.8, md: 1 },
               width: { xs: '100%', sm: 'auto' },
               borderRadius: '8px',
               boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
@@ -179,8 +196,8 @@ export default function TasksTab() {
 
       <ReceivedTasks currentUser={currentUser} />
       
-      <Box sx={{ mt: 6, mb: { xs: 1.5, sm: 2.5, md: 4 } }}>
-        <Divider sx={{ mb: 4 }}>
+      <Box sx={{ mt: { xs: 2.5, sm: 3.5, md: 4.5 }, mb: { xs: 1.5, sm: 2.5, md: 4 } }}>
+        <Divider sx={{ mb: { xs: 1.2, sm: 1.8, md: 2.5 } }}>
           <Chip 
             icon={<ChecklistIcon />} 
             label="المهام المرسلة" 
@@ -216,11 +233,11 @@ export default function TasksTab() {
           alignItems: 'center',
           backgroundColor: 'primary.main',
           color: 'white',
-          py: 2,
+          py: { xs: 1, sm: 1.4, md: 1.7 },
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px'
         }}>
-          <Typography variant="h5" fontWeight={600}>
+          <Typography variant="h5" fontWeight={600} sx={{ fontSize: { xs: '0.82rem', sm: '0.95rem', md: '1.1rem' } }}>
             اختر نوع المهمة
           </Typography>
           <IconButton 
@@ -275,8 +292,8 @@ export default function TasksTab() {
                     }}
                   >
                     <Box sx={{
-                      width: 80,
-                      height: 80,
+                      width: { xs: 52, sm: 64, md: 76 },
+                      height: { xs: 52, sm: 64, md: 76 },
                       borderRadius: '50%',
                       backgroundColor: 'rgba(25, 118, 210, 0.1)',
                       display: 'flex',
@@ -285,14 +302,14 @@ export default function TasksTab() {
                       mb: 3
                     }}>
                       <PublicIcon sx={{ 
-                        fontSize: '2.5rem', 
+                        fontSize: { xs: '1.6rem', sm: '2rem', md: '2.3rem' }, 
                         color: 'primary.main'
                       }} />
                     </Box>
-                    <Typography variant="h5" fontWeight={600} color="primary.main" gutterBottom>
+                    <Typography variant="h5" fontWeight={600} color="primary.main" gutterBottom sx={{ fontSize: { xs: '0.82rem', sm: '0.95rem', md: '1.1rem' } }}>
                       مهمة عامة
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 1, md: 1.5 }, fontSize: { xs: '0.64rem', sm: '0.72rem', md: '0.82rem' } }}>
                       إنشاء مهمة يدوية مخصصة لمستخدم أو مجموعة مستخدمين
                     </Typography>
                     <Chip 

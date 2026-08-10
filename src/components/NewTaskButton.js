@@ -96,13 +96,13 @@ const NewTaskButton = ({
           onClick={handleAddTask}
           startIcon={<AddIcon />}
           sx={{
-            px: 4,
-            py: 1.5,
+            px: { xs: 1.5, sm: 2.2, md: 3 },
+            py: { xs: 0.65, sm: 0.8, md: 1 },
             borderRadius: '10px',
             boxShadow: `0 4px 12px ${colorPalette.primary}40`,
             fontWeight: 600,
             textTransform: 'none',
-            fontSize: '1rem',
+            fontSize: { xs: '0.64rem', sm: '0.74rem', md: '0.84rem' },
             backgroundColor: colorPalette.primary,
             '&:hover': {
               backgroundColor: colorPalette.primaryDark,
@@ -126,8 +126,11 @@ const NewTaskButton = ({
           sx: {
             borderRadius: '16px',
             background: `linear-gradient(to bottom, ${colorPalette.background}, #ffffff)`,
-            minHeight: '500px',
-            minWidth: "1200px",
+            minHeight: { xs: 'auto', sm: 360, md: 440 },
+            width: { xs: 'calc(100vw - 16px)', sm: 'min(760px, calc(100vw - 32px))', md: 'min(900px, calc(100vw - 48px))' },
+            maxWidth: '900px',
+            minWidth: 0,
+            m: { xs: 1, sm: 2 },
             display: 'flex',
             flexDirection: 'column',
             border: `1px solid ${colorPalette.primaryLighter}`,
@@ -142,11 +145,11 @@ const NewTaskButton = ({
           alignItems: 'center',
           background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
           color: 'white',
-          py: 2,
+          py: { xs: 0.9, sm: 1.2, md: 1.6 },
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px'
         }}>
-          <Typography variant="h5" fontWeight={600} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+          <Typography variant="h5" fontWeight={600} sx={{ fontFamily: '"Cairo", sans-serif', fontSize: { xs: '0.82rem', sm: '0.95rem', md: '1.08rem' } }}>
             اختر نوع المهمة
           </Typography>
           <IconButton 
@@ -158,15 +161,15 @@ const NewTaskButton = ({
         </DialogTitle>
         
         <DialogContent sx={{ 
-          p: 4,
+          p: { xs: 1.2, sm: 2, md: 3 },
           flex: 1,
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: colorPalette.background
         }}>
-          <Grid container spacing={4} justifyContent="center" sx={{ maxWidth: '1000px' }}>
+          <Grid container spacing={{ xs: 1.2, sm: 2, md: 3 }} justifyContent="center" sx={{ maxWidth: '850px', width: '100%', m: 0 }}>
             {/* Public Task Option */}
               <Grid item xs={12} md={5}>
                 <motion.div 
@@ -177,7 +180,7 @@ const NewTaskButton = ({
                     onClick={handlePublicSelect}
                     elevation={0}
                     sx={{ 
-                      p: 4, 
+                      p: { xs: 1.5, sm: 2.2, md: 3 },
                       cursor: "pointer", 
                       textAlign: "center", 
                       backgroundColor: colorPalette.primaryLighter,
@@ -198,8 +201,8 @@ const NewTaskButton = ({
                     }}
                   >
                     <Box sx={{
-                      width: 80,
-                      height: 80,
+                      width: { xs: 52, sm: 64, md: 74 },
+                      height: { xs: 52, sm: 64, md: 74 },
                       borderRadius: '50%',
                       backgroundColor: colorPalette.primaryLighter,
                       display: 'flex',
@@ -209,14 +212,14 @@ const NewTaskButton = ({
                       border: `2px solid ${colorPalette.primary}`
                     }}>
                       <PublicIcon sx={{ 
-                        fontSize: '2.5rem', 
+                        fontSize: { xs: '1.6rem', sm: '2rem', md: '2.3rem' }, 
                         color: colorPalette.primary
                       }} />
                     </Box>
-                    <Typography variant="h5" fontWeight={600} sx={{ color: colorPalette.textDark, fontFamily: '"Cairo", sans-serif' }} gutterBottom>
+                    <Typography variant="h5" fontWeight={600} sx={{ color: colorPalette.textDark, fontFamily: '"Cairo", sans-serif', fontSize: { xs: '0.82rem', sm: '0.95rem', md: '1.08rem' } }} gutterBottom>
                       مهمة عامة
                     </Typography>
-                    <Typography variant="body1" sx={{ color: colorPalette.textLight, mb: 2, fontFamily: '"Cairo", sans-serif', lineHeight: 1.6 }}>
+                    <Typography variant="body1" sx={{ color: colorPalette.textLight, mb: { xs: 1, md: 1.5 }, fontFamily: '"Cairo", sans-serif', lineHeight: 1.6, fontSize: { xs: '0.64rem', sm: '0.72rem', md: '0.82rem' } }}>
                       إنشاء مهمة يدوية مخصصة لمستخدم أو مجموعة مستخدمين
                     </Typography>
                     <Chip 

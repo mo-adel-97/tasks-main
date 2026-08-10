@@ -28,7 +28,9 @@ import {
   FormGroup,
   FormControlLabel,
   InputAdornment,
-  Badge
+  Badge,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   AttachFile as AttachFileIcon,
@@ -87,10 +89,30 @@ const jobTitles = [
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     borderRadius: theme.spacing(3),
-    padding: theme.spacing(0),
-    minWidth: '700px',
+    padding: 0,
+    width: 'min(820px, calc(100vw - 32px))',
+    maxWidth: '820px',
+    minWidth: 0,
+    maxHeight: '90dvh',
     boxShadow: theme.shadows[10],
-    background: colorPalette.background
+    background: colorPalette.background,
+    overflow: 'hidden',
+
+    [theme.breakpoints.down('md')]: {
+      width: 'calc(100vw - 24px)',
+      maxWidth: 'calc(100vw - 24px)',
+      maxHeight: '88dvh',
+      margin: 12,
+      borderRadius: 14,
+    },
+
+    [theme.breakpoints.down('sm')]: {
+      width: 'calc(100vw - 12px)',
+      maxWidth: 'calc(100vw - 12px)',
+      maxHeight: '90dvh',
+      margin: 6,
+      borderRadius: 12,
+    },
   }
 }));
 
@@ -98,27 +120,80 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+  gap: theme.spacing(1),
   padding: theme.spacing(2, 3),
   borderBottom: `1px solid ${colorPalette.primaryLighter}`,
   background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
   color: 'white',
+
   '& .MuiTypography-root': {
-    fontWeight: 600,
-    fontSize: '1.25rem',
+    fontWeight: 700,
+    fontSize: '1.05rem',
     fontFamily: '"Cairo", sans-serif'
-  }
+  },
+
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(1.2, 1.6),
+
+    '& .MuiTypography-root': {
+      fontSize: '0.86rem',
+    },
+
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.15rem',
+    },
+  },
+
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(0.9, 1.1),
+
+    '& .MuiTypography-root': {
+      fontSize: '0.74rem',
+      lineHeight: 1.35,
+    },
+
+    '& .MuiIconButton-root': {
+      width: 30,
+      height: 30,
+    },
+
+    '& .MuiSvgIcon-root': {
+      fontSize: '1rem',
+    },
+  },
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
-  marginTop: theme.spacing(3),
+  marginTop: theme.spacing(2),
   marginBottom: theme.spacing(1),
   color: colorPalette.textDark,
-  fontWeight: 600,
-  fontSize: '1rem',
-  fontFamily: '"Cairo", sans-serif'
+  fontWeight: 700,
+  fontSize: '0.92rem',
+  fontFamily: '"Cairo", sans-serif',
+
+  [theme.breakpoints.down('md')]: {
+    marginTop: theme.spacing(1.2),
+    marginBottom: theme.spacing(0.7),
+    gap: theme.spacing(0.6),
+    fontSize: '0.76rem',
+
+    '& .MuiSvgIcon-root': {
+      fontSize: '1rem',
+    },
+  },
+
+  [theme.breakpoints.down('sm')]: {
+    marginTop: theme.spacing(0.9),
+    marginBottom: theme.spacing(0.5),
+    fontSize: '0.66rem',
+
+    '& .MuiSvgIcon-root': {
+      fontSize: '0.9rem',
+    },
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -176,13 +251,28 @@ const FormSection = styled(Box)(({ theme }) => ({
   borderRadius: theme.spacing(1),
   padding: theme.spacing(2),
   marginBottom: theme.spacing(2),
-  border: `1px solid ${colorPalette.primaryLight}`
+  border: `1px solid ${colorPalette.primaryLight}`,
+
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(1.1),
+    marginBottom: theme.spacing(1.1),
+  },
+
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(0.75),
+    marginBottom: theme.spacing(0.75),
+    borderRadius: 8,
+  },
 }));
 
 const SearchContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1, 2),
   borderBottom: `1px solid ${colorPalette.primaryLighter}`,
-  backgroundColor: colorPalette.background
+  backgroundColor: colorPalette.background,
+
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(0.6, 0.8),
+  },
 }));
 
 const UsersCountBadge = styled(Badge)(({ theme }) => ({
@@ -221,6 +311,10 @@ export default function PublicTaskDialog({
   isEditMode = false,
   taskToEdit = null
 }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedDept, setSelectedDept] = useState([]);
@@ -591,7 +685,38 @@ const handleSubmit = async () => {
         </IconButton>
       </StyledDialogTitle>
       
-      <DialogContent dividers sx={{ padding: 3, backgroundColor: colorPalette.background }}>
+      <DialogContent
+        dividers
+        sx={{
+          p: { xs: 0.75, sm: 1.2, md: 2.2 },
+          backgroundColor: colorPalette.background,
+          overflowY: 'auto',
+
+          '& .MuiInputBase-root, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
+            fontSize: { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' },
+          },
+
+          '& .MuiButton-root': {
+            fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' },
+            minHeight: { xs: 30, sm: 32, md: 36 },
+          },
+
+          '& .MuiChip-root': {
+            fontSize: { xs: '0.52rem', sm: '0.59rem', md: '0.68rem' },
+            height: { xs: 21, sm: 23, md: 26 },
+          },
+
+          '& .MuiAvatar-root': {
+            width: { xs: 26, sm: 30, md: 34 },
+            height: { xs: 26, sm: 30, md: 34 },
+            fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.75rem' },
+          },
+
+          '& .MuiSvgIcon-root': {
+            fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
+          },
+        }}
+      >
         <FormSection>
           <SectionTitle>
             <DescriptionIcon sx={{ color: colorPalette.primary }} />
@@ -641,7 +766,7 @@ const handleSubmit = async () => {
                 value={mainTaskDesc}
                 onChange={(e) => setMainTaskDesc(e.target.value)}
                 multiline
-                rows={4}
+                rows={isPhone ? 2 : isTablet ? 3 : 4}
                 fullWidth
                 variant="outlined"
                 size="small"
@@ -812,7 +937,7 @@ const handleSubmit = async () => {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          maxHeight: 400
+                          maxHeight: isPhone ? 260 : isTablet ? 320 : 400
                         }
                       }
                     }}

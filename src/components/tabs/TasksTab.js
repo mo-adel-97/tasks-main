@@ -8,7 +8,9 @@ import {
   InputLabel, 
   Select, 
   MenuItem, 
-  Chip 
+  Chip,
+  useTheme,
+  useMediaQuery
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { alpha } from "@mui/material/styles";
@@ -79,6 +81,16 @@ const TasksTab = ({
   filterTasksByTypeAndDate,
   calculateStats
 }) => {
+
+  const theme = useTheme();
+
+const isMobile = useMediaQuery(
+  theme.breakpoints.down("sm")
+);
+
+const isTablet = useMediaQuery(
+  theme.breakpoints.between("sm", "md")
+);
   
   const sentTasks = filterTasksByTypeAndDate("sent", selectedYear, selectedMonth);
   const receivedTasks = filterTasksByTypeAndDate("received", selectedYear, selectedMonth);
@@ -168,6 +180,27 @@ const availableYears = Array.from(
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
     >
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          px: { xs: 0.15, sm: 0.5, md: 0 },
+          "& .MuiTypography-root": {
+            overflowWrap: "anywhere",
+          },
+          "& .MuiChip-root": {
+            fontSize: { xs: "0.58rem", sm: "0.66rem", md: "0.72rem" },
+            height: { xs: 24, sm: 26, md: 28 },
+          },
+          "& .MuiChip-icon": {
+            fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+          },
+          "& .MuiInputBase-root, & .MuiInputLabel-root": {
+            fontSize: { xs: "0.68rem", sm: "0.76rem", md: "0.84rem" },
+          },
+        }}
+      >
       {/* Filters Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -175,19 +208,36 @@ const availableYears = Array.from(
         transition={{ delay: 0.3 }}
       >
         <Card sx={{ 
-          p: 3, 
-          mb: 4, 
+          p: { xs: 1.1, sm: 1.5, md: 2.2 }, 
+          mb: { xs: 1.5, sm: 2, md: 3 }, 
           borderRadius: 3,
           boxShadow: `0 8px 32px ${alpha(COLOR_SCHEME.primary, 0.08)}`,
           background: "white",
           border: `1px solid ${alpha(COLOR_SCHEME.primary, 0.1)}`
         }}>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center", justifyContent: 'center' }}>
-            <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mr: 1 }}>
+          <Box sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: { xs: 0.8, sm: 1.2, md: 2 },
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            <Typography
+              variant="h6"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mr: { xs: 0, md: 1 },
+                width: { xs: "100%", sm: "auto" },
+                justifyContent: { xs: "center", sm: "flex-start" },
+                fontSize: { xs: "0.78rem", sm: "0.9rem", md: "1rem" },
+                fontWeight: 800
+              }}
+            >
               <Analytics sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> تصفية بيانات المهام:
             </Typography>
             
-            <FormControl size="small" sx={{ minWidth: 120 }}>
+            <FormControl size="small" sx={{ minWidth: { xs: 105, sm: 115, md: 120 }, flex: { xs: 1, sm: "0 0 auto" } }}>
               <InputLabel>السنة</InputLabel>
               <Select
                 value={selectedYear}
@@ -200,7 +250,7 @@ const availableYears = Array.from(
               </Select>
             </FormControl>
 
-            <FormControl size="small" sx={{ minWidth: 130 }}>
+            <FormControl size="small" sx={{ minWidth: { xs: 112, sm: 122, md: 130 }, flex: { xs: 1, sm: "0 0 auto" } }}>
               <InputLabel>الشهر</InputLabel>
               <Select
                 value={selectedMonth}
@@ -219,11 +269,11 @@ const availableYears = Array.from(
 
       {/* Tasks Analysis */}
       <motion.div variants={stagger} initial="hidden" animate="visible">
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 1.2, sm: 1.8, md: 3 }}>
           <Grid item xs={12} md={6}>
             <motion.div variants={fadeIn}>
               <Card sx={{ 
-                p: 3, 
+                p: { xs: 1.1, sm: 1.5, md: 2.2 }, 
                 borderRadius: 3,
                 boxShadow: `0 8px 32px ${alpha(COLOR_SCHEME.primary, 0.08)}`,
                 background: "white",
@@ -234,11 +284,11 @@ const availableYears = Array.from(
                 },
                 height: '100%'
               }}>
-                <Typography variant="h6" sx={{ mb: 2, display: "flex", alignItems: "center", color: COLOR_SCHEME.primary }}>
+                <Typography variant="h6" sx={{ mb: { xs: 1, md: 2 }, display: "flex", alignItems: "center", color: COLOR_SCHEME.primary, fontSize: { xs: "0.76rem", sm: "0.88rem", md: "1rem" }, fontWeight: 800 }}>
                   <Send sx={{ mr: 1 }} /> تحليل المهام المرسلة
                 </Typography>
                 
-                <Box sx={{ mt: 3, height: 200 }}>
+                <Box sx={{ mt: { xs: 1, md: 2 }, height: { xs: 165, sm: 180, md: 200 } }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -247,7 +297,7 @@ const availableYears = Array.from(
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        outerRadius={80}
+                        outerRadius={isMobile ? 58 : isTablet ? 68 : 80}
                         label={renderCustomizedLabel}
                         labelLine={false}
                       >
@@ -261,7 +311,7 @@ const availableYears = Array.from(
                   </ResponsiveContainer>
                 </Box>
                 
-                <Box sx={{ mt: 2, display: "flex", justifyContent: "space-around" }}>
+                <Box sx={{ mt: { xs: 1, md: 2 }, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: { xs: 0.5, sm: 0.75 } }}>
                   <Chip icon={<CheckCircle />} label={`${sentStats.completed} مكتملة`} sx={{ background: COLOR_SCHEME.success, color: 'white' }} size="small" />
                   <Chip icon={<Pending />} label={`${sentStats.inProgress} قيد التنفيذ`} sx={{ background: COLOR_SCHEME.warning, color: 'white' }} size="small" />
                   <Chip icon={<Schedule />} label={`${sentStats.pending} معلقة`} sx={{ background: COLOR_SCHEME.error, color: 'white' }} size="small" />
@@ -273,7 +323,7 @@ const availableYears = Array.from(
           <Grid item xs={12} md={6}>
             <motion.div variants={fadeIn}>
               <Card sx={{ 
-                p: 3, 
+                p: { xs: 1.1, sm: 1.5, md: 2.2 }, 
                 borderRadius: 3,
                 boxShadow: `0 8px 32px ${alpha(COLOR_SCHEME.primary, 0.08)}`,
                 background: "white",
@@ -284,11 +334,11 @@ const availableYears = Array.from(
                 },
                 height: '100%'
               }}>
-                <Typography variant="h6" sx={{ mb: 2, display: "flex", alignItems: "center", color: COLOR_SCHEME.accent }}>
+                <Typography variant="h6" sx={{ mb: { xs: 1, md: 2 }, display: "flex", alignItems: "center", color: COLOR_SCHEME.accent, fontSize: { xs: "0.76rem", sm: "0.88rem", md: "1rem" }, fontWeight: 800 }}>
                   <Inbox sx={{ mr: 1 }} /> تحليل المهام المستلمة
                 </Typography>
                 
-                <Box sx={{ mt: 3, height: 200 }}>
+                <Box sx={{ mt: { xs: 1, md: 2 }, height: { xs: 165, sm: 180, md: 200 } }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -297,7 +347,7 @@ const availableYears = Array.from(
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        outerRadius={80}
+                        outerRadius={isMobile ? 58 : isTablet ? 68 : 80}
                         label={renderCustomizedLabel}
                         labelLine={false}
                       >
@@ -311,7 +361,7 @@ const availableYears = Array.from(
                   </ResponsiveContainer>
                 </Box>
                 
-                <Box sx={{ mt: 2, display: "flex", justifyContent: "space-around" }}>
+                <Box sx={{ mt: { xs: 1, md: 2 }, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: { xs: 0.5, sm: 0.75 } }}>
                   <Chip icon={<CheckCircle />} label={`${receivedStats.completed} مكتملة`} sx={{ background: COLOR_SCHEME.success, color: 'white' }} size="small" />
                   <Chip icon={<Pending />} label={`${receivedStats.inProgress} قيد التنفيذ`} sx={{ background: COLOR_SCHEME.warning, color: 'white' }} size="small" />
                   <Chip icon={<Schedule />} label={`${receivedStats.pending} معلقة`} sx={{ background: COLOR_SCHEME.error, color: 'white' }} size="small" />
@@ -325,18 +375,18 @@ const availableYears = Array.from(
       {/* Performance Chart */}
       <motion.div variants={fadeIn}>
         <Card sx={{ 
-          p: 3, 
-          mt: 3,
+          p: { xs: 1.1, sm: 1.5, md: 2.2 }, 
+          mt: { xs: 1.5, sm: 2, md: 3 },
           borderRadius: 3,
           boxShadow: `0 8px 32px ${alpha(COLOR_SCHEME.primary, 0.08)}`,
           background: "white",
           border: `1px solid ${alpha(COLOR_SCHEME.primary, 0.1)}`
         }}>
-          <Typography variant="h6" sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+          <Typography variant="h6" sx={{ mb: { xs: 1, md: 2 }, display: "flex", alignItems: "center", fontSize: { xs: "0.76rem", sm: "0.88rem", md: "1rem" }, fontWeight: 800 }}>
             <TrendingUp sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> تطور الأداء خلال السنة
           </Typography>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={isMobile ? 210 : isTablet ? 250 : 300}>
+            <LineChart data={chartData} margin={isMobile ? { top: 8, right: 6, left: -24, bottom: 0 } : { top: 10, right: 30, left: 0, bottom: 0 }}>
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip content={<CustomTooltip />} />
@@ -363,6 +413,7 @@ const availableYears = Array.from(
           </ResponsiveContainer>
         </Card>
       </motion.div>
+      </Box>
     </motion.div>
   );
 };

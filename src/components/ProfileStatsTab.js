@@ -61,8 +61,66 @@ const dashboardGlobalStyles = {
   },
   "@media (max-width: 900px)": {
     "#profile-dashboard-root .profile-dashboard-container": {
-      paddingLeft: "10px !important",
-      paddingRight: "10px !important",
+      paddingLeft: "8px !important",
+      paddingRight: "8px !important",
+    },
+    "#profile-dashboard-root .MuiTypography-h4": {
+      fontSize: "1.05rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-h5": {
+      fontSize: "0.94rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-h6": {
+      fontSize: "0.82rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-body1": {
+      fontSize: "0.72rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-body2": {
+      fontSize: "0.66rem !important",
+    },
+    "#profile-dashboard-root .MuiButton-root": {
+      fontSize: "0.68rem !important",
+      minHeight: "34px",
+    },
+    "#profile-dashboard-root .MuiInputBase-root, #profile-dashboard-root .MuiInputLabel-root": {
+      fontSize: "0.72rem !important",
+    },
+    "#profile-dashboard-root .MuiChip-root": {
+      fontSize: "0.62rem !important",
+      height: "25px",
+    },
+  },
+  "@media (max-width: 600px)": {
+    "#profile-dashboard-root .profile-dashboard-container": {
+      paddingLeft: "4px !important",
+      paddingRight: "4px !important",
+    },
+    "#profile-dashboard-root .MuiTypography-h4": {
+      fontSize: "0.95rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-h5": {
+      fontSize: "0.86rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-h6": {
+      fontSize: "0.76rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-body1": {
+      fontSize: "0.66rem !important",
+    },
+    "#profile-dashboard-root .MuiTypography-body2": {
+      fontSize: "0.61rem !important",
+    },
+    "#profile-dashboard-root .MuiButton-root": {
+      fontSize: "0.62rem !important",
+      minHeight: "32px",
+    },
+    "#profile-dashboard-root .MuiInputBase-root, #profile-dashboard-root .MuiInputLabel-root": {
+      fontSize: "0.66rem !important",
+    },
+    "#profile-dashboard-root .MuiChip-root": {
+      fontSize: "0.56rem !important",
+      height: "23px",
     },
   },
 };
@@ -424,8 +482,8 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
           maxWidth={false}
           disableGutters
           sx={{
-            py: { xs: 2, md: 3 },
-            px: { xs: 1.25, sm: 1.75, md: 2.5, xl: 3.5 },
+            py: { xs: 0.65, sm: 1, md: 1.6, xl: 2.5 },
+            px: { xs: 0.45, sm: 0.75, md: 1.4, xl: 3 },
             width: "100%",
             maxWidth: "none",
             boxSizing: "border-box",
@@ -452,7 +510,7 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
           <Box
             className="profile-tab-content"
             sx={{
-              mt: { xs: 1.5, md: 2 },
+              mt: { xs: 0.7, sm: 1, md: 1.5 },
               width: "100%",
               maxWidth: "100%",
             }}
@@ -500,7 +558,7 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                     sx={{
                       background: "white",
                       borderRadius: 3,
-                      p: 4,
+                      p: { xs: 1.2, sm: 1.8, md: 3 },
                       boxShadow: "0 8px 32px rgba(128, 180, 158, 0.1)",
                       border: "2px dashed #80b49e",
                       maxWidth: 400,
@@ -510,11 +568,11 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                     <Typography
                       variant="h5"
                       gutterBottom
-                      sx={{ color: "#80b49e", fontWeight: "bold", mb: 3 }}
+                      sx={{ color: "#80b49e", fontWeight: "bold", mb: { xs: 1, md: 2 }, fontSize: { xs: "0.88rem", sm: "1rem", md: "1.2rem" } }}
                     >
                       الإعلانات والمنشورات
                     </Typography>
-                    <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
+                    <Typography variant="body1" color="textSecondary" sx={{ mb: { xs: 1.2, md: 2 }, fontSize: { xs: "0.64rem", sm: "0.72rem", md: "0.82rem" } }}>
                       شارك أفكارك، اطلع على آخر المستجدات، وتفاعل مع زملائك
                     </Typography>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -529,9 +587,9 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                             transform: "translateY(-2px)",
                             boxShadow: "0 8px 20px rgba(128, 180, 158, 0.3)",
                           },
-                          px: 4,
-                          py: 1.5,
-                          fontSize: "1.1rem",
+                          px: { xs: 1.4, sm: 2, md: 3 },
+                          py: { xs: 0.7, sm: 0.9, md: 1.1 },
+                          fontSize: { xs: "0.64rem", sm: "0.74rem", md: "0.9rem" },
                           borderRadius: 2,
                           transition: "all 0.3s ease",
                         }}

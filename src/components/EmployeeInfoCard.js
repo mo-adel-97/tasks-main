@@ -55,8 +55,12 @@ const glassChipSx = {
   background: "rgba(255,255,255,0.16)",
   border: "1px solid rgba(255,255,255,0.28)",
   backdropFilter: "blur(10px)",
+  fontSize: { xs: "0.62rem", sm: "0.7rem", md: "0.78rem" },
+  height: { xs: 26, sm: 29, md: 32 },
+  "& .MuiChip-label": { px: { xs: 0.8, sm: 1 } },
   "& .MuiChip-icon": {
-    color: COLOR_SCHEME.white
+    color: COLOR_SCHEME.white,
+    fontSize: { xs: 15, sm: 17, md: 19 }
   }
 };
 
@@ -236,14 +240,14 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
     <motion.div variants={fadeIn} initial="hidden" animate="visible">
       <Card
         sx={{
-          p: { xs: 2.2, md: 3.5 },
-          borderRadius: 5,
+          p: { xs: 1.25, sm: 1.7, md: 2.2, lg: 3 },
+          borderRadius: { xs: 3, sm: 4, md: 5 },
           background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 100%)`,
           color: COLOR_SCHEME.white,
           boxShadow: `0 24px 60px ${alpha(COLOR_SCHEME.primary, 0.28)}`,
           position: "relative",
           overflow: "hidden",
-          mb: 3,
+          mb: { xs: 1.2, sm: 1.8, md: 2.4 },
           border: "1px solid rgba(255,255,255,0.18)",
           "&:before": {
             content: '""',
@@ -271,14 +275,14 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
         <Box
           sx={{
             display: "flex",
-            alignItems: { xs: "flex-start", md: "center" },
-            flexDirection: { xs: "column", md: "row" },
-            gap: { xs: 2.5, md: 3 },
+            alignItems: { xs: "center", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: { xs: 1.2, sm: 1.8, md: 2.4 },
             position: "relative",
             zIndex: 2
           }}
         >
-          <Box sx={{ position: "relative", alignSelf: { xs: "center", md: "auto" } }}>
+          <Box sx={{ position: "relative", alignSelf: "center" }}>
             <Box
               sx={{
                 p: 0.8,
@@ -291,8 +295,8 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
               {imageLoading ? (
                 <Box
                   sx={{
-                    width: 112,
-                    height: 112,
+                    width: { xs: 66, sm: 82, md: 96, lg: 108 },
+                    height: { xs: 66, sm: 82, md: 96, lg: 108 },
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
@@ -306,10 +310,10 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
               ) : (
                 <Avatar
                   sx={{
-                    width: 112,
-                    height: 112,
+                    width: { xs: 66, sm: 82, md: 96, lg: 108 },
+                    height: { xs: 66, sm: 82, md: 96, lg: 108 },
                     border: "4px solid rgba(255,255,255,0.34)",
-                    fontSize: "2.7rem",
+                    fontSize: { xs: "1.7rem", sm: "2rem", md: "2.3rem" },
                     fontWeight: 1000,
                     background: imageUrl
                       ? "transparent"
@@ -326,10 +330,10 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
             <IconButton
               sx={{
                 position: "absolute",
-                bottom: 5,
-                right: 5,
-                width: 36,
-                height: 36,
+                bottom: { xs: 1, sm: 3, md: 5 },
+                right: { xs: 1, sm: 3, md: 5 },
+                width: { xs: 28, sm: 32, md: 36 },
+                height: { xs: 28, sm: 32, md: 36 },
                 background: COLOR_SCHEME.accent,
                 color: COLOR_SCHEME.white,
                 border: "3px solid rgba(255,255,255,0.95)",
@@ -348,24 +352,24 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
             </IconButton>
           </Box>
 
-          <Box sx={{ flex: 1, width: "100%", textAlign: { xs: "center", md: "left" } }}>
+          <Box sx={{ flex: 1, width: "100%", textAlign: { xs: "center", sm: "left" } }}>
             <Typography
               variant="h4"
               sx={{
                 fontWeight: 1000,
                 mb: 0.8,
                 letterSpacing: "0.2px",
-                fontSize: { xs: "1.65rem", md: "2.15rem" }
+                fontSize: { xs: "1.18rem", sm: "1.4rem", md: "1.72rem", lg: "1.95rem" }
               }}
             >
               {displayName}
             </Typography>
 
-            <Typography variant="h6" sx={{ opacity: 0.92, mb: 0.7, fontWeight: 850 }}>
+            <Typography variant="h6" sx={{ opacity: 0.92, mb: 0.45, fontWeight: 850, fontSize: { xs: '0.78rem', sm: '0.9rem', md: '1.02rem' } }}>
               {userName}
             </Typography>
 
-            <Typography variant="body1" sx={{ opacity: 0.84, fontWeight: 750 }}>
+            <Typography variant="body1" sx={{ opacity: 0.84, fontWeight: 750, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.88rem' } }}>
               {department} • {employeeCode}
             </Typography>
 
@@ -374,8 +378,8 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
                 direction="row"
                 gap={1}
                 flexWrap="wrap"
-                justifyContent={{ xs: "center", md: "flex-start" }}
-                sx={{ mt: 2 }}
+                justifyContent={{ xs: "center", sm: "flex-start" }}
+                sx={{ mt: { xs: 1, sm: 1.4 } }}
               >
                 <Chip
                   label={isHRManager ? "مدير موارد بشرية" : "موظف موارد بشرية"}
@@ -401,16 +405,16 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
 
           <Box
             sx={{
-              minWidth: { xs: "100%", md: 190 },
+              minWidth: { xs: "100%", sm: 150, md: 175 },
               textAlign: "center",
-              p: 1.6,
-              borderRadius: 4,
+              p: { xs: 0.8, sm: 1.05, md: 1.35 },
+              borderRadius: { xs: 2.4, sm: 3, md: 4 },
               background: "rgba(255,255,255,0.12)",
               border: "1px solid rgba(255,255,255,0.18)",
               backdropFilter: "blur(10px)"
             }}
           >
-            <Typography variant="body1" sx={{ opacity: 0.92, mb: 1, fontWeight: 900 }}>
+            <Typography variant="body1" sx={{ opacity: 0.92, mb: 0.7, fontWeight: 900, fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.84rem' } }}>
               {new Date().toLocaleDateString("ar-EG", {
                 day: "numeric",
                 month: "long",
@@ -431,8 +435,8 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
         <Stack
           direction="row"
           flexWrap="wrap"
-          gap={1.4}
-          sx={{ mt: 3.2, position: "relative", zIndex: 2 }}
+          gap={{ xs: 0.6, sm: 0.8, md: 1.1 }}
+          sx={{ mt: { xs: 1.2, sm: 1.7, md: 2.3 }, position: "relative", zIndex: 2 }}
         >
           <Chip icon={<Work />} label={`كود الموظف: ${employeeCode}`} sx={glassChipSx} />
           <Chip icon={<Security />} label={`الحالة: ${isActive ? "نشط" : "غير نشط"}`} sx={glassChipSx} />
