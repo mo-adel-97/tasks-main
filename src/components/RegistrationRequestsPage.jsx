@@ -15,7 +15,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import Sidebar from "../components/Sidebar";
 
 const SIDEBAR_WIDTH = 280;
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 const today = () => new Date().toISOString().slice(0, 10);
 
 const exportCsv = (rows, fileName) => {

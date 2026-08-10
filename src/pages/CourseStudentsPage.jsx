@@ -20,7 +20,7 @@ import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import EditStudentDialog from "../components/EditStudentDialog";
 import RegisterDocumentDialog from "../components/RegisterDocumentDialog";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 const ATTACHMENTS_BASE_URL = "https://sstli.com/arc-api/images_view.php";
 const ZERO_GUID = "00000000-0000-0000-0000-000000000000";
 const SIDEBAR_WIDTH = 280;

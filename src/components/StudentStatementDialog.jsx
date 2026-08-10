@@ -20,7 +20,7 @@ export default function StudentStatementDialog({ open, onClose, accountGuid }) {
   const fetchStatements = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://api4.sstli.com/api/reception-office/student-statement/${accountGuid}`);
+      const response = await axios.get(`http://localhost:5258/api/reception-office/student-statement/${accountGuid}`);
       setStatements(response.data);
     } catch (error) {
       console.error('Error fetching statement', error);

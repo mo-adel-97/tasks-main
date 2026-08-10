@@ -33,7 +33,7 @@ const SIDEBAR_WIDTH = 280;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  "http://localhost:5258";
 
 const PROGRAM_TYPES = [
   {

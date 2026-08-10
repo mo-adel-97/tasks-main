@@ -47,6 +47,8 @@ import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import DeselectIcon from "@mui/icons-material/Deselect";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 import Sidebar from "../components/Sidebar";
 import StudentStatementDialog2
@@ -59,13 +61,16 @@ import RegisterDocumentDialog
 const SIDEBAR_WIDTH = 280;
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  "http://localhost:5258";
 
 const ATTACHMENTS_BASE_URL =
   "https://sstli.com/arc-api/images_view.php";
 
 const ZERO_GUID =
   "00000000-0000-0000-0000-000000000000";
+
+const SECTION_TEMPLATE_URL =
+  `${process.env.PUBLIC_URL || ""}/templates/section-distribution-template.xlsx`;
 
 const unwrap = (value) => {
   if (value === null || value === undefined) return value;
@@ -132,11 +137,18 @@ const readJson = async (response) => {
   }
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       result?.details
         ? `${result?.message || "حدث خطأ"}: ${result.details}`
         : result?.message || text || `HTTP ${response.status}`
     );
+
+    error.validationErrors =
+      Array.isArray(result?.errors)
+        ? result.errors
+        : [];
+
+    throw error;
   }
 
   return result;
@@ -167,6 +179,10 @@ const normalizeRow = (item, index) => ({
   diplomName: pick(item, ["DiplomName"]),
   statusName: pick(item, ["StautName", "StatusName"]),
   levelName: pick(item, ["LevelName"]),
+  levelGuid: toGuid(pick(item, ["LevelGuid"])),
+  sectionGuid: toGuid(pick(item, ["SectionGuid"])),
+  sectionCode: Number(pick(item, ["SectionCode"], 0)),
+  sectionName: pick(item, ["SectionName"], "غير موزع"),
   email: pick(item, ["Email"]),
   levelNotes: pick(item, ["LevelNotes"]),
   typeStudent: pick(item, ["TYPESTUDENT"]),
@@ -378,6 +394,11 @@ const nationalityText = (value) => {
   return text;
 };
 
+const isContinuingStudent = (row) =>
+  String(row?.statusName || "")
+    .trim()
+    .replace(/\s+/g, " ") === "مستمر";
+
 const downloadBlob = (blob, fileName) => {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -411,6 +432,13 @@ const DiplomaStudentsPage = () => {
   const [levels, setLevels] = useState([]);
   const [branchGuid, setBranchGuid] = useState("");
   const [newLevelGuid, setNewLevelGuid] = useState("");
+  const [filterLevelGuid, setFilterLevelGuid] = useState("");
+  const [filterDiplomaGuid, setFilterDiplomaGuid] = useState("");
+  const [filterBatchGuid, setFilterBatchGuid] = useState("");
+  const [filterSectionGuid, setFilterSectionGuid] = useState("all");
+  const [distributionStatus, setDistributionStatus] = useState("all");
+  const [sections, setSections] = useState([]);
+  const [targetSectionGuid, setTargetSectionGuid] = useState("");
   const [rows, setRows] = useState([]);
   const [selectionModel, setSelectionModel] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -464,6 +492,7 @@ const DiplomaStudentsPage = () => {
   ] = useState(null);
 
   const requestIdRef = useRef(0);
+  const sectionExcelInputRef = useRef(null);
 
   const loadLookups = useCallback(async () => {
     try {
@@ -592,6 +621,112 @@ const DiplomaStudentsPage = () => {
     );
   }, [rows, selectionModel]);
 
+  const diplomaOptions = useMemo(() => {
+    const map = new Map();
+    rows
+      .filter((row) => !filterLevelGuid || row.levelGuid === filterLevelGuid)
+      .forEach((row) => {
+        if (row.diplomaGuid !== ZERO_GUID && row.diplomName) {
+          map.set(row.diplomaGuid, row.diplomName);
+        }
+      });
+    return [...map.entries()].map(([guid, name]) => ({ guid, name }));
+  }, [rows, filterLevelGuid]);
+
+  const batchOptions = useMemo(() => {
+    const map = new Map();
+    rows
+      .filter((row) =>
+        (!filterLevelGuid || row.levelGuid === filterLevelGuid) &&
+        (!filterDiplomaGuid || row.diplomaGuid === filterDiplomaGuid)
+      )
+      .forEach((row) => {
+        if (row.batchGuid !== ZERO_GUID && row.batchName) {
+          map.set(row.batchGuid, row.batchName);
+        }
+      });
+    return [...map.entries()].map(([guid, name]) => ({ guid, name }));
+  }, [rows, filterLevelGuid, filterDiplomaGuid]);
+
+  const filteredRows = useMemo(() => {
+    return rows.filter((row) => {
+      if (filterLevelGuid && row.levelGuid !== filterLevelGuid) return false;
+      if (filterDiplomaGuid && row.diplomaGuid !== filterDiplomaGuid) return false;
+      if (filterBatchGuid && row.batchGuid !== filterBatchGuid) return false;
+
+      if (distributionStatus === "assigned" && row.sectionGuid === ZERO_GUID)
+        return false;
+      if (distributionStatus === "unassigned" && row.sectionGuid !== ZERO_GUID)
+        return false;
+
+      if (
+        filterSectionGuid &&
+        filterSectionGuid !== "all" &&
+        filterSectionGuid !== "unassigned" &&
+        row.sectionGuid !== filterSectionGuid
+      ) return false;
+
+      if (filterSectionGuid === "unassigned" && row.sectionGuid !== ZERO_GUID)
+        return false;
+
+      return true;
+    });
+  }, [
+    rows,
+    filterLevelGuid,
+    filterDiplomaGuid,
+    filterBatchGuid,
+    filterSectionGuid,
+    distributionStatus
+  ]);
+
+  const loadSections = useCallback(async () => {
+    if (!branchGuid || !filterLevelGuid) {
+      setSections([]);
+      setTargetSectionGuid("");
+      return;
+    }
+
+    try {
+      const params = new URLSearchParams({
+        userGuid,
+        branchGuid,
+        levelGuid: filterLevelGuid
+      });
+
+      if (filterDiplomaGuid) params.set("diplomGuid", filterDiplomaGuid);
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/diploma-students/sections?${params}`,
+        { cache: "no-store" }
+      );
+      const result = await readJson(response);
+      const data = Array.isArray(result?.data) ? result.data : [];
+      const normalized = data.map((item) => ({
+        guid: toGuid(pick(item, ["Guid", "guid"])),
+        sectionCode: Number(pick(item, ["SectionCode", "sectionCode"], 0)),
+        sectionName: pick(item, ["SectionName", "sectionName"]),
+        studentCount: Number(pick(item, ["StudentCount", "studentCount"], 0))
+      }));
+      setSections(normalized);
+      setTargetSectionGuid((current) =>
+        normalized.some((item) => item.guid === current) ? current : ""
+      );
+    } catch (error) {
+      setSections([]);
+      setTargetSectionGuid("");
+      await showError(error?.message || "تعذر تحميل الشعب");
+    }
+  }, [userGuid, branchGuid, filterLevelGuid, filterDiplomaGuid]);
+
+  useEffect(() => {
+    loadSections();
+  }, [loadSections]);
+
+  useEffect(() => {
+    setSelectionModel([]);
+  }, [filterLevelGuid, filterDiplomaGuid, filterBatchGuid, filterSectionGuid, distributionStatus]);
+
   const closeMenu = () => {
     setAnchorEl(null);
     setMenuRow(null);
@@ -705,6 +840,861 @@ const DiplomaStudentsPage = () => {
       },
       `جاري ترحيل ${selectedRows.length} طالب`
     );
+  };
+
+
+  const normalizeExcelHeader = (value) =>
+    String(value ?? "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .replace(/[ـ]/g, "")
+      .toLowerCase();
+
+  const downloadSectionExcelTemplate = async () => {
+    try {
+      setWorkingText("جاري تحميل نموذج توزيع الشعب");
+
+      const response = await fetch(
+        SECTION_TEMPLATE_URL,
+        {
+          cache: "no-store"
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `تعذر تحميل نموذج Excel - HTTP ${response.status}`
+        );
+      }
+
+      const blob = await response.blob();
+
+      downloadBlob(
+        blob,
+        "نموذج توزيع الشعب.xlsx"
+      );
+    } catch (error) {
+      await showError(
+        error?.message ||
+          "تعذر تحميل نموذج توزيع الشعب"
+      );
+    } finally {
+      setWorkingText("");
+    }
+  };
+
+  const readSectionExcelFile = async (file) => {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, {
+      type: "array",
+      cellText: true,
+      cellDates: false
+    });
+
+    const firstSheetName = workbook.SheetNames?.[0];
+
+    if (!firstSheetName) {
+      throw new Error("ملف Excel لا يحتوي على أي Sheet");
+    }
+
+    const worksheet = workbook.Sheets[firstSheetName];
+
+    const rawRows = XLSX.utils.sheet_to_json(
+      worksheet,
+      {
+        defval: "",
+        raw: false
+      }
+    );
+
+    if (!Array.isArray(rawRows) || rawRows.length === 0) {
+      throw new Error("ملف Excel فارغ");
+    }
+
+    const headerMap = new Map();
+
+    Object.keys(rawRows[0] || {}).forEach((key) => {
+      headerMap.set(
+        normalizeExcelHeader(key),
+        key
+      );
+    });
+
+    const getHeader = (aliases) => {
+      for (const alias of aliases) {
+        const found = headerMap.get(
+          normalizeExcelHeader(alias)
+        );
+
+        if (found) return found;
+      }
+
+      return "";
+    };
+
+    const nationalIdHeader = getHeader([
+      "رقم الهوية",
+      "الهوية",
+      "nationalid",
+      "national id"
+    ]);
+
+    const levelHeader = getHeader([
+      "المستوى",
+      "اسم المستوى",
+      "level",
+      "levelname"
+    ]);
+
+    const diplomaHeader = getHeader([
+      "الدبلوم",
+      "اسم الدبلوم",
+      "التخصص",
+      "diploma",
+      "diplomname"
+    ]);
+
+    const sectionHeader = getHeader([
+      "الشعبة",
+      "رقم الشعبة",
+      "section",
+      "sectioncode"
+    ]);
+
+    if (
+      !nationalIdHeader ||
+      !levelHeader ||
+      !diplomaHeader ||
+      !sectionHeader
+    ) {
+      throw new Error(
+        "أعمدة الملف يجب أن تكون: رقم الهوية، المستوى، الدبلوم، الشعبة"
+      );
+    }
+
+    const parsedRows = rawRows
+      .map((row, index) => {
+        const rawSection =
+          String(row[sectionHeader] ?? "").trim();
+
+        const sectionMatch =
+          rawSection.match(/\d+/);
+
+        return {
+          rowNumber: index + 2,
+          nationalId:
+            String(row[nationalIdHeader] ?? "")
+              .trim()
+              .replace(/\.0$/, ""),
+          levelNumber: (() => {
+            const rawLevel =
+              String(row[levelHeader] ?? "").trim();
+
+            const levelMatch =
+              rawLevel.match(/\d+/);
+
+            return levelMatch
+              ? Number(levelMatch[0])
+              : 0;
+          })(),
+          diplomName:
+            String(row[diplomaHeader] ?? "").trim(),
+          sectionCode:
+            sectionMatch
+              ? Number(sectionMatch[0])
+              : 0
+        };
+      })
+      .filter((row) =>
+        row.nationalId ||
+        row.levelNumber ||
+        row.diplomName ||
+        row.sectionCode
+      );
+
+    if (parsedRows.length === 0) {
+      throw new Error("لا توجد صفوف بيانات داخل ملف Excel");
+    }
+
+    const invalidRows = parsedRows.filter(
+      (row) =>
+        !row.nationalId ||
+        row.levelNumber < 1 ||
+        row.levelNumber > 8 ||
+        !row.diplomName ||
+        row.sectionCode < 1 ||
+        row.sectionCode > 8
+    );
+
+    if (invalidRows.length > 0) {
+      throw new Error(
+        `يوجد ${invalidRows.length} صف غير صحيح. المستوى يجب أن يكون من 1 إلى 8 والشعبة من 1 إلى 8. أول صف به مشكلة: ${invalidRows[0].rowNumber}`
+      );
+    }
+
+    return parsedRows;
+  };
+
+  const handleSectionExcelUpload = async (event) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) return;
+
+    if (!branchGuid) {
+      await showError("اختر الفرع أولًا");
+      return;
+    }
+
+    try {
+      setWorkingText("جاري قراءة ملف توزيع الشعب");
+
+      const excelRows =
+        await readSectionExcelFile(file);
+
+      setWorkingText("");
+
+      const uniqueSections = [
+        ...new Set(
+          excelRows.map(
+            (row) =>
+              `${row.diplomName} | المستوى ${row.levelNumber} | الشعبة ${row.sectionCode}`
+          )
+        )
+      ];
+
+      const previewLines = uniqueSections
+        .slice(0, 20)
+        .map(
+          (value) => `<div>${value}</div>`
+        )
+        .join("");
+
+      const confirmed = await Swal.fire({
+        icon: "question",
+        title: "تأكيد رفع توزيع الشعب",
+        html: `
+          <div style="direction:rtl;text-align:right;font-family:Cairo">
+            <div style="margin-bottom:8px">
+              عدد الصفوف في الملف:
+              <b>${excelRows.length}</b>
+            </div>
+
+            <div style="
+              padding:10px 12px;
+              border:1px solid #dfe8e3;
+              border-radius:10px;
+              background:#f7faf8;
+              max-height:260px;
+              overflow:auto;
+              line-height:1.9
+            ">
+              ${previewLines}
+              ${
+                uniqueSections.length > 20
+                  ? `<div>... وباقي ${uniqueSections.length - 20} توزيع</div>`
+                  : ""
+              }
+            </div>
+
+            <div style="
+              margin-top:10px;
+              padding:8px 10px;
+              border-radius:8px;
+              background:#fff4e5;
+              color:#8a4b08
+            ">
+              المستوى في الملف يكون رقمًا فقط من 1 إلى 8.
+              سيتم التوزيع فقط للطلاب حالتهم مستمر.
+              إذا كانت الشعبة غير موجودة سيتم إنشاؤها تلقائيًا
+              لنفس الفرع + الدبلوم + المستوى.
+            </div>
+
+            <div style="
+              margin-top:8px;
+              color:#ae1e21;
+              font-weight:700
+            ">
+              إذا وجد صف غير صحيح لن يتم حفظ أي توزيع من الملف.
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "نعم، تنفيذ التوزيع",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#057546"
+      });
+
+      if (!confirmed.isConfirmed) return;
+
+      setWorkingText(
+        `جاري توزيع ${excelRows.length} طالب من ملف Excel`
+      );
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        120000
+      );
+
+      let response;
+
+      try {
+        response = await fetch(
+          `${API_BASE_URL}/api/diploma-students/sections/import-excel`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              userGuid,
+              branchGuid,
+              rows: excelRows
+            }),
+            signal: controller.signal
+          }
+        );
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          throw new Error(
+            "انتهت مهلة توزيع ملف Excel. لم يستجب السيرفر خلال دقيقتين."
+          );
+        }
+
+        throw error;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
+      const result = await readJson(response);
+
+      // الـ API خلص والحفظ تم بالفعل؛ اقفل شاشة "جاري التوزيع" فورًا.
+      // كان سبب التعليق الظاهري إن workingText كان يفضل موجود
+      // أثناء إعادة تحميل الطلاب والشعب بعد رسالة النجاح.
+      setWorkingText("");
+
+      const distribution =
+        Array.isArray(result?.data?.distribution)
+          ? result.data.distribution
+          : [];
+
+      await Swal.fire({
+        icon: "success",
+        title: "تم توزيع الشعب من Excel",
+        html: `
+          <div style="direction:rtl;text-align:right;font-family:Cairo">
+            <div style="margin-bottom:8px">
+              ${result?.message || "تم تنفيذ التوزيع بنجاح"}
+            </div>
+
+            ${
+              Number(result?.data?.createdSections || 0) > 0
+                ? `
+                  <div style="
+                    margin-bottom:8px;
+                    padding:8px 10px;
+                    border-radius:8px;
+                    background:#eaf6ef;
+                    color:#057546;
+                    font-weight:700
+                  ">
+                    تم إنشاء ${result.data.createdSections}
+                    شعبة جديدة تلقائيًا.
+                  </div>
+                `
+                : ""
+            }
+
+            ${
+              distribution.length
+                ? `
+                  <div style="
+                    padding:10px 12px;
+                    border:1px solid #dfe8e3;
+                    border-radius:10px;
+                    background:#f7faf8;
+                    max-height:260px;
+                    overflow:auto;
+                    line-height:1.9
+                  ">
+                    ${distribution
+                      .map(
+                        (item) =>
+                          `<div>${item.diplomName} - ${item.levelName} - ${item.sectionName}: ${item.studentCount} طالب</div>`
+                      )
+                      .join("")}
+                  </div>
+                `
+                : ""
+            }
+          </div>
+        `,
+        confirmButtonText: "حسنًا",
+        confirmButtonColor: "#057546"
+      });
+
+      setSelectionModel([]);
+      setFilterSectionGuid("all");
+      setDistributionStatus("all");
+
+      // تحديث القائمة والشعب معًا بدل الانتظار واحدًا وراء الآخر.
+      await Promise.all([
+        loadStudents(),
+        loadSections()
+      ]);
+    } catch (error) {
+      setWorkingText("");
+
+      const details =
+        Array.isArray(error?.validationErrors)
+          ? error.validationErrors
+          : [];
+
+      if (details.length > 0) {
+        await Swal.fire({
+          icon: "error",
+          title: "أخطاء ملف Excel",
+          html: `
+            <div style="direction:rtl;text-align:right;font-family:Cairo">
+              <div style="margin-bottom:10px;font-weight:700">
+                ${error?.message || "تعذر تنفيذ التوزيع"}
+              </div>
+              <div style="
+                max-height:320px;
+                overflow:auto;
+                padding:10px 12px;
+                border:1px solid #f1c7c7;
+                border-radius:10px;
+                background:#fff8f8;
+                line-height:1.9
+              ">
+                ${details
+                  .slice(0, 100)
+                  .map((item) => `<div>• ${String(item)}</div>`)
+                  .join("")}
+              </div>
+            </div>
+          `,
+          confirmButtonText: "حسنًا",
+          confirmButtonColor: "#ae1e21",
+          width: 760
+        });
+      } else {
+        await showError(
+          error?.message ||
+            "تعذر قراءة أو توزيع ملف Excel"
+        );
+      }
+    } finally {
+      // حماية إضافية: ممنوع شاشة التحميل تفضل مفتوحة لأي سبب.
+      setWorkingText("");
+    }
+  };
+
+  const createSection = async () => {
+    if (!filterLevelGuid || !filterDiplomaGuid) {
+      await showError("اختر المستوى والدبلوم أولًا");
+      return;
+    }
+
+    const inputOptions = Object.fromEntries(
+      Array.from({ length: 9 }, (_, index) => {
+        const sectionNumber = index + 1;
+        return [String(sectionNumber), `الشعبة ${sectionNumber}`];
+      })
+    );
+
+    const result = await Swal.fire({
+      title: "إنشاء شعبة جديدة",
+      input: "select",
+      inputLabel: "رقم الشعبة",
+      inputOptions,
+      inputPlaceholder: "اختر رقم الشعبة",
+      showCancelButton: true,
+      confirmButtonText: "إنشاء",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#057546",
+      inputValidator: (value) =>
+        !value ? "اختر رقم الشعبة من 1 إلى 9" : undefined
+    });
+
+    if (!result.isConfirmed) return;
+
+    const sectionCode = Number(result.value);
+
+    const success = await postJson(
+      "/api/diploma-students/sections",
+      {
+        userGuid,
+        branchGuid,
+        levelGuid: filterLevelGuid,
+        diplomGuid: filterDiplomaGuid,
+        sectionCode
+      },
+      `جاري إنشاء الشعبة ${sectionCode}`
+    );
+
+    if (success) await loadSections();
+  };
+
+  const assignSelectedToSection = async () => {
+    if (!targetSectionGuid) {
+      await showError("اختر الشعبة المستهدفة أولًا");
+      return;
+    }
+
+    if (selectedRows.length === 0) {
+      await showError("حدد طالبًا واحدًا على الأقل");
+      return;
+    }
+
+    const nonContinuingStudents = selectedRows.filter(
+      (row) => !isContinuingStudent(row)
+    );
+
+    if (nonContinuingStudents.length > 0) {
+      await showError(
+        `لا يمكن توزيع ${nonContinuingStudents.length} طالب لأن حالتهم ليست مستمر`
+      );
+      return;
+    }
+
+    const confirmed = await Swal.fire({
+      icon: "question",
+      title: "تأكيد توزيع الطلاب",
+      text: `سيتم توزيع ${selectedRows.length} طالب على الشعبة المحددة`,
+      showCancelButton: true,
+      confirmButtonText: "نعم، توزيع",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#057546"
+    });
+    if (!confirmed.isConfirmed) return;
+
+    const success = await postJson(
+      "/api/diploma-students/sections/assign",
+      {
+        userGuid,
+        sectionGuid: targetSectionGuid,
+        studentLevelGuids: selectedRows.map((row) => row.studentLevelGuid)
+      },
+      `جاري توزيع ${selectedRows.length} طالب`
+    );
+
+    if (success) await loadSections();
+  };
+
+  const distributeAllRandomly = async () => {
+    if (!filterLevelGuid || !filterDiplomaGuid) {
+      await showError("اختر المستوى والدبلوم أولًا");
+      return;
+    }
+
+    const matchingStudents = rows.filter(
+      (row) =>
+        row.levelGuid === filterLevelGuid &&
+        row.diplomaGuid === filterDiplomaGuid &&
+        isContinuingStudent(row)
+    );
+
+    const excludedStudentsCount = rows.filter(
+      (row) =>
+        row.levelGuid === filterLevelGuid &&
+        row.diplomaGuid === filterDiplomaGuid &&
+        !isContinuingStudent(row)
+    ).length;
+
+    if (matchingStudents.length === 0) {
+      await showError(
+        "لا يوجد طلاب حالتهم مستمر مطابقون للمستوى والدبلوم المحددين"
+      );
+      return;
+    }
+
+    let studentsPerSection = null;
+    let previewSections = [...sections].sort(
+      (first, second) =>
+        first.sectionCode - second.sectionCode
+    );
+
+    if (previewSections.length === 0) {
+      const capacityResult = await Swal.fire({
+        icon: "info",
+        title: "إنشاء الشعب تلقائيًا",
+        html: `
+          <div style="direction:rtl;text-align:right;font-family:Cairo">
+            لا توجد شعب منشأة لهذا الفرع والدبلوم والمستوى.
+            <br />
+            أدخل العدد الأقصى المطلوب من الطلاب داخل كل شعبة،
+            وسيتم حساب عدد الشعب وإنشاؤها تلقائيًا.
+          </div>
+        `,
+        input: "number",
+        inputLabel: "عدد الطلاب في كل شعبة",
+        inputPlaceholder: "مثال: 25",
+        inputAttributes: {
+          min: "1",
+          max: String(matchingStudents.length),
+          step: "1"
+        },
+        showCancelButton: true,
+        confirmButtonText: "حساب التوزيع",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#057546",
+        inputValidator: (value) => {
+          const count = Number(value);
+
+          if (!Number.isInteger(count) || count < 1) {
+            return "اكتب عددًا صحيحًا أكبر من صفر";
+          }
+
+          const requiredSections = Math.ceil(
+            matchingStudents.length / count
+          );
+
+          if (requiredSections > 9) {
+            return `هذا العدد يحتاج ${requiredSections} شعبة، والحد الأقصى 9 شعب. زوّد عدد الطلاب في الشعبة.`;
+          }
+
+          return undefined;
+        }
+      });
+
+      if (!capacityResult.isConfirmed) return;
+
+      studentsPerSection = Number(capacityResult.value);
+
+      const requiredSections = Math.ceil(
+        matchingStudents.length / studentsPerSection
+      );
+
+      previewSections = Array.from(
+        { length: requiredSections },
+        (_, index) => ({
+          guid: "",
+          sectionCode: index + 1,
+          sectionName: `الشعبة ${index + 1}`,
+          studentCount: 0,
+          willBeCreated: true
+        })
+      );
+    }
+
+    const baseCount = Math.floor(
+      matchingStudents.length / previewSections.length
+    );
+
+    const remainder =
+      matchingStudents.length % previewSections.length;
+
+    const distributionLines = previewSections.map(
+      (section, index) =>
+        `${section.sectionName}: ${
+          baseCount + (index < remainder ? 1 : 0)
+        } طالب${
+          section.willBeCreated ? " — سيتم إنشاؤها تلقائيًا" : ""
+        }`
+    );
+
+    const confirmation = await Swal.fire({
+      icon: "question",
+      title: "تأكيد التوزيع الجماعي العشوائي",
+      html: `
+        <div style="direction:rtl;text-align:right;font-family:Cairo">
+          <div style="margin-bottom:8px">
+            سيتم توزيع
+            <b>${matchingStudents.length}</b>
+            طالب حالتهم <b>مستمر</b> عشوائيًا وبالتساوي على
+            <b>${previewSections.length}</b>
+            شعبة.
+          </div>
+
+          ${
+            sections.length === 0
+              ? `
+                <div style="
+                  margin-bottom:8px;
+                  padding:8px 10px;
+                  border-radius:8px;
+                  background:#eaf6ef;
+                  color:#057546;
+                  font-weight:700
+                ">
+                  لا توجد شعب حاليًا؛ سيتم إنشاء ${previewSections.length}
+                  شعبة تلقائيًا بحد أقصى ${studentsPerSection}
+                  طالب في الشعبة.
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            excludedStudentsCount > 0
+              ? `
+                <div style="
+                  margin-bottom:8px;
+                  padding:8px 10px;
+                  border-radius:8px;
+                  background:#fff4e5;
+                  color:#8a4b08
+                ">
+                  لن يتم توزيع ${excludedStudentsCount}
+                  طالب لأن حالتهم ليست مستمر.
+                </div>
+              `
+              : ""
+          }
+
+          <div style="
+            padding:10px 12px;
+            border:1px solid #dfe8e3;
+            border-radius:10px;
+            background:#f7faf8;
+            line-height:2
+          ">
+            ${distributionLines
+              .map((line) => `<div>${line}</div>`)
+              .join("")}
+          </div>
+
+          <div style="margin-top:10px;color:#ae1e21;font-weight:700">
+            سيتم استبدال أي توزيع سابق للطلاب المطابقين.
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "نعم، تنفيذ التوزيع",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#057546"
+    });
+
+    if (!confirmation.isConfirmed) return;
+
+    try {
+      setWorkingText(
+        `جاري توزيع ${matchingStudents.length} طالب عشوائيًا`
+      );
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/diploma-students/sections/distribute-random`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userGuid,
+            branchGuid,
+            levelGuid: filterLevelGuid,
+            diplomGuid: filterDiplomaGuid,
+            studentsPerSection
+          })
+        }
+      );
+
+      const result = await readJson(response);
+
+      const resultDistribution = Array.isArray(
+        result?.data?.distribution
+      )
+        ? result.data.distribution
+        : [];
+
+      await Swal.fire({
+        icon: "success",
+        title: "تم التوزيع بنجاح",
+        html: `
+          <div style="direction:rtl;text-align:right;font-family:Cairo">
+            <div style="margin-bottom:8px">
+              ${result?.message || "تم توزيع الطلاب بالتساوي"}
+            </div>
+
+            ${
+              Number(result?.data?.createdSections || 0) > 0
+                ? `
+                  <div style="
+                    margin-bottom:8px;
+                    padding:8px 10px;
+                    border-radius:8px;
+                    background:#eaf6ef;
+                    color:#057546;
+                    font-weight:700
+                  ">
+                    تم إنشاء ${result.data.createdSections}
+                    شعبة تلقائيًا.
+                  </div>
+                `
+                : ""
+            }
+
+            ${
+              resultDistribution.length
+                ? `
+                  <div style="
+                    padding:10px 12px;
+                    border:1px solid #dfe8e3;
+                    border-radius:10px;
+                    background:#f7faf8;
+                    line-height:2
+                  ">
+                    ${resultDistribution
+                      .map(
+                        (item) =>
+                          `<div>${item.sectionName}: ${item.studentCount} طالب</div>`
+                      )
+                      .join("")}
+                  </div>
+                `
+                : ""
+            }
+          </div>
+        `,
+        confirmButtonText: "حسنًا",
+        confirmButtonColor: "#057546"
+      });
+
+      await loadStudents();
+      await loadSections();
+      setSelectionModel([]);
+      setFilterSectionGuid("all");
+      setDistributionStatus("all");
+    } catch (error) {
+      await showError(
+        error?.message || "تعذر تنفيذ التوزيع الجماعي"
+      );
+    } finally {
+      setWorkingText("");
+    }
+  };
+
+  const removeSelectedFromSection = async () => {
+    if (selectedRows.length === 0) {
+      await showError("حدد طالبًا واحدًا على الأقل");
+      return;
+    }
+
+    const confirmed = await Swal.fire({
+      icon: "warning",
+      title: "إزالة الطلاب من الشعب",
+      text: `سيتم جعل ${selectedRows.length} طالب غير موزعين`,
+      showCancelButton: true,
+      confirmButtonText: "نعم، إزالة",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: "#ae1e21"
+    });
+    if (!confirmed.isConfirmed) return;
+
+    const success = await postJson(
+      "/api/diploma-students/sections/remove",
+      {
+        userGuid,
+        studentLevelGuids: selectedRows.map((row) => row.studentLevelGuid)
+      },
+      `جاري إزالة ${selectedRows.length} طالب من الشعب`
+    );
+
+    if (success) await loadSections();
   };
 
   const saveNotes = async () => {
@@ -1310,6 +2300,13 @@ ${record.map((value) =>
         flex: 0.65
       },
       {
+        field: "sectionName",
+        headerName: "الشعبة",
+        minWidth: 110,
+        flex: 0.75,
+        renderCell: (params) => params.row.sectionName || "غير موزع"
+      },
+      {
         field: "email",
         headerName: "الإيميل",
         minWidth: 155,
@@ -1493,7 +2490,7 @@ ${record.map((value) =>
               startIcon={<SelectAllIcon />}
               onClick={() =>
                 setSelectionModel(
-                  rows.map((row) => row.id)
+                  filteredRows.map((row) => row.id)
                 )
               }
             >
@@ -1548,7 +2545,208 @@ ${record.map((value) =>
                 color: "#ae1e21"
               }}
             >
-              عدد الطلاب: {rows.length}
+              عدد الطلاب: {filteredRows.length}
+            </Typography>
+          </Stack>
+        </Paper>
+
+        <Paper
+          elevation={0}
+          sx={{
+            p: 1.4,
+            mb: 1,
+            borderRadius: 3,
+            border: "1px solid rgba(5,117,70,.14)"
+          }}
+        >
+          <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, mb: 1 }}>
+            الفلاتر المتقدمة وتقسيم الشعب
+          </Typography>
+
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1} flexWrap="wrap" useFlexGap>
+            <TextField
+              select
+              size="small"
+              label="المستوى"
+              value={filterLevelGuid}
+              onChange={(event) => {
+                setFilterLevelGuid(event.target.value);
+                setFilterDiplomaGuid("");
+                setFilterBatchGuid("");
+                setFilterSectionGuid("all");
+              }}
+              sx={{ minWidth: 180 }}
+            >
+              <MenuItem value="">كل المستويات</MenuItem>
+              {levels.map((level) => (
+                <MenuItem key={level.guid} value={level.guid}>{level.levelName}</MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              size="small"
+              label="الدبلوم"
+              value={filterDiplomaGuid}
+              disabled={!filterLevelGuid}
+              onChange={(event) => {
+                setFilterDiplomaGuid(event.target.value);
+                setFilterBatchGuid("");
+                setFilterSectionGuid("all");
+              }}
+              sx={{ minWidth: 210 }}
+            >
+              <MenuItem value="">كل الدبلومات</MenuItem>
+              {diplomaOptions.map((item) => (
+                <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              size="small"
+              label="الدفعة"
+              value={filterBatchGuid}
+              disabled={!filterDiplomaGuid}
+              onChange={(event) => {
+                setFilterBatchGuid(event.target.value);
+                setFilterSectionGuid("all");
+              }}
+              sx={{ minWidth: 190 }}
+            >
+              <MenuItem value="">كل الدفعات</MenuItem>
+              {batchOptions.map((item) => (
+                <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              size="small"
+              label="حالة التوزيع"
+              value={distributionStatus}
+              onChange={(event) => setDistributionStatus(event.target.value)}
+              sx={{ minWidth: 155 }}
+            >
+              <MenuItem value="all">الكل</MenuItem>
+              <MenuItem value="assigned">تم توزيعهم</MenuItem>
+              <MenuItem value="unassigned">غير موزعين</MenuItem>
+            </TextField>
+
+            <TextField
+              select
+              size="small"
+              label="فلتر الشعبة"
+              value={filterSectionGuid}
+              disabled={!filterLevelGuid}
+              onChange={(event) => setFilterSectionGuid(event.target.value)}
+              sx={{ minWidth: 180 }}
+            >
+              <MenuItem value="all">كل الشعب</MenuItem>
+              <MenuItem value="unassigned">غير موزعين</MenuItem>
+              {sections.map((section) => (
+                <MenuItem key={section.guid} value={section.guid}>
+                  {section.sectionName} ({section.studentCount})
+                </MenuItem>
+              ))}
+            </TextField>
+          </Stack>
+
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1} alignItems="center" sx={{ mt: 1 }}>
+            <TextField
+              select
+              size="small"
+              label="الشعبة المستهدفة"
+              value={targetSectionGuid}
+              disabled={!filterLevelGuid || !filterDiplomaGuid}
+              onChange={(event) => setTargetSectionGuid(event.target.value)}
+              sx={{ minWidth: 230 }}
+            >
+              {sections.map((section) => (
+                <MenuItem key={section.guid} value={section.guid}>
+                  {section.sectionName} - {section.studentCount} طالب
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <Button
+              variant="contained"
+              onClick={assignSelectedToSection}
+              disabled={!targetSectionGuid || selectedRows.length === 0}
+              sx={{ bgcolor: "#057546" }}
+            >
+              إسناد المحدد للشعبة ({selectedRows.length})
+            </Button>
+
+            <Button
+              variant="outlined"
+              onClick={createSection}
+              disabled={!filterLevelGuid || !filterDiplomaGuid}
+            >
+              إنشاء شعبة جديدة
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={distributeAllRandomly}
+              disabled={
+                !filterLevelGuid ||
+                !filterDiplomaGuid
+              }
+              sx={{
+                bgcolor: "#7a4b00",
+                "&:hover": {
+                  bgcolor: "#5f3a00"
+                }
+              }}
+            >
+              توزيع جماعي عشوائي متساوي
+            </Button>
+
+            <input
+              ref={sectionExcelInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              hidden
+              onChange={handleSectionExcelUpload}
+            />
+
+            <Button
+              variant="outlined"
+              startIcon={<DescriptionIcon />}
+              onClick={downloadSectionExcelTemplate}
+            >
+              تحميل نموذج Excel
+            </Button>
+
+            <Button
+              variant="contained"
+              startIcon={<UploadFileIcon />}
+              onClick={() =>
+                sectionExcelInputRef.current?.click()
+              }
+              disabled={!branchGuid}
+              sx={{
+                bgcolor: "#1565c0",
+                "&:hover": {
+                  bgcolor: "#0d47a1"
+                }
+              }}
+            >
+              توزيع الشعب من Excel
+            </Button>
+
+            <Button
+              color="error"
+              variant="outlined"
+              onClick={removeSelectedFromSection}
+              disabled={selectedRows.length === 0}
+            >
+              إزالة المحدد من الشعبة
+            </Button>
+
+            <Typography sx={{ ml: "auto", fontFamily: "Cairo", fontWeight: 900 }}>
+              الظاهر: {filteredRows.length} من {rows.length}
             </Typography>
           </Stack>
         </Paper>
@@ -1565,7 +2763,7 @@ ${record.map((value) =>
         >
           <DataGrid
             autoHeight
-            rows={rows}
+            rows={filteredRows}
             columns={columns}
             loading={loading}
             checkboxSelection

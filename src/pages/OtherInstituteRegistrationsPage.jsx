@@ -47,7 +47,7 @@ const dangerColor = "#d32f2f";
 const warningColor = "#ed6c02";
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "https://api4.sstli.com/api";
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:5258/api";
 
 const allowedGuids = [
   "f426653a-b389-4036-95f0-907920e7f205",

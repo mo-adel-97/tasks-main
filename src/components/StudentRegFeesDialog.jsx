@@ -198,7 +198,7 @@ const StudentRegFeesDialog = ({
   open,
   onClose,
   student,
-  apiBaseUrl = "https://api4.sstli.com",
+  apiBaseUrl = "http://localhost:5258",
   onSaved
 }) => {
   const [loadingContext, setLoadingContext] = useState(false);

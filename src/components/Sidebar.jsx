@@ -137,7 +137,7 @@ const [permissionData, setPermissionData] =
       setPermissionsLoading(true);
 
       const response = await fetch(
-        `https://api4.sstli.com/api/user-permissions/${encodeURIComponent(userGuid)}`,
+        `http://localhost:5258/api/user-permissions/${encodeURIComponent(userGuid)}`,
         {
           method: "GET",
           headers: {

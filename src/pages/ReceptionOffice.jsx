@@ -89,7 +89,7 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
 const SIDEBAR_WIDTH = 280;
-const API_BASE_URL = "https://api4.sstli.com";
+const API_BASE_URL = "http://localhost:5258";
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
