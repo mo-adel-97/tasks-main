@@ -1,38 +1,50 @@
-// Shared dimensions for the sidebar renderer and page layouts.
+// One responsive navigation contract for the whole application.
+// Pages must never calculate their own sidebar gutter.
 export const SIDEBAR_WIDTH = 280;
 export const SIDEBAR_COLLAPSED_WIDTH = 86;
-export const DESKTOP_BREAKPOINT = 1600;
-export const SIDEBAR_DESKTOP_QUERY = '(min-width:' + DESKTOP_BREAKPOINT + 'px)';
-export const SIDEBAR_MOBILE_WIDTH = { xs: 220, sm: 236, md: 248 };
-export const SIDEBAR_MOBILE_MAX_WIDTH = '74vw';
 
-export const getSidebarOffset = (variant, isDesktop, collapsed = false) =>
-  variant === 'admin'
-    ? (collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH)
-    : (isDesktop ? SIDEBAR_WIDTH : 0);
+// >= 1200px: permanent sidebar (desktop/laptop)
+// < 1200px: off-canvas drawer (tablet/mobile) and content uses the full width.
+// This intentionally does not assume a 1600px+ screen.
+export const DESKTOP_BREAKPOINT = 1200;
+export const SIDEBAR_DESKTOP_QUERY = `(min-width:${DESKTOP_BREAKPOINT}px)`;
 
-const offset = 'var(--navigation-content-offset, 0px)';
-const contentWidth = 'calc(100% - ' + offset + ')';
+// Drawer is fluid and capped, so it works on small phones through tablets.
+export const SIDEBAR_MOBILE_WIDTH = {
+  xs: 'min(86vw, 312px)',
+  sm: 'min(72vw, 320px)',
+  md: 'min(42vw, 336px)',
+};
+export const SIDEBAR_MOBILE_MAX_WIDTH = 'calc(100vw - 40px)';
 
-// The RTL plugin reverses a literal direction:rtl in sx. A CSS variable
-// keeps logical margins anchored to true RTL without changing global styles.
+export const getSidebarOffset = (variant, isDesktop, collapsed = false) => {
+  if (!isDesktop) return 0;
+  if (variant === 'admin') {
+    return collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+  }
+  return SIDEBAR_WIDTH;
+};
+
+// Kept for backwards compatibility with existing screens. The actual gutter is
+// now owned by NavigationShell, so page components no longer calculate widths.
 export const navigationContentSx = {
   direction: 'var(--navigation-direction, rtl)',
-  marginInlineStart: offset,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  marginInlineStart: 0,
   marginInlineEnd: 0,
-  width: contentWidth,
-  minWidth: 0,
   boxSizing: 'border-box',
 };
 
-// Inline styles bypass Emotion: right means physical right.
 export const navigationContentStyle = {
-  marginRight: offset,
-  marginLeft: 0,
-  width: contentWidth,
+  width: '100%',
+  maxWidth: '100%',
   minWidth: 0,
+  marginRight: 0,
+  marginLeft: 0,
   boxSizing: 'border-box',
 };
 
-// Physical placement is an inline style, outside the RTL CSS transform.
+// Physical placement is an inline style, outside Emotion's RTL transform.
 export const sidebarPositionStyle = { right: 0, left: 'auto', direction: 'rtl' };

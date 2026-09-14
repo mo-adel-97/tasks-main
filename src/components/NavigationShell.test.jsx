@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { useMediaQuery } from '@mui/material';
 import NavigationShell from './NavigationShell';
 
-jest.mock('@mui/material', () => ({ useMediaQuery: jest.fn() }));
+jest.mock('@mui/material', () => ({ ...jest.requireActual('@mui/material'), useMediaQuery: jest.fn() }));
 jest.mock('./Sidebar', () => function TestSidebar(props) {
   return <><button data-testid="sidebar" data-variant={props.variant}
     data-open={String(props.mobileOpen)}
@@ -14,17 +14,22 @@ beforeEach(() => useMediaQuery.mockReturnValue(true));
 
 test('admin collapse updates the shared content gutter', () => {
   render(<NavigationShell variant="admin"><main data-testid="content" /></NavigationShell>);
-  const wrapper = screen.getByTestId('content').parentElement;
+  const main = screen.getByTestId('content').parentElement;
+  const wrapper = main.parentElement;
   expect(wrapper.dir).toBe('rtl');
   expect(wrapper.style.getPropertyValue('--navigation-content-offset')).toBe('280px');
+  expect(main.style.marginRight).toBe('280px');
   fireEvent.click(screen.getByTestId('sidebar'));
   expect(wrapper.style.getPropertyValue('--navigation-content-offset')).toBe('86px');
+  expect(main.style.marginRight).toBe('86px');
 });
 
 test('mobile standard shell reserves no gutter and forwards its open state', () => {
   useMediaQuery.mockReturnValue(false);
   render(<NavigationShell mobileOpen><main data-testid="content" /></NavigationShell>);
-  expect(screen.getByTestId('content').parentElement.style.getPropertyValue('--navigation-content-offset')).toBe('0px');
+  const main = screen.getByTestId('content').parentElement;
+  expect(main.parentElement.style.getPropertyValue('--navigation-content-offset')).toBe('0px');
+  expect(main.style.marginRight).toBe('0px');
   expect(screen.getByTestId('sidebar')).toHaveAttribute('data-open', 'true');
 });
 
@@ -35,7 +40,7 @@ test('embedded screens share one renderer and restore parent navigation on unmou
   const { rerender } = render(<View nested />);
   expect(screen.getAllByTestId('sidebar')).toHaveLength(1);
   expect(screen.getByTestId('sidebar')).toHaveAttribute('data-variant', 'admin');
-  expect(screen.getByTestId('nested').parentElement.style.getPropertyValue('--navigation-content-offset')).toBe('0px');
+  expect(screen.getByTestId('nested').parentElement.style.marginRight).toBe('280px');
   rerender(<View nested={false} />);
   expect(screen.getByTestId('sidebar')).toHaveAttribute('data-variant', 'standard');
 });

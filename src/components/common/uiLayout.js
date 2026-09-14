@@ -5,6 +5,7 @@ export const withUiSx = (original, ...additions) => [
 ];
 
 export const formFieldSx = {
+  direction: 'rtl',
   minWidth: 0,
   maxWidth: '100%',
   textAlign: 'start',
@@ -32,6 +33,7 @@ export const formFieldSx = {
 };
 
 export const formGridSx = {
+  direction: 'rtl', textAlign: 'start',
   display: 'grid', minWidth: 0, alignItems: 'start', gap: 2,
   gridTemplateColumns: {
     xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))',
@@ -43,6 +45,7 @@ export const formGridSx = {
 };
 
 export const filterBarSx = {
+  direction: 'rtl', textAlign: 'start',
   display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
   alignItems: 'flex-end', gap: 1.5, minWidth: 0,
   '& > .MuiFormControl-root, & > .MuiAutocomplete-root': {
@@ -56,6 +59,7 @@ export const filterBarSx = {
 };
 
 export const actionBarSx = {
+  direction: 'rtl', textAlign: 'start',
   display: 'flex', flexWrap: 'wrap', gap: 1.25, minWidth: 0,
   alignItems: 'center',
   '& > .MuiButton-root': { flexShrink: 0, minHeight: 44 },
@@ -69,6 +73,8 @@ export const checkboxFieldSx = {
 };
 
 export const dialogLayoutSx = {
+  direction: 'rtl', textAlign: 'start',
+  '& .MuiDialog-paper': { direction: 'rtl', textAlign: 'start' },
   '& .MuiDialog-paper:not(.MuiDialog-paperFullScreen)': {
     margin: { xs: '12px', sm: '24px' },
     maxHeight: 'calc(100dvh - 24px)',
@@ -83,6 +89,7 @@ export const dialogLayoutSx = {
 };
 
 export const dialogActionsSx = {
+  direction: 'rtl', textAlign: 'start', justifyContent: 'flex-start',
   flexWrap: 'wrap', gap: 1.25, padding: '16px 24px',
   '&& > :not(style) ~ :not(style)': { margin: 0 },
   '& > .MuiButton-root': { minHeight: 44 },
@@ -90,17 +97,20 @@ export const dialogActionsSx = {
 };
 
 export const tableContainerSx = {
+  direction: 'rtl',
   minWidth: 0, maxWidth: '100%', overflowX: 'auto',
   WebkitOverflowScrolling: 'touch',
 };
 
 export const tablePaginationSx = {
+  direction: 'rtl',
   '&& .MuiTablePagination-toolbar': { flexWrap: 'wrap', gap: 1, paddingInline: 1 },
   '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': { marginBlock: 1 },
   '& .MuiTablePagination-actions': { marginInlineStart: 1, marginLeft: 0 },
 };
 
 export const dataGridSx = {
+  direction: 'rtl', textAlign: 'start',
   minWidth: 0, maxWidth: '100%', fontSize: '0.875rem',
   '&& .MuiDataGrid-virtualScroller': { overflowX: 'auto' },
   '&& .MuiDataGrid-columnHeaderTitle': { fontSize: '0.8125rem', lineHeight: 1.5 },
@@ -112,12 +122,14 @@ export const dataGridSx = {
 };
 
 export const radioGroupSx = {
+  direction: 'rtl', textAlign: 'start',
   flexWrap: 'wrap', gap: 1.25, minWidth: 0,
   '&& .MuiFormControlLabel-root': { margin: 0 },
   '&& .MuiFormControlLabel-label': { fontSize: '0.875rem', lineHeight: 1.6 },
 };
 
 export const pageHeaderSx = {
+  direction: 'rtl', textAlign: 'start',
   flexWrap: 'wrap', gap: 2, minWidth: 0,
   '& > *': { minWidth: 0, maxWidth: '100%' },
 };

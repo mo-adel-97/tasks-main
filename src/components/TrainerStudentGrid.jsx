@@ -512,7 +512,7 @@ const filteredRows = rows.filter((row) => {
                 <Chip label="متابعة" sx={{ backgroundColor: '#ff9800', color: 'white' }} size="small" />
                 {note && (
                   <Tooltip title={note} arrow>
-                    <InfoIcon sx={{ color: '#ff9800' }} fontSize="small" sx={{ cursor: 'pointer' }} />
+                    <InfoIcon fontSize="small" sx={{ color: '#ff9800', cursor: 'pointer' }} />
                   </Tooltip>
                 )}
               </Box>

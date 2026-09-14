@@ -4879,7 +4879,7 @@ const HrEmployeesPage = () => {
                         justifyContent="space-between"
                         alignItems="center"
                         spacing={1}
-                        sx={{ mb: 1 }}
+                        sx={{ mb: 1, direction: EMPLOYEE_DIALOG_DIRECTION }}
                       >
                         {/* العنوان في جهة البداية (يمين) والإجراء في أقصى اليسار */}
                         <Typography
@@ -5438,7 +5438,7 @@ const HrEmployeesPage = () => {
                       justifyContent="space-between"
                       alignItems="center"
                       spacing={1}
-                      sx={{ mb: 1 }}
+                      sx={{ mb: 1, direction: EMPLOYEE_DIALOG_DIRECTION }}
                     >
                       {/* العنوان في جهة البداية (يمين) والإجراء في أقصى اليسار */}
                       <Stack

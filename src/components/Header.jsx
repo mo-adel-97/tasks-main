@@ -1,13 +1,10 @@
 import { HEADER_NAVIGATION } from '../config/sidebarNavigation';
-import { SIDEBAR_DESKTOP_QUERY, getSidebarOffset } from '../config/sidebarLayout';
 import React from "react";
-import { useMediaQuery } from "@mui/material";
 import { NavLink } from "react-router-dom";
 
 const Header = ({ user, branch, onLogout }) => {
-  const isDesktop = useMediaQuery(SIDEBAR_DESKTOP_QUERY, { noSsr: true });
   return (
-    <header className="main-header" style={{ ...headerStyles, marginRight: getSidebarOffset('standard', isDesktop) }}>
+    <header className="main-header" style={headerStyles}>
       {/* الجانب الأيسر - الشعار والمعلومات */}
       <div style={leftSectionStyles}>
         <div style={logoStyles}>
@@ -51,7 +48,10 @@ const Header = ({ user, branch, onLogout }) => {
 const headerStyles = {
   flexWrap: 'wrap',
   gap: '16px',
+  width: '100%',
+  maxWidth: '100%',
   minWidth: 0,
+  boxSizing: 'border-box',
   direction: 'rtl',
   display: 'flex',
   textAlign: 'start',

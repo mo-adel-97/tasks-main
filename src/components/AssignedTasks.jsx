@@ -996,7 +996,7 @@ if (loading || externalLoading) {
                           </Box>
                         }
                         title={
-                          <Typography sx={{mt:4,width:"100%"}} variant="h6" fontWeight={700} sx={{ color: colorPalette.textDark }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mt: 4, width: "100%", color: colorPalette.textDark }}>
                             {externalTaskData?.TaskName || task.taskName}
                             {task.isPassedTask && (
                               <Tooltip title="هذه المهمة ممررة" arrow>

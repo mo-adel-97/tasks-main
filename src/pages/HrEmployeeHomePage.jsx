@@ -4022,14 +4022,6 @@ const decideLeaveApproval = async (
                       attachment: null
                     }))
                   }
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        direction: LEAVE_DIALOG_DIRECTION,
-                        textAlign: LEAVE_DIALOG_TEXT_ALIGN
-                      }
-                    }
-                  }}
                 >
                   {(leave?.types || []).map((type) => (
                     <MenuItem
@@ -4154,14 +4146,6 @@ const decideLeaveApproval = async (
                         )
                       }))
                     }
-                    MenuProps={{
-                      PaperProps: {
-                        sx: {
-                          direction: LEAVE_DIALOG_DIRECTION,
-                          textAlign: LEAVE_DIALOG_TEXT_ALIGN
-                        }
-                      }
-                    }}
                   >
                     <MenuItem value={0}>
                       يوم كامل

@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-09-14T15:37:59.763Z",
+  "filesChecked": 257,
+  "productionFilesChecked": 245,
+  "syntaxErrors": [],
+  "duplicateJsxProps": [],
+  "missingRelativeImports": [],
+  "ui": {
+    "textFields": 897,
+    "textFieldsWithoutSharedLayout": [],
+    "textFieldsWithoutShrink": [],
+    "formControls": 247,
+    "formControlsWithoutSharedLayout": [],
+    "dialogs": 251,
+    "dialogsWithoutSharedLayout": [],
+    "buttons": 1145,
+    "buttonsWithoutSharedLayout": []
+  },
+  "notes": [
+    "Test files are excluded from shared-layout coverage checks.",
+    "PrintExamPage.jsx is intentionally excluded from shared UI geometry because its printable exam dimensions are language/print specific."
+  ],
+  "ok": true
+}

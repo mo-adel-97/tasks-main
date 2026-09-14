@@ -27,3 +27,132 @@ pre:not([dir]),
   unicode-bidi: isolate;
   text-align: start;
 }
+
+/* ===== Unified responsive application shell ===== */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.sstli-navigation-shell {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.sstli-navigation-main {
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.sstli-navigation-main > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Wide data should scroll inside its own surface, never the whole page. */
+.sstli-navigation-main .MuiTableContainer-root,
+.sstli-navigation-main [data-horizontal-scroll="true"] {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sstli-navigation-main .MuiDataGrid-root {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.sstli-navigation-main .MuiDataGrid-virtualScroller {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sstli-navigation-main .MuiPaper-root:not(.MuiDrawer-paper),
+.sstli-navigation-main .MuiCard-root,
+.sstli-navigation-main .MuiStack-root,
+.sstli-navigation-main .MuiGrid-root,
+.sstli-navigation-main .MuiFormControl-root,
+.sstli-navigation-main .MuiAutocomplete-root,
+.sstli-navigation-main .MuiInputBase-root {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sstli-navigation-main img,
+.sstli-navigation-main video,
+.sstli-navigation-main canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.sstli-navigation-main .MuiTabs-root {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.sstli-navigation-main .MuiTabs-scroller {
+  overflow-x: auto !important;
+  scrollbar-width: thin;
+}
+
+.sstli-navigation-main .MuiToolbar-root,
+.sstli-navigation-main .MuiDialogActions-root,
+.sstli-navigation-main .MuiCardActions-root {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1199.95px) {
+  .sstli-navigation-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 767.95px) {
+  .sstli-navigation-main {
+    overflow-x: hidden;
+  }
+
+  .sstli-navigation-main .MuiContainer-root {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* The optional legacy top header lives inside the same shell and wraps cleanly. */
+@media (max-width: 767.95px) {
+  .main-header {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+
+  .main-header > * {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .main-header nav {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

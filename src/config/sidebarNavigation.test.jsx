@@ -73,7 +73,7 @@ test('normalizes server icon keys and retains the unknown-icon fallback', () => 
 test('mobile standard navigation overlays content and admin collapse controls its gutter', () => {
   expect(getSidebarOffset('standard', false)).toBe(0);
   expect(getSidebarOffset('standard', true)).toBe(SIDEBAR_WIDTH);
-  expect(getSidebarOffset('admin', false, false)).toBe(SIDEBAR_WIDTH);
+  expect(getSidebarOffset('admin', false, false)).toBe(0);
   expect(getSidebarOffset('admin', true, true)).toBe(SIDEBAR_COLLAPSED_WIDTH);
 });
 
@@ -137,16 +137,18 @@ test('expanded and collapsed content gutters remain on the RTL start side under 
   const { container } = render(<RtlEnvironment><MemoryRouter>
     <NavigationShell variant="admin"><Box data-testid="main-content" sx={navigationContentSx} /></NavigationShell>
   </MemoryRouter></RtlEnvironment>);
-  const shell = container.querySelector('[dir="rtl"]');
+  const shell = container.querySelector('.sstli-navigation-shell');
   const content = screen.getByTestId('main-content');
+  const main = content.parentElement;
   expect(shell.style.getPropertyValue('--navigation-direction')).toBe('rtl');
   expect(shell.style.getPropertyValue('--navigation-content-offset')).toBe('280px');
+  expect(main.style.marginRight).toBe('280px');
   expect(getComputedStyle(content).direction).toBe('var(--navigation-direction, rtl)');
-  expect(getComputedStyle(content).marginInlineStart).toBe('var(--navigation-content-offset, 0px)');
+  expect(getComputedStyle(content).marginInlineStart).toBe('0px');
   expect(getComputedStyle(content).marginInlineEnd).toBe('0px');
   fireEvent.click(screen.getByRole('button', { name: collapseLabel }));
   expect(shell.style.getPropertyValue('--navigation-content-offset')).toBe('86px');
-  expect(getComputedStyle(content).direction).toBe('var(--navigation-direction, rtl)');
+  expect(main.style.marginRight).toBe('86px');
 });
 
 test('standard desktop sidebar is physically right under the real RTL cache', async () => {

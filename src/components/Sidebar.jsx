@@ -1,5 +1,13 @@
 import * as uiLayout from './common/uiLayout';
-import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, DESKTOP_BREAKPOINT, SIDEBAR_MOBILE_WIDTH, SIDEBAR_MOBILE_MAX_WIDTH, sidebarPositionStyle } from '../config/sidebarLayout';
+import {
+  SIDEBAR_WIDTH,
+  SIDEBAR_COLLAPSED_WIDTH,
+  DESKTOP_BREAKPOINT,
+  SIDEBAR_DESKTOP_QUERY,
+  SIDEBAR_MOBILE_WIDTH,
+  SIDEBAR_MOBILE_MAX_WIDTH,
+  sidebarPositionStyle,
+} from '../config/sidebarLayout';
 import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
@@ -243,8 +251,8 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // مهم: الديسكتوب فقط من 1600px وما فوق.
-  // أقل من ذلك = Drawer خفيف لا يحجز أي مساحة من الصفحة.
+  // نفس breakpoint المركزي للمشروع: ديسكتوب/Laptop دائم، وما دونه Drawer.
+  // لا يوجد أي افتراض أن الشاشة يجب أن تكون 1600px أو أكبر.
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -1541,7 +1549,12 @@ const BG = "#0f172a";        // slate-900
 const BG2 = "#111c33";       // deeper
 const TEXT_MUTED = "#94a3b8";
 
-function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
+function AdminSidebar({
+  collapsed: controlledCollapsed,
+  onCollapsedChange,
+  mobileOpen = false,
+  onMobileClose = () => {},
+}) {
   const [currentUser, setCurrentUser] = useState(null);
   const [localCollapsed, setLocalCollapsed] = useState(false);
   const collapsed = controlledCollapsed ?? localCollapsed;
@@ -1552,6 +1565,16 @@ function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
   };
   const navigate = useNavigate();
   const location = useLocation();
+  const isDesktop = useMediaQuery(SIDEBAR_DESKTOP_QUERY, { noSsr: true });
+
+  useEffect(() => {
+    if (!isDesktop) {
+      onMobileClose();
+      if (collapsed) setCollapsed(false);
+    }
+    // Close the off-canvas menu after navigation on tablet/mobile.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, isDesktop, collapsed]);
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -1630,14 +1653,17 @@ function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
       : {},
   });
 
-  return (
+  const adminContent = (
     <Box
       dir="rtl"
       style={sidebarPositionStyle}
       sx={{
-        width: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
-        height: "100vh",
-        position: "fixed",
+        width: isDesktop
+          ? (collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH)
+          : SIDEBAR_MOBILE_WIDTH,
+        maxWidth: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_MAX_WIDTH,
+        height: "100dvh",
+        position: isDesktop ? "fixed" : "relative",
         top: 0,
         zIndex: 1200,
         color: "white",
@@ -1695,20 +1721,22 @@ function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
 
           <Box sx={{ flexGrow: 1 }} />
 
-          <Tooltip title={collapsed ? "توسيع" : "تصغير"} placement="left" arrow>
-            <IconButton
-              aria-label={collapsed ? "توسيع القائمة" : "تصغير القائمة"}
-              onClick={() => setCollapsed((p) => !p)}
-              sx={{
-                color: "white",
-                backgroundColor: "rgba(255,255,255,0.06)",
-                borderRadius: 2,
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
-              }}
-            >
-              {collapsed ? <ChevronLeftRoundedIcon /> : <ChevronRightRoundedIcon />}
-            </IconButton>
-          </Tooltip>
+          {isDesktop && (
+            <Tooltip title={collapsed ? "توسيع" : "تصغير"} placement="left" arrow>
+              <IconButton
+                aria-label={collapsed ? "توسيع القائمة" : "تصغير القائمة"}
+                onClick={() => setCollapsed((p) => !p)}
+                sx={{
+                  color: "white",
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  borderRadius: 2,
+                  "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+                }}
+              >
+                {collapsed ? <ChevronLeftRoundedIcon /> : <ChevronRightRoundedIcon />}
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
 
         {/* ====== User Card ====== */}
@@ -1878,6 +1906,36 @@ function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
         </Typography>
       </Box>
     </Box>
+  );
+
+  if (isDesktop) return adminContent;
+
+  return (
+    <Drawer
+      anchor="right"
+      SlideProps={{ direction: "left" }}
+      open={mobileOpen}
+      onClose={onMobileClose}
+      transitionDuration={{ enter: 180, exit: 140 }}
+      ModalProps={{ keepMounted: true }}
+      slotProps={{
+        backdrop: { sx: { backgroundColor: "rgba(0,0,0,0.42)" } },
+      }}
+      PaperProps={{
+        style: sidebarPositionStyle,
+        sx: {
+          width: SIDEBAR_MOBILE_WIDTH,
+          maxWidth: SIDEBAR_MOBILE_MAX_WIDTH,
+          height: "100dvh",
+          background: "transparent",
+          boxShadow: "-14px 0 38px rgba(0,0,0,0.30)",
+          overflow: "hidden",
+          borderRadius: 0,
+        },
+      }}
+    >
+      {adminContent}
+    </Drawer>
   );
 }
 

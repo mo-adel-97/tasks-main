@@ -68,6 +68,7 @@ import PrintExamPage from './pages/PrintExamPage';
 import CreateExam from './pages/CreateExam';
 
 import Header from './components/Header';
+import NavigationShell from './components/NavigationShell';
 import HRCreateSurvey from './components/HRCreateSurvey';
 import EmployeeSurveys from './components/EmployeeSurveys';
 import MeetingPage from './pages/MeetingPage';
@@ -376,21 +377,25 @@ const MainLayoutWithHeader = ({ children }) => {
   if (!user) return children;
 
   return (
-    <div className="main-shell" style={{ direction: 'rtl' }}>
-      <Header user={user} branch={branch} onLogout={handleLogout} />
-      {React.isValidElement(children)
-        ? React.cloneElement(children, { userBranch: branch })
-        : children}
-    </div>
+    <NavigationShell variant="standard">
+      <div className="main-shell" style={{ direction: 'rtl', width: '100%', minWidth: 0 }}>
+        <Header user={user} branch={branch} onLogout={handleLogout} />
+        {React.isValidElement(children)
+          ? React.cloneElement(children, { userBranch: branch })
+          : children}
+      </div>
+    </NavigationShell>
   );
 };
 
 const LayoutWithoutHeader = ({ children }) => {
   const { user, branch } = useCurrentUserAndBranch();
 
-  return React.isValidElement(children)
+  const content = React.isValidElement(children)
     ? React.cloneElement(children, { user, userBranch: branch })
     : children;
+
+  return <NavigationShell variant="standard">{content}</NavigationShell>;
 };
 
 function App() {
@@ -515,7 +520,9 @@ function App() {
             path="/dashboard/course-students"
             element={
               <PrivateRoute>
-                <CourseStudentsPage />
+                <LayoutWithoutHeader>
+                  <CourseStudentsPage />
+                </LayoutWithoutHeader>
               </PrivateRoute>
             }
           />
