@@ -1,5 +1,6 @@
 import * as uiLayout from './common/uiLayout';
-import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import PageContainer from './common/PageContainer';
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 // RegistrationCommissions.jsx
 import React, { useEffect, useMemo, useState } from "react";
@@ -106,14 +107,14 @@ const DashboardContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   minHeight: "100dvh",
   width: "100%",
-  maxWidth: "100vw",
+  maxWidth: "100%",
   overflowX: "hidden",
   backgroundColor: colorPalette.background,
   fontFamily: "'Tajawal', sans-serif",
   direction: "rtl",
 }));
 
-const ContentContainer = styled(Box)(({ theme }) => ({
+const ContentContainer = styled(PageContainer)(() => ({
   flex: 1,
   minWidth: 0,
   width: "100%",
@@ -121,19 +122,7 @@ const ContentContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   boxSizing: "border-box",
-  overflowX: "hidden",
-  padding: theme.spacing(1),
-  marginLeft: 0,
-  [theme.breakpoints.between("sm", "lg")]: {
-    padding: theme.spacing(1.25)
-  },
-  [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(0.55)
-  },
-  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-    padding: theme.spacing(4)
-  },
-  ...navigationContentSx
+  overflowX: "hidden"
 }));
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -880,14 +869,9 @@ setData(zeroizeForHamza(json[0]));
         
 
         <ContentContainer
+          component="main"
           sx={{
-            mb: isCompact ? 0.75 : 3,
-            mt: isPhone
-              ? "56px"
-              : isTablet
-                ? "64px"
-                : 0,
-            pt: isCompact ? 0.45 : undefined
+            mt: isDesktop ? 0 : "var(--app-header-height, 56px)"
           }}
         >
           {loading && (
@@ -895,11 +879,9 @@ setData(zeroizeForHamza(json[0]));
               sx={{
                 position: "fixed",
                 inset: 0,
-                top: isPhone
-                  ? "50px"
-                  : isTablet
-                    ? "56px"
-                    : 0,
+                top: isDesktop
+                  ? 0
+                  : "var(--app-header-height, 56px)",
                 display: "grid",
                 placeItems: "center",
                 bgcolor: "rgba(248,251,249,.88)",
@@ -937,16 +919,6 @@ setData(zeroizeForHamza(json[0]));
                 }}
               >
                 لوحة العمولات والإحصائيات
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colorPalette.textLight,
-                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
-                  display: isPhone ? "none" : "block"
-                }}
-              >
-                نظرة مركزة على أداء التسجيلات وحساب العمولات للفترة المحددة
               </Typography>
             </Box>
 
@@ -1096,7 +1068,6 @@ setData(zeroizeForHamza(json[0]));
                 }}
               >
                 <Chip
-                  icon={<FilterIcon sx={{ color: colorPalette.primary }} />}
                   label="الشهر الحالي"
                   onClick={() => {
                     setStartDate(startOfMonth(new Date()));
@@ -1111,7 +1082,6 @@ setData(zeroizeForHamza(json[0]));
                   }}
                 />
                 <Chip
-                  icon={<DateRangeIcon sx={{ color: colorPalette.textLight }} />}
                   label={
                     startDate && endDate
                       ? `${format(startDate, "yyyy/MM/dd")} - ${format(endDate, "yyyy/MM/dd")}`

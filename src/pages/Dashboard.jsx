@@ -243,24 +243,6 @@ export default function Dashboard() {
                 }}
               />
             </IconButton>
-
-            <Typography
-              sx={{
-                flex: 1,
-                fontWeight: 900,
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.8rem",
-                  md: "0.88rem",
-                },
-                color: "#17372b",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              نظام الإدارة
-            </Typography>
           </Toolbar>
         </AppBar>
       )}

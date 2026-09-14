@@ -1,4 +1,5 @@
 import * as uiLayout from './common/uiLayout';
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -148,7 +149,7 @@ const MoneyCell = ({ value, color = textColor }) => (
       fontWeight: 1000,
       color,
       fontSize: "0.85rem",
-      "@media (max-width:1599px)": { fontSize: "0.75rem" },
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
       "@media (max-width:599px)": { fontSize: "0.75rem" }
     }}
   >
@@ -166,7 +167,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
       border: `1px solid ${primaryLight}`,
       backgroundColor: whiteColor,
       minWidth: 170,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         minWidth: 0,
         px: 0.7,
         py: 0.55,
@@ -186,7 +187,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         fontSize: "0.78rem",
         color: primaryColor,
         fontWeight: 900,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -198,7 +199,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         fontSize: "1.25rem",
         color,
         fontWeight: 1000,
-        "@media (max-width:1599px)": { fontSize: "0.82rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.82rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -211,7 +212,7 @@ const EmptyBox = ({ text }) => (
   <Box
     sx={{
       height: 240,
-      "@media (max-width:1599px)": { height: 160, fontSize: "0.75rem" },
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { height: 160, fontSize: "0.75rem" },
       "@media (max-width:599px)": { height: 120, fontSize: "0.75rem" },
       display: "flex",
       alignItems: "center",
@@ -230,7 +231,7 @@ const EllipsisText = ({ value, align = "start", direction = "rtl" }) => (
       sx={{
         width: "100%",
         fontSize: "0.82rem",
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" },
         fontWeight: 800,
         color: textColor,
@@ -260,8 +261,15 @@ const StudentStatementDialog2 = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
-  const isCompact = isPhone || isTablet;
+  const isTablet = useMediaQuery(
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
+  );
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+  const isCompact = !isDesktop;
 
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -1256,13 +1264,15 @@ const StudentStatementDialog2 = ({
     {
       field: "actions",
       headerName: "العمليات",
-      width: 115,
+      width: 88,
+      minWidth: 88,
+      maxWidth: 88,
       sortable: false,
       filterable: false,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <Stack direction="row" spacing={0.5} justifyContent="center" sx={{ width: "100%" }}>
+        <Stack direction="row" spacing={0.35} justifyContent="center" sx={{ width: "100%" }}>
           <Tooltip title="عرض المستند">
             <IconButton
               size="small"
@@ -1270,12 +1280,12 @@ const StudentStatementDialog2 = ({
               sx={{
                 color: primaryColor,
                 backgroundColor: primaryLight,
-                width: 30,
-                height: 30,
+                width: 28,
+                height: 28,
                 "&:hover": { backgroundColor: "#d7f0e5" }
               }}
             >
-              <VisibilityIcon fontSize="small" />
+              <VisibilityIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Tooltip>
 
@@ -1286,12 +1296,12 @@ const StudentStatementDialog2 = ({
               sx={{
                 color: accentColor,
                 backgroundColor: "#fff4f4",
-                width: 30,
-                height: 30,
+                width: 28,
+                height: 28,
                 "&:hover": { backgroundColor: "#ffe4e4" }
               }}
             >
-              <HistoryIcon fontSize="small" />
+              <HistoryIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Tooltip>
         </Stack>
@@ -1300,7 +1310,8 @@ const StudentStatementDialog2 = ({
     {
       field: "date",
       headerName: "التاريخ الميلادي",
-      width: 125,
+      width: 108,
+      minWidth: 108,
       align: "center",
       headerAlign: "center",
       valueFormatter: (params) =>
@@ -1313,21 +1324,24 @@ const StudentStatementDialog2 = ({
     {
       field: "documentType",
       headerName: "نوع المستند",
-      width: 145,
+      flex: 0.8,
+      minWidth: 105,
       align: "center",
       headerAlign: "center"
     },
     {
       field: "documentNo",
       headerName: "رقم المستند",
-      width: 125,
+      width: 96,
+      minWidth: 96,
       align: "center",
       headerAlign: "center"
     },
     {
       field: "maden",
       headerName: "مدين",
-      width: 105,
+      width: 76,
+      minWidth: 76,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => <MoneyCell value={params.row?.maden} />
@@ -1335,7 +1349,8 @@ const StudentStatementDialog2 = ({
     {
       field: "daen",
       headerName: "دائن",
-      width: 105,
+      width: 76,
+      minWidth: 76,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => <MoneyCell value={params.row?.daen} />
@@ -1343,7 +1358,8 @@ const StudentStatementDialog2 = ({
     {
       field: "balance",
       headerName: "الرصيد",
-      width: 115,
+      width: 82,
+      minWidth: 82,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
@@ -1356,14 +1372,17 @@ const StudentStatementDialog2 = ({
     {
       field: "notes",
       headerName: "بيان",
-      flex: 1,
-      minWidth: 360,
+      flex: 1.55,
+      minWidth: 220,
       renderCell: (params) => <EllipsisText value={params.value} />
     },
     {
       field: "costCenter",
       headerName: "مركز التكلفة",
-      width: 245,
+      flex: 1,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <EllipsisText value={params.value} align="center" direction="rtl" />
       )
@@ -1612,8 +1631,8 @@ const StudentStatementDialog2 = ({
     "& .MuiDataGrid-cell": {
       fontWeight: 800,
       borderColor: "#edf4f1",
-      fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
-      px: isPhone ? 0.15 : isTablet ? 0.35 : undefined
+      fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : "0.75rem",
+      px: isPhone ? 0.15 : isTablet ? 0.35 : 0.45
     },
     "& .MuiDataGrid-row:nth-of-type(even)": {
       backgroundColor: "#fbfdfc"

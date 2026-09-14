@@ -1,4 +1,5 @@
 import * as uiLayout from './common/uiLayout';
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -74,8 +75,15 @@ const StudyApprovalDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
-  const isCompact = isPhone || isTablet;
+  const isTablet = useMediaQuery(
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
+  );
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+  const isCompact = !isDesktop;
 
   const compactMenuProps = {
     anchorOrigin: { vertical: "bottom", horizontal: "right" },
@@ -1189,7 +1197,9 @@ const StudyApprovalDialog = ({
             .page {
               position: relative;
               width: 210mm;
+              height: 297mm;
               min-height: 297mm;
+              max-height: 297mm;
               margin: 0 auto;
               background: #ffffff;
               overflow: hidden;
@@ -1324,11 +1334,7 @@ const StudyApprovalDialog = ({
               flex-direction: row;
               align-items: center;
               justify-content: flex-start;
-              gap: isCompact ? 0.35 : 1,
-          py: isPhone ? 0.42 : isTablet ? 0.6 : 1.5,
-          px: isPhone ? 0.7 : isTablet ? 0.95 : 2,
-          fontSize: isPhone ? "0.58rem" : isTablet ? "0.7rem" : undefined,
-          flexShrink: 00px;
+              gap: 10px;
               width: 100%;
               text-align: right;
             }
@@ -1403,11 +1409,23 @@ const StudyApprovalDialog = ({
             @media print {
               html,
               body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
                 background: #fff;
+                overflow: hidden;
               }
 
               .page {
+                width: 210mm;
+                height: 297mm;
+                min-height: 297mm;
+                max-height: 297mm;
                 margin: 0;
+                overflow: hidden;
+                page-break-inside: avoid;
+                break-inside: avoid-page;
               }
             }
           </style>
@@ -1509,9 +1527,40 @@ const StudyApprovalDialog = ({
           </div>
 
           <script>
-            window.onload = () => {
-              setTimeout(() => window.print(), 650);
-            };
+            (function () {
+              function waitForImages() {
+                var images = Array.prototype.slice.call(document.images || []);
+
+                return Promise.all(
+                  images.map(function (image) {
+                    if (image.complete && image.naturalWidth > 0) {
+                      return Promise.resolve();
+                    }
+
+                    return new Promise(function (resolve) {
+                      var finish = function () { resolve(); };
+                      image.onload = finish;
+                      image.onerror = finish;
+                      window.setTimeout(finish, 5000);
+                    });
+                  })
+                );
+              }
+
+              window.addEventListener("load", function () {
+                var fontsReady =
+                  document.fonts && document.fonts.ready
+                    ? document.fonts.ready
+                    : Promise.resolve();
+
+                Promise.all([fontsReady, waitForImages()]).then(function () {
+                  window.focus();
+                  window.setTimeout(function () {
+                    window.print();
+                  }, 250);
+                });
+              });
+            })();
           </script>
         </body>
         </html>
@@ -1533,16 +1582,16 @@ const StudyApprovalDialog = ({
       dir="rtl"
       sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
-          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
-          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
-          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pt: isPhone ? "58px" : isTablet ? "58px" : 1.25,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.25,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.25,
           alignItems: isPhone ? "stretch" : "center"
         }
       }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
-          width: isPhone ? "100vw" : isTablet ? "96vw" : "95vw",
-          maxWidth: isPhone ? "100vw" : isTablet ? "1100px" : 1500,
+          width: isPhone ? "100vw" : isTablet ? "96vw" : "min(96vw, 1500px)",
+          maxWidth: isPhone ? "100vw" : isTablet ? "1100px" : "1500px",
           height: isPhone
             ? "calc(100dvh - 58px)"
             : isTablet
@@ -1557,6 +1606,7 @@ const StudyApprovalDialog = ({
           m: 0,
           borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
           overflow: "hidden",
+          overflowX: "hidden",
           display: "flex",
           flexDirection: "column"
         }
@@ -1584,11 +1634,29 @@ const StudyApprovalDialog = ({
       <DialogContent
         dividers
         sx={{
-          px: isPhone ? 1.2 : isTablet ? 1.5 : 3,
-py: isPhone ? 0.8 : isTablet ? 1 : 3,
+          px: isPhone ? 1.2 : isTablet ? 1.5 : 1.75,
+          py: isPhone ? 0.8 : isTablet ? 1 : 1.35,
           overflowY: "auto",
+          overflowX: "hidden",
           flex: 1,
           minHeight: 0,
+
+          // MUI Grid spacing can add negative side margins / calc(100% + gap),
+          // which creates a useless horizontal scrollbar inside the dialog.
+          // Keep every form row inside the actual content width.
+          "& .MuiGrid-container": {
+            width: "100%",
+            maxWidth: "100%",
+            ml: 0,
+            mr: 0,
+            boxSizing: "border-box"
+          },
+
+          "& .MuiGrid-item": {
+            minWidth: 0,
+            boxSizing: "border-box"
+          },
+
           "& .MuiInputLabel-root": {
             fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           },
@@ -1643,7 +1711,14 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
             <CircularProgress />
           </Box>
         ) : (
-          <Stack sx={uiLayout.formGridSx} spacing={isPhone ? 0.9 : isTablet ? 1.1 : 2}>
+          <Stack
+            spacing={isPhone ? 0.9 : isTablet ? 1.1 : 1.35}
+            sx={{
+              minWidth: 0,
+              width: "100%",
+              alignItems: "stretch"
+            }}
+          >
             <Grid container spacing={isPhone ? 0.75 : isTablet ? 0.95 : 1.5}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
@@ -1673,54 +1748,70 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               </Grid>
             </Grid>
 
-            <FormControl
-  sx={uiLayout.withUiSx({
-    pl: isPhone ? 1.2 : isTablet ? 1.5 : 0
-  }, uiLayout.formFieldSx)}
->
-  <FormLabel>نوع البرنامج</FormLabel>
+            <Grid container spacing={isPhone ? 0.75 : isTablet ? 0.9 : 1.25}>
+              <Grid item xs={12} md={6}>
+                <FormControl
+                  fullWidth
+                  sx={uiLayout.withUiSx(
+                    {
+                      minWidth: 0
+                    },
+                    uiLayout.formFieldSx
+                  )}
+                >
+                  <FormLabel>نوع البرنامج</FormLabel>
 
-  <RadioGroup sx={uiLayout.radioGroupSx}
-    row
-    value={programType}
-    onChange={(e) => setProgramType(Number(e.target.value))}
-  >
-    {approvalTypes.map((item) => (
-      <FormControlLabel
-        key={item.value}
-        value={item.value}
-        control={<Radio />}
-        label={item.label}
-      />
-    ))}
-  </RadioGroup>
-</FormControl>
+                  <RadioGroup
+                    sx={uiLayout.radioGroupSx}
+                    row
+                    value={programType}
+                    onChange={(e) => setProgramType(Number(e.target.value))}
+                  >
+                    {approvalTypes.map((item) => (
+                      <FormControlLabel
+                        key={item.value}
+                        value={item.value}
+                        control={<Radio />}
+                        label={item.label}
+                      />
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
 
-          <FormControl
-  sx={uiLayout.withUiSx({
-    pl: isPhone ? 1.2 : isTablet ? 1.5 : 0
-  }, uiLayout.formFieldSx)}
->
-  <FormLabel>نوع الدراسة</FormLabel>
+              <Grid item xs={12} md={6}>
+                <FormControl
+                  fullWidth
+                  sx={uiLayout.withUiSx(
+                    {
+                      minWidth: 0
+                    },
+                    uiLayout.formFieldSx
+                  )}
+                >
+                  <FormLabel>نوع الدراسة</FormLabel>
 
-  <RadioGroup sx={uiLayout.radioGroupSx}
-    row
-    value={studyType}
-    onChange={(e) => setStudyType(Number(e.target.value))}
-  >
-    <FormControlLabel
-      value={0}
-      control={<Radio />}
-      label="حضوري"
-    />
+                  <RadioGroup
+                    sx={uiLayout.radioGroupSx}
+                    row
+                    value={studyType}
+                    onChange={(e) => setStudyType(Number(e.target.value))}
+                  >
+                    <FormControlLabel
+                      value={0}
+                      control={<Radio />}
+                      label="حضوري"
+                    />
 
-    <FormControlLabel
-      value={1}
-      control={<Radio />}
-      label="عن بعد"
-    />
-  </RadioGroup>
-</FormControl>
+                    <FormControlLabel
+                      value={1}
+                      control={<Radio />}
+                      label="عن بعد"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+            </Grid>
 
             <Grid container spacing={isPhone ? 0.8 : isTablet ? 1 : 2}>
               <Grid item xs={12} sm={6} md={6}>
@@ -1897,7 +1988,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 </Grid>
               ) : null}
 
-              <Grid item xs={12} sm={6} md={6}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="القائم بالتسجيل"
@@ -1906,7 +1997,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3} md={3}>
+              <Grid item xs={12} sm={6} md={2}>
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="تاريخ بدء الدراسة هـ"
@@ -1918,7 +2009,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3} md={3}>
+              <Grid item xs={12} sm={6} md={2}>
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="تاريخ نهاية الدراسة هـ"
@@ -1930,7 +2021,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3} md={3}>
+              <Grid item xs={12} sm={6} md={2}>
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   type="number"
@@ -1941,34 +2032,38 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               </Grid>
 
               <Grid
-  item
-  xs={6}
-  sm={3}
-  md={3}
-  sx={{
-   pl: {
-  xs: "20px !important",
-  sm: "24px !important",
-  md: "24px !important"
-}
-  }}
->
-  <FormControlLabel
-    control={
-      <Radio
-        checked={showGregorian}
-        onClick={() => setShowGregorian((v) => !v)}
-      />
-    }
-    label="إظهار الميلادي في الموافقة"
-  />
-</Grid>
+                item
+                xs={12}
+                sm={6}
+                md={2}
+                sx={{
+                  minWidth: 0,
+                  display: "flex",
+                  alignItems: "flex-end"
+                }}
+              >
+                <FormControlLabel
+                  sx={{
+                    ...uiLayout.checkboxFieldSx,
+                    width: "100%",
+                    marginTop: 0,
+                    alignItems: "center"
+                  }}
+                  control={
+                    <Radio
+                      checked={showGregorian}
+                      onClick={() => setShowGregorian((v) => !v)}
+                    />
+                  }
+                  label="إظهار الميلادي في الموافقة"
+                />
+              </Grid>
             </Grid>
 
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               fullWidth
               multiline
-              minRows={isPhone ? 2 : isTablet ? 3 : 5}
+              minRows={isPhone ? 2 : isTablet ? 3 : 3}
               label="ملاحظات"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

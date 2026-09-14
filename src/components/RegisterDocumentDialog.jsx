@@ -1,4 +1,5 @@
 import * as uiLayout from './common/uiLayout';
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
@@ -66,7 +67,7 @@ const InfoField = ({ label, value }) => (
       gridTemplateColumns: "125px 1fr",
       gap: 1,
       py: 0.65,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         gridTemplateColumns: "82px 1fr",
         gap: 0.45,
         py: 0.35
@@ -84,7 +85,7 @@ const InfoField = ({ label, value }) => (
         fontWeight: 950,
         whiteSpace: "nowrap",
         lineHeight: 1.5,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -94,7 +95,7 @@ const InfoField = ({ label, value }) => (
     <Typography
       sx={{
         fontWeight: 800,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -112,7 +113,14 @@ const RegisterDocumentDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
+  );
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
   const previewScale = isPhone ? 0.40 : isTablet ? 0.72 : 1;
 
   const [documentData, setDocumentData] = useState(null);
@@ -249,13 +257,38 @@ const RegisterDocumentDialog = ({
     clonedRoot.style.setProperty("min-height", "297mm", "important");
     clonedRoot.style.setProperty("max-height", "297mm", "important");
     clonedRoot.style.setProperty("margin", "0", "important");
-    clonedRoot.style.setProperty("padding", "7mm", "important");
+    clonedRoot.style.setProperty("padding", "10mm", "important");
     clonedRoot.style.setProperty("overflow", "hidden", "important");
     clonedRoot.style.setProperty("border", "0", "important");
     clonedRoot.style.setProperty("border-radius", "0", "important");
     clonedRoot.style.setProperty("box-shadow", "none", "important");
     clonedRoot.style.setProperty("background", "#ffffff", "important");
     clonedRoot.style.setProperty("box-sizing", "border-box", "important");
+    clonedRoot.style.setProperty("transform", "none", "important");
+    clonedRoot.style.setProperty("transform-origin", "top left", "important");
+    clonedRoot.style.setProperty("top", "auto", "important");
+    clonedRoot.style.setProperty("left", "auto", "important");
+    clonedRoot.style.setProperty("right", "auto", "important");
+
+    // عناصر العرض التفاعلية مثل TableContainer تستخدم overflow-x:auto.
+    // في نسخة الطباعة نلغي أي scroll/min-width حتى يطبع الجدول داخل A4 بالكامل.
+    const printableTableContainer = clonedRoot.querySelector(".items-table");
+    if (printableTableContainer) {
+      printableTableContainer.style.setProperty("width", "100%", "important");
+      printableTableContainer.style.setProperty("max-width", "100%", "important");
+      printableTableContainer.style.setProperty("min-width", "0", "important");
+      printableTableContainer.style.setProperty("overflow", "visible", "important");
+      printableTableContainer.style.setProperty("overflow-x", "visible", "important");
+      printableTableContainer.style.setProperty("overflow-y", "visible", "important");
+
+      const printableTable = printableTableContainer.querySelector("table");
+      if (printableTable) {
+        printableTable.style.setProperty("width", "100%", "important");
+        printableTable.style.setProperty("max-width", "100%", "important");
+        printableTable.style.setProperty("min-width", "0", "important");
+        printableTable.style.setProperty("table-layout", "fixed", "important");
+      }
+    }
 
     const printableHtml = `
       <!DOCTYPE html>
@@ -308,6 +341,43 @@ const RegisterDocumentDialog = ({
               break-before: avoid-page !important;
               break-after: avoid-page !important;
               break-inside: avoid-page !important;
+              transform: none !important;
+              transform-origin: top left !important;
+            }
+
+            .print-page .items-table,
+            .print-page .MuiTableContainer-root {
+              width: 100% !important;
+              max-width: 100% !important;
+              min-width: 0 !important;
+              overflow: visible !important;
+              overflow-x: visible !important;
+              overflow-y: visible !important;
+            }
+
+            .print-page .items-table table,
+            .print-page .MuiTable-root {
+              width: 100% !important;
+              max-width: 100% !important;
+              min-width: 0 !important;
+              table-layout: fixed !important;
+            }
+
+            .print-page .items-table th,
+            .print-page .items-table td {
+              min-width: 0 !important;
+              max-width: none !important;
+              overflow: visible !important;
+              text-overflow: clip !important;
+              white-space: normal !important;
+              word-break: normal !important;
+            }
+
+            .print-page .items-table::-webkit-scrollbar,
+            .print-page .MuiTableContainer-root::-webkit-scrollbar {
+              display: none !important;
+              width: 0 !important;
+              height: 0 !important;
             }
 
             @media print {
@@ -319,6 +389,7 @@ const RegisterDocumentDialog = ({
                 min-height: 297mm !important;
                 max-height: 297mm !important;
                 overflow: hidden !important;
+                transform: none !important;
               }
             }
           </style>
@@ -413,8 +484,11 @@ const RegisterDocumentDialog = ({
       <DialogContent
         sx={{
           backgroundColor: "#eeeeee",
-          p: isPhone ? 0.25 : isTablet ? 0.5 : 2,
-          overflow: "auto"
+          p: isPhone ? 0.25 : isTablet ? 0.5 : 1.5,
+          overflow: "auto",
+          "& > .MuiBox-root": {
+            marginInline: "auto"
+          }
         }}
       >
         {loading ? (
@@ -444,11 +518,15 @@ const RegisterDocumentDialog = ({
         ) : documentData ? (
           <Box
             sx={{
-              width: isPhone ? `${210 * previewScale}mm` : isTablet ? `${210 * previewScale}mm` : "210mm",
-              height: isPhone ? `${297 * previewScale}mm` : isTablet ? `${297 * previewScale}mm` : "297mm",
+              width: `${210 * previewScale}mm`,
+              height: `${297 * previewScale}mm`,
               mx: "auto",
               position: "relative",
-              flexShrink: 0
+              flexShrink: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              overflow: "visible"
             }}
           >
           <Paper
@@ -461,13 +539,19 @@ const RegisterDocumentDialog = ({
               height: "297mm",
               minHeight: "297mm",
               maxHeight: "297mm",
-              mx: "auto",
+              m: 0,
               p: "10mm",
               overflow: "hidden",
               backgroundColor: "#fff",
               color: "#111",
-              transform: previewScale === 1 ? "none" : `scale(${previewScale})`,
-              transformOrigin: "top left"
+              position: previewScale === 1 ? "relative" : "absolute",
+              top: 0,
+              left: previewScale === 1 ? "auto" : "50%",
+              transform:
+                previewScale === 1
+                  ? "none"
+                  : `translateX(-50%) scale(${previewScale})`,
+              transformOrigin: "top center"
             }}
           >
             {/* Header */}

@@ -1,4 +1,5 @@
 import * as uiLayout from './common/uiLayout';
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -318,27 +319,32 @@ const getBranchForWork = (user) => {
 };
 
 const getResponsiveSwalOptions = () => {
-  const width = typeof window !== "undefined" ? window.innerWidth : 1600;
-  const isPhoneView = width < 600;
-  const isTabletView = width >= 600 && width < 1600;
+  const width =
+    typeof window !== "undefined"
+      ? window.innerWidth
+      : DESKTOP_BREAKPOINT;
 
-  if (!isPhoneView && !isTabletView) {
-    return {
-      customClass: {
-        popup: "sstli-swal-popup",
-        title: "sstli-swal-title",
-        htmlContainer: "sstli-swal-text",
-        confirmButton: "sstli-swal-confirm",
-        cancelButton: "sstli-swal-cancel"
-      }
-    };
-  }
+  const isPhoneView = width < 600;
+  const isTabletView =
+    width >= 600 && width < DESKTOP_BREAKPOINT;
 
   return {
-    width: isPhoneView ? "82vw" : "420px",
-    padding: isPhoneView ? "0.65rem" : "0.85rem",
+    width: isPhoneView
+      ? "82vw"
+      : isTabletView
+        ? "360px"
+        : "380px",
+    padding: isPhoneView
+      ? "0.65rem"
+      : isTabletView
+        ? "0.8rem"
+        : "0.9rem",
     customClass: {
-      popup: "sstli-swal-popup sstli-swal-compact",
+      popup: `sstli-swal-popup${
+        isPhoneView || isTabletView
+          ? " sstli-swal-compact"
+          : ""
+      }`,
       icon: "sstli-swal-icon",
       title: "sstli-swal-title",
       htmlContainer: "sstli-swal-text",
@@ -925,7 +931,7 @@ const infoCell = ({ value }) => (
         width: "100%",
         fontWeight: 900,
         fontSize: "0.82rem",
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" },
         textAlign: "center",
         whiteSpace: "nowrap",
@@ -948,7 +954,7 @@ const SectionTitle = ({ children, color = dangerColor }) => (
       mb: 1,
       textAlign: "start",
       lineHeight: 1.15,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         fontSize: "0.75rem",
         mb: 0.3
       },
@@ -971,7 +977,7 @@ const DetailBox = ({ label, value, color = textColor }) => (
       border: "1px solid #e6f3ee",
       backgroundColor: whiteColor,
       height: "100%",
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.48,
         borderRadius: 1.3,
         minHeight: 48
@@ -990,7 +996,7 @@ const DetailBox = ({ label, value, color = textColor }) => (
         mb: 0.4,
         textAlign: "start",
         lineHeight: 1.15,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           fontSize: "0.75rem",
           mb: 0.12
         },
@@ -1007,7 +1013,7 @@ const DetailBox = ({ label, value, color = textColor }) => (
         fontWeight: 950,
         lineHeight: 1.6,
         wordBreak: "break-word",
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           fontSize: "0.75rem",
           lineHeight: 1.25
         },
@@ -1032,7 +1038,7 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
       minHeight: 62,
       borderRadius: 3,
       justifyContent: "flex-start",
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         minHeight: 42,
         borderRadius: 1.5,
         px: 0.65,
@@ -1052,7 +1058,7 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
       "& .MuiButton-startIcon": {
         ml: 1,
         mr: 0,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           ml: 0.45,
           "& svg": { fontSize: "0.9rem" }
         },
@@ -1072,7 +1078,7 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
         sx={{
           fontWeight: 950,
           lineHeight: 1.15,
-          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
           "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
@@ -1084,7 +1090,7 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
           fontSize: "0.75rem",
           opacity: 0.85,
           lineHeight: 1.15,
-          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
           "@media (max-width:599px)": {
             fontSize: "0.75rem",
             display: "none"
@@ -1108,8 +1114,15 @@ const StudentPaymentOrderDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
-  const isCompact = isPhone || isTablet;
+  const isTablet = useMediaQuery(
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
+  );
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+  const isCompact = !isDesktop;
 
   const [paymentKind, setPaymentKind] = useState("diplom");
   const [paymentMethod, setPaymentMethod] = useState("cash");
@@ -2114,27 +2127,56 @@ const StudentPaymentOrderDialog = ({
         {`
           .sstli-swal-popup {
             font-family: Cairo, Arial, sans-serif !important;
-            border-radius: 18px !important;
+            width: min(380px, calc(100vw - 32px)) !important;
+            max-width: calc(100vw - 32px) !important;
+            padding: 0.9rem !important;
+            border-radius: 14px !important;
+          }
+
+          .sstli-swal-icon {
+            width: 3.4em !important;
+            height: 3.4em !important;
+            margin: 0.55em auto 0.25em !important;
+          }
+
+          .sstli-swal-icon .swal2-icon-content {
+            font-size: 2.25em !important;
           }
 
           .sstli-swal-title {
+            padding: 0.2em 0.45em 0 !important;
             font-weight: 950 !important;
+            font-size: 1rem !important;
+            line-height: 1.25 !important;
           }
 
           .sstli-swal-text {
+            margin: 0.4em 0 0 !important;
+            padding: 0 0.65em !important;
             font-weight: 800 !important;
-            line-height: 1.55 !important;
+            font-size: 0.76rem !important;
+            line-height: 1.45 !important;
+          }
+
+          .sstli-swal-actions {
+            margin: 0.7em auto 0 !important;
+            gap: 0.4rem !important;
           }
 
           .sstli-swal-confirm,
           .sstli-swal-cancel {
+            min-width: 82px !important;
+            min-height: 32px !important;
+            margin: 0 !important;
+            padding: 0.42rem 0.85rem !important;
             font-weight: 900 !important;
-            border-radius: 9px !important;
+            font-size: 0.72rem !important;
+            border-radius: 8px !important;
           }
 
-          @media (max-width: 1599px) {
+          @media (max-width: ${DESKTOP_BREAKPOINT - 0.05}px) {
             .sstli-swal-popup.sstli-swal-compact {
-              max-width: 420px !important;
+              max-width: 360px !important;
               border-radius: 14px !important;
             }
 
@@ -3169,14 +3211,14 @@ const gridStyle = {
     fontSize: "0.78rem",
     textAlign: "center",
     color: whiteColor,
-    "@media (max-width:1599px)": { fontSize: "0.5rem", lineHeight: 1.05 },
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.5rem", lineHeight: 1.05 },
     "@media (max-width:599px)": { fontSize: "0.42rem" }
   },
   "& .MuiDataGrid-cell": {
     borderBottom: "1px solid #edf4f1",
     fontWeight: 900,
     outline: "none !important",
-    "@media (max-width:1599px)": { fontSize: "0.5rem", px: 0.28 },
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.5rem", px: 0.28 },
     "@media (max-width:599px)": { fontSize: "0.42rem", px: 0.1 }
   },
   "& .MuiDataGrid-row:hover": {
@@ -3193,7 +3235,7 @@ const chipStyle = {
   backgroundColor: primaryLight,
   color: primaryColor,
   border: `1px solid ${primaryLight}`,
-  "@media (max-width:1599px)": {
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
     height: 22,
     fontSize: "0.48rem"
   },

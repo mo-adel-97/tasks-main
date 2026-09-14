@@ -2255,8 +2255,9 @@ const handleAcceptOrder = (row) => {
       {
         field: "actions",
         headerName: "الإجراءات",
-        flex: 0.75,
-        minWidth: 108,
+        width: 180,
+        minWidth: 180,
+        maxWidth: 180,
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
@@ -2268,10 +2269,14 @@ const handleAcceptOrder = (row) => {
             endIcon={<MoreVertIcon />}
             onClick={(event) => handleOpenActionMenu(event, params.row)}
             sx={uiLayout.withUiSx({
-              minWidth: 92,
+              minWidth: 0,
               width: "100%",
+              flexShrink: 0,
+              flexGrow: 0,
               height: 32,
-              borderRadius: 999,
+              px: 1.25,
+              justifyContent: "center",
+              borderRadius: `${designTokens.radius}px`,
               fontWeight: 600,
               fontSize: designTokens.typography.table,
               whiteSpace: "nowrap",
@@ -2281,7 +2286,7 @@ const handleAcceptOrder = (row) => {
                 background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`,
                 boxShadow: "0 8px 20px rgba(5,117,70,0.28)"
               },
-              "& .MuiButton-endIcon": { ml: 0, mr: 0.5 }
+              "& .MuiButton-endIcon": { ml: 0, mr: 0.75, flexShrink: 0 }
             }, uiLayout.buttonSx)}
           >
             الإجراءات
@@ -2346,8 +2351,9 @@ const handleAcceptOrder = (row) => {
       {
         field: "oldActions",
         headerName: "العمليات",
-        flex: 0.8,
-        minWidth: 130,
+        width: 180,
+        minWidth: 180,
+        maxWidth: 180,
         align: "center",
         headerAlign: "center",
         sortable: false,
@@ -3085,7 +3091,7 @@ const handleAcceptOrder = (row) => {
             }
             loading={loading}
             disableRowSelectionOnClick
-            rowHeight={isDesktop ? 44 : isPhone ? 38 : 44}
+            rowHeight={isDesktop ? 52 : isPhone ? 44 : 48}
             columnHeaderHeight={isDesktop ? 42 : isPhone ? 34 : 40}
             pageSizeOptions={[30, 60, 100]}
             initialState={{
@@ -3144,6 +3150,27 @@ const handleAcceptOrder = (row) => {
                 px: isDesktop ? 0.5 : { xs: 0.15, sm: 0.35, md: 0.45 },
                 fontSize: "0.6875rem",
                 overflow: "hidden"
+              },
+
+              // Vertical breathing for this grid only:
+              // keep column widths unchanged and add space above/below row content.
+              "& .MuiDataGrid-row": {
+                boxSizing: "border-box"
+              },
+
+              "& .MuiDataGrid-cell": {
+                py: isDesktop ? 0.75 : 0.5,
+                boxSizing: "border-box",
+                alignItems: "center"
+              },
+
+              "& .MuiDataGrid-cell[data-field=\"actions\"]": {
+                px: 0.75,
+                justifyContent: "center"
+              },
+
+              "& .MuiDataGrid-columnHeader[data-field=\"actions\"]": {
+                px: 1.25
               },
 
               "& .MuiDataGrid-row:hover": {

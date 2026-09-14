@@ -628,20 +628,6 @@ if (loading || externalLoading) {
             >
               <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
             </IconButton>
-
-            <Typography
-              sx={{
-                flex: 1,
-                fontWeight: 900,
-                fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.88rem' },
-                color: '#17372b',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              نظام الإدارة
-            </Typography>
           </Toolbar>
         </AppBar>
       )}
@@ -725,20 +711,6 @@ if (loading || externalLoading) {
             >
               <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
             </IconButton>
-
-            <Typography
-              sx={{
-                flex: 1,
-                fontWeight: 900,
-                fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.88rem' },
-                color: '#17372b',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              نظام الإدارة
-            </Typography>
           </Toolbar>
         </AppBar>
       )}

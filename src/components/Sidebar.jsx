@@ -1093,16 +1093,6 @@ const childItemSx = (selected) => ({
               minHeight: 30
             }}
           >
-            <Typography
-              sx={{
-                fontFamily: 'Cairo',
-                fontWeight: 900,
-                fontSize: '1.05rem',
-                lineHeight: 1.5
-              }}
-            >
-              نظام الإدارة
-            </Typography>
 
           </Stack>
 
