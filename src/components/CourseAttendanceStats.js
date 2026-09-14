@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -377,7 +378,7 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
       </Paper>
 
       {/* Course Attendance Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={openDialog} 
         onClose={handleCloseDialog}
         maxWidth="md"
@@ -434,11 +435,11 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
             ))}
           </List>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           <Button 
             onClick={handleCloseDialog} 
             color="primary"
-            sx={{ fontFamily: '"Cairo", sans-serif' }}
+            sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -446,7 +447,7 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
       </Dialog>
 
       {/* Student Details Dialog */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={openStudentDialog}
         onClose={handleCloseStudentDialog}
         maxWidth="sm"
@@ -527,11 +528,11 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
             </Typography>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           <Button 
             onClick={handleCloseStudentDialog} 
             color="primary"
-            sx={{ fontFamily: '"Cairo", sans-serif' }}
+            sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

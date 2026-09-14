@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -621,14 +622,14 @@ export default function InvoiceReturnDialog({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -661,7 +662,7 @@ export default function InvoiceReturnDialog({
           fontWeight: 950,
           py: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
           px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
-          fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : undefined,
+          fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : undefined,
           flexShrink: 0
         }}
       >
@@ -678,10 +679,10 @@ export default function InvoiceReturnDialog({
           minHeight: 0,
 
           "& .MuiInputLabel-root": {
-            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           },
           "& .MuiInputBase-input, & .MuiSelect-select": {
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             py: isPhone ? 0.52 : isTablet ? 0.67 : undefined
           },
 
@@ -704,7 +705,7 @@ export default function InvoiceReturnDialog({
             sx={{
               mb: isCompact ? 0.35 : 2,
               py: isCompact ? 0.15 : undefined,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }}
           >
             {error}
@@ -721,7 +722,7 @@ export default function InvoiceReturnDialog({
           >
             <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="اسم الطالب"
                   value={studentName || ""}
@@ -729,8 +730,8 @@ export default function InvoiceReturnDialog({
                 />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={4}>
-                <TextField
+              <Grid item xs={12} sm={3} md={4}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="رقم الهوية"
                   value={nationalId || ""}
@@ -738,8 +739,8 @@ export default function InvoiceReturnDialog({
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={4}>
-                <TextField
+              <Grid item xs={12} sm={3} md={4}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="رقم الجوال"
                   value={studentTel || ""}
@@ -751,7 +752,7 @@ export default function InvoiceReturnDialog({
 
           <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
             <Grid item xs={12} sm={4} md={4}>
-              <FormControl
+              <FormControl sx={uiLayout.formFieldSx}
                 fullWidth
                 disabled={loadingInvoices}
               >
@@ -848,7 +849,7 @@ export default function InvoiceReturnDialog({
                           <>
                             <Typography
                               sx={{
-                                fontSize: isPhone ? "0.46rem" : "0.55rem",
+                                fontSize: isPhone ? "0.75rem" : "0.75rem",
                                 fontWeight: 1000,
                                 color: primaryColor,
                                 whiteSpace: "nowrap"
@@ -860,7 +861,7 @@ export default function InvoiceReturnDialog({
                             <Box sx={{ minWidth: 0 }}>
                               <Typography
                                 sx={{
-                                  fontSize: isPhone ? "0.47rem" : "0.56rem",
+                                  fontSize: isPhone ? "0.75rem" : "0.75rem",
                                   fontWeight: 900,
                                   color: "#24364b",
                                   lineHeight: 1.15,
@@ -875,7 +876,7 @@ export default function InvoiceReturnDialog({
                               <Typography
                                 sx={{
                                   mt: 0.08,
-                                  fontSize: isPhone ? "0.39rem" : "0.47rem",
+                                  fontSize: isPhone ? "0.75rem" : "0.75rem",
                                   color: "#6f8a81",
                                   lineHeight: 1.1,
                                   whiteSpace: "nowrap",
@@ -891,7 +892,7 @@ export default function InvoiceReturnDialog({
                             {isTablet && (
                               <Typography
                                 sx={{
-                                  fontSize: "0.48rem",
+                                  fontSize: "0.75rem",
                                   fontWeight: 900,
                                   color: invoice.isReturned
                                     ? accentColor
@@ -919,8 +920,8 @@ export default function InvoiceReturnDialog({
               </FormControl>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={4}>
-              <TextField
+            <Grid item xs={12} sm={4} md={4}>
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 type="datetime-local"
                 label="التاريخ"
@@ -932,8 +933,8 @@ export default function InvoiceReturnDialog({
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
-            <Grid item xs={6} sm={4} md={4}>
-              <FormControl
+            <Grid item xs={12} sm={4} md={4}>
+              <FormControl sx={uiLayout.formFieldSx}
                 fullWidth
                 disabled={
                   loadingDocuments ||
@@ -1010,8 +1011,8 @@ export default function InvoiceReturnDialog({
           {context ? (
             <>
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
-                <Grid item xs={6} sm={6} md={6}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={6}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الفرع"
                     value={
@@ -1022,8 +1023,8 @@ export default function InvoiceReturnDialog({
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={6}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={6}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="المحصل"
                     value={context.salesManName || ""}
@@ -1032,7 +1033,7 @@ export default function InvoiceReturnDialog({
                 </Grid>
               </Grid>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 multiline
                 minRows={isPhone ? 2 : isTablet ? 2 : 3}
@@ -1046,19 +1047,19 @@ export default function InvoiceReturnDialog({
               <TableContainer
                 component={Paper}
                 variant="outlined"
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: isCompact ? 1.3 : undefined,
                   overflowX: "auto",
 
                   "& .MuiTableCell-root": {
                     py: isPhone ? 0.4 : isTablet ? 0.55 : undefined,
                     px: isPhone ? 0.28 : isTablet ? 0.45 : undefined,
-                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     whiteSpace: "nowrap"
                   },
 
                   "& .MuiTableHead-root .MuiTableCell-root": {
-                    fontSize: isPhone ? "0.4rem" : isTablet ? "0.49rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     lineHeight: 1.05
                   },
 
@@ -1073,9 +1074,9 @@ export default function InvoiceReturnDialog({
                   "& .MuiInputBase-input": {
                     px: isPhone ? 0.25 : isTablet ? 0.4 : undefined,
                     py: isPhone ? 0.35 : isTablet ? 0.45 : undefined,
-                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   }
-                }}
+                }, uiLayout.tableContainerSx)}
               >
                 <Table size="small">
                   <TableHead>
@@ -1165,7 +1166,7 @@ export default function InvoiceReturnDialog({
                         </TableCell>
 
                         <TableCell align="center">
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             size="small"
                             type="number"
                             value={item.quantity}
@@ -1183,12 +1184,12 @@ export default function InvoiceReturnDialog({
                                 textAlign: "center"
                               , direction: "ltr", unicodeBidi: "isolate" }
                             , dir: "ltr" }}
-                            sx={{ width: 95 }}
+                            sx={uiLayout.withUiSx({ width: 95 }, uiLayout.formFieldSx)}
                           />
                         </TableCell>
 
                         <TableCell align="center">
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             size="small"
                             type="number"
                             value={item.cost}
@@ -1206,12 +1207,12 @@ export default function InvoiceReturnDialog({
                                 textAlign: "center"
                               , direction: "ltr", unicodeBidi: "isolate" }
                             , dir: "ltr" }}
-                            sx={{ width: 120 }}
+                            sx={uiLayout.withUiSx({ width: 120 }, uiLayout.formFieldSx)}
                           />
                         </TableCell>
 
                         <TableCell align="center">
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             size="small"
                             type="number"
                             value={item.taxRate}
@@ -1229,7 +1230,7 @@ export default function InvoiceReturnDialog({
                                 textAlign: "center"
                               , direction: "ltr", unicodeBidi: "isolate" }
                             , dir: "ltr" }}
-                            sx={{ width: 100 }}
+                            sx={uiLayout.withUiSx({ width: 100 }, uiLayout.formFieldSx)}
                           />
                         </TableCell>
 
@@ -1263,7 +1264,7 @@ export default function InvoiceReturnDialog({
                       textAlign: "center"
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
                       الإجمالي
                     </Typography>
 
@@ -1289,7 +1290,7 @@ export default function InvoiceReturnDialog({
                       textAlign: "center"
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
                       الضريبة
                     </Typography>
 
@@ -1315,7 +1316,7 @@ export default function InvoiceReturnDialog({
                       textAlign: "center"
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
                       الصافي
                     </Typography>
 
@@ -1337,12 +1338,12 @@ export default function InvoiceReturnDialog({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.35 : isTablet ? 0.55 : 3,
           py: isPhone ? 0.28 : isTablet ? 0.42 : 2,
           gap: isCompact ? 0.35 : 1,
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
@@ -1362,13 +1363,13 @@ export default function InvoiceReturnDialog({
               <SaveIcon />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             minWidth: isPhone ? 92 : isTablet ? 110 : 140,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           حفظ
         </Button>
@@ -1376,13 +1377,13 @@ export default function InvoiceReturnDialog({
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

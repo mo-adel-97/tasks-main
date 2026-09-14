@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -172,7 +174,7 @@ function LookupDialog({
   onChoose
 }) {
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       maxWidth="sm"
@@ -194,7 +196,7 @@ function LookupDialog({
           <ToggleButton value="code">الكود</ToggleButton>
         </ToggleButtonGroup>
 
-        <TextField
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -213,7 +215,7 @@ function LookupDialog({
             <CircularProgress size={28} />
           </Box>
         ) : (
-          <TableContainer sx={{ mt: 1, maxHeight: 420 }}>
+          <TableContainer sx={uiLayout.withUiSx({ mt: 1, maxHeight: 420 }, uiLayout.tableContainerSx)}>
             <Table stickyHeader size="small">
               <TableHead>
                 <TableRow>
@@ -236,7 +238,7 @@ function LookupDialog({
                       {row.name}
                     </TableCell>
                     <TableCell>
-                      <Button
+                      <Button sx={uiLayout.buttonSx}
                         size="small"
                         onClick={() => onChoose(row)}
                       >
@@ -261,8 +263,8 @@ function LookupDialog({
         )}
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose}>إغلاق</Button>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button sx={uiLayout.buttonSx} onClick={onClose}>إغلاق</Button>
       </DialogActions>
     </Dialog>
   );
@@ -922,7 +924,7 @@ export default function ClosingEntry() {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "1fr",
@@ -931,9 +933,9 @@ export default function ClosingEntry() {
                       "165px 165px minmax(220px,1fr) minmax(220px,1fr) 90px 90px"
                   },
                   gap: 0.7
-                }}
+                }, uiLayout.filterBarSx)}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   size="small"
                   type="date"
                   label="الفترة من"
@@ -944,7 +946,7 @@ export default function ClosingEntry() {
                   InputLabelProps={{ shrink: true }}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   size="small"
                   type="date"
                   label="الفترة إلى"
@@ -955,7 +957,7 @@ export default function ClosingEntry() {
                   InputLabelProps={{ shrink: true }}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   label="مركز التكلفة / الفرع"
                   value={cost?.name || ""}
@@ -980,7 +982,7 @@ export default function ClosingEntry() {
                   }}
                 />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   label="حساب الإقفال"
                   value={
@@ -1013,10 +1015,10 @@ export default function ClosingEntry() {
                   startIcon={<RefreshIcon />}
                   onClick={loadPreview}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: 40,
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -1026,12 +1028,12 @@ export default function ClosingEntry() {
                   startIcon={<FileDownloadIcon />}
                   onClick={exportExcel}
                   disabled={!data}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: 40,
                     fontWeight: 900,
                     color: primary,
                     borderColor: primary
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   Excel
                 </Button>
@@ -1096,12 +1098,12 @@ export default function ClosingEntry() {
                     </Box>
 
                     <TableContainer
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         maxHeight: {
                           xs: 360,
                           md: "calc(100vh - 340px)"
                         }
-                      }}
+                      }, uiLayout.tableContainerSx)}
                     >
                       <Table stickyHeader size="small">
                         <TableHead>
@@ -1166,12 +1168,12 @@ export default function ClosingEntry() {
                     </Box>
 
                     <TableContainer
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         maxHeight: {
                           xs: 360,
                           md: "calc(100vh - 340px)"
                         }
-                      }}
+                      }, uiLayout.tableContainerSx)}
                     >
                       <Table stickyHeader size="small">
                         <TableHead>
@@ -1304,11 +1306,11 @@ export default function ClosingEntry() {
                     variant="contained"
                     startIcon={<PreviewIcon />}
                     onClick={openJournalPreview}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       bgcolor: primaryDark,
                       fontWeight: 900,
                       minHeight: 42
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     تجهيز قيد الإقفال
                   </Button>
@@ -1358,7 +1360,7 @@ export default function ClosingEntry() {
         }}
       />
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={journalOpen}
         onClose={() => !posting && setJournalOpen(false)}
         fullScreen={isMobile}
@@ -1389,7 +1391,7 @@ export default function ClosingEntry() {
           <TableContainer
             component={Paper}
             variant="outlined"
-            sx={{ maxHeight: 520 }}
+            sx={uiLayout.withUiSx({ maxHeight: 520 }, uiLayout.tableContainerSx)}
           >
             <Table stickyHeader size="small">
               <TableHead>
@@ -1448,8 +1450,8 @@ export default function ClosingEntry() {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() => setJournalOpen(false)}
             disabled={posting}
           >
@@ -1468,10 +1470,10 @@ export default function ClosingEntry() {
               posting ||
               Math.abs(journalTotals.difference) > 0.01
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primary,
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             حفظ قيد الإقفال
           </Button>

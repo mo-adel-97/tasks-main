@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useMemo, useState } from "react";
@@ -489,7 +490,7 @@ const UploadGrades = () => {
               bgcolor: "#fbfdfc",
             }}
           >
-            <Stack spacing={1.5}>
+            <Stack sx={uiLayout.pageHeaderSx} spacing={1.5}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <UploadFileIcon sx={{ color: "#80b49e" }} />
                 <Typography sx={{ fontFamily: "Cairo", fontWeight: 700 }}>
@@ -502,7 +503,7 @@ const UploadGrades = () => {
                 variant="contained"
                 disabled={loading}
                 startIcon={<UploadFileIcon />}
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   borderRadius: 2,
@@ -510,7 +511,7 @@ const UploadGrades = () => {
                   bgcolor: "#80b49e",
                   "&:hover": { bgcolor: "#6a9a87" },
                   width: { xs: "100%", md: "fit-content" },
-                }}
+                }, uiLayout.buttonSx)}
               >
                 اختيار ملف
                 <input
@@ -594,7 +595,7 @@ const UploadGrades = () => {
                       <UploadFileIcon />
                     )
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     borderRadius: 2,
@@ -604,7 +605,7 @@ const UploadGrades = () => {
                     "&:hover": { bgcolor: "#6a9a87" },
                     whiteSpace: "nowrap",
                     minWidth: { xs: "100%", md: 220 },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {loading ? "جاري الرفع..." : "رفع الدرجات"}
                 </Button>

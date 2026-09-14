@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -372,7 +373,7 @@ const Announcements = () => {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleOpenDialog}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: 'white',
                   color: '#6a11cb',
                   fontWeight: 'bold',
@@ -383,7 +384,7 @@ const Announcements = () => {
                     bgcolor: 'rgba(255,255,255,0.9)',
                     transform: 'translateY(-2px)'
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إعلان جديد
               </Button>
@@ -405,17 +406,17 @@ const Announcements = () => {
           >
             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 300 }}>
               <SearchIcon sx={{ color: 'text.secondary', marginInlineEnd: 1 }} />
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 variant="outlined"
                 placeholder="ابحث في الإعلانات..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '10px',
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Box>
 
@@ -656,7 +657,7 @@ const Announcements = () => {
                               size="small"
                               startIcon={<VisibilityIcon />}
                               onClick={() => handleViewDetails(announcement)}
-                              sx={{ borderRadius: '8px' }}
+                              sx={uiLayout.withUiSx({ borderRadius: '8px' }, uiLayout.buttonSx)}
                             >
                               عرض التفاصيل
                             </Button>
@@ -707,11 +708,11 @@ const Announcements = () => {
           onClose={handleCloseDialog}
           maxWidth="md"
           fullWidth
-          sx={{
+          sx={uiLayout.withUiSx({
             '& .MuiDialog-paper': {
               borderRadius: '16px',
             }
-          }}
+          }, uiLayout.dialogLayoutSx)}
         >
           <DialogTitle>
             <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -727,18 +728,18 @@ const Announcements = () => {
           <DialogContent>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="عنوان الإعلان"
                   value={newAnnouncement.title}
                   onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
                   required
-                  sx={{ mb: 2 }}
+                  sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                 />
               </Grid>
 
               <Grid item xs={12}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="محتوى الإعلان"
                   value={newAnnouncement.content}
@@ -746,7 +747,7 @@ const Announcements = () => {
                   multiline
                   rows={6}
                   required
-                  sx={{ mb: 2 }}
+                  sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                 />
               </Grid>
 
@@ -813,11 +814,11 @@ const Announcements = () => {
                   variant="outlined"
                   startIcon={<CloudUploadIcon />}
                   fullWidth
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     py: 2,
                     borderStyle: 'dashed',
                     borderRadius: '12px'
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   رفع صور متعددة
                   <VisuallyHiddenInput 
@@ -894,20 +895,20 @@ const Announcements = () => {
             </Grid>
           </DialogContent>
 
-          <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button onClick={handleCloseDialog} color="inherit">
+          <DialogActions sx={uiLayout.withUiSx({ px: 3, pb: 3 }, uiLayout.dialogActionsSx)}>
+            <Button sx={uiLayout.buttonSx} onClick={handleCloseDialog} color="inherit">
               إلغاء
             </Button>
             <Button
               onClick={handleAddAnnouncement}
               variant="contained"
               startIcon={<CheckCircleIcon />}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: '#6a11cb',
                 '&:hover': {
                   bgcolor: '#5a0cb0'
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               نشر الإعلان
             </Button>
@@ -915,7 +916,7 @@ const Announcements = () => {
         </Dialog>
 
         {/* دايالوج عرض التفاصيل */}
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={previewOpen}
           onClose={() => setPreviewOpen(false)}
           maxWidth="md"
@@ -1026,8 +1027,8 @@ const Announcements = () => {
                 </Grid>
               </DialogContent>
               
-              <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button onClick={() => setPreviewOpen(false)} variant="contained">
+              <DialogActions sx={uiLayout.withUiSx({ px: 3, pb: 3 }, uiLayout.dialogActionsSx)}>
+                <Button sx={uiLayout.buttonSx} onClick={() => setPreviewOpen(false)} variant="contained">
                   إغلاق
                 </Button>
               </DialogActions>

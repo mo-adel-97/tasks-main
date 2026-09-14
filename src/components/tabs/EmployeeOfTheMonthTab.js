@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -459,7 +460,7 @@ const handleSaveRating = async () => {
         <Card sx={{ mb: 3, p: 2 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel>الشهر</InputLabel>
                 <Select
                   value={selectedMonth}
@@ -475,7 +476,7 @@ const handleSaveRating = async () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel>السنة</InputLabel>
                 <Select
                   value={selectedYear}
@@ -558,7 +559,7 @@ const handleSaveRating = async () => {
                               label="تم التقييم"
                               size="small"
                               color="success"
-                              sx={{ fontSize: '0.6rem', height: 20, mt: 0.5 }}
+                              sx={{ fontSize: "0.75rem", height: 20, mt: 0.5 }}
                             />
                           )}
                         </Box>
@@ -585,7 +586,7 @@ const handleSaveRating = async () => {
                         {Object.keys(evaluationCriteria).map((criteria) => (
                           <Grid item xs={6} key={criteria}>
                             <Box sx={{ textAlign: 'center' }}>
-                              <Typography variant="caption" sx={{ color: COLOR_SCHEME.text, fontSize: '0.7rem' }}>
+                              <Typography variant="caption" sx={{ color: COLOR_SCHEME.text, fontSize: "0.75rem" }}>
                                 {evaluationCriteria[criteria].name}
                               </Typography>
                               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
@@ -613,13 +614,13 @@ const handleSaveRating = async () => {
                             startIcon={<Grade />}
                             onClick={() => handleRateEmployee(employee)}
                             disabled={loading}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderColor: COLOR_SCHEME.primary,
                               color: COLOR_SCHEME.primary,
                               fontWeight: 'bold',
-                              fontSize: '0.7rem',
+                              fontSize: "0.75rem",
                               py: 0.8
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             {employee.existingEvaluation ? 'تعديل' : 'تقييم'}
                           </Button>
@@ -631,13 +632,13 @@ const handleSaveRating = async () => {
                             startIcon={<EmojiEvents />}
                             onClick={() => handleAssignEmployee(employee)}
                             disabled={loading || totalScore === 0}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 100%)`,
                               color: 'white',
                               fontWeight: 'bold',
-                              fontSize: '0.7rem',
+                              fontSize: "0.75rem",
                               py: 0.8
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             تعيين
                           </Button>
@@ -678,7 +679,7 @@ const handleSaveRating = async () => {
           لا توجد بيانات لموظفي الشهور الماضية
         </Alert>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
+        <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3 }, uiLayout.tableContainerSx)}>
           <Table>
             <TableHead sx={{ backgroundColor: COLOR_SCHEME.primary }}>
               <TableRow>
@@ -772,7 +773,7 @@ const handleSaveRating = async () => {
       {activeTab === 1 && <PastWinnersTab />}
 
       {/* Dialog لتقييم الموظف */}
-      <Dialog open={openRatingDialog} onClose={() => setOpenRatingDialog(false)} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={openRatingDialog} onClose={() => setOpenRatingDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ 
           background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 100%)`,
           color: 'white',
@@ -868,15 +869,15 @@ const handleSaveRating = async () => {
           )}
         </DialogContent>
         
-        <DialogActions sx={{ p: 3, gap: 1 }}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 1 }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={() => setOpenRatingDialog(false)}
             variant="outlined"
             disabled={loading}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               borderColor: COLOR_SCHEME.primary,
               color: COLOR_SCHEME.primary
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -884,12 +885,12 @@ const handleSaveRating = async () => {
             onClick={handleSaveRating}
             variant="contained"
             disabled={loading}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 100%)`,
               color: 'white',
               fontWeight: 'bold',
               px: 4
-            }}
+            }, uiLayout.buttonSx)}
           >
             {loading ? <CircularProgress size={24} /> : (selectedEmployee?.existingEvaluation ? 'تحديث التقييم' : 'حفظ التقييم')}
           </Button>
@@ -897,7 +898,7 @@ const handleSaveRating = async () => {
       </Dialog>
 
       {/* Dialog لتعيين موظف الشهر */}
-      <Dialog open={openAssignDialog} onClose={() => setOpenAssignDialog(false)} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={openAssignDialog} onClose={() => setOpenAssignDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ 
           background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 100%)`,
           color: 'white',
@@ -979,8 +980,8 @@ const handleSaveRating = async () => {
           )}
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs={6}>
-              <FormControl fullWidth>
+            <Grid sm={6} item xs={12}>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>الشهر</InputLabel>
                 <Select
                   value={selectedMonth}
@@ -996,8 +997,8 @@ const handleSaveRating = async () => {
               </FormControl>
             </Grid>
             
-            <Grid item xs={6}>
-              <FormControl fullWidth>
+            <Grid sm={6} item xs={12}>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>السنة</InputLabel>
                 <Select
                   value={selectedYear}
@@ -1014,7 +1015,7 @@ const handleSaveRating = async () => {
             </Grid>
           </Grid>
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             fullWidth
             multiline
             rows={4}
@@ -1025,15 +1026,15 @@ const handleSaveRating = async () => {
           />
         </DialogContent>
         
-        <DialogActions sx={{ p: 3, gap: 1 }}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 1 }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={() => setOpenAssignDialog(false)}
             variant="outlined"
             disabled={loading}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               borderColor: COLOR_SCHEME.primary,
               color: COLOR_SCHEME.primary
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -1041,12 +1042,12 @@ const handleSaveRating = async () => {
             onClick={handleSubmitAssignment}
             variant="contained"
             disabled={!reason.trim() || loading}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               background: `linear-gradient(135deg, ${COLOR_SCHEME.gold} 0%, ${COLOR_SCHEME.primary} 100%)`,
               color: 'white',
               fontWeight: 'bold',
               px: 4
-            }}
+            }, uiLayout.buttonSx)}
           >
             {loading ? <CircularProgress size={24} /> : 'تأكيد التعيين'}
           </Button>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -1077,7 +1079,7 @@ th{background:#eef6f2}
 
         <Box sx={{ p: { xs: 1, sm: 2 } }}>
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr 1fr",
@@ -1087,13 +1089,13 @@ th{background:#eef6f2}
               gap: 1,
               mb: { xs: 1.25, sm: 1.75 },
               alignItems: "stretch"
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={newEntry}
-              sx={{ bgcolor: primary, fontWeight: 800 }}
+              sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 800 }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -1102,7 +1104,7 @@ th{background:#eef6f2}
               variant="outlined"
               startIcon={<SearchIcon />}
               onClick={() => setListOpen(true)}
-              sx={{ borderColor: primary, color: primary, fontWeight: 800 }}
+              sx={uiLayout.withUiSx({ borderColor: primary, color: primary, fontWeight: 800 }, uiLayout.buttonSx)}
             >
               بحث عن قيد
             </Button>
@@ -1112,7 +1114,7 @@ th{background:#eef6f2}
               startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
               disabled={saving || linkedToDocument}
               onClick={save}
-              sx={{ bgcolor: primary, fontWeight: 800 }}
+              sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 800 }, uiLayout.buttonSx)}
             >
               {guid ? "حفظ التعديل" : "حفظ"}
             </Button>
@@ -1122,7 +1124,7 @@ th{background:#eef6f2}
               startIcon={<PrintIcon />}
               disabled={!guid}
               onClick={printEntry}
-              sx={{ fontWeight: 800 }}
+              sx={uiLayout.withUiSx({ fontWeight: 800 }, uiLayout.buttonSx)}
             >
               طباعة
             </Button>
@@ -1135,7 +1137,7 @@ th{background:#eef6f2}
           )}
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr 1fr",
@@ -1144,16 +1146,16 @@ th{background:#eef6f2}
               },
               gap: 1.2,
               mb: 1.5
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="رقم القيد"
               value={code}
               size="small"
               InputProps={{ readOnly: true }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               label="التاريخ الميلادي"
               type="date"
               value={dayDate}
@@ -1168,10 +1170,10 @@ th{background:#eef6f2}
               disabled={linkedToDocument}
             />
 
-            <TextField
-              sx={{
+            <TextField InputLabelProps={{ shrink: true }}
+              sx={uiLayout.withUiSx({
                 gridColumn: { xs: "1 / -1", sm: "auto" }
-              }}
+              }, uiLayout.formFieldSx)}
               label="ملاحظات القيد"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -1182,12 +1184,12 @@ th{background:#eef6f2}
             />
 
             <FormControlLabel
-              sx={{
+              sx={uiLayout.withUiSx({
                 m: 0,
                 border: `1px solid ${line}`,
                 borderRadius: 1,
                 px: 1
-              }}
+              }, uiLayout.checkboxFieldSx)}
               control={
                 <Switch
                   checked={isUse}
@@ -1225,9 +1227,9 @@ th{background:#eef6f2}
                     boxShadow: "0 4px 14px rgba(5,117,70,.05)"
                   }}
                 >
-                  <Stack spacing={1}>
+                  <Stack sx={uiLayout.formGridSx} spacing={1}>
                     <Stack direction="row" spacing={1}>
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         fullWidth
                         label="رقم الحساب"
                         value={row.accountCode}
@@ -1256,7 +1258,7 @@ th{background:#eef6f2}
                       </IconButton>
                     </Stack>
 
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       label="اسم الحساب"
                       value={row.accountName}
                       size="small"
@@ -1276,7 +1278,7 @@ th{background:#eef6f2}
                       }}
                     />
 
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       label="البيان"
                       value={row.notes}
                       onChange={(e) => updateRow(index, "notes", e.target.value)}
@@ -1284,8 +1286,8 @@ th{background:#eef6f2}
                       disabled={linkedToDocument}
                     />
 
-                    <Stack direction="row" spacing={1}>
-                      <TextField
+                    <Stack sx={uiLayout.formGridSx} direction="row" spacing={1}>
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         label="مدين"
                         type="number"
                         value={row.debit}
@@ -1295,7 +1297,7 @@ th{background:#eef6f2}
                         disabled={linkedToDocument}
                         inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                       />
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         label="دائن"
                         type="number"
                         value={row.credit}
@@ -1307,7 +1309,7 @@ th{background:#eef6f2}
                       />
                     </Stack>
 
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       label="مركز التكلفة"
                       value={row.costName}
                       size="small"
@@ -1332,11 +1334,11 @@ th{background:#eef6f2}
             </Box>
           ) : (
             <TableContainer
-              sx={{
+              sx={uiLayout.withUiSx({
                 border: `1px solid ${line}`,
                 borderRadius: 2,
                 overflowX: "auto"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <Table
                 size="small"
@@ -1366,7 +1368,7 @@ th{background:#eef6f2}
                   {rows.map((row, index) => (
                     <TableRow key={row.id}>
                       <TableCell>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           value={row.accountCode}
                           size="small"
                           fullWidth
@@ -1388,7 +1390,7 @@ th{background:#eef6f2}
                       </TableCell>
 
                       <TableCell>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           value={row.accountName}
                           size="small"
                           fullWidth
@@ -1410,7 +1412,7 @@ th{background:#eef6f2}
                       </TableCell>
 
                       <TableCell>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           value={row.notes}
                           onChange={(e) => updateRow(index, "notes", e.target.value)}
                           size="small"
@@ -1420,7 +1422,7 @@ th{background:#eef6f2}
                       </TableCell>
 
                       <TableCell>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           type="number"
                           value={row.debit}
                           onChange={(e) => updateRow(index, "debit", e.target.value)}
@@ -1432,7 +1434,7 @@ th{background:#eef6f2}
                       </TableCell>
 
                       <TableCell>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           type="number"
                           value={row.credit}
                           onChange={(e) => updateRow(index, "credit", e.target.value)}
@@ -1449,11 +1451,11 @@ th{background:#eef6f2}
                           variant="outlined"
                           onClick={() => openCostLookup(index)}
                           disabled={linkedToDocument}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             justifyContent: "flex-start",
                             textTransform: "none",
                             color: row.costName ? primaryDark : "text.secondary"
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           {row.costName || "اختيار مركز تكلفة"}
                         </Button>
@@ -1483,7 +1485,7 @@ th{background:#eef6f2}
             startIcon={<AddIcon />}
             onClick={addRow}
             disabled={linkedToDocument}
-            sx={{ mt: 1.2, color: primary, fontWeight: 800 }}
+            sx={uiLayout.withUiSx({ mt: 1.2, color: primary, fontWeight: 800 }, uiLayout.buttonSx)}
           >
             إضافة سطر
           </Button>
@@ -1533,7 +1535,7 @@ th{background:#eef6f2}
       </Paper>
 
       {/* Accounts dialog */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={accountOpen}
         onClose={() => setAccountOpen(false)}
         fullScreen={isMobile}
@@ -1554,20 +1556,20 @@ th{background:#eef6f2}
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={1}
-            sx={{ mb: 1.5 }}
+            sx={uiLayout.withUiSx({ mb: 1.5 }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               size="small"
               value={accountBy}
               onChange={(e) => setAccountBy(e.target.value)}
-              sx={{ minWidth: 150 }}
+              sx={uiLayout.withUiSx({ minWidth: 150 }, uiLayout.formFieldSx)}
             >
               <MenuItem value="name">اسم الحساب</MenuItem>
               <MenuItem value="code">كود الحساب</MenuItem>
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               autoFocus
               fullWidth
               size="small"
@@ -1593,7 +1595,7 @@ th{background:#eef6f2}
               <CircularProgress size={28} />
             </Box>
           ) : (
-            <TableContainer>
+            <TableContainer sx={uiLayout.tableContainerSx}>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -1626,7 +1628,7 @@ th{background:#eef6f2}
       </Dialog>
 
       {/* Cost centers dialog */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={costOpen}
         onClose={() => setCostOpen(false)}
         fullScreen={isMobile}
@@ -1635,13 +1637,13 @@ th{background:#eef6f2}
       >
         <DialogTitle sx={{ fontWeight: 900 }}>مراكز التكلفة</DialogTitle>
         <DialogContent dividers>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             size="small"
             value={costSearch}
             onChange={(e) => setCostSearch(e.target.value)}
             placeholder="بحث في مراكز التكلفة..."
-            sx={{ mb: 1.5 }}
+            sx={uiLayout.withUiSx({ mb: 1.5 }, uiLayout.formFieldSx)}
           />
 
           <Stack spacing={0.8}>
@@ -1656,11 +1658,11 @@ th{background:#eef6f2}
                   key={c.guid}
                   variant="outlined"
                   onClick={() => chooseCost(c)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     justifyContent: "space-between",
                     color: primaryDark,
                     borderColor: line
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   <span>{c.name}</span>
                   <small>{c.code}</small>
@@ -1668,13 +1670,13 @@ th{background:#eef6f2}
               ))}
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCostOpen(false)}>إغلاق</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setCostOpen(false)}>إغلاق</Button>
         </DialogActions>
       </Dialog>
 
       {/* Journal list */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={listOpen}
         onClose={() => setListOpen(false)}
         fullScreen={isMobile}
@@ -1692,7 +1694,7 @@ th{background:#eef6f2}
         </DialogTitle>
 
         <DialogContent dividers>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus
             fullWidth
             size="small"
@@ -1706,7 +1708,7 @@ th{background:#eef6f2}
                 </InputAdornment>
               )
             }}
-            sx={{ mb: 1.5 }}
+            sx={uiLayout.withUiSx({ mb: 1.5 }, uiLayout.formFieldSx)}
           />
 
           {listLoading ? (
@@ -1739,7 +1741,7 @@ th{background:#eef6f2}
               ))}
             </Stack>
           ) : (
-            <TableContainer>
+            <TableContainer sx={uiLayout.tableContainerSx}>
               <Table size="small">
                 <TableHead>
                   <TableRow>

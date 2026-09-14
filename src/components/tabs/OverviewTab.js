@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import React, { useEffect, useMemo, useRef } from "react";
 import {
   Box,
@@ -132,7 +133,7 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
             <Typography sx={{ fontWeight: 900, fontSize: { xs: 12, sm: 13, md: 15 } }}>
               {title}
             </Typography>
-            <Typography sx={{ mt: 0.35, opacity: 0.8, fontSize: { xs: 10, sm: 11, md: 12 } }}>
+            <Typography sx={{ mt: 0.35, opacity: 0.8, fontSize: { xs: 12, sm: 12, md: 12 } }}>
               خلال فترة التقييم المختارة
             </Typography>
           </Box>
@@ -157,7 +158,7 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
           <Typography sx={{ fontSize: { xs: 25, sm: 30, md: 36 }, lineHeight: 1, fontWeight: 1000 }}>
             {stats.total}
           </Typography>
-          <Typography sx={{ pb: 0.35, fontSize: { xs: 10, sm: 11.5, md: 12.5 }, opacity: 0.86 }}>
+          <Typography sx={{ pb: 0.35, fontSize: { xs: 12, sm: 12, md: 12.5 }, opacity: 0.86 }}>
             مهمة
           </Typography>
         </Box>
@@ -183,10 +184,10 @@ function TaskMetricCard({ icon, title, stats, variant = "received" }) {
           />
         </Box>
         <Box sx={{ mt: 0.9, display: "flex", justifyContent: "space-between", gap: 1 }}>
-          <Typography sx={{ fontSize: { xs: 10, sm: 11, md: 12 }, fontWeight: 800 }}>
+          <Typography sx={{ fontSize: { xs: 12, sm: 12, md: 12 }, fontWeight: 800 }}>
             نسبة الإنجاز {stats.completionRate}%
           </Typography>
-          <Typography sx={{ fontSize: { xs: 10, sm: 11, md: 12 }, opacity: 0.78 }}>
+          <Typography sx={{ fontSize: { xs: 12, sm: 12, md: 12 }, opacity: 0.78 }}>
             مكتملة: {stats.completed}
           </Typography>
         </Box>
@@ -260,7 +261,7 @@ function LockedServiceCard({ title, description }) {
         <Typography sx={{ color: COLORS.primaryDark, fontWeight: 1000, fontSize: { xs: 12.5, sm: 13.5, md: 15 } }}>
           {title}
         </Typography>
-        <Typography sx={{ mt: 0.5, color: COLORS.muted, fontSize: { xs: 10.5, sm: 11.5, md: 12.5 }, lineHeight: 1.65 }}>
+        <Typography sx={{ mt: 0.5, color: COLORS.muted, fontSize: { xs: 12, sm: 12, md: 12.5 }, lineHeight: 1.65 }}>
           {description}
         </Typography>
         <Typography
@@ -271,7 +272,7 @@ function LockedServiceCard({ title, description }) {
             borderRadius: 99,
             bgcolor: alpha(COLORS.primary, 0.09),
             color: COLORS.primary,
-            fontSize: { xs: 9.5, sm: 10.5, md: 11.5 },
+            fontSize: { xs: 12, sm: 12, md: 12 },
             fontWeight: 900,
           }}
         >
@@ -362,13 +363,13 @@ export default function OverviewTab({
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             display: "grid",
             gridTemplateColumns: { xs: "1fr 1fr", sm: "auto 140px 140px" },
             alignItems: "center",
             justifyContent: "center",
             gap: { xs: 0.7, sm: 0.9 },
-          }}
+          }, uiLayout.formGridSx)}
         >
           <Typography
             sx={{
@@ -388,7 +389,7 @@ export default function OverviewTab({
             فترة تقييم الأداء
           </Typography>
 
-          <FormControl size="small" sx={selectSx}>
+          <FormControl size="small" sx={uiLayout.withUiSx(selectSx, uiLayout.formFieldSx)}>
             <InputLabel>السنة</InputLabel>
             <Select
               value={selectedYear}
@@ -403,7 +404,7 @@ export default function OverviewTab({
             </Select>
           </FormControl>
 
-          <FormControl size="small" sx={selectSx}>
+          <FormControl size="small" sx={uiLayout.withUiSx(selectSx, uiLayout.formFieldSx)}>
             <InputLabel>الشهر</InputLabel>
             <Select
               value={selectedMonth}

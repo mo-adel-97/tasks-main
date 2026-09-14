@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useMemo, useState } from "react";
 import {
   Alert,
@@ -103,7 +104,7 @@ const StudentField = ({
   isPhone,
   isTablet
 }) => (
-  <TextField
+  <TextField InputLabelProps={{ shrink: true }}
     fullWidth
     size="small"
     label={label}
@@ -111,12 +112,12 @@ const StudentField = ({
     InputProps={{
       readOnly: true
     }}
-    sx={{
+    sx={uiLayout.withUiSx({
       "& .MuiInputLabel-root": {
         fontSize: isPhone
-          ? "0.46rem"
+          ? "0.75rem"
           : isTablet
-            ? "0.55rem"
+            ? "0.75rem"
             : undefined,
 
         fontWeight: 850
@@ -124,9 +125,9 @@ const StudentField = ({
 
       "& .MuiInputBase-input": {
         fontSize: isPhone
-          ? "0.52rem"
+          ? "0.75rem"
           : isTablet
-            ? "0.6rem"
+            ? "0.75rem"
             : undefined,
 
         fontWeight: 850,
@@ -150,7 +151,7 @@ const StudentField = ({
             ? 1.2
             : undefined
       }
-    }}
+    }, uiLayout.formFieldSx)}
   />
 );
 
@@ -365,7 +366,7 @@ const RefundRequestDialog = ({
         fullWidth
         fullScreen={isPhone}
         dir="rtl"
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone
               ? "58px"
@@ -389,7 +390,7 @@ const RefundRequestDialog = ({
               ? "stretch"
               : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone
@@ -453,9 +454,9 @@ const RefundRequestDialog = ({
                 : 1.5,
 
             fontSize: isPhone
-              ? "0.62rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.74rem"
+                ? "0.75rem"
                 : undefined,
 
             flexShrink: 0
@@ -503,9 +504,9 @@ const RefundRequestDialog = ({
                 py: isCompact ? 0.15 : undefined,
 
                 fontSize: isPhone
-                  ? "0.46rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.54rem"
+                    ? "0.75rem"
                     : undefined
               }}
             >
@@ -589,7 +590,7 @@ const RefundRequestDialog = ({
             </Grid>
           </Paper>
 
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             multiline
             minRows={
@@ -608,7 +609,7 @@ const RefundRequestDialog = ({
               maxLength: 2000
             }}
             helperText={`${notes.length}/2000`}
-            sx={{
+            sx={uiLayout.withUiSx({
               mb: isPhone
                 ? 0.7
                 : isTablet
@@ -617,17 +618,17 @@ const RefundRequestDialog = ({
 
               "& .MuiInputLabel-root": {
                 fontSize: isPhone
-                  ? "0.46rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.55rem"
+                    ? "0.75rem"
                     : undefined
               },
 
               "& .MuiInputBase-input": {
                 fontSize: isPhone
-                  ? "0.52rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.6rem"
+                    ? "0.75rem"
                     : undefined,
 
                 lineHeight: 1.4
@@ -635,12 +636,12 @@ const RefundRequestDialog = ({
 
               "& .MuiFormHelperText-root": {
                 fontSize: isPhone
-                  ? "0.4rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.48rem"
+                    ? "0.75rem"
                     : undefined
               }
-            }}
+            }, uiLayout.formFieldSx)}
           />
 
           <Button
@@ -658,7 +659,7 @@ const RefundRequestDialog = ({
                 }}
               />
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minHeight: isPhone
                 ? 34
                 : isTablet
@@ -670,9 +671,9 @@ const RefundRequestDialog = ({
               fontWeight: 950,
 
               fontSize: isPhone
-                ? "0.48rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.56rem"
+                  ? "0.75rem"
                   : undefined,
 
               borderRadius: isCompact
@@ -688,7 +689,7 @@ const RefundRequestDialog = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap"
-            }}
+            }, uiLayout.buttonSx)}
           >
             {ibanFile
               ? ibanFile.name
@@ -708,7 +709,7 @@ const RefundRequestDialog = ({
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: isPhone
               ? 0.6
               : isTablet
@@ -726,7 +727,7 @@ const RefundRequestDialog = ({
               : 1,
 
             flexShrink: 0
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             variant="contained"
@@ -750,7 +751,7 @@ const RefundRequestDialog = ({
                 />
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               backgroundColor: primaryColor,
 
               minWidth: isPhone
@@ -766,11 +767,11 @@ const RefundRequestDialog = ({
                   : undefined,
 
               fontSize: isPhone
-                ? "0.48rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.56rem"
+                  ? "0.75rem"
                   : undefined
-            }}
+            }, uiLayout.buttonSx)}
           >
             حفظ الطلب
           </Button>
@@ -778,7 +779,7 @@ const RefundRequestDialog = ({
           <Button
             onClick={onClose}
             disabled={saving}
-            sx={{
+            sx={uiLayout.withUiSx({
               color: accentColor,
               fontWeight: 900,
 
@@ -795,11 +796,11 @@ const RefundRequestDialog = ({
                   : undefined,
 
               fontSize: isPhone
-                ? "0.48rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.56rem"
+                  ? "0.75rem"
                   : undefined
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

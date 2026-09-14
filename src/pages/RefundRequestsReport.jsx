@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -217,11 +219,11 @@ const TextCell = ({
         fontSize: "0.76rem",
         fontWeight: 700,
         "@media (max-width: 599px)": {
-          fontSize: "0.28rem",
+          fontSize: "0.75rem",
           lineHeight: 1.05
         },
         "@media (min-width: 600px) and (max-width: 1599px)": {
-          fontSize: "0.42rem",
+          fontSize: "0.75rem",
           lineHeight: 1.15
         }
       }}
@@ -284,10 +286,10 @@ const MultiValueFilter = ({
                 : options
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             fontFamily: "Cairo",
             fontWeight: 800
-          }}
+          }, uiLayout.buttonSx)}
         >
           {allSelected
             ? "إلغاء الكل"
@@ -332,7 +334,7 @@ const MultiValueFilter = ({
           </li>
         )}
         renderInput={(params) => (
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             {...params}
             size="small"
             placeholder="ابحث وحدد أكثر من قيمة"
@@ -904,7 +906,7 @@ const RefundRequestsReport =
               height: 18,
               minWidth: 0,
               maxWidth: "100%",
-              fontSize: "0.25rem",
+              fontSize: "0.75rem",
               borderRadius: "9px",
               "& .MuiChip-label": {
                 px: 0.35,
@@ -914,7 +916,7 @@ const RefundRequestsReport =
             },
             "@media (min-width: 600px) and (max-width: 1599px)": {
               height: 23,
-              fontSize: "0.38rem",
+              fontSize: "0.75rem",
               "& .MuiChip-label": {
                 px: 0.55
               }
@@ -1013,8 +1015,8 @@ const RefundRequestsReport =
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     fontSize: isPhone
-                      ? "0.29rem"
-                      : "0.44rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     lineHeight: 1.1,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -1433,7 +1435,7 @@ const RefundRequestsReport =
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: "0.66rem",
+                    xs: "0.75rem",
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
@@ -1481,7 +1483,7 @@ const RefundRequestsReport =
             useFlexGap
             flexWrap={isDesktop ? "nowrap" : "wrap"}
             alignItems={isDesktop ? "center" : "stretch"}
-            sx={{
+            sx={uiLayout.withUiSx({
               ...(!isDesktop
                 ? {
                     display: "grid",
@@ -1514,8 +1516,8 @@ const RefundRequestsReport =
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.32rem"
-                    : "0.43rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 lineHeight: 1.1
               },
@@ -1531,8 +1533,8 @@ const RefundRequestsReport =
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.31rem"
-                    : "0.42rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
 
@@ -1543,7 +1545,7 @@ const RefundRequestsReport =
                     : 15
                   : undefined
               }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <CurrencyExchangeIcon
               sx={{
@@ -1563,8 +1565,8 @@ const RefundRequestsReport =
                 fontSize: isDesktop
                   ? "1.15rem"
                   : isPhone
-                    ? "0.55rem"
-                    : "0.72rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                 fontWeight: 900,
                 color: "#173b2b"
               }}
@@ -1592,7 +1594,7 @@ const RefundRequestsReport =
               onClick={() =>
                 setFilterDialogOpen(true)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 ...(activeFilterCount > 0
@@ -1601,7 +1603,7 @@ const RefundRequestsReport =
                         "linear-gradient(135deg,#057546,#034d31)"
                     }
                   : {})
-              }}
+              }, uiLayout.buttonSx)}
             >
               فلاتر متقدمة
               {activeFilterCount > 0
@@ -1609,7 +1611,7 @@ const RefundRequestsReport =
                 : ""}
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="outlined"
               startIcon={
                 <FileDownloadIcon />
@@ -1619,7 +1621,7 @@ const RefundRequestsReport =
               تصدير
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="outlined"
               startIcon={
                 <RefreshIcon />
@@ -1648,7 +1650,7 @@ const RefundRequestsReport =
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isDesktop
                 ? "repeat(2,minmax(0,1fr)) auto"
@@ -1664,8 +1666,8 @@ const RefundRequestsReport =
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.4rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiInputBase-root": {
@@ -1677,8 +1679,8 @@ const RefundRequestsReport =
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.38rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiButton-root": {
@@ -1689,13 +1691,13 @@ const RefundRequestsReport =
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.34rem"
-                    : "0.44rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               }
-            }}
+            }, uiLayout.filterBarSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="من تاريخ"
               value={fromDate}
@@ -1710,7 +1712,7 @@ const RefundRequestsReport =
               size="small"
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="إلى تاريخ"
               value={toDate}
@@ -1739,7 +1741,7 @@ const RefundRequestsReport =
               }
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: isPhone
                   ? "1 / -1"
                   : "auto",
@@ -1747,7 +1749,7 @@ const RefundRequestsReport =
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -1756,7 +1758,7 @@ const RefundRequestsReport =
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             width: "100%",
             minWidth: 0,
             height: isDesktop
@@ -1773,7 +1775,7 @@ const RefundRequestsReport =
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.13)"
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <DataGrid
             rows={filteredGridRows}
@@ -1838,7 +1840,7 @@ const RefundRequestsReport =
                   ? 32
                   : 42
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               border: 0,
               direction: "rtl",
               fontFamily: "Cairo",
@@ -1855,7 +1857,7 @@ const RefundRequestsReport =
 
               "& .MuiDataGrid-virtualScroller": {
                 overflowX:
-                  "hidden !important"
+                  "auto"
               },
 
               "& .MuiDataGrid-columnHeaders":
@@ -1884,8 +1886,8 @@ const RefundRequestsReport =
                 fontWeight: 900,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.26rem"
-                    : "0.4rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
 
@@ -1903,8 +1905,8 @@ const RefundRequestsReport =
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.28rem"
-                    : "0.42rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 textAlign: !isDesktop
                   ? "center"
@@ -1951,18 +1953,18 @@ const RefundRequestsReport =
                     "& .MuiDataGrid-virtualScroller": {
                       direction: "rtl",
                       overflowX:
-                        "hidden !important"
+                        "auto"
                     },
                     "& .MuiDataGrid-scrollbar--horizontal": {
-                      display: "none"
+                      display: "block"
                     }
                   }
                 : {})
-            }}
+            }, uiLayout.dataGridSx)}
           />
         </Paper>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={detailsOpen}
           onClose={closeDetails}
           fullWidth
@@ -2078,8 +2080,8 @@ const RefundRequestsReport =
                           fontWeight: 900,
                           color: "#60756d",
                           fontSize: isPhone
-                            ? "0.38rem"
-                            : "0.49rem"
+                            ? "0.75rem"
+                            : "0.75rem"
                         }}
                       >
                         {label}
@@ -2091,8 +2093,8 @@ const RefundRequestsReport =
                           fontWeight: 800,
                           color: "#1f2d3d",
                           fontSize: isPhone
-                            ? "0.49rem"
-                            : "0.62rem",
+                            ? "0.75rem"
+                            : "0.75rem",
                           wordBreak:
                             "break-word"
                         }}
@@ -2108,7 +2110,7 @@ const RefundRequestsReport =
                   spacing={0.5}
                   useFlexGap
                   flexWrap="wrap"
-                  sx={{ mt: 0.8 }}
+                  sx={uiLayout.withUiSx({ mt: 0.8 }, uiLayout.actionBarSx)}
                 >
                   <Button
                     size="small"
@@ -2121,13 +2123,13 @@ const RefundRequestsReport =
                       );
                       setNoteDialogOpen(true);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     إضافة ملاحظة
                   </Button>
@@ -2152,13 +2154,13 @@ const RefundRequestsReport =
                       });
                       setStatementOpen(true);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     كشف حساب
                   </Button>
@@ -2180,13 +2182,13 @@ const RefundRequestsReport =
                         );
                       }
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     المرفقات
                   </Button>
@@ -2196,29 +2198,29 @@ const RefundRequestsReport =
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: isPhone ? 1 : 1.5,
               py: isPhone ? 0.7 : 1
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="contained"
               onClick={closeDetails}
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.47rem"
-                  : "0.58rem"
-              }}
+                  ? "0.75rem"
+                  : "0.75rem"
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={filterDialogOpen}
           onClose={() =>
             setFilterDialogOpen(false)
@@ -2384,7 +2386,7 @@ const RefundRequestsReport =
             </Box>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions sx={uiLayout.dialogActionsSx}>
             <Button
               color="error"
               startIcon={<RestartAltIcon />}
@@ -2392,10 +2394,10 @@ const RefundRequestsReport =
               disabled={
                 activeFilterCount === 0
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح الفلاتر
             </Button>
@@ -2407,12 +2409,12 @@ const RefundRequestsReport =
               onClick={() =>
                 setFilterDialogOpen(false)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تطبيق وإغلاق
             </Button>
@@ -2485,7 +2487,7 @@ const RefundRequestsReport =
           }
         />
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={noteDialogOpen}
           onClose={
             noteSaving
@@ -2524,7 +2526,7 @@ const RefundRequestsReport =
           </DialogTitle>
 
           <DialogContent dividers>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               autoFocus
               fullWidth
               multiline
@@ -2539,8 +2541,8 @@ const RefundRequestsReport =
             />
           </DialogContent>
 
-          <DialogActions>
-            <Button
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx}
               onClick={() =>
                 setNoteDialogOpen(
                   false
@@ -2565,10 +2567,10 @@ const RefundRequestsReport =
                   )
                   : <NoteAddIcon />
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor:
                   "#057546"
-              }}
+              }, uiLayout.buttonSx)}
             >
               حفظ
             </Button>

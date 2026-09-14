@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -534,7 +536,7 @@ const Chats = () => {
     const isPdf = fileExtension === 'pdf';
   
     return (
-      <Box display="flex" flexDirection="column" alignItems="flex-start">
+      <Box sx={uiLayout.actionBarSx} display="flex" flexDirection="column" alignItems="flex-start">
         {isImage ? (
           <img
             src={message.file_url}
@@ -553,7 +555,7 @@ const Chats = () => {
             <Button
               variant="outlined"
               size="small"
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)}
               onClick={() => window.open(message.file_url, '_blank')}
             >
               View PDF
@@ -565,7 +567,7 @@ const Chats = () => {
             <Button
               variant="outlined"
               size="small"
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)}
               onClick={() => window.open(message.file_url, '_blank')}
             >
               Download {fileExtension?.toUpperCase() || 'File'}
@@ -614,13 +616,13 @@ if (loading) {
           </Typography>
           
           {/* Search Bar */}
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             variant="outlined"
             placeholder="ابحث عن مستخدم..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ mb: 2 }}
+            sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -817,7 +819,7 @@ if (loading) {
                 {showScrollButton && (
                   <Button 
                     variant="contained" 
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       backgroundColor: colorPalette.primary,
                       position: 'sticky',
                       bottom: 16,
@@ -827,7 +829,7 @@ if (loading) {
                       '&:hover': {
                         backgroundColor: colorPalette.primaryDark
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                     onClick={() => scrollToBottom()}
                   >
                   اذهب للأسفل ▼
@@ -955,7 +957,7 @@ if (loading) {
                       </Box>
                     </ClickAwayListener>
                   </Popover>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     variant="outlined"
                     placeholder="اكتب رسالة..."
@@ -964,7 +966,7 @@ if (loading) {
                     onKeyPress={handleKeyPress}
                     multiline
                     maxRows={4}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       mx: 1,
                       '& .MuiOutlinedInput-root': {
                         borderRadius: '24px',
@@ -978,7 +980,7 @@ if (loading) {
                           borderColor: colorPalette.primary,
                         }
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                  {isRecording ? (
   <Box display="flex" alignItems="center">

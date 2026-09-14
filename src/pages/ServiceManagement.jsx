@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -136,7 +138,7 @@ function ServiceLookupDialog({
   onPick
 }) {
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -161,7 +163,7 @@ function ServiceLookupDialog({
       </DialogTitle>
 
       <DialogContent dividers sx={{ p: { xs: 0.6, sm: 1.2 } }}>
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -175,12 +177,12 @@ function ServiceLookupDialog({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: 0.7,
             "& input": {
-              fontSize: { xs: 10.2, sm: 13 }
+              fontSize: { xs: 12, sm: 13 }
             }
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         {loading ? (
@@ -219,7 +221,7 @@ function ServiceLookupDialog({
                   <Typography
                     sx={{
                       fontWeight: 900,
-                      fontSize: { xs: 9.8, sm: 12.5 }
+                      fontSize: { xs: 12, sm: 12.5 }
                     }}
                   >
                     {row.code || "-"}
@@ -229,7 +231,7 @@ function ServiceLookupDialog({
                     noWrap
                     sx={{
                       fontWeight: 800,
-                      fontSize: { xs: 10.2, sm: 13 }
+                      fontSize: { xs: 12, sm: 13 }
                     }}
                   >
                     {row.name || "-"}
@@ -248,10 +250,10 @@ function ServiceLookupDialog({
                   <Button
                     size="small"
                     onClick={() => onPick(row)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 0,
-                      fontSize: { xs: 8.8, sm: 11 }
-                    }}
+                      fontSize: { xs: 12, sm: 12 }
+                    }, uiLayout.buttonSx)}
                   >
                     اختيار
                   </Button>
@@ -268,8 +270,8 @@ function ServiceLookupDialog({
         )}
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose}>إغلاق</Button>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button sx={uiLayout.buttonSx} onClick={onClose}>إغلاق</Button>
       </DialogActions>
     </Dialog>
   );
@@ -825,7 +827,7 @@ export default function ServiceManagement() {
         key={`${item.value}-${item.label}`}
         value={item.value}
         sx={{
-          fontSize: { xs: 10.5, sm: 13 },
+          fontSize: { xs: 12, sm: 13 },
           minHeight: { xs: 30, sm: 36 }
         }}
       >
@@ -886,7 +888,7 @@ export default function ServiceManagement() {
             <Typography
               sx={{
                 opacity: 0.9,
-                fontSize: { xs: 8.1, sm: 11 }
+                fontSize: { xs: 12, sm: 12 }
               }}
             >
               ملف — دبلوم أو دورة أو رسوم وخدمات
@@ -904,7 +906,7 @@ export default function ServiceManagement() {
               bgcolor: "#fff",
               color: primaryDark,
               fontWeight: 900,
-              fontSize: { xs: 8.1, sm: 11 }
+              fontSize: { xs: 12, sm: 12 }
             }}
           />
         </Box>
@@ -916,26 +918,26 @@ export default function ServiceManagement() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(3,minmax(0,1fr))",
                 sm: "repeat(3,max-content)"
               },
               gap: 0.4
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={newService}
               disabled={!ops.canAdd && !isEdit}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#1976d2",
                 fontWeight: 900,
                 minWidth: 0,
-                fontSize: { xs: 9, sm: 12.5 }
-              }}
+                fontSize: { xs: 12, sm: 12.5 }
+              }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -945,11 +947,11 @@ export default function ServiceManagement() {
               startIcon={<SearchIcon />}
               onClick={openLookup}
               disabled={!ops.canFind}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
-                fontSize: { xs: 9, sm: 12.5 }
-              }}
+                fontSize: { xs: 12, sm: 12.5 }
+              }, uiLayout.buttonSx)}
             >
               بحث
             </Button>
@@ -970,11 +972,11 @@ export default function ServiceManagement() {
                   ? !ops.canEdit
                   : !ops.canAdd)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
-                fontSize: { xs: 9, sm: 12.5 }
-              }}
+                fontSize: { xs: 12, sm: 12.5 }
+              }, uiLayout.buttonSx)}
             >
               {isEdit ? "حفظ التعديل" : "حفظ"}
             </Button>
@@ -992,7 +994,7 @@ export default function ServiceManagement() {
             }}
           >
             <CircularProgress size={15} />
-            <Typography sx={{ fontSize: 10.5 }}>
+            <Typography sx={{ fontSize: 12 }}>
               جاري التحميل...
             </Typography>
           </Box>
@@ -1000,7 +1002,7 @@ export default function ServiceManagement() {
 
         <Box sx={{ p: { xs: 0.5, sm: 1 } }}>
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(2,minmax(0,1fr))",
@@ -1008,16 +1010,16 @@ export default function ServiceManagement() {
               },
               gap: { xs: 0.5, sm: 0.8 },
               "& .MuiTextField-root": fieldSx
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود"
               size="small"
               value={model.code}
               InputProps={{ readOnly: true }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="نوع الخدمة"
               size="small"
@@ -1030,7 +1032,7 @@ export default function ServiceManagement() {
               {selectItems(options.serviceTypes)}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="وحدة الخدمة"
               size="small"
               value={model.unit}
@@ -1061,7 +1063,7 @@ export default function ServiceManagement() {
                   <Typography
                     sx={{
                       fontWeight: 800,
-                      fontSize: { xs: 9.3, sm: 12.5 }
+                      fontSize: { xs: 12, sm: 12.5 }
                     }}
                   >
                     نشط
@@ -1070,7 +1072,7 @@ export default function ServiceManagement() {
               />
             </Box>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="اسم الخدمة"
               size="small"
               value={model.name}
@@ -1078,15 +1080,15 @@ export default function ServiceManagement() {
                 setField("name", e.target.value)
               }
               required
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: {
                   xs: "1 / -1",
                   sm: "span 2"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="القسم التدريبي"
               size="small"
@@ -1099,7 +1101,7 @@ export default function ServiceManagement() {
               {selectItems(options.departments)}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="نوع الدراسة"
               size="small"
@@ -1112,7 +1114,7 @@ export default function ServiceManagement() {
               {selectItems(options.studyTypes)}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               type="number"
               label="مدة الدراسة"
               size="small"
@@ -1125,7 +1127,7 @@ export default function ServiceManagement() {
               , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="وحدة مدة الدراسة"
               size="small"
@@ -1144,7 +1146,7 @@ export default function ServiceManagement() {
               ))}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="نوع الضريبة"
               size="small"
@@ -1157,7 +1159,7 @@ export default function ServiceManagement() {
               {selectItems(options.taxTypes)}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               type="number"
               label="نسبة الضريبة"
               size="small"
@@ -1178,7 +1180,7 @@ export default function ServiceManagement() {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="المستفيدين"
               size="small"
@@ -1191,7 +1193,7 @@ export default function ServiceManagement() {
               {selectItems(options.beneficiaries)}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="طبيعة الدراسة"
               size="small"
@@ -1211,7 +1213,7 @@ export default function ServiceManagement() {
               {selectItems(options.studyNature)}
             </TextField>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="وصف الخدمة"
               multiline
               minRows={5}
@@ -1219,9 +1221,9 @@ export default function ServiceManagement() {
               onChange={(e) =>
                 setField("description", e.target.value)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: "1 / -1"
-              }}
+              }, uiLayout.formFieldSx)}
             />
           </Box>
         </Box>

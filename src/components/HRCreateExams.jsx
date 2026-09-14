@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { hrChipSx } from "./hrControlStyles";
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
@@ -1010,18 +1011,18 @@ const exportAttemptsToExcel = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1.5, flexWrap: 'wrap', alignItems: 'center' }, uiLayout.actionBarSx)}>
             <Button
               variant="contained"
               startIcon={<Add />}
               onClick={openCreateDialog}
-              sx={{
+              sx={uiLayout.withUiSx({
                 background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                 borderRadius: 3,
                 px: 3,
                 py: 1.3,
                 fontWeight: 'bold'
-              }}
+              }, uiLayout.buttonSx)}
             >
               إنشاء اختبار
             </Button>
@@ -1030,26 +1031,26 @@ const exportAttemptsToExcel = () => {
               variant="outlined"
               startIcon={<Visibility />}
               onClick={fetchAllExams}
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderColor: primaryColor,
                 color: primaryDark,
                 borderRadius: 3,
                 px: 3,
                 py: 1.3,
                 fontWeight: 'bold'
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض الاختبارات
             </Button>
           </Box>
         </Box>
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           value={examSearch}
           onChange={(e) => setExamSearch(e.target.value)}
           placeholder="بحث باسم الاختبار أو المنشئ..."
-          sx={{ mb: 3 }}
+          sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -1233,7 +1234,7 @@ const exportAttemptsToExcel = () => {
       </Paper>
 
       {/* CREATE / EDIT EXAM DIALOG */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={showCreateExamDialog}
         onClose={() => setShowCreateExamDialog(false)}
         maxWidth="lg"
@@ -1247,7 +1248,7 @@ const exportAttemptsToExcel = () => {
         <DialogContent dividers sx={{ backgroundColor }}>
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} md={6}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="عنوان الاختبار"
                 value={examForm.title}
@@ -1256,7 +1257,7 @@ const exportAttemptsToExcel = () => {
             </Grid>
 
             <Grid item xs={12} md={3}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 type="number"
                 label="مدة الاختبار بالدقائق"
@@ -1266,7 +1267,7 @@ const exportAttemptsToExcel = () => {
             </Grid>
 
             <Grid item xs={12} md={3}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 type="number"
                 label="درجة النجاح"
@@ -1276,7 +1277,7 @@ const exportAttemptsToExcel = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 multiline
                 rows={2}
@@ -1287,7 +1288,7 @@ const exportAttemptsToExcel = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 type="date"
                 label="تاريخ البداية"
@@ -1298,7 +1299,7 @@ const exportAttemptsToExcel = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 type="date"
                 label="تاريخ النهاية"
@@ -1309,7 +1310,7 @@ const exportAttemptsToExcel = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>حالة الاختبار</InputLabel>
                 <Select
                   label="حالة الاختبار"
@@ -1328,7 +1329,7 @@ const exportAttemptsToExcel = () => {
               الأسئلة
             </Typography>
 
-            <Button variant="outlined" startIcon={<Add />} onClick={addQuestion}>
+            <Button sx={uiLayout.buttonSx} variant="outlined" startIcon={<Add />} onClick={addQuestion}>
               إضافة سؤال
             </Button>
           </Box>
@@ -1344,7 +1345,7 @@ const exportAttemptsToExcel = () => {
               <AccordionDetails>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={7}>
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="نص السؤال"
                       value={q.text}
@@ -1353,7 +1354,7 @@ const exportAttemptsToExcel = () => {
                   </Grid>
 
                   <Grid item xs={12} md={3}>
-                    <FormControl fullWidth>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth>
                       <InputLabel>نوع السؤال</InputLabel>
                       <Select
                         label="نوع السؤال"
@@ -1366,8 +1367,8 @@ const exportAttemptsToExcel = () => {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={8} md={1}>
-                    <TextField
+                  <Grid sm={6} item xs={12} md={1}>
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       type="number"
                       label="الدرجة"
@@ -1383,12 +1384,12 @@ const exportAttemptsToExcel = () => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }, uiLayout.actionBarSx)}>
                       <Button
                         variant="outlined"
                         component="label"
                         startIcon={<AttachFileIcon />}
-                        sx={{ borderRadius: 2, color: primaryDark, borderColor: primaryColor }}
+                        sx={uiLayout.withUiSx({ borderRadius: 2, color: primaryDark, borderColor: primaryColor }, uiLayout.buttonSx)}
                       >
                         إرفاق ملف للسؤال
                         <input
@@ -1410,7 +1411,7 @@ const exportAttemptsToExcel = () => {
                             color="success"
                           />
 
-                          <Button
+                          <Button sx={uiLayout.buttonSx}
                             size="small"
                             color="error"
                             onClick={() => removeQuestionAttachment(qIndex)}
@@ -1429,19 +1430,19 @@ const exportAttemptsToExcel = () => {
                   </Typography>
 
                   {q.answers.map((answer, aIndex) => (
-                    <Box key={aIndex} sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <Box key={aIndex} sx={uiLayout.withUiSx({ display: 'flex', gap: 1, mb: 1, alignItems: 'center', flexWrap: 'wrap' }, uiLayout.filterBarSx)}>
                       <Radio
                         checked={Number(answer.is_correct) === 1}
                         onChange={() => setCorrectAnswer(qIndex, aIndex)}
                       />
 
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         size="small"
                         label={`الإجابة ${aIndex + 1}`}
                         value={answer.text}
                         onChange={(e) => updateAnswer(qIndex, aIndex, 'text', e.target.value)}
                         disabled={q.type === 'true_false'}
-                        sx={{ flex: 1, minWidth: { xs: '100%', md: 280 } }}
+                        sx={uiLayout.withUiSx({ flex: 1, minWidth: { xs: '100%', md: 280 } }, uiLayout.formFieldSx)}
                       />
 
                       <Button
@@ -1449,7 +1450,7 @@ const exportAttemptsToExcel = () => {
                         component="label"
                         size="small"
                         startIcon={<AttachFileIcon />}
-                        sx={{ borderRadius: 2, color: primaryDark, borderColor: primaryColor }}
+                        sx={uiLayout.withUiSx({ borderRadius: 2, color: primaryDark, borderColor: primaryColor }, uiLayout.buttonSx)}
                       >
                         مرفق
                         <input
@@ -1472,7 +1473,7 @@ const exportAttemptsToExcel = () => {
                             color="success"
                           />
 
-                          <Button
+                          <Button sx={uiLayout.buttonSx}
                             size="small"
                             color="error"
                             onClick={() => removeAnswerAttachment(qIndex, aIndex)}
@@ -1495,7 +1496,7 @@ const exportAttemptsToExcel = () => {
                   ))}
 
                   {q.type !== 'true_false' && (
-                    <Button size="small" startIcon={<Add />} onClick={() => addAnswer(qIndex)}>
+                    <Button sx={uiLayout.buttonSx} size="small" startIcon={<Add />} onClick={() => addAnswer(qIndex)}>
                       إضافة إجابة
                     </Button>
                   )}
@@ -1505,8 +1506,8 @@ const exportAttemptsToExcel = () => {
           ))}
         </DialogContent>
 
-        <DialogActions>
-          <Button startIcon={<Close />} onClick={() => setShowCreateExamDialog(false)}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} startIcon={<Close />} onClick={() => setShowCreateExamDialog(false)}>
             إغلاق
           </Button>
 
@@ -1514,10 +1515,10 @@ const exportAttemptsToExcel = () => {
             variant="contained"
             startIcon={<Save />}
             onClick={handleSaveExam}
-            sx={{
+            sx={uiLayout.withUiSx({
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
               fontWeight: 'bold'
-            }}
+            }, uiLayout.buttonSx)}
           >
             حفظ الاختبار
           </Button>
@@ -1525,7 +1526,7 @@ const exportAttemptsToExcel = () => {
       </Dialog>
 
       {/* EXAM DETAILS DIALOG */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={showExamDetailsDialog}
         onClose={() => setShowExamDetailsDialog(false)}
         maxWidth="md"
@@ -1579,7 +1580,7 @@ const exportAttemptsToExcel = () => {
                           href={q.attachment_url}
                           target="_blank"
                           startIcon={<AttachFileIcon />}
-                          sx={{ color: primaryDark, borderColor: primaryColor }}
+                          sx={uiLayout.withUiSx({ color: primaryDark, borderColor: primaryColor }, uiLayout.buttonSx)}
                         >
                           عرض مرفق السؤال
                         </Button>
@@ -1609,7 +1610,7 @@ const exportAttemptsToExcel = () => {
                             href={a.attachment_url}
                             target="_blank"
                             startIcon={<AttachFileIcon />}
-                            sx={{ color: primaryDark }}
+                            sx={uiLayout.withUiSx({ color: primaryDark }, uiLayout.buttonSx)}
                           >
                             مرفق الإجابة
                           </Button>
@@ -1621,12 +1622,12 @@ const exportAttemptsToExcel = () => {
                       </Box>
                     ))}
 
-                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                      <Button size="small" startIcon={<Edit />} onClick={() => openEditDialog(selectedExamDetails.id)}>
+                    <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1, mt: 2 }, uiLayout.actionBarSx)}>
+                      <Button sx={uiLayout.buttonSx} size="small" startIcon={<Edit />} onClick={() => openEditDialog(selectedExamDetails.id)}>
                         تعديل الاختبار
                       </Button>
 
-                      <Button
+                      <Button sx={uiLayout.buttonSx}
                         size="small"
                         color="error"
                         startIcon={<Delete />}
@@ -1642,13 +1643,13 @@ const exportAttemptsToExcel = () => {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button onClick={() => setShowExamDetailsDialog(false)}>إغلاق</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setShowExamDetailsDialog(false)}>إغلاق</Button>
         </DialogActions>
       </Dialog>
 
       {/* ATTEMPTS / RESULTS DIALOG */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={showAttemptsDialog}
         onClose={() => setShowAttemptsDialog(false)}
         maxWidth="xl"
@@ -1666,11 +1667,11 @@ const exportAttemptsToExcel = () => {
       startIcon={<DownloadIcon />}
       onClick={exportAttemptsToExcel}
       disabled={!selectedExamAttempts?.attempts?.length}
-      sx={{
+      sx={uiLayout.withUiSx({
         background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
         fontWeight: 'bold',
         borderRadius: 2
-      }}
+      }, uiLayout.buttonSx)}
     >
       تصدير Excel
     </Button>
@@ -1733,7 +1734,7 @@ const exportAttemptsToExcel = () => {
                         <Chip label={`وقت الإرسال: ${attempt.submitted_at || '-'}`} />
                       </Box>
 
-                      <TableContainer component={Paper} sx={{ borderRadius: 3, border: `1px solid ${primaryLight}` }}>
+                      <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3, border: `1px solid ${primaryLight}` }, uiLayout.tableContainerSx)}>
                         <Table size="small">
                           <TableHead>
                             <TableRow sx={{ backgroundColor: '#edf7f2' }}>
@@ -1763,7 +1764,7 @@ const exportAttemptsToExcel = () => {
                                 </TableCell>
                                 <TableCell align="center">
                                   {ans.question_attachment_url ? (
-                                    <Button
+                                    <Button sx={uiLayout.buttonSx}
                                       size="small"
                                       href={ans.question_attachment_url}
                                       target="_blank"
@@ -1778,7 +1779,7 @@ const exportAttemptsToExcel = () => {
                                 </TableCell>
                                 <TableCell align="center">
                                   {ans.selected_answer_attachment_url ? (
-                                    <Button
+                                    <Button sx={uiLayout.buttonSx}
                                       size="small"
                                       href={ans.selected_answer_attachment_url}
                                       target="_blank"
@@ -1793,7 +1794,7 @@ const exportAttemptsToExcel = () => {
                                 </TableCell>
                                 <TableCell align="center">
                                   {ans.correct_answer_attachment_url ? (
-                                    <Button
+                                    <Button sx={uiLayout.buttonSx}
                                       size="small"
                                       href={ans.correct_answer_attachment_url}
                                       target="_blank"
@@ -1834,8 +1835,8 @@ const exportAttemptsToExcel = () => {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button onClick={() => setShowAttemptsDialog(false)}>إغلاق</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setShowAttemptsDialog(false)}>إغلاق</Button>
         </DialogActions>
       </Dialog>
     </Container>

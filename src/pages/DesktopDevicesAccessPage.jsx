@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -559,7 +561,7 @@ const StatCard = ({ title, value, icon, color = colors.primary, subtitle }) => (
           {subtitle && (
             <Typography
               noWrap
-              sx={{ fontFamily: "Cairo", color: colors.muted, fontSize: "0.72rem", mt: 1, maxWidth: "100%" }}
+              sx={{ fontFamily: "Cairo", color: colors.muted, fontSize: "0.75rem", mt: 1, maxWidth: "100%" }}
             >
               {subtitle}
             </Typography>
@@ -899,7 +901,7 @@ export default function DesktopDevicesAccessPage() {
               <Typography noWrap sx={{ fontFamily: "Cairo", fontWeight: 900, lineHeight: 1.2, fontSize: "0.82rem" }}>
                 {params.row.display_user_name || "غير معروف"}
               </Typography>
-              <Typography noWrap sx={{ fontFamily: "Cairo", fontSize: "0.68rem", color: colors.muted }}>
+              <Typography noWrap sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: colors.muted }}>
                 {params.row.actual_user_loaded
                   ? params.row.resolved_user_name || params.row.user_guid || ""
                   : params.row.user_guid
@@ -978,7 +980,7 @@ export default function DesktopDevicesAccessPage() {
                 sx={{
                   fontFamily: "Cairo",
                   fontWeight: 800,
-                  fontSize: "0.72rem",
+                  fontSize: "0.75rem",
                   direction: "ltr",
                   textAlign: "left",
                   maxWidth: "100%",
@@ -1284,7 +1286,7 @@ export default function DesktopDevicesAccessPage() {
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <RefreshIcon />}
               onClick={() => fetchRows(filters)}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 borderRadius: 3,
@@ -1293,7 +1295,7 @@ export default function DesktopDevicesAccessPage() {
                 color: colors.primary,
                 boxShadow: "none",
                 "&:hover": { bgcolor: "#edf7f2", boxShadow: "none" },
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث البيانات
             </Button>
@@ -1367,7 +1369,7 @@ export default function DesktopDevicesAccessPage() {
             alignItems={{ xs: "stretch", md: "center" }}
             spacing={1.5}
             useFlexGap
-            sx={{ flexWrap: "wrap" }}
+            sx={uiLayout.withUiSx({ flexWrap: "wrap" }, uiLayout.filterBarSx)}
           >
             <TextField
               fullWidth
@@ -1380,9 +1382,9 @@ export default function DesktopDevicesAccessPage() {
                 }
               }}
               size="small"
-              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
+              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } , shrink: true }}
               inputProps={{ dir: "auto", style: { textAlign: "start", fontFamily: "Cairo" } }}
-              sx={{ flex: "1 1 340px" }}
+              sx={uiLayout.withUiSx({ flex: "1 1 340px" }, uiLayout.formFieldSx)}
             />
 
             <TextField
@@ -1391,11 +1393,11 @@ export default function DesktopDevicesAccessPage() {
               value={filters.status}
               onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
               size="small"
-              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
-              sx={{
+              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } , shrink: true }}
+              sx={uiLayout.withUiSx({
                 minWidth: { xs: "100%", md: 170 },
                 ".MuiSelect-select": { fontFamily: "Cairo", textAlign: "start" },
-              }}
+              }, uiLayout.formFieldSx)}
             >
               <MenuItem value="all">الكل</MenuItem>
               <MenuItem value="allowed">مسموح</MenuItem>
@@ -1410,11 +1412,11 @@ export default function DesktopDevicesAccessPage() {
               value={filters.suspicion}
               onChange={(e) => setFilters((prev) => ({ ...prev, suspicion: e.target.value }))}
               size="small"
-              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
-              sx={{
+              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } , shrink: true }}
+              sx={uiLayout.withUiSx({
                 minWidth: { xs: "100%", md: 230 },
                 ".MuiSelect-select": { fontFamily: "Cairo", textAlign: "start" },
-              }}
+              }, uiLayout.formFieldSx)}
             >
               <MenuItem value="all">كل السجلات</MenuItem>
               <MenuItem value="suspicious">كل الشبهات</MenuItem>
@@ -1431,7 +1433,7 @@ export default function DesktopDevicesAccessPage() {
               size="small"
               InputLabelProps={{ shrink: true, sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
               inputProps={{ style: { textAlign: "left", direction: "ltr" , unicodeBidi: "isolate" } , dir: "ltr" }}
-              sx={{ minWidth: { xs: "100%", md: 155 } }}
+              sx={uiLayout.withUiSx({ minWidth: { xs: "100%", md: 155 } }, uiLayout.formFieldSx)}
             />
 
             <TextField
@@ -1442,14 +1444,14 @@ export default function DesktopDevicesAccessPage() {
               size="small"
               InputLabelProps={{ shrink: true, sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
               inputProps={{ style: { textAlign: "left", direction: "ltr" , unicodeBidi: "isolate" } , dir: "ltr" }}
-              sx={{ minWidth: { xs: "100%", md: 155 } }}
+              sx={uiLayout.withUiSx({ minWidth: { xs: "100%", md: 155 } }, uiLayout.formFieldSx)}
             />
 
             <Button
               variant="contained"
               onClick={applyCurrentFilters}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 height: "40px",
                 minWidth: { xs: "100%", md: 130 },
                 fontFamily: "Cairo",
@@ -1458,7 +1460,7 @@ export default function DesktopDevicesAccessPage() {
                 bgcolor: colors.primary,
                 boxShadow: "0 10px 22px rgba(5,116,69,0.18)",
                 "&:hover": { bgcolor: colors.primaryDark },
-              }}
+              }, uiLayout.buttonSx)}
             >
               تطبيق
             </Button>
@@ -1478,7 +1480,7 @@ export default function DesktopDevicesAccessPage() {
                 fetchRows(resetFilters);
               }}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 height: "40px",
                 minWidth: { xs: "100%", md: 110 },
                 fontFamily: "Cairo",
@@ -1490,7 +1492,7 @@ export default function DesktopDevicesAccessPage() {
                   borderColor: colors.red,
                   bgcolor: colors.redSoft,
                 },
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصفير
             </Button>
@@ -1511,14 +1513,14 @@ export default function DesktopDevicesAccessPage() {
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             width: "100%",
             borderRadius: 4.5,
             overflow: "visible",
             border: `1px solid ${colors.border}`,
             boxShadow: "0 18px 42px rgba(5,116,69,0.08)",
             bgcolor: "#fff",
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <Box
             sx={{
@@ -1571,7 +1573,7 @@ export default function DesktopDevicesAccessPage() {
                 paginationModel: { pageSize: 100, page: 0 },
               },
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               direction: "rtl",
               border: "none",
               fontFamily: "Cairo",
@@ -1581,7 +1583,7 @@ export default function DesktopDevicesAccessPage() {
                 overflowY: "visible",
               },
               ".MuiDataGrid-virtualScroller": {
-                overflowX: "hidden !important",
+                overflowX: "auto",
                 overflowY: "visible !important",
               },
               ".MuiDataGrid-columnHeaders": {
@@ -1615,12 +1617,12 @@ export default function DesktopDevicesAccessPage() {
               ".MuiTablePagination-root, .MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
                 fontFamily: "Cairo",
               },
-            }}
+            }, uiLayout.dataGridSx)}
           />
         </Paper>
       </Box>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={mapDialog.open}
         onClose={closeMapDialog}
         maxWidth="md"
@@ -1881,19 +1883,19 @@ export default function DesktopDevicesAccessPage() {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             p: 2,
             justifyContent: "space-between",
             borderTop: `1px solid ${colors.border}`,
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={closeMapDialog}
-            sx={{
+            sx={uiLayout.withUiSx({
               fontFamily: "Cairo",
               fontWeight: 900,
               color: colors.red,
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -1908,7 +1910,7 @@ export default function DesktopDevicesAccessPage() {
                   "_blank"
                 );
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 borderRadius: 2.5,
@@ -1916,7 +1918,7 @@ export default function DesktopDevicesAccessPage() {
                 "&:hover": {
                   bgcolor: colors.primaryDark,
                 },
-              }}
+              }, uiLayout.buttonSx)}
             >
               فتح في Google Maps
             </Button>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { SIDEBAR_ICON_OPTIONS as ICON_OPTIONS } from '../config/sidebarNavigation';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -345,8 +347,8 @@ export default function SidebarSettings() {
   };
 
   const screensList = (
-    <Paper variant="outlined" sx={{ p: 1, borderRadius: 3, borderColor: border, minHeight: 460 }}>
-      <TextField
+    <Paper variant="outlined" sx={uiLayout.withUiSx({ p: 1, borderRadius: 3, borderColor: border, minHeight: 460 }, uiLayout.filterBarSx)}>
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         fullWidth
         size="small"
         value={search}
@@ -356,26 +358,26 @@ export default function SidebarSettings() {
           endAdornment: <InputAdornment position="end"><SearchIcon /></InputAdornment>
         }}
       />
-      <FormControl fullWidth size="small" sx={{ mt: 1 }}>
+      <FormControl fullWidth size="small" sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.formFieldSx)}>
         <InputLabel>فلترة حسب القائمة</InputLabel>
         <Select value={groupFilter} label="فلترة حسب القائمة" onChange={(e) => setGroupFilter(e.target.value)}>
           <MenuItem value="all">كل الشاشات</MenuItem>
           {data.groups.map((g) => <MenuItem key={g.groupGuid} value={g.groupGuid}>{g.name || g.title}</MenuItem>)}
         </Select>
       </FormControl>
-      <Button fullWidth sx={{ mt: 1 }} variant="outlined" startIcon={<AddIcon />} onClick={newScreen}>شاشة / تابة جديدة</Button>
+      <Button fullWidth sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)} variant="outlined" startIcon={<AddIcon />} onClick={newScreen}>شاشة / تابة جديدة</Button>
       <Stack spacing={0.8} sx={{ mt: 1, maxHeight: "58vh", overflow: "auto" }}>
         {filteredScreens.map((row) => (
           <Button
             key={row.formGuid}
             onClick={() => selectScreen(row)}
             variant={norm(screen.formGuid) === norm(row.formGuid) ? "contained" : "outlined"}
-            sx={{ justifyContent: "flex-start", textAlign: "start", py: 1, px: 1.2, borderRadius: 2 }}
+            sx={uiLayout.withUiSx({ justifyContent: "flex-start", textAlign: "start", py: 1, px: 1.2, borderRadius: 2 }, uiLayout.buttonSx)}
           >
             <Box sx={{ width: "100%" }}>
               <Typography sx={{ fontWeight: 900, fontSize: 14 }}>{row.name || row.title}</Typography>
-              <Typography sx={{ fontSize: 10.5, opacity: 0.75, direction: "ltr", textAlign: "left" }}>{row.route}</Typography>
-              <Typography sx={{ fontSize: 10.5, opacity: 0.75 }}>Code: {row.code || row.formCode}</Typography>
+              <Typography sx={{ fontSize: 12, opacity: 0.75, direction: "ltr", textAlign: "left" }}>{row.route}</Typography>
+              <Typography sx={{ fontSize: 12, opacity: 0.75 }}>Code: {row.code || row.formCode}</Typography>
             </Box>
           </Button>
         ))}
@@ -394,10 +396,10 @@ export default function SidebarSettings() {
               الاسم هنا هو Form_Name.Name نفسه؛ لا يوجد اسم Web منفصل بعد الآن.
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={newScreen}>جديدة</Button>
-            {screen.formGuid && <Button color="error" variant="outlined" startIcon={<DeleteOutlineIcon />} onClick={deleteScreen}>حذف</Button>}
-            <Button variant="contained" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />} onClick={saveScreen} disabled={saving}>حفظ</Button>
+          <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1}>
+            <Button sx={uiLayout.buttonSx} variant="outlined" startIcon={<AddIcon />} onClick={newScreen}>جديدة</Button>
+            {screen.formGuid && <Button sx={uiLayout.buttonSx} color="error" variant="outlined" startIcon={<DeleteOutlineIcon />} onClick={deleteScreen}>حذف</Button>}
+            <Button sx={uiLayout.buttonSx} variant="contained" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />} onClick={saveScreen} disabled={saving}>حفظ</Button>
           </Stack>
         </Stack>
 
@@ -406,14 +408,14 @@ export default function SidebarSettings() {
           <b>المصدر واحد:</b> تغيير اسم الشاشة هنا يحدث Form_Name مباشرة؛ شاشة «إضافة مستخدم» والسايدبار سيقرآن نفس الاسم.
         </Alert>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }}>
-          <TextField size="small" label="اسم الشاشة" value={screen.name} onChange={(e) => setScreenField("name", e.target.value)} />
-          <TextField size="small" label="Code الصلاحية / Form_Name" value={screen.code || screen.formCode || data.nextCode} disabled={Boolean(screen.formGuid)} onChange={(e) => setScreenField("code", e.target.value)} helperText={screen.formGuid ? "كود Form_Name ثابت بعد الإنشاء" : "يتم توليده تلقائيًا إذا تركته فارغًا"} />
-          <TextField size="small" label="ItemKey" value={screen.itemKey} disabled={Boolean(screen.formGuid)} onChange={(e) => setScreenField("itemKey", e.target.value)} helperText="مفتاح تقني ثابت مثل payment-follow" />
-          <TextField size="small" label="Route" value={screen.route} onChange={(e) => setScreenField("route", e.target.value)} />
-          <TextField size="small" label="وصف اختياري" value={screen.description || ""} onChange={(e) => setScreenField("description", e.target.value)} />
+        <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }, uiLayout.formGridSx)}>
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم الشاشة" value={screen.name} onChange={(e) => setScreenField("name", e.target.value)} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="Code الصلاحية / Form_Name" value={screen.code || screen.formCode || data.nextCode} disabled={Boolean(screen.formGuid)} onChange={(e) => setScreenField("code", e.target.value)} helperText={screen.formGuid ? "كود Form_Name ثابت بعد الإنشاء" : "يتم توليده تلقائيًا إذا تركته فارغًا"} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="ItemKey" value={screen.itemKey} disabled={Boolean(screen.formGuid)} onChange={(e) => setScreenField("itemKey", e.target.value)} helperText="مفتاح تقني ثابت مثل payment-follow" />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="Route" value={screen.route} onChange={(e) => setScreenField("route", e.target.value)} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="وصف اختياري" value={screen.description || ""} onChange={(e) => setScreenField("description", e.target.value)} />
 
-          <FormControl size="small">
+          <FormControl sx={uiLayout.formFieldSx} size="small">
             <InputLabel>طريقة الظهور</InputLabel>
             <Select value={screen.placement || "grouped"} label="طريقة الظهور" onChange={(e) => setScreenField("placement", e.target.value)}>
               <MenuItem value="grouped">داخل قائمة</MenuItem>
@@ -429,7 +431,7 @@ export default function SidebarSettings() {
             getOptionLabel={(x) => `${x.name || x.title} (${x.code})`}
             isOptionEqualToValue={(a, b) => norm(a.groupGuid) === norm(b.groupGuid)}
             onChange={(_, value) => setScreenField("menuGuid", value?.groupGuid || "")}
-            renderInput={(params) => <TextField {...params} label="القائمة الرئيسية" placeholder="اختر من القوائم المعرفة في WebSidebarGroup" />}
+            renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="القائمة الرئيسية" placeholder="اختر من القوائم المعرفة في WebSidebarGroup" />}
           />
 
           <Autocomplete
@@ -439,11 +441,11 @@ export default function SidebarSettings() {
             value={screen.iconKey || ""}
             onChange={(_, value) => setScreenField("iconKey", value || "")}
             onInputChange={(_, value) => setScreenField("iconKey", value || "")}
-            renderInput={(params) => <TextField {...params} label="IconKey" />}
+            renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="IconKey" />}
           />
-          <TextField size="small" type="number" label="الترتيب" value={screen.sortOrder} onChange={(e) => setScreenField("sortOrder", Number(e.target.value))} />
-          <TextField size="small" label="Badge" value={screen.badgeText || ""} onChange={(e) => setScreenField("badgeText", e.target.value)} />
-          <TextField size="small" label="Custom Badge" value={screen.customBadge || ""} onChange={(e) => setScreenField("customBadge", e.target.value)} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" type="number" label="الترتيب" value={screen.sortOrder} onChange={(e) => setScreenField("sortOrder", Number(e.target.value))} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="Badge" value={screen.badgeText || ""} onChange={(e) => setScreenField("badgeText", e.target.value)} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="Custom Badge" value={screen.customBadge || ""} onChange={(e) => setScreenField("customBadge", e.target.value)} />
         </Box>
 
         <Box sx={{ mt: 1.2, display: "flex", gap: 1.5, flexWrap: "wrap" }}>
@@ -473,13 +475,13 @@ export default function SidebarSettings() {
   const groupsEditor = (
     <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "340px 1fr" }, gap: 1.3 }}>
       <Paper variant="outlined" sx={{ p: 1, borderRadius: 3, borderColor: border }}>
-        <Button fullWidth variant="outlined" startIcon={<AddIcon />} onClick={() => setGroup(emptyGroup())}>قائمة جديدة</Button>
+        <Button sx={uiLayout.buttonSx} fullWidth variant="outlined" startIcon={<AddIcon />} onClick={() => setGroup(emptyGroup())}>قائمة جديدة</Button>
         <Stack spacing={0.8} sx={{ mt: 1 }}>
           {data.groups.map((row) => (
-            <Button key={row.groupGuid} variant={norm(group.groupGuid) === norm(row.groupGuid) ? "contained" : "outlined"} onClick={() => selectGroup(row)} sx={{ justifyContent: "flex-start" }}>
+            <Button key={row.groupGuid} variant={norm(group.groupGuid) === norm(row.groupGuid) ? "contained" : "outlined"} onClick={() => selectGroup(row)} sx={uiLayout.withUiSx({ justifyContent: "flex-start" }, uiLayout.buttonSx)}>
               <Box sx={{ width: "100%", textAlign: "start" }}>
                 <Typography sx={{ fontWeight: 900 }}>{row.name || row.title}</Typography>
-                <Typography sx={{ fontSize: 11, opacity: 0.7 }}>{row.code} · {row.groupKey}</Typography>
+                <Typography sx={{ fontSize: 12, opacity: 0.7 }}>{row.code} · {row.groupKey}</Typography>
               </Box>
             </Button>
           ))}
@@ -492,18 +494,18 @@ export default function SidebarSettings() {
             <Typography sx={{ fontWeight: 900, fontSize: 20 }}>بيانات القائمة الرئيسية</Typography>
             <Typography color="text.secondary" sx={{ fontSize: 12 }}>الاسم هنا هو اسم القائمة في WebSidebarGroup؛ ويظهر بنفس الاسم في السايدبار وشاشة إضافة المستخدم.</Typography>
           </Box>
-          <Stack direction="row" spacing={1}>
-            {group.groupGuid && <Button color="error" variant="outlined" startIcon={<DeleteOutlineIcon />} onClick={deleteGroup}>إيقاف</Button>}
-            <Button variant="contained" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />} onClick={saveGroup} disabled={saving}>حفظ</Button>
+          <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1}>
+            {group.groupGuid && <Button sx={uiLayout.buttonSx} color="error" variant="outlined" startIcon={<DeleteOutlineIcon />} onClick={deleteGroup}>إيقاف</Button>}
+            <Button sx={uiLayout.buttonSx} variant="contained" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />} onClick={saveGroup} disabled={saving}>حفظ</Button>
           </Stack>
         </Stack>
         <Divider sx={{ my: 1.5 }} />
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }}>
-          <TextField size="small" label="اسم القائمة" value={group.name || ""} onChange={(e) => setGroupField("name", e.target.value)} />
-          <TextField size="small" label="كود صلاحية القائمة القديمة (اختياري)" value={group.code || group.permissionMenuCode || ""} onChange={(e) => setGroupField("code", e.target.value)} helperText="مثال: sales / report / maintools. اتركه فارغًا للقوائم الويب فقط." />
-          <TextField size="small" label="GroupKey" value={group.groupKey || ""} disabled={Boolean(group.groupGuid)} onChange={(e) => setGroupField("groupKey", e.target.value)} />
-          <Autocomplete freeSolo size="small" options={ICON_OPTIONS} value={group.iconKey || ""} onChange={(_, value) => setGroupField("iconKey", value || "")} onInputChange={(_, value) => setGroupField("iconKey", value || "")} renderInput={(params) => <TextField {...params} label="IconKey" />} />
-          <TextField size="small" type="number" label="الترتيب" value={group.sortOrder} onChange={(e) => setGroupField("sortOrder", Number(e.target.value))} />
+        <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }, uiLayout.formGridSx)}>
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم القائمة" value={group.name || ""} onChange={(e) => setGroupField("name", e.target.value)} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="كود صلاحية القائمة القديمة (اختياري)" value={group.code || group.permissionMenuCode || ""} onChange={(e) => setGroupField("code", e.target.value)} helperText="مثال: sales / report / maintools. اتركه فارغًا للقوائم الويب فقط." />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="GroupKey" value={group.groupKey || ""} disabled={Boolean(group.groupGuid)} onChange={(e) => setGroupField("groupKey", e.target.value)} />
+          <Autocomplete freeSolo size="small" options={ICON_OPTIONS} value={group.iconKey || ""} onChange={(_, value) => setGroupField("iconKey", value || "")} onInputChange={(_, value) => setGroupField("iconKey", value || "")} renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="IconKey" />} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" type="number" label="الترتيب" value={group.sortOrder} onChange={(e) => setGroupField("sortOrder", Number(e.target.value))} />
         </Box>
         <Box sx={{ mt: 1.2, display: "flex", gap: 1.5, flexWrap: "wrap" }}>
           <FormControlLabel control={<Checkbox checked={group.isActive !== false} onChange={(e) => setGroupField("isActive", e.target.checked)} />} label="فعالة" />

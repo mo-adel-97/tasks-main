@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -357,7 +358,7 @@ export default function ExceptionsLists() {
               startIcon={<RefreshIcon />}
               onClick={() => fetchList({ page })}
               disabled={loading}
-              sx={{ borderRadius: 2, fontWeight: 800, whiteSpace: "nowrap" }}
+              sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 800, whiteSpace: "nowrap" }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -373,7 +374,7 @@ export default function ExceptionsLists() {
                   إضافة استثناء
                 </Typography>
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="رقم الهوية"
                   value={nationalId}
@@ -390,7 +391,7 @@ export default function ExceptionsLists() {
                   }}
                 />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   select
                   label="الحالة"
@@ -402,7 +403,7 @@ export default function ExceptionsLists() {
                   <MenuItem value={STATUS.ZERO_BALANCE}>{STATUS.ZERO_BALANCE}</MenuItem>
                 </TextField>
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="ملاحظات (اختياري)"
                   value={notes}
@@ -425,7 +426,7 @@ export default function ExceptionsLists() {
                   onClick={createItem}
                   startIcon={<AddCircleOutlineIcon />}
                   disabled={loading || showAllBranches} // ما تضيفش وانت في وضع كل الفروع
-                  sx={{ mt: 2, borderRadius: 2, py: 1.2, fontWeight: 800 }}
+                  sx={uiLayout.withUiSx({ mt: 2, borderRadius: 2, py: 1.2, fontWeight: 800 }, uiLayout.buttonSx)}
                 >
                   إضافة
                 </Button>
@@ -465,8 +466,8 @@ export default function ExceptionsLists() {
                     القائمة
                   </Typography>
 
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    <TextField
+                  <Box sx={uiLayout.withUiSx({ display: "flex", gap: 1, flexWrap: "wrap" }, uiLayout.formGridSx)}>
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       size="small"
                       placeholder="بحث برقم الهوية أو الملاحظات"
                       value={search}
@@ -480,12 +481,12 @@ export default function ExceptionsLists() {
                       }}
                     />
 
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       size="small"
                       select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
-                      sx={{ minWidth: 160 }}
+                      sx={uiLayout.withUiSx({ minWidth: 160 }, uiLayout.formFieldSx)}
                     >
                       <MenuItem value="الكل">الكل</MenuItem>
                       <MenuItem value={STATUS.GRADUATED}>{STATUS.GRADUATED}</MenuItem>
@@ -494,7 +495,7 @@ export default function ExceptionsLists() {
                   </Box>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: "hidden" }}>
+                <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, overflow: "hidden" }, uiLayout.tableContainerSx)}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>

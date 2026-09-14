@@ -1,3 +1,4 @@
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useRef, useState } from "react";

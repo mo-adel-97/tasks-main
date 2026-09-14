@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React from 'react';
 import { 
   Box, 
@@ -62,7 +63,7 @@ const ReportViewer = ({ report, onBack }) => {
         </Stack>
       </AccordionSummary>
       <AccordionDetails>
-        <TableContainer component={Paper} sx={styles.tableContainer}>
+        <TableContainer component={Paper} sx={uiLayout.withUiSx(styles.tableContainer, uiLayout.tableContainerSx)}>
           <Table size="small">
             <TableHead sx={styles.tableHead}>
               <TableRow>
@@ -245,7 +246,7 @@ const ReportViewer = ({ report, onBack }) => {
             <Button 
               startIcon={<BackIcon />}
               onClick={onBack}
-              sx={styles.backButton}
+              sx={uiLayout.withUiSx(styles.backButton, uiLayout.buttonSx)}
             >
               العودة
             </Button>

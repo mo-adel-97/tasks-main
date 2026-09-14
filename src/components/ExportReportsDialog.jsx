@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
@@ -887,7 +888,7 @@ export default function ExportReportsDialog({
   };
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={exporting ? undefined : onClose}
       fullWidth
@@ -929,7 +930,7 @@ export default function ExportReportsDialog({
           <Typography sx={{ fontWeight: 700, mb: 1 }}>
             Export Format
           </Typography>
-          <FormControl fullWidth size="small">
+          <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
             <InputLabel>Format</InputLabel>
             <Select
               value={exportFormat}
@@ -958,7 +959,7 @@ export default function ExportReportsDialog({
           )}
         </Box>
 
-        <Box sx={{ mb: 3 }}>
+        <Box sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.pageHeaderSx)}>
           <Typography sx={{ fontWeight: 700, mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
             <BusinessIcon />
             Select Branches
@@ -972,11 +973,11 @@ export default function ExportReportsDialog({
             </Box>
           ) : (
             <>
-              <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: "wrap" }}>
-                <Button size="small" variant="outlined" onClick={handleSelectAll} disabled={!branches.length || exporting}>
+              <Stack direction="row" spacing={1} sx={uiLayout.withUiSx({ mb: 1, flexWrap: "wrap" }, uiLayout.actionBarSx)}>
+                <Button sx={uiLayout.buttonSx} size="small" variant="outlined" onClick={handleSelectAll} disabled={!branches.length || exporting}>
                   Select All
                 </Button>
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   size="small"
                   variant="outlined"
                   color="error"
@@ -1007,7 +1008,7 @@ export default function ExportReportsDialog({
                   </li>
                 )}
                 renderInput={(params) => (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     {...params}
                     placeholder="Select branches..."
                     size="small"
@@ -1024,14 +1025,14 @@ export default function ExportReportsDialog({
           <Typography sx={{ fontWeight: 800, mb: 1 }}>Date Range</Typography>
 
           <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ar}>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <Stack sx={uiLayout.formGridSx} direction={{ xs: "column", sm: "row" }} spacing={2}>
               <DatePicker
                 label="From Date"
                 value={dateFrom}
                 onChange={(v) => {
                   if (v && !isNaN(v)) setDateFrom(v);
                 }}
-                renderInput={(params) => <TextField {...params} size="small" />}
+                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" />}
               />
               <DatePicker
                 label="To Date"
@@ -1039,7 +1040,7 @@ export default function ExportReportsDialog({
                 onChange={(v) => {
                   if (v && !isNaN(v)) setDateTo(v);
                 }}
-                renderInput={(params) => <TextField {...params} size="small" />}
+                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" />}
               />
             </Stack>
           </LocalizationProvider>
@@ -1074,8 +1075,8 @@ export default function ExportReportsDialog({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} disabled={exporting}>
+      <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
+        <Button sx={uiLayout.buttonSx} onClick={onClose} disabled={exporting}>
           Cancel
         </Button>
         <Button
@@ -1083,13 +1084,13 @@ export default function ExportReportsDialog({
           startIcon={exportFormat === "html" ? <HtmlIcon /> : <DescriptionIcon />}
           onClick={handleExport}
           disabled={!canExport || exporting || branchesLoading}
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: palette?.primary?.main || "#80b49e",
             "&:hover": { backgroundColor: palette?.primary?.dark || "#5a8f7d" },
             fontWeight: 800,
             borderRadius: 2,
             px: 3,
-          }}
+          }, uiLayout.buttonSx)}
         >
           Export {exportFormat.toUpperCase()}
         </Button>

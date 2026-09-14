@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import { hrChipSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import {
@@ -516,15 +517,15 @@ const copyToClipboard = (text) => {
         boxSizing: "border-box",
         "& .MuiTypography-root": { overflowWrap: "anywhere" },
         "& .MuiButton-root": {
-          fontSize: { xs: "0.64rem", sm: "0.72rem", md: "0.82rem" },
+          fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.82rem" },
           minHeight: { xs: 32, sm: 34, md: 38 },
         },
         "& .MuiChip-root": {
-          fontSize: { xs: "0.58rem", sm: "0.66rem", md: "0.72rem" },
+          fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
           height: { xs: 24, sm: 26, md: 28 },
         },
         "& .MuiInputBase-root, & .MuiInputLabel-root": {
-          fontSize: { xs: "0.68rem", sm: "0.75rem", md: "0.84rem" },
+          fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.84rem" },
         },
       }}
     >
@@ -553,7 +554,7 @@ const copyToClipboard = (text) => {
             <Typography variant="h4" fontWeight="bold" color={COLOR_SCHEME.text} gutterBottom sx={{ fontSize: { xs: "1rem", sm: "1.2rem", md: "1.55rem" }, mb: { xs: 0.25, md: 0.5 } }}>
               غرفة الاجتماعات الافتراضية
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: "0.66rem", sm: "0.74rem", md: "0.84rem" } }}>
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.84rem" } }}>
               انضم إلى الاجتماعات أو أنشئ اجتماعات جديدة بضغطة زر
             </Typography>
           </Box>
@@ -563,7 +564,7 @@ const copyToClipboard = (text) => {
     variant="contained"
     startIcon={<VideoCameraFront />}
     onClick={() => handleOpenDialog()}
-    sx={{
+    sx={uiLayout.withUiSx({
       bgcolor: COLOR_SCHEME.primary,
       '&:hover': {
         bgcolor: COLOR_SCHEME.primaryDark,
@@ -572,9 +573,9 @@ const copyToClipboard = (text) => {
       py: { xs: 0.65, sm: 0.8, md: 1 },
       borderRadius: 2,
       fontWeight: 'bold',
-      fontSize: { xs: "0.66rem", sm: "0.75rem", md: "0.86rem" },
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.86rem" },
       width: { xs: "100%", sm: "auto" },
-    }}
+    }, uiLayout.buttonSx)}
   >
     اجتماع جديد
   </Button>
@@ -605,7 +606,7 @@ const copyToClipboard = (text) => {
               <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.filter(m => m.status === "جاري").length}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.76rem" } }}>
                 اجتماعات نشطة
               </Typography>
             </CardContent>
@@ -631,7 +632,7 @@ const copyToClipboard = (text) => {
               <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.filter(m => m.status === "مخطط").length}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.76rem" } }}>
                 قادمة
               </Typography>
             </CardContent>
@@ -657,7 +658,7 @@ const copyToClipboard = (text) => {
               <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.reduce((acc, meeting) => acc + meeting.participants.length, 0)}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.76rem" } }}>
                 مشاركين
               </Typography>
             </CardContent>
@@ -683,7 +684,7 @@ const copyToClipboard = (text) => {
               <Typography variant="h5" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                 {meetings.length}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.68rem", md: "0.76rem" } }}>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.76rem" } }}>
                 إجمالي الاجتماعات
               </Typography>
             </CardContent>
@@ -735,12 +736,12 @@ const copyToClipboard = (text) => {
     variant="contained" 
     startIcon={<VideoCameraFront />}
     onClick={() => handleOpenDialog()}
-    sx={{ 
+    sx={uiLayout.withUiSx({ 
       bgcolor: COLOR_SCHEME.primary,
       '&:hover': {
         bgcolor: COLOR_SCHEME.primaryDark,
       }
-    }}
+    }, uiLayout.buttonSx)}
   >
     إنشاء اجتماع جديد
   </Button>
@@ -842,14 +843,14 @@ const copyToClipboard = (text) => {
                             variant="contained"
                             startIcon={<VideoCameraFront />}
                             onClick={() => handleJoinMeeting(meeting)}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               bgcolor: COLOR_SCHEME.success,
                               '&:hover': {
                                 bgcolor: '#1a9c4d',
                               },
                               minWidth: '120px',
                               mb: { xs: 1, sm: 0 }
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             انضم الآن
                           </Button>
@@ -889,7 +890,7 @@ const copyToClipboard = (text) => {
         maxWidth="md"
         fullWidth
         fullScreen={isMobile}
-        sx={{ '& .MuiDialog-paper': { borderRadius: 3 } }}
+        sx={uiLayout.withUiSx({ '& .MuiDialog-paper': { borderRadius: 3 } }, uiLayout.dialogLayoutSx)}
       >
         <DialogTitle sx={{ 
           bgcolor: alpha(COLOR_SCHEME.primary, 0.05),
@@ -905,7 +906,7 @@ const copyToClipboard = (text) => {
             <Grid container spacing={{ xs: 1, sm: 1.5, md: 2.5 }}>
               {/* معلومات الأساسية */}
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="عنوان الاجتماع"
                   value={formData.title}
@@ -916,7 +917,7 @@ const copyToClipboard = (text) => {
               </Grid>
               
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   multiline
                   rows={3}
@@ -928,7 +929,7 @@ const copyToClipboard = (text) => {
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   fullWidth
                   type="date"
                   label="تاريخ الاجتماع"
@@ -940,7 +941,7 @@ const copyToClipboard = (text) => {
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   fullWidth
                   type="time"
                   label="وقت الاجتماع"
@@ -961,7 +962,7 @@ const copyToClipboard = (text) => {
                   
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <FormControl fullWidth size="small">
+                      <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                         <InputLabel>اختر الأقسام</InputLabel>
                         <Select
                           multiple
@@ -1003,7 +1004,7 @@ const copyToClipboard = (text) => {
 
                     {selectedDept.length > 0 && (
                       <Grid item xs={12} md={6}>
-                        <FormControl fullWidth size="small">
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                           <InputLabel>الوظائف المطلوبة</InputLabel>
                           <Select
                             multiple
@@ -1059,7 +1060,7 @@ const copyToClipboard = (text) => {
 
                     {selectedJobs.length > 0 && !loading && (
                       <Grid item xs={12}>
-                        <FormControl fullWidth size="small">
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                           <InputLabel>اختر الموظفين</InputLabel>
                           <Select
                             multiple
@@ -1103,7 +1104,7 @@ const copyToClipboard = (text) => {
                             }}
                           >
                             <Box sx={{ p: 1, borderBottom: `1px solid ${alpha(COLOR_SCHEME.primary, 0.1)}` }}>
-                              <TextField
+                              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                                 fullWidth
                                 variant="outlined"
                                 size="small"
@@ -1177,16 +1178,16 @@ const copyToClipboard = (text) => {
             </Grid>
           </DialogContent>
           
-          <DialogActions sx={{ p: 3, gap: 1 }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 1 }, uiLayout.dialogActionsSx)}>
             <Button 
               onClick={handleCloseDialog}
               disabled={submitting}
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 color: COLOR_SCHEME.text,
                 '&:hover': {
                   bgcolor: alpha(COLOR_SCHEME.text, 0.05)
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               إلغاء
             </Button>
@@ -1195,7 +1196,7 @@ const copyToClipboard = (text) => {
               variant="contained"
               disabled={!formData.title || !formData.date || !formData.time || selectedUsers.length === 0 || submitting}
               startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : null}
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 bgcolor: COLOR_SCHEME.primary,
                 '&:hover': {
                   bgcolor: COLOR_SCHEME.primaryDark,
@@ -1203,7 +1204,7 @@ const copyToClipboard = (text) => {
                 '&:disabled': {
                   bgcolor: alpha(COLOR_SCHEME.primary, 0.5)
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {submitting ? 'جاري الحفظ...' : selectedMeeting ? 'تحديث' : 'إنشاء'}
             </Button>
@@ -1212,7 +1213,7 @@ const copyToClipboard = (text) => {
       </Dialog>
 
       {/* نافذة الانضمام للاجتماع */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={joinMeetingDialog} 
         onClose={() => setJoinMeetingDialog(false)}
         maxWidth="sm"
@@ -1258,15 +1259,15 @@ const copyToClipboard = (text) => {
           )}
         </DialogContent>
         
-        <DialogActions sx={{ p: 3, justifyContent: 'center', gap: 2 }}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 3, justifyContent: 'center', gap: 2 }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={() => setJoinMeetingDialog(false)}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               color: COLOR_SCHEME.text,
               '&:hover': {
                 bgcolor: alpha(COLOR_SCHEME.text, 0.05)
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -1274,13 +1275,13 @@ const copyToClipboard = (text) => {
             variant="contained"
             startIcon={<VideoCameraFront />}
             onClick={handleStartMeeting}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               bgcolor: COLOR_SCHEME.success,
               '&:hover': {
                 bgcolor: '#1a9c4d',
               },
               px: 4
-            }}
+            }, uiLayout.buttonSx)}
           >
             انضم إلى الاجتماع
           </Button>

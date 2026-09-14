@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -322,7 +323,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
   };
 
   return (
-    <Dialog 
+    <Dialog sx={uiLayout.dialogLayoutSx} 
       open={true} 
       maxWidth="md" 
       fullWidth
@@ -390,7 +391,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     name="fullName"
                     label="الاسم الكامل *"
@@ -399,7 +400,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                     required
                     variant="outlined"
                     placeholder="أدخل الاسم الكامل"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       '& .MuiInputLabel-root': { 
                         color: '#475569',
                         fontWeight: '600'
@@ -420,12 +421,12 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                         background: 'white',
                         borderRadius: 1
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth required>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth required>
                     <InputLabel sx={{ 
                       color: '#475569',
                       fontWeight: '600'
@@ -477,7 +478,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <FormControl fullWidth required>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth required>
                     <InputLabel sx={{ 
                       color: '#475569',
                       fontWeight: '600'
@@ -542,7 +543,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                   variant="outlined"
                   color="primary"
                   size="medium"
-                  sx={{ 
+                  sx={uiLayout.withUiSx({ 
                     color: '#0ea5e9', 
                     borderColor: '#0ea5e9',
                     borderWidth: 1,
@@ -552,7 +553,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                       borderColor: '#0284c7',
                       backgroundColor: '#f0f9ff',
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إضافة جوال
                 </Button>
@@ -589,7 +590,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
 
                     <Grid container spacing={2}>
                       <Grid item xs={12} md={4}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           label="السيريال نمبر *"
                           value={phone.serial}
@@ -599,7 +600,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                           error={phone.serial && !validateSerialNumber(phone.serial)}
                           helperText={phone.serial && !validateSerialNumber(phone.serial) ? 
                             "يجب أن يكون بين 6 و 20 حرف/رقم" : ""}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             '& .MuiInputLabel-root': { 
                               color: '#475569',
                               fontWeight: '600'
@@ -620,12 +621,12 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                               background: 'white',
                               borderRadius: 1
                             }
-                          }}
+                          }, uiLayout.formFieldSx)}
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
 
                       <Grid item xs={12} md={4}>
-                        <FormControl fullWidth required>
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth required>
                           <InputLabel sx={{ 
                             color: '#475569',
                             fontWeight: '600'
@@ -660,14 +661,14 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                       </Grid>
 
                       <Grid item xs={12} md={4}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           label="نوع الجوال *"
                           value={phone.type}
                           onChange={(e) => handlePhoneChange(index, 'type', e.target.value)}
                           placeholder="مثال: Samsung, iPhone, etc."
                           required
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             '& .MuiInputLabel-root': { 
                               color: '#475569',
                               fontWeight: '600'
@@ -688,14 +689,14 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                               background: 'white',
                               borderRadius: 1
                             }
-                          }}
+                          }, uiLayout.formFieldSx)}
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
 
                       {/* أرقام الشرائح */}
                       {phone.simNumbers.map((simNumber, simIndex) => (
                         <Grid item xs={12} key={simIndex}>
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             fullWidth
                             label={`رقم الشريحة ${simIndex + 1} *`}
                             value={simNumber}
@@ -708,7 +709,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                             error={simNumber && !validateSaudiPhoneNumber(simNumber)}
                             helperText={simNumber && !validateSaudiPhoneNumber(simNumber) ? 
                               "يجب أن يبدأ بـ 05 ويتكون من 10 أرقام" : ""}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               '& .MuiInputLabel-root': { 
                                 color: '#475569',
                                 fontWeight: '600'
@@ -729,7 +730,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                                 background: 'white',
                                 borderRadius: 1
                               }
-                            }}
+                            }, uiLayout.formFieldSx)}
                           />
                         </Grid>
                       ))}
@@ -754,11 +755,11 @@ const EmployeeDataDialog = ({ onSuccess }) => {
 
       <Divider sx={{ bgcolor: '#e2e8f0' }} />
 
-      <DialogActions sx={{ 
+      <DialogActions sx={uiLayout.withUiSx({ 
         p: 3, 
         background: '#f8fafc',
         borderTop: '1px solid #e2e8f0'
-      }}>
+      }, uiLayout.dialogActionsSx)}>
         <Button
           type="submit"
           onClick={handleSubmit}
@@ -766,7 +767,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
           size="large"
           disabled={loading}
           startIcon={loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : <SaveIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: 250,
             py: 1.5,
             fontSize: '1.1rem',
@@ -783,7 +784,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
               background: '#94a3b8',
               transform: 'none'
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           {loading ? 'جاري حفظ البيانات...' : 'تسليم البيانات والمتابعة'}
         </Button>

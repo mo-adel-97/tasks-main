@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { hrChipSx } from "./hrControlStyles";
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -682,7 +683,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, md: 1.5 }, p: { xs: 0.8, sm: 1, md: 1.4 }, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
                   <Avatar
                     src={like.user_image}
-                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, marginInlineEnd: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
+                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, marginInlineEnd: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: "0.75rem", sm: '0.82rem', md: '1rem' } }}
                   >
                     {getInitials(like.user_full_name)}
                   </Avatar>
@@ -699,7 +700,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
               fullWidth
               variant="contained"
               onClick={closeLikesModal}
-              sx={{ bgcolor: COLOR_SCHEME.primary, '&:hover': { bgcolor: COLOR_SCHEME.primaryDark }, borderRadius: 3 }}
+              sx={uiLayout.withUiSx({ bgcolor: COLOR_SCHEME.primary, '&:hover': { bgcolor: COLOR_SCHEME.primaryDark }, borderRadius: 3 }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
@@ -744,7 +745,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, md: 1.5 }, p: { xs: 0.8, sm: 1, md: 1.4 }, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
                   <Avatar
                     src={view.user_image}
-                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, marginInlineEnd: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
+                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, marginInlineEnd: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: "0.75rem", sm: '0.82rem', md: '1rem' } }}
                   >
                     {getInitials(view.user_full_name)}
                   </Avatar>
@@ -766,7 +767,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
               fullWidth
               variant="contained"
               onClick={closeViewsModal}
-              sx={{ bgcolor: COLOR_SCHEME.primary, '&:hover': { bgcolor: COLOR_SCHEME.primaryDark }, borderRadius: 3 }}
+              sx={uiLayout.withUiSx({ bgcolor: COLOR_SCHEME.primary, '&:hover': { bgcolor: COLOR_SCHEME.primaryDark }, borderRadius: 3 }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
@@ -780,7 +781,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
         maxWidth="lg"
         fullWidth
         fullScreen={isMobile}
-        sx={{
+        sx={uiLayout.withUiSx({
           // نزّل الـ Dialog كله تحت الهيدر الرئيسي في الموبايل والتابلت.
           // التعديل هنا على الـ Paper نفسه، مش على DialogContent فقط.
           '& .MuiDialog-container': {
@@ -825,7 +826,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
             boxShadow: '0 30px 60px rgba(128, 180, 158, 0.3)',
             border: `1px solid ${COLOR_SCHEME.primaryLight}30`
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
       >
         <AppBar
           position="static"
@@ -884,7 +885,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Typography variant="h5" fontWeight="bold" color="white" sx={{ mb: 0.25, fontSize: { xs: "0.78rem", sm: "0.9rem", md: "1rem" }, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {userFullName}
                 </Typography>
-                <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ fontSize: { xs: "0.58rem", sm: "0.68rem", md: "0.78rem" }, display: { xs: "none", sm: "block" } }}>
+                <Typography variant="body2" color="rgba(255,255,255,0.9)" sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.78rem" }, display: { xs: "none", sm: "block" } }}>
                   مرحباً بك في مجتمعنا ✨
                 </Typography>
               </Box>
@@ -896,7 +897,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
       variant="contained"
       startIcon={<Add sx={{ fontSize: '1.3rem' }} />}
       onClick={() => setShowNewPostForm(true)}
-      sx={{
+      sx={uiLayout.withUiSx({
         bgcolor: 'rgba(255,255,255,0.9)',
         color: COLOR_SCHEME.primaryDark,
         '&:hover': {
@@ -910,9 +911,9 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
         py: { xs: 0.55, sm: 0.7, md: 0.9 },
         borderRadius: 3,
         fontWeight: 'bold',
-        fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.82rem' },
+        fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' },
         boxShadow: '0 4px 15px rgba(255,255,255,0.2)'
-      }}
+      }, uiLayout.buttonSx)}
     >
       منشور جديد
     </Button>
@@ -945,17 +946,17 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
               overflowWrap: 'anywhere'
             },
             '& .MuiChip-root': {
-              fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
+              fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               height: { xs: 23, sm: 25, md: 28 }
             },
             '& .MuiChip-icon': {
               fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.05rem' }
             },
             '& .MuiButton-root': {
-              fontSize: { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' }
+              fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.8rem' }
             },
             '& .MuiInputBase-root': {
-              fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' }
+              fontSize: { xs: "0.75rem", sm: '0.76rem', md: '0.86rem' }
             }
           }}
         >
@@ -1000,28 +1001,28 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         {getInitials(userFullName)}
                       </Avatar>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: 0.2, fontSize: { xs: "0.72rem", sm: "0.82rem", md: "0.92rem" } }}>
+                        <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: 0.2, fontSize: { xs: "0.75rem", sm: "0.82rem", md: "0.92rem" } }}>
                           {userFullName}
                         </Typography>
-                        <Typography variant="body2" color={COLOR_SCHEME.primary} sx={{ fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.82rem" } }}>
+                        <Typography variant="body2" color={COLOR_SCHEME.primary} sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.82rem" } }}>
                           شارك أفكارك مع المجتمع... 🌟
                         </Typography>
                       </Box>
                     </Box>
 
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       multiline
                       rows={isMobile ? 3 : isTablet ? 4 : 5}
                       placeholder="ما الذي يدور في ذهنك؟ شاركنا أفكارك وإبداعاتك..."
                       value={newPostContent}
                       onChange={(e) => setNewPostContent(e.target.value)}
-                      sx={{ mb: { xs: 1, sm: 1.5, md: 2 } }}
+                      sx={uiLayout.withUiSx({ mb: { xs: 1, sm: 1.5, md: 2 } }, uiLayout.formFieldSx)}
                       variant="outlined"
                       InputProps={{
                         sx: {
                           borderRadius: 3,
-                          fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.92rem' },
+                          fontSize: { xs: "0.75rem", sm: '0.82rem', md: '0.92rem' },
                           lineHeight: 1.6,
                           p: { xs: 1, sm: 1.2, md: 1.5 },
                           border: `2px solid ${COLOR_SCHEME.primaryLight}30`,
@@ -1033,7 +1034,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
 
                     {selectedImages.length > 0 && (
                       <Box sx={{ mb: { xs: 1.2, md: 2.5 } }}>
-                        <Typography variant="h6" fontWeight="bold" sx={{ mb: { xs: 0.8, md: 1.5 }, color: COLOR_SCHEME.text, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.92rem' } }}>
+                        <Typography variant="h6" fontWeight="bold" sx={{ mb: { xs: 0.8, md: 1.5 }, color: COLOR_SCHEME.text, fontSize: { xs: "0.75rem", sm: '0.82rem', md: '0.92rem' } }}>
                           الصور المختارة ({selectedImages.length})
                         </Typography>
                         <Box sx={{ display: 'flex', gap: { xs: 0.8, md: 1.5 }, flexWrap: 'wrap' }}>
@@ -1092,7 +1093,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             variant="outlined"
                             startIcon={<ImageIcon />}
                             onClick={() => fileInputRef.current?.click()}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderColor: COLOR_SCHEME.primaryLight,
                               color: COLOR_SCHEME.primaryDark,
                               bgcolor: `${COLOR_SCHEME.primaryLight}15`,
@@ -1101,7 +1102,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               borderRadius: 3,
                               px: { xs: 1, sm: 1.4, md: 2 },
                               py: { xs: 0.5, sm: 0.65, md: 0.8 }
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             صورة
                           </Button>
@@ -1112,7 +1113,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             variant="outlined"
                             startIcon={<EmojiEmotions />}
                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderColor: COLOR_SCHEME.primaryLight,
                               color: COLOR_SCHEME.primaryDark,
                               bgcolor: `${COLOR_SCHEME.primaryLight}15`,
@@ -1121,7 +1122,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               borderRadius: 3,
                               px: { xs: 1, sm: 1.4, md: 2 },
                               py: { xs: 0.5, sm: 0.65, md: 0.8 }
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             ايموجي
                           </Button>
@@ -1148,7 +1149,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         />
                       </Box>
 
-                      <Box sx={{ display: 'flex', gap: { xs: 0.6, sm: 1, md: 1.5 }, flexWrap: 'wrap' }}>
+                      <Box sx={uiLayout.withUiSx({ display: 'flex', gap: { xs: 0.6, sm: 1, md: 1.5 }, flexWrap: 'wrap' }, uiLayout.actionBarSx)}>
                         <Button
                           onClick={() => {
                             setShowNewPostForm(false);
@@ -1158,16 +1159,16 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                           }}
                           variant="outlined"
                           color="inherit"
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             borderRadius: 3,
                             px: { xs: 1.2, sm: 1.8, md: 2.5 },
                             py: { xs: 0.6, sm: 0.75, md: 0.9 },
-                            fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.82rem' },
+                            fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' },
                             borderColor: COLOR_SCHEME.textSecondary,
                             color: COLOR_SCHEME.textSecondary,
                             '&:hover': { bgcolor: `${COLOR_SCHEME.textSecondary}10`, transform: 'translateY(-2px)' },
                             transition: 'all 0.3s ease'
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           إلغاء
                         </Button>
@@ -1175,17 +1176,17 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                           onClick={handleCreatePost}
                           variant="contained"
                           disabled={!newPostContent.trim() && selectedImages.length === 0}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             bgcolor: COLOR_SCHEME.primary,
                             '&:hover': { bgcolor: COLOR_SCHEME.primaryDark, transform: 'translateY(-2px)', boxShadow: `0 8px 25px ${COLOR_SCHEME.primary}50` },
                             px: { xs: 1.5, sm: 2.2, md: 3.2 },
                             py: { xs: 0.6, sm: 0.75, md: 0.9 },
                             borderRadius: 3,
                             boxShadow: `0 4px 15px ${COLOR_SCHEME.primary}30`,
-                            fontSize: { xs: '0.64rem', sm: '0.75rem', md: '0.86rem' },
+                            fontSize: { xs: "0.75rem", sm: '0.75rem', md: '0.86rem' },
                             fontWeight: 'bold',
                             transition: 'all 0.3s ease'
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           نشر المنشور
                         </Button>
@@ -1224,7 +1225,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Typography variant="h4" color={COLOR_SCHEME.text} gutterBottom sx={{ mb: { xs: 1, md: 2 }, fontWeight: 'bold', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.35rem' } }}>
                   لا توجد منشورات حتى الآن
                 </Typography>
-                <Typography variant="h6" color={COLOR_SCHEME.textSecondary} sx={{ mb: { xs: 1.5, md: 3 }, maxWidth: 500, mx: 'auto', lineHeight: 1.6, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' } }}>
+                <Typography variant="h6" color={COLOR_SCHEME.textSecondary} sx={{ mb: { xs: 1.5, md: 3 }, maxWidth: 500, mx: 'auto', lineHeight: 1.6, fontSize: { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' } }}>
                   كن أول من يشارك أفكاره ويبدأ المحادثة في مجتمعنا
                 </Typography>
                     {canCreatePost && (
@@ -1232,11 +1233,11 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
         variant="contained"
         startIcon={<Add sx={{ fontSize: '1.3rem' }} />}
         onClick={() => setShowNewPostForm(true)}
-        sx={{
+        sx={uiLayout.withUiSx({
           bgcolor: COLOR_SCHEME.primary,
           '&:hover': { bgcolor: COLOR_SCHEME.primaryDark, transform: 'translateY(-3px)', boxShadow: `0 10px 30px ${COLOR_SCHEME.primary}40` },
           px: 5, py: 2, borderRadius: 3, fontSize: '1.2rem', boxShadow: `0 6px 20px ${COLOR_SCHEME.primary}30`, transition: 'all 0.3s ease'
-        }}
+        }, uiLayout.buttonSx)}
       >
         ابدأ بنشر أول منشور
       </Button>
@@ -1343,7 +1344,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         {/* Content */}
                         {post.content && (
                           <Typography variant="body1" sx={{
-                            mb: { xs: 1.2, md: 2.2 }, lineHeight: 1.7, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.92rem' }, color: COLOR_SCHEME.text, p: { xs: 0.8, sm: 1, md: 1.4 },
+                            mb: { xs: 1.2, md: 2.2 }, lineHeight: 1.7, fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.92rem' }, color: COLOR_SCHEME.text, p: { xs: 0.8, sm: 1, md: 1.4 },
                             bgcolor: `${COLOR_SCHEME.primaryLight}08`, borderRadius: 3, border: `1px solid ${COLOR_SCHEME.primaryLight}20`
                           }}>
                             {post.content}
@@ -1386,7 +1387,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                 px: { xs: 0.8, md: 1.4 },
                                 py: { xs: 0.35, md: 0.7 },
                                 borderRadius: 3,
-                                fontSize: { xs: '0.56rem', sm: '0.66rem', md: '0.78rem' },
+                                fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.78rem' },
                                 fontWeight: 'bold',
                                 backdropFilter: 'blur(10px)',
                                 border: '2px solid rgba(255,255,255,0.3)'
@@ -1454,7 +1455,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         <Divider sx={{ my: { xs: 1, sm: 1.3, md: 2 }, borderColor: COLOR_SCHEME.primaryLight }} />
 
                         {/* Actions */}
-                        <Box sx={{ display: 'flex', gap: { xs: 0.6, sm: 0.8, md: 1.2 } }}>
+                        <Box sx={uiLayout.withUiSx({ display: 'flex', gap: { xs: 0.6, sm: 0.8, md: 1.2 } }, uiLayout.actionBarSx)}>
                           <Button
                             fullWidth
                             startIcon={
@@ -1463,17 +1464,17 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                 : <FavoriteBorder sx={{ fontSize: '1.3rem' }} />
                             }
                             onClick={() => handleLike(post.id)}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               color: post.user_has_liked ? COLOR_SCHEME.secondary : COLOR_SCHEME.textSecondary,
                               borderRadius: 3,
                               py: { xs: 0.6, sm: 0.8, md: 1 },
-                              fontSize: { xs: '0.64rem', sm: '0.74rem', md: '0.86rem' },
+                              fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.86rem' },
                               fontWeight: 'bold',
                               bgcolor: post.user_has_liked ? `${COLOR_SCHEME.secondary}10` : 'transparent',
                               border: `2px solid ${post.user_has_liked ? COLOR_SCHEME.secondary : COLOR_SCHEME.primaryLight}`,
                               '&:hover': { bgcolor: post.user_has_liked ? `${COLOR_SCHEME.secondary}15` : `${COLOR_SCHEME.primaryLight}15`, transform: 'translateY(-2px)' },
                               transition: 'all 0.3s ease'
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             {post.user_has_liked ? 'معجب به' : 'أعجبني'}
                           </Button>
@@ -1482,17 +1483,17 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             fullWidth
                             startIcon={<Comment sx={{ fontSize: '1.3rem' }} />}
                             onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderRadius: 3,
                               py: { xs: 0.6, sm: 0.8, md: 1 },
-                              fontSize: { xs: '0.64rem', sm: '0.74rem', md: '0.86rem' },
+                              fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.86rem' },
                               fontWeight: 'bold',
                               color: COLOR_SCHEME.textSecondary,
                               border: `2px solid ${COLOR_SCHEME.primaryLight}`,
                               bgcolor: 'transparent',
                               '&:hover': { bgcolor: `${COLOR_SCHEME.primaryLight}15`, transform: 'translateY(-2px)' },
                               transition: 'all 0.3s ease'
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             تعليق
                           </Button>
@@ -1503,7 +1504,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                           {activeCommentPost === post.id && (
                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }}>
                               <Box sx={{ mt: { xs: 1.4, sm: 1.8, md: 2.5 }, position: 'relative' }}>
-                                <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: { xs: 1, md: 1.8 }, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.92rem' } }}>
+                                <Typography variant="h6" fontWeight="bold" color={COLOR_SCHEME.text} sx={{ mb: { xs: 1, md: 1.8 }, fontSize: { xs: "0.75rem", sm: '0.82rem', md: '0.92rem' } }}>
                                   التعليقات ({post.comments_count})
                                 </Typography>
 
@@ -1523,20 +1524,20 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                     >
                                       <Avatar
                                         src={comment.user_image}
-                                        sx={{ width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }, marginInlineEnd: { xs: 1, md: 1.5 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' }, border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
+                                        sx={{ width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }, marginInlineEnd: { xs: 1, md: 1.5 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' }, border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
                                       >
                                         {getInitials(comment.user_full_name)}
                                       </Avatar>
                                       <Box sx={{ flex: 1 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5, flexWrap: 'wrap' }}>
-                                          <Typography variant="subtitle1" fontWeight="bold" sx={{ marginInlineEnd: { xs: 0.6, md: 1.2 }, color: COLOR_SCHEME.text, fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' } }}>
+                                          <Typography variant="subtitle1" fontWeight="bold" sx={{ marginInlineEnd: { xs: 0.6, md: 1.2 }, color: COLOR_SCHEME.text, fontSize: { xs: "0.75rem", sm: '0.76rem', md: '0.86rem' } }}>
                                             {comment.user_full_name}
                                           </Typography>
-                                          <Typography variant="caption" color={COLOR_SCHEME.textSecondary} sx={{ fontSize: { xs: '0.54rem', sm: '0.62rem', md: '0.72rem' } }}>
+                                          <Typography variant="caption" color={COLOR_SCHEME.textSecondary} sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } }}>
                                             {formatDate(comment.created_at)}
                                           </Typography>
                                         </Box>
-                                        <Typography variant="body1" sx={{ lineHeight: 1.6, color: COLOR_SCHEME.text, fontSize: { xs: '0.66rem', sm: '0.74rem', md: '0.84rem' } }}>
+                                        <Typography variant="body1" sx={{ lineHeight: 1.6, color: COLOR_SCHEME.text, fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.84rem' } }}>
                                           {comment.comment_text}
                                         </Typography>
                                       </Box>
@@ -1553,13 +1554,13 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                     {getInitials(userFullName)}
                                   </Avatar>
                                   <Box sx={{ flex: 1, position: 'relative' }}>
-                                    <TextField
+                                    <TextField InputLabelProps={{ shrink: true }}
                                       fullWidth
                                       size="medium"
                                       placeholder="اكتب تعليقك... شاركنا رأيك 💭"
                                       value={commentText}
                                       onChange={(e) => setCommentText(e.target.value)}
-                                      sx={{ mb: 2 }}
+                                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                                       multiline
                                       maxRows={4}
                                       InputProps={{
@@ -1607,11 +1608,11 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                         endIcon={<Send sx={{ fontSize: '1.2rem' }} />}
                                         onClick={() => handleAddComment(post.id)}
                                         disabled={!commentText.trim()}
-                                        sx={{
+                                        sx={uiLayout.withUiSx({
                                           bgcolor: COLOR_SCHEME.primary,
                                           '&:hover': { bgcolor: COLOR_SCHEME.primaryDark, transform: 'translateY(-2px)', boxShadow: `0 6px 20px ${COLOR_SCHEME.primary}40` },
                                           px: 4, py: 1.2, borderRadius: 3, fontSize: '1rem', fontWeight: 'bold', boxShadow: `0 4px 15px ${COLOR_SCHEME.primary}30`, transition: 'all 0.3s ease'
-                                        }}
+                                        }, uiLayout.buttonSx)}
                                       >
                                         تعليق
                                       </Button>

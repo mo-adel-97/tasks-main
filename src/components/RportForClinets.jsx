@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentStyle } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -1188,7 +1189,7 @@ const resetFilters = () => {
             </Tooltip>
           </Box>
           
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={uiLayout.withUiSx({ display: 'flex', flexWrap: 'wrap', gap: 2 }, uiLayout.formGridSx)}>
             {/* Single Date Filter */}
             <TextField
               type="date"
@@ -1196,7 +1197,7 @@ const resetFilters = () => {
               onChange={handleDateChange}
               label="فلتر بالتاريخ"
               InputLabelProps={{ shrink: true }}
-              sx={{ minWidth: 200 }}
+              sx={uiLayout.withUiSx({ minWidth: 200 }, uiLayout.formFieldSx)}
               size="small"
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
@@ -1218,7 +1219,7 @@ const resetFilters = () => {
             </LocalizationProvider>
 
             {/* Call Type Filter */}
-            <FormControl sx={{ minWidth: 200 }} size="small">
+            <FormControl sx={uiLayout.withUiSx({ minWidth: 200 }, uiLayout.formFieldSx)} size="small">
               <InputLabel>نوع الاتصال</InputLabel>
               <Select
                 value={callTypeFilter}
@@ -1233,7 +1234,7 @@ const resetFilters = () => {
             </FormControl>
 
             {/* Call Status Filter */}
-            <FormControl sx={{ minWidth: 200 }} size="small">
+            <FormControl sx={uiLayout.withUiSx({ minWidth: 200 }, uiLayout.formFieldSx)} size="small">
               <InputLabel>حالة الاتصال</InputLabel>
               <Select
                 value={callStatusFilter}
@@ -1247,7 +1248,7 @@ const resetFilters = () => {
             </FormControl>
 
             {/* بعد فلتر حالة الاتصال */}
-<FormControl sx={{ minWidth: 200 }} size="small">
+<FormControl sx={uiLayout.withUiSx({ minWidth: 200 }, uiLayout.formFieldSx)} size="small">
   <InputLabel>المستخدم</InputLabel>
   <Select
     value={userFilter}
@@ -1295,7 +1296,7 @@ const resetFilters = () => {
           quickFilterProps: { debounceMs: 500 },
         },
       }}
-      sx={{
+      sx={uiLayout.withUiSx({
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: '#f5f5f5',
           fontWeight: 'bold',
@@ -1309,14 +1310,14 @@ const resetFilters = () => {
         '& .MuiDataGrid-footerContainer': {
           borderTop: '1px solid #e0e0e0',
         },
-      }}
+      }, uiLayout.dataGridSx)}
     />
   </div>
 </Paper>
 
         {/* Follow-ups Dialog */}
           {/* Follow-ups Dialog */}
-<Dialog
+<Dialog sx={uiLayout.dialogLayoutSx}
   open={followUpsDialogOpen}
   onClose={() => setFollowUpsDialogOpen(false)}
   maxWidth="md"
@@ -1354,15 +1355,15 @@ const resetFilters = () => {
       )}
     </Box>
   </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setFollowUpsDialogOpen(false)} color="primary">
+  <DialogActions sx={uiLayout.dialogActionsSx}>
+    <Button sx={uiLayout.buttonSx} onClick={() => setFollowUpsDialogOpen(false)} color="primary">
       إغلاق
     </Button>
   </DialogActions>
 </Dialog>
 
         {/* Notes Dialog */}
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={notesDialogOpen}
           onClose={() => setNotesDialogOpen(false)}
           maxWidth="md"
@@ -1374,15 +1375,15 @@ const resetFilters = () => {
               {selectedNotes}
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setNotesDialogOpen(false)} color="primary">
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx} onClick={() => setNotesDialogOpen(false)} color="primary">
               إغلاق
             </Button>
           </DialogActions>
         </Dialog>
 
         {/* Forward Dialog */}
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={forwardDialogOpen}
           onClose={() => setForwardDialogOpen(false)}
           maxWidth="sm"
@@ -1411,8 +1412,8 @@ const resetFilters = () => {
               )}
             </Stack>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setForwardDialogOpen(false)} color="primary">
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx} onClick={() => setForwardDialogOpen(false)} color="primary">
               إغلاق
             </Button>
           </DialogActions>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1711,7 +1713,7 @@ const handleExportPdf = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.7rem",
+                  xs: "0.75rem",
                   sm: "0.8rem",
                   md: "0.88rem"
                 },
@@ -1780,7 +1782,7 @@ const handleExportPdf = () => {
                 sx={{
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.7rem" : isTablet ? "0.86rem" : "1.25rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.86rem" : "1.25rem",
                   color: "#173b2b"
                 }}
               >
@@ -1791,7 +1793,7 @@ const handleExportPdf = () => {
                 sx={{
                   fontFamily: "Cairo",
                   color: "#708179",
-                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.5rem" : ".78rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".78rem",
                   display: isPhone ? "none" : "block"
                 }}
               >
@@ -1814,7 +1816,7 @@ const handleExportPdf = () => {
         >
           <FormControl
             fullWidth
-            sx={fieldSx}
+            sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
           >
             <InputLabel>
               اختر نوع النموذج
@@ -1973,7 +1975,7 @@ const handleExportPdf = () => {
           <Paper
             className="quality-editor-shell"
             elevation={0}
-            sx={{
+            sx={uiLayout.withUiSx({
               p: isPhone ? 0.55 : isTablet ? 0.85 : 2.5,
               borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
               border:
@@ -2046,40 +2048,40 @@ const handleExportPdf = () => {
               "& .MuiButton-root": {
                 "@media (max-width:1599px)": {
                   minHeight: "33px",
-                  fontSize: "0.56rem",
+                  fontSize: "0.75rem",
                   padding: "5px 9px"
                 },
 
                 "@media (max-width:599px)": {
                   minHeight: "30px",
-                  fontSize: "0.48rem",
+                  fontSize: "0.75rem",
                   padding: "4px 7px"
                 }
               },
 
               "& .MuiFormControlLabel-label": {
                 "@media (max-width:1599px)": {
-                  fontSize: "0.56rem",
+                  fontSize: "0.75rem",
                   fontWeight: 800
                 },
 
                 "@media (max-width:599px)": {
-                  fontSize: "0.47rem"
+                  fontSize: "0.75rem"
                 }
               },
 
               "& .MuiAlert-root": {
                 "@media (max-width:1599px)": {
-                  fontSize: "0.55rem",
+                  fontSize: "0.75rem",
                   paddingTop: "4px",
                   paddingBottom: "4px"
                 },
 
                 "@media (max-width:599px)": {
-                  fontSize: "0.46rem"
+                  fontSize: "0.75rem"
                 }
               }
-            }}
+            }, uiLayout.pageHeaderSx)}
           >
             <Typography
               align="center"
@@ -2100,7 +2102,7 @@ const handleExportPdf = () => {
                 fontWeight: 800,
                 color: "#ae1e21",
                 mb: isPhone ? 0.55 : isTablet ? 0.75 : 2,
-                fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               }}
             >
               إدخال بيانات نموذج {selected?.name}
@@ -2129,7 +2131,7 @@ const handleExportPdf = () => {
             <Section
               title="البيانات الأساسية"
             >
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 label="السجل المدني"
                 value={form.nationalId}
                 onChange={update("nationalId")}
@@ -2137,7 +2139,7 @@ const handleExportPdf = () => {
                   maxLength: 10,
                   inputMode: "numeric"
                 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 InputProps={{
                   endAdornment:
                     loadingStudent
@@ -2147,7 +2149,7 @@ const handleExportPdf = () => {
                         />
                       )
                       : (
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           onClick={() =>
                             loadStudent()
                           }
@@ -2171,11 +2173,11 @@ const handleExportPdf = () => {
                 value={form.hijriDate}
               />
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 label="الرقم التدريبي"
                 value={form.trainingNo}
                 onChange={update("trainingNo")}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
               />
 
               <ReadOnlyField
@@ -2183,11 +2185,11 @@ const handleExportPdf = () => {
                 value={form.nationality}
               />
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 label="إلى"
                 value={form.toText}
                 onChange={update("toText")}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
               />
             </Section>
 
@@ -2196,11 +2198,11 @@ const handleExportPdf = () => {
             >
               {selectedTemplate ===
                 "COOP_TRAINING" ? (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="مدة التدريب التعاوني"
                   value={form.studySystem}
                   onChange={update("studySystem")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                   placeholder="مثال: 1448/01/06 هـ إلى 1448/03/07 هـ"
                 />
               ) : (
@@ -2212,11 +2214,11 @@ const handleExportPdf = () => {
 
               {selectedTemplate ===
                 "COOP_TRAINING" ? (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="تاريخ بداية ونهاية التدريب"
                   value={form.studyStartDate}
                   onChange={update("studyStartDate")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                   placeholder="مثال: 1448/01/06 هـ إلى 1448/03/07 هـ"
                 />
               ) : (
@@ -2228,11 +2230,11 @@ const handleExportPdf = () => {
 
               {selectedTemplate ===
                 "COOP_TRAINING" ? (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="أيام العمل"
                   value={form.studentStatus}
                   onChange={update("studentStatus")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                   placeholder="مثال: 5 أيام من الأحد إلى الخميس"
                 />
               ) : (
@@ -2244,11 +2246,11 @@ const handleExportPdf = () => {
 
               {selectedTemplate ===
                 "COOP_TRAINING" ? (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="عدد ساعات التدريب يوميًا"
                   value={form.totalHours}
                   onChange={update("totalHours")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                   placeholder="مثال: 6 ساعات يوميًا"
                 />
               ) : (
@@ -2262,7 +2264,7 @@ const handleExportPdf = () => {
                 "REGISTERED_LETTER" && (
                 <FormControl
                   fullWidth
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 >
                   <InputLabel>
                     فترة الدراسة
@@ -2290,27 +2292,27 @@ const handleExportPdf = () => {
 
               {selectedTemplate ===
                 "HOURS_STATEMENT" && (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="عدد الساعات المكتسبة"
                   value={form.earnedHours}
                   onChange={update("earnedHours")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 />
               )}
 
               {selectedTemplate ===
                 "HOURS_STATEMENT" && (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="البريد الإلكتروني"
                   value={form.email}
                   onChange={update("email")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               )}
 
               {selectedTemplate ===
                 "COOP_TRAINING" && (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="رقم الجوال"
                   value={form.coopPhone}
                   onChange={update("coopPhone")}
@@ -2318,21 +2320,21 @@ const handleExportPdf = () => {
                     inputMode: "tel",
                     maxLength: 20
                   }}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 />
               )}
 
               {selectedTemplate ===
                 "COOP_TRAINING" && (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   label="البريد الإلكتروني"
                   value={form.email}
                   onChange={update("email")}
-                  sx={fieldSx}
+                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               )}
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 label={
                   selectedTemplate ===
                   "COOP_TRAINING"
@@ -2341,10 +2343,10 @@ const handleExportPdf = () => {
                 }
                 value={form.managerName}
                 onChange={update("managerName")}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
               />
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 label={
                   selectedTemplate ===
                   "COOP_TRAINING"
@@ -2353,7 +2355,7 @@ const handleExportPdf = () => {
                 }
                 value={form.managerTitle}
                 onChange={update("managerTitle")}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
               />
             </Section>
 
@@ -2372,9 +2374,9 @@ const handleExportPdf = () => {
                   fontWeight: 900,
                   mb: isPhone ? 0.3 : isTablet ? 0.4 : 1,
                   fontSize: isPhone
-                    ? "0.48rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.58rem"
+                      ? "0.75rem"
                       : undefined,
                   lineHeight: 1.15
                 }}
@@ -2385,14 +2387,14 @@ const handleExportPdf = () => {
                   : "تخصص المتدرب الدقيق"}
               </Typography>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 multiline
                 minRows={1}
                 maxRows={isPhone ? 1 : isTablet ? 2 : 3}
                 fullWidth
                 value={form.specialization}
                 onChange={update("specialization")}
-                sx={{
+                sx={uiLayout.withUiSx({
                   ...fieldSx,
 
                   "@media (max-width:1599px)": {
@@ -2418,7 +2420,7 @@ const handleExportPdf = () => {
                       lineHeight: 1.3
                     }
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Paper>
             </>
@@ -2491,10 +2493,10 @@ const handleExportPdf = () => {
               direction="row"
               justifyContent="center"
               spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.2}
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 flexWrap: "nowrap"
-              }}
+              }, uiLayout.actionBarSx)}
             >
               <Button
                 variant="contained"
@@ -2517,13 +2519,13 @@ const handleExportPdf = () => {
                     !form.eligible
                   )
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: isPhone ? 0 : isTablet ? 120 : 180,
                   flex: isCompact ? 1 : "initial",
                   background:
                     "linear-gradient(135deg,#057546,#034d31)",
-                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-                }}
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+                }, uiLayout.buttonSx)}
               >
                 حفظ النموذج
               </Button>
@@ -2547,11 +2549,11 @@ const handleExportPdf = () => {
                   !form.documentGuid ||
                   exportingPdf
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   flex: isCompact ? 1 : "initial",
                   minWidth: isPhone ? 0 : isTablet ? 120 : undefined,
-                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-                }}
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+                }, uiLayout.buttonSx)}
               >
                 {isCompact
                   ? exportingPdf
@@ -2667,12 +2669,12 @@ const Section = ({
 
         "@media (max-width:1599px)": {
           mb: 0.55,
-          fontSize: "0.58rem"
+          fontSize: "0.75rem"
         },
 
         "@media (max-width:599px)": {
           mb: 0.4,
-          fontSize: "0.49rem"
+          fontSize: "0.75rem"
         }
       }}
     >
@@ -2748,10 +2750,10 @@ const ReadOnlyField = ({
   label,
   value
 }) => (
-  <TextField
+  <TextField InputLabelProps={{ shrink: true }}
     label={label}
     value={value || ""}
-    sx={fieldSx}
+    sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
     InputProps={{
       readOnly: true
     }}
@@ -4225,7 +4227,7 @@ const StudentLookupFields = ({
   hideDiploma = false
 }) => (
   <>
-    <TextField
+    <TextField InputLabelProps={{ shrink: true }}
       label="رقم السجل المدني"
       value={form.nationalId}
       onChange={update("nationalId")}
@@ -4233,12 +4235,12 @@ const StudentLookupFields = ({
         maxLength: 10,
         inputMode: "numeric"
       , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-      sx={fieldSx}
+      sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       InputProps={{
         endAdornment: loadingStudent ? (
           <CircularProgress size={20} />
         ) : (
-          <Button
+          <Button sx={uiLayout.buttonSx}
             onClick={() => loadStudent()}
             startIcon={<SearchIcon />}
           >
@@ -4495,11 +4497,11 @@ const ExamScheduleEditor = ({
           value={form.levelName}
         />
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           label="إلى"
           value={form.toText}
           onChange={update("toText")}
-          sx={fieldSx}
+          sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
         />
       </Section>
 
@@ -4529,25 +4531,25 @@ const ExamScheduleEditor = ({
             mb: 1,
             "@media (max-width:1599px)": {
               mb: 0.45,
-              fontSize: "0.58rem"
+              fontSize: "0.75rem"
             },
             "@media (max-width:599px)": {
               mb: 0.3,
-              fontSize: "0.49rem"
+              fontSize: "0.75rem"
             }
           }}
         >
           نص الخطاب
         </Typography>
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           multiline
           minRows={1}
           maxRows={3}
           value={form.statementText}
           onChange={update("statementText")}
-          sx={compactTextAreaSx}
+          sx={uiLayout.withUiSx(compactTextAreaSx, uiLayout.formFieldSx)}
         />
       </Paper>
 
@@ -4604,7 +4606,7 @@ const ExamScheduleEditor = ({
             startIcon={
               <AddCircleOutlineIcon />
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: {
                 xs: 78,
                 sm: 92,
@@ -4615,14 +4617,14 @@ const ExamScheduleEditor = ({
                 sm: 33
               },
               fontSize: {
-                xs: "0.48rem",
-                sm: "0.56rem",
+                xs: "0.75rem",
+                sm: "0.75rem",
                 lg: undefined
               },
               fontFamily: "Cairo",
               background:
                 "linear-gradient(135deg,#057546,#034d31)"
-            }}
+            }, uiLayout.buttonSx)}
           >
             إضافة يوم
           </Button>
@@ -4677,8 +4679,8 @@ const ExamScheduleEditor = ({
                       fontWeight: 900,
                       color: "#057546",
                       fontSize: {
-                        xs: "0.46rem",
-                        sm: "0.55rem"
+                        xs: "0.75rem",
+                        sm: "0.75rem"
                       }
                     }}
                   >
@@ -4714,7 +4716,7 @@ const ExamScheduleEditor = ({
                 </Stack>
 
                 <Box
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     display: "grid",
                     gridTemplateColumns:
                       "repeat(2,minmax(0,1fr))",
@@ -4726,7 +4728,7 @@ const ExamScheduleEditor = ({
                       xs: 0.75,
                       sm: 0.95
                     }
-                  }}
+                  }, uiLayout.formGridSx)}
                 >
                   <TextField
                     type="date"
@@ -4753,7 +4755,7 @@ const ExamScheduleEditor = ({
                       row.dayDate ||
                       "اختر التاريخ"
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...fieldSx,
                       "& .MuiFormHelperText-root": {
                         m: 0,
@@ -4762,15 +4764,15 @@ const ExamScheduleEditor = ({
                         color: "#057546",
                         fontWeight: 900,
                         fontSize: {
-                          xs: "0.38rem",
-                          sm: "0.46rem"
+                          xs: "0.75rem",
+                          sm: "0.75rem"
                         },
                         lineHeight: 1.25
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     label="المقرر الأول"
                     value={row.courseName || ""}
                     placeholder={
@@ -4783,7 +4785,7 @@ const ExamScheduleEditor = ({
                         event.target.value
                       )
                     }
-                    sx={fieldSx}
+                    sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                   />
 
                   <TextField
@@ -4808,7 +4810,7 @@ const ExamScheduleEditor = ({
                     helperText={
                       row.timeOne || "اختر الوقت"
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...fieldSx,
                       "& .MuiFormHelperText-root": {
                         m: 0,
@@ -4817,15 +4819,15 @@ const ExamScheduleEditor = ({
                         color: "#057546",
                         fontWeight: 850,
                         fontSize: {
-                          xs: "0.37rem",
-                          sm: "0.45rem"
+                          xs: "0.75rem",
+                          sm: "0.75rem"
                         },
                         lineHeight: 1.2
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     label="المقرر الثاني"
                     value={row.courseTwo || ""}
                     placeholder={
@@ -4838,7 +4840,7 @@ const ExamScheduleEditor = ({
                         event.target.value
                       )
                     }
-                    sx={fieldSx}
+                    sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                   />
 
                   <TextField
@@ -4863,7 +4865,7 @@ const ExamScheduleEditor = ({
                     helperText={
                       row.timeTwo || "اختر الوقت"
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...fieldSx,
                       gridColumn: "1 / -1",
                       "& .MuiFormHelperText-root": {
@@ -4873,12 +4875,12 @@ const ExamScheduleEditor = ({
                         color: "#057546",
                         fontWeight: 850,
                         fontSize: {
-                          xs: "0.37rem",
-                          sm: "0.45rem"
+                          xs: "0.75rem",
+                          sm: "0.75rem"
                         },
                         lineHeight: 1.2
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Box>
               </Paper>
@@ -4930,12 +4932,12 @@ const ExamScheduleEditor = ({
                 onClick={() =>
                   deleteExamDay(index)
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 42,
                   width: 42,
                   height: 42,
                   p: 0
-                }}
+                }, uiLayout.buttonSx)}
               >
                 <DeleteOutlineIcon />
               </Button>
@@ -4960,10 +4962,10 @@ const ExamScheduleEditor = ({
                   shrink: true
                 }}
                 helperText={row.dayDate || ""}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 value={row.courseName || ""}
                 placeholder={
                   EXAM_ROW_PLACEHOLDERS.courseName
@@ -4975,7 +4977,7 @@ const ExamScheduleEditor = ({
                     event.target.value
                   )
                 }
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
               />
 
               <TextField
@@ -4998,10 +5000,10 @@ const ExamScheduleEditor = ({
                   shrink: true
                 }}
                 helperText={row.timeOne || ""}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 value={row.courseTwo || ""}
                 placeholder={
                   EXAM_ROW_PLACEHOLDERS.courseTwo
@@ -5013,7 +5015,7 @@ const ExamScheduleEditor = ({
                     event.target.value
                   )
                 }
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
               />
 
               <TextField
@@ -5036,7 +5038,7 @@ const ExamScheduleEditor = ({
                   shrink: true
                 }}
                 helperText={row.timeTwo || ""}
-                sx={fieldSx}
+                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </React.Fragment>
           ))}
@@ -5089,7 +5091,7 @@ const CourseListEditor = ({
   return (
     <Paper
       variant="outlined"
-      sx={{
+      sx={uiLayout.withUiSx({
         p: 2,
         mb: 2,
         borderRadius: 3,
@@ -5105,7 +5107,7 @@ const CourseListEditor = ({
           mb: 0.65,
           borderRadius: 1.5
         }
-      }}
+      }, uiLayout.pageHeaderSx)}
     >
       <Typography
         sx={{
@@ -5116,12 +5118,12 @@ const CourseListEditor = ({
 
           "@media (max-width:1599px)": {
             mb: 0.55,
-            fontSize: "0.58rem"
+            fontSize: "0.75rem"
           },
 
           "@media (max-width:599px)": {
             mb: 0.4,
-            fontSize: "0.49rem"
+            fontSize: "0.75rem"
           }
         }}
       >
@@ -5136,9 +5138,9 @@ const CourseListEditor = ({
           md: 1
         }}
         alignItems="center"
-        sx={{ mb: courses.length ? 0.6 : 0 }}
+        sx={uiLayout.withUiSx({ mb: courses.length ? 0.6 : 0 }, uiLayout.filterBarSx)}
       >
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           size="small"
           label="اسم المقرر"
@@ -5153,14 +5155,14 @@ const CourseListEditor = ({
               addCourse();
             }
           }}
-          sx={fieldSx}
+          sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
         />
 
         <Button
           variant="contained"
           onClick={addCourse}
           startIcon={<AddCircleOutlineIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             flexShrink: 0,
             minWidth: {
               xs: 72,
@@ -5176,11 +5178,11 @@ const CourseListEditor = ({
             background:
               "linear-gradient(135deg,#057546,#034d31)",
             fontSize: {
-              xs: "0.46rem",
-              sm: "0.54rem",
-              md: "0.72rem"
+              xs: "0.75rem",
+              sm: "0.75rem",
+              md: "0.75rem"
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           إضافة
         </Button>
@@ -5229,9 +5231,9 @@ const CourseListEditor = ({
                   fontWeight: 800,
                   color: "#17372b",
                   fontSize: {
-                    xs: "0.42rem",
-                    sm: "0.5rem",
-                    md: "0.66rem"
+                    xs: "0.75rem",
+                    sm: "0.75rem",
+                    md: "0.75rem"
                   },
                   whiteSpace: "nowrap",
                   overflow: "hidden",
@@ -5284,15 +5286,15 @@ const CourseListEditor = ({
 const AbsenceWarningEditor = ({ form, update, setForm, loadStudent, loadingStudent }) => <>
   <Section title="البيانات الأساسية">
     <StudentLookupFields form={form} update={update} loadStudent={loadStudent} loadingStudent={loadingStudent} />
-    <TextField label="الفصل التدريبي" value={form.termName} onChange={update("termName")} sx={fieldSx}/>
-    <TextField label="رقم الجلسة" value={form.sessionNo} onChange={update("sessionNo")} sx={fieldSx}/>
-    <TextField label="تاريخ اللائحة" value={form.sessionHijriDate} onChange={update("sessionHijriDate")} sx={fieldSx}/>
-    <TextField label="رقم المادة" value={form.articleNo} onChange={update("articleNo")} sx={fieldSx}/>
-    <TextField label="رقم الإنذار" value={form.warningNo} onChange={update("warningNo")} sx={fieldSx}/>
+    <TextField InputLabelProps={{ shrink: true }} label="الفصل التدريبي" value={form.termName} onChange={update("termName")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
+    <TextField InputLabelProps={{ shrink: true }} label="رقم الجلسة" value={form.sessionNo} onChange={update("sessionNo")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
+    <TextField InputLabelProps={{ shrink: true }} label="تاريخ اللائحة" value={form.sessionHijriDate} onChange={update("sessionHijriDate")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
+    <TextField InputLabelProps={{ shrink: true }} label="رقم المادة" value={form.articleNo} onChange={update("articleNo")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
+    <TextField InputLabelProps={{ shrink: true }} label="رقم الإنذار" value={form.warningNo} onChange={update("warningNo")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
   </Section>
   <Section title="إعدادات الإنذار">
-    <TextField label="نسبة الإنذار" value={form.absencePercent} onChange={update("absencePercent")} sx={fieldSx}/>
-    <TextField label="نسبة الحرمان النهائية" value={form.denialPercent} onChange={update("denialPercent")} sx={fieldSx}/>
+    <TextField InputLabelProps={{ shrink: true }} label="نسبة الإنذار" value={form.absencePercent} onChange={update("absencePercent")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
+    <TextField InputLabelProps={{ shrink: true }} label="نسبة الحرمان النهائية" value={form.denialPercent} onChange={update("denialPercent")} sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}/>
   </Section>
   <CourseListEditor
     value={form.courses}
@@ -5315,58 +5317,58 @@ const GradeWarningEditor = ({
         loadingStudent={loadingStudent}
       />
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="رقم الجلسة"
         value={form.sessionNo}
         onChange={update("sessionNo")}
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="تاريخ اللائحة"
         value={form.sessionHijriDate}
         onChange={update("sessionHijriDate")}
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="رقم المادة"
         value={form.articleNo}
         onChange={update("articleNo")}
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="رقم الإنذار"
         value={form.warningNo}
         onChange={update("warningNo")}
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
     </Section>
 
     <Section title="إعدادات انخفاض المعدل">
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="المعدل أقل من"
         value={form.gradeValue}
         onChange={update("gradeValue")}
         placeholder="مثال: 2.00"
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="من"
         value={form.gradeMax}
         onChange={update("gradeMax")}
         placeholder="مثال: 5.00"
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="الفترة التدريبية"
         value={form.periodHijriText}
         onChange={update("periodHijriText")}
         placeholder="مثال: الفصل التدريبي الأول لعام 1448هـ"
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
     </Section>
 
@@ -5396,18 +5398,18 @@ const GradeWarningEditor = ({
           mb: 1,
           "@media (max-width:1599px)": {
             mb: 0.5,
-            fontSize: "0.58rem"
+            fontSize: "0.75rem"
           },
           "@media (max-width:599px)": {
             mb: 0.35,
-            fontSize: "0.49rem"
+            fontSize: "0.75rem"
           }
         }}
       >
         سبب انخفاض المعدل
       </Typography>
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         fullWidth
         multiline
         minRows={1}
@@ -5415,7 +5417,7 @@ const GradeWarningEditor = ({
         value={form.reasonText}
         onChange={update("reasonText")}
         placeholder="مثال: نظراً لحرمانك / غيابك عن أداء الاختبارات"
-        sx={compactTextAreaSx}
+        sx={uiLayout.withUiSx(compactTextAreaSx, uiLayout.formFieldSx)}
       />
     </Paper>
   </>
@@ -5439,7 +5441,7 @@ const FinancialWarningEditor = ({
     </Section>
 
     <Section title="بيانات الإنذار المالي">
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="قيمة المستحقات المالية"
         value={form.financialAmount}
         onChange={update("financialAmount")}
@@ -5447,16 +5449,16 @@ const FinancialWarningEditor = ({
         inputProps={{
           inputMode: "decimal"
         }}
-        sx={fieldSx}
+        sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
       />
 
       {isSecond && (
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           label="تاريخ الإنذار المالي الأول"
           value={form.firstWarningDate}
           onChange={update("firstWarningDate")}
           placeholder="مثال: 1448/02/18 هـ"
-          sx={fieldSx}
+          sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
         />
       )}
     </Section>
@@ -5498,7 +5500,7 @@ const GeneralLetterEditor = ({
         />
 
         {!isRejected && !isDropped && (
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             label={
               isCourseWaiting
                 ? "الدورة"
@@ -5515,59 +5517,59 @@ const GeneralLetterEditor = ({
                   ? "اكتب اسم الدبلوم أو الدورة"
                   : "مثال: دبلوم إدارة المستشفيات"
             }
-            sx={fieldSx}
+            sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
           />
         )}
 
         {isRejected && (
           <>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="دورة / دبلوم الموافقة"
               value={form.letterApprovedProgramName}
               onChange={update("letterApprovedProgramName")}
               placeholder="اكتب البرنامج الوارد بخطاب الموافقة"
-              sx={fieldSx}
+              sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="تاريخ بداية الموافقة"
               value={form.letterStartDate}
               onChange={update("letterStartDate")}
               placeholder="مثال: 1448/02/18 هـ"
-              sx={fieldSx}
+              sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
             />
           </>
         )}
 
         {isDropped && (
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             label="تاريخ طي القيد"
             value={form.letterRegisterDate}
             onChange={update("letterRegisterDate")}
             placeholder="مثال: 1448/02/18 هـ"
-            sx={fieldSx}
+            sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
           />
         )}
 
         {isCourseWaiting && (
           <>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="تاريخ بداية الدراسة"
               value={form.letterStartDate}
               onChange={update("letterStartDate")}
               placeholder="مثال: 1448/02/18 هـ"
-              sx={fieldSx}
+              sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="تاريخ نهاية الدراسة"
               value={form.letterEndDate}
               onChange={update("letterEndDate")}
               placeholder="مثال: 1448/05/18 هـ"
-              sx={fieldSx}
+              sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="عدد ساعات الدورة"
               value={form.letterStudyHours}
               onChange={update("letterStudyHours")}
@@ -5575,7 +5577,7 @@ const GeneralLetterEditor = ({
               inputProps={{
                 inputMode: "numeric"
               }}
-              sx={fieldSx}
+              sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
             />
           </>
         )}
@@ -5612,12 +5614,12 @@ const GeneralLetterEditor = ({
 
               "@media (max-width:1599px)": {
                 mb: 0.45,
-                fontSize: "0.58rem"
+                fontSize: "0.75rem"
               },
 
               "@media (max-width:599px)": {
                 mb: 0.3,
-                fontSize: "0.49rem"
+                fontSize: "0.75rem"
               }
             }}
           >
@@ -5652,11 +5654,11 @@ const GeneralLetterEditor = ({
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   "@media (max-width:1599px)": {
-                    fontSize: "0.54rem",
+                    fontSize: "0.75rem",
                     lineHeight: 1.35
                   },
                   "@media (max-width:599px)": {
-                    fontSize: "0.45rem",
+                    fontSize: "0.75rem",
                     lineHeight: 1.3
                   }
                 },
@@ -5694,11 +5696,11 @@ const GeneralLetterEditor = ({
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   "@media (max-width:1599px)": {
-                    fontSize: "0.54rem",
+                    fontSize: "0.75rem",
                     lineHeight: 1.35
                   },
                   "@media (max-width:599px)": {
-                    fontSize: "0.45rem",
+                    fontSize: "0.75rem",
                     lineHeight: 1.3
                   }
                 },

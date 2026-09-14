@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -632,7 +633,7 @@ if (loading || externalLoading) {
               sx={{
                 flex: 1,
                 fontWeight: 900,
-                fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' },
+                fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.88rem' },
                 color: '#17372b',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -729,7 +730,7 @@ if (loading || externalLoading) {
               sx={{
                 flex: 1,
                 fontWeight: 900,
-                fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' },
+                fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.88rem' },
                 color: '#17372b',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -773,23 +774,23 @@ if (loading || externalLoading) {
           },
           '& .MuiTypography-h6': {
             fontSize: isDesktop ? undefined : {
-              xs: '0.68rem',
+              xs: "0.75rem",
               sm: '0.76rem',
               md: '0.86rem'
             }
           },
           '& .MuiTypography-body2': {
             fontSize: isDesktop ? undefined : {
-              xs: '0.56rem',
-              sm: '0.64rem',
-              md: '0.72rem'
+              xs: "0.75rem",
+              sm: "0.75rem",
+              md: "0.75rem"
             }
           },
           '& .MuiButton-root': {
             fontSize: isDesktop ? undefined : {
-              xs: '0.56rem',
-              sm: '0.64rem',
-              md: '0.72rem'
+              xs: "0.75rem",
+              sm: "0.75rem",
+              md: "0.75rem"
             },
             minHeight: isDesktop ? undefined : {
               xs: 31,
@@ -799,9 +800,9 @@ if (loading || externalLoading) {
           },
           '& .MuiChip-root': {
             fontSize: isDesktop ? undefined : {
-              xs: '0.52rem',
-              sm: '0.58rem',
-              md: '0.66rem'
+              xs: "0.75rem",
+              sm: "0.75rem",
+              md: "0.75rem"
             },
             height: isDesktop ? undefined : {
               xs: 23,
@@ -811,8 +812,8 @@ if (loading || externalLoading) {
           },
           '& .MuiInputBase-root, & .MuiInputLabel-root': {
             fontSize: isDesktop ? undefined : {
-              xs: '0.64rem',
-              sm: '0.72rem',
+              xs: "0.75rem",
+              sm: "0.75rem",
               md: '0.8rem'
             }
           },
@@ -820,7 +821,7 @@ if (loading || externalLoading) {
         }}
       >
         {/* Header section */}
-        <Box sx={{
+        <Box sx={uiLayout.withUiSx({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: isDesktop ? 'center' : { xs: 'stretch', md: 'center' },
@@ -828,12 +829,12 @@ if (loading || externalLoading) {
           flexWrap: isDesktop ? 'nowrap' : 'wrap',
           gap: isDesktop ? 0 : { xs: 0.8, sm: 1, md: 1.2 },
           mb: isDesktop ? 3 : { xs: 0.9, sm: 1.2, md: 1.6 }
-        }}>
+        }, uiLayout.pageHeaderSx)}>
           <Typography variant="h4" gutterBottom fontWeight={700} sx={{ color: colorPalette.textDark }}>
             المهام الخاصة بك ({displayTasks.length})
           </Typography>
           
-          <Box sx={{
+          <Box sx={uiLayout.withUiSx({
             display: 'flex',
             alignItems: isDesktop ? 'center' : 'stretch',
             flexDirection: isDesktop ? 'row' : { xs: 'column', sm: 'row' },
@@ -844,7 +845,7 @@ if (loading || externalLoading) {
             '& > *': {
               width: isDesktop ? 'auto' : { xs: '100%', sm: 'auto' }
             }
-          }}>
+          }, uiLayout.actionBarSx)}>
             {filterByDate ? (
               <>
                 <Chip 
@@ -856,12 +857,12 @@ if (loading || externalLoading) {
                     fontWeight: 600
                   }}
                 />
-                <Button variant="outlined" onClick={showAllTasks} sx={{ color: colorPalette.primary, borderColor: colorPalette.primary }}>
+                <Button variant="outlined" onClick={showAllTasks} sx={uiLayout.withUiSx({ color: colorPalette.primary, borderColor: colorPalette.primary }, uiLayout.buttonSx)}>
                   عرض جميع المهام
                 </Button>
               </>
             ) : (
-              <Button variant="outlined" onClick={showTodayTasks} sx={{ color: colorPalette.primary, borderColor: colorPalette.primary }}>
+              <Button variant="outlined" onClick={showTodayTasks} sx={uiLayout.withUiSx({ color: colorPalette.primary, borderColor: colorPalette.primary }, uiLayout.buttonSx)}>
                 عرض مهام اليوم
               </Button>
             )}
@@ -870,7 +871,7 @@ if (loading || externalLoading) {
               variant="outlined"
               startIcon={<CalendarMonthIcon />}
               onClick={handleCalendarOpen}
-              sx={{ fontWeight: 700, color: colorPalette.primary, borderColor: colorPalette.primary }}
+              sx={uiLayout.withUiSx({ fontWeight: 700, color: colorPalette.primary, borderColor: colorPalette.primary }, uiLayout.buttonSx)}
             >
               اختر تاريخ
             </Button>
@@ -967,7 +968,7 @@ if (loading || externalLoading) {
                             bgcolor: ended ? colorPalette.error : task.isPassedTask ? '#9c27b0' : colorPalette.primary,
                             width: isDesktop ? 40 : { xs: 30, sm: 34, md: 38 },
                             height: isDesktop ? 40 : { xs: 30, sm: 34, md: 38 },
-                            fontSize: isDesktop ? '0.875rem' : { xs: '0.62rem', sm: '0.72rem', md: '0.82rem' }
+                            fontSize: isDesktop ? '0.875rem' : { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' }
                           }}>
                             {ended ? '!' : task.isPassedTask ? 'م' : 'ع'}
                           </Avatar>
@@ -1154,14 +1155,14 @@ if (loading || externalLoading) {
                           <Button
                             fullWidth
                             startIcon={<AttachFileIcon />}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               mb: 2,
                               backgroundColor: colorPalette.primaryLighter,
                               color: colorPalette.primary,
                               '&:hover': {
                                 backgroundColor: colorPalette.primaryLight
                               }
-                            }}
+                            }, uiLayout.buttonSx)}
                             onClick={() => handleOpenAttachment(externalTaskData?.AttachFileName || task.attachmentPath)}
                           >
                             عرض المرفق
@@ -1177,11 +1178,11 @@ if (loading || externalLoading) {
                               setSelectedTaskUpdates(taskUpdates[task.id] || []);
                               setUpdatesDialogOpen(true);
                             }}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               textTransform: 'none',
                               color: colorPalette.textLight,
                               justifyContent: 'space-between'
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             عرض التحديثات ({taskUpdates[task.id]?.length || 0})
                           </Button>
@@ -1204,7 +1205,7 @@ if (loading || externalLoading) {
                           </Typography>
                         ) : (
                           <>
-                            <FormControl sx={{ minWidth: 120 }} size="small">
+                            <FormControl sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)} size="small">
                               <InputLabel>تغيير الحالة</InputLabel>
                               <Select
                                 value={task.status}
@@ -1227,7 +1228,7 @@ if (loading || externalLoading) {
                             </FormControl>
                             
                             {(currentUser.userJop === 9 || task.isCurrentUserSender) && (
-                              <Button
+                              <Button sx={uiLayout.buttonSx}
                                 variant="contained"
                                 color="secondary"
                                 startIcon={<SendIcon />}
@@ -1265,7 +1266,7 @@ if (loading || externalLoading) {
       </Box>
 
       {/* Attachment dialog */}
-      <Dialog open={!!openAttachment} onClose={handleCloseAttachment} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={!!openAttachment} onClose={handleCloseAttachment} maxWidth="md" fullWidth>
         <DialogTitle sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
@@ -1303,7 +1304,7 @@ if (loading || externalLoading) {
               href={openAttachment} 
               download 
               variant="contained" 
-              sx={{ mt: 3, backgroundColor: colorPalette.primary }}
+              sx={uiLayout.withUiSx({ mt: 3, backgroundColor: colorPalette.primary }, uiLayout.buttonSx)}
               startIcon={<AttachFileIcon />}
             >
               تحميل الملف
@@ -1325,7 +1326,7 @@ if (loading || externalLoading) {
       />
 
       {/* Pass task dialog */}
-      <Dialog open={openPassDialog} onClose={handleClosePassDialog} maxWidth="sm" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={openPassDialog} onClose={handleClosePassDialog} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
@@ -1343,7 +1344,7 @@ if (loading || externalLoading) {
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
-          <Box sx={{ mt: 2 }}>
+          <Box sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formGridSx)}>
             <Autocomplete
               multiple
               options={filteredUsers}
@@ -1351,12 +1352,12 @@ if (loading || externalLoading) {
               value={selectedUser || []}
               onChange={(event, newValue) => setSelectedUser(newValue)}
               renderInput={(params) => (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   {...params}
                   label="اختر الموظفين"
                   variant="outlined"
                   fullWidth
-                  sx={{ mb: 2 }}
+                  sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                 />
               )}
               renderOption={(props, option) => (
@@ -1387,35 +1388,35 @@ if (loading || externalLoading) {
               }
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="ملاحظة (اختياري)"
               variant="outlined"
               fullWidth
               multiline
               rows={3}
-              sx={{ mt: 2 }}
+              sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formFieldSx)}
               value={passNote}
               onChange={(e) => setPassNote(e.target.value)}
               placeholder="أضف أي ملاحظات أو تعليمات للموظفين..."
             />
 
-            <Box sx={{ 
+            <Box sx={uiLayout.withUiSx({ 
               display: 'flex', 
               justifyContent: 'flex-end', 
               mt: 3,
               pt: 2,
               borderTop: `1px solid ${colorPalette.primaryLighter}`
-            }}>
+            }, uiLayout.actionBarSx)}>
               <Button
                 variant="outlined"
                 onClick={handleClosePassDialog}
-                sx={{ mr: 2, color: colorPalette.primary, borderColor: colorPalette.primary }}
+                sx={uiLayout.withUiSx({ mr: 2, color: colorPalette.primary, borderColor: colorPalette.primary }, uiLayout.buttonSx)}
               >
                 إلغاء
               </Button>
               <Button
                 variant="contained"
-                sx={{ backgroundColor: colorPalette.primary }}
+                sx={uiLayout.withUiSx({ backgroundColor: colorPalette.primary }, uiLayout.buttonSx)}
                 onClick={handlePassTask}
                 disabled={!selectedUser || selectedUser.length === 0}
                 startIcon={<SendIcon />}
@@ -1448,7 +1449,7 @@ if (loading || externalLoading) {
       <SentTasks tasks={tasks} />
       
       {/* Task Updates Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={updatesDialogOpen} 
         onClose={() => setUpdatesDialogOpen(false)} 
         maxWidth="md" 
@@ -1552,11 +1553,11 @@ if (loading || externalLoading) {
                           <Button
                             size="small"
                             variant="outlined"
-                            sx={{ 
+                            sx={uiLayout.withUiSx({ 
                               color: colorPalette.primary,
                               borderColor: colorPalette.primary,
                               mt: 2 
-                            }}
+                            }, uiLayout.buttonSx)}
                             startIcon={<AttachFileIcon fontSize="small" />}
                             onClick={() => handleOpenAttachmentUpdates(update.attachmentFilePath)}
                           >

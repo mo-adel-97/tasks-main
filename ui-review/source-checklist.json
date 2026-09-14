@@ -1,0 +1,2482 @@
+[
+  {
+    "file": "src/components/Achievements.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 11,
+      "formFieldSx": 4,
+      "actionBarSx": 3,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1,
+      "pageHeaderSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AddNewStudentButton.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 3,
+      "dialogLayoutSx": 1,
+      "formFieldSx": 9,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AddStudentDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "mobileGrid": 15,
+      "formFieldSx": 15,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AddTaskDialog.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "buttonSx": 6,
+      "actionBarSx": 1,
+      "pageHeaderSx": 1,
+      "formFieldSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AdminAchievementsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 10,
+      "formFieldSx": 5,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AdminDashboard.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 2,
+      "pageHeaderSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 3,
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AdminIncomeDashboard.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 2,
+      "buttonSx": 3,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AdminStats.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AdminStudentNotes.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 2,
+      "buttonSx": 4,
+      "formFieldSx": 4,
+      "mobileGrid": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AdmissionOrderDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "buttonSx": 9,
+      "dialogLayoutSx": 2,
+      "formFieldSx": 12,
+      "tableContainerSx": 5,
+      "dataGridSx": 5,
+      "mobileGrid": 6,
+      "radioGroupSx": 1,
+      "dialogActionsSx": 2,
+      "filterBarSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AllTasksList.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "tableContainerSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/Announcements.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 6,
+      "formFieldSx": 3,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AssignedTasks.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "actionBarSx": 2,
+      "buttonSx": 10,
+      "formFieldSx": 3,
+      "dialogLayoutSx": 3,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/AttachmentViewer.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/attendance/AttendanceDialog.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 6,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/attendance/StudentInfoCard.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/attendance/StudentSearchForm.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/BranchesDashboard.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/CallHistory.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 2,
+      "formFieldSx": 16,
+      "tableContainerSx": 5,
+      "actionBarSx": 1,
+      "buttonSx": 8,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/AchievementsCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/AttendanceCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/DeductionsCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/LockedServiceCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/SalaryCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/StatsCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/cards/VacationCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ChangePaymentStatusDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formGridSx": 1,
+      "formFieldSx": 4,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ChangeStudentStatusDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 5,
+      "mobileGrid": 2,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/common/ErrorButton.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/common/GradientButton.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/common/ProfessionalCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/common/SuccessButton.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ComplaintsSuggestionsTasks.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/CountdownTimer.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/CourseAttendanceStats.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/DashboardTabs.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/DashboardTabs.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/DialogStutsChangePuplic.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 1,
+      "buttonSx": 3,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/DiplomaStatistics.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 8
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/DiscountOrderDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 6,
+      "dialogLayoutSx": 3,
+      "filterBarSx": 1,
+      "buttonSx": 11,
+      "tableContainerSx": 3,
+      "dialogActionsSx": 3,
+      "mobileGrid": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/DocumentHistoryDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogActionsSx": 1,
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EditStudentDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 19,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeCVAdminPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 6
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeCVDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 16,
+      "buttonSx": 2,
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeDataDialog.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 7,
+      "buttonSx": 2,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeEvaluationPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "tableContainerSx": 2,
+      "buttonSx": 14,
+      "pageHeaderSx": 2,
+      "actionBarSx": 2,
+      "formFieldSx": 9,
+      "filterBarSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeInfoCard.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeInfoCard.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeOfTheMonthBanner.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeProfileDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "buttonSx": 3,
+      "formFieldSx": 4,
+      "tableContainerSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/EmployeeSurveys.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 2,
+      "radioGroupSx": 1,
+      "buttonSx": 3,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/exam/AnswerKeyViewer.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/exam/FormComponents.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/exam/QuestionComponents.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/exam/QuestionList.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/exam/SharedComponents.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/exam/ViewerComponents.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ExceptionsLists.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 2,
+      "formFieldSx": 5,
+      "formGridSx": 1,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ExceptionsListsAdmin.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1,
+      "formGridSx": 1,
+      "formFieldSx": 3,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ExportReportsDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 4,
+      "pageHeaderSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 4,
+      "formGridSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/FloatingParticles.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/FloatingParticles.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/FollowUpCallsDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 2,
+      "formFieldSx": 6,
+      "actionBarSx": 1,
+      "buttonSx": 6,
+      "tableContainerSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/Footer.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/GroupChat.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "buttonSx": 10,
+      "formFieldSx": 5,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/Header.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/hrControlStyles.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/HRCreateExams.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 3,
+      "buttonSx": 20,
+      "formFieldSx": 12,
+      "dialogLayoutSx": 3,
+      "mobileGrid": 1,
+      "filterBarSx": 1,
+      "dialogActionsSx": 3,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/HRCreateSurvey.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 17,
+      "tableContainerSx": 3,
+      "dataGridSx": 1,
+      "buttonSx": 30,
+      "actionBarSx": 6,
+      "pageHeaderSx": 3,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/HrOrganizationDesigner.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "filterBarSx": 3,
+      "formFieldSx": 11,
+      "checkboxFieldSx": 1,
+      "dialogLayoutSx": 1,
+      "formGridSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/HrOrgOverviewPanel.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 4,
+      "actionBarSx": 1,
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/HrPermissionWorkflowManager.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "dialogLayoutSx": 1,
+      "filterBarSx": 1,
+      "formGridSx": 3,
+      "formFieldSx": 12,
+      "actionBarSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/InquiriesPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "buttonSx": 9,
+      "formFieldSx": 7,
+      "filterBarSx": 1,
+      "tableContainerSx": 4,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/InvoiceReturnDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 12,
+      "mobileGrid": 6,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/mohamed.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/MyCallHistoryDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 6,
+      "formGridSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 3,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/NavigationShell.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/NewTaskButton.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1,
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/NewTaskForm.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 7,
+      "checkboxFieldSx": 1,
+      "pageHeaderSx": 1,
+      "filterBarSx": 1,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/NewVersionCelebration.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/P2PMarketing.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 8,
+      "formFieldSx": 10,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/P2PMarketingAdmin.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 3,
+      "formFieldSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/PastReports.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "filterBarSx": 1,
+      "formFieldSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/PaymentChart.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/PaymentOrderDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formGridSx": 1,
+      "formFieldSx": 8,
+      "tableContainerSx": 1,
+      "actionBarSx": 2,
+      "buttonSx": 11,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/PostsDialog.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 11,
+      "dialogLayoutSx": 1,
+      "formFieldSx": 2,
+      "actionBarSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/PrivateRoute.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ProfileStatsTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ProfileStatsTab.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/PublicTaskDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 4,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RealTicetsForUsers.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 13,
+      "formFieldSx": 7,
+      "actionBarSx": 1,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ReceivedTasks.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 2,
+      "actionBarSx": 1,
+      "buttonSx": 10,
+      "formFieldSx": 3,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ReceptionCelebration.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RefundRequestDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 2,
+      "dialogLayoutSx": 1,
+      "buttonSx": 3,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RegisterDocumentDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RegistrationCommissions.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "buttonSx": 3,
+      "dialogLayoutSx": 1,
+      "formFieldSx": 1,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RegistrationRequestsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 2,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RegistrationReturnDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 7,
+      "mobileGrid": 4,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ReportList.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "tableContainerSx": 1,
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/ReportViewer.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "tableContainerSx": 1,
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/RportForClinets.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 4,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SalesInvoiceDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 2,
+      "dialogActionsSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SentTasks.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 6,
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SentTasksPuplic.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 5,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SharedDateFilter.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 2,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/Sidebar.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SidebarAdmin.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SpecialComponent.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "buttonSx": 3,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "dialogLayoutSx": 1,
+      "formFieldSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SplashCursor.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentNotes.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "filterBarSx": 1,
+      "buttonSx": 4,
+      "formFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentOperationsDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogActionsSx": 1,
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentPaymentOrderDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 10,
+      "dialogLayoutSx": 2,
+      "tableContainerSx": 4,
+      "dataGridSx": 4,
+      "mobileGrid": 3,
+      "formFieldSx": 5,
+      "dialogActionsSx": 2,
+      "actionBarSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentRegFeesDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "mobileGrid": 3,
+      "formFieldSx": 6,
+      "buttonSx": 5,
+      "pageHeaderSx": 1,
+      "filterBarSx": 1,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentSearch.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 2,
+      "buttonSx": 14,
+      "formFieldSx": 15,
+      "tableContainerSx": 4,
+      "dialogLayoutSx": 4,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentStatementDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1,
+      "buttonSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentStatementDialog2.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "dialogLayoutSx": 3,
+      "tableContainerSx": 3,
+      "dataGridSx": 6,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudentStudyFileDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "buttonSx": 3,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/StudyApprovalDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formGridSx": 1,
+      "formFieldSx": 17,
+      "mobileGrid": 5,
+      "radioGroupSx": 2,
+      "dialogActionsSx": 1,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/SurveyReportExporter.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/AttendanceTab.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/EmployeeOfTheMonthTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 5,
+      "buttonSx": 6,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2,
+      "mobileGrid": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/HRVacationsTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 9,
+      "formFieldSx": 6,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/MeetingRoomTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "dialogLayoutSx": 2,
+      "formFieldSx": 8,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/OverviewTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/ProfileTab.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/SalaryTab.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/TasksTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/VacationPermissionsTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 14,
+      "formFieldSx": 40,
+      "pageHeaderSx": 1,
+      "actionBarSx": 1,
+      "tableContainerSx": 2,
+      "dialogLayoutSx": 3,
+      "checkboxFieldSx": 9,
+      "dialogActionsSx": 3,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/tabs/VacationsTab.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "dialogLayoutSx": 2,
+      "formFieldSx": 6,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/TasksCalendarView.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "buttonSx": 2,
+      "formFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/TaskTrail.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1,
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/TechnicalSupport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 14,
+      "formFieldSx": 8,
+      "actionBarSx": 1,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/TrainerStudentGrid.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 3,
+      "buttonSx": 4,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/TrainerStudentGrid2.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "filterBarSx": 1,
+      "formFieldSx": 3,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/UpdateDialog.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/UploadGrades.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/components/UploadUpdate.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "actionBarSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/AdminViewTasks.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 5,
+      "buttonSx": 5,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/AdmissionRequests.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "tableContainerSx": 4,
+      "formFieldSx": 8,
+      "filterBarSx": 2,
+      "buttonSx": 13,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 4,
+      "pageHeaderSx": 1,
+      "actionBarSx": 1,
+      "dialogActionsSx": 4,
+      "checkboxFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/AdmissionRequestsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 3,
+      "buttonSx": 4,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/AfterSalesFollow.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 7,
+      "buttonSx": 3,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/AfterSalesReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 7,
+      "buttonSx": 4,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/AttendancePage.js",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BalanceReviewPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 4,
+      "buttonSx": 4,
+      "tableContainerSx": 3,
+      "dataGridSx": 3,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BatchCountManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 5,
+      "buttonSx": 5,
+      "dialogActionsSx": 1,
+      "actionBarSx": 1,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BatchManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 6,
+      "buttonSx": 5,
+      "dialogActionsSx": 1,
+      "actionBarSx": 1,
+      "formGridSx": 2,
+      "checkboxFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BatchSeatsCounter.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "filterBarSx": 1,
+      "formFieldSx": 2,
+      "buttonSx": 2,
+      "tableContainerSx": 2,
+      "dataGridSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BatchStatistics.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 2,
+      "actionBarSx": 1,
+      "buttonSx": 7,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "filterBarSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BranchDailyReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 2,
+      "formGridSx": 1,
+      "formFieldSx": 4,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/BranchReportsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "tableContainerSx": 3,
+      "pageHeaderSx": 1,
+      "filterBarSx": 1,
+      "buttonSx": 4,
+      "formFieldSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CashDisbursement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 17,
+      "filterBarSx": 2,
+      "buttonSx": 14,
+      "actionBarSx": 1,
+      "formGridSx": 1,
+      "checkboxFieldSx": 1,
+      "tableContainerSx": 2,
+      "dialogLayoutSx": 4,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CashPaymentOrder.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 7,
+      "formGridSx": 1,
+      "formFieldSx": 8,
+      "checkboxFieldSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CashReceiptAcknowledgment.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 4,
+      "formGridSx": 1,
+      "formFieldSx": 9,
+      "checkboxFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ChangeUserPassword.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 2,
+      "actionBarSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ChatMian.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/Chats.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 3,
+      "formFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CircularsList.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 4,
+      "formFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CircularsUpload.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 10,
+      "filterBarSx": 1,
+      "formFieldSx": 3,
+      "dialogLayoutSx": 1,
+      "formGridSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ClosingEntry.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 2,
+      "formFieldSx": 5,
+      "tableContainerSx": 4,
+      "buttonSx": 7,
+      "dialogActionsSx": 2,
+      "filterBarSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CollectionCommissionsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 2,
+      "formFieldSx": 6,
+      "buttonSx": 9,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/Complaiments.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 5,
+      "dialogLayoutSx": 4,
+      "formGridSx": 1,
+      "dialogActionsSx": 4,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/components/HrOrganizationDesigner.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "filterBarSx": 3,
+      "formFieldSx": 11,
+      "checkboxFieldSx": 1,
+      "dialogLayoutSx": 1,
+      "formGridSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/components/HrOrgOverviewPanel.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 4,
+      "actionBarSx": 1,
+      "dialogLayoutSx": 1,
+      "tableContainerSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/components/HrPermissionWorkflowManager.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "dialogLayoutSx": 1,
+      "filterBarSx": 1,
+      "formGridSx": 3,
+      "formFieldSx": 12,
+      "actionBarSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ConsolidatedIncomeStatement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 2,
+      "buttonSx": 2,
+      "tableContainerSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CourseStudentsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 16,
+      "buttonSx": 22,
+      "actionBarSx": 3,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "formGridSx": 3,
+      "dialogLayoutSx": 6,
+      "dialogActionsSx": 6,
+      "checkboxFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/CreateExam.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 20,
+      "dialogLayoutSx": 3,
+      "formFieldSx": 17,
+      "dialogActionsSx": 3,
+      "formGridSx": 2,
+      "actionBarSx": 4,
+      "radioGroupSx": 1,
+      "pageHeaderSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DailyAttendanceReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 5,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DailyFollowUpReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 2,
+      "buttonSx": 6,
+      "formFieldSx": 2,
+      "tableContainerSx": 1,
+      "actionBarSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/Dashboard.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DeregistrationRequestsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 13,
+      "formFieldSx": 4,
+      "actionBarSx": 2,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DesktopDevicesAccessPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 5,
+      "filterBarSx": 1,
+      "formFieldSx": 5,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DiplomaStudentsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 3,
+      "formFieldSx": 21,
+      "buttonSx": 26,
+      "actionBarSx": 2,
+      "pageHeaderSx": 1,
+      "formGridSx": 2,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 4,
+      "dialogActionsSx": 4,
+      "checkboxFieldSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DiscountRequestsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "actionBarSx": 3,
+      "buttonSx": 18,
+      "formFieldSx": 5,
+      "dialogLayoutSx": 4,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "dialogActionsSx": 4,
+      "filterBarSx": 1,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/DiscountTypeManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 6,
+      "buttonSx": 5,
+      "dialogActionsSx": 1,
+      "actionBarSx": 1,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ExploerNetwork.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/GeneralAccountStatement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 11,
+      "filterBarSx": 1,
+      "formFieldSx": 5,
+      "actionBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/GeneralDaily.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 4,
+      "filterBarSx": 1,
+      "buttonSx": 5,
+      "actionBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/GraduatesFollowReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "actionBarSx": 3,
+      "buttonSx": 17,
+      "formFieldSx": 6,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 4,
+      "dialogActionsSx": 4
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HomeTab.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrAttendancePage.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 5,
+      "buttonSx": 37,
+      "filterBarSx": 2,
+      "formFieldSx": 39,
+      "formGridSx": 10,
+      "dialogLayoutSx": 8,
+      "checkboxFieldSx": 1,
+      "dialogActionsSx": 8
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrContractsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 8,
+      "formGridSx": 3,
+      "formFieldSx": 15,
+      "dialogLayoutSx": 4,
+      "filterBarSx": 1,
+      "checkboxFieldSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrDepartmentsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 2,
+      "buttonSx": 14,
+      "filterBarSx": 2,
+      "formFieldSx": 9,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 6,
+      "formGridSx": 1,
+      "dialogActionsSx": 4
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrEmployeeHomePage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 33,
+      "dialogLayoutSx": 6,
+      "dialogActionsSx": 6,
+      "actionBarSx": 3,
+      "tableContainerSx": 3,
+      "formFieldSx": 11
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrEmployeesPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 33,
+      "formFieldSx": 44,
+      "formGridSx": 4,
+      "actionBarSx": 9,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 3,
+      "filterBarSx": 4
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrJobTitlesPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 3,
+      "buttonSx": 14,
+      "formGridSx": 5,
+      "formFieldSx": 16,
+      "dialogLayoutSx": 5,
+      "dialogActionsSx": 5,
+      "pageHeaderSx": 2,
+      "filterBarSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrLeavesPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 28,
+      "formGridSx": 13,
+      "formFieldSx": 50,
+      "tableContainerSx": 6,
+      "actionBarSx": 3,
+      "filterBarSx": 4,
+      "dialogLayoutSx": 6,
+      "dialogActionsSx": 6,
+      "checkboxFieldSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/HrPermissionsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 8,
+      "formGridSx": 4,
+      "formFieldSx": 16,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "actionBarSx": 1,
+      "dialogLayoutSx": 1,
+      "checkboxFieldSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/JournalEntry.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "actionBarSx": 1,
+      "buttonSx": 8,
+      "formGridSx": 4,
+      "formFieldSx": 18,
+      "checkboxFieldSx": 1,
+      "tableContainerSx": 3,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/Login.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 2,
+      "actionBarSx": 1,
+      "buttonSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/MaintenancePage.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/MarketersReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 2,
+      "formFieldSx": 4,
+      "buttonSx": 9,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/MeetingPage.js",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1,
+      "formFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/MonthlyAttendanceReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formGridSx": 1,
+      "formFieldSx": 3,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/NewStudentsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 1,
+      "buttonSx": 2,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/OfflineRegistrationRequests.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/OnlineRegistrationRequests.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/OtherInstituteRegistrationsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 5,
+      "formFieldSx": 3,
+      "pageHeaderSx": 1,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/PaymentFollowReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "pageHeaderSx": 1,
+      "actionBarSx": 3,
+      "buttonSx": 27,
+      "formFieldSx": 8,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 8,
+      "dialogActionsSx": 6
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/PaymentRequestsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 5,
+      "formFieldSx": 4,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/PeriodicReports.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 4,
+      "tableContainerSx": 4,
+      "actionBarSx": 2,
+      "buttonSx": 10,
+      "dialogActionsSx": 4,
+      "formFieldSx": 5
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/PeriodicReportsForManagers.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 3,
+      "tableContainerSx": 2,
+      "dialogLayoutSx": 2,
+      "buttonSx": 3,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/PrintExamPage.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/QualityFormsAudit.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 4,
+      "buttonSx": 3,
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/QualityFormsPage.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "formFieldSx": 55,
+      "pageHeaderSx": 2,
+      "buttonSx": 7,
+      "actionBarSx": 1,
+      "formGridSx": 1,
+      "filterBarSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ReceptionOffice.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 7,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2,
+      "actionBarSx": 2,
+      "radioGroupSx": 1,
+      "formFieldSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/RefundRequestsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 13,
+      "formFieldSx": 4,
+      "actionBarSx": 2,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 3,
+      "dialogActionsSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/RegistrationRequestReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 5,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/RewardsList.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 2,
+      "formFieldSx": 2,
+      "buttonSx": 7,
+      "tableContainerSx": 2,
+      "dataGridSx": 2,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/SalesManManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 5,
+      "buttonSx": 7,
+      "dialogActionsSx": 1,
+      "actionBarSx": 1,
+      "formGridSx": 1,
+      "checkboxFieldSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/SalesReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 6,
+      "dialogActionsSx": 1,
+      "buttonSx": 6,
+      "filterBarSx": 1,
+      "tableContainerSx": 2,
+      "dataGridSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/ServiceManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 14,
+      "buttonSx": 5,
+      "dialogActionsSx": 1,
+      "actionBarSx": 1,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/SharedCoursesManager.jsx",
+    "status": "source reviewed; no matching layout change needed",
+    "notes": {},
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/SidebarSettings.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 18,
+      "buttonSx": 9,
+      "actionBarSx": 2,
+      "formGridSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TasksTab.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 1,
+      "dialogLayoutSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TaxReturnsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 9,
+      "filterBarSx": 1,
+      "formFieldSx": 4,
+      "actionBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TaxSalesReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 9,
+      "filterBarSx": 1,
+      "formFieldSx": 4,
+      "actionBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TrainerManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 2,
+      "formFieldSx": 17,
+      "buttonSx": 7,
+      "dialogActionsSx": 2,
+      "actionBarSx": 1,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TrainingAgreementsFollow.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 5,
+      "buttonSx": 4,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TransferRequestsReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "buttonSx": 11,
+      "formFieldSx": 3,
+      "actionBarSx": 2,
+      "filterBarSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1,
+      "dialogLayoutSx": 2,
+      "dialogActionsSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/TrialBalance.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 4,
+      "buttonSx": 7,
+      "tableContainerSx": 1,
+      "dialogLayoutSx": 1,
+      "dialogActionsSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/UserActionReport.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 9,
+      "buttonSx": 3,
+      "formGridSx": 1
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/UserManagement.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 1,
+      "formFieldSx": 12,
+      "buttonSx": 9,
+      "dialogActionsSx": 1,
+      "actionBarSx": 2,
+      "formGridSx": 2
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/pages/VipCustomers.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "filterBarSx": 1,
+      "formFieldSx": 3,
+      "buttonSx": 3
+    },
+    "visual": "pending runtime review"
+  },
+  {
+    "file": "src/MyRequests.jsx",
+    "status": "presentation adjusted",
+    "notes": {
+      "dialogLayoutSx": 3,
+      "formFieldSx": 14,
+      "mobileGrid": 6,
+      "dialogActionsSx": 3,
+      "buttonSx": 9,
+      "formGridSx": 1,
+      "tableContainerSx": 1,
+      "dataGridSx": 1
+    },
+    "visual": "pending runtime review"
+  }
+]

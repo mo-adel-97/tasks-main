@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import React from 'react';
 import { 
   Box, 
@@ -237,12 +238,12 @@ const StudentInfoCard = ({
         </Paper>
 
         {/* Action Buttons */}
-        <Box sx={{ 
+        <Box sx={uiLayout.withUiSx({ 
           display: "flex", 
           gap: 2, 
           direction: 'rtl',
           flexDirection: { xs: 'column', sm: 'row' }
-        }}>
+        }, uiLayout.actionBarSx)}>
           <SuccessButton
             fullWidth
             onClick={handleOpenAttendanceDialog}

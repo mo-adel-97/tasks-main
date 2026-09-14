@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -849,7 +851,7 @@ const BranchDailyReport = () => {
               </Typography>
             </Box>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="outlined"
               startIcon={<RefreshIcon />}
               onClick={loadBranchInfo}
@@ -871,16 +873,16 @@ const BranchDailyReport = () => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
                 md: "1fr 1fr"
               },
               gap: 1.2
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="الفترة من"
               value={fromDate}
@@ -894,7 +896,7 @@ const BranchDailyReport = () => {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="الفترة إلى"
               value={toDate}
@@ -908,7 +910,7 @@ const BranchDailyReport = () => {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="الفرع"
               value={
                 branchInfo?.branchName ||
@@ -919,7 +921,7 @@ const BranchDailyReport = () => {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="الخزينة / البنك"
               value={
                 branchInfo?.cashBoxName ||
@@ -953,11 +955,11 @@ const BranchDailyReport = () => {
                 loadingData ||
                 loadingInfo
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 130,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -1022,14 +1024,14 @@ const BranchDailyReport = () => {
           )}
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               height: {
                 xs: 580,
                 md: 670
               },
               width: "100%",
               p: 1.2
-            }}
+            }, uiLayout.tableContainerSx)}
           >
             <DataGrid
               rows={
@@ -1075,7 +1077,7 @@ const BranchDailyReport = () => {
                 50,
                 100
               ]}
-              sx={{
+              sx={uiLayout.withUiSx({
                 border: 0,
                 direction: "rtl",
                 "& .MuiDataGrid-columnHeaders": {
@@ -1093,7 +1095,7 @@ const BranchDailyReport = () => {
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap"
                 }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         </Paper>

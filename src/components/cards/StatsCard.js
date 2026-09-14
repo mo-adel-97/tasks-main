@@ -61,13 +61,13 @@ export default function StatsCard({
       </Box>
 
       <Box sx={{ minWidth: 0, position: "relative", zIndex: 1 }}>
-        <Typography sx={{ fontSize: "0.64rem", fontWeight: 850, opacity: 0.92 }}>
+        <Typography sx={{ fontSize: "0.75rem", fontWeight: 850, opacity: 0.92 }}>
           {title}
         </Typography>
         <Typography sx={{ fontSize: "1.12rem", lineHeight: 1.2, fontWeight: 1000, my: 0.25 }}>
           {value}
         </Typography>
-        <Typography sx={{ fontSize: "0.57rem", opacity: 0.82 }}>
+        <Typography sx={{ fontSize: "0.75rem", opacity: 0.82 }}>
           {subtitle}
         </Typography>
       </Box>

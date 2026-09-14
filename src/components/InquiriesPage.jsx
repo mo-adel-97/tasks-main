@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -357,12 +358,12 @@ const submitFollowUp = async () => {
           background: `linear-gradient(135deg, ${surfaceColor} 0%, #f0f7f4 100%)`,
           border: `1px solid ${primaryLight}`
         }}>
-          <Box sx={{ 
+          <Box sx={uiLayout.withUiSx({ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
             mb: 3
-          }}>
+          }, uiLayout.pageHeaderSx)}>
             <Typography variant="h4" fontWeight="bold" sx={{ 
               fontFamily: 'Cairo, sans-serif',
               color: primaryDark,
@@ -378,7 +379,7 @@ const submitFollowUp = async () => {
                 variant="outlined"
                 startIcon={<FilterListIcon />}
                 onClick={() => setShowFilters(!showFilters)}
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   borderRadius: 2,
                   borderColor: primaryColor,
                   color: primaryDark,
@@ -386,7 +387,7 @@ const submitFollowUp = async () => {
                     borderColor: primaryDark,
                     backgroundColor: primaryLight + '20'
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {showFilters ? 'إخفاء الفلاتر' : 'عرض الفلاتر'}
               </Button>
@@ -409,7 +410,7 @@ const submitFollowUp = async () => {
 
           {/* Search and Filters Section */}
           <Box sx={{ mb: 3 }}>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               variant="outlined"
               placeholder="ابحث باسم الطالب أو الملاحظات..."
@@ -434,7 +435,7 @@ const submitFollowUp = async () => {
                   }
                 }
               }}
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
             />
 
             <Collapse in={showFilters}>
@@ -445,13 +446,13 @@ const submitFollowUp = async () => {
                 backgroundColor: '#f0f7f4',
                 border: `1px solid ${primaryLight}`
               }}>
-                <Box sx={{ 
+                <Box sx={uiLayout.withUiSx({ 
                   display: 'flex', 
                   flexWrap: 'wrap', 
                   gap: 2,
                   alignItems: 'center'
-                }}>
-                  <FormControl sx={{ minWidth: 120 }} size="small">
+                }, uiLayout.filterBarSx)}>
+                  <FormControl sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)} size="small">
                     <InputLabel sx={{ color: primaryDark }}>حالة المكالمة</InputLabel>
                     <Select
                       value={statusFilter}
@@ -475,7 +476,7 @@ const submitFollowUp = async () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl sx={{ minWidth: 120 }} size="small">
+                  <FormControl sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)} size="small">
                     <InputLabel sx={{ color: primaryDark }}>نوع المكالمة</InputLabel>
                     <Select
                       value={typeFilter}
@@ -509,10 +510,10 @@ const submitFollowUp = async () => {
                         setPage(1);
                       }}
                       renderInput={(params) => (
-                        <TextField 
+                        <TextField InputLabelProps={{ shrink: true }} 
                           {...params} 
                           size="small" 
-                          sx={{ width: 150 }}
+                          sx={uiLayout.withUiSx({ width: 150 }, uiLayout.formFieldSx)}
                           InputProps={{
                             sx: {
                               '& .MuiOutlinedInput-notchedOutline': {
@@ -534,10 +535,10 @@ const submitFollowUp = async () => {
                         setPage(1);
                       }}
                       renderInput={(params) => (
-                        <TextField 
+                        <TextField InputLabelProps={{ shrink: true }} 
                           {...params} 
                           size="small" 
-                          sx={{ width: 150 }}
+                          sx={uiLayout.withUiSx({ width: 150 }, uiLayout.formFieldSx)}
                           InputProps={{
                             sx: {
                               '& .MuiOutlinedInput-notchedOutline': {
@@ -559,7 +560,7 @@ const submitFollowUp = async () => {
                     color="error"
                     startIcon={<CloseIcon />}
                     onClick={handleResetFilters}
-                    sx={{ 
+                    sx={uiLayout.withUiSx({ 
                       borderRadius: 2,
                       borderColor: '#e74c3c',
                       color: '#e74c3c',
@@ -567,7 +568,7 @@ const submitFollowUp = async () => {
                         borderColor: '#c0392b',
                         backgroundColor: '#e74c3c10'
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     إعادة الضبط
                   </Button>
@@ -625,12 +626,12 @@ const submitFollowUp = async () => {
               </Typography>
             </Box>
           ) : (
-            <TableContainer component={Paper} sx={{ 
+            <TableContainer component={Paper} sx={uiLayout.withUiSx({ 
               borderRadius: 2,
               overflow: 'hidden',
               boxShadow: '0 4px 20px rgba(128, 180, 158, 0.1)',
               border: `1px solid ${primaryLight}`
-            }}>
+            }, uiLayout.tableContainerSx)}>
               <Table>
                 <TableHead>
                   <TableRow sx={{ 
@@ -744,7 +745,7 @@ const submitFollowUp = async () => {
           size="small"
           variant="outlined"
           onClick={() => loadStudentInfo(accountGuid)}
-          sx={{ borderRadius: 2, borderColor: primaryLight, color: primaryDark }}
+          sx={uiLayout.withUiSx({ borderRadius: 2, borderColor: primaryLight, color: primaryDark }, uiLayout.buttonSx)}
         >
           عرض بيانات الطالب
         </Button>
@@ -814,7 +815,7 @@ const submitFollowUp = async () => {
                                     size="small" 
                                     onClick={() => handleViewDetails(call)}
                                     startIcon={<DescriptionIcon fontSize="small" />}
-                                    sx={{ 
+                                    sx={uiLayout.withUiSx({ 
                                       borderRadius: 2,
                                       minWidth: 'auto',
                                       borderColor: primaryLight,
@@ -823,7 +824,7 @@ const submitFollowUp = async () => {
                                         borderColor: primaryColor,
                                         backgroundColor: primaryLight + '20'
                                       }
-                                    }}
+                                    }, uiLayout.buttonSx)}
                                   />
                                 </Tooltip>
                                 
@@ -834,14 +835,14 @@ const submitFollowUp = async () => {
                                       size="small" 
                                       onClick={() => handleFollowUp(call)}
                                       startIcon={<AddIcon fontSize="small" />}
-                                      sx={{ 
+                                      sx={uiLayout.withUiSx({ 
                                         borderRadius: 2,
                                         minWidth: 'auto',
                                         backgroundColor: primaryColor,
                                         '&:hover': {
                                           backgroundColor: primaryDark
                                         }
-                                      }}
+                                      }, uiLayout.buttonSx)}
                                     />
                                   </Tooltip>
                                 )}
@@ -854,14 +855,14 @@ const submitFollowUp = async () => {
                                       color="success"
                                       onClick={() => handleCompleteCall(call.guid)}
                                       startIcon={<CheckCircleIcon fontSize="small" />}
-                                      sx={{ 
+                                      sx={uiLayout.withUiSx({ 
                                         borderRadius: 2,
                                         minWidth: 'auto',
                                         backgroundColor: '#27ae60',
                                         '&:hover': {
                                           backgroundColor: '#219a52'
                                         }
-                                      }}
+                                      }, uiLayout.buttonSx)}
                                     />
                                   </Tooltip>
                                 )}
@@ -898,7 +899,7 @@ const submitFollowUp = async () => {
                                 borderTop: `1px solid ${primaryLight}`
                               }}>
                                 <Collapse in={true} timeout="auto" unmountOnExit>
-                                  <Box sx={{ p: 2 }}>
+                                  <Box sx={uiLayout.withUiSx({ p: 2 }, uiLayout.tableContainerSx)}>
                                     <Typography variant="subtitle1" fontWeight="bold" sx={{ 
                                       mb: 1,
                                       display: 'flex',
@@ -945,7 +946,7 @@ const submitFollowUp = async () => {
                                             </TableCell>
                                             <TableCell align="center">
                                               <Chip 
-                                                avatar={<Avatar sx={{ bgcolor: primaryColor, fontSize: '0.7rem' }}>
+                                                avatar={<Avatar sx={{ bgcolor: primaryColor, fontSize: "0.75rem" }}>
                                                   {followUp.userFullName?.charAt(0)}
                                                 </Avatar>}
                                                 label={followUp.userFullName}
@@ -1031,7 +1032,7 @@ const submitFollowUp = async () => {
       </Box>
 
       {/* Follow-up Dialog */}
-      <Dialog open={openFollowForm} onClose={handleCloseFollowForm} fullWidth maxWidth="sm"
+      <Dialog sx={uiLayout.dialogLayoutSx} open={openFollowForm} onClose={handleCloseFollowForm} fullWidth maxWidth="sm"
         PaperProps={{ sx: { borderRadius: 3 } }}>
         <DialogTitle sx={{ 
           background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
@@ -1044,7 +1045,7 @@ const submitFollowUp = async () => {
           <AddIcon /> إضافة متابعة جديدة
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             label="ملاحظات المتابعة"
             multiline
             fullWidth
@@ -1068,9 +1069,9 @@ const submitFollowUp = async () => {
                 }
               }
             }}
-            sx={{ mb: 2 }}
+            sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
           />
-          <FormControl fullWidth margin="normal">
+          <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
             <InputLabel sx={{ color: primaryDark }}>حالة المتابعة</InputLabel>
             <Select
               value={followUpStatus}
@@ -1108,11 +1109,11 @@ const submitFollowUp = async () => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={handleCloseFollowForm} 
             variant="outlined"
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               borderRadius: 2,
               borderColor: primaryLight,
               color: primaryDark,
@@ -1120,7 +1121,7 @@ const submitFollowUp = async () => {
                 borderColor: primaryColor,
                 backgroundColor: primaryLight + '20'
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -1129,7 +1130,7 @@ const submitFollowUp = async () => {
             variant="contained"
             disabled={isSubmitting}
             startIcon={isSubmitting ? <CircularProgress size={20} sx={{ color: 'white' }} /> : <CheckCircleIcon />}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               borderRadius: 2,
               backgroundColor: primaryColor,
               '&:hover': {
@@ -1138,7 +1139,7 @@ const submitFollowUp = async () => {
               '&:disabled': {
                 backgroundColor: primaryLight
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             {isSubmitting ? 'جاري الحفظ...' : 'حفظ المتابعة'}
           </Button>
@@ -1146,7 +1147,7 @@ const submitFollowUp = async () => {
       </Dialog>
 
       {/* Call Details Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={detailsDialogOpen} 
         onClose={() => setDetailsDialogOpen(false)} 
         maxWidth="md" 
@@ -1166,7 +1167,7 @@ const submitFollowUp = async () => {
               <DescriptionIcon /> تفاصيل المكالمة
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
-              <TableContainer>
+              <TableContainer sx={uiLayout.tableContainerSx}>
                 <Table>
                   <TableBody>
                     <TableRow>
@@ -1264,7 +1265,7 @@ const submitFollowUp = async () => {
                     <ArrowForwardIcon sx={{ color: primaryColor }} />
                     المتابعات المسجلة
                   </Typography>
-                  <TableContainer component={Paper} sx={{ borderRadius: 2, border: `1px solid ${primaryLight}` }}>
+                  <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, border: `1px solid ${primaryLight}` }, uiLayout.tableContainerSx)}>
                     <Table size="small">
                       <TableHead>
                         <TableRow sx={{ backgroundColor: '#f0f7f4' }}>
@@ -1290,7 +1291,7 @@ const submitFollowUp = async () => {
                             </TableCell>
                             <TableCell align="center">
                               <Chip 
-                                avatar={<Avatar sx={{ bgcolor: primaryColor, fontSize: '0.7rem' }}>
+                                avatar={<Avatar sx={{ bgcolor: primaryColor, fontSize: "0.75rem" }}>
                                   {followUp.userFullName?.charAt(0)}
                                 </Avatar>}
                                 label={followUp.userFullName}
@@ -1314,17 +1315,17 @@ const submitFollowUp = async () => {
                 </>
               )}
             </DialogContent>
-            <DialogActions sx={{ p: 2 }}>
+            <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
               <Button 
                 onClick={() => setDetailsDialogOpen(false)} 
                 variant="contained"
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   borderRadius: 2,
                   backgroundColor: primaryColor,
                   '&:hover': {
                     backgroundColor: primaryDark
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إغلاق
               </Button>

@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import { hrChipSx } from "../hrControlStyles";
 import React from "react";
 import { 
@@ -191,14 +192,14 @@ const availableYears = Array.from(
             overflowWrap: "anywhere",
           },
           "& .MuiChip-root": {
-            fontSize: { xs: "0.58rem", sm: "0.66rem", md: "0.72rem" },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
             height: { xs: 24, sm: 26, md: 28 },
           },
           "& .MuiChip-icon": {
             fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           },
           "& .MuiInputBase-root, & .MuiInputLabel-root": {
-            fontSize: { xs: "0.68rem", sm: "0.76rem", md: "0.84rem" },
+            fontSize: { xs: "0.75rem", sm: "0.76rem", md: "0.84rem" },
           },
         }}
       >
@@ -216,13 +217,13 @@ const availableYears = Array.from(
           background: "white",
           border: `1px solid ${alpha(COLOR_SCHEME.primary, 0.1)}`
         }}>
-          <Box sx={{
+          <Box sx={uiLayout.withUiSx({
             display: "flex",
             flexWrap: "wrap",
             gap: { xs: 0.8, sm: 1.2, md: 2 },
             alignItems: "center",
             justifyContent: "center"
-          }}>
+          }, uiLayout.formGridSx)}>
             <Typography
               variant="h6"
               sx={{
@@ -238,7 +239,7 @@ const availableYears = Array.from(
               <Analytics sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} /> تصفية بيانات المهام:
             </Typography>
             
-            <FormControl size="small" sx={{ minWidth: { xs: 105, sm: 115, md: 120 }, flex: { xs: 1, sm: "0 0 auto" } }}>
+            <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: { xs: 105, sm: 115, md: 120 }, flex: { xs: 1, sm: "0 0 auto" } }, uiLayout.formFieldSx)}>
               <InputLabel>السنة</InputLabel>
               <Select
                 value={selectedYear}
@@ -251,7 +252,7 @@ const availableYears = Array.from(
               </Select>
             </FormControl>
 
-            <FormControl size="small" sx={{ minWidth: { xs: 112, sm: 122, md: 130 }, flex: { xs: 1, sm: "0 0 auto" } }}>
+            <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: { xs: 112, sm: 122, md: 130 }, flex: { xs: 1, sm: "0 0 auto" } }, uiLayout.formFieldSx)}>
               <InputLabel>الشهر</InputLabel>
               <Select
                 value={selectedMonth}

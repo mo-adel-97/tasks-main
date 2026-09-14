@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -820,7 +822,7 @@ const MonthlyAttendanceReport = () => {
           backgroundColor: 'white',
           boxShadow: `0 4px 20px ${alpha(colorPalette.primary, 0.08)}`
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 3 }, uiLayout.formGridSx)}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: colorPalette.primary }}>
               <FilterIcon />
               <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
@@ -828,7 +830,7 @@ const MonthlyAttendanceReport = () => {
               </Typography>
             </Box>
 
-            <FormControl sx={{ minWidth: 220 }}>
+            <FormControl sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}>
               <InputLabel sx={{ 
                 fontFamily: '"Cairo", sans-serif',
                 fontWeight: 600,
@@ -873,7 +875,7 @@ const MonthlyAttendanceReport = () => {
               onChange={handleSearch}
               InputLabelProps={{ 
                 sx: { fontFamily: '"Cairo", sans-serif', fontWeight: 600 } 
-              }}
+              , shrink: true }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -882,7 +884,7 @@ const MonthlyAttendanceReport = () => {
                 ),
                 sx: { fontFamily: '"Cairo", sans-serif' }
               }}
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 maxWidth: 400,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '10px',
@@ -893,7 +895,7 @@ const MonthlyAttendanceReport = () => {
                     borderColor: colorPalette.primary,
                   },
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
           </Box>
         </Paper>
@@ -962,12 +964,12 @@ const MonthlyAttendanceReport = () => {
         ) : (
           <>
             <Box sx={{ overflowX: 'auto' }}>
-              <TableContainer component={Paper} elevation={0} sx={{ 
+              <TableContainer component={Paper} elevation={0} sx={uiLayout.withUiSx({ 
                 border: `1px solid ${colorPalette.primaryLighter}`,
                 borderRadius: '16px',
                 backgroundColor: 'white',
                 boxShadow: `0 4px 20px ${alpha(colorPalette.primary, 0.08)}`
-              }}>
+              }, uiLayout.tableContainerSx)}>
                 <Table stickyHeader aria-label="monthly attendance table">
                   <TableHead>
                     <TableRow>
@@ -1162,7 +1164,7 @@ const MonthlyAttendanceReport = () => {
               </TableContainer>
             </Box>
 
-            <StyledTablePagination
+            <StyledTablePagination sx={uiLayout.tablePaginationSx}
               component="div"
               count={filteredStudents.length}
               page={page}
@@ -1185,12 +1187,12 @@ const MonthlyAttendanceReport = () => {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="md"
-        sx={{ 
+        sx={uiLayout.withUiSx({ 
           '& .MuiDialog-paper': { 
             borderRadius: '20px',
             overflow: 'hidden'
           } 
-        }}
+        }, uiLayout.dialogLayoutSx)}
       >
         <DialogTitle sx={{ 
           background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
@@ -1365,7 +1367,7 @@ const MonthlyAttendanceReport = () => {
               </Grid>
 
               {/* Course Filter */}
-              <FormControl fullWidth sx={{ mb: 3 }}>
+              <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}>
                 <InputLabel sx={{ 
                   fontFamily: '"Cairo", sans-serif',
                   fontWeight: 600,
@@ -1523,13 +1525,13 @@ const MonthlyAttendanceReport = () => {
           )}
         </DialogContent>
 
-        <DialogActions sx={{ 
+        <DialogActions sx={uiLayout.withUiSx({ 
           p: 3, 
           borderTop: `1px solid ${colorPalette.primaryLighter}`, 
           display: 'flex', 
           justifyContent: 'space-between',
           backgroundColor: 'white'
-        }}>
+        }, uiLayout.dialogActionsSx)}>
           <StyledButton
             onClick={() => handleSendToWhatsApp(selectedStudent)}
             variant="contained"

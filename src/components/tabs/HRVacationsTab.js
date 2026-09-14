@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import { hrChipSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import { 
@@ -525,7 +526,7 @@ const fetchHRRequests = async () => {
             )}
           </Typography>
           
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="outlined"
             startIcon={<Refresh />}
             onClick={fetchHRRequests}
@@ -611,7 +612,7 @@ const fetchHRRequests = async () => {
       <Card sx={{ mb: 3, borderRadius: 3, p: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={3}>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               fullWidth
               placeholder="ابحث بالاسم، الفرع، النوع..."
               value={searchTerm}
@@ -634,7 +635,7 @@ const fetchHRRequests = async () => {
           </Grid>
           
           <Grid item xs={12} sm={6} md={2}>
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>حالة الطلب</InputLabel>
               <Select
                 value={statusFilter}
@@ -650,7 +651,7 @@ const fetchHRRequests = async () => {
           </Grid>
           
           <Grid item xs={12} sm={6} md={2}>
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>نوع الطلب</InputLabel>
               <Select
                 value={typeFilter}
@@ -665,7 +666,7 @@ const fetchHRRequests = async () => {
           </Grid>
           
           <Grid item xs={12} sm={6} md={2}>
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>الفرع</InputLabel>
               <Select
                 value={branchFilter}
@@ -683,7 +684,7 @@ const fetchHRRequests = async () => {
           </Grid>
           
           <Grid item xs={12} sm={6} md={2}>
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>الفترة</InputLabel>
               <Select
                 value={dateFilter}
@@ -699,7 +700,7 @@ const fetchHRRequests = async () => {
           </Grid>
           
           <Grid item xs={12} md={1}>
-            <Button
+            <Button sx={uiLayout.buttonSx}
               fullWidth
               variant="outlined"
               startIcon={<Clear />}
@@ -732,7 +733,7 @@ const fetchHRRequests = async () => {
         </Box>
       ) : (
         <>
-          <TableContainer component={Paper} sx={{ borderRadius: 3, mb: 2 }}>
+          <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3, mb: 2 }, uiLayout.tableContainerSx)}>
             <Table>
               <TableHead>
                 <TableRow sx={{ backgroundColor: COLOR_SCHEME.background }}>
@@ -867,7 +868,7 @@ const fetchHRRequests = async () => {
                       <TableCell>
                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                           <Tooltip title="عرض التفاصيل">
-                            <Button
+                            <Button sx={uiLayout.buttonSx}
                               size="small"
                               variant="outlined"
                               startIcon={<Visibility />}
@@ -880,7 +881,7 @@ const fetchHRRequests = async () => {
                           {canApproveRequest(request) && (
                             <>
                               <Tooltip title="قبول الطلب">
-                                <Button
+                                <Button sx={uiLayout.buttonSx}
                                   size="small"
                                   variant="contained"
                                   color="success"
@@ -891,7 +892,7 @@ const fetchHRRequests = async () => {
                                 </Button>
                               </Tooltip>
                               <Tooltip title="رفض الطلب">
-                                <Button
+                                <Button sx={uiLayout.buttonSx}
                                   size="small"
                                   variant="contained"
                                   color="error"
@@ -942,7 +943,7 @@ const fetchHRRequests = async () => {
       )}
 
       {/* ديالوج تفاصيل الطلب */}
-      <Dialog open={detailsDialog.open} onClose={handleCloseDetailsDialog} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={detailsDialog.open} onClose={handleCloseDetailsDialog} maxWidth="md" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Description color="primary" />
@@ -1039,7 +1040,7 @@ const fetchHRRequests = async () => {
                   </Typography>
                   {detailsDialog.request.attached_file && !isFakeFile(detailsDialog.request.attached_file) ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Button
+                      <Button sx={uiLayout.buttonSx}
                         variant="outlined"
                         size="small"
                         startIcon={<AttachFile />}
@@ -1075,15 +1076,15 @@ const fetchHRRequests = async () => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailsDialog}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleCloseDetailsDialog}>
             إغلاق
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* ديالوج الإجراء (قبول/رفض) */}
-      <Dialog open={actionDialog.open} onClose={handleCloseActionDialog} maxWidth="sm" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={actionDialog.open} onClose={handleCloseActionDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
             {actionDialog.action === 'approved' ? 'قبول الطلب' : 'رفض الطلب'}
@@ -1095,23 +1096,23 @@ const fetchHRRequests = async () => {
               هل أنت متأكد من {actionDialog.action === 'approved' ? 'قبول' : 'رفض'} هذا الطلب؟
             </Typography>
             
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               label="ملاحظات إدارية (اختياري)"
               multiline
               rows={3}
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              sx={{ mt: 2 }}
+              sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formFieldSx)}
               placeholder="أضف ملاحظاتك هنا..."
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseActionDialog}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleCloseActionDialog}>
             إلغاء
           </Button>
-          <Button 
+          <Button sx={uiLayout.buttonSx} 
             onClick={handleExecuteAction}
             variant="contained"
             color={actionDialog.action === 'approved' ? 'success' : 'error'}

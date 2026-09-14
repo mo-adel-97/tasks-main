@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
@@ -170,7 +171,7 @@ const EmployeeOfTheMonthDialog = () => {
 
   return (
     <>
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={open}
         onClose={() => setOpen(false)}
         PaperProps={{

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { hrChipSx, hrTabIconSx } from "./hrControlStyles";
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -2135,7 +2136,7 @@ const ResponsesMasterDetail = ({
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             size="small"
             value={search}
@@ -2148,7 +2149,7 @@ const ResponsesMasterDetail = ({
                 </InputAdornment>
               )
             }}
-            sx={fieldStyle}
+            sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
           />
         </Grid>
       </Grid>
@@ -2157,7 +2158,7 @@ const ResponsesMasterDetail = ({
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Paper sx={{ borderRadius: 3, border: `1px solid ${primaryLight}`, overflow: 'hidden' }}>
-            <Box sx={{ height: 520, width: '100%' }}>
+            <Box sx={uiLayout.withUiSx({ height: 520, width: '100%' }, uiLayout.tableContainerSx)}>
               <DataGrid
                 rows={filtered.map((r, idx) => ({ id: r.id || `${survey.id}_${idx}`, ...r }))}
                 columns={columns}
@@ -2167,7 +2168,7 @@ const ResponsesMasterDetail = ({
                 }}
                 onRowClick={(p) => onSelect(p.row)}
                 disableRowSelectionOnClick
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   '& .MuiDataGrid-columnHeaders': {
                     backgroundColor: backgroundColor,
@@ -2175,7 +2176,7 @@ const ResponsesMasterDetail = ({
                     fontWeight: 'bold'
                   },
                   '& .MuiDataGrid-cell': { fontFamily: '"Cairo", sans-serif' }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Paper>
@@ -2528,7 +2529,7 @@ async function chartToPngBase64({
           size="small"
           startIcon={<Download />}
           onClick={() => handleDownloadFile(answer)}
-          sx={{ borderColor: primaryColor, color: primaryColor }}
+          sx={uiLayout.withUiSx({ borderColor: primaryColor, color: primaryColor }, uiLayout.buttonSx)}
         >
           تحميل الملف
         </Button>
@@ -2555,7 +2556,7 @@ async function chartToPngBase64({
           size="small"
           startIcon={<Download />}
           onClick={() => handleDownloadFile(answer)}
-          sx={{ borderColor: primaryColor, color: primaryColor }}
+          sx={uiLayout.withUiSx({ borderColor: primaryColor, color: primaryColor }, uiLayout.buttonSx)}
         >
           تحميل الملف
         </Button>
@@ -2694,7 +2695,7 @@ async function chartToPngBase64({
     <Fade in={true} timeout={500}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             label="عنوان الاستبيان"
             value={isExternal ? externalSurvey.title : survey.title}
@@ -2703,14 +2704,14 @@ async function chartToPngBase64({
               setSurvey(prev => ({ ...prev, title: e.target.value }))
             }
             required
-            sx={fieldStyle}
+            sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
             variant="outlined"
             size="medium"
           />
         </Grid>
         
         <Grid item xs={12}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             label="وصف الاستبيان"
             value={isExternal ? externalSurvey.description : survey.description}
@@ -2720,7 +2721,7 @@ async function chartToPngBase64({
             }
             multiline
             rows={3}
-            sx={fieldStyle}
+            sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
             variant="outlined"
           />
         </Grid>
@@ -2734,11 +2735,11 @@ async function chartToPngBase64({
               setSurvey(prev => ({ ...prev, start_date: newValue }))
             }
             renderInput={(params) => 
-              <TextField 
+              <TextField InputLabelProps={{ shrink: true }} 
                 {...params} 
                 fullWidth 
                 required 
-                sx={fieldStyle}
+                sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
                 variant="outlined"
               />
             }
@@ -2754,11 +2755,11 @@ async function chartToPngBase64({
               setSurvey(prev => ({ ...prev, end_date: newValue }))
             }
             renderInput={(params) => 
-              <TextField 
+              <TextField InputLabelProps={{ shrink: true }} 
                 {...params} 
                 fullWidth 
                 required 
-                sx={fieldStyle}
+                sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
                 variant="outlined"
               />
             }
@@ -2766,7 +2767,7 @@ async function chartToPngBase64({
         </Grid>
         
         <Grid item xs={12} md={6}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             label="الحد الأقصى للمشاركين (اختياري)"
             type="number"
@@ -2775,7 +2776,7 @@ async function chartToPngBase64({
               setExternalSurvey(prev => ({ ...prev, max_responses: e.target.value })) :
               setSurvey(prev => ({ ...prev, max_responses: e.target.value }))
             }
-            sx={fieldStyle}
+            sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
             variant="outlined"
            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
         </Grid>
@@ -2788,7 +2789,7 @@ async function chartToPngBase64({
       <Box>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth size="small">
+            <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
               <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>اختر الأقسام</InputLabel>
               <Select
                 multiple
@@ -2830,7 +2831,7 @@ async function chartToPngBase64({
 
           {selectedDept.length > 0 && (
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>الوظائف المطلوبة</InputLabel>
                 <Select
                   multiple
@@ -2883,7 +2884,7 @@ async function chartToPngBase64({
 
           {selectedJobs.length > 0 && !loadingUsers && (
             <Grid item xs={12}>
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>اختر الموظفين</InputLabel>
                 <Select
                   multiple
@@ -2931,7 +2932,7 @@ async function chartToPngBase64({
                   }}
                 >
                   <Box sx={{ p: 1, borderBottom: `1px solid ${primaryLight}` }}>
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       variant="outlined"
                       size="small"
@@ -3047,7 +3048,7 @@ async function chartToPngBase64({
 </Grid>
 
 <Grid item xs={12} md={6}>
-  <FormControl fullWidth size="small">
+  <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
     <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>اختر الفروع</InputLabel>
     <Select
       multiple
@@ -3088,7 +3089,7 @@ async function chartToPngBase64({
 
           {selectedBranches.length > 0 && (
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>الدبلومات المطلوبة</InputLabel>
                 <Select
                   multiple
@@ -3162,13 +3163,13 @@ async function chartToPngBase64({
           يتم عرض المدربين حسب الفرع المختار  .
         </Alert>
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           size="small"
           placeholder="بحث باسم المدرب..."
           value={trainerSearchTerm}
           onChange={(e) => setTrainerSearchTerm(e.target.value)}
-          sx={{ mb: 2 }}
+          sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -3178,7 +3179,7 @@ async function chartToPngBase64({
           }}
         />
 
-        <FormControl fullWidth size="small">
+        <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
           <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>
             اختر المدربين
           </InputLabel>
@@ -3280,19 +3281,19 @@ async function chartToPngBase64({
               
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} md={8}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="نص السؤال"
                     value={question.text}
                     onChange={(e) => updateQuestion(qIndex, 'text', e.target.value, isExternal)}
                     required
-                    sx={fieldStyle}
+                    sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
                     variant="outlined"
                   />
                 </Grid>
                 
                 <Grid item xs={12} md={4}>
-                  <FormControl fullWidth sx={fieldStyle}>
+                  <FormControl fullWidth sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}>
                     <InputLabel>نوع السؤال</InputLabel>
                     <Select
                       value={question.type}
@@ -3320,13 +3321,13 @@ async function chartToPngBase64({
                     {question.options.map((option, oIndex) => (
                       <Grid item xs={12} md={6} key={oIndex}>
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             fullWidth
                             size="medium"
                             value={option}
                             onChange={(e) => updateOption(qIndex, oIndex, e.target.value, isExternal)}
                             placeholder={`الخيار ${oIndex + 1}`}
-                            sx={fieldStyle}
+                            sx={uiLayout.withUiSx(fieldStyle, uiLayout.formFieldSx)}
                             variant="outlined"
                           />
                           <IconButton 
@@ -3348,7 +3349,7 @@ async function chartToPngBase64({
                     onClick={() => addOption(qIndex, isExternal)}
                     variant="outlined"
                     size="medium"
-                    sx={outlinedButtonStyle}
+                    sx={uiLayout.withUiSx(outlinedButtonStyle, uiLayout.buttonSx)}
                   >
                     إضافة خيار
                   </Button>
@@ -3363,7 +3364,7 @@ async function chartToPngBase64({
             startIcon={<Add />}
             onClick={() => addQuestion(isExternal)}
             variant="contained"
-            sx={primaryButtonStyle}
+            sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
             size="large"
           >
             إضافة سؤال جديد
@@ -3486,7 +3487,7 @@ async function chartToPngBase64({
 
   // Render functions for main page
   const renderSurveysTable = () => (
-    <TableContainer component={Paper} sx={{ borderRadius: 3, border: `1px solid ${primaryLight}` }}>
+    <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3, border: `1px solid ${primaryLight}` }, uiLayout.tableContainerSx)}>
       <Table>
         <TableHead sx={{ backgroundColor: backgroundColor }}>
           <TableRow>
@@ -3530,18 +3531,18 @@ async function chartToPngBase64({
               </TableCell>
               <TableCell>
   <Box
-    sx={{
+    sx={uiLayout.withUiSx({
       display: 'flex',
       gap: 1,
       flexDirection: 'column',
       minWidth: 150
-    }}
+    }, uiLayout.actionBarSx)}
   >
     <Button
       variant="outlined"
       size="small"
       startIcon={<Visibility />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: primaryColor,
@@ -3550,7 +3551,7 @@ async function chartToPngBase64({
           borderColor: primaryDark,
           backgroundColor: `${primaryColor}10`
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleViewResponses(survey, false)}
     >
       عرض الردود
@@ -3560,7 +3561,7 @@ async function chartToPngBase64({
       variant="outlined"
       size="small"
       startIcon={<Edit />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: primaryColor,
@@ -3569,7 +3570,7 @@ async function chartToPngBase64({
           borderColor: primaryDark,
           backgroundColor: `${primaryColor}10`
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleEditSurvey(survey)}
     >
       تعديل
@@ -3579,7 +3580,7 @@ async function chartToPngBase64({
       variant="outlined"
       size="small"
       startIcon={<ContentCopy />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: '#1976d2',
@@ -3588,7 +3589,7 @@ async function chartToPngBase64({
           borderColor: '#115293',
           backgroundColor: 'rgba(25, 118, 210, 0.08)'
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleDuplicateSurvey(survey, false)}
     >
       نسخ
@@ -3598,7 +3599,7 @@ async function chartToPngBase64({
       variant="outlined"
       size="small"
       startIcon={<Delete />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: '#d32f2f',
@@ -3607,7 +3608,7 @@ async function chartToPngBase64({
           borderColor: '#b71c1c',
           backgroundColor: 'rgba(211, 47, 47, 0.08)'
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleDeleteSurvey(survey.id, false)}
     >
       حذف
@@ -3617,14 +3618,14 @@ async function chartToPngBase64({
       startIcon={<Download />}
       variant="contained"
       size="small"
-      sx={{
+      sx={uiLayout.withUiSx({
         backgroundColor: '#28a745',
         color: 'white',
         fontFamily: '"Cairo", sans-serif',
         '&:hover': {
           backgroundColor: '#218838'
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleExportReport(survey, false)}
       disabled={
         !surveyResponses[survey.id] ||
@@ -3645,11 +3646,11 @@ async function chartToPngBase64({
 const renderExternalSurveysTable = () => (
   <TableContainer
     component={Paper}
-    sx={{
+    sx={uiLayout.withUiSx({
       borderRadius: 3,
       border: `1px solid ${primaryLight}`,
       overflowX: 'auto'
-    }}
+    }, uiLayout.tableContainerSx)}
   >
     <Table sx={{ minWidth: 900 }}>
       <TableHead sx={{ backgroundColor: backgroundColor }}>
@@ -3831,7 +3832,7 @@ const renderExternalSurveysTable = () => (
                       return (
                         <Box
   key={trainer.trainerGuid}
-  sx={{
+  sx={uiLayout.withUiSx({
     p: 1,
     border: `1px solid ${primaryLight}`,
     borderRadius: 2,
@@ -3840,7 +3841,7 @@ const renderExternalSurveysTable = () => (
     gridTemplateColumns: '1fr auto auto auto',
     alignItems: 'center',
     gap: 1
-  }}
+  }, uiLayout.actionBarSx)}
 >
   <Chip
     label={trainerName}
@@ -3859,16 +3860,16 @@ const renderExternalSurveysTable = () => (
   <Button
     variant="contained"
     size="small"
-    sx={{
+    sx={uiLayout.withUiSx({
       backgroundColor: '#2196f3',
       color: 'white',
       fontFamily: '"Cairo", sans-serif',
-      fontSize: '0.72rem',
+      fontSize: "0.75rem",
       minWidth: 80,
       '&:hover': {
         backgroundColor: '#1976d2'
       }
-    }}
+    }, uiLayout.buttonSx)}
     onClick={() => copySurveyLink(trainerSurveyLink)}
   >
     نسخ
@@ -3899,9 +3900,9 @@ const renderExternalSurveysTable = () => (
   <Button
     variant="outlined"
     size="small"
-    sx={{
+    sx={uiLayout.withUiSx({
       fontFamily: '"Cairo", sans-serif',
-      fontSize: '0.72rem',
+      fontSize: "0.75rem",
       borderColor: primaryColor,
       color: primaryDark,
       minWidth: 95,
@@ -3909,7 +3910,7 @@ const renderExternalSurveysTable = () => (
         borderColor: primaryDark,
         backgroundColor: `${primaryColor}10`
       }
-    }}
+    }, uiLayout.buttonSx)}
     onClick={() => handleViewResponses(survey, true, trainer)}
   >
     عرض الردود
@@ -3945,7 +3946,7 @@ const renderExternalSurveysTable = () => (
                     <Button
                       variant="contained"
                       size="small"
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         backgroundColor: '#2196f3',
                         color: 'white',
                         fontFamily: '"Cairo", sans-serif',
@@ -3954,7 +3955,7 @@ const renderExternalSurveysTable = () => (
                         '&:hover': {
                           backgroundColor: '#1976d2'
                         }
-                      }}
+                      }, uiLayout.buttonSx)}
                       onClick={() => copySurveyLink(surveyLink)}
                     >
                       نسخ
@@ -3982,18 +3983,18 @@ const renderExternalSurveysTable = () => (
               {/* الإجراءات */}
               <TableCell>
   <Box
-    sx={{
+    sx={uiLayout.withUiSx({
       display: 'flex',
       gap: 1,
       flexDirection: 'column',
       minWidth: 150
-    }}
+    }, uiLayout.actionBarSx)}
   >
     <Button
       variant="outlined"
       size="small"
       startIcon={<Visibility />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: primaryColor,
@@ -4002,7 +4003,7 @@ const renderExternalSurveysTable = () => (
           borderColor: primaryDark,
           backgroundColor: `${primaryColor}10`
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleViewResponses(survey, true)}
     >
       عرض كل الردود
@@ -4012,7 +4013,7 @@ const renderExternalSurveysTable = () => (
       variant="outlined"
       size="small"
       startIcon={<Edit />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: primaryColor,
@@ -4021,7 +4022,7 @@ const renderExternalSurveysTable = () => (
           borderColor: primaryDark,
           backgroundColor: `${primaryColor}10`
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleEditExternalSurvey(survey)}
     >
       تعديل
@@ -4031,7 +4032,7 @@ const renderExternalSurveysTable = () => (
       variant="outlined"
       size="small"
       startIcon={<ContentCopy />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: '#1976d2',
@@ -4040,7 +4041,7 @@ const renderExternalSurveysTable = () => (
           borderColor: '#115293',
           backgroundColor: 'rgba(25, 118, 210, 0.08)'
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleDuplicateSurvey(survey, true)}
     >
       نسخ
@@ -4050,7 +4051,7 @@ const renderExternalSurveysTable = () => (
       variant="outlined"
       size="small"
       startIcon={<Delete />}
-      sx={{
+      sx={uiLayout.withUiSx({
         fontFamily: '"Cairo", sans-serif',
         fontSize: '0.75rem',
         borderColor: '#d32f2f',
@@ -4059,7 +4060,7 @@ const renderExternalSurveysTable = () => (
           borderColor: '#b71c1c',
           backgroundColor: 'rgba(211, 47, 47, 0.08)'
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleDeleteSurvey(survey.id, true)}
     >
       حذف
@@ -4069,14 +4070,14 @@ const renderExternalSurveysTable = () => (
       startIcon={<Download />}
       variant="contained"
       size="small"
-      sx={{
+      sx={uiLayout.withUiSx({
         backgroundColor: '#28a745',
         color: 'white',
         fontFamily: '"Cairo", sans-serif',
         '&:hover': {
           backgroundColor: '#218838'
         }
-      }}
+      }, uiLayout.buttonSx)}
       onClick={() => handleExportReport(survey, true)}
       disabled={
         !externalSurveyResponses[survey.id] ||
@@ -4103,7 +4104,7 @@ const renderExternalSurveysTable = () => (
       {allSurveys.map((survey) => (
         <Card key={survey.id} sx={{ ...cardStyle, mb: 3 }}>
           <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }, uiLayout.pageHeaderSx)}>
               <Typography variant="h6" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
                 {survey.title}
               </Typography>
@@ -4116,14 +4117,14 @@ const renderExternalSurveysTable = () => (
                   startIcon={<Download />}
                   variant="contained"
                   size="small"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor: '#28a745',
                     color: 'white',
                     fontFamily: '"Cairo", sans-serif',
                     '&:hover': {
                       backgroundColor: '#218838',
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                   onClick={() => handleExportReport(survey, false)}
                   disabled={!surveyResponses[survey.id] || surveyResponses[survey.id].length === 0}
                 >
@@ -4171,7 +4172,7 @@ const renderExternalSurveysTable = () => (
       {allExternalSurveys.map((survey) => (
         <Card key={survey.id} sx={{ ...cardStyle, mb: 3 }}>
           <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }, uiLayout.pageHeaderSx)}>
               <Typography variant="h6" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
                 {survey.title}
               </Typography>
@@ -4184,14 +4185,14 @@ const renderExternalSurveysTable = () => (
                   startIcon={<Download />}
                   variant="contained"
                   size="small"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor: '#28a745',
                     color: 'white',
                     fontFamily: '"Cairo", sans-serif',
                     '&:hover': {
                       backgroundColor: '#218838',
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                   onClick={() => handleExportReport(survey, true)}
                   disabled={!externalSurveyResponses[survey.id] || externalSurveyResponses[survey.id].length === 0}
                 >
@@ -4251,7 +4252,7 @@ const renderExternalSurveysTable = () => (
           startIcon={<Add />}
           onClick={handleOpenCreateExternalDialog}
           variant="contained"
-          sx={primaryButtonStyle}
+          sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
         >
           إنشاء استبيان خارجي
         </Button>
@@ -4314,7 +4315,7 @@ const renderExternalSurveysTable = () => (
         >
           <Paper sx={mainPaperStyle}>
             {/* Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+            <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }, uiLayout.pageHeaderSx)}>
               <Typography 
                 variant="h4" 
                 component="h1" 
@@ -4327,12 +4328,12 @@ const renderExternalSurveysTable = () => (
                 إدارة الاستبيانات
               </Typography>
               
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 2 }, uiLayout.actionBarSx)}>
                 <Button 
                   startIcon={<Add />}
                   onClick={handleOpenCreateExternalDialog}
                   variant="outlined"
-                 sx={{
+                 sx={uiLayout.withUiSx({
   ...outlinedButtonStyle,
   mt: 0,
   borderColor: '#ff9800',
@@ -4341,7 +4342,7 @@ const renderExternalSurveysTable = () => (
     borderColor: '#f57c00',
     backgroundColor: 'rgba(255, 152, 0, 0.1)'
   }
-}}
+}, uiLayout.buttonSx)}
                 >
                   استبيان خارجي
                 </Button>
@@ -4349,7 +4350,7 @@ const renderExternalSurveysTable = () => (
                   startIcon={<Add />}
                   onClick={handleOpenCreateDialog}
                   variant="contained"
-                  sx={primaryButtonStyle}
+                  sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
                 >
                   استبيان داخلي
                 </Button>
@@ -4410,7 +4411,7 @@ const renderExternalSurveysTable = () => (
             )}
 
             {/* Create Internal Survey Dialog */}
-            <Dialog 
+            <Dialog sx={uiLayout.dialogLayoutSx} 
               open={showCreateDialog} 
               onClose={handleCloseCreateDialog}
               maxWidth="md"
@@ -4451,13 +4452,13 @@ const renderExternalSurveysTable = () => (
                 </Box>
               </DialogContent>
 
-              <DialogActions sx={{ p: 3, gap: 2, justifyContent: 'space-between' }}>
-                <Box>
+              <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 2, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
+                <Box sx={uiLayout.actionBarSx}>
                   <Button
                     onClick={handleNext}
                     disabled={activeStep === steps.length - 1}
                     endIcon={<ArrowBack />}
-                    sx={primaryButtonStyle}
+                    sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
                   >
                     التالي
                   </Button>
@@ -4465,7 +4466,7 @@ const renderExternalSurveysTable = () => (
                   <Button
                     onClick={handleBack}
                     startIcon={<ArrowForward />}
-                    sx={outlinedButtonStyle}
+                    sx={uiLayout.withUiSx(outlinedButtonStyle, uiLayout.buttonSx)}
                     disabled={activeStep === 0}
                   >
                     رجوع
@@ -4476,7 +4477,7 @@ const renderExternalSurveysTable = () => (
                  <Button
   onClick={() => handleSubmit(false)}
   variant="contained"
-  sx={primaryButtonStyle}
+  sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
 >
   {isEditMode ? 'حفظ التعديل' : 'إنشاء الاستبيان'}
 </Button>
@@ -4485,7 +4486,7 @@ const renderExternalSurveysTable = () => (
             </Dialog>
 
             {/* Create External Survey Dialog */}
-            <Dialog 
+            <Dialog sx={uiLayout.dialogLayoutSx} 
               open={showCreateExternalDialog} 
               onClose={handleCloseCreateExternalDialog}
               maxWidth="md"
@@ -4526,19 +4527,19 @@ const renderExternalSurveysTable = () => (
                 </Box>
               </DialogContent>
 
-              <DialogActions sx={{ p: 3, gap: 2, justifyContent: 'space-between' }}>
-                <Box>
+              <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 2, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
+                <Box sx={uiLayout.actionBarSx}>
                   <Button
                     onClick={handleNext}
                     disabled={activeStep === externalSteps.length - 1}
                     endIcon={<ArrowBack />}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...primaryButtonStyle,
                       background: `linear-gradient(135deg, #ff9800 0%, #f57c00 100%)`,
                       '&:hover': {
                         background: `linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)`,
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     التالي
                   </Button>
@@ -4546,7 +4547,7 @@ const renderExternalSurveysTable = () => (
                   <Button
                     onClick={handleBack}
                     startIcon={<ArrowForward />}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...outlinedButtonStyle,
                       borderColor: '#ff9800',
                       color: '#ff9800',
@@ -4554,7 +4555,7 @@ const renderExternalSurveysTable = () => (
                         borderColor: '#f57c00',
                         backgroundColor: 'rgba(255, 152, 0, 0.1)'
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                     disabled={activeStep === 0}
                   >
                     رجوع
@@ -4566,7 +4567,7 @@ const renderExternalSurveysTable = () => (
                     onClick={() => handleSubmit(true)}
                     variant="contained"
                     disabled={!isExternalFormValid}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...primaryButtonStyle,
                       background: `linear-gradient(135deg, #28a745 0%, #20c997 100%)`,
                       '&:hover': {
@@ -4575,7 +4576,7 @@ const renderExternalSurveysTable = () => (
                       '&:disabled': {
                         background: '#ccc'
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                    {isExternalEditMode ? 'حفظ التعديل' : 'إنشاء الاستبيان الخارجي'}
                   </Button>
@@ -4584,7 +4585,7 @@ const renderExternalSurveysTable = () => (
             </Dialog>
 
             {/* Responses Details Dialog */}
-           <Dialog
+           <Dialog sx={uiLayout.dialogLayoutSx}
   open={responsesDialogOpen}
   onClose={() => setResponsesDialogOpen(false)}
   maxWidth="xl"
@@ -4615,11 +4616,11 @@ const renderExternalSurveysTable = () => (
         <Button
           startIcon={<Download />}
           variant="contained"
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: '#28a745',
             fontFamily: '"Cairo", sans-serif',
             '&:hover': { backgroundColor: '#218838' }
-          }}
+          }, uiLayout.buttonSx)}
           disabled={!responsesDialogSurvey}
           onClick={() => handleExportExcel(responsesDialogSurvey, responsesDialogSurvey?.isExternal)}
         >
@@ -4651,12 +4652,12 @@ const renderExternalSurveysTable = () => (
     ) : null}
   </DialogContent>
 
-  <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+  <DialogActions sx={uiLayout.withUiSx({ p: 2, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
     <Typography variant="caption" sx={{ fontFamily: '"Cairo", sans-serif', color: primaryDark }}>
       اختر صف من الجدول لعرض التفاصيل يمينًا.
     </Typography>
 
-    <Button variant="outlined" sx={outlinedButtonStyle} onClick={() => setResponsesDialogOpen(false)}>
+    <Button variant="outlined" sx={uiLayout.withUiSx(outlinedButtonStyle, uiLayout.buttonSx)} onClick={() => setResponsesDialogOpen(false)}>
       إغلاق
     </Button>
   </DialogActions>

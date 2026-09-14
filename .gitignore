@@ -10,6 +10,8 @@
 
 # production
 /build
+/ui-review/preview-build
+/ui-review/layout-inventory.json
 
 # misc
 .DS_Store

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useMemo, useState } from "react";
 import {
   Alert,
@@ -248,7 +249,7 @@ export default function ChangePaymentStatusDialog({
   };
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={saving ? undefined : onClose}
       maxWidth="sm"
@@ -279,15 +280,15 @@ export default function ChangePaymentStatusDialog({
           variant="outlined"
           sx={{ p: 2, mb: 2 }}
         >
-          <Stack spacing={1.5}>
-            <TextField
+          <Stack sx={uiLayout.formGridSx} spacing={1.5}>
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم الطالب"
               value={studentName || ""}
               InputProps={{ readOnly: true }}
               fullWidth
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="رقم الهوية"
               value={nationalId || ""}
               InputProps={{ readOnly: true }}
@@ -296,7 +297,7 @@ export default function ChangePaymentStatusDialog({
           </Stack>
         </Paper>
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           label="حالة السداد الحالية"
           value={
@@ -305,10 +306,10 @@ export default function ChangePaymentStatusDialog({
               : currentPayStatusName
           }
           InputProps={{ readOnly: true }}
-          sx={{ mb: 2 }}
+          sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
         />
 
-        <FormControl
+        <FormControl sx={uiLayout.formFieldSx}
           fullWidth
           disabled={loadingCurrent}
         >
@@ -344,7 +345,7 @@ export default function ChangePaymentStatusDialog({
         ) : null}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions sx={uiLayout.withUiSx({ px: 3, py: 2 }, uiLayout.dialogActionsSx)}>
         <Button
           variant="contained"
           onClick={save}
@@ -363,10 +364,10 @@ export default function ChangePaymentStatusDialog({
               <SaveIcon />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             minWidth: 140
-          }}
+          }, uiLayout.buttonSx)}
         >
           حفظ
         </Button>
@@ -374,10 +375,10 @@ export default function ChangePaymentStatusDialog({
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

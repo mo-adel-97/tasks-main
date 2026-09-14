@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React from 'react';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -148,7 +149,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
         {localData.registrations.map((reg, index) => (
           <Box key={`reg-${index}`} display="flex" alignItems="center" gap={2} mb={2}>
             <Box flex={1}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="اسم الدبلوم"
                 value={reg.diplomaName}
@@ -157,7 +158,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
               />
             </Box>
             <Box width={120}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="عدد التسجيلات"
                 type="number"
@@ -167,7 +168,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
             <Box width={120}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="الدفعة"
                 value={reg.batch}
@@ -202,7 +203,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
         {localData.attendance.map((att, index) => (
           <Box key={`att-${index}`} display="flex" alignItems="center" gap={2} mb={2}>
             <Box flex={1}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="اسم الدبلوم"
                 value={att.diplomaName}
@@ -211,7 +212,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
               />
             </Box>
             <Box width={120}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="عدد الحضور"
                 type="number"
@@ -247,7 +248,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
         {localData.approvals.map((app, index) => (
           <Box key={`app-${index}`} display="flex" alignItems="center" gap={2} mb={2}>
             <Box flex={1}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="اسم الدبلوم"
                 value={app.diplomaName}
@@ -256,7 +257,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
               />
             </Box>
             <Box width={120}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="العدد"
                 type="number"
@@ -266,7 +267,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
             <Box width={120}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="الدفعة"
                 value={app.batch}

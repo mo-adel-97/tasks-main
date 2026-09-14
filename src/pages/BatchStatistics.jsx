@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -226,7 +228,7 @@ const StatCard = ({
             sx={{
               mt: 0.25,
               fontFamily: "Cairo",
-              fontSize: 11.5,
+              fontSize: 12,
               color: COLORS.muted
             }}
           >
@@ -773,8 +775,8 @@ const BatchStatistics = () => {
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     fontSize: isPhone
-                      ? "0.38rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     lineHeight: 1.35,
                     textAlign: "center",
                     whiteSpace: "normal",
@@ -798,8 +800,8 @@ const BatchStatistics = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.4rem"
-                    : "0.54rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   color: isCalculated
                     ? COLORS.danger
                     : COLORS.primaryDark
@@ -1179,7 +1181,7 @@ const BatchStatistics = () => {
                     noOptionsText="لا توجد دفعات"
                     loadingText="جارٍ تحميل الدفعات..."
                     renderInput={(params) => (
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         {...params}
                         placeholder="ابحث باسم الدفعة أو الكود"
                         InputProps={{
@@ -1198,7 +1200,7 @@ const BatchStatistics = () => {
                             </>
                           )
                         }}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           direction: "rtl",
                           "& .MuiOutlinedInput-root": {
                             height: 48,
@@ -1212,7 +1214,7 @@ const BatchStatistics = () => {
                               borderWidth: 1.5
                             }
                           }
-                        }}
+                        }, uiLayout.formFieldSx)}
                       />
                     )}
                   />
@@ -1221,14 +1223,14 @@ const BatchStatistics = () => {
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={1}
-                  sx={{ pt: { lg: 2.75 } }}
+                  sx={uiLayout.withUiSx({ pt: { lg: 2.75 } }, uiLayout.actionBarSx)}
                 >
                   <Button
                     variant="contained"
                     startIcon={<SearchIcon />}
                     onClick={loadReport}
                     disabled={loading || !selectedBatch?.guid}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 120,
                       height: 48,
                       px: 2.5,
@@ -1241,7 +1243,7 @@ const BatchStatistics = () => {
                         background: COLORS.primaryDark,
                         boxShadow: "none"
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     عرض التقرير
                   </Button>
@@ -1256,7 +1258,7 @@ const BatchStatistics = () => {
                       }
                     }}
                     disabled={loading || loadingBatches}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 108,
                       height: 48,
                       borderRadius: 2.5,
@@ -1268,7 +1270,7 @@ const BatchStatistics = () => {
                         borderColor: COLORS.primary,
                         background: COLORS.primarySoft
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     تحديث
                   </Button>
@@ -1278,7 +1280,7 @@ const BatchStatistics = () => {
                     startIcon={<FileDownloadIcon />}
                     onClick={exportCsv}
                     disabled={loading || rows.length === 0}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 108,
                       height: 48,
                       borderRadius: 2.5,
@@ -1290,7 +1292,7 @@ const BatchStatistics = () => {
                         borderColor: COLORS.danger,
                         background: "rgba(167,37,42,0.04)"
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     تصدير CSV
                   </Button>
@@ -1485,7 +1487,7 @@ const BatchStatistics = () => {
                 />
               </Box>
 
-              <Box sx={{ width: "100%", height: { xs: 590, md: 690 } }}>
+              <Box sx={uiLayout.withUiSx({ width: "100%", height: { xs: 590, md: 690 } }, uiLayout.tableContainerSx)}>
                 <DataGrid
                   rows={dataGridRows}
                   columns={columns}
@@ -1526,7 +1528,7 @@ const BatchStatistics = () => {
                     filterPanelColumns: "العمود",
                     filterPanelInputLabel: "القيمة"
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     border: 0,
                     direction: "rtl",
                     fontFamily: "Cairo",
@@ -1610,7 +1612,7 @@ const BatchStatistics = () => {
                     "& .MuiDataGrid-overlay": {
                       fontFamily: "Cairo"
                     }
-                  }}
+                  }, uiLayout.dataGridSx)}
                 />
               </Box>
             </Paper>
@@ -1883,7 +1885,7 @@ const BatchStatistics = () => {
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: {
-                xs: "0.66rem",
+                xs: "0.75rem",
                 sm: "0.78rem"
               },
               color: COLORS.text,
@@ -1964,7 +1966,7 @@ const BatchStatistics = () => {
                     fontWeight: 950,
                     color: COLORS.primaryDark,
                     fontSize: isPhone
-                      ? "0.68rem"
+                      ? "0.75rem"
                       : "0.82rem"
                   }}
                 >
@@ -1977,7 +1979,7 @@ const BatchStatistics = () => {
                       mt: 0.15,
                       fontFamily: "Cairo",
                       color: COLORS.muted,
-                      fontSize: "0.44rem"
+                      fontSize: "0.75rem"
                     }}
                   >
                     عرض توزيع التسجيلات على الفروع حسب الدفعة
@@ -2010,7 +2012,7 @@ const BatchStatistics = () => {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: isPhone
                     ? "repeat(2,minmax(0,1fr))"
@@ -2025,8 +2027,8 @@ const BatchStatistics = () => {
                       : 35,
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.45rem"
-                      : "0.54rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiButton-root": {
@@ -2040,8 +2042,8 @@ const BatchStatistics = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.39rem"
-                      : "0.5rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiSvgIcon-root": {
@@ -2049,7 +2051,7 @@ const BatchStatistics = () => {
                       ? 14
                       : 16
                   }
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <Autocomplete
                   options={batches}
@@ -2076,7 +2078,7 @@ const BatchStatistics = () => {
                     gridColumn: "1 / -1"
                   }}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       placeholder="اختر الدفعة"
@@ -2121,15 +2123,15 @@ const BatchStatistics = () => {
                     loading ||
                     !selectedBatch?.guid
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background:
                       COLORS.primary
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
 
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   variant="outlined"
                   startIcon={<RefreshIcon />}
                   onClick={async () => {
@@ -2159,14 +2161,14 @@ const BatchStatistics = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color: COLORS.danger,
                     borderColor:
                       "rgba(167,37,42,.28)",
                     gridColumn: isPhone
                       ? "1 / -1"
                       : "span 2"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير CSV
                 </Button>
@@ -2195,8 +2197,8 @@ const BatchStatistics = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.32rem"
-                    : "0.42rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   background:
                     COLORS.primarySoft,
                   color:
@@ -2218,8 +2220,8 @@ const BatchStatistics = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.32rem"
-                    : "0.42rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   background:
                     COLORS.infoSoft,
                   color: COLORS.info,
@@ -2240,8 +2242,8 @@ const BatchStatistics = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.32rem"
-                    : "0.42rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   background:
                     "rgba(167,37,42,.07)",
                   color: COLORS.danger,
@@ -2297,8 +2299,8 @@ const BatchStatistics = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.36rem"
-                      : "0.48rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     borderColor:
                       `${COLORS.border} !important`
                   },
@@ -2326,7 +2328,7 @@ const BatchStatistics = () => {
             </Paper>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 375px)"
@@ -2338,7 +2340,7 @@ const BatchStatistics = () => {
                   `1px solid ${COLORS.border}`,
                 borderRadius: 1.4,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -2371,7 +2373,7 @@ const BatchStatistics = () => {
                   noResultsOverlayLabel:
                     "لا توجد نتائج مطابقة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -2396,8 +2398,8 @@ const BatchStatistics = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.34rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     lineHeight: 1,
                     whiteSpace: "nowrap",
@@ -2422,8 +2424,8 @@ const BatchStatistics = () => {
                   "& .MuiDataGrid-cell": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.39rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     justifyContent: "center",
                     px: isPhone
@@ -2444,13 +2446,13 @@ const BatchStatistics = () => {
 
                   "& .MuiDataGrid-virtualScroller": {
                     overflowX:
-                      "hidden !important"
+                      "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: "none"
+                    display: "block"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
@@ -2484,7 +2486,7 @@ const BatchStatistics = () => {
                         fontWeight: 950,
                         color: COLORS.primaryDark,
                         fontSize: isPhone
-                          ? "0.6rem"
+                          ? "0.75rem"
                           : "0.76rem"
                       }}
                     >
@@ -2497,8 +2499,8 @@ const BatchStatistics = () => {
                         fontFamily: "Cairo",
                         color: COLORS.muted,
                         fontSize: isPhone
-                          ? "0.34rem"
-                          : "0.44rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                       }}
                     >
                       ملخص سريع لأهم أرقام الدفعة الحالية
@@ -2512,8 +2514,8 @@ const BatchStatistics = () => {
                       fontFamily: "Cairo",
                       fontWeight: 950,
                       fontSize: isPhone
-                        ? "0.34rem"
-                        : "0.45rem",
+                        ? "0.75rem"
+                        : "0.75rem",
                       color: "#fff",
                       background: COLORS.primary,
                       "& .MuiChip-label": {
@@ -2548,8 +2550,8 @@ const BatchStatistics = () => {
                         fontWeight: 900,
                         color: COLORS.info,
                         fontSize: isPhone
-                          ? "0.36rem"
-                          : "0.46rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                       }}
                     >
                       إجمالي الرجال
@@ -2562,7 +2564,7 @@ const BatchStatistics = () => {
                         fontWeight: 950,
                         color: COLORS.info,
                         fontSize: isPhone
-                          ? "0.7rem"
+                          ? "0.75rem"
                           : "0.9rem"
                       }}
                     >
@@ -2589,8 +2591,8 @@ const BatchStatistics = () => {
                         fontWeight: 900,
                         color: COLORS.danger,
                         fontSize: isPhone
-                          ? "0.36rem"
-                          : "0.46rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                       }}
                     >
                       إجمالي النساء
@@ -2603,7 +2605,7 @@ const BatchStatistics = () => {
                         fontWeight: 950,
                         color: COLORS.danger,
                         fontSize: isPhone
-                          ? "0.7rem"
+                          ? "0.75rem"
                           : "0.9rem"
                       }}
                     >
@@ -2632,8 +2634,8 @@ const BatchStatistics = () => {
                         fontWeight: 900,
                         color: COLORS.primaryDark,
                         fontSize: isPhone
-                          ? "0.36rem"
-                          : "0.46rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                       }}
                     >
                       عدد الفروع
@@ -2646,7 +2648,7 @@ const BatchStatistics = () => {
                         fontWeight: 950,
                         color: COLORS.primaryDark,
                         fontSize: isPhone
-                          ? "0.7rem"
+                          ? "0.75rem"
                           : "0.9rem"
                       }}
                     >
@@ -2706,8 +2708,8 @@ const BatchStatistics = () => {
                             fontWeight: 800,
                             color: COLORS.muted,
                             fontSize: isPhone
-                              ? "0.29rem"
-                              : "0.4rem",
+                              ? "0.75rem"
+                              : "0.75rem",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis"
@@ -2723,8 +2725,8 @@ const BatchStatistics = () => {
                             fontWeight: 950,
                             color: COLORS.text,
                             fontSize: isPhone
-                              ? "0.45rem"
-                              : "0.6rem"
+                              ? "0.75rem"
+                              : "0.75rem"
                           }}
                         >
                           {formatNumber(value)}
@@ -2737,7 +2739,7 @@ const BatchStatistics = () => {
               </Paper>
             )}
 
-            <Dialog
+            <Dialog sx={uiLayout.dialogLayoutSx}
               open={detailsOpen}
               onClose={closeDetails}
               fullWidth
@@ -2883,8 +2885,8 @@ const BatchStatistics = () => {
                                   COLORS.muted,
                                 fontSize:
                                   isPhone
-                                    ? "0.39rem"
-                                    : "0.49rem"
+                                    ? "0.75rem"
+                                    : "0.75rem"
                               }}
                             >
                               {label}
@@ -2899,8 +2901,8 @@ const BatchStatistics = () => {
                                   COLORS.text,
                                 fontSize:
                                   isPhone
-                                    ? "0.5rem"
-                                    : "0.62rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                 wordBreak:
                                   "break-word"
                               }}
@@ -2923,27 +2925,27 @@ const BatchStatistics = () => {
               </DialogContent>
 
               <DialogActions
-                sx={{
+                sx={uiLayout.withUiSx({
                   px: isPhone
                     ? 1
                     : 1.5,
                   py: isPhone
                     ? 0.7
                     : 1
-                }}
+                }, uiLayout.dialogActionsSx)}
               >
                 <Button
                   variant="contained"
                   onClick={closeDetails}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor:
                       COLORS.primary,
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.47rem"
-                      : "0.58rem"
-                  }}
+                      ? "0.75rem"
+                      : "0.75rem"
+                  }, uiLayout.buttonSx)}
                 >
                   إغلاق
                 </Button>

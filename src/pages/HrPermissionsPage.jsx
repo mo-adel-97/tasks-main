@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -776,7 +778,7 @@ export default function HrPermissionsPage() {
                 <Typography sx={{ fontSize: { xs: 19, md: 24 }, fontWeight: 1000 }}>
                   أذونات الموظفين
                 </Typography>
-                <Typography sx={{ opacity: 0.78, fontSize: 11 }}>
+                <Typography sx={{ opacity: 0.78, fontSize: 12 }}>
                   إدارة التأخير، الانصراف المبكر، الخروج أثناء الدوام، والإذن ليوم كامل
                 </Typography>
               </Box>
@@ -799,7 +801,7 @@ export default function HrPermissionsPage() {
                 variant="contained"
                 startIcon={<AddRoundedIcon />}
                 onClick={openCreate}
-                sx={{ bgcolor: "#fff", color: primaryDark, fontWeight: 900, "&:hover": { bgcolor: "#edf7f2" } }}
+                sx={uiLayout.withUiSx({ bgcolor: "#fff", color: primaryDark, fontWeight: 900, "&:hover": { bgcolor: "#edf7f2" } }, uiLayout.buttonSx)}
               >
                 إذن جديد
               </Button>
@@ -819,7 +821,7 @@ export default function HrPermissionsPage() {
             <Paper key={label} elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.5, p: 1.2 }}>
               <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
                 <Box>
-                  <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>{label}</Typography>
+                  <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{label}</Typography>
                   <Typography sx={{ fontWeight: 1000, fontSize: 19 }}>{value}</Typography>
                 </Box>
                 <Box sx={{ color: primary }}>{icon}</Box>
@@ -830,14 +832,14 @@ export default function HrPermissionsPage() {
 
         <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.5, p: 1.2, mb: 1 }}>
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: { xs: "1fr", md: "repeat(2,1fr)", xl: "1fr 1fr 1fr 1fr 1.6fr auto" },
               gap: 1,
               alignItems: "center"
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               size="small"
               label="من تاريخ"
@@ -845,7 +847,7 @@ export default function HrPermissionsPage() {
               onChange={(e) => setFilters((x) => ({ ...x, fromDate: e.target.value }))}
               InputLabelProps={{ shrink: true }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               size="small"
               label="إلى تاريخ"
@@ -853,7 +855,7 @@ export default function HrPermissionsPage() {
               onChange={(e) => setFilters((x) => ({ ...x, toDate: e.target.value }))}
               InputLabelProps={{ shrink: true }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الفرع</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -867,7 +869,7 @@ export default function HrPermissionsPage() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>نوع الإذن</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -881,7 +883,7 @@ export default function HrPermissionsPage() {
                 ))}
               </Select>
             </FormControl>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               placeholder="بحث باسم الموظف أو الكود أو رقم الإذن..."
               value={filters.search}
@@ -893,8 +895,8 @@ export default function HrPermissionsPage() {
                 )
               }}
             />
-            <Stack direction="row" spacing={0.7}>
-              <FormControl size="small" sx={{ minWidth: 125 }}>
+            <Stack sx={uiLayout.filterBarSx} direction="row" spacing={0.7}>
+              <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 125 }, uiLayout.formFieldSx)}>
                 <InputLabel>الحالة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -908,10 +910,10 @@ export default function HrPermissionsPage() {
                   ))}
                 </Select>
               </FormControl>
-              <Button variant="contained" onClick={applyFilters} sx={{ bgcolor: primary, fontWeight: 800 }}>
+              <Button variant="contained" onClick={applyFilters} sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 800 }, uiLayout.buttonSx)}>
                 عرض
               </Button>
-              <Button variant="outlined" onClick={clearFilters} sx={{ minWidth: 55 }}>مسح</Button>
+              <Button variant="outlined" onClick={clearFilters} sx={uiLayout.withUiSx({ minWidth: 55 }, uiLayout.buttonSx)}>مسح</Button>
             </Stack>
           </Box>
         </Paper>
@@ -930,7 +932,7 @@ export default function HrPermissionsPage() {
               <Typography sx={{ fontWeight: 800 }}>لا توجد أذونات في الفترة المحددة</Typography>
             </Stack>
           ) : (
-            <TableContainer sx={{ maxHeight: "calc(100vh - 390px)" }}>
+            <TableContainer sx={uiLayout.withUiSx({ maxHeight: "calc(100vh - 390px)" }, uiLayout.tableContainerSx)}>
               <Table stickyHeader size="small" sx={{ minWidth: 1350 }}>
                 <TableHead>
                   <TableRow>
@@ -950,7 +952,7 @@ export default function HrPermissionsPage() {
                         <TableCell>{row.permissionNumber}</TableCell>
                         <TableCell>
                           <Typography sx={{ fontWeight: 900, fontSize: 13 }}>{row.employeeName}</Typography>
-                          <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>كود {row.employeeCode || "-"}</Typography>
+                          <Typography sx={{ fontSize: 12, color: "text.secondary" }}>كود {row.employeeCode || "-"}</Typography>
                         </TableCell>
                         <TableCell>{row.branchName || "-"}</TableCell>
                         <TableCell sx={{ whiteSpace: "nowrap" }}>{formatDate(row.permissionDate)}</TableCell>
@@ -958,7 +960,7 @@ export default function HrPermissionsPage() {
                         <TableCell sx={{ whiteSpace: "nowrap" }}>
                           <Typography sx={{ fontWeight: 800, fontSize: 12.5 }}>{permissionTimeDescription(row)}</Typography>
                           {Number(row.requestedMinutes || 0) > 0 && (
-                            <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>{minutesText(row.requestedMinutes)}</Typography>
+                            <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{minutesText(row.requestedMinutes)}</Typography>
                           )}
                         </TableCell>
                         <TableCell sx={{ minWidth: 200 }}>{row.reason || "-"}</TableCell>
@@ -966,30 +968,30 @@ export default function HrPermissionsPage() {
                         <TableCell sx={{ minWidth: 150 }}>
                           {row.status === "Pending" && row.currentApprovalStep ? (
                             <>
-                              <Typography sx={{ fontSize: 11.5, fontWeight: 900 }}>{row.currentApprovalRole || `الخطوة ${row.currentApprovalStep}`}</Typography>
-                              <Typography sx={{ fontSize: 10, color: "text.secondary" }}>{row.currentApproverName || "حسب الهيكل الإداري"}</Typography>
+                              <Typography sx={{ fontSize: 12, fontWeight: 900 }}>{row.currentApprovalRole || `الخطوة ${row.currentApprovalStep}`}</Typography>
+                              <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{row.currentApproverName || "حسب الهيكل الإداري"}</Typography>
                             </>
                           ) : "-"}
                         </TableCell>
                         <TableCell>
                           <Typography sx={{ fontSize: 12 }}>{row.requestedByName || "-"}</Typography>
                           {row.decisionByName && row.status !== "Pending" && (
-                            <Typography sx={{ fontSize: 10, color: "text.secondary" }}>القرار: {row.decisionByName}</Typography>
+                            <Typography sx={{ fontSize: 12, color: "text.secondary" }}>القرار: {row.decisionByName}</Typography>
                           )}
                         </TableCell>
                         <TableCell sx={{ minWidth: 220 }}>
                           {busy ? (
                             <CircularProgress size={22} />
                           ) : (
-                            <Stack direction="row" spacing={0.6} flexWrap="wrap" useFlexGap>
+                            <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.6} flexWrap="wrap" useFlexGap>
                               {row.status !== "Approved" && row.status !== "Cancelled" && (
-                                <Button size="small" color="success" variant="contained" onClick={() => decidePermission(row, "Approved")}>اعتماد</Button>
+                                <Button sx={uiLayout.buttonSx} size="small" color="success" variant="contained" onClick={() => decidePermission(row, "Approved")}>اعتماد</Button>
                               )}
                               {row.status === "Pending" && (
-                                <Button size="small" color="error" variant="outlined" onClick={() => decidePermission(row, "Rejected")}>رفض</Button>
+                                <Button sx={uiLayout.buttonSx} size="small" color="error" variant="outlined" onClick={() => decidePermission(row, "Rejected")}>رفض</Button>
                               )}
                               {row.status !== "Cancelled" && (
-                                <Button size="small" color="inherit" variant="outlined" onClick={() => cancelPermission(row)}>إلغاء</Button>
+                                <Button sx={uiLayout.buttonSx} size="small" color="inherit" variant="outlined" onClick={() => cancelPermission(row)}>إلغاء</Button>
                               )}
                             </Stack>
                           )}
@@ -1011,7 +1013,7 @@ export default function HrPermissionsPage() {
           >
             <Typography sx={{ fontSize: 12, color: "text.secondary" }}>إجمالي النتائج: {totalCount}</Typography>
             <Stack direction="row" spacing={1} alignItems="center">
-              <FormControl size="small" sx={{ minWidth: 85 }}>
+              <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 85 }, uiLayout.formFieldSx)}>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
                   value={pageSize}
@@ -1033,7 +1035,7 @@ export default function HrPermissionsPage() {
       </Box>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={createOpen}
         onClose={() => !saving && setCreateOpen(false)}
         fullWidth
@@ -1045,7 +1047,7 @@ export default function HrPermissionsPage() {
           {lookupsLoading ? (
             <Stack alignItems="center" sx={{ py: 4 }}><CircularProgress /></Stack>
           ) : (
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5, pt: 0.5 }}>
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5, pt: 0.5 }, uiLayout.formGridSx)}>
               <Autocomplete
               ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                 options={lookups.employees}
@@ -1057,13 +1059,13 @@ export default function HrPermissionsPage() {
                   <li {...props} key={option.employeeGuid}>
                     <Box>
                       <Typography sx={{ fontWeight: 800, fontSize: 13 }}>{option.employeeName}</Typography>
-                      <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>{option.branchName} • كود {option.employeeCode || "-"}</Typography>
+                      <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{option.branchName} • كود {option.employeeCode || "-"}</Typography>
                     </Box>
                   </li>
                 )}
-                renderInput={(params) => <TextField {...params} label="الموظف" required />}
+                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="الموظف" required />}
               />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="تاريخ الإذن"
                 value={form.permissionDate}
@@ -1072,7 +1074,7 @@ export default function HrPermissionsPage() {
                 required
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <FormControl fullWidth required>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth required>
                 <InputLabel>نوع الإذن</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1084,29 +1086,29 @@ export default function HrPermissionsPage() {
                 </Select>
               </FormControl>
 
-              <Box>
+              <Box sx={uiLayout.formGridSx}>
                 {Number(form.permissionType) === 1 && (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx}
                     fullWidth type="time" label="السماح بالحضور حتى" value={form.toTime}
                     onChange={(e) => setForm((x) => ({ ...x, toTime: e.target.value }))}
                     InputLabelProps={{ shrink: true }} required
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 )}
                 {Number(form.permissionType) === 2 && (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx}
                     fullWidth type="time" label="السماح بالانصراف من" value={form.fromTime}
                     onChange={(e) => setForm((x) => ({ ...x, fromTime: e.target.value }))}
                     InputLabelProps={{ shrink: true }} required
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 )}
                 {Number(form.permissionType) === 3 && (
-                  <Stack direction="row" spacing={1}>
-                    <TextField
+                  <Stack sx={uiLayout.formGridSx} direction="row" spacing={1}>
+                    <TextField sx={uiLayout.formFieldSx}
                       fullWidth type="time" label="وقت الخروج" value={form.fromTime}
                       onChange={(e) => setForm((x) => ({ ...x, fromTime: e.target.value }))}
                       InputLabelProps={{ shrink: true }} required
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx}
                       fullWidth type="time" label="وقت العودة" value={form.toTime}
                       onChange={(e) => setForm((x) => ({ ...x, toTime: e.target.value }))}
                       InputLabelProps={{ shrink: true }} required
@@ -1118,31 +1120,31 @@ export default function HrPermissionsPage() {
                 )}
               </Box>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth label="سبب الإذن" value={form.reason}
                 onChange={(e) => setForm((x) => ({ ...x, reason: e.target.value }))}
-                required sx={{ gridColumn: { md: "1 / -1" } }}
+                required sx={uiLayout.withUiSx({ gridColumn: { md: "1 / -1" } }, uiLayout.formFieldSx)}
               />
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth multiline minRows={2} label="ملاحظات إضافية" value={form.notes}
                 onChange={(e) => setForm((x) => ({ ...x, notes: e.target.value }))}
-                sx={{ gridColumn: { md: "1 / -1" } }}
+                sx={uiLayout.withUiSx({ gridColumn: { md: "1 / -1" } }, uiLayout.formFieldSx)}
               />
               <FormControlLabel
                 control={<Checkbox checked={form.autoApprove} onChange={(e) => setForm((x) => ({ ...x, autoApprove: e.target.checked }))} />}
                 label="اعتماد الإذن مباشرة عند الإنشاء"
-                sx={{ gridColumn: { md: "1 / -1" } }}
+                sx={uiLayout.withUiSx({ gridColumn: { md: "1 / -1" } }, uiLayout.checkboxFieldSx)}
               />
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 1.5 }}>
-          <Button onClick={() => setCreateOpen(false)} disabled={saving}>إلغاء</Button>
+        <DialogActions sx={uiLayout.withUiSx({ p: 1.5 }, uiLayout.dialogActionsSx)}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setCreateOpen(false)} disabled={saving}>إلغاء</Button>
           <Button
             variant="contained"
             onClick={savePermission}
             disabled={saving || lookupsLoading}
-            sx={{ bgcolor: primary, minWidth: 120, fontWeight: 900 }}
+            sx={uiLayout.withUiSx({ bgcolor: primary, minWidth: 120, fontWeight: 900 }, uiLayout.buttonSx)}
           >
             {saving ? <CircularProgress size={22} color="inherit" /> : "حفظ الإذن"}
           </Button>

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React from 'react';
 import {
   Box,
@@ -19,28 +20,28 @@ const SharedDateFilter = ({
 }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+      <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }, uiLayout.filterBarSx)}>
         <DatePicker
           label="من تاريخ"
           value={fromDate}
           onChange={onFromDateChange}
-          renderInput={(params) => <TextField {...params} size="small" />}
+          renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" />}
         />
         <DatePicker
           label="إلى تاريخ"
           value={toDate}
           onChange={onToDateChange}
-          renderInput={(params) => <TextField {...params} size="small" />}
+          renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" />}
           minDate={fromDate}
         />
         <Button 
           variant="contained" 
           onClick={onFilter}
-          sx={{ marginInlineStart: 2 }}
+          sx={uiLayout.withUiSx({ marginInlineStart: 2 }, uiLayout.buttonSx)}
         >
           تطبيق
         </Button>
-        <Button 
+        <Button sx={uiLayout.buttonSx} 
           variant="outlined" 
           onClick={onReset}
         >

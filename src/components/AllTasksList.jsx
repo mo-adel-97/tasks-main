@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -101,7 +102,7 @@ export default function AllTaskRoutesList() {
         {loading ? (
           <CircularProgress />
         ) : (
-          <TableContainer component={Paper} sx={{ mb: 5 }}>
+          <TableContainer component={Paper} sx={uiLayout.withUiSx({ mb: 5 }, uiLayout.tableContainerSx)}>
             <Table>
               <TableHead>
                 <TableRow sx={{ backgroundColor: '#f3f4f6' }}>
@@ -146,7 +147,7 @@ export default function AllTaskRoutesList() {
         {loading ? (
           <CircularProgress />
         ) : (
-          <TableContainer component={Paper}>
+          <TableContainer sx={uiLayout.tableContainerSx} component={Paper}>
             <Table>
               <TableHead>
                 <TableRow sx={{ backgroundColor: '#f3f4f6' }}>

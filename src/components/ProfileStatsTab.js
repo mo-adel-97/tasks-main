@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from "react";
 import {
   Box, Container, CircularProgress, Alert, Typography, Button, GlobalStyles
@@ -572,7 +573,7 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                     >
                       الإعلانات والمنشورات
                     </Typography>
-                    <Typography variant="body1" color="textSecondary" sx={{ mb: { xs: 1.2, md: 2 }, fontSize: { xs: "0.64rem", sm: "0.72rem", md: "0.82rem" } }}>
+                    <Typography variant="body1" color="textSecondary" sx={{ mb: { xs: 1.2, md: 2 }, fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.82rem" } }}>
                       شارك أفكارك، اطلع على آخر المستجدات، وتفاعل مع زملائك
                     </Typography>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -580,7 +581,7 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                         variant="contained"
                         size="large"
                         onClick={handleOpenPostsDialog}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           bgcolor: "#80b49e",
                           "&:hover": {
                             bgcolor: "#5a8f7a",
@@ -589,10 +590,10 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                           },
                           px: { xs: 1.4, sm: 2, md: 3 },
                           py: { xs: 0.7, sm: 0.9, md: 1.1 },
-                          fontSize: { xs: "0.64rem", sm: "0.74rem", md: "0.9rem" },
+                          fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.9rem" },
                           borderRadius: 2,
                           transition: "all 0.3s ease",
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         فتح الإعلانات والمنشورات
                       </Button>

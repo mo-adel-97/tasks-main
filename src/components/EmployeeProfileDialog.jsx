@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { hrChipSx } from "./hrControlStyles";
 // EmployeeProfileDialog.jsx
 import React from 'react';
@@ -383,13 +384,13 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
   );
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth dir="rtl" PaperProps={{ sx: { textAlign: "start" } }}>
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} maxWidth="lg" fullWidth dir="rtl" PaperProps={{ sx: { textAlign: "start" } }}>
       <DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5" fontWeight="bold">
             الملف الشخصي - {employee.fullName}
           </Typography>
-          <Button onClick={onClose} variant="outlined">
+          <Button sx={uiLayout.buttonSx} onClick={onClose} variant="outlined">
             إغلاق
           </Button>
         </Box>
@@ -583,7 +584,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                     </Typography>
                     <Grid container spacing={2} alignItems="center">
                       <Grid item xs={12} sm={5}>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx}
                           fullWidth
                           label="من تاريخ"
                           type="date"
@@ -593,7 +594,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={5}>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx}
                           fullWidth
                           label="إلى تاريخ"
                           type="date"
@@ -603,7 +604,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={2}>
-                        <Button variant="contained" fullWidth>
+                        <Button sx={uiLayout.buttonSx} variant="contained" fullWidth>
                           تطبيق
                         </Button>
                       </Grid>
@@ -665,7 +666,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                   </Grid>
 
                   {/* جدول التفاصيل */}
-                  <TableContainer component={Paper}>
+                  <TableContainer sx={uiLayout.tableContainerSx} component={Paper}>
                     <Table>
                       <TableHead>
                         <TableRow>
@@ -749,7 +750,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                     </Typography>
                     <Grid container spacing={2} alignItems="center">
                       <Grid item xs={12} sm={5}>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx}
                           fullWidth
                           label="من تاريخ"
                           type="date"
@@ -759,7 +760,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={5}>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx}
                           fullWidth
                           label="إلى تاريخ"
                           type="date"
@@ -769,7 +770,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={2}>
-                        <Button variant="contained" fullWidth>
+                        <Button sx={uiLayout.buttonSx} variant="contained" fullWidth>
                           تطبيق
                         </Button>
                       </Grid>
@@ -821,7 +822,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                   </Grid>
 
                   {/* جدول التفاصيل */}
-                  <TableContainer component={Paper}>
+                  <TableContainer sx={uiLayout.tableContainerSx} component={Paper}>
                     <Table>
                       <TableHead>
                         <TableRow>

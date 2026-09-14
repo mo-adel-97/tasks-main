@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import React, { useEffect, useState } from 'react';
@@ -586,23 +587,23 @@ const handleEditFormChange = (field, value) => {
       },
       '& .MuiTypography-h6': {
         fontSize: isDesktop ? undefined : {
-          xs: '0.64rem',
-          sm: '0.72rem',
+          xs: "0.75rem",
+          sm: "0.75rem",
           md: '0.82rem'
         }
       },
       '& .MuiTypography-body2': {
         fontSize: isDesktop ? undefined : {
-          xs: '0.54rem',
-          sm: '0.61rem',
-          md: '0.7rem'
+          xs: "0.75rem",
+          sm: "0.75rem",
+          md: "0.75rem"
         }
       },
       '& .MuiButton-root': {
         fontSize: isDesktop ? undefined : {
-          xs: '0.54rem',
-          sm: '0.61rem',
-          md: '0.7rem'
+          xs: "0.75rem",
+          sm: "0.75rem",
+          md: "0.75rem"
         },
         minHeight: isDesktop ? undefined : {
           xs: 28,
@@ -612,9 +613,9 @@ const handleEditFormChange = (field, value) => {
       },
       '& .MuiChip-root': {
         fontSize: isDesktop ? undefined : {
-          xs: '0.5rem',
-          sm: '0.56rem',
-          md: '0.64rem'
+          xs: "0.75rem",
+          sm: "0.75rem",
+          md: "0.75rem"
         },
         height: isDesktop ? undefined : {
           xs: 21,
@@ -624,9 +625,9 @@ const handleEditFormChange = (field, value) => {
       },
       '& .MuiInputBase-root, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
         fontSize: isDesktop ? undefined : {
-          xs: '0.56rem',
-          sm: '0.63rem',
-          md: '0.72rem'
+          xs: "0.75rem",
+          sm: "0.75rem",
+          md: "0.75rem"
         }
       },
       ...navigationContentSx
@@ -673,7 +674,7 @@ const handleEditFormChange = (field, value) => {
               minWidth: 0,
               px: isDesktop ? 1.5 : { xs: 0.45, sm: 0.65, md: 0.9 },
               py: isDesktop ? 1 : { xs: 0.45, sm: 0.55, md: 0.7 },
-              fontSize: isDesktop ? undefined : { xs: '0.5rem', sm: '0.56rem', md: '0.64rem' },
+              fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               lineHeight: 1.35,
               whiteSpace: 'normal'
             }
@@ -740,7 +741,7 @@ const handleEditFormChange = (field, value) => {
 
         <Typography sx={{
           fontWeight: 700,
-          fontSize: isDesktop ? 16 : { xs: '0.58rem', sm: '0.66rem', md: '0.74rem' },
+          fontSize: isDesktop ? 16 : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
           color: colorPalette.textDark,
           width: isDesktop ? 'auto' : '100%',
           textAlign: isDesktop ? 'initial' : 'center'
@@ -763,7 +764,7 @@ const handleEditFormChange = (field, value) => {
         }}>
           <Typography variant="h6" sx={{
             color: colorPalette.textLight,
-            fontSize: isDesktop ? undefined : { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' },
+            fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: '0.8rem' },
             textAlign: 'center',
             px: 1
           }}>
@@ -925,7 +926,7 @@ const handleEditFormChange = (field, value) => {
                             label="محدثة"
                             size="small"
                             color="info"
-                            sx={{ ml: 1, fontSize: '0.7rem' }}
+                            sx={{ ml: 1, fontSize: "0.75rem" }}
                           />
                         )}
                       </Typography>
@@ -1009,7 +1010,7 @@ const handleEditFormChange = (field, value) => {
                           startIcon={<AttachFile />}
                           variant="outlined"
                           size="small"
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             mt: 1,
                             borderRadius: 2,
                             textTransform: 'none',
@@ -1019,7 +1020,7 @@ const handleEditFormChange = (field, value) => {
                               backgroundColor: colorPalette.primaryLighter,
                               borderColor: colorPalette.primary
                             }
-                          }}
+                          }, uiLayout.buttonSx)}
                           onClick={() => handleDownloadAttachment(externalTaskData?.AttachFileName || task.attachmentPath)}
                         >
                           عرض المرفق
@@ -1030,14 +1031,14 @@ const handleEditFormChange = (field, value) => {
                         <Button
                           variant="contained"
                           size="small"
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             borderRadius: 2,
                             textTransform: 'none',
                             backgroundColor: colorPalette.primary,
                             '&:hover': {
                               backgroundColor: colorPalette.primaryDark
                             }
-                          }}
+                          }, uiLayout.buttonSx)}
                           onClick={() => handleOpenDialog(task)}
                           disabled={updatesLoading[task.id]}
                         >
@@ -1091,7 +1092,7 @@ const handleEditFormChange = (field, value) => {
       )}
 
       {/* Updates Dialog */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={openDialog}
         onClose={handleCloseDialog}
         fullWidth
@@ -1143,7 +1144,7 @@ const handleEditFormChange = (field, value) => {
                     color: 'white',
                     backgroundColor: 'rgba(255,255,255,0.2)',
                     height: isDesktop ? 22 : { xs: 18, sm: 20, md: 22 },
-                    fontSize: isDesktop ? '0.7rem' : { xs: '0.5rem', sm: '0.56rem', md: '0.64rem' }
+                    fontSize: isDesktop ? "0.75rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
                   }}
                 />
               )}
@@ -1215,7 +1216,7 @@ const handleEditFormChange = (field, value) => {
                               bgcolor: isFirstUpdate ? colorPalette.primary : colorPalette.textLight,
                               width: isDesktop ? 36 : { xs: 28, sm: 32, md: 34 }, 
                               height: isDesktop ? 36 : { xs: 28, sm: 32, md: 34 },
-                              fontSize: isDesktop ? '0.9rem' : { xs: '0.58rem', sm: '0.66rem', md: '0.74rem' }
+                              fontSize: isDesktop ? '0.9rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
                             }}>
                               {userDetails.avatar}
                             </Avatar>
@@ -1239,7 +1240,7 @@ const handleEditFormChange = (field, value) => {
                                 fontWeight={700}
                                 sx={{
                                   color: colorPalette.textDark,
-                                  fontSize: isDesktop ? undefined : { xs: '0.66rem', sm: '0.74rem', md: '0.82rem' }
+                                  fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' }
                                 }}
                               >
                                 {userDetails.name}
@@ -1252,7 +1253,7 @@ const handleEditFormChange = (field, value) => {
                                 icon={statusInfo.icon}
                                 sx={{
                                   height: isDesktop ? 22 : { xs: 18, sm: 20, md: 22 },
-                                  fontSize: isDesktop ? '0.7rem' : { xs: '0.48rem', sm: '0.54rem', md: '0.61rem' },
+                                  fontSize: isDesktop ? "0.75rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                                   '& .MuiChip-icon': {
                                     fontSize: isDesktop ? undefined : { xs: 13, sm: 14, md: 15 }
                                   }
@@ -1266,7 +1267,7 @@ const handleEditFormChange = (field, value) => {
                                   color="primary"
                                   sx={{ 
                                     height: isDesktop ? 22 : { xs: 18, sm: 20, md: 22 }, 
-                                    fontSize: isDesktop ? '0.7rem' : { xs: '0.48rem', sm: '0.54rem', md: '0.61rem' }
+                                    fontSize: isDesktop ? "0.75rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
                                   }}
                                 />
                               )}
@@ -1279,7 +1280,7 @@ const handleEditFormChange = (field, value) => {
                                 sx={{
                                   mt: 0.3,
                                   color: colorPalette.textDark,
-                                  fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.63rem', md: '0.7rem' },
+                                  fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                                   lineHeight: 1.5
                                 }}
                               >
@@ -1299,7 +1300,7 @@ const handleEditFormChange = (field, value) => {
                                   variant="caption"
                                   sx={{
                                     color: colorPalette.textLight,
-                                    fontSize: isDesktop ? undefined : { xs: '0.5rem', sm: '0.56rem', md: '0.62rem' }
+                                    fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
                                   }}
                                 >
                                   {formatDate(update.updatedAt)}
@@ -1310,13 +1311,13 @@ const handleEditFormChange = (field, value) => {
                                     size="small"
                                     startIcon={<AttachFile fontSize="small" />}
                                     onClick={() => handleDownloadAttachment(update.attachmentFilePath)}
-                                    sx={{ 
+                                    sx={uiLayout.withUiSx({ 
                                       minHeight: isDesktop ? undefined : 24,
                                       px: isDesktop ? undefined : 0.7,
-                                      fontSize: isDesktop ? '0.7rem' : { xs: '0.5rem', sm: '0.56rem', md: '0.62rem' },
+                                      fontSize: isDesktop ? "0.75rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                                       color: colorPalette.primary,
                                       textTransform: 'none'
-                                    }}
+                                    }, uiLayout.buttonSx)}
                                   >
                                     عرض المرفق
                                   </Button>
@@ -1349,7 +1350,7 @@ const handleEditFormChange = (field, value) => {
                   color: colorPalette.textLight
                 }}>
                   <CancelOutlined sx={{ fontSize: isDesktop ? 40 : 28, mb: 0.6 }} />
-                  <Typography sx={{ fontSize: isDesktop ? undefined : '0.62rem' }}>
+                  <Typography sx={{ fontSize: isDesktop ? undefined : "0.75rem" }}>
                     لا توجد تحديثات لهذه المهمة بعد
                   </Typography>
                 </Box>
@@ -1359,24 +1360,24 @@ const handleEditFormChange = (field, value) => {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: isDesktop ? 3 : { xs: 1, sm: 1.3, md: 1.8 },
             py: isDesktop ? 2 : { xs: 0.7, sm: 0.9, md: 1.2 }
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button 
             onClick={handleCloseDialog}
             variant="contained"
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               minHeight: isDesktop ? undefined : 30,
               px: isDesktop ? undefined : { xs: 1.2, sm: 1.5, md: 2 },
-              fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
+              fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               backgroundColor: colorPalette.primary,
               '&:hover': {
                 backgroundColor: colorPalette.primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -1414,7 +1415,7 @@ const handleEditFormChange = (field, value) => {
   </Alert>
 </Snackbar>
       
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={statusSummaryDialog.open}
         onClose={handleCloseStatusSummary}
         fullWidth
@@ -1540,17 +1541,17 @@ const handleEditFormChange = (field, value) => {
           </List>
         </DialogContent>
         
-        <DialogActions sx={{ px: 3, py: 2 }}>
+        <DialogActions sx={uiLayout.withUiSx({ px: 3, py: 2 }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={handleCloseStatusSummary}
             variant="contained"
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               backgroundColor: colorPalette.primary,
               '&:hover': {
                 backgroundColor: colorPalette.primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

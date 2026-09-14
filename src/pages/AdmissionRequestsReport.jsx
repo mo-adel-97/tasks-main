@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -499,10 +501,10 @@ const AdmissionRequestsReport = () => {
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: isPhone
-                ? "0.34rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.42rem"
-                  : "0.7rem",
+                  ? "0.75rem"
+                  : "0.75rem",
               color: confirmed
                 ? "#1b5e20"
                 : "#b71c1c",
@@ -1343,7 +1345,7 @@ const AdmissionRequestsReport = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.67rem",
+                  xs: "0.75rem",
                   sm: "0.79rem"
                 },
                 color: "#17372b",
@@ -1427,7 +1429,7 @@ const AdmissionRequestsReport = () => {
                 fontWeight: 900,
                 color: "#034d31",
                 fontSize: isPhone
-                  ? "0.72rem"
+                  ? "0.75rem"
                   : isTablet
                     ? "0.88rem"
                     : undefined
@@ -1442,9 +1444,9 @@ const AdmissionRequestsReport = () => {
                 fontFamily: "Cairo",
                 color: "#61756d",
                 fontSize: isPhone
-                  ? "0.4rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.5rem"
+                    ? "0.75rem"
                     : undefined,
                 display: isPhone
                   ? "none"
@@ -1465,7 +1467,7 @@ const AdmissionRequestsReport = () => {
             }}
           >
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: isPhone
                   ? "repeat(2,minmax(0,1fr))"
@@ -1487,18 +1489,18 @@ const AdmissionRequestsReport = () => {
                 "& .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiInputBase-input": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   py: isPhone
                     ? 0.45
@@ -1527,9 +1529,9 @@ const AdmissionRequestsReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   fontSize: isPhone
-                    ? "0.43rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.51rem"
+                      ? "0.75rem"
                       : undefined,
                   px: isPhone
                     ? 0.55
@@ -1545,9 +1547,9 @@ const AdmissionRequestsReport = () => {
                       ? 16
                       : undefined
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="من تاريخ"
@@ -1563,7 +1565,7 @@ const AdmissionRequestsReport = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="إلى تاريخ"
@@ -1584,14 +1586,14 @@ const AdmissionRequestsReport = () => {
                 startIcon={<SearchIcon />}
                 onClick={loadReport}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   background: "#057546"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 عرض
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 onClick={loadReport}
@@ -1608,18 +1610,18 @@ const AdmissionRequestsReport = () => {
                   loading ||
                   filteredRows.length === 0
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#ae1e21",
                   borderColor: "#ae1e21",
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير Excel
               </Button>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 size="small"
                 label="بحث شامل داخل التقرير"
@@ -1649,24 +1651,24 @@ const AdmissionRequestsReport = () => {
                       </InputAdornment>
                     ) : null
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.formFieldSx)}
               />
 
               <Button
                 variant="outlined"
                 startIcon={<FilterAltOffIcon />}
                 onClick={clearFilters}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#ae1e21",
                   borderColor: "#ae1e21",
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 مسح الفلاتر
               </Button>
@@ -1691,9 +1693,9 @@ const AdmissionRequestsReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   textAlign: "center",
                   whiteSpace: "nowrap",
@@ -1707,7 +1709,7 @@ const AdmissionRequestsReport = () => {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 380px)"
@@ -1723,7 +1725,7 @@ const AdmissionRequestsReport = () => {
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1842,7 +1844,7 @@ const AdmissionRequestsReport = () => {
                   columnMenuUnsort:
                     "إلغاء الترتيب"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1854,15 +1856,11 @@ const AdmissionRequestsReport = () => {
                   },
 
                   "& .MuiDataGrid-virtualScroller": {
-                    overflowX: isCompact
-                      ? "hidden !important"
-                      : undefined
+                    overflowX: "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: isCompact
-                      ? "none"
-                      : undefined
+                    display: "block"
                   },
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -1885,9 +1883,9 @@ const AdmissionRequestsReport = () => {
                     textAlign: "center",
                     width: "100%",
                     fontSize: isPhone
-                      ? "0.38rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.46rem"
+                        ? "0.75rem"
                         : undefined,
                     lineHeight: 1.2
                   },
@@ -1911,9 +1909,9 @@ const AdmissionRequestsReport = () => {
                         ? 0.5
                         : undefined,
                     fontSize: isPhone
-                      ? "0.38rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.46rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
@@ -1955,12 +1953,12 @@ const AdmissionRequestsReport = () => {
                         ? 38
                         : undefined,
                     fontSize: isPhone
-                      ? "0.4rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.48rem"
+                        ? "0.75rem"
                         : undefined
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>

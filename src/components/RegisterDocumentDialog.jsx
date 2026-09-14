@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
@@ -83,8 +84,8 @@ const InfoField = ({ label, value }) => (
         fontWeight: 950,
         whiteSpace: "nowrap",
         lineHeight: 1.5,
-        "@media (max-width:1599px)": { fontSize: "0.58rem" },
-        "@media (max-width:599px)": { fontSize: "0.5rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {label}
@@ -93,8 +94,8 @@ const InfoField = ({ label, value }) => (
     <Typography
       sx={{
         fontWeight: 800,
-        "@media (max-width:1599px)": { fontSize: "0.58rem" },
-        "@media (max-width:599px)": { fontSize: "0.5rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {value || "-"}
@@ -372,10 +373,10 @@ const RegisterDocumentDialog = ({
       onClose={onClose}
       fullScreen
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         // لازم استمارة التسجيل تظهر فوق كشف الحساب المفتوح تحتها.
         zIndex: 1800
-      }}
+      }, uiLayout.dialogLayoutSx)}
     >
       <DialogTitle
         className="no-print"
@@ -393,11 +394,11 @@ const RegisterDocumentDialog = ({
           <ReceiptLongIcon />
 
           <Box>
-            <Typography sx={{ fontWeight: 950, fontSize: isPhone ? "0.62rem" : isTablet ? "0.72rem" : undefined }}>
+            <Typography sx={{ fontWeight: 950, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
               عرض استمارة التسجيل
             </Typography>
 
-            <Typography sx={{ fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.78rem", opacity: 0.9 }}>
+            <Typography sx={{ fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.78rem", opacity: 0.9 }}>
               رقم المستند:{" "}
               {documentData?.documentNo || documentNo || "-"}
             </Typography>
@@ -659,7 +660,7 @@ const RegisterDocumentDialog = ({
               </Box>
             </Box>
 
-            <TableContainer className="items-table">
+            <TableContainer sx={uiLayout.tableContainerSx} className="items-table">
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -762,7 +763,7 @@ const RegisterDocumentDialog = ({
           "& .MuiButton-root": {
             minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           }
                 }}
               >
@@ -782,7 +783,7 @@ const RegisterDocumentDialog = ({
                   className="refund-caption"
                   sx={{
                     mt: 0.8,
-                    fontSize: 11,
+                    fontSize: 12,
                     lineHeight: 1.5,
                     fontWeight: 900,
                     textAlign: "center"
@@ -853,7 +854,7 @@ const RegisterDocumentDialog = ({
                   className="verification-caption"
                   sx={{
                     mt: 0.8,
-                    fontSize: 11,
+                    fontSize: 12,
                     lineHeight: 1.5,
                     fontWeight: 900,
                     textAlign: "center"
@@ -887,23 +888,23 @@ const RegisterDocumentDialog = ({
 
       <DialogActions
         className="no-print"
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.45 : isTablet ? 0.7 : 2,
           py: isPhone ? 0.35 : isTablet ? 0.55 : 1.5,
           gap: isPhone ? 0.35 : isTablet ? 0.55 : 1,
           justifyContent: "flex-start"
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
           startIcon={<PrintIcon />}
           disabled={!documentData || loading}
           onClick={openPrintWindow}
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             fontWeight: 950,
             direction: "rtl"
-          }}
+          }, uiLayout.buttonSx)}
         >
           طباعة
         </Button>
@@ -913,14 +914,14 @@ const RegisterDocumentDialog = ({
           startIcon={<PictureAsPdfIcon />}
           disabled={!documentData || loading}
           onClick={openPrintWindow}
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: accentColor,
             fontWeight: 950,
             direction: "rtl",
             "&:hover": {
               backgroundColor: "#8f171a"
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           تصدير PDF
         </Button>
@@ -929,7 +930,7 @@ const RegisterDocumentDialog = ({
           variant="outlined"
           color="error"
           onClick={onClose}
-          sx={{ fontWeight: 950 }}
+          sx={uiLayout.withUiSx({ fontWeight: 950 }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

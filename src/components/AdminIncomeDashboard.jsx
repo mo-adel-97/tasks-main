@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
@@ -895,7 +896,7 @@ const refundBillsCount = useMemo(() => {
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={1.3}
-                  sx={{ mt: 2 }}
+                  sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.filterBarSx)}
                   alignItems={{ sm: "center" }}
                 >
                   <TextField
@@ -905,14 +906,14 @@ const refundBillsCount = useMemo(() => {
                     onChange={(e) => setFromInput(e.target.value)}
                     InputLabelProps={{ shrink: true }}
                     size="small"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       width: 200,
                       bgcolor: "rgba(255,255,255,0.06)",
                       borderRadius: 2,
                       "& .MuiInputBase-input": { color: "white" },
                       "& .MuiInputLabel-root": { color: "rgba(226,232,240,0.9)" },
                       "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.12)" },
-                    }}
+                    }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                   <TextField
@@ -922,21 +923,21 @@ const refundBillsCount = useMemo(() => {
                     onChange={(e) => setToInput(e.target.value)}
                     InputLabelProps={{ shrink: true }}
                     size="small"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       width: 200,
                       bgcolor: "rgba(255,255,255,0.06)",
                       borderRadius: 2,
                       "& .MuiInputBase-input": { color: "white" },
                       "& .MuiInputLabel-root": { color: "rgba(226,232,240,0.9)" },
                       "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.12)" },
-                    }}
+                    }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                   <Button
                     onClick={applyRange}
                     variant="contained"
                     startIcon={<DoneAllRoundedIcon />}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       bgcolor: "rgba(128,180,158,0.16)",
                       color: "#d8fff0",
                       border: "1px solid rgba(128,180,158,0.35)",
@@ -947,7 +948,7 @@ const refundBillsCount = useMemo(() => {
                         bgcolor: "rgba(128,180,158,0.22)",
                         borderColor: "rgba(128,180,158,0.55)",
                       },
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     تطبيق
                   </Button>
@@ -992,13 +993,13 @@ const refundBillsCount = useMemo(() => {
                     onClick={() => setLive((p) => !p)}
                     startIcon={<AutorenewRoundedIcon />}
                     variant="contained"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       bgcolor: PRIMARY,
                       fontWeight: 900,
                       borderRadius: 2.2,
                       px: 2.2,
                       "&:hover": { bgcolor: PRIMARY_DARK },
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     {live ? "إيقاف" : "تشغيل"}
                   </Button>
@@ -1195,7 +1196,7 @@ const refundBillsCount = useMemo(() => {
 
                 <TableContainer
                   component={Paper}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor: "transparent",
                     boxShadow: "none",
                     maxHeight: 360,
@@ -1204,7 +1205,7 @@ const refundBillsCount = useMemo(() => {
                       background: "rgba(128,180,158,0.35)",
                       borderRadius: 10,
                     },
-                  }}
+                  }, uiLayout.tableContainerSx)}
                 >
                   <Table stickyHeader size="small">
                     <TableHead>
@@ -1348,7 +1349,7 @@ const refundBillsCount = useMemo(() => {
                   <Button
                     variant="outlined"
                     startIcon={<MonetizationOnRoundedIcon />}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderColor: "rgba(128,180,158,0.45)",
                       color: "#d8fff0",
                       fontWeight: 900,
@@ -1357,7 +1358,7 @@ const refundBillsCount = useMemo(() => {
                         borderColor: "rgba(128,180,158,0.75)",
                         backgroundColor: "rgba(128,180,158,0.08)",
                       },
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     تقرير الدخل
                   </Button>

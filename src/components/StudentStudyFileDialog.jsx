@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -122,8 +123,8 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
           fontWeight: 950,
           fontSize: "0.78rem",
           lineHeight: 1.1,
-          "@media (max-width:1599px)": { fontSize: "0.5rem" },
-          "@media (max-width:599px)": { fontSize: "0.43rem" }
+          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
         {label}
@@ -137,11 +138,11 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
           fontSize: strong ? "1rem" : "0.92rem",
           lineHeight: 1.7,
           "@media (max-width:1599px)": {
-            fontSize: strong ? "0.63rem" : "0.58rem",
+            fontSize: strong ? "0.75rem" : "0.75rem",
             lineHeight: 1.2
           },
           "@media (max-width:599px)": {
-            fontSize: strong ? "0.55rem" : "0.5rem"
+            fontSize: strong ? "0.75rem" : "0.75rem"
           },
           textAlign: "start",
           direction: "rtl",
@@ -436,14 +437,14 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
       fullWidth
       maxWidth="md"
       fullScreen={isPhone}
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
@@ -508,7 +509,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 sx={{
                   fontWeight: 1000,
                   color: whiteColor,
-                  fontSize: isPhone ? "0.66rem" : isTablet ? "0.78rem" : "1.15rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.78rem" : "1.15rem",
                   lineHeight: 1.1
                 }}
               >
@@ -518,7 +519,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 sx={{
                   fontWeight: 800,
                   color: "#e6f3ee",
-                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : "0.82rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.82rem",
                   lineHeight: 1.1,
                   display: isPhone ? "none" : "block"
                 }}
@@ -536,7 +537,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 fontWeight: 950,
                 borderRadius: isCompact ? 1.1 : 2,
                 height: isPhone ? 21 : isTablet ? 24 : undefined,
-                fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 "& .MuiChip-label": {
                   px: isPhone ? 0.45 : isTablet ? 0.6 : undefined
                 },
@@ -552,18 +553,18 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               startIcon={<RefreshIcon />}
               onClick={loadStudyInfo}
               disabled={loading || savingClass}
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderRadius: isCompact ? 1.1 : 2,
                 fontWeight: 950,
                 minWidth: isPhone ? 48 : isTablet ? 58 : undefined,
                 height: isPhone ? 25 : isTablet ? 29 : undefined,
                 px: isPhone ? 0.4 : isTablet ? 0.6 : undefined,
-                fontSize: isPhone ? "0.43rem" : isTablet ? "0.51rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 direction: "rtl",
                 color: whiteColor,
                 borderColor: "#e6f3ee",
                 "&:hover": { borderColor: whiteColor, backgroundColor: "rgba(255,255,255,0.10)" }
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -588,7 +589,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               sx={{
                 mt: isCompact ? 0.6 : 2,
                 fontWeight: 950,
-                fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               }}
             >جاري تحميل الملف التدريبي...</Typography>
           </Stack>
@@ -599,7 +600,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               borderRadius: isCompact ? 1.2 : 2,
               py: isCompact ? 0.15 : undefined,
               fontWeight: 900,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }}
           >
             لا يوجد طالب محدد.
@@ -623,7 +624,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                   px: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
                   py: isPhone ? 0.3 : isTablet ? 0.4 : 0.8,
                   borderRadius: isCompact ? 1.1 : 2,
-                  fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   textAlign: "start",
                   background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                   color: whiteColor
@@ -662,7 +663,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                   px: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
                   py: isPhone ? 0.3 : isTablet ? 0.4 : 0.8,
                   borderRadius: isCompact ? 1.1 : 2,
-                  fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   textAlign: "start",
                   background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                   color: whiteColor
@@ -708,7 +709,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                     borderRadius: isCompact ? 1.2 : 2,
                     py: isCompact ? 0.15 : undefined,
                     fontWeight: 900,
-                    fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   }}
                 >
                   لم يتم العثور على بيانات ملف تدريبي لهذا الطالب بنفس الفرع والدبلوم.
@@ -761,7 +762,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
           py: isPhone ? 0.28 : isTablet ? 0.42 : 1.4,
           gap: isCompact ? 0.35 : 1,
@@ -769,20 +770,20 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           backgroundColor: whiteColor,
           justifyContent: "space-between",
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           onClick={openAttachments}
           startIcon={<AttachFileIcon />}
           disabled={!student || loading || savingClass}
-          sx={{
+          sx={uiLayout.withUiSx({
             fontWeight: 950,
             color: primaryColor,
             direction: "rtl",
             minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
-            fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           عرض المرفقات
         </Button>
@@ -791,14 +792,14 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           onClick={onClose}
           disabled={loading || savingClass}
           startIcon={<CloseIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             fontWeight: 950,
             color: dangerColor,
             direction: "rtl",
             minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
-            fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           خروج
         </Button>

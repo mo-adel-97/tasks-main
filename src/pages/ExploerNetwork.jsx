@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState } from "react";
@@ -291,7 +293,7 @@ const ExplorerNetwork = () => {
         </NetworkCard>
       </CenteredContainer>
 
-      <StyledDialog 
+      <StyledDialog sx={uiLayout.dialogLayoutSx} 
         open={open} 
         onClose={handleDialogClose} 
         fullWidth 
@@ -362,7 +364,7 @@ const ExplorerNetwork = () => {
                 disabled={!currentPath}
                 size="small"
                 variant="contained"
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   fontFamily: "'Cairo', sans-serif",
                   cursor: "pointer",
                   backgroundColor: primaryColor,
@@ -374,7 +376,7 @@ const ExplorerNetwork = () => {
                   },
                   borderRadius: 2,
                   px: 2,
-                }}
+                }, uiLayout.buttonSx)}
               >
                 رجوع
               </Button>
@@ -416,7 +418,7 @@ const ExplorerNetwork = () => {
                 onClick={() => fetchItems(currentPath)} 
                 variant="contained"
                 startIcon={<RefreshIcon />}
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   fontFamily: "'Cairo', sans-serif", 
                   cursor: "pointer",
                   backgroundColor: primaryColor,
@@ -424,7 +426,7 @@ const ExplorerNetwork = () => {
                     backgroundColor: primaryDark,
                   },
                   borderRadius: 2,
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إعادة المحاولة
               </Button>

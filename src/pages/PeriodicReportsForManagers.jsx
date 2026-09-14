@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -787,7 +789,7 @@ const AdminBranchesReports = () => {
                   ),
                   sx: { fontFamily: '"Cairo", sans-serif' }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '10px',
                     '& fieldset': {
@@ -797,7 +799,7 @@ const AdminBranchesReports = () => {
                       borderColor: colorPalette.primary,
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
@@ -820,7 +822,7 @@ const AdminBranchesReports = () => {
                   ),
                   sx: { fontFamily: '"Cairo", sans-serif' }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '10px',
                     '& fieldset': {
@@ -830,12 +832,12 @@ const AdminBranchesReports = () => {
                       borderColor: colorPalette.primary,
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel sx={{ 
                   fontFamily: '"Cairo", sans-serif',
                   fontWeight: 600,
@@ -1169,7 +1171,7 @@ const AdminBranchesReports = () => {
                 </Typography>
               </Box>
               
-              <TableContainer>
+              <TableContainer sx={uiLayout.tableContainerSx}>
                 <Table>
                   <TableHead sx={{ backgroundColor: colorPalette.primaryLighter }}>
                     <TableRow>
@@ -1387,14 +1389,14 @@ const BranchDetailsDialog = ({
       onClose={onClose}
       maxWidth="xl"
       fullWidth
-      sx={{
+      sx={uiLayout.withUiSx({
         '& .MuiDialog-paper': {
           borderRadius: '16px',
           background: 'linear-gradient(135deg, #ffffff, #f8fbf9)',
           minHeight: '80vh',
           maxHeight: '90vh'
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
     >
       <DialogTitle sx={{ 
         fontFamily: '"Cairo", sans-serif', 
@@ -1827,7 +1829,7 @@ const BranchDetailsDialog = ({
                           variant="outlined"
                           startIcon={<ViewIcon />}
                           onClick={() => onViewTrainerStudents(trainer, branchData)}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             borderColor: colorPalette.primary,
                             color: colorPalette.primary,
                             fontFamily: '"Cairo", sans-serif',
@@ -1838,7 +1840,7 @@ const BranchDetailsDialog = ({
                               transform: 'translateY(-2px)',
                               boxShadow: `0 4px 12px ${alpha(colorPalette.primary, 0.2)}`
                             }
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           عرض تفاصيل الطلاب
                         </Button>
@@ -1870,17 +1872,17 @@ const BranchDetailsDialog = ({
         )}
       </DialogContent>
       
-      <DialogActions sx={{ p: 3 }}>
+      <DialogActions sx={uiLayout.withUiSx({ p: 3 }, uiLayout.dialogActionsSx)}>
         <Button 
           onClick={onClose}
           variant="outlined"
-          sx={{
+          sx={uiLayout.withUiSx({
             fontFamily: '"Cairo", sans-serif',
             borderColor: colorPalette.primary,
             color: colorPalette.primary,
             borderRadius: '10px',
             px: 3
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -1897,13 +1899,13 @@ const TrainerStudentsDialog = ({ open, onClose, students, trainerName, colorPale
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      sx={{
+      sx={uiLayout.withUiSx({
         '& .MuiDialog-paper': {
           borderRadius: '16px',
           background: 'linear-gradient(135deg, #ffffff, #f8fbf9)',
           minHeight: '60vh'
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
     >
       <DialogTitle sx={{ 
         fontFamily: '"Cairo", sans-serif', 
@@ -1919,7 +1921,7 @@ const TrainerStudentsDialog = ({ open, onClose, students, trainerName, colorPale
       
       <DialogContent sx={{ p: 3 }}>
         {students && students.length > 0 ? (
-          <TableContainer component={Paper} elevation={2} sx={{ borderRadius: '12px', border: `1px solid ${colorPalette.primaryLighter}` }}>
+          <TableContainer component={Paper} elevation={2} sx={uiLayout.withUiSx({ borderRadius: '12px', border: `1px solid ${colorPalette.primaryLighter}` }, uiLayout.tableContainerSx)}>
             <Table>
               <TableHead sx={{ backgroundColor: colorPalette.primaryLighter }}>
                 <TableRow>
@@ -1990,17 +1992,17 @@ const TrainerStudentsDialog = ({ open, onClose, students, trainerName, colorPale
         )}
       </DialogContent>
       
-      <DialogActions sx={{ p: 3 }}>
+      <DialogActions sx={uiLayout.withUiSx({ p: 3 }, uiLayout.dialogActionsSx)}>
         <Button 
           onClick={onClose}
           variant="outlined"
-          sx={{
+          sx={uiLayout.withUiSx({
             fontFamily: '"Cairo", sans-serif',
             borderColor: colorPalette.primary,
             color: colorPalette.primary,
             borderRadius: '10px',
             px: 3
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

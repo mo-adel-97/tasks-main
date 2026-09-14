@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1200,7 +1202,7 @@ export default function GeneralAccountStatement() {
           onClick={() =>
             openFilterPicker(field)
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: 0,
             minHeight:
               isPhone ? 34 : 38,
@@ -1210,7 +1212,7 @@ export default function GeneralAccountStatement() {
             fontFamily: "Cairo",
             fontWeight: 900,
             fontSize:
-              isPhone ? 9 : 11,
+              isPhone ? 12 : 12,
             textTransform: "none",
             overflow: "hidden",
             bgcolor:
@@ -1229,7 +1231,7 @@ export default function GeneralAccountStatement() {
                   ? primaryDark
                   : "#eef8f3"
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           <Box
             component="span"
@@ -1253,7 +1255,7 @@ export default function GeneralAccountStatement() {
               ml: 0.6,
               height: 20,
               minWidth: 24,
-              fontSize: 9,
+              fontSize: 12,
               pointerEvents: "none",
               bgcolor:
                 selected.length
@@ -1466,7 +1468,7 @@ export default function GeneralAccountStatement() {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: isDesktop
                     ? "150px 150px minmax(230px,1fr) 110px 125px minmax(220px,280px)"
@@ -1476,7 +1478,7 @@ export default function GeneralAccountStatement() {
                   gap: isPhone ? 0.45 : 0.65,
                   alignItems: "center",
                   direction: "rtl"
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <TextField
                   type="date"
@@ -1496,16 +1498,16 @@ export default function GeneralAccountStatement() {
                     shrink: true
                   }}
                   size="small"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
                     "& .MuiInputBase-root": {
                       minHeight: isPhone ? 34 : 40
                     },
                     "& input": {
-                      fontSize: isPhone ? 9 : 12,
+                      fontSize: isPhone ? 12 : 12,
                       fontWeight: 800
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
                 <TextField
@@ -1526,16 +1528,16 @@ export default function GeneralAccountStatement() {
                     shrink: true
                   }}
                   size="small"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
                     "& .MuiInputBase-root": {
                       minHeight: isPhone ? 34 : 40
                     },
                     "& input": {
-                      fontSize: isPhone ? 9 : 12,
+                      fontSize: isPhone ? 12 : 12,
                       fontWeight: 800
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
                 <Button
@@ -1552,11 +1554,11 @@ export default function GeneralAccountStatement() {
                       true
                     );
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
                     minHeight: isPhone ? 34 : 40,
                     fontWeight: 900,
-                    fontSize: isPhone ? 9 : 11,
+                    fontSize: isPhone ? 12 : 12,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -1564,7 +1566,7 @@ export default function GeneralAccountStatement() {
                     gridColumn: isPhone
                       ? "1 / -1"
                       : "auto"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   <Box
                     component="span"
@@ -1605,17 +1607,17 @@ export default function GeneralAccountStatement() {
                     loading ||
                     !selectedAccount
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: isPhone ? 34 : 40,
                     bgcolor:
                       primaryColor,
                     fontWeight: 900,
-                    fontSize: isPhone ? 9 : 11,
+                    fontSize: isPhone ? 12 : 12,
                     "&:hover": {
                       bgcolor:
                         primaryDark
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {loading
                     ? "جاري..."
@@ -1631,17 +1633,17 @@ export default function GeneralAccountStatement() {
                   disabled={
                     !filteredRows.length
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: isPhone ? 34 : 40,
                     fontWeight: 900,
-                    fontSize: isPhone ? 9 : 11,
+                    fontSize: isPhone ? 12 : 12,
                     whiteSpace: "nowrap"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير Excel
                 </Button>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   value={gridSearch}
                   onChange={(e) =>
                     setGridSearch(
@@ -1662,7 +1664,7 @@ export default function GeneralAccountStatement() {
                       </InputAdornment>
                     )
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
                     gridColumn: isPhone
                       ? "1 / -1"
@@ -1671,9 +1673,9 @@ export default function GeneralAccountStatement() {
                       minHeight: isPhone ? 34 : 40
                     },
                     "& input": {
-                      fontSize: isPhone ? 9 : 11
+                      fontSize: isPhone ? 12 : 12
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
               </Box>
 
@@ -1681,12 +1683,12 @@ export default function GeneralAccountStatement() {
                 direction="row"
                 alignItems="center"
                 spacing={0.6}
-                sx={{
+                sx={uiLayout.withUiSx({
                   mt: 0.65,
                   direction: "rtl",
                   flexWrap: "wrap",
                   gap: 0.45
-                }}
+                }, uiLayout.actionBarSx)}
               >
                 <Button
                   variant={
@@ -1707,15 +1709,15 @@ export default function GeneralAccountStatement() {
                       (current) => !current
                     )
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: isPhone ? 32 : 36,
                     bgcolor:
                       advancedFiltersOpen
                         ? primaryColor
                         : undefined,
                     fontWeight: 900,
-                    fontSize: isPhone ? 9 : 11
-                  }}
+                    fontSize: isPhone ? 12 : 12
+                  }, uiLayout.buttonSx)}
                 >
                   فلاتر متقدمة
                   {activeAdvancedFilterCount > 0
@@ -1731,11 +1733,11 @@ export default function GeneralAccountStatement() {
                       <ClearAllOutlinedIcon />
                     }
                     onClick={clearAdvancedFilters}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minHeight: isPhone ? 32 : 36,
                       fontWeight: 900,
-                      fontSize: isPhone ? 9 : 11
-                    }}
+                      fontSize: isPhone ? 12 : 12
+                    }, uiLayout.buttonSx)}
                   >
                     مسح الفلاتر
                   </Button>
@@ -1749,7 +1751,7 @@ export default function GeneralAccountStatement() {
                     ml: "auto",
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    fontSize: isPhone ? 8 : 10
+                    fontSize: isPhone ? 12 : 12
                   }}
                 />
               </Stack>
@@ -1771,7 +1773,7 @@ export default function GeneralAccountStatement() {
                       fontFamily: "Cairo",
                       fontWeight: 950,
                       color: primaryColor,
-                      fontSize: isPhone ? 9 : 11.5,
+                      fontSize: isPhone ? 12 : 12,
                       direction: "ltr"
                     }}
                   >
@@ -1843,7 +1845,7 @@ export default function GeneralAccountStatement() {
                       fontWeight: 900,
                       fontSize:
                         isPhone
-                          ? 10
+                          ? 12
                           : 12
                     }}
                   >
@@ -1919,8 +1921,8 @@ export default function GeneralAccountStatement() {
                         fontWeight: 900,
                         fontSize:
                           isPhone
-                            ? 8
-                            : 10.5
+                            ? 12
+                            : 12
                       }}
                     >
                       {item.title}
@@ -1957,7 +1959,7 @@ export default function GeneralAccountStatement() {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 height:
                   isPhone
                     ? 420
@@ -1965,7 +1967,7 @@ export default function GeneralAccountStatement() {
                       ? 520
                       : 600,
                 width: "100%"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={filteredRows}
@@ -2021,7 +2023,7 @@ export default function GeneralAccountStatement() {
                         : "odd-row"
                     )
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   border:
                     `1px solid ${borderColor}`,
                   direction: "rtl",
@@ -2043,8 +2045,8 @@ export default function GeneralAccountStatement() {
                         isDesktop
                           ? 12
                           : isPhone
-                            ? 8
-                            : 10,
+                            ? 12
+                            : 12,
                       textAlign:
                         "center"
                     },
@@ -2064,8 +2066,8 @@ export default function GeneralAccountStatement() {
                         isDesktop
                           ? 12
                           : isPhone
-                            ? 8
-                            : 10,
+                            ? 12
+                            : 12,
                       px:
                         isPhone
                           ? 0.15
@@ -2113,7 +2115,7 @@ export default function GeneralAccountStatement() {
                       outline:
                         "none"
                     }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>
@@ -2124,7 +2126,7 @@ export default function GeneralAccountStatement() {
           Lightweight advanced-filter picker.
           Only ONE dialog is rendered and at most 80 values are mounted.
           ===================================================== */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={Boolean(filterPickerField)}
         onClose={closeFilterPicker}
         fullWidth
@@ -2167,7 +2169,7 @@ export default function GeneralAccountStatement() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus
             fullWidth
             value={filterPickerSearch}
@@ -2185,7 +2187,7 @@ export default function GeneralAccountStatement() {
                 </InputAdornment>
               )
             }}
-            sx={{ mb: 1 }}
+            sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)}
           />
 
           <List
@@ -2270,13 +2272,13 @@ export default function GeneralAccountStatement() {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             p: 1,
             gap: 1
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           {selectedPickerValues.length > 0 && (
-            <Button
+            <Button sx={uiLayout.buttonSx}
               color="error"
               onClick={() => {
                 const key =
@@ -2299,10 +2301,10 @@ export default function GeneralAccountStatement() {
           <Button
             variant="contained"
             onClick={closeFilterPicker}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primaryColor,
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             تم
           </Button>
@@ -2312,7 +2314,7 @@ export default function GeneralAccountStatement() {
       {/* =====================================================
           Account List
           ===================================================== */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={accountDialogOpen}
         onClose={() =>
           setAccountDialogOpen(false)
@@ -2356,7 +2358,7 @@ export default function GeneralAccountStatement() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus
             fullWidth
             value={accountSearch}
@@ -2382,7 +2384,7 @@ export default function GeneralAccountStatement() {
                 </InputAdornment>
               )
             }}
-            sx={{ mb: 1 }}
+            sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)}
           />
 
           <Stack
@@ -2399,7 +2401,7 @@ export default function GeneralAccountStatement() {
               sx={{
                 color: mutedColor,
                 fontFamily: "Cairo",
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 700
               }}
             >
@@ -2527,12 +2529,12 @@ export default function GeneralAccountStatement() {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             p: 1.2,
             gap: 1
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
-          <Button
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setAccountDialogOpen(false)
             }
@@ -2546,11 +2548,11 @@ export default function GeneralAccountStatement() {
               !selectedAccountGuid
             }
             onClick={chooseAccount}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor:
                 primaryColor,
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             اختيار وعرض
           </Button>
@@ -2560,7 +2562,7 @@ export default function GeneralAccountStatement() {
       {/* =====================================================
           Mobile / Tablet details
           ===================================================== */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={detailOpen}
         onClose={() =>
           setDetailOpen(false)
@@ -2623,7 +2625,7 @@ export default function GeneralAccountStatement() {
                     fontFamily:
                       "Cairo",
                     fontWeight: 800,
-                    fontSize: 9
+                    fontSize: 12
                   }}
                 >
                   {label}
@@ -2660,7 +2662,7 @@ export default function GeneralAccountStatement() {
                   fontFamily:
                     "Cairo",
                   fontWeight: 800,
-                  fontSize: 9
+                  fontSize: 12
                 }}
               >
                 البيان
@@ -2683,8 +2685,8 @@ export default function GeneralAccountStatement() {
           </Box>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setDetailOpen(false)
             }

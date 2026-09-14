@@ -248,7 +248,7 @@ export default function Dashboard() {
                 flex: 1,
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.72rem",
+                  xs: "0.75rem",
                   sm: "0.8rem",
                   md: "0.88rem",
                 },

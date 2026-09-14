@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -372,8 +374,8 @@ const TextCell = ({
         fontFamily: "Cairo",
         fontSize: "0.76rem",
         fontWeight: 700,
-        "@media (max-width: 599px)": { fontSize: "0.34rem", lineHeight: 1.15, fontWeight: 800 },
-        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.48rem", lineHeight: 1.25 }
+        "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.15, fontWeight: 800 },
+        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem", lineHeight: 1.25 }
       }}
     >
       {value || "-"}
@@ -387,10 +389,10 @@ const MoneyCell = ({ value }) => (
       width: "100%",
       textAlign: "center",
       fontFamily: "Cairo",
-      fontSize: "0.74rem",
+      fontSize: "0.75rem",
       fontWeight: 800,
-      "@media (max-width: 599px)": { fontSize: "0.34rem", lineHeight: 1.1, fontWeight: 900 },
-      "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.47rem", lineHeight: 1.2 }
+      "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.1, fontWeight: 900 },
+      "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem", lineHeight: 1.2 }
     }}
   >
     {money(value)}
@@ -435,10 +437,10 @@ const TotalItem = ({
         mb: 0.35,
         color: "#708179",
         fontFamily: "Cairo",
-        fontSize: "0.68rem",
+        fontSize: "0.75rem",
         fontWeight: 800,
-        "@media (max-width: 599px)": { fontSize: "0.38rem", lineHeight: 1.1 },
-        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.5rem" },
+        "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.1 },
+        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -454,8 +456,8 @@ const TotalItem = ({
         fontFamily: "Cairo",
         fontSize: "0.9rem",
         fontWeight: 900,
-        "@media (max-width: 599px)": { fontSize: "0.48rem", lineHeight: 1.15 },
-        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.62rem" },
+        "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.15 },
+        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -517,8 +519,8 @@ const PaymentTotalsSection = ({
             fontFamily: "Cairo",
             fontSize: "0.76rem",
             fontWeight: 800,
-            "@media (max-width: 599px)": { fontSize: "0.42rem" },
-            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.54rem" },
+            "@media (max-width: 599px)": { fontSize: "0.75rem" },
+            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" },
             opacity: 0.88
           }}
         >
@@ -531,8 +533,8 @@ const PaymentTotalsSection = ({
             fontFamily: "Cairo",
             fontSize: "0.88rem",
             fontWeight: 900,
-            "@media (max-width: 599px)": { fontSize: "0.50rem", lineHeight: 1.3 },
-            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.64rem" }
+            "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.3 },
+            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" }
           }}
         >
           العدد {rowCount} — المسددين {totals.paid} — لم يسدد {totals.unpaid}
@@ -691,7 +693,7 @@ const MultiValueFilter = ({
         alignItems="center"
         justifyContent="space-between"
         spacing={1}
-        sx={{ mb: 1 }}
+        sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.pageHeaderSx)}
       >
         <Typography
           sx={{
@@ -703,7 +705,7 @@ const MultiValueFilter = ({
           {label}
         </Typography>
 
-        <Stack direction="row" spacing={0.5}>
+        <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.5}>
           <Button
             size="small"
             startIcon={<DoneAllIcon />}
@@ -712,11 +714,11 @@ const MultiValueFilter = ({
                 allSelected ? [] : options
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: 0,
               fontFamily: "Cairo",
               fontWeight: 800
-            }}
+            }, uiLayout.buttonSx)}
           >
             {allSelected
               ? "إلغاء الكل"
@@ -728,11 +730,11 @@ const MultiValueFilter = ({
               size="small"
               color="error"
               onClick={() => onChange([])}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح
             </Button>
@@ -788,7 +790,7 @@ const MultiValueFilter = ({
           ))
         }
         renderInput={(params) => (
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             {...params}
             size="small"
             placeholder="ابحث وحدد أكثر من قيمة"
@@ -797,7 +799,7 @@ const MultiValueFilter = ({
                 ? `تم اختيار ${selected.length} من ${options.length}`
                 : `الكل ظاهر (${options.length})`
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiInputBase-root": {
                 fontFamily: "Cairo"
               },
@@ -805,7 +807,7 @@ const MultiValueFilter = ({
                 fontFamily: "Cairo",
                 textAlign: "right"
               }
-            }}
+            }, uiLayout.formFieldSx)}
           />
         )}
       />
@@ -1988,8 +1990,8 @@ const PaymentFollowReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     fontSize: isPhone
-                      ? "0.34rem"
-                      : "0.48rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     lineHeight: 1.2,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -3287,7 +3289,7 @@ const exportExcel = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: "0.66rem",
+                    xs: "0.75rem",
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
@@ -3365,7 +3367,7 @@ const exportExcel = () => {
                     fontSize: isDesktop
                       ? undefined
                       : isPhone
-                        ? "0.68rem"
+                        ? "0.75rem"
                         : "0.82rem"
                   }}
                 >
@@ -3409,13 +3411,13 @@ const exportExcel = () => {
                 spacing={isDesktop ? 1.2 : 0.5}
                 useFlexGap
                 flexWrap={isDesktop ? "nowrap" : "wrap"}
-                sx={{
+                sx={uiLayout.withUiSx({
                   "& .MuiInputLabel-root": {
                     fontFamily: "Cairo",
                     fontSize: !isDesktop
                       ? isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
+                        ? "0.75rem"
+                        : "0.75rem"
                       : undefined
                   },
                   "& .MuiInputBase-root": {
@@ -3427,8 +3429,8 @@ const exportExcel = () => {
                     fontFamily: "Cairo",
                     fontSize: !isDesktop
                       ? isPhone
-                        ? "0.46rem"
-                        : "0.56rem"
+                        ? "0.75rem"
+                        : "0.75rem"
                       : undefined
                   },
                   "& .MuiButton-root": {
@@ -3439,11 +3441,11 @@ const exportExcel = () => {
                       : undefined,
                     fontSize: !isDesktop
                       ? isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
+                        ? "0.75rem"
+                        : "0.75rem"
                       : undefined
                   }
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <TextField
                   type="date"
@@ -3458,11 +3460,11 @@ const exportExcel = () => {
                   InputLabelProps={{
                     shrink: true
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     width: !isDesktop
                       ? "calc(50% - 4px)"
                       : "auto"
-                  }}
+                  }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
@@ -3478,11 +3480,11 @@ const exportExcel = () => {
                   InputLabelProps={{
                     shrink: true
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     width: !isDesktop
                       ? "calc(50% - 4px)"
                       : "auto"
-                  }}
+                  }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Autocomplete
@@ -3513,7 +3515,7 @@ const exportExcel = () => {
                     width: !isDesktop ? "100%" : "auto"
                   }}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       label="الفرع"
@@ -3546,7 +3548,7 @@ const exportExcel = () => {
                     width: !isDesktop ? "100%" : "auto"
                   }}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       label="الدفعة (اختياري)"
@@ -3558,11 +3560,11 @@ const exportExcel = () => {
                   variant="contained"
                   startIcon={<SearchIcon />}
                   onClick={loadData}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor: "#057546",
                     fontWeight: 900,
                     fontFamily: "Cairo"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -3573,10 +3575,10 @@ const exportExcel = () => {
                     <RefreshIcon />
                   }
                   onClick={loadData}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 800
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -3591,10 +3593,10 @@ const exportExcel = () => {
                   disabled={
                     !filteredGridRows.length
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 800
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -3606,7 +3608,7 @@ const exportExcel = () => {
               spacing={1}
               useFlexGap
               flexWrap="wrap"
-              sx={{
+              sx={uiLayout.withUiSx({
                 mb: isDesktop ? 1.5 : 0.7,
                 gap: !isDesktop ? 0.35 : undefined,
                 "& .MuiChip-root": {
@@ -3618,8 +3620,8 @@ const exportExcel = () => {
                   fontFamily: "Cairo",
                   fontSize: !isDesktop
                     ? isPhone
-                      ? "0.33rem"
-                      : "0.43rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                     : undefined
                 },
                 "& .MuiButton-root": {
@@ -3630,11 +3632,11 @@ const exportExcel = () => {
                     : undefined,
                   fontSize: !isDesktop
                     ? isPhone
-                      ? "0.36rem"
-                      : "0.46rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                     : undefined
                 }
-              }}
+              }, uiLayout.actionBarSx)}
             >
               <Chip
                 label={`العدد: ${filteredGridRows.length} من ${gridRows.length}`}
@@ -3666,7 +3668,7 @@ const exportExcel = () => {
                 onClick={() =>
                   setFilterDialogOpen(true)
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   ...(activeFilterCount
@@ -3677,7 +3679,7 @@ const exportExcel = () => {
                         }
                       }
                     : {})
-                }}
+                }, uiLayout.buttonSx)}
               >
                 الفلاتر المتقدمة
                 {activeFilterCount
@@ -3692,10 +3694,10 @@ const exportExcel = () => {
                   variant="text"
                   startIcon={<RestartAltIcon />}
                   onClick={resetColumnFilters}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إلغاء الفلاتر
                 </Button>
@@ -3711,11 +3713,11 @@ const exportExcel = () => {
                   isExcludedDistributionBranch(branch?.name) ||
                   distributionStatus?.canExecute === false
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   background: "linear-gradient(135deg,#057546,#034d31)"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تعيين مسؤولي الاتصال للشهر الحالي
               </Button>
@@ -3733,7 +3735,7 @@ const exportExcel = () => {
                 variant="text"
                 onClick={() => setAllVisibleCustomStudents(true)}
                 disabled={!visibleUnassignedDistributionRows.length}
-                sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#6f42c1" }}
+                sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, color: "#6f42c1" }, uiLayout.buttonSx)}
               >
                 تحديد غير الموزعين الظاهرين
               </Button>
@@ -3744,7 +3746,7 @@ const exportExcel = () => {
                 color="error"
                 onClick={() => setCustomStudentSelections({})}
                 disabled={!selectedCustomStudents.length}
-                sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+                sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}
               >
                 إلغاء تحديد الطلاب
               </Button>
@@ -3755,7 +3757,7 @@ const exportExcel = () => {
                 startIcon={<PersonAddAlt1Icon />}
                 onClick={openCustomDistributionDialog}
                 disabled={!branch?.guid || !gridRows.length || !selectedCustomStudents.length}
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   color: "#6f42c1",
@@ -3765,7 +3767,7 @@ const exportExcel = () => {
                     borderColor: "#6f42c1",
                     background: "#f3edff"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 توزيع الطلاب المحددين ({selectedCustomStudents.length})
               </Button>
@@ -3781,7 +3783,7 @@ const exportExcel = () => {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 height: isDesktop
                   ? 720
                   : isPhone
@@ -3797,7 +3799,7 @@ const exportExcel = () => {
                   "1px solid #dcebe4",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={filteredGridRows}
@@ -3859,7 +3861,7 @@ const exportExcel = () => {
                     : "";
                   return `${paymentClass} ${selectedClass}`.trim();
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   direction: "rtl",
                   fontFamily: "Cairo",
                   border: 0,
@@ -3870,7 +3872,7 @@ const exportExcel = () => {
 
                   "& .MuiDataGrid-virtualScroller": {
                     overflowX:
-                      "hidden !important"
+                      "auto"
                   },
 
                   "& .MuiDataGrid-virtualScrollerContent": {
@@ -3899,10 +3901,10 @@ const exportExcel = () => {
                     lineHeight: 1.25,
                     textAlign: "center",
                     fontSize: isDesktop
-                      ? "0.72rem"
+                      ? "0.75rem"
                       : isPhone
-                        ? "0.29rem"
-                        : "0.44rem",
+                        ? "0.75rem"
+                        : "0.75rem",
                     fontWeight: 900,
                     whiteSpace: isDesktop
                       ? "normal"
@@ -3917,8 +3919,8 @@ const exportExcel = () => {
                         : 0.2,
                     fontSize: !isDesktop
                       ? isPhone
-                        ? "0.32rem"
-                        : "0.44rem"
+                        ? "0.75rem"
+                        : "0.75rem"
                       : undefined,
                     display: "flex",
                     alignItems: "center",
@@ -3967,7 +3969,7 @@ const exportExcel = () => {
                         }
                       }
                     : {})
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
@@ -3992,7 +3994,7 @@ const exportExcel = () => {
         </Paper>
 
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={mobileDetailsOpen}
           onClose={closeMobileDetails}
           fullWidth
@@ -4103,8 +4105,8 @@ const exportExcel = () => {
                           fontWeight: 900,
                           color: "#60756d",
                           fontSize: isPhone
-                            ? "0.39rem"
-                            : "0.49rem"
+                            ? "0.75rem"
+                            : "0.75rem"
                         }}
                       >
                         {label}
@@ -4116,8 +4118,8 @@ const exportExcel = () => {
                           fontWeight: 800,
                           color: "#1f2d3d",
                           fontSize: isPhone
-                            ? "0.5rem"
-                            : "0.62rem",
+                            ? "0.75rem"
+                            : "0.75rem",
                           wordBreak: "break-word"
                         }}
                       >
@@ -4132,7 +4134,7 @@ const exportExcel = () => {
                   spacing={0.6}
                   useFlexGap
                   flexWrap="wrap"
-                  sx={{ mt: 1 }}
+                  sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.actionBarSx)}
                 >
                   <Button
                     size="small"
@@ -4144,13 +4146,13 @@ const exportExcel = () => {
                       );
                       setStatementOpen(true);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.42rem"
-                        : "0.52rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     كشف الحساب
                   </Button>
@@ -4164,13 +4166,13 @@ const exportExcel = () => {
                         mobileDetailsRow
                       )
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.42rem"
-                        : "0.52rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     إجراءات الطالب
                   </Button>
@@ -4180,29 +4182,29 @@ const exportExcel = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: isPhone ? 1 : 1.5,
               py: isPhone ? 0.7 : 1
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="contained"
               onClick={closeMobileDetails}
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.47rem"
-                  : "0.58rem"
-              }}
+                  ? "0.75rem"
+                  : "0.75rem"
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={filterDialogOpen}
           onClose={() =>
             setFilterDialogOpen(false)
@@ -4345,21 +4347,21 @@ const exportExcel = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: 2,
               py: 1.5,
               direction: "rtl"
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               color="error"
               startIcon={<RestartAltIcon />}
               onClick={resetColumnFilters}
               disabled={!activeFilterCount}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح جميع الفلاتر
             </Button>
@@ -4371,12 +4373,12 @@ const exportExcel = () => {
               onClick={() =>
                 setFilterDialogOpen(false)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 px: 3
-              }}
+              }, uiLayout.buttonSx)}
             >
               تطبيق وإغلاق
             </Button>
@@ -4531,7 +4533,7 @@ const exportExcel = () => {
           apiBaseUrl={API_BASE_URL}
         />
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={customDistributionOpen}
           onClose={closeCustomDistributionDialog}
           maxWidth="lg"
@@ -4713,7 +4715,7 @@ const exportExcel = () => {
                           <Typography title={trainer.name} sx={{ fontFamily: "Cairo", fontWeight: 900, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {trainer.name}
                           </Typography>
-                          <Typography sx={{ fontFamily: "Cairo", fontSize: "0.74rem", color: "text.secondary" }}>
+                          <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "text.secondary" }}>
                             {trainer.roleLabel}
                           </Typography>
                         </Box>
@@ -4726,7 +4728,7 @@ const exportExcel = () => {
                             <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", fontWeight: 800 }}>
                               {student.studentName}
                             </Typography>
-                            <Typography sx={{ fontFamily: "Cairo", fontSize: "0.67rem", color: "text.secondary" }}>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "text.secondary" }}>
                               <bdi dir="ltr">{student.nationalId}</bdi> — {student.diplomName}
                             </Typography>
                           </Box>
@@ -4745,13 +4747,13 @@ const exportExcel = () => {
             )}
           </DialogContent>
 
-          <DialogActions sx={{ p: 2, gap: 1 }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2, gap: 1 }, uiLayout.dialogActionsSx)}>
             <Button
               variant="outlined"
               color="inherit"
               onClick={customDistributionStep === 2 ? () => setCustomDistributionStep(1) : closeCustomDistributionDialog}
               disabled={executingCustomDistribution}
-              sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+              sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}
             >
               {customDistributionStep === 2 ? "رجوع للمدربين" : "إلغاء"}
             </Button>
@@ -4762,7 +4764,7 @@ const exportExcel = () => {
                 startIcon={<PreviewIcon />}
                 onClick={buildCustomDistributionPreview}
                 disabled={!selectedCustomStudents.length || !selectedCustomTrainers.length}
-                sx={{ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#6f42c1,#452780)" }}
+                sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#6f42c1,#452780)" }, uiLayout.buttonSx)}
               >
                 معاينة توزيع المحددين
               </Button>
@@ -4772,7 +4774,7 @@ const exportExcel = () => {
                 startIcon={executingCustomDistribution ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
                 onClick={executeCustomDistribution}
                 disabled={executingCustomDistribution}
-                sx={{ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#057546,#034d31)" }}
+                sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#057546,#034d31)" }, uiLayout.buttonSx)}
               >
                 {executingCustomDistribution ? "جارٍ التوزيع..." : "تأكيد وتنفيذ التوزيع"}
               </Button>
@@ -4780,7 +4782,7 @@ const exportExcel = () => {
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={distributionDialogOpen}
           onClose={closeDistributionDialog}
           maxWidth="md"
@@ -4932,7 +4934,7 @@ const exportExcel = () => {
                           sx={{
                             mt: 0.25,
                             fontFamily: "Cairo",
-                            fontSize: "0.73rem",
+                            fontSize: "0.75rem",
                             color: "#7c6a3a"
                           }}
                         >
@@ -5053,7 +5055,7 @@ const exportExcel = () => {
                                 fontFamily:
                                   "Cairo",
                                 fontSize:
-                                  "0.72rem",
+                                  "0.75rem",
                                 color:
                                   selection.selected
                                     ? "#057546"
@@ -5190,7 +5192,7 @@ const exportExcel = () => {
                       sx={{
                         mt: 0.65,
                         fontFamily: "Cairo",
-                        fontSize: "0.74rem",
+                        fontSize: "0.75rem",
                         color: "#7c6a3a"
                       }}
                     >
@@ -5278,10 +5280,10 @@ const exportExcel = () => {
             )}
           </DialogContent>
 
-          <DialogActions sx={{ p: 2, gap: 1 }}>
-            <Button variant="outlined" color="inherit" onClick={distributionStep === 2 ? () => setDistributionStep(1) : closeDistributionDialog} disabled={loadingDistribution} sx={{ fontFamily: "Cairo", fontWeight: 800 }}>{distributionStep === 2 ? "رجوع" : "إلغاء"}</Button>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2, gap: 1 }, uiLayout.dialogActionsSx)}>
+            <Button variant="outlined" color="inherit" onClick={distributionStep === 2 ? () => setDistributionStep(1) : closeDistributionDialog} disabled={loadingDistribution} sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800 }, uiLayout.buttonSx)}>{distributionStep === 2 ? "رجوع" : "إلغاء"}</Button>
             {distributionStatus?.canExecute !== false && distributionStep === 1 && (
-              <Button variant="contained" startIcon={<PreviewIcon />} onClick={previewDistribution} disabled={loadingDistribution || selectedDistributionTrainers.length === 0} sx={{ background: "#057546", fontFamily: "Cairo", fontWeight: 900 }}>معاينة التوزيع</Button>
+              <Button variant="contained" startIcon={<PreviewIcon />} onClick={previewDistribution} disabled={loadingDistribution || selectedDistributionTrainers.length === 0} sx={uiLayout.withUiSx({ background: "#057546", fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}>معاينة التوزيع</Button>
             )}
             {distributionStatus?.canExecute !== false && distributionStep === 2 && (
               <Button
@@ -5291,7 +5293,7 @@ const exportExcel = () => {
                     openDistributionConfirmation
                   }
                   disabled={loadingDistribution}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     px: 2.4,
                     py: 1,
                     borderRadius: 2.6,
@@ -5301,7 +5303,7 @@ const exportExcel = () => {
                     fontWeight: 900,
                     boxShadow:
                       "0 8px 18px rgba(5,117,70,.20)"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   مراجعة وتأكيد التنفيذ
                 </Button>
@@ -5309,7 +5311,7 @@ const exportExcel = () => {
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={previewingDistribution}
           disableEscapeKeyDown
           maxWidth="xs"
@@ -5404,7 +5406,7 @@ const exportExcel = () => {
           </Box>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={confirmDistributionOpen}
           onClose={closeDistributionConfirmation}
           maxWidth="md"
@@ -5509,7 +5511,7 @@ const exportExcel = () => {
                 <Typography
                   sx={{
                     fontFamily: "Cairo",
-                    fontSize: "0.72rem",
+                    fontSize: "0.75rem",
                     color: "text.secondary",
                     fontWeight: 800
                   }}
@@ -5541,7 +5543,7 @@ const exportExcel = () => {
                 <Typography
                   sx={{
                     fontFamily: "Cairo",
-                    fontSize: "0.72rem",
+                    fontSize: "0.75rem",
                     color: "text.secondary",
                     fontWeight: 800
                   }}
@@ -5573,7 +5575,7 @@ const exportExcel = () => {
                 <Typography
                   sx={{
                     fontFamily: "Cairo",
-                    fontSize: "0.72rem",
+                    fontSize: "0.75rem",
                     color: "text.secondary",
                     fontWeight: 800
                   }}
@@ -5720,7 +5722,7 @@ const exportExcel = () => {
                         sx={{
                           mt: 0.1,
                           fontFamily: "Cairo",
-                          fontSize: "0.72rem",
+                          fontSize: "0.75rem",
                           color:
                             "text.secondary"
                         }}
@@ -5763,12 +5765,12 @@ const exportExcel = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               p: 2,
               gap: 1,
               borderTop:
                 "1px solid #e6ece9"
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="outlined"
@@ -5776,11 +5778,11 @@ const exportExcel = () => {
               onClick={
                 closeDistributionConfirmation
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 110,
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               رجوع
             </Button>
@@ -5789,7 +5791,7 @@ const exportExcel = () => {
               variant="contained"
               startIcon={<SaveIcon />}
               onClick={executeDistribution}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 190,
                 py: 1,
                 borderRadius: 2.5,
@@ -5799,14 +5801,14 @@ const exportExcel = () => {
                 fontWeight: 900,
                 boxShadow:
                   "0 8px 18px rgba(5,117,70,.22)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تأكيد وبدء التوزيع
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={executingDistribution}
           disableEscapeKeyDown
           maxWidth="sm"
@@ -5928,7 +5930,7 @@ const exportExcel = () => {
           </Box>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={Boolean(
             actionDialog.type
           )}
@@ -5983,7 +5985,7 @@ const exportExcel = () => {
 
             {actionDialog.type ===
               "dereg" && (
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 multiline
                 minRows={5}
@@ -5994,7 +5996,7 @@ const exportExcel = () => {
                     event.target.value
                   )
                 }
-                sx={{ mb: 2 }}
+                sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
               />
             )}
 
@@ -6026,7 +6028,7 @@ const exportExcel = () => {
                   second.guid
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     {...params}
                     label="اسم التخصص/الدبلوم الجديد"
                     placeholder="اختر التخصص الجديد"
@@ -6068,7 +6070,7 @@ const exportExcel = () => {
                   second.guid
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     {...params}
                     label="اسم الفرع الجديد"
                     placeholder="اختر الفرع الجديد"
@@ -6085,11 +6087,11 @@ const exportExcel = () => {
               startIcon={
                 <AttachFileIcon />
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 minHeight: 52,
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               {attachment
                 ? attachment.name
@@ -6134,10 +6136,10 @@ const exportExcel = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               p: 2,
               gap: 1
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="outlined"
@@ -6146,10 +6148,10 @@ const exportExcel = () => {
                 closeActionDialog
               }
               disabled={savingAction}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               إلغاء
             </Button>
@@ -6161,11 +6163,11 @@ const exportExcel = () => {
                 submitFileAction
               }
               disabled={savingAction}
-              sx={{
+              sx={uiLayout.withUiSx({
                 background: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               {savingAction
                 ? "جارٍ الحفظ..."

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import React, {
   useCallback,
   useEffect,
@@ -550,7 +552,7 @@ function Section({ title, subtitle, action, children, sectionRef }) {
             <Typography
               color="text.secondary"
               sx={{
-                fontSize: { xs: 8.7, sm: 9.5, md: 10.5 },
+                fontSize: { xs: 12, sm: 12, md: 12 },
                 mt: 0.15,
                 lineHeight: 1.5,
                 textAlign: SECTION_TEXT_ALIGN
@@ -638,7 +640,7 @@ function DetailTile({
           <Typography
             color="text.secondary"
             sx={{
-              fontSize: { xs: 8.15, sm: 8.8, md: 9.5 },
+              fontSize: { xs: 12, sm: 12, md: 12 },
               fontWeight: 800,
               lineHeight: 1.35,
               textAlign: SECTION_TEXT_ALIGN
@@ -653,7 +655,7 @@ function DetailTile({
             sx={{
               mt: 0.2,
               color: "#17372b",
-              fontSize: { xs: 9.75, sm: 10.4, md: 11.2 },
+              fontSize: { xs: 12, sm: 12, md: 12 },
               lineHeight: 1.4,
               fontWeight: 900,
               textAlign: ltr
@@ -673,7 +675,7 @@ function DetailTile({
             <Typography
               color="text.secondary"
               sx={{
-                fontSize: { xs: 7.6, sm: 8.1, md: 8.6 },
+                fontSize: { xs: 12, sm: 12, md: 12 },
                 mt: 0.08,
                 textAlign: SECTION_TEXT_ALIGN,
                 overflow: "hidden",
@@ -690,15 +692,15 @@ function DetailTile({
               size="small"
               variant="text"
               onClick={() => setDetailsOpen(true)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 mt: "auto",
                 p: 0,
                 minWidth: 0,
                 alignSelf: "flex-start",
-                fontSize: 8.9,
+                fontSize: 12,
                 fontWeight: 900,
                 lineHeight: 1.3
-              }}
+              }, uiLayout.buttonSx)}
             >
               قراءة المزيد
             </Button>
@@ -708,7 +710,7 @@ function DetailTile({
 
       {canOpenDetails && (
         <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
           dir={DETAIL_DIALOG_DIRECTION}
           open={detailsOpen}
           onClose={() => setDetailsOpen(false)}
@@ -752,7 +754,7 @@ function DetailTile({
                 <Typography
                   color="text.secondary"
                   sx={{
-                    fontSize: 9.4,
+                    fontSize: 12,
                     mt: 0.2,
                     textAlign: DETAIL_DIALOG_TEXT_ALIGN
                   }}
@@ -809,7 +811,7 @@ function DetailTile({
                 color="text.secondary"
                 sx={{
                   mt: 1,
-                  fontSize: 9.8,
+                  fontSize: 12,
                   textAlign: DETAIL_DIALOG_TEXT_ALIGN
                 }}
               >
@@ -819,14 +821,14 @@ function DetailTile({
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: 2,
               py: 1.1,
               borderTop: `1px solid ${border}`,
               justifyContent: "flex-start"
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="contained"
               onClick={() => setDetailsOpen(false)}
             >
@@ -868,7 +870,7 @@ function ProfileDetailsDialog({
 }) {
   return (
     <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
       dir={DETAIL_DIALOG_DIRECTION}
       open={open}
       onClose={onClose}
@@ -922,7 +924,7 @@ function ProfileDetailsDialog({
                 color="text.secondary"
                 sx={{
                   mt: 0.15,
-                  fontSize: { xs: 8.5, sm: 9.7 },
+                  fontSize: { xs: 12, sm: 12 },
                   textAlign: DETAIL_DIALOG_TEXT_ALIGN
                 }}
               >
@@ -960,22 +962,22 @@ function ProfileDetailsDialog({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: { xs: 1.2, sm: 2 },
           py: { xs: 0.8, sm: 1 },
           borderTop: `1px solid ${border}`,
           background: "#fbfdfc",
           justifyContent: "flex-start"
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
           size="small"
           onClick={onClose}
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: 90,
             fontWeight: 900
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -1034,7 +1036,7 @@ function MetricCard({ title, value, subtitle, icon, tone = "default", onClick })
           <Typography
             color="text.secondary"
             sx={{
-              fontSize: { xs: 8.4, sm: 9.2, md: 10 },
+              fontSize: { xs: 12, sm: 12, md: 12 },
               lineHeight: 1.35,
               fontWeight: 800,
               textAlign: SECTION_TEXT_ALIGN
@@ -1061,7 +1063,7 @@ function MetricCard({ title, value, subtitle, icon, tone = "default", onClick })
         <Typography
           color="text.secondary"
           sx={{
-            fontSize: { xs: 7.7, sm: 8.7, md: 9.8 },
+            fontSize: { xs: 12, sm: 12, md: 12 },
             mt: { xs: 0.55, md: 0.9 },
             lineHeight: 1.35,
             textAlign: SECTION_TEXT_ALIGN
@@ -1136,7 +1138,7 @@ function HomeSkeleton() {
 function FilePreviewDialog({ preview, onClose, onDownload }) {
   return (
     <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
       open={preview.open}
       onClose={onClose}
       maxWidth={false}
@@ -1155,7 +1157,7 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
           <Box sx={{ minWidth: 0 }}>
             <Typography sx={{ fontWeight: 950, fontSize: 15 }}>{preview.title || "معاينة الملف"}</Typography>
-            <Typography color="text.secondary" sx={{ fontSize: 9.5, mt: 0.2 }}>
+            <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.2 }}>
               {preview.fileName || ""}
             </Typography>
           </Box>
@@ -1168,7 +1170,7 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
           <Box sx={{ height: "100%", display: "grid", placeItems: "center" }}>
             <Stack spacing={1} alignItems="center">
               <Skeleton variant="rounded" width={360} height={36} />
-              <Typography color="text.secondary" sx={{ fontSize: 11 }}>جاري تجهيز المعاينة...</Typography>
+              <Typography color="text.secondary" sx={{ fontSize: 12 }}>جاري تجهيز المعاينة...</Typography>
             </Stack>
           </Box>
         )}
@@ -1190,11 +1192,11 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 1.5, py: 1, borderTop: `1px solid ${border}` }}>
-        <Button onClick={onDownload} startIcon={<DownloadRoundedIcon />} disabled={!preview.requestUrl}>
+      <DialogActions sx={uiLayout.withUiSx({ px: 1.5, py: 1, borderTop: `1px solid ${border}` }, uiLayout.dialogActionsSx)}>
+        <Button sx={uiLayout.buttonSx} onClick={onDownload} startIcon={<DownloadRoundedIcon />} disabled={!preview.requestUrl}>
           تحميل الملف
         </Button>
-        <Button onClick={onClose}>إغلاق</Button>
+        <Button sx={uiLayout.buttonSx} onClick={onClose}>إغلاق</Button>
       </DialogActions>
     </Dialog>
   );
@@ -2164,7 +2166,7 @@ const decideLeaveApproval = async (
   if (error && !home) {
     return (
       <Paper elevation={0} sx={{ p: 2, borderRadius: 3, border: "1px solid rgba(197,48,48,.15)" }}>
-        <Alert severity="error" action={<Button size="small" onClick={() => loadData({ initial: true })}>إعادة المحاولة</Button>}>
+        <Alert severity="error" action={<Button sx={uiLayout.buttonSx} size="small" onClick={() => loadData({ initial: true })}>إعادة المحاولة</Button>}>
           {error}
         </Alert>
       </Paper>
@@ -2270,7 +2272,7 @@ const decideLeaveApproval = async (
             <Typography
               sx={{
                 opacity: 0.9,
-                fontSize: { xs: 9.1, sm: 10.5, md: 12 },
+                fontSize: { xs: 12, sm: 12, md: 12 },
                 lineHeight: 1.45,
                 fontWeight: 800,
                 mt: 0.25,
@@ -2291,7 +2293,7 @@ const decideLeaveApproval = async (
                 mt: { xs: 0.65, sm: 0.9, md: 1.05 },
                             "& .MuiChip-root": {
                   height: { xs: 22, sm: 25, md: 28 },
-                  fontSize: { xs: 8.2, sm: 9, md: 10 }
+                  fontSize: { xs: 12, sm: 12, md: 12 }
                 }
               }}
             >
@@ -2311,16 +2313,16 @@ const decideLeaveApproval = async (
               loadMyApprovals();
             }}
             disabled={refreshing}
-            sx={{
+            sx={uiLayout.withUiSx({
               color: primaryDark,
               background: "#fff",
               fontWeight: 950,
               minHeight: { xs: 34, sm: 38 },
-              fontSize: { xs: 9.3, sm: 10.5 },
+              fontSize: { xs: 12, sm: 12 },
               gridColumn: { xs: "1 / -1", sm: "auto" },
               justifySelf: { xs: "stretch", sm: "end" },
               "&:hover": { background: "#f3fbf7" }
-            }}
+            }, uiLayout.buttonSx)}
           >
             تحديث الملف
           </Button>
@@ -2338,7 +2340,7 @@ const decideLeaveApproval = async (
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             display: "grid",
             gridTemplateColumns: {
               xs: "repeat(2,minmax(0,1fr))",
@@ -2348,15 +2350,15 @@ const decideLeaveApproval = async (
             "& .MuiButton-root": {
               minHeight: { xs: 32, sm: 35 },
               px: { xs: 0.55, sm: 0.9 },
-              fontSize: { xs: 8.4, sm: 9.5 },
+              fontSize: { xs: 12, sm: 12 },
               whiteSpace: "nowrap"
             }
-          }}
+          }, uiLayout.actionBarSx)}
         >
-          <Button size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog} disabled={!capabilities?.canRequestLeave}>
+          <Button sx={uiLayout.buttonSx} size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog} disabled={!capabilities?.canRequestLeave}>
             طلب إجازة جديد
           </Button>
-          <Button
+          <Button sx={uiLayout.buttonSx}
             size="small"
             variant="contained"
             color="secondary"
@@ -2365,13 +2367,13 @@ const decideLeaveApproval = async (
           >
             طلب إذن
           </Button>
-          <Button size="small" variant="outlined" startIcon={<AccessTimeRoundedIcon />} onClick={() => scrollTo(attendanceRef)}>
+          <Button sx={uiLayout.buttonSx} size="small" variant="outlined" startIcon={<AccessTimeRoundedIcon />} onClick={() => scrollTo(attendanceRef)}>
             حضوري
           </Button>
-          <Button size="small" variant="outlined" startIcon={<DescriptionRoundedIcon />} onClick={() => scrollTo(contractRef)}>
+          <Button sx={uiLayout.buttonSx} size="small" variant="outlined" startIcon={<DescriptionRoundedIcon />} onClick={() => scrollTo(contractRef)}>
             عقدي وراتبي
           </Button>
-          <Button size="small" variant="outlined" startIcon={<FolderRoundedIcon />} onClick={() => scrollTo(documentsRef)}>
+          <Button sx={uiLayout.buttonSx} size="small" variant="outlined" startIcon={<FolderRoundedIcon />} onClick={() => scrollTo(documentsRef)}>
             مرفقاتي ({documents?.count || 0})
           </Button>
         </Box>
@@ -2480,7 +2482,7 @@ const decideLeaveApproval = async (
                           color="text.secondary"
                           sx={{
                             mt: 0.15,
-                            fontSize: { xs: 9, sm: 9.8 }
+                            fontSize: { xs: 12, sm: 12 }
                           }}
                         >
                           {row.employeeCode
@@ -2502,7 +2504,7 @@ const decideLeaveApproval = async (
                         >
                           <Typography
                             sx={{
-                              fontSize: { xs: 9.2, sm: 10 },
+                              fontSize: { xs: 12, sm: 12 },
                               fontWeight: 850
                             }}
                           >
@@ -2511,7 +2513,7 @@ const decideLeaveApproval = async (
                           <Typography
                             dir={DATE_DIRECTION}
                             sx={{
-                              fontSize: { xs: 8.8, sm: 9.6 },
+                              fontSize: { xs: 12, sm: 12 },
                               textAlign: DATE_TEXT_ALIGN
                             }}
                           >
@@ -2521,7 +2523,7 @@ const decideLeaveApproval = async (
                           </Typography>
                           <Typography
                             sx={{
-                              fontSize: { xs: 9.2, sm: 10 },
+                              fontSize: { xs: 12, sm: 12 },
                               fontWeight: 900
                             }}
                           >
@@ -2534,7 +2536,7 @@ const decideLeaveApproval = async (
                             color="text.secondary"
                             sx={{
                               mt: 0.55,
-                              fontSize: { xs: 8.8, sm: 9.5 },
+                              fontSize: { xs: 12, sm: 12 },
                               lineHeight: 1.6,
                               overflow: "hidden",
                               display: "-webkit-box",
@@ -2550,16 +2552,16 @@ const decideLeaveApproval = async (
                       <Stack
                         direction={{ xs: "row", md: "column" }}
                         spacing={0.55}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           minWidth: { md: 112 },
                           "& .MuiButton-root": {
                             minHeight: 32,
-                            fontSize: { xs: 8.8, sm: 9.5 },
+                            fontSize: { xs: 12, sm: 12 },
                             fontWeight: 900
                           }
-                        }}
+                        }, uiLayout.actionBarSx)}
                       >
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           fullWidth
                           size="small"
                           variant="outlined"
@@ -2573,7 +2575,7 @@ const decideLeaveApproval = async (
                           متابعة
                         </Button>
 
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           fullWidth
                           size="small"
                           color="success"
@@ -2588,7 +2590,7 @@ const decideLeaveApproval = async (
                           موافقة
                         </Button>
 
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           fullWidth
                           size="small"
                           color="error"
@@ -2604,7 +2606,7 @@ const decideLeaveApproval = async (
                         </Button>
 
                         {row.attachmentOriginalName && (
-                          <Button
+                          <Button sx={uiLayout.buttonSx}
                             fullWidth
                             size="small"
                             variant="text"
@@ -2646,21 +2648,21 @@ const decideLeaveApproval = async (
           {hrPermissions?.attendance && (
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr" }, gap: 1.4 }}>
               {hrPermissions?.attendance && (
-                <Section title="حالة الفريق اليوم" subtitle="الموظفون داخل نطاقك حسب صلاحية الحضور" action={<Button size="small" endIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/dashboard/hr-attendance")}>شاشة الحضور</Button>}>
-                  <TableContainer sx={{ maxHeight: 390 }}>
+                <Section title="حالة الفريق اليوم" subtitle="الموظفون داخل نطاقك حسب صلاحية الحضور" action={<Button sx={uiLayout.buttonSx} size="small" endIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/dashboard/hr-attendance")}>شاشة الحضور</Button>}>
+                  <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx)}>
                     <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
                       <TableHead><TableRow><TableCell>الموظف</TableCell><TableCell>المسمى</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell></TableRow></TableHead>
                       <TableBody>
                         {(management?.teamToday || []).map((row) => (
                           <TableRow key={row.employeeGuid} hover>
-                            <TableCell><Typography sx={{ fontWeight: 900, fontSize: 10.8 }}>{row.employeeName}</Typography><Typography color="text.secondary" sx={{ fontSize: 9.2 }}>{row.employeeCode}</Typography></TableCell>
-                            <TableCell sx={{ fontSize: 10.2 }}>{row.jobTitleName || "-"}</TableCell>
+                            <TableCell><Typography sx={{ fontWeight: 900, fontSize: 12 }}>{row.employeeName}</Typography><Typography color="text.secondary" sx={{ fontSize: 12 }}>{row.employeeCode}</Typography></TableCell>
+                            <TableCell sx={{ fontSize: 12 }}>{row.jobTitleName || "-"}</TableCell>
                             <TableCell><StatusChip status={row.status || "Pending"} /></TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtTime(row.checkInAt)}</TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtTime(row.checkOutAt)}</TableCell>
+                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtTime(row.checkInAt)}</TableCell>
+                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtTime(row.checkOutAt)}</TableCell>
                           </TableRow>
                         ))}
-                        {!management?.teamToday?.length && <TableRow><TableCell colSpan={5} align="center"><Typography color="text.secondary" sx={{ py: 2.5, fontSize: 10.5 }}>لا توجد بيانات حضور متاحة اليوم.</Typography></TableCell></TableRow>}
+                        {!management?.teamToday?.length && <TableRow><TableCell colSpan={5} align="center"><Typography color="text.secondary" sx={{ py: 2.5, fontSize: 12 }}>لا توجد بيانات حضور متاحة اليوم.</Typography></TableCell></TableRow>}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -2674,8 +2676,8 @@ const decideLeaveApproval = async (
                       <Paper key={row.leaveRequestGuid} variant="outlined" sx={{ p: 1, borderRadius: 2, borderColor: border }}>
                         <Stack direction="row" justifyContent="space-between" gap={1}>
                           <Box sx={{ minWidth: 0, textAlign: SECTION_TEXT_ALIGN }}>
-                            <Typography sx={{ fontSize: 10.8, fontWeight: 950 }}>{row.employeeName}</Typography>
-                            <Typography color="text.secondary" sx={{ fontSize: 9.2 }}>{row.leaveTypeName} • {row.currentApprovalRole || "موافقة"}</Typography>
+                            <Typography sx={{ fontSize: 12, fontWeight: 950 }}>{row.employeeName}</Typography>
+                            <Typography color="text.secondary" sx={{ fontSize: 12 }}>{row.leaveTypeName} • {row.currentApprovalRole || "موافقة"}</Typography>
                           </Box>
                           <Chip size="small" label={`${row.requestedDays || 0} يوم`} />
                         </Stack>
@@ -2708,12 +2710,12 @@ const decideLeaveApproval = async (
               variant="text"
               startIcon={<VisibilityRoundedIcon />}
               onClick={() => setWorkDetailsOpen(true)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: { xs: "100%", sm: "auto" },
                 minHeight: { xs: 30, sm: 32 },
-                fontSize: { xs: 8.6, sm: 9.5 },
+                fontSize: { xs: 12, sm: 12 },
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض التفاصيل
             </Button>
@@ -2792,12 +2794,12 @@ const decideLeaveApproval = async (
               variant="text"
               startIcon={<VisibilityRoundedIcon />}
               onClick={() => setPersonalDetailsOpen(true)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: { xs: "100%", sm: "auto" },
                 minHeight: { xs: 30, sm: 32 },
-                fontSize: { xs: 8.6, sm: 9.5 },
+                fontSize: { xs: 12, sm: 12 },
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض التفاصيل
             </Button>
@@ -2858,9 +2860,9 @@ const decideLeaveApproval = async (
           title="العقد والبيانات المالية"
           subtitle="العقد الحالي والراتب الأساسي المسجل بالعقد"
           action={contract?.hasContract && contract?.contractGuid && contract?.originalFileName ? (
-            <Stack direction="row" spacing={0.6}>
-              <Button size="small" variant="outlined" startIcon={<VisibilityRoundedIcon />} onClick={() => openPreview(contract, "contract")}>معاينة العقد</Button>
-              <Button size="small" startIcon={<DownloadRoundedIcon />} onClick={() => downloadOwnFile(contract, "contract")}>تحميل</Button>
+            <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.6}>
+              <Button sx={uiLayout.buttonSx} size="small" variant="outlined" startIcon={<VisibilityRoundedIcon />} onClick={() => openPreview(contract, "contract")}>معاينة العقد</Button>
+              <Button sx={uiLayout.buttonSx} size="small" startIcon={<DownloadRoundedIcon />} onClick={() => downloadOwnFile(contract, "contract")}>تحميل</Button>
             </Stack>
           ) : null}
         >
@@ -2868,11 +2870,11 @@ const decideLeaveApproval = async (
             <>
               <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: ".55fr 1.45fr" }, gap: 1.1 }}>
                 <Paper elevation={0} sx={{ p: 1.5, borderRadius: 2.5, color: "#fff", background: "linear-gradient(135deg,#057546,#034d31)" }}>
-                  <Typography sx={{ fontSize: 10, opacity: 0.82 }}>الراتب الأساسي حسب العقد</Typography>
+                  <Typography sx={{ fontSize: 12, opacity: 0.82 }}>الراتب الأساسي حسب العقد</Typography>
                   <Typography sx={{ fontSize: 28, fontWeight: 950, mt: 0.4 }}>{money(contract?.basicSalary)}</Typography>
                   <Divider sx={{ my: 1.2, borderColor: "rgba(255,255,255,.16)" }} />
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography sx={{ fontSize: 10, opacity: 0.85 }}>حالة العقد</Typography>
+                    <Typography sx={{ fontSize: 12, opacity: 0.85 }}>حالة العقد</Typography>
                     <StatusChip status={contract?.contractStatus} />
                   </Stack>
                 </Paper>
@@ -2894,18 +2896,18 @@ const decideLeaveApproval = async (
 
               {(contract?.history || []).length > 1 && (
                 <Box sx={{ mt: 1.4 }}>
-                  <Typography sx={{ fontSize: 11.5, fontWeight: 950, mb: 0.7 }}>سجل العقود السابقة</Typography>
-                  <TableContainer sx={{ border: `1px solid ${border}`, borderRadius: 2 }}>
+                  <Typography sx={{ fontSize: 12, fontWeight: 950, mb: 0.7 }}>سجل العقود السابقة</Typography>
+                  <TableContainer sx={uiLayout.withUiSx({ border: `1px solid ${border}`, borderRadius: 2 }, uiLayout.tableContainerSx)}>
                     <Table size="small" dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
                       <TableHead><TableRow><TableCell>رقم العقد</TableCell><TableCell>النوع</TableCell><TableCell>البداية</TableCell><TableCell>النهاية</TableCell><TableCell>الراتب الأساسي</TableCell><TableCell>الحالة</TableCell></TableRow></TableHead>
                       <TableBody>
                         {contract.history.map((row) => (
                           <TableRow key={row.contractGuid}>
-                            <TableCell sx={{ fontSize: 10 }}>{row.contractNumber || "-"}</TableCell>
-                            <TableCell sx={{ fontSize: 10 }}>{contractTypeText(row.contractType)}</TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtDate(row.startDate)}</TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtDate(row.endDate)}</TableCell>
-                            <TableCell sx={{ fontSize: 10 }}>{money(row.basicSalary)}</TableCell>
+                            <TableCell sx={{ fontSize: 12 }}>{row.contractNumber || "-"}</TableCell>
+                            <TableCell sx={{ fontSize: 12 }}>{contractTypeText(row.contractType)}</TableCell>
+                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtDate(row.startDate)}</TableCell>
+                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtDate(row.endDate)}</TableCell>
+                            <TableCell sx={{ fontSize: 12 }}>{money(row.basicSalary)}</TableCell>
                             <TableCell><Chip size="small" label={row.isCurrent ? "الحالي" : row.isTerminated ? "منتهي" : "سابق"} color={row.isCurrent ? "success" : "default"} /></TableCell>
                           </TableRow>
                         ))}
@@ -2926,7 +2928,7 @@ const decideLeaveApproval = async (
           sectionRef={attendanceRef}
           title="حضوري هذا الشهر"
           subtitle={`إجمالي العمل: ${minutesText(attendance?.workedMinutes)} • إجمالي التأخير: ${minutesText(attendance?.lateMinutes)}`}
-          action={hrPermissions?.attendance ? <Button size="small" onClick={() => navigate("/dashboard/hr-attendance")}>شاشة الحضور الإدارية</Button> : null}
+          action={hrPermissions?.attendance ? <Button sx={uiLayout.buttonSx} size="small" onClick={() => navigate("/dashboard/hr-attendance")}>شاشة الحضور الإدارية</Button> : null}
         >
           <Box
             sx={{
@@ -2939,7 +2941,7 @@ const decideLeaveApproval = async (
               mb: 1,
               "& .MuiChip-root": {
                 height: { xs: 28, sm: 32 },
-                fontSize: { xs: 8.2, sm: 9.2 }
+                fontSize: { xs: 12, sm: 12 }
               }
             }}
           >
@@ -2950,35 +2952,35 @@ const decideLeaveApproval = async (
             <Chip label={`غير مكتمل ${attendance?.incompleteDays || 0}`} variant="outlined" />
           </Box>
 
-          <TableContainer sx={{ maxHeight: 390 }}>
+          <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx)}>
             <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
               <TableHead><TableRow><TableCell>التاريخ</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell><TableCell>التأخير</TableCell><TableCell>الخروج المبكر</TableCell><TableCell>الإضافي</TableCell></TableRow></TableHead>
               <TableBody>
                 {(attendance?.recent || []).map((row, index) => (
                   <TableRow key={`${row.attendanceDate}-${index}`}>
-                    <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtDate(row.attendanceDate)}</TableCell>
+                    <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtDate(row.attendanceDate)}</TableCell>
                     <TableCell><StatusChip status={row.status} /></TableCell>
-                    <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtTime(row.checkInAt)}</TableCell>
-                    <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 10 }}>{fmtTime(row.checkOutAt)}</TableCell>
-                    <TableCell sx={{ fontSize: 10 }}>{Number(row.lateMinutes || 0) ? `${row.lateMinutes} د` : "-"}</TableCell>
-                    <TableCell sx={{ fontSize: 10 }}>{Number(row.earlyLeaveMinutes || 0) ? `${row.earlyLeaveMinutes} د` : "-"}</TableCell>
-                    <TableCell sx={{ fontSize: 10 }}>{Number(row.overtimeMinutes || 0) ? `${row.overtimeMinutes} د` : "-"}</TableCell>
+                    <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtTime(row.checkInAt)}</TableCell>
+                    <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtTime(row.checkOutAt)}</TableCell>
+                    <TableCell sx={{ fontSize: 12 }}>{Number(row.lateMinutes || 0) ? `${row.lateMinutes} د` : "-"}</TableCell>
+                    <TableCell sx={{ fontSize: 12 }}>{Number(row.earlyLeaveMinutes || 0) ? `${row.earlyLeaveMinutes} د` : "-"}</TableCell>
+                    <TableCell sx={{ fontSize: 12 }}>{Number(row.overtimeMinutes || 0) ? `${row.overtimeMinutes} د` : "-"}</TableCell>
                   </TableRow>
                 ))}
-                {!attendance?.recent?.length && <TableRow><TableCell colSpan={7} align="center"><Typography color="text.secondary" sx={{ py: 3, fontSize: 10.5 }}>لا توجد سجلات حضور متاحة لهذا الشهر.</Typography></TableCell></TableRow>}
+                {!attendance?.recent?.length && <TableRow><TableCell colSpan={7} align="center"><Typography color="text.secondary" sx={{ py: 3, fontSize: 12 }}>لا توجد سجلات حضور متاحة لهذا الشهر.</Typography></TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>
         </Section>
 
-        <Section title="أرصدة الإجازات" subtitle={`السنة ${leave?.year || new Date().getFullYear()}`} action={<Button size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog}>طلب إجازة</Button>}>
+        <Section title="أرصدة الإجازات" subtitle={`السنة ${leave?.year || new Date().getFullYear()}`} action={<Button sx={uiLayout.buttonSx} size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog}>طلب إجازة</Button>}>
           <Stack spacing={0.75}>
             {(leave?.balances || []).map((row) => (
               <Box key={row.leaveTypeGuid} sx={{ p: 1, borderRadius: 2, border: `1px solid ${border}`, background: soft }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
                   <Box sx={{ textAlign: SECTION_TEXT_ALIGN }}>
-                    <Typography sx={{ fontSize: 10.8, fontWeight: 950 }}>{row.leaveTypeName}</Typography>
-                    <Typography color="text.secondary" sx={{ fontSize: 9.2 }}>مستخدم {row.usedDays || 0} يوم</Typography>
+                    <Typography sx={{ fontSize: 12, fontWeight: 950 }}>{row.leaveTypeName}</Typography>
+                    <Typography color="text.secondary" sx={{ fontSize: 12 }}>مستخدم {row.usedDays || 0} يوم</Typography>
                   </Box>
                   <Typography sx={{ color: primary, fontWeight: 950, fontSize: 15 }}>{Number(row.availableDays || 0).toLocaleString("ar-SA", { maximumFractionDigits: 2 })} يوم</Typography>
                 </Stack>
@@ -2996,22 +2998,22 @@ const decideLeaveApproval = async (
               <Box key={row.leaveRequestGuid} sx={{ p: 1, border: `1px solid ${border}`, borderRadius: 2 }}>
                 <Stack direction="row" justifyContent="space-between" gap={1} alignItems="flex-start">
                   <Box sx={{ minWidth: 0, textAlign: SECTION_TEXT_ALIGN }}>
-                    <Typography sx={{ fontSize: 10.8, fontWeight: 950 }}>#{row.requestNumber || "-"} • {row.leaveTypeName}</Typography>
-                    <Typography color="text.secondary" sx={{ fontSize: 9.2, mt: 0.2 }}><span dir={DATE_DIRECTION}>{fmtDate(row.fromDate)}</span> - <span dir={DATE_DIRECTION}>{fmtDate(row.toDate)}</span> • {row.requestedDays || 0} يوم</Typography>
-                    {row.currentApprovalRole && <Typography sx={{ fontSize: 9.2, color: "#2b6cb0", mt: 0.35 }}>الخطوة الحالية: {row.currentApprovalRole}</Typography>}
-                    {row.reason && <Typography color="text.secondary" sx={{ fontSize: 9.2, mt: 0.35 }}>السبب: {row.reason}</Typography>}
+                    <Typography sx={{ fontSize: 12, fontWeight: 950 }}>#{row.requestNumber || "-"} • {row.leaveTypeName}</Typography>
+                    <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.2 }}><span dir={DATE_DIRECTION}>{fmtDate(row.fromDate)}</span> - <span dir={DATE_DIRECTION}>{fmtDate(row.toDate)}</span> • {row.requestedDays || 0} يوم</Typography>
+                    {row.currentApprovalRole && <Typography sx={{ fontSize: 12, color: "#2b6cb0", mt: 0.35 }}>الخطوة الحالية: {row.currentApprovalRole}</Typography>}
+                    {row.reason && <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.35 }}>السبب: {row.reason}</Typography>}
                     <Button
                       size="small"
                       variant="text"
                       startIcon={<HistoryToggleOffRoundedIcon fontSize="small" />}
                       onClick={() => openLeaveTracking(row)}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         mt: 0.35,
                         p: 0,
                         minWidth: 0,
-                        fontSize: 8.9,
+                        fontSize: 12,
                         fontWeight: 900
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       متابعة الطلب
                     </Button>
@@ -3028,7 +3030,7 @@ const decideLeaveApproval = async (
           title="أذوناتي"
           subtitle="طلبات التأخير والانصراف والخروج أثناء الدوام"
           action={
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="contained"
               startIcon={<ManageAccountsRoundedIcon />}
@@ -3061,11 +3063,11 @@ const decideLeaveApproval = async (
                     alignItems="flex-start"
                   >
                     <Box sx={{ minWidth: 0, textAlign: SECTION_TEXT_ALIGN }}>
-                      <Typography sx={{ fontSize: 10.8, fontWeight: 950 }}>
+                      <Typography sx={{ fontSize: 12, fontWeight: 950 }}>
                         #{row.permissionNumber || "-"} • {row.permissionTypeName || permissionTypeText(row.permissionType)}
                       </Typography>
 
-                      <Typography color="text.secondary" sx={{ fontSize: 9.2, mt: 0.2 }}>
+                      <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.2 }}>
                         <span dir={DATE_DIRECTION}>{fmtDate(row.permissionDate)}</span>
                         {Number(row.permissionType) === 1 && row.toTime
                           ? ` • السماح بالحضور حتى ${fmtClockValue(row.toTime)}`
@@ -3079,7 +3081,7 @@ const decideLeaveApproval = async (
                       </Typography>
 
                       {row.reason && (
-                        <Typography color="text.secondary" sx={{ fontSize: 9.2, mt: 0.35 }}>
+                        <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.35 }}>
                           السبب: {row.reason}
                         </Typography>
                       )}
@@ -3090,13 +3092,13 @@ const decideLeaveApproval = async (
                           color="error"
                           variant="text"
                           onClick={() => cancelMyPermission(row)}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             mt: 0.25,
                             p: 0,
                             minWidth: 0,
-                            fontSize: 8.9,
+                            fontSize: 12,
                             fontWeight: 900
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           إلغاء الطلب
                         </Button>
@@ -3126,10 +3128,10 @@ const decideLeaveApproval = async (
                     <InsertDriveFileRoundedIcon fontSize="small" />
                   </Box>
                   <Box sx={{ minWidth: 0, flex: 1, textAlign: SECTION_TEXT_ALIGN }}>
-                    <Typography sx={{ fontSize: 10.5, fontWeight: 950, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.documentTypeName || row.originalFileName || "مرفق"}</Typography>
-                    <Typography color="text.secondary" sx={{ fontSize: 8.9, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.originalFileName}</Typography>
-                    <Typography color="text.secondary" sx={{ fontSize: 8.7 }}>{fileSizeText(row.fileSize)} • {fmtDate(row.uploadedAt)}</Typography>
-                    {(row.issueDate || row.expiryDate) && <Typography color="text.secondary" sx={{ fontSize: 8.7 }}>إصدار: {fmtDate(row.issueDate)} • انتهاء: {fmtDate(row.expiryDate)}</Typography>}
+                    <Typography sx={{ fontSize: 12, fontWeight: 950, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.documentTypeName || row.originalFileName || "مرفق"}</Typography>
+                    <Typography color="text.secondary" sx={{ fontSize: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.originalFileName}</Typography>
+                    <Typography color="text.secondary" sx={{ fontSize: 12 }}>{fileSizeText(row.fileSize)} • {fmtDate(row.uploadedAt)}</Typography>
+                    {(row.issueDate || row.expiryDate) && <Typography color="text.secondary" sx={{ fontSize: 12 }}>إصدار: {fmtDate(row.issueDate)} • انتهاء: {fmtDate(row.expiryDate)}</Typography>}
                   </Box>
                   <Stack direction="row" spacing={0.2}>
                     <Tooltip title="معاينة"><IconButton size="small" onClick={() => openPreview(row, "document")}><VisibilityRoundedIcon fontSize="small" /></IconButton></Tooltip>
@@ -3147,7 +3149,7 @@ const decideLeaveApproval = async (
         <Section title="إدارة الموارد البشرية" subtitle="تظهر فقط الشاشات التي يملك المستخدم صلاحية عرضها">
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4,1fr)" }, gap: 0.8 }}>
             {quickLinks.map((item) => (
-              <Button key={item.path} variant="outlined" startIcon={item.icon} onClick={() => navigate(item.path)} sx={{ justifyContent: "flex-start", minHeight: 46, borderColor: border, color: "#17372b", fontWeight: 900, fontSize: 10, "&:hover": { borderColor: primary, background: "rgba(5,117,70,.04)" } }}>
+              <Button key={item.path} variant="outlined" startIcon={item.icon} onClick={() => navigate(item.path)} sx={uiLayout.withUiSx({ justifyContent: "flex-start", minHeight: 46, borderColor: border, color: "#17372b", fontWeight: 900, fontSize: 12, "&:hover": { borderColor: primary, background: "rgba(5,117,70,.04)" } }, uiLayout.buttonSx)}>
                 {item.label}
               </Button>
             ))}
@@ -3229,7 +3231,7 @@ const decideLeaveApproval = async (
       </ProfileDetailsDialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         dir={LEAVE_TRACKING_DIALOG_DIRECTION}
         open={leaveTrackingOpen}
         onClose={() =>
@@ -3285,7 +3287,7 @@ const decideLeaveApproval = async (
                   color="text.secondary"
                   sx={{
                     mt:.15,
-                    fontSize:{xs:8.6,sm:9.6}
+                    fontSize:{xs:12,sm:12}
                   }}
                 >
                   #{leaveTrackingData.request.requestNumber}
@@ -3348,7 +3350,7 @@ const decideLeaveApproval = async (
                   }}
                 >
                   <Box>
-                    <Typography color="text.secondary" sx={{fontSize:8.3}}>
+                    <Typography color="text.secondary" sx={{fontSize:12}}>
                       الحالة
                     </Typography>
                     <StatusChip
@@ -3357,28 +3359,28 @@ const decideLeaveApproval = async (
                   </Box>
 
                   <Box>
-                    <Typography color="text.secondary" sx={{fontSize:8.3}}>
+                    <Typography color="text.secondary" sx={{fontSize:12}}>
                       المرحلة الحالية
                     </Typography>
-                    <Typography sx={{fontSize:9.8,fontWeight:950,mt:.25}}>
+                    <Typography sx={{fontSize:12,fontWeight:950,mt:.25}}>
                       {leaveTrackingData.request.currentApprovalRole || "-"}
                     </Typography>
                   </Box>
 
                   <Box>
-                    <Typography color="text.secondary" sx={{fontSize:8.3}}>
+                    <Typography color="text.secondary" sx={{fontSize:12}}>
                       المسؤول الحالي
                     </Typography>
-                    <Typography sx={{fontSize:9.8,fontWeight:950,mt:.25}}>
+                    <Typography sx={{fontSize:12,fontWeight:950,mt:.25}}>
                       {leaveTrackingData.request.currentApproverName || "-"}
                     </Typography>
                   </Box>
 
                   <Box>
-                    <Typography color="text.secondary" sx={{fontSize:8.3}}>
+                    <Typography color="text.secondary" sx={{fontSize:12}}>
                       الأيام
                     </Typography>
-                    <Typography sx={{fontSize:10,fontWeight:950,mt:.25}}>
+                    <Typography sx={{fontSize:12,fontWeight:950,mt:.25}}>
                       {leaveTrackingData.request.requestedDays || 0} يوم
                     </Typography>
                   </Box>
@@ -3387,7 +3389,7 @@ const decideLeaveApproval = async (
 
               <Typography
                 sx={{
-                  fontSize:{xs:11.5,sm:12.5},
+                  fontSize:{xs:12,sm:12.5},
                   fontWeight:950
                 }}
               >
@@ -3438,20 +3440,20 @@ const decideLeaveApproval = async (
                               size="small"
                               variant="outlined"
                               label={`خطوة ${stage.stepNo}`}
-                              sx={{height:22,fontSize:8.2}}
+                              sx={{height:22,fontSize:12}}
                             />
                             <Chip
                               size="small"
                               color={color}
                               label={label}
-                              sx={{height:22,fontSize:8.2,fontWeight:900}}
+                              sx={{height:22,fontSize:12,fontWeight:900}}
                             />
                             {isCurrent && (
                               <Chip
                                 size="small"
                                 color="warning"
                                 label="الحالية"
-                                sx={{height:22,fontSize:8.2,fontWeight:950}}
+                                sx={{height:22,fontSize:12,fontWeight:950}}
                               />
                             )}
                           </Stack>
@@ -3459,7 +3461,7 @@ const decideLeaveApproval = async (
                           <Typography
                             sx={{
                               mt:.45,
-                              fontSize:{xs:9.8,sm:10.7},
+                              fontSize:{xs:12,sm:12},
                               fontWeight:950
                             }}
                           >
@@ -3470,7 +3472,7 @@ const decideLeaveApproval = async (
                             color="text.secondary"
                             sx={{
                               mt:.25,
-                              fontSize:{xs:8.1,sm:8.8},
+                              fontSize:{xs:12,sm:12},
                               lineHeight:1.5
                             }}
                           >
@@ -3492,7 +3494,7 @@ const decideLeaveApproval = async (
                           >
                             <Typography
                               sx={{
-                                fontSize:{xs:8.3,sm:9},
+                                fontSize:{xs:12,sm:12},
                                 fontWeight:900
                               }}
                             >
@@ -3503,7 +3505,7 @@ const decideLeaveApproval = async (
                               color="text.secondary"
                               sx={{
                                 mt:.15,
-                                fontSize:7.9,
+                                fontSize:12,
                                 direction:DATE_DIRECTION
                               }}
                             >
@@ -3514,7 +3516,7 @@ const decideLeaveApproval = async (
                               <Typography
                                 sx={{
                                   mt:.25,
-                                  fontSize:8,
+                                  fontSize:12,
                                   lineHeight:1.45
                                 }}
                               >
@@ -3532,7 +3534,7 @@ const decideLeaveApproval = async (
               <Typography
                 sx={{
                   pt:.3,
-                  fontSize:{xs:11.5,sm:12.5},
+                  fontSize:{xs:12,sm:12.5},
                   fontWeight:950
                 }}
               >
@@ -3557,10 +3559,10 @@ const decideLeaveApproval = async (
                       gap={.7}
                     >
                       <Box>
-                        <Typography sx={{fontSize:9.2,fontWeight:950}}>
+                        <Typography sx={{fontSize:12,fontWeight:950}}>
                           {leaveHistoryActionText(item.actionName)}
                         </Typography>
-                        <Typography color="text.secondary" sx={{fontSize:8}}>
+                        <Typography color="text.secondary" sx={{fontSize:12}}>
                           {item.actionByName || "النظام"}
                         </Typography>
                       </Box>
@@ -3568,7 +3570,7 @@ const decideLeaveApproval = async (
                       <Typography
                         color="text.secondary"
                         sx={{
-                          fontSize:7.9,
+                          fontSize:12,
                           direction:DATE_DIRECTION
                         }}
                       >
@@ -3580,7 +3582,7 @@ const decideLeaveApproval = async (
                       <Typography
                         sx={{
                           mt:.3,
-                          fontSize:8.2,
+                          fontSize:12,
                           lineHeight:1.55
                         }}
                       >
@@ -3599,14 +3601,14 @@ const decideLeaveApproval = async (
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px:1.2,
             py:.9,
             borderTop:`1px solid ${border}`,
             justifyContent:"flex-start"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="contained"
             onClick={() =>
               setLeaveTrackingOpen(false)
@@ -3620,7 +3622,7 @@ const decideLeaveApproval = async (
       <FilePreviewDialog preview={preview} onClose={closePreview} onDownload={downloadCurrentPreview} />
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         dir={LEAVE_DIALOG_DIRECTION}
         open={permissionDialogOpen}
         onClose={() =>
@@ -3664,7 +3666,7 @@ const decideLeaveApproval = async (
               <Typography sx={{ fontSize: { xs: 14.5, sm: 17 }, fontWeight: 950, color: "#17372b" }}>
                 طلب إذن جديد
               </Typography>
-              <Typography color="text.secondary" sx={{ fontSize: 9.4, mt: 0.2 }}>
+              <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.2 }}>
                 يتم إرسال الطلب للمراجعة ولا يعتمد تلقائيًا
               </Typography>
             </Box>
@@ -3705,10 +3707,10 @@ const decideLeaveApproval = async (
               }}
             >
               <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 10.2, fontWeight: 900, color: "#52635c" }}>
+                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
                   تاريخ الإذن
                 </Typography>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   type="date"
@@ -3727,10 +3729,10 @@ const decideLeaveApproval = async (
               </Box>
 
               <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 10.2, fontWeight: 900, color: "#52635c" }}>
+                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
                   نوع الإذن
                 </Typography>
-                <FormControl size="small" fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                   <Select
                   MenuProps={RTL_MENU_PROPS}
                     value={permissionForm.permissionType}
@@ -3755,12 +3757,12 @@ const decideLeaveApproval = async (
             {(permissionForm.permissionType === 2 ||
               permissionForm.permissionType === 3) && (
               <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 10.2, fontWeight: 900, color: "#52635c" }}>
+                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
                   {permissionForm.permissionType === 2
                     ? "وقت بداية الانصراف المسموح"
                     : "وقت الخروج"}
                 </Typography>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   type="time"
@@ -3782,12 +3784,12 @@ const decideLeaveApproval = async (
             {(permissionForm.permissionType === 1 ||
               permissionForm.permissionType === 3) && (
               <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 10.2, fontWeight: 900, color: "#52635c" }}>
+                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
                   {permissionForm.permissionType === 1
                     ? "السماح بالحضور حتى"
                     : "وقت العودة"}
                 </Typography>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   type="time"
@@ -3807,10 +3809,10 @@ const decideLeaveApproval = async (
             )}
 
             <Box>
-              <Typography sx={{ mb: 0.55, fontSize: 10.2, fontWeight: 900, color: "#52635c" }}>
+              <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
                 السبب
               </Typography>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 fullWidth
                 multiline
@@ -3827,10 +3829,10 @@ const decideLeaveApproval = async (
             </Box>
 
             <Box>
-              <Typography sx={{ mb: 0.55, fontSize: 10.2, fontWeight: 900, color: "#52635c" }}>
+              <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
                 ملاحظات
               </Typography>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 fullWidth
                 multiline
@@ -3855,27 +3857,27 @@ const decideLeaveApproval = async (
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: { xs: 1.1, sm: 2.3 },
             py: { xs: 0.9, sm: 1.35 },
             borderTop: `1px solid ${border}`,
             background: "#fbfdfc",
                     gap: 0.7
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             variant="contained"
             startIcon={<SaveRoundedIcon />}
             onClick={submitPermissionRequest}
             disabled={permissionSubmitting}
-            sx={{ fontWeight: 900 }}
+            sx={uiLayout.withUiSx({ fontWeight: 900 }, uiLayout.buttonSx)}
           >
             {permissionSubmitting
               ? "جاري الإرسال..."
               : "إرسال الطلب"}
           </Button>
 
-          <Button
+          <Button sx={uiLayout.buttonSx}
             onClick={() => setPermissionDialogOpen(false)}
             disabled={permissionSubmitting}
           >
@@ -3885,7 +3887,7 @@ const decideLeaveApproval = async (
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         dir={LEAVE_DIALOG_DIRECTION}
         open={leaveDialogOpen}
         onClose={() =>
@@ -3995,7 +3997,7 @@ const decideLeaveApproval = async (
               <Typography
                 sx={{
                   mb: { xs: 0.45, sm: 0.7 },
-                  fontSize: { xs: 9.2, sm: 10.5 },
+                  fontSize: { xs: 12, sm: 12 },
                   fontWeight: 900,
                   color: "#52635c",
                   textAlign: LEAVE_DIALOG_TEXT_ALIGN
@@ -4004,7 +4006,7 @@ const decideLeaveApproval = async (
                 نوع الإجازة
               </Typography>
 
-              <FormControl
+              <FormControl sx={uiLayout.formFieldSx}
                 size="small"
                 fullWidth
               >
@@ -4059,7 +4061,7 @@ const decideLeaveApproval = async (
                 <Typography
                   sx={{
                     mb: 0.7,
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 900,
                     color: "#52635c",
                     textAlign: LEAVE_DIALOG_TEXT_ALIGN
@@ -4068,7 +4070,7 @@ const decideLeaveApproval = async (
                   من تاريخ
                 </Typography>
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   type="date"
@@ -4092,7 +4094,7 @@ const decideLeaveApproval = async (
                 <Typography
                   sx={{
                     mb: 0.7,
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 900,
                     color: "#52635c",
                     textAlign: LEAVE_DIALOG_TEXT_ALIGN
@@ -4101,7 +4103,7 @@ const decideLeaveApproval = async (
                   إلى تاريخ
                 </Typography>
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   type="date"
@@ -4128,7 +4130,7 @@ const decideLeaveApproval = async (
                 <Typography
                   sx={{
                     mb: 0.7,
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 900,
                     color: "#52635c",
                     textAlign: LEAVE_DIALOG_TEXT_ALIGN
@@ -4137,7 +4139,7 @@ const decideLeaveApproval = async (
                   نوع اليوم
                 </Typography>
 
-                <FormControl
+                <FormControl sx={uiLayout.formFieldSx}
                   size="small"
                   fullWidth
                 >
@@ -4180,7 +4182,7 @@ const decideLeaveApproval = async (
               <Typography
                 sx={{
                   mb: { xs: 0.45, sm: 0.7 },
-                  fontSize: { xs: 9.2, sm: 10.5 },
+                  fontSize: { xs: 12, sm: 12 },
                   fontWeight: 900,
                   color: "#52635c",
                   textAlign: LEAVE_DIALOG_TEXT_ALIGN
@@ -4189,7 +4191,7 @@ const decideLeaveApproval = async (
                 سبب الإجازة
               </Typography>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 multiline
                 minRows={2}
@@ -4210,7 +4212,7 @@ const decideLeaveApproval = async (
               <Typography
                 sx={{
                   mb: { xs: 0.45, sm: 0.7 },
-                  fontSize: { xs: 9.2, sm: 10.5 },
+                  fontSize: { xs: 12, sm: 12 },
                   fontWeight: 900,
                   color: "#52635c",
                   textAlign: LEAVE_DIALOG_TEXT_ALIGN
@@ -4227,13 +4229,13 @@ const decideLeaveApproval = async (
                 variant="outlined"
                 startIcon={<FolderRoundedIcon />}
                 fullWidth
-                sx={{
+                sx={uiLayout.withUiSx({
                   minHeight: { xs: 40, sm: 46 },
                   borderRadius: 2,
                                 px: { xs: 1, sm: 1.4 },
-                  fontSize: { xs: 9.2, sm: 10.5 },
+                  fontSize: { xs: 12, sm: 12 },
                   overflow: "hidden"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 <Typography
                   component="span"
@@ -4242,7 +4244,7 @@ const decideLeaveApproval = async (
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 800
                   }}
                 >
@@ -4281,7 +4283,7 @@ const decideLeaveApproval = async (
                   alignItems: "center",
                   py: { xs: 0.35, sm: 0.6 },
                   "& .MuiAlert-message": {
-                    fontSize: { xs: 9.1, sm: 10.2 },
+                    fontSize: { xs: 12, sm: 12 },
                     lineHeight: 1.5
                   }
                 }}
@@ -4306,7 +4308,7 @@ const decideLeaveApproval = async (
                   <Stack spacing={0.35}>
                     <Typography
                       sx={{
-                        fontSize: 10.7,
+                        fontSize: 12,
                         fontWeight: 950
                       }}
                     >
@@ -4316,7 +4318,7 @@ const decideLeaveApproval = async (
 
                     {leaveCalculation.requiresBalance && (
                       <Typography
-                        sx={{ fontSize: 9.7 }}
+                        sx={{ fontSize: 12 }}
                       >
                         الرصيد المتاح:{" "}
                         {leaveCalculation.availableBalance ??
@@ -4330,7 +4332,7 @@ const decideLeaveApproval = async (
                         0
                     ) > 0 && (
                       <Typography
-                        sx={{ fontSize: 9.7 }}
+                        sx={{ fontSize: 12 }}
                       >
                         عطلات مستبعدة:{" "}
                         {leaveCalculation.holidayDays}
@@ -4340,7 +4342,7 @@ const decideLeaveApproval = async (
                     {leaveCalculation.minNoticeDays !=
                       null && (
                       <Typography
-                        sx={{ fontSize: 9.7 }}
+                        sx={{ fontSize: 12 }}
                       >
                         الحد الأدنى للتقديم المسبق:{" "}
                         {
@@ -4357,7 +4359,7 @@ const decideLeaveApproval = async (
 
         <DialogActions
           dir={LEAVE_DIALOG_DIRECTION}
-          sx={{
+          sx={uiLayout.withUiSx({
             px: { xs: 1.1, sm: 2.3 },
             py: { xs: 0.9, sm: 1.35 },
             borderTop: `1px solid ${border}`,
@@ -4365,9 +4367,9 @@ const decideLeaveApproval = async (
                     gap: { xs: 0.55, sm: 0.7 },
             "& .MuiButton-root": {
               minHeight: { xs: 38, sm: 40 },
-              fontSize: { xs: 9.6, sm: 10.5 }
+              fontSize: { xs: 12, sm: 12 }
             }
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             variant="contained"
@@ -4378,11 +4380,11 @@ const decideLeaveApproval = async (
               leaveCalculating ||
               !leaveCalculation
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: { xs: 0, sm: 122 },
               flex: { xs: 1, sm: "0 0 auto" },
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             {leaveSubmitting
               ? "جاري الإرسال..."
@@ -4394,9 +4396,9 @@ const decideLeaveApproval = async (
               setLeaveDialogOpen(false)
             }
             disabled={leaveSubmitting}
-            sx={{
+            sx={uiLayout.withUiSx({
               flex: { xs: 1, sm: "0 0 auto" }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>

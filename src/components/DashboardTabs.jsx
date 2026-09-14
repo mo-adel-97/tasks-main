@@ -44,7 +44,7 @@ export default function DashboardTabs({
           sx={{
             "& .MuiBadge-badge": {
               backgroundColor: COLORS.accent,
-              fontSize: "0.56rem",
+              fontSize: "0.75rem",
               minWidth: 16,
               height: 16,
             },
@@ -95,7 +95,7 @@ export default function DashboardTabs({
             py: 0.25,
             borderRadius: 2,
             fontWeight: 850,
-            fontSize: { xs: "0.56rem", md: "0.61rem" },
+            fontSize: { xs: "0.75rem", md: "0.75rem" },
             color: COLORS.text,
             transition: "background-color .18s ease, color .18s ease",
             "& svg": {

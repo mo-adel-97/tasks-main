@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -133,10 +134,10 @@ function NoteCard({ note, usersMap, branchesMap }) {
                     fontWeight: 800,
                     color: theme.text,
                     "@media (max-width:1599px)": {
-                      fontSize: "0.62rem"
+                      fontSize: "0.75rem"
                     },
                     "@media (max-width:599px)": {
-                      fontSize: "0.52rem"
+                      fontSize: "0.75rem"
                     },
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -161,13 +162,13 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 "@media (max-width:1599px)": {
                   mb: 0.7,
                   minHeight: 34,
-                  fontSize: "0.54rem",
+                  fontSize: "0.75rem",
                   lineHeight: 1.45
                 },
                 "@media (max-width:599px)": {
                   mb: 0.55,
                   minHeight: 30,
-                  fontSize: "0.46rem"
+                  fontSize: "0.75rem"
                 },
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -246,14 +247,14 @@ function NoteCard({ note, usersMap, branchesMap }) {
           }
         }}
       >
-        <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
+        <Stack direction="row" spacing={1} sx={uiLayout.withUiSx({ width: '100%' }, uiLayout.actionBarSx)}>
           <Button
             fullWidth
             variant="outlined"
             size="small"
             startIcon={<OpenInNewIcon />}
             onClick={() => window.open(fileUrl, "_blank", "noreferrer")}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               borderColor: theme.border,
               color: theme.primary,
@@ -262,7 +263,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 borderColor: theme.primary,
                 backgroundColor: 'rgba(128,180,158,0.08)'
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             فتح
           </Button>
@@ -275,7 +276,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
             component="a"
             href={fileUrl}
             download
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`,
               fontWeight: 700,
@@ -284,7 +285,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 background: `linear-gradient(135deg, ${theme.primaryDark} 0%, #5a8875 100%)`,
                 boxShadow: `0 4px 12px rgba(128,180,158,0.3)`
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             تحميل
           </Button>
@@ -575,7 +576,7 @@ export default function AdminStudentNotes() {
                 flex: 1,
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.68rem",
+                  xs: "0.75rem",
                   sm: "0.8rem"
                 },
                 color: theme.text,
@@ -638,7 +639,7 @@ export default function AdminStudentNotes() {
                   color: theme.text,
                   mb: 0.5,
                   fontSize: isPhone
-                    ? "0.72rem"
+                    ? "0.75rem"
                     : isTablet
                       ? "0.88rem"
                       : undefined
@@ -652,25 +653,25 @@ export default function AdminStudentNotes() {
               direction="row"
               spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}
               alignItems="center"
-              sx={{
+              sx={uiLayout.withUiSx({
                 "& .MuiButton-root": {
                   minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
-                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   px: isPhone ? 0.7 : isTablet ? 1 : undefined
                 }
-              }}
+              }, uiLayout.actionBarSx)}
             >
               <Button
                 variant="outlined"
                 startIcon={<FilterListIcon />}
                 onClick={handleClearFilters}
                 disabled={Object.values(filters).every(v => !v || v === "all")}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: 2,
                   borderColor: theme.border,
                   color: theme.text,
                   fontWeight: 600
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إعادة الضبط
               </Button>
@@ -679,7 +680,7 @@ export default function AdminStudentNotes() {
                 variant="contained"
                 startIcon={<RefreshIcon />}
                 onClick={loadAll}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: 2,
                   background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`,
                   fontWeight: 700,
@@ -689,7 +690,7 @@ export default function AdminStudentNotes() {
                     background: `linear-gradient(135deg, ${theme.primaryDark} 0%, #5a8875 100%)`,
                     boxShadow: `0 8px 20px rgba(128,180,158,0.35)`
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تحديث البيانات
               </Button>
@@ -831,22 +832,22 @@ export default function AdminStudentNotes() {
             spacing={isPhone ? 0.75 : isTablet ? 0.95 : 2}
           >
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="بحث في الملفات والملاحظات"
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                 size="small"
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Grid>
             
-            <Grid item xs={6} md={2}>
-              <FormControl fullWidth size="small">
+            <Grid sm={6} item xs={12} md={2}>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel>الفرع</InputLabel>
                 <Select
                   value={filters.branch}
@@ -864,7 +865,7 @@ export default function AdminStudentNotes() {
               </FormControl>
             </Grid>
             
-            <Grid item xs={6} md={2}>
+            <Grid sm={6} item xs={12} md={2}>
               <TextField
                 fullWidth
                 label="من تاريخ"
@@ -873,15 +874,15 @@ export default function AdminStudentNotes() {
                 onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
                 size="small"
                 InputLabelProps={{ shrink: true }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
-            <Grid item xs={6} md={2}>
+            <Grid sm={6} item xs={12} md={2}>
               <TextField
                 fullWidth
                 label="إلى تاريخ"
@@ -890,11 +891,11 @@ export default function AdminStudentNotes() {
                 onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
                 size="small"
                 InputLabelProps={{ shrink: true }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
           </Grid>

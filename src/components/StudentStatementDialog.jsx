@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import { 
   Dialog, DialogTitle, DialogContent, DialogActions, 
@@ -30,7 +31,7 @@ export default function StudentStatementDialog({ open, onClose, accountGuid }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} fullWidth maxWidth="lg">
       <DialogTitle style={{ textAlign: 'center', fontWeight: 'bold', color: '#1976d2' }}>
         📑 كشف الحساب
       </DialogTitle>
@@ -41,7 +42,7 @@ export default function StudentStatementDialog({ open, onClose, accountGuid }) {
         ) : statements.length === 0 ? (
           <Typography align="center" mt={2}>لا توجد بيانات كشف حساب.</Typography>
         ) : (
-          <TableContainer component={Paper} style={{ marginTop: 10 }}>
+          <TableContainer sx={uiLayout.tableContainerSx} component={Paper} style={{ marginTop: 10 }}>
             <Table>
               <TableHead>
                 <TableRow style={{ backgroundColor: '#f1f1f1' }}>
@@ -89,8 +90,8 @@ export default function StudentStatementDialog({ open, onClose, accountGuid }) {
         )}
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">إغلاق</Button>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button sx={uiLayout.buttonSx} onClick={onClose} color="secondary">إغلاق</Button>
       </DialogActions>
     </Dialog>
   );

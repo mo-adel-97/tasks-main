@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -1490,7 +1492,7 @@ export default function PaymentRequestsReport() {
               width: "100%",
               textAlign: "center",
               fontWeight: 750,
-              fontSize: { xs: ".50rem", sm: ".66rem", md: ".73rem" },
+              fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               lineHeight: 1.25,
               whiteSpace: "normal",
               overflow: "visible",
@@ -1519,7 +1521,7 @@ export default function PaymentRequestsReport() {
               width: "100%",
               textAlign: "center",
               fontWeight: 850,
-              fontSize: isPhone ? ".33rem" : isTablet ? ".56rem" : ".74rem",
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
               lineHeight: 1.25,
               whiteSpace: "normal",
               overflow: "visible",
@@ -1639,7 +1641,7 @@ export default function PaymentRequestsReport() {
           sx={{
             fontWeight: 900,
             height: isPhone ? 18 : isTablet ? 22 : 24,
-            fontSize: isPhone ? "0.25rem" : isTablet ? "0.46rem" : "0.68rem",
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
             "& .MuiChip-label": {
               px: isPhone ? 0.35 : 0.7
             }
@@ -1682,13 +1684,13 @@ export default function PaymentRequestsReport() {
                   "تم نسخ رقم الفاتورة"
                 );
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 px: 0.5,
                 fontWeight: 950,
-                fontSize: { xs: ".50rem", sm: ".68rem" },
+                fontSize: { xs: "0.75rem", sm: "0.75rem" },
                 color: primaryColor
-              }}
+              }, uiLayout.buttonSx)}
             >
               {billCode}
             </Button>
@@ -1876,7 +1878,7 @@ export default function PaymentRequestsReport() {
               height: { xs: 19, sm: 22 },
               maxWidth: { xs: 92, sm: 150 },
               fontWeight: 800,
-              fontSize: { xs: "0.54rem", sm: "0.65rem" },
+              fontSize: { xs: "0.75rem", sm: "0.75rem" },
               "& .MuiChip-label": {
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -1892,7 +1894,7 @@ export default function PaymentRequestsReport() {
           label={label}
           placeholder={value.length ? "" : placeholder}
           InputLabelProps={{ shrink: true }}
-          sx={{
+          sx={uiLayout.withUiSx({
             "& .MuiInputBase-root": {
               minHeight: { xs: 31, sm: 39 },
               py: "0px !important",
@@ -1901,12 +1903,12 @@ export default function PaymentRequestsReport() {
             },
             "& .MuiInputLabel-root": {
               fontWeight: 850,
-              fontSize: { xs: ".50rem", sm: ".70rem" }
+              fontSize: { xs: "0.75rem", sm: "0.75rem" }
             },
             "& .MuiInputBase-input": {
-              fontSize: { xs: ".51rem", sm: ".70rem" }
+              fontSize: { xs: "0.75rem", sm: "0.75rem" }
             }
-          }}
+          }, uiLayout.formFieldSx)}
         />
       )}
       sx={{ minWidth: 0, width: "100%" }}
@@ -1949,7 +1951,7 @@ export default function PaymentRequestsReport() {
             >
               <MenuRoundedIcon />
             </IconButton>
-            <Typography sx={{ flex: 1, fontWeight: 950, fontSize: isPhone ? "0.68rem" : "0.82rem", color: textColor }}>
+            <Typography sx={{ flex: 1, fontWeight: 950, fontSize: isPhone ? "0.75rem" : "0.82rem", color: textColor }}>
               طلبات السداد
             </Typography>
           </Toolbar>
@@ -2003,10 +2005,10 @@ export default function PaymentRequestsReport() {
             }}
           >
             <Box>
-              <Typography sx={{ fontWeight: 1000, fontSize: isDesktop ? "1.2rem" : isPhone ? "0.72rem" : "0.9rem", lineHeight: 1.2, color: isDesktop ? primaryDark : "inherit" }}>
+              <Typography sx={{ fontWeight: 1000, fontSize: isDesktop ? "1.2rem" : isPhone ? "0.75rem" : "0.9rem", lineHeight: 1.2, color: isDesktop ? primaryDark : "inherit" }}>
                 طلبات السداد
               </Typography>
-              <Typography sx={{ opacity: .9, fontSize: isDesktop ? ".74rem" : ".54rem", color: isDesktop ? "#60756d" : "inherit", display: { xs: "none", sm: "block" } }}>شاشة الحسابات لعرض وتأكيد طلبات السداد وإدارة الفاتورة والمستندات</Typography>
+              <Typography sx={{ opacity: .9, fontSize: isDesktop ? "0.75rem" : "0.75rem", color: isDesktop ? "#60756d" : "inherit", display: { xs: "none", sm: "block" } }}>شاشة الحسابات لعرض وتأكيد طلبات السداد وإدارة الفاتورة والمستندات</Typography>
             </Box>
             <Chip
               label={`عدد الطلبات: ${filteredRows.length}`}
@@ -2016,7 +2018,7 @@ export default function PaymentRequestsReport() {
                 color: primaryDark,
                 fontWeight: 950,
                 height: isPhone ? 22 : isTablet ? 26 : 30,
-                fontSize: isPhone ? ".46rem" : isTablet ? ".62rem" : ".72rem"
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem"
               }}
             />
           </Box>
@@ -2025,7 +2027,7 @@ export default function PaymentRequestsReport() {
             {error ? <Alert severity="error" sx={{ mb: 1.2 }}>{error}</Alert> : null}
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 mt: { xs: 0.35, sm: 0.7, md: 1 },
                 gridTemplateColumns: {
@@ -2036,7 +2038,7 @@ export default function PaymentRequestsReport() {
                 gap: { xs: 0.55, sm: 0.7, md: 0.8 },
                 alignItems: "center",
                 mb: { xs: 0.7, md: 1.1 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
               <TextField
                 size="small"
@@ -2047,11 +2049,11 @@ export default function PaymentRequestsReport() {
                 onChange={(e) => setFromDate(e.target.value)}
                 inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 InputLabelProps={{ shrink: true }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   "& .MuiInputBase-root": { height: { xs: 34, sm: 38 } },
-                  "& .MuiInputBase-input": { fontSize: { xs: ".65rem", sm: ".78rem" }, py: 0.45 },
-                  "& .MuiInputLabel-root": { fontSize: { xs: ".58rem", sm: ".72rem" } }
-                }}
+                  "& .MuiInputBase-input": { fontSize: { xs: "0.75rem", sm: ".78rem" }, py: 0.45 },
+                  "& .MuiInputLabel-root": { fontSize: { xs: "0.75rem", sm: "0.75rem" } }
+                }, uiLayout.formFieldSx)}
               />
 
               <TextField
@@ -2063,11 +2065,11 @@ export default function PaymentRequestsReport() {
                 onChange={(e) => setToDate(e.target.value)}
                 inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 InputLabelProps={{ shrink: true }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   "& .MuiInputBase-root": { height: { xs: 34, sm: 38 } },
-                  "& .MuiInputBase-input": { fontSize: { xs: ".65rem", sm: ".78rem" }, py: 0.45 },
-                  "& .MuiInputLabel-root": { fontSize: { xs: ".58rem", sm: ".72rem" } }
-                }}
+                  "& .MuiInputBase-input": { fontSize: { xs: "0.75rem", sm: ".78rem" }, py: 0.45 },
+                  "& .MuiInputLabel-root": { fontSize: { xs: "0.75rem", sm: "0.75rem" } }
+                }, uiLayout.formFieldSx)}
               />
 
               <Button
@@ -2075,11 +2077,11 @@ export default function PaymentRequestsReport() {
                 onClick={loadData}
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={14} color="inherit" /> : <RefreshIcon sx={{ fontSize: 17 }} />}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minHeight: { xs: 32, sm: 36 },
-                  fontSize: { xs: ".62rem", sm: ".76rem" },
+                  fontSize: { xs: "0.75rem", sm: ".76rem" },
                   px: { xs: 0.7, sm: 1.3 }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 عرض
               </Button>
@@ -2088,11 +2090,11 @@ export default function PaymentRequestsReport() {
                 variant="outlined"
                 onClick={exportExcel}
                 startIcon={<FileDownloadIcon sx={{ fontSize: 17 }} />}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minHeight: { xs: 32, sm: 36 },
-                  fontSize: { xs: ".58rem", sm: ".72rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.75rem" },
                   px: { xs: 0.55, sm: 1.1 }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير Excel
               </Button>
@@ -2102,13 +2104,13 @@ export default function PaymentRequestsReport() {
                 color={activeAdvancedFiltersCount ? "success" : "inherit"}
                 onClick={() => setAdvancedFiltersOpen((prev) => !prev)}
                 startIcon={<TuneIcon sx={{ fontSize: 17 }} />}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minHeight: { xs: 32, sm: 36 },
-                  fontSize: { xs: ".58rem", sm: ".72rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.75rem" },
                   px: { xs: 0.55, sm: 1.1 },
                   gridColumn: { xs: "1 / -1", sm: "auto", lg: "auto" },
                   whiteSpace: "nowrap"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 فلاتر متقدمة
                 {activeAdvancedFiltersCount > 0
@@ -2116,17 +2118,17 @@ export default function PaymentRequestsReport() {
                   : ""}
               </Button>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 size="small"
                 placeholder="بحث في الطلبات..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: { xs: "1 / -1", sm: "1 / -1", lg: "auto" },
                   minWidth: 0,
                   "& .MuiInputBase-root": { height: { xs: 33, sm: 38 } },
-                  "& .MuiInputBase-input": { fontSize: { xs: ".64rem", sm: ".78rem" }, py: 0.45 }
-                }}
+                  "& .MuiInputBase-input": { fontSize: { xs: "0.75rem", sm: ".78rem" }, py: 0.45 }
+                }, uiLayout.formFieldSx)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -2160,7 +2162,7 @@ export default function PaymentRequestsReport() {
                       sx={{
                         fontWeight: 1000,
                         color: primaryDark,
-                        fontSize: { xs: ".68rem", sm: ".86rem" }
+                        fontSize: { xs: "0.75rem", sm: ".86rem" }
                       }}
                     >
                       الفلاتر المتقدمة
@@ -2168,7 +2170,7 @@ export default function PaymentRequestsReport() {
                     <Typography
                       sx={{
                         color: "#64748b",
-                        fontSize: { xs: ".47rem", sm: ".63rem" },
+                        fontSize: { xs: "0.75rem", sm: "0.75rem" },
                         display: { xs: "none", sm: "block" }
                       }}
                     >
@@ -2183,11 +2185,11 @@ export default function PaymentRequestsReport() {
                     disabled={!activeAdvancedFiltersCount}
                     onClick={clearAdvancedFilters}
                     startIcon={<FilterAltOffIcon sx={{ fontSize: 16 }} />}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontWeight: 900,
-                      fontSize: { xs: ".58rem", sm: ".68rem" },
+                      fontSize: { xs: "0.75rem", sm: "0.75rem" },
                       whiteSpace: "nowrap"
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     مسح الكل
                   </Button>
@@ -2305,10 +2307,10 @@ export default function PaymentRequestsReport() {
                     textAlign: "center"
                   }}
                 >
-                  <Typography sx={{ fontWeight: 850, color: "#60756d", fontSize: isPhone ? ".28rem" : isTablet ? ".44rem" : ".58rem" }}>
+                  <Typography sx={{ fontWeight: 850, color: "#60756d", fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem" }}>
                     {label}
                   </Typography>
-                  <Typography sx={{ mt: 0.15, fontWeight: 950, color, fontSize: isPhone ? ".43rem" : isTablet ? ".62rem" : ".8rem", direction: "ltr" }}>
+                  <Typography sx={{ mt: 0.15, fontWeight: 950, color, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".8rem", direction: "ltr" }}>
                     {money(value)}
                   </Typography>
                 </Paper>
@@ -2316,12 +2318,12 @@ export default function PaymentRequestsReport() {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 maxWidth: "100%",
                 overflowX: isDesktop ? "auto" : "hidden",
                 overflowY: "visible"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
 <DataGrid 
   autoHeight 
@@ -2338,7 +2340,7 @@ export default function PaymentRequestsReport() {
       : "payment-row-odd" 
   } 
 
-  sx={{ 
+  sx={uiLayout.withUiSx({ 
     border: "none", 
 
     // اتجاه الجريد يظل LTR
@@ -2352,7 +2354,7 @@ export default function PaymentRequestsReport() {
       borderBottom: "1px solid #d8d1c7", 
       color: "#163e32", 
       fontWeight: "900", 
-      fontSize: isDesktop ? "12px" : isPhone ? "8px" : "10px" 
+      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px" 
     }, 
 
     "& .MuiDataGrid-columnHeader": { 
@@ -2377,7 +2379,7 @@ export default function PaymentRequestsReport() {
 
     "& .MuiDataGrid-cell": { 
       borderBottom: "1px solid #dedbd5", 
-      fontSize: isDesktop ? "11.5px" : isPhone ? "8px" : "10px", 
+      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px", 
       fontWeight: "700", 
       color: "#24352f", 
       display: "flex", 
@@ -2392,8 +2394,8 @@ export default function PaymentRequestsReport() {
       fontSize: isDesktop 
         ? "15px" 
         : isPhone 
-          ? "8px" 
-          : "9.5px", 
+          ? "12px" 
+          : "12px", 
 
       fontWeight: isDesktop 
         ? "900 !important" 
@@ -2408,7 +2410,7 @@ export default function PaymentRequestsReport() {
        التاريخ
     ============================== */ 
     "& .date-cell": { 
-      fontSize: isDesktop ? "11px" : isPhone ? "8px" : "9.5px", 
+      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px", 
       fontWeight: "750", 
       color: "#24352f", 
       whiteSpace: "nowrap", 
@@ -2489,15 +2491,15 @@ export default function PaymentRequestsReport() {
           }, 
 
           "& .MuiDataGrid-virtualScroller": { 
-            overflowX: "hidden !important" 
+            overflowX: "auto" 
           }, 
 
           "& .MuiDataGrid-scrollbar--horizontal": { 
-            display: "none" 
+            display: "block" 
           } 
         } 
       : {}) 
-  }} 
+  }, uiLayout.dataGridSx)} 
 />
             </Box>
           </Box>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -711,7 +713,7 @@ const CircularsUpload = () => {
                 </Box>
               </Stack>
 
-              <Stack
+              <Stack sx={uiLayout.actionBarSx}
                 direction={{ xs: "column", sm: "row" }}
                 spacing={0.8}
               >
@@ -720,7 +722,7 @@ const CircularsUpload = () => {
                   startIcon={<AddRoundedIcon />}
                   onClick={() => openDialog("createTab")}
                   disabled={loading || busy || forbidden}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor: PRIMARY,
                     borderRadius: 2.5,
                     boxShadow: "none",
@@ -728,7 +730,7 @@ const CircularsUpload = () => {
                     fontWeight: 900,
                     "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
                     "& .MuiButton-startIcon": { ml: 0.6, mr: 0 },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   قسم جديد
                 </Button>
@@ -738,14 +740,14 @@ const CircularsUpload = () => {
                   startIcon={<RefreshRoundedIcon />}
                   onClick={loadTree}
                   disabled={loading || busy}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderRadius: 2.5,
                     borderColor: BORDER,
                     color: PRIMARY,
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     "& .MuiButton-startIcon": { ml: 0.6, mr: 0 },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -839,7 +841,7 @@ const CircularsUpload = () => {
                   variant="contained"
                   startIcon={<AddRoundedIcon />}
                   onClick={() => openDialog("createTab")}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     mt: 1.5,
                     bgcolor: PRIMARY,
                     borderRadius: 2.5,
@@ -848,7 +850,7 @@ const CircularsUpload = () => {
                     fontWeight: 900,
                     "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
                     "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إنشاء أول قسم
                 </Button>
@@ -932,14 +934,14 @@ const CircularsUpload = () => {
                         <Button
                           onClick={leaveFolder}
                           startIcon={<ArrowBackRoundedIcon />}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             minWidth: "auto",
                             px: 1,
                             color: PRIMARY,
                             fontFamily: "Cairo",
                             fontWeight: 900,
                             "& .MuiButton-startIcon": { ml: 0.4, mr: 0 },
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           رجوع
                         </Button>
@@ -987,11 +989,11 @@ const CircularsUpload = () => {
                       )}
                     </Stack>
 
-                    <Stack
+                    <Stack sx={uiLayout.filterBarSx}
                       direction={{ xs: "column", sm: "row" }}
                       spacing={0.7}
                     >
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         size="small"
                         value={searchText}
                         onChange={(event) => setSearchText(event.target.value)}
@@ -1000,14 +1002,14 @@ const CircularsUpload = () => {
                             ? "ابحث في الملفات..."
                             : "ابحث في المجلدات..."
                         }
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           width: { xs: "100%", sm: 270 },
                           "& .MuiOutlinedInput-root": {
                             borderRadius: 2.5,
                             bgcolor: WHITE,
                           },
                           "& input": { fontFamily: "Cairo" },
-                        }}
+                        }, uiLayout.formFieldSx)}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
@@ -1024,7 +1026,7 @@ const CircularsUpload = () => {
                             startIcon={<CreateNewFolderRoundedIcon />}
                             onClick={() => openDialog("createFolder")}
                             disabled={busy}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               bgcolor: PRIMARY,
                               borderRadius: 2.5,
                               boxShadow: "none",
@@ -1035,7 +1037,7 @@ const CircularsUpload = () => {
                                 boxShadow: "none",
                               },
                               "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             مجلد جديد
                           </Button>
@@ -1045,7 +1047,7 @@ const CircularsUpload = () => {
                             startIcon={<EditRoundedIcon />}
                             onClick={() => openDialog("editTab", activeTab)}
                             disabled={busy || !activeTab}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderRadius: 2.5,
                               borderColor: BORDER,
                               color: PRIMARY,
@@ -1057,7 +1059,7 @@ const CircularsUpload = () => {
                                 bgcolor: "#f6fbf8",
                               },
                               "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             تعديل القسم
                           </Button>
@@ -1067,7 +1069,7 @@ const CircularsUpload = () => {
                             startIcon={<DeleteOutlineRoundedIcon />}
                             onClick={deleteTab}
                             disabled={busy || !activeTab}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderRadius: 2.5,
                               borderColor: "#e6bcbc",
                               color: DANGER,
@@ -1079,7 +1081,7 @@ const CircularsUpload = () => {
                                 bgcolor: "#fff6f6",
                               },
                               "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             حذف القسم
                           </Button>
@@ -1091,7 +1093,7 @@ const CircularsUpload = () => {
                             variant="contained"
                             startIcon={<CloudUploadRoundedIcon />}
                             disabled={busy}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               bgcolor: PRIMARY,
                               borderRadius: 2.5,
                               boxShadow: "none",
@@ -1102,7 +1104,7 @@ const CircularsUpload = () => {
                                 boxShadow: "none",
                               },
                               "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             رفع ملفات
                             <input
@@ -1529,7 +1531,7 @@ const CircularsUpload = () => {
         </Stack>
       </Box>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={dialog.open}
         onClose={closeDialog}
         fullWidth
@@ -1541,8 +1543,8 @@ const CircularsUpload = () => {
         </DialogTitle>
 
         <DialogContent>
-          <Stack spacing={1.5} sx={{ mt: 0.5 }}>
-            <TextField
+          <Stack spacing={1.5} sx={uiLayout.withUiSx({ mt: 0.5 }, uiLayout.formGridSx)}>
+            <TextField InputLabelProps={{ shrink: true }}
               autoFocus
               label={dialog.mode === "editFile" ? "اسم الملف" : "الاسم"}
               value={dialog.name}
@@ -1554,16 +1556,16 @@ const CircularsUpload = () => {
               }
               fullWidth
               inputProps={{ maxLength: dialog.mode === "editFile" ? 250 : 200 }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 "& .MuiOutlinedInput-root": { borderRadius: 2.5 },
                 "& .MuiInputBase-input, & .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                 },
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
             {dialog.mode !== "editFile" && (
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 label="الوصف - اختياري"
                 value={dialog.description}
                 onChange={(event) =>
@@ -1576,22 +1578,22 @@ const CircularsUpload = () => {
                 multiline
                 minRows={3}
                 inputProps={{ maxLength: 500 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   "& .MuiOutlinedInput-root": { borderRadius: 2.5 },
                   "& .MuiInputBase-input, & .MuiInputLabel-root": {
                     fontFamily: "Cairo",
                   },
-                }}
+                }, uiLayout.formFieldSx)}
               />
             )}
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
           <Button
             onClick={closeDialog}
             disabled={busy}
-            sx={{ fontFamily: "Cairo", fontWeight: 900, color: MUTED }}
+            sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, color: MUTED }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -1600,7 +1602,7 @@ const CircularsUpload = () => {
             variant="contained"
             onClick={saveDialog}
             disabled={busy}
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: 110,
               bgcolor: PRIMARY,
               borderRadius: 2.5,
@@ -1608,7 +1610,7 @@ const CircularsUpload = () => {
               fontFamily: "Cairo",
               fontWeight: 900,
               "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
-            }}
+            }, uiLayout.buttonSx)}
           >
             {busy ? (
               <CircularProgress size={20} sx={{ color: WHITE }} />

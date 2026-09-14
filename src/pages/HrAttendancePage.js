@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { hrChipSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -2810,7 +2812,7 @@ export default function HrAttendancePage() {
                 <Typography
                   sx={{
                     opacity: 0.75,
-                    fontSize: 11
+                    fontSize: 12
                   }}
                 >
                   الحضور والتأخير والغياب والساعات الإضافية والورديات
@@ -2818,7 +2820,7 @@ export default function HrAttendancePage() {
               </Box>
             </Stack>
 
-            <Stack
+            <Stack sx={uiLayout.actionBarSx}
               direction="row"
               spacing={0.6}
               flexWrap="wrap"
@@ -2831,14 +2833,14 @@ export default function HrAttendancePage() {
                     ? closeAttendanceReport()
                     : openAttendanceReport()
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.45)",
                   fontWeight: 900,
                   bgcolor: reportMode
                     ? "rgba(255,255,255,.12)"
                     : "transparent"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {reportMode ? "العودة للحضور اليومي" : "تقرير الفترة"}
               </Button>
@@ -2851,11 +2853,11 @@ export default function HrAttendancePage() {
                   setBioExcelSearch("");
                   setBioExcelStatus("all");
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.45)",
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 رفع Excel البصمة
               </Button>
@@ -2864,11 +2866,11 @@ export default function HrAttendancePage() {
                 variant="outlined"
                 startIcon={<GroupWorkRoundedIcon />}
                 onClick={openBioBulkCenter}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.45)",
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 ربط جماعي BioTime
               </Button>
@@ -2883,12 +2885,12 @@ export default function HrAttendancePage() {
                     openNewShift();
                   }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor:
                     "rgba(255,255,255,.45)",
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إعداد الورديات
               </Button>
@@ -2897,12 +2899,12 @@ export default function HrAttendancePage() {
                 variant="outlined"
                 startIcon={<AddRoundedIcon />}
                 onClick={openNewShift}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor:
                     "rgba(255,255,255,.45)",
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 وردية جديدة
               </Button>
@@ -2920,11 +2922,11 @@ export default function HrAttendancePage() {
                   syncBioTimeAttendance({ silent: false })
                 }
                 disabled={bioSyncLoading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.45)",
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {bioSyncLoading
                   ? "جارٍ مزامنة البصمات..."
@@ -2936,7 +2938,7 @@ export default function HrAttendancePage() {
                 startIcon={<GroupWorkRoundedIcon />}
                 onClick={openBulkAssignment}
                 disabled={!selectedCount}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: "#fff",
                   color: primaryDark,
                   fontWeight: 950,
@@ -2947,7 +2949,7 @@ export default function HrAttendancePage() {
                     bgcolor: "rgba(255,255,255,.18)",
                     color: "rgba(255,255,255,.55)"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تعيين للمحدد
                 {selectedCount > 0
@@ -2993,7 +2995,7 @@ export default function HrAttendancePage() {
                 bgcolor: "#fff"
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.filterBarSx}
                 direction={{ xs: "column", md: "row" }}
                 spacing={1}
                 alignItems={{ xs: "stretch", md: "center" }}
@@ -3046,7 +3048,7 @@ export default function HrAttendancePage() {
                         </Typography>
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 10.5, mt: 0.2 }}
+                          sx={{ fontSize: 12, mt: 0.2 }}
                         >
                           {option.branchName || "فرع غير محدد"}
                           {option.bioTimeEmpCode
@@ -3057,7 +3059,7 @@ export default function HrAttendancePage() {
                     </Box>
                   )}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       label="الموظف"
@@ -3098,7 +3100,7 @@ export default function HrAttendancePage() {
                     setReportData(null);
                   }}
                   InputLabelProps={{ shrink: true }}
-                  sx={{ width: { xs: "100%", md: 170 } }}
+                  sx={uiLayout.withUiSx({ width: { xs: "100%", md: 170 } }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
@@ -3114,19 +3116,19 @@ export default function HrAttendancePage() {
                     setReportData(null);
                   }}
                   InputLabelProps={{ shrink: true }}
-                  sx={{ width: { xs: "100%", md: 170 } }}
+                  sx={uiLayout.withUiSx({ width: { xs: "100%", md: 170 } }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
                   variant="contained"
                   onClick={runAttendanceReport}
                   disabled={reportLoading || !reportForm.employeeGuid}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 145,
                     height: 40,
                     bgcolor: primary,
                     fontWeight: 950
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {reportLoading ? "جاري التجهيز..." : "عرض التقرير"}
                 </Button>
@@ -3167,7 +3169,7 @@ export default function HrAttendancePage() {
                       </Typography>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 11, mt: 0.25 }}
+                        sx={{ fontSize: 12, mt: 0.25 }}
                       >
                         {reportData?.employee?.branchName || ""}
                         {reportData?.employee?.bioTimeEmpCode
@@ -3177,12 +3179,12 @@ export default function HrAttendancePage() {
                       </Typography>
                     </Box>
 
-                    <Stack direction="row" spacing={0.7}>
+                    <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.7}>
                       <Button
                         size="small"
                         variant="outlined"
                         onClick={exportAttendanceReportCsv}
-                        sx={{ fontWeight: 850 }}
+                        sx={uiLayout.withUiSx({ fontWeight: 850 }, uiLayout.buttonSx)}
                       >
                         Excel / CSV
                       </Button>
@@ -3190,7 +3192,7 @@ export default function HrAttendancePage() {
                         size="small"
                         variant="outlined"
                         onClick={printAttendanceReport}
-                        sx={{ fontWeight: 850 }}
+                        sx={uiLayout.withUiSx({ fontWeight: 850 }, uiLayout.buttonSx)}
                       >
                         طباعة
                       </Button>
@@ -3229,7 +3231,7 @@ export default function HrAttendancePage() {
                     >
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 10, fontWeight: 800 }}
+                        sx={{ fontSize: 12, fontWeight: 800 }}
                       >
                         {label}
                       </Typography>
@@ -3267,7 +3269,7 @@ export default function HrAttendancePage() {
                         py: 1,
                         bgcolor: "#edf6f1",
                         borderBottom: `1px solid ${border}`,
-                        fontSize: 10.5,
+                        fontSize: 12,
                         fontWeight: 950,
                         color: primaryDark
                       }}
@@ -3309,23 +3311,23 @@ export default function HrAttendancePage() {
                                 : index % 2
                                   ? "#fbfdfc"
                                   : "#fff",
-                            fontSize: 11
+                            fontSize: 12
                           }}
                         >
-                          <Typography sx={{ fontSize: 11, fontWeight: 850 }}>
+                          <Typography sx={{ fontSize: 12, fontWeight: 850 }}>
                             {row.attendanceDate || "-"}
                           </Typography>
-                          <Typography sx={{ fontSize: 11 }}>
+                          <Typography sx={{ fontSize: 12 }}>
                             {row.dayName || "-"}
                           </Typography>
                           <Box>
-                            <Typography sx={{ fontSize: 11, fontWeight: 850 }}>
+                            <Typography sx={{ fontSize: 12, fontWeight: 850 }}>
                               {row.shiftName || "-"}
                             </Typography>
                             {row.shiftStartTime && row.shiftEndTime && (
                               <Typography
                                 color="text.secondary"
-                                sx={{ fontSize: 9.5 }}
+                                sx={{ fontSize: 12 }}
                               >
                                 {formatTimeSpan(row.shiftStartTime)}
                                 {" - "}
@@ -3333,22 +3335,22 @@ export default function HrAttendancePage() {
                               </Typography>
                             )}
                           </Box>
-                          <Typography sx={{ fontSize: 11, fontWeight: 850 }}>
+                          <Typography sx={{ fontSize: 12, fontWeight: 850 }}>
                             {formatTime(row.checkInAt)}
                           </Typography>
-                          <Typography sx={{ fontSize: 11, fontWeight: 850 }}>
+                          <Typography sx={{ fontSize: 12, fontWeight: 850 }}>
                             {formatTime(row.checkOutAt)}
                           </Typography>
-                          <Typography sx={{ fontSize: 11, fontWeight: 850 }}>
+                          <Typography sx={{ fontSize: 12, fontWeight: 850 }}>
                             {minutesToText(row.workedMinutes)}
                           </Typography>
-                          <Typography sx={{ fontSize: 11 }}>
+                          <Typography sx={{ fontSize: 12 }}>
                             {minutesToText(row.lateMinutes)}
                           </Typography>
-                          <Typography sx={{ fontSize: 11 }}>
+                          <Typography sx={{ fontSize: 12 }}>
                             {minutesToText(row.earlyLeaveMinutes)}
                           </Typography>
-                          <Typography sx={{ fontSize: 11 }}>
+                          <Typography sx={{ fontSize: 12 }}>
                             {minutesToText(row.overtimeMinutes)}
                           </Typography>
                           <Chip
@@ -3357,10 +3359,10 @@ export default function HrAttendancePage() {
                             color={rowMeta.color}
                             sx={{ height: 23, fontWeight: 900, width: "fit-content" }}
                           />
-                          <Typography sx={{ fontSize: 10.2, fontWeight: 850 }}>
+                          <Typography sx={{ fontSize: 12, fontWeight: 850 }}>
                             {permissionReportText(row)}
                           </Typography>
-                          <Typography sx={{ fontSize: 11, fontWeight: 900 }}>
+                          <Typography sx={{ fontSize: 12, fontWeight: 900 }}>
                             {Number(row.punchCount || 0)}
                           </Typography>
                         </Box>
@@ -3392,7 +3394,7 @@ export default function HrAttendancePage() {
                   </Typography>
                   <Typography
                     color="text.secondary"
-                    sx={{ mt: 0.5, fontSize: 11 }}
+                    sx={{ mt: 0.5, fontSize: 12 }}
                   >
                     البحث بالاسم سريع ومباشر، والمزامنة تتم مرة واحدة للفترة المحددة.
                   </Typography>
@@ -3440,7 +3442,7 @@ export default function HrAttendancePage() {
                 <Typography
                   color="text.secondary"
                   sx={{
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 800
                   }}
                 >
@@ -3472,7 +3474,7 @@ export default function HrAttendancePage() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -3480,9 +3482,9 @@ export default function HrAttendancePage() {
                   "180px minmax(250px,1.4fr) 180px 180px 180px 110px"
               },
               gap: 1
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               size="small"
               type="date"
               label="التاريخ"
@@ -3496,7 +3498,7 @@ export default function HrAttendancePage() {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               value={search}
               onChange={(e) => {
@@ -3513,7 +3515,7 @@ export default function HrAttendancePage() {
               }}
             />
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الفرع</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3544,7 +3546,7 @@ export default function HrAttendancePage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>القسم</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3578,7 +3580,7 @@ export default function HrAttendancePage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الحالة</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3602,7 +3604,7 @@ export default function HrAttendancePage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الصفوف</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3698,7 +3700,7 @@ export default function HrAttendancePage() {
               />
 
               {selectedCount > 0 && (
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   size="small"
                   onClick={() =>
                     setSelectedEmployeeGuids([])
@@ -3714,10 +3716,10 @@ export default function HrAttendancePage() {
               startIcon={<GroupWorkRoundedIcon />}
               disabled={!selectedCount}
               onClick={openBulkAssignment}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: primary,
                 fontWeight: 950
-              }}
+              }, uiLayout.buttonSx)}
             >
               تعيين وردية للمحدد
             </Button>
@@ -3828,7 +3830,7 @@ export default function HrAttendancePage() {
                             color="text.secondary"
                             sx={{
                               mt: 0.15,
-                              fontSize: 10.3,
+                              fontSize: 12,
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow:
@@ -3858,7 +3860,7 @@ export default function HrAttendancePage() {
                             />
                             <Typography
                               sx={{
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontWeight: 850,
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
@@ -3894,7 +3896,7 @@ export default function HrAttendancePage() {
                               variant="outlined"
                               sx={[hrChipSx("small"), {
                                 height: 22,
-                                fontSize: 9.5,
+                                fontSize: 12,
                                 fontWeight: 850
                               }]}
                             />
@@ -3906,7 +3908,7 @@ export default function HrAttendancePage() {
                     <Box>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.8 }}
+                        sx={{ fontSize: 12 }}
                       >
                         الوردية
                       </Typography>
@@ -3914,7 +3916,7 @@ export default function HrAttendancePage() {
                       <Typography
                         sx={{
                           fontWeight: 900,
-                          fontSize: 11.5
+                          fontSize: 12
                         }}
                       >
                         {row.shiftName ||
@@ -3924,7 +3926,7 @@ export default function HrAttendancePage() {
                       {row.shiftGuid && (
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 9.5 }}
+                          sx={{ fontSize: 12 }}
                         >
                           {formatTimeSpan(
                             row.shiftStartTime
@@ -3940,7 +3942,7 @@ export default function HrAttendancePage() {
                     <Box>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.8 }}
+                        sx={{ fontSize: 12 }}
                       >
                         الحضور
                       </Typography>
@@ -3955,7 +3957,7 @@ export default function HrAttendancePage() {
                     <Box>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.8 }}
+                        sx={{ fontSize: 12 }}
                       >
                         الانصراف
                       </Typography>
@@ -3970,7 +3972,7 @@ export default function HrAttendancePage() {
                     <Box>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.8 }}
+                        sx={{ fontSize: 12 }}
                       >
                         ساعات العمل
                       </Typography>
@@ -3987,7 +3989,7 @@ export default function HrAttendancePage() {
                         <Typography
                           sx={{
                             color: primary,
-                            fontSize: 9.5,
+                            fontSize: 12,
                             fontWeight: 850
                           }}
                         >
@@ -4002,7 +4004,7 @@ export default function HrAttendancePage() {
                     <Box>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.8 }}
+                        sx={{ fontSize: 12 }}
                       >
                         الحالة
                       </Typography>
@@ -4054,7 +4056,7 @@ export default function HrAttendancePage() {
                       </Stack>
                     </Box>
 
-                    <Stack
+                    <Stack sx={uiLayout.actionBarSx}
                       direction="row"
                       spacing={0.4}
                       justifyContent="flex-start"
@@ -4108,11 +4110,11 @@ export default function HrAttendancePage() {
                           onClick={() =>
                             openAssignment(row)
                           }
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             minWidth: 115,
                             bgcolor: primary,
                             fontWeight: 900
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           تعيين وردية
                         </Button>
@@ -4131,11 +4133,11 @@ export default function HrAttendancePage() {
                                   "checkin"
                                 )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 minWidth: 95,
                                 bgcolor: primary,
                                 fontWeight: 900
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               حضور
                             </Button>
@@ -4155,11 +4157,11 @@ export default function HrAttendancePage() {
                                     "checkout"
                                   )
                                 }
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   minWidth: 95,
                                   bgcolor: primary,
                                   fontWeight: 900
-                                }}
+                                }, uiLayout.buttonSx)}
                               >
                                 انصراف
                               </Button>
@@ -4243,7 +4245,7 @@ export default function HrAttendancePage() {
 
       {/* Shift dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={shiftDialogOpen}
         onClose={() =>
           setShiftDialogOpen(false)
@@ -4260,7 +4262,7 @@ export default function HrAttendancePage() {
 
         <DialogContent dividers>
           <Stack spacing={1.1}>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم الوردية"
               value={shiftForm.shiftName}
               onChange={(e) =>
@@ -4272,14 +4274,14 @@ export default function HrAttendancePage() {
             />
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="time"
                 label="بداية الوردية"
                 value={shiftForm.startTime}
@@ -4292,7 +4294,7 @@ export default function HrAttendancePage() {
                 InputLabelProps={{ shrink: true }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="time"
                 label="نهاية الوردية"
                 value={shiftForm.endTime}
@@ -4305,7 +4307,7 @@ export default function HrAttendancePage() {
                 InputLabelProps={{ shrink: true }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="سماح التأخير - دقيقة"
                 value={shiftForm.graceMinutes}
@@ -4318,7 +4320,7 @@ export default function HrAttendancePage() {
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="سماح الانصراف المبكر"
                 value={
@@ -4334,7 +4336,7 @@ export default function HrAttendancePage() {
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="أقل مدة تحسب إضافي"
                 value={
@@ -4350,7 +4352,7 @@ export default function HrAttendancePage() {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
-            <FormControlLabel
+            <FormControlLabel sx={uiLayout.checkboxFieldSx}
               control={
                 <Checkbox
                   checked={shiftForm.isActive}
@@ -4402,7 +4404,7 @@ export default function HrAttendancePage() {
 
                           <Typography
                             color="text.secondary"
-                            sx={{ fontSize: 10 }}
+                            sx={{ fontSize: 12 }}
                           >
                             {formatTimeSpan(
                               shift.startTime
@@ -4417,7 +4419,7 @@ export default function HrAttendancePage() {
                           </Typography>
                         </Box>
 
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           size="small"
                           onClick={() =>
                             openEditShift(shift)
@@ -4434,8 +4436,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setShiftDialogOpen(false)
             }
@@ -4448,7 +4450,7 @@ export default function HrAttendancePage() {
             variant="contained"
             onClick={saveShift}
             disabled={shiftSaving}
-            sx={{ bgcolor: primary }}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {shiftSaving
               ? "جاري الحفظ..."
@@ -4459,7 +4461,7 @@ export default function HrAttendancePage() {
 
       {/* Assignment dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={assignmentOpen}
         onClose={() =>
           setAssignmentOpen(false)
@@ -4473,7 +4475,7 @@ export default function HrAttendancePage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack spacing={1.1}>
+          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
             <Paper
               variant="outlined"
               sx={{
@@ -4489,7 +4491,7 @@ export default function HrAttendancePage() {
 
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: 10.5 }}
+                sx={{ fontSize: 12 }}
               >
                 {assignmentEmployee?.jobTitle ||
                   "غير محدد"}
@@ -4499,7 +4501,7 @@ export default function HrAttendancePage() {
               </Typography>
             </Paper>
 
-            <FormControl>
+            <FormControl sx={uiLayout.formFieldSx}>
               <InputLabel>الوردية</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -4539,14 +4541,14 @@ export default function HrAttendancePage() {
             </FormControl>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="ساري من"
                 value={
@@ -4564,7 +4566,7 @@ export default function HrAttendancePage() {
                 InputLabelProps={{ shrink: true }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="ساري حتى"
                 value={
@@ -4632,7 +4634,7 @@ export default function HrAttendancePage() {
               </Stack>
             </Box>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات"
               value={assignmentForm.notes}
               onChange={(e) =>
@@ -4649,8 +4651,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setAssignmentOpen(false)
             }
@@ -4663,7 +4665,7 @@ export default function HrAttendancePage() {
             variant="contained"
             onClick={saveAssignment}
             disabled={assignmentSaving}
-            sx={{ bgcolor: primary }}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {assignmentSaving
               ? "جاري الحفظ..."
@@ -4675,7 +4677,7 @@ export default function HrAttendancePage() {
 
       {/* Bulk shift assignment dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={bulkAssignmentOpen}
         onClose={() =>
           !bulkAssignmentSaving &&
@@ -4690,7 +4692,7 @@ export default function HrAttendancePage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack spacing={1.1}>
+          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
             <Alert severity="info">
               تم تحديد{" "}
               <strong>{selectedCount}</strong>
@@ -4699,7 +4701,7 @@ export default function HrAttendancePage() {
               التكليفات السابقة.
             </Alert>
 
-            <FormControl>
+            <FormControl sx={uiLayout.formFieldSx}>
               <InputLabel>الوردية</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -4738,14 +4740,14 @@ export default function HrAttendancePage() {
             </FormControl>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="ساري من"
                 value={
@@ -4762,7 +4764,7 @@ export default function HrAttendancePage() {
                 InputLabelProps={{ shrink: true }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="ساري حتى"
                 value={
@@ -4829,7 +4831,7 @@ export default function HrAttendancePage() {
               </Stack>
             </Box>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات على التوزيع"
               value={bulkAssignmentForm.notes}
               onChange={(e) =>
@@ -4846,8 +4848,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setBulkAssignmentOpen(false)
             }
@@ -4863,7 +4865,7 @@ export default function HrAttendancePage() {
               bulkAssignmentSaving ||
               !selectedCount
             }
-            sx={{ bgcolor: primary }}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {bulkAssignmentSaving
               ? "جاري التوزيع..."
@@ -4874,7 +4876,7 @@ export default function HrAttendancePage() {
 
       {/* Attendance edit dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={attendanceOpen}
         onClose={() =>
           setAttendanceOpen(false)
@@ -4888,7 +4890,7 @@ export default function HrAttendancePage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack spacing={1.1}>
+          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
             <Paper
               variant="outlined"
               sx={{
@@ -4904,7 +4906,7 @@ export default function HrAttendancePage() {
 
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: 10.5 }}
+                sx={{ fontSize: 12 }}
               >
                 {attendanceEmployee?.shiftName ||
                   "بدون وردية"}
@@ -4914,14 +4916,14 @@ export default function HrAttendancePage() {
             </Paper>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="datetime-local"
                 label="وقت الحضور"
                 value={attendanceForm.checkInAt}
@@ -4937,7 +4939,7 @@ export default function HrAttendancePage() {
                 InputLabelProps={{ shrink: true }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="datetime-local"
                 label="وقت الانصراف"
                 value={attendanceForm.checkOutAt}
@@ -4954,7 +4956,7 @@ export default function HrAttendancePage() {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
-            <FormControl>
+            <FormControl sx={uiLayout.formFieldSx}>
               <InputLabel>الحالة</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -4991,7 +4993,7 @@ export default function HrAttendancePage() {
               </Select>
             </FormControl>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات"
               value={attendanceForm.notes}
               onChange={(e) =>
@@ -5006,7 +5008,7 @@ export default function HrAttendancePage() {
               minRows={2}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               required
               label="سبب التسجيل / التعديل"
               value={attendanceForm.reason}
@@ -5029,8 +5031,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setAttendanceOpen(false)
             }
@@ -5043,7 +5045,7 @@ export default function HrAttendancePage() {
             variant="contained"
             onClick={saveAttendance}
             disabled={attendanceSaving}
-            sx={{ bgcolor: primary }}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {attendanceSaving
               ? "جاري الحفظ..."
@@ -5055,7 +5057,7 @@ export default function HrAttendancePage() {
       {/* BioTime employee linking dialog */}
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={reportOpen}
         onClose={() => !reportLoading && setReportOpen(false)}
         maxWidth="lg"
@@ -5081,16 +5083,16 @@ export default function HrAttendancePage() {
             </Alert>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "1fr",
                   md: "2fr 1fr 1fr auto"
                 },
                 gap: 1
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel>الموظف</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -5121,7 +5123,7 @@ export default function HrAttendancePage() {
                 </Select>
               </FormControl>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 size="small"
                 type="date"
                 label="من"
@@ -5136,7 +5138,7 @@ export default function HrAttendancePage() {
                 InputLabelProps={{ shrink: true }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 size="small"
                 type="date"
                 label="إلى"
@@ -5155,7 +5157,7 @@ export default function HrAttendancePage() {
                 variant="contained"
                 disabled={reportLoading || !reportForm.employeeGuid}
                 onClick={runAttendanceReport}
-                sx={{ bgcolor: primary, fontWeight: 900, minWidth: 130 }}
+                sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 900, minWidth: 130 }, uiLayout.buttonSx)}
               >
                 {reportLoading ? "جاري التجهيز..." : "عرض التقرير"}
               </Button>
@@ -5195,7 +5197,7 @@ export default function HrAttendancePage() {
                       <Typography sx={{ fontWeight: 950, fontSize: 16 }}>
                         {reportData?.employee?.employeeName}
                       </Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: 11 }}>
+                      <Typography color="text.secondary" sx={{ fontSize: 12 }}>
                         {reportData?.employee?.branchName || "بدون فرع"}
                         {" • "}
                         {reportForm.fromDate} إلى {reportForm.toDate}
@@ -5205,15 +5207,15 @@ export default function HrAttendancePage() {
                       </Typography>
                     </Box>
 
-                    <Stack direction="row" spacing={0.7}>
-                      <Button
+                    <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.7}>
+                      <Button sx={uiLayout.buttonSx}
                         size="small"
                         variant="outlined"
                         onClick={exportAttendanceReportCsv}
                       >
                         Excel / CSV
                       </Button>
-                      <Button
+                      <Button sx={uiLayout.buttonSx}
                         size="small"
                         variant="outlined"
                         onClick={printAttendanceReport}
@@ -5247,7 +5249,7 @@ export default function HrAttendancePage() {
                       variant="outlined"
                       sx={{ p: 1, textAlign: "center", borderRadius: 2 }}
                     >
-                      <Typography color="text.secondary" sx={{ fontSize: 10 }}>
+                      <Typography color="text.secondary" sx={{ fontSize: 12 }}>
                         {label}
                       </Typography>
                       <Typography sx={{ fontWeight: 950, color: primaryDark }}>
@@ -5274,7 +5276,7 @@ export default function HrAttendancePage() {
                       bgcolor: "#eef6f2",
                       borderBottom: `1px solid ${border}`,
                       p: 1,
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: 950,
                       textAlign: "center"
                     }}
@@ -5299,7 +5301,7 @@ export default function HrAttendancePage() {
                           alignItems: "center",
                           textAlign: "center",
                           borderBottom: `1px solid ${border}`,
-                          fontSize: 11
+                          fontSize: 12
                         }}
                       >
                         <Box>{row.attendanceDate}</Box>
@@ -5319,7 +5321,7 @@ export default function HrAttendancePage() {
                             sx={{ fontWeight: 900, height: 23 }}
                           />
                         </Box>
-                        <Box sx={{ fontSize: 10.2, fontWeight: 850 }}>
+                        <Box sx={{ fontSize: 12, fontWeight: 850 }}>
                           {permissionReportText(row)}
                         </Box>
                         <Box>{Number(row.punchCount || 0)}</Box>
@@ -5332,8 +5334,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() => setReportOpen(false)}
             disabled={reportLoading}
           >
@@ -5343,7 +5345,7 @@ export default function HrAttendancePage() {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={bioExcelOpen}
         onClose={() =>
           !bioExcelSaving &&
@@ -5379,7 +5381,7 @@ export default function HrAttendancePage() {
               موظف إلا بعد تحديد <strong>اعتماد</strong>.
             </Alert>
 
-            <Stack
+            <Stack sx={uiLayout.actionBarSx}
               direction={{ xs: "column", md: "row" }}
               spacing={0.8}
               alignItems={{ xs: "stretch", md: "center" }}
@@ -5395,11 +5397,11 @@ export default function HrAttendancePage() {
                   )
                 }
                 disabled={bioExcelLoading || bioExcelSaving}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: primary,
                   fontWeight: 950,
                   minHeight: 42
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {bioExcelLoading
                   ? "جاري قراءة ومطابقة الملف..."
@@ -5451,7 +5453,7 @@ export default function HrAttendancePage() {
                   variant="outlined"
                   onClick={approveStrongBioExcelMatches}
                   disabled={bioExcelSaving}
-                  sx={{ fontWeight: 900, minHeight: 42 }}
+                  sx={uiLayout.withUiSx({ fontWeight: 900, minHeight: 42 }, uiLayout.buttonSx)}
                 >
                   تحديد المطابق القوي
                 </Button>
@@ -5492,7 +5494,7 @@ export default function HrAttendancePage() {
                     >
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.5 }}
+                        sx={{ fontSize: 12 }}
                       >
                         {label}
                       </Typography>
@@ -5528,11 +5530,11 @@ export default function HrAttendancePage() {
                   </Stack>
                 )}
 
-                <Stack
+                <Stack sx={uiLayout.formGridSx}
                   direction={{ xs: "column", md: "row" }}
                   spacing={0.8}
                 >
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     size="small"
                     fullWidth
                     value={bioExcelSearch}
@@ -5551,7 +5553,7 @@ export default function HrAttendancePage() {
 
                   <FormControl
                     size="small"
-                    sx={{ minWidth: 220 }}
+                    sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}
                   >
                     <InputLabel>حالة المطابقة</InputLabel>
                     <Select
@@ -5592,7 +5594,7 @@ export default function HrAttendancePage() {
                       py: 0.9,
                       bgcolor: "#eef6f2",
                       color: primaryDark,
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: 950,
                       borderBottom: `1px solid ${border}`
                     }}
@@ -5659,13 +5661,13 @@ export default function HrAttendancePage() {
 
                           <Box>
                             <Typography
-                              sx={{ fontSize: 10.5, fontWeight: 900 }}
+                              sx={{ fontSize: 12, fontWeight: 900 }}
                             >
                               {row.sheetName || "-"}
                             </Typography>
                             <Typography
                               color="text.secondary"
-                              sx={{ fontSize: 8.5 }}
+                              sx={{ fontSize: 12 }}
                             >
                               صف {row.excelRowNumber || "-"}
                             </Typography>
@@ -5674,7 +5676,7 @@ export default function HrAttendancePage() {
                           <Box sx={{ minWidth: 0 }}>
                             <Typography
                               sx={{
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: 900,
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
@@ -5685,7 +5687,7 @@ export default function HrAttendancePage() {
                             </Typography>
                             <Typography
                               color="text.secondary"
-                              sx={{ fontSize: 8.8 }}
+                              sx={{ fontSize: 12 }}
                             >
                               الهوية: {row.identityNumber || "-"}
                             </Typography>
@@ -5702,13 +5704,13 @@ export default function HrAttendancePage() {
                           {row.status === "already-linked" ? (
                             <Box>
                               <Typography
-                                sx={{ fontSize: 11, fontWeight: 950 }}
+                                sx={{ fontSize: 12, fontWeight: 950 }}
                               >
                                 {row.bestMatch?.employeeName || "-"}
                               </Typography>
                               <Typography
                                 color="text.secondary"
-                                sx={{ fontSize: 8.8 }}
+                                sx={{ fontSize: 12 }}
                               >
                                 مربوط بنفس رقم البصمة
                               </Typography>
@@ -5747,13 +5749,13 @@ export default function HrAttendancePage() {
                                 <li {...props} key={option.employeeGuid}>
                                   <Box sx={{ width: "100%" }}>
                                     <Typography
-                                      sx={{ fontSize: 11, fontWeight: 900 }}
+                                      sx={{ fontSize: 12, fontWeight: 900 }}
                                     >
                                       {option.employeeName}
                                     </Typography>
                                     <Typography
                                       color="text.secondary"
-                                      sx={{ fontSize: 9 }}
+                                      sx={{ fontSize: 12 }}
                                     >
                                       {option.branchName || "بدون فرع"}
                                       {" • "}
@@ -5763,7 +5765,7 @@ export default function HrAttendancePage() {
                                 </li>
                               )}
                               renderInput={(params) => (
-                                <TextField
+                                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                                   {...params}
                                   placeholder="اختر الموظف المطابق..."
                                 />
@@ -5772,7 +5774,7 @@ export default function HrAttendancePage() {
                           )}
 
                           <Typography
-                            sx={{ fontSize: 9.5, fontWeight: 850 }}
+                            sx={{ fontSize: 12, fontWeight: 850 }}
                           >
                             {selected?.branchName ||
                               row.bestMatch?.branchName ||
@@ -5823,8 +5825,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() => setBioExcelOpen(false)}
             disabled={bioExcelSaving || bioExcelLoading}
           >
@@ -5839,7 +5841,7 @@ export default function HrAttendancePage() {
               bioExcelLoading ||
               !bioExcelApprovedLinks.length
             }
-            sx={{ bgcolor: primary, fontWeight: 950 }}
+            sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 950 }, uiLayout.buttonSx)}
           >
             {bioExcelSaving
               ? "جاري حفظ الربط..."
@@ -5849,7 +5851,7 @@ export default function HrAttendancePage() {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={bioBulkOpen}
         onClose={() =>
           !bioBulkSaving &&
@@ -5896,7 +5898,7 @@ export default function HrAttendancePage() {
               >
                 <Typography
                   color="text.secondary"
-                  sx={{ fontSize: 10 }}
+                  sx={{ fontSize: 12 }}
                 >
                   مربوطون حاليًا
                 </Typography>
@@ -5913,7 +5915,7 @@ export default function HrAttendancePage() {
               >
                 <Typography
                   color="text.secondary"
-                  sx={{ fontSize: 10 }}
+                  sx={{ fontSize: 12 }}
                 >
                   غير مربوطين
                 </Typography>
@@ -5930,7 +5932,7 @@ export default function HrAttendancePage() {
               >
                 <Typography
                   color="text.secondary"
-                  sx={{ fontSize: 10 }}
+                  sx={{ fontSize: 12 }}
                 >
                   موظفو BioTime بالكاش
                 </Typography>
@@ -5947,7 +5949,7 @@ export default function HrAttendancePage() {
               >
                 <Typography
                   color="text.secondary"
-                  sx={{ fontSize: 10 }}
+                  sx={{ fontSize: 12 }}
                 >
                   آخر تحديث للكاش
                 </Typography>
@@ -5978,12 +5980,12 @@ export default function HrAttendancePage() {
                   bioBulkRefreshing || bioBulkSaving
                 }
                 onClick={refreshBioBulkCache}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minHeight: 52,
                   bgcolor: primary,
                   fontWeight: 950,
                   px: 2.2
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {bioBulkRefreshing
                   ? "تحديث BioTime..."
@@ -6000,11 +6002,11 @@ export default function HrAttendancePage() {
               </Alert>
             )}
 
-            <Stack
+            <Stack sx={uiLayout.formGridSx}
               direction={{ xs: "column", md: "row" }}
               spacing={0.8}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 fullWidth
                 value={bioBulkSearch}
@@ -6023,7 +6025,7 @@ export default function HrAttendancePage() {
 
               <FormControl
                 size="small"
-                sx={{ minWidth: { md: 260 } }}
+                sx={uiLayout.withUiSx({ minWidth: { md: 260 } }, uiLayout.formFieldSx)}
               >
                 <InputLabel>الفرع</InputLabel>
                 <Select
@@ -6065,7 +6067,7 @@ export default function HrAttendancePage() {
 
               <FormControl
                 size="small"
-                sx={{ minWidth: 120 }}
+                sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)}
               >
                 <InputLabel>الصفوف</InputLabel>
                 <Select
@@ -6141,7 +6143,7 @@ export default function HrAttendancePage() {
                     bgcolor: "#f5f8f6",
                     borderBottom: `1px solid ${border}`,
                     fontWeight: 950,
-                    fontSize: 11
+                    fontSize: 12
                   }}
                 >
                   <Box>اعتماد</Box>
@@ -6277,7 +6279,7 @@ export default function HrAttendancePage() {
                           </Typography>
                           <Typography
                             color="text.secondary"
-                            sx={{ fontSize: 10 }}
+                            sx={{ fontSize: 12 }}
                           >
                             #{employee.employeeCode || "-"}
                             {" • "}
@@ -6406,7 +6408,7 @@ export default function HrAttendancePage() {
                                       }
                                       sx={{
                                         height: 19,
-                                        fontSize: 9
+                                        fontSize: 12
                                       }}
                                     />
                                   )}
@@ -6414,7 +6416,7 @@ export default function HrAttendancePage() {
 
                                 <Typography
                                   color="text.secondary"
-                                  sx={{ fontSize: 9.5 }}
+                                  sx={{ fontSize: 12 }}
                                 >
                                   BioTime #
                                   {
@@ -6433,7 +6435,7 @@ export default function HrAttendancePage() {
                             </li>
                           )}
                           renderInput={(params) => (
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               {...params}
                               placeholder="اختر أو اكتب اسم BioTime..."
                             />
@@ -6463,13 +6465,13 @@ export default function HrAttendancePage() {
                                 }
                                 sx={{
                                   fontWeight: 850,
-                                  fontSize: 9.5
+                                  fontSize: 12
                                 }}
                               />
                               <Typography
                                 color="text.secondary"
                                 sx={{
-                                  fontSize: 9,
+                                  fontSize: 12,
                                   lineHeight: 1.35
                                 }}
                               >
@@ -6525,12 +6527,12 @@ export default function HrAttendancePage() {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             justifyContent: "space-between",
             px: 2
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
-          <Button
+          <Button sx={uiLayout.buttonSx}
             onClick={() => setBioBulkOpen(false)}
             disabled={
               bioBulkSaving || bioBulkRefreshing
@@ -6547,11 +6549,11 @@ export default function HrAttendancePage() {
               !bioBulkApprovedLinks.length
             }
             onClick={saveBioBulkLinks}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primary,
               fontWeight: 950,
               minWidth: 190
-            }}
+            }, uiLayout.buttonSx)}
           >
             {bioBulkSaving
               ? "جاري اعتماد الربط..."
@@ -6561,7 +6563,7 @@ export default function HrAttendancePage() {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={bioDialogOpen}
         onClose={() =>
           !bioSavingId &&
@@ -6602,7 +6604,7 @@ export default function HrAttendancePage() {
               </Alert>
             )}
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               fullWidth
               value={bioSearch}
@@ -6706,7 +6708,7 @@ export default function HrAttendancePage() {
                               }`}
                               sx={{
                                 height: 22,
-                                fontSize: 9.3,
+                                fontSize: 12,
                                 fontWeight: 850
                               }}
                             />
@@ -6717,7 +6719,7 @@ export default function HrAttendancePage() {
                           color="text.secondary"
                           sx={{
                             mt: 0.25,
-                            fontSize: 10.5
+                            fontSize: 12
                           }}
                         >
                           BioTime ID: {bio.id}
@@ -6733,7 +6735,7 @@ export default function HrAttendancePage() {
                             color="text.secondary"
                             sx={{
                               mt: 0.2,
-                              fontSize: 10
+                              fontSize: 12
                             }}
                           >
                             {bio.areas.join(" • ")}
@@ -6755,11 +6757,11 @@ export default function HrAttendancePage() {
                         onClick={() =>
                           linkBioEmployee(bio)
                         }
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           minWidth: 110,
                           bgcolor: primary,
                           fontWeight: 900
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         {bioSavingId === bio.id
                           ? "جاري الربط..."
@@ -6779,8 +6781,8 @@ export default function HrAttendancePage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setBioDialogOpen(false)
             }

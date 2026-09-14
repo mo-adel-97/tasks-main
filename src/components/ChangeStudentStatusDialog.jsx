@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -260,7 +261,7 @@ const ChangeStudentStatusDialog = ({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone
             ? "58px"
@@ -284,7 +285,7 @@ const ChangeStudentStatusDialog = ({
             ? "stretch"
             : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone
@@ -348,7 +349,7 @@ const ChangeStudentStatusDialog = ({
               : 2,
 
           fontSize: isPhone
-            ? "0.68rem"
+            ? "0.75rem"
             : isTablet
               ? "0.8rem"
               : undefined,
@@ -384,17 +385,17 @@ const ChangeStudentStatusDialog = ({
 
           "& .MuiInputLabel-root": {
             fontSize: isPhone
-              ? "0.47rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.56rem"
+                ? "0.75rem"
                 : undefined
           },
 
           "& .MuiInputBase-input": {
             fontSize: isPhone
-              ? "0.5rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.59rem"
+                ? "0.75rem"
                 : undefined,
 
             py: isPhone
@@ -418,9 +419,9 @@ const ChangeStudentStatusDialog = ({
 
           "& .MuiFormHelperText-root": {
             fontSize: isPhone
-              ? "0.4rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.48rem"
+                ? "0.75rem"
                 : undefined
           }
         }}
@@ -433,9 +434,9 @@ const ChangeStudentStatusDialog = ({
               py: isCompact ? 0.15 : undefined,
 
               fontSize: isPhone
-                ? "0.46rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.54rem"
+                  ? "0.75rem"
                   : undefined
             }}
           >
@@ -472,7 +473,7 @@ const ChangeStudentStatusDialog = ({
             }
           >
             <Grid item xs={12} sm={6}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 label="اسم الطالب"
                 value={studentName}
                 InputProps={{ readOnly: true }}
@@ -480,8 +481,8 @@ const ChangeStudentStatusDialog = ({
               />
             </Grid>
 
-            <Grid item xs={6} sm={3}>
-              <TextField
+            <Grid item xs={12} sm={3}>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 label="رقم الهوية"
                 value={nationalId}
                 InputProps={{ readOnly: true }}
@@ -489,8 +490,8 @@ const ChangeStudentStatusDialog = ({
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
-            <Grid item xs={6} sm={3}>
-              <TextField
+            <Grid item xs={12} sm={3}>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 label="الحالة الحالية"
                 value={currentStatus || "-"}
                 InputProps={{ readOnly: true }}
@@ -500,7 +501,7 @@ const ChangeStudentStatusDialog = ({
           </Grid>
         </Paper>
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           label="بحث في الحالات"
           value={search}
@@ -522,11 +523,11 @@ const ChangeStudentStatusDialog = ({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: isCompact
               ? 0.4
               : 1.5
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         <Paper
@@ -585,9 +586,9 @@ const ChangeStudentStatusDialog = ({
                 fontWeight: 800,
 
                 fontSize: isPhone
-                  ? "0.5rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.58rem"
+                    ? "0.75rem"
                     : undefined
               }}
             >
@@ -685,7 +686,7 @@ const ChangeStudentStatusDialog = ({
           )}
         </Paper>
 
-        <TextField
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
           fullWidth
           multiline
           minRows={
@@ -719,9 +720,9 @@ const ChangeStudentStatusDialog = ({
                 : undefined,
 
               fontSize: isPhone
-                ? "0.46rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.54rem"
+                  ? "0.75rem"
                   : undefined
             }}
           >
@@ -734,7 +735,7 @@ const ChangeStudentStatusDialog = ({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone
             ? 0.35
             : isTablet
@@ -752,7 +753,7 @@ const ChangeStudentStatusDialog = ({
             : 1,
 
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
@@ -780,7 +781,7 @@ const ChangeStudentStatusDialog = ({
               />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor:
               primaryColor,
 
@@ -803,11 +804,11 @@ const ChangeStudentStatusDialog = ({
                 : undefined,
 
             fontSize: isPhone
-              ? "0.48rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.56rem"
+                ? "0.75rem"
                 : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           حفظ
         </Button>
@@ -815,7 +816,7 @@ const ChangeStudentStatusDialog = ({
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900,
 
@@ -838,11 +839,11 @@ const ChangeStudentStatusDialog = ({
                 : undefined,
 
             fontSize: isPhone
-              ? "0.48rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.56rem"
+                ? "0.75rem"
                 : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

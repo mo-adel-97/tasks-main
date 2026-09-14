@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import deepmerge from '@mui/utils/deepmerge';
 import { rtlComponents } from '../config/rtlComponents';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -319,7 +321,7 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
 
   return (
     <Box mt={4}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box sx={uiLayout.pageHeaderSx} display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h6" fontWeight="bold" color="primary">
           التقرير الحضوري للموظفين
         </Typography>
@@ -329,11 +331,11 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
             variant="outlined"
             startIcon={<FilterList />}
             onClick={handleFilterClick}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: '8px',
               borderWidth: '2px',
               fontWeight: 600
-            }}
+            }, uiLayout.buttonSx)}
           >
             خيارات متقدمة
           </Button>
@@ -357,7 +359,7 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
               </Typography>
               
               <Box display="flex" alignItems="center" gap={2} mb={3}>
-                <FormControl fullWidth size="small">
+                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                   <InputLabel>حالة الحضور</InputLabel>
                   <Select
                     value={bulkStatus}
@@ -414,7 +416,7 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
           <Typography variant="body1">{error}</Typography>
         </Box>
       ) : (
-        <StyledTableContainer component={Paper}>
+        <StyledTableContainer sx={uiLayout.tableContainerSx} component={Paper}>
           <Table>
             <StyledTableHead>
               <TableRow>
@@ -544,14 +546,14 @@ const OrderedListInput = ({ title, items, setItems }) => {
               >
                 {index + 1}
               </Box>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 variant="outlined"
                 value={item}
                 onChange={(e) => handleItemChange(index, e.target.value)}
                 placeholder={`أدخل البند ${index + 1}`}
                 size="small"
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '8px',
                     '& fieldset': {
@@ -565,7 +567,7 @@ const OrderedListInput = ({ title, items, setItems }) => {
                       boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                     }
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               />
               <Box style={{display:"flex"}} marginLeft={2}>
                 {index === items.length - 1 && (
@@ -650,7 +652,7 @@ const ReportPreview = ({
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={uiLayout.withUiSx({ p: 3 }, uiLayout.pageHeaderSx)}>
       {/* Header Section */}
       <Box sx={{ 
         textAlign: 'center',
@@ -706,7 +708,7 @@ const ReportPreview = ({
             </Typography>
           </Box>
 
-          <TableContainer>
+          <TableContainer sx={uiLayout.tableContainerSx}>
             <Table>
               <TableHead>
                 <TableRow sx={{ 
@@ -1284,19 +1286,19 @@ const ReportPreview = ({
       </Grid>
 
       {/* Action Buttons */}
-      <Box sx={{ 
+      <Box sx={uiLayout.withUiSx({ 
         mt: 4,
         pt: 3,
         display: 'flex',
         justifyContent: 'flex-end',
         gap: 2,
         borderTop: '1px solid rgba(0,0,0,0.1)'
-      }}>
+      }, uiLayout.actionBarSx)}>
         <Button
           variant="outlined"
           color="primary"
           onClick={onCancel}
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: 150,
             py: 1.5,
             fontWeight: 600,
@@ -1306,7 +1308,7 @@ const ReportPreview = ({
               borderWidth: '2px',
               backgroundColor: 'rgba(25, 118, 210, 0.04)'
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           تعديل التقرير
         </Button>
@@ -1315,7 +1317,7 @@ const ReportPreview = ({
           color="primary"
           onClick={onConfirm}
           disabled={submitLoading}
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: 150,
             py: 1.5,
             fontWeight: 600,
@@ -1324,7 +1326,7 @@ const ReportPreview = ({
             '&:hover': {
               boxShadow: '0 4px 14px rgba(25, 118, 210, 0.4)'
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           {submitLoading ? (
             <CircularProgress size={24} color="inherit" />
@@ -1630,19 +1632,19 @@ const renderStepContent = (step) => {
                     color="success"
                     onClick={handlePreview}
                     disabled={submitLoading}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       padding: '10px 24px',
                       fontWeight: 600,
                       borderRadius: '8px'
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     معاينة التقرير
                   </Button>
                 )}
               </Box>
               
-              <Box display="flex" gap={2}>
-                <Button
+              <Box sx={uiLayout.actionBarSx} display="flex" gap={2}>
+                <Button sx={uiLayout.buttonSx}
                   variant="outlined"
                   disabled={activeStep === 0 || showPreview}
                   startIcon={<ArrowForward />}
@@ -1650,7 +1652,7 @@ const renderStepContent = (step) => {
                 >
                   السابق
                 </Button>
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   variant="contained"
                   onClick={handleNext}
                   endIcon={<ArrowBack />}

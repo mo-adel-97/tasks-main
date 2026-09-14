@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -147,8 +148,8 @@ const MoneyCell = ({ value, color = textColor }) => (
       fontWeight: 1000,
       color,
       fontSize: "0.85rem",
-      "@media (max-width:1599px)": { fontSize: "0.58rem" },
-      "@media (max-width:599px)": { fontSize: "0.49rem" }
+      "@media (max-width:1599px)": { fontSize: "0.75rem" },
+      "@media (max-width:599px)": { fontSize: "0.75rem" }
     }}
   >
     {money(value)}
@@ -185,8 +186,8 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         fontSize: "0.78rem",
         color: primaryColor,
         fontWeight: 900,
-        "@media (max-width:1599px)": { fontSize: "0.55rem" },
-        "@media (max-width:599px)": { fontSize: "0.47rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {label}
@@ -198,7 +199,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         color,
         fontWeight: 1000,
         "@media (max-width:1599px)": { fontSize: "0.82rem" },
-        "@media (max-width:599px)": { fontSize: "0.72rem" }
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {money(value)}
@@ -210,8 +211,8 @@ const EmptyBox = ({ text }) => (
   <Box
     sx={{
       height: 240,
-      "@media (max-width:1599px)": { height: 160, fontSize: "0.62rem" },
-      "@media (max-width:599px)": { height: 120, fontSize: "0.54rem" },
+      "@media (max-width:1599px)": { height: 160, fontSize: "0.75rem" },
+      "@media (max-width:599px)": { height: 120, fontSize: "0.75rem" },
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -229,8 +230,8 @@ const EllipsisText = ({ value, align = "start", direction = "rtl" }) => (
       sx={{
         width: "100%",
         fontSize: "0.82rem",
-        "@media (max-width:1599px)": { fontSize: "0.58rem" },
-        "@media (max-width:599px)": { fontSize: "0.49rem" },
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" },
         fontWeight: 800,
         color: textColor,
         whiteSpace: "nowrap",
@@ -1405,7 +1406,7 @@ const StudentStatementDialog2 = ({
           size="small"
           variant="outlined"
           onClick={() => openSalesInvoice(params.row)}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 2,
             fontWeight: 900,
             color: primaryColor,
@@ -1415,7 +1416,7 @@ const StudentStatementDialog2 = ({
               borderColor: primaryColor,
               backgroundColor: "#f0faf5"
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           عرض
         </Button>
@@ -1482,7 +1483,7 @@ const StudentStatementDialog2 = ({
           size="small"
           variant="outlined"
           onClick={() => onOpenSalesReturn?.(params.row)}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 2,
             fontWeight: 900,
             color: accentColor,
@@ -1492,7 +1493,7 @@ const StudentStatementDialog2 = ({
               borderColor: accentColor,
               backgroundColor: "#fff4f4"
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           عرض
         </Button>
@@ -1633,13 +1634,13 @@ const StudentStatementDialog2 = ({
       fullWidth
       maxWidth="xl"
       fullScreen={isPhone}
-      sx={{
+      sx={uiLayout.withUiSx({
   "& .MuiDialog-container": {
     pt: isPhone ? "120px" : isTablet ? "50px" : 1.5,
     px: isPhone ? 0 : isTablet ? 0.7 : 1.5,
     pb: isPhone ? 0 : isTablet ? 0.7 : 1.5,
   },
-}}
+}, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -1709,7 +1710,7 @@ const StudentStatementDialog2 = ({
                   maxWidth: isCompact ? 102 : undefined,
                   "& .MuiChip-label": {
                     px: isPhone ? 0.65 : isTablet ? 0.8 : undefined,
-                    fontSize: isPhone ? "0.52rem" : isTablet ? "0.6rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     whiteSpace: "nowrap"
                   }
                 }}
@@ -1729,11 +1730,11 @@ const StudentStatementDialog2 = ({
                 disabled={loading}
                 startIcon={<ArchiveIcon />}
                 variant="outlined"
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: isPhone ? 54 : isTablet ? 64 : 112,
                   height: isPhone ? 25 : isTablet ? 28 : 38,
                   px: isPhone ? 0.35 : isTablet ? 0.55 : 1.4,
-                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   borderRadius: isCompact ? 1.4 : 2.5,
                   color: whiteColor,
                   borderColor: "rgba(255,255,255,0.75)",
@@ -1755,7 +1756,7 @@ const StudentStatementDialog2 = ({
                     color: "rgba(255,255,255,0.45)",
                     borderColor: "rgba(255,255,255,0.25)"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 الأرشيف
               </Button>
@@ -1888,7 +1889,7 @@ const StudentStatementDialog2 = ({
                 fontWeight: 1000,
                 minHeight: isPhone ? 34 : isTablet ? 40 : 48,
                 minWidth: isPhone ? 86 : isTablet ? 110 : undefined,
-                fontSize: isPhone ? "0.48rem" : isTablet ? "0.58rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 px: isPhone ? 0.6 : isTablet ? 0.9 : undefined
               },
               "& .Mui-selected": {
@@ -1908,12 +1909,12 @@ const StudentStatementDialog2 = ({
           <Divider />
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               height: isPhone ? "calc(100dvh - 225px)" : isTablet ? "calc(94dvh - 245px)" : "calc(92vh - 320px)",
               minHeight: isPhone ? 360 : isTablet ? 430 : 410,
               p: isPhone ? 0.25 : isTablet ? 0.45 : 1.2,
               minWidth: 0
-            }}
+            }, uiLayout.tableContainerSx)}
           >
             {loading ? (
               <Box
@@ -1950,7 +1951,7 @@ const StudentStatementDialog2 = ({
                       labelRowsPerPage: "عدد الصفوف"
                     }
                   }}
-                  sx={gridSx}
+                  sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
                 />
               ) : (
                 <EmptyBox text="لا توجد حركات في كشف الحساب" />
@@ -1979,7 +1980,7 @@ const StudentStatementDialog2 = ({
                       labelRowsPerPage: "عدد الصفوف"
                     }
                   }}
-                  sx={gridSx}
+                  sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
                 />
               ) : (
                 <EmptyBox text="لا توجد فواتير مبيعات لهذا الطالب" />
@@ -2003,7 +2004,7 @@ const StudentStatementDialog2 = ({
                     labelRowsPerPage: "عدد الصفوف"
                   }
                 }}
-                sx={gridSx}
+                sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
               />
             ) : (
               <EmptyBox text="لا توجد مرتجعات مبيعات لهذا الطالب" />
@@ -2013,21 +2014,21 @@ const StudentStatementDialog2 = ({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.45 : isTablet ? 0.7 : 2,
           py: isPhone ? 0.35 : isTablet ? 0.55 : 1.5,
           borderTop: `1px solid ${primaryLight}`,
           backgroundColor: whiteColor
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 2,
             fontWeight: 1000,
             px: isPhone ? 1 : isTablet ? 1.4 : 4,
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             color: accentColor,
             borderColor: "#f3c6c7",
             backgroundColor: whiteColor,
@@ -2035,7 +2036,7 @@ const StudentStatementDialog2 = ({
               borderColor: accentColor,
               backgroundColor: "#fff4f4"
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -2047,7 +2048,7 @@ const StudentStatementDialog2 = ({
         fullWidth
         maxWidth="lg"
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
 
           "& .MuiDialog-container": {
             pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
@@ -2055,7 +2056,7 @@ const StudentStatementDialog2 = ({
             pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -2092,7 +2093,7 @@ const StudentStatementDialog2 = ({
             background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
             py: isPhone ? 0.45 : isTablet ? 0.65 : 1.4,
             px: isPhone ? 0.55 : isTablet ? 0.8 : 2,
-            fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : undefined,
             lineHeight: 1.2
           }}
         >
@@ -2143,7 +2144,7 @@ const StudentStatementDialog2 = ({
 
                   "& .MuiChip-label": {
                     px: isPhone ? 0.5 : isTablet ? 0.7 : undefined,
-                    fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     whiteSpace: "nowrap"
                   }
                 }}
@@ -2155,13 +2156,13 @@ const StudentStatementDialog2 = ({
               startIcon={<RefreshIcon />}
               onClick={loadArchiveStudents}
               disabled={archiveLoading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 flexShrink: 0,
                 fontWeight: 900,
                 minWidth: isPhone ? 58 : isTablet ? 72 : undefined,
                 height: isPhone ? 27 : isTablet ? 31 : undefined,
                 px: isPhone ? 0.45 : isTablet ? 0.7 : undefined,
-                fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
 
                 "& .MuiButton-startIcon": {
                   mr: 0.2,
@@ -2171,7 +2172,7 @@ const StudentStatementDialog2 = ({
                     fontSize: isPhone ? 13 : isTablet ? 15 : undefined
                   }
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -2184,7 +2185,7 @@ const StudentStatementDialog2 = ({
                 mb: isCompact ? 0.3 : 1.5,
                 py: isCompact ? 0.15 : undefined,
                 fontWeight: 900,
-                fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 flexShrink: 0
               }}
             >
@@ -2204,7 +2205,7 @@ const StudentStatementDialog2 = ({
               <Typography
                 sx={{
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.52rem" : isTablet ? "0.6rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 }}
               >
                 جاري تحميل أرشيف المتدرب...
@@ -2212,12 +2213,12 @@ const StudentStatementDialog2 = ({
             </Stack>
           ) : (
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 flex: 1,
                 minHeight: 0,
                 width: "100%",
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={archiveRows}
@@ -2355,7 +2356,7 @@ const StudentStatementDialog2 = ({
                     labelRowsPerPage: "عدد الصفوف"
                   }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   ...gridSx,
                   width: "100%",
                   height: "100%",
@@ -2364,7 +2365,7 @@ const StudentStatementDialog2 = ({
                   "& .MuiDataGrid-columnHeaderTitle": {
                     fontWeight: 1000,
                     color: whiteColor,
-                    fontSize: isPhone ? "0.41rem" : isTablet ? "0.5rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     whiteSpace: "normal",
                     lineHeight: 1.1
                   },
@@ -2372,7 +2373,7 @@ const StudentStatementDialog2 = ({
                   "& .MuiDataGrid-cell": {
                     fontWeight: 800,
                     borderColor: "#edf4f1",
-                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     px: isPhone ? 0.1 : isTablet ? 0.3 : undefined
                   },
 
@@ -2382,38 +2383,38 @@ const StudentStatementDialog2 = ({
                   },
 
                   "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           )}
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             flexShrink: 0,
             p: isPhone ? 0.3 : isTablet ? 0.45 : 1,
             borderTop: `1px solid ${primaryLight}`
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={() => setArchiveOpen(false)}
             disabled={archiveLoading}
-            sx={{
+            sx={uiLayout.withUiSx({
               color: accentColor,
               fontWeight: 900,
               minHeight: isPhone ? 28 : isTablet ? 31 : undefined,
               px: isPhone ? 1 : isTablet ? 1.3 : undefined,
-              fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-            }}
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={oldStatementOpen}
         onClose={() => !oldStatementLoading && setOldStatementOpen(false)}
         fullWidth
@@ -2448,7 +2449,7 @@ const StudentStatementDialog2 = ({
               sx={{
                 fontWeight: 1000,
                 color: whiteColor,
-                fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : "1.15rem"
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : "1.15rem"
               }}
             >
               كشف حساب سابق
@@ -2498,7 +2499,7 @@ const StudentStatementDialog2 = ({
               {oldStatementError}
             </Alert>
           ) : oldStatementData ? (
-            <Stack spacing={2}>
+            <Stack sx={uiLayout.tableContainerSx} spacing={2}>
               <Stack direction="row" spacing={isCompact ? 0.3 : 1} flexWrap="nowrap">
                 <SummaryCard
                   label="مدين"
@@ -2542,7 +2543,7 @@ const StudentStatementDialog2 = ({
                     paginationModel: { pageSize: 30, page: 0 }
                   }
                 }}
-                sx={gridSx}
+                sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
               />
 
               <Typography sx={{ fontWeight: 1000, color: primaryColor }}>
@@ -2560,17 +2561,17 @@ const StudentStatementDialog2 = ({
                     paginationModel: { pageSize: 30, page: 0 }
                   }
                 }}
-                sx={gridSx}
+                sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
               />
             </Stack>
           ) : null}
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           <Button
             onClick={() => setOldStatementOpen(false)}
             disabled={oldStatementLoading}
-            sx={{ color: accentColor, fontWeight: 900 }}
+            sx={uiLayout.withUiSx({ color: accentColor, fontWeight: 900 }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

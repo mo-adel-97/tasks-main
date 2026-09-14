@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1276,7 +1278,7 @@ export default function GeneralDaily() {
                 ...props.style,
                 fontFamily:
                   "Cairo",
-                fontSize: 11,
+                fontSize: 12,
                 minHeight: 34
               }}
             >
@@ -1308,7 +1310,7 @@ export default function GeneralDaily() {
           renderInput={(
             params
           ) => (
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               {...params}
               label={
                 field.label
@@ -1318,7 +1320,7 @@ export default function GeneralDaily() {
                   ? "بحث..."
                   : ""
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
 
                 "& .MuiInputLabel-root":
@@ -1328,8 +1330,8 @@ export default function GeneralDaily() {
                     fontWeight: 800,
                     fontSize:
                       isPhone
-                        ? 9
-                        : 11
+                        ? 12
+                        : 12
                   },
 
                 "& .MuiOutlinedInput-root":
@@ -1348,8 +1350,8 @@ export default function GeneralDaily() {
                       "Cairo",
                     fontSize:
                       isPhone
-                        ? 8.5
-                        : 10.5,
+                        ? 12
+                        : 12,
                     fontWeight: 800
                   },
 
@@ -1363,11 +1365,11 @@ export default function GeneralDaily() {
                       "Cairo",
                     fontSize:
                       isPhone
-                        ? 8
-                        : 9.5,
+                        ? 12
+                        : 12,
                     fontWeight: 800
                   }
-              }}
+              }, uiLayout.formFieldSx)}
             />
           )}
           ListboxProps={{
@@ -1574,8 +1576,8 @@ export default function GeneralDaily() {
                     opacity: 0.9,
                     fontSize:
                       isPhone
-                        ? 8
-                        : 10.5
+                        ? 12
+                        : 12
                   }}
                 >
                   حركة القيود اليومية مع الفلاتر والإجماليات
@@ -1610,7 +1612,7 @@ export default function GeneralDaily() {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display:
                     "grid",
 
@@ -1630,7 +1632,7 @@ export default function GeneralDaily() {
 
                   direction:
                     "rtl"
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <TextField
                   type="date"
@@ -1655,7 +1657,7 @@ export default function GeneralDaily() {
                     shrink: true
                   }}
                   size="small"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
 
                     "& .MuiInputBase-root":
@@ -1669,13 +1671,13 @@ export default function GeneralDaily() {
                     "& input": {
                       fontSize:
                         isPhone
-                          ? 9
-                          : 11.5,
+                          ? 12
+                          : 12,
 
                       fontWeight:
                         800
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
                 <TextField
@@ -1701,7 +1703,7 @@ export default function GeneralDaily() {
                     shrink: true
                   }}
                   size="small"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
 
                     "& .MuiInputBase-root":
@@ -1715,13 +1717,13 @@ export default function GeneralDaily() {
                     "& input": {
                       fontSize:
                         isPhone
-                          ? 9
-                          : 11.5,
+                          ? 12
+                          : 12,
 
                       fontWeight:
                         800
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
                 <Button
@@ -1747,7 +1749,7 @@ export default function GeneralDaily() {
                   disabled={
                     loading
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight:
                       isPhone
                         ? 34
@@ -1761,14 +1763,14 @@ export default function GeneralDaily() {
 
                     fontSize:
                       isPhone
-                        ? 9
-                        : 11,
+                        ? 12
+                        : 12,
 
                     "&:hover": {
                       bgcolor:
                         primaryDark
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {loading
                     ? "جاري..."
@@ -1787,7 +1789,7 @@ export default function GeneralDaily() {
                     filteredRows
                       .length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight:
                       isPhone
                         ? 34
@@ -1798,17 +1800,17 @@ export default function GeneralDaily() {
 
                     fontSize:
                       isPhone
-                        ? 9
-                        : 11,
+                        ? 12
+                        : 12,
 
                     whiteSpace:
                       "nowrap"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير Excel
                 </Button>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   value={
                     gridSearch
                   }
@@ -1836,7 +1838,7 @@ export default function GeneralDaily() {
                       </InputAdornment>
                     )
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: 0,
 
                     gridColumn:
@@ -1855,10 +1857,10 @@ export default function GeneralDaily() {
                     "& input": {
                       fontSize:
                         isPhone
-                          ? 9
-                          : 11
+                          ? 12
+                          : 12
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
               </Box>
 
@@ -1866,13 +1868,13 @@ export default function GeneralDaily() {
                 direction="row"
                 alignItems="center"
                 spacing={0.5}
-                sx={{
+                sx={uiLayout.withUiSx({
                   mt: 0.55,
                   direction:
                     "rtl",
                   flexWrap: "wrap",
                   gap: 0.4
-                }}
+                }, uiLayout.actionBarSx)}
               >
                 <Button
                   variant={
@@ -1898,7 +1900,7 @@ export default function GeneralDaily() {
                         !current
                     )
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight:
                       isPhone
                         ? 31
@@ -1914,9 +1916,9 @@ export default function GeneralDaily() {
 
                     fontSize:
                       isPhone
-                        ? 8.5
-                        : 10.5
-                  }}
+                        ? 12
+                        : 12
+                  }, uiLayout.buttonSx)}
                 >
                   فلاتر متقدمة
                   {activeFilterCount >
@@ -1938,7 +1940,7 @@ export default function GeneralDaily() {
                         createEmptyFilters()
                       )
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minHeight:
                         isPhone
                           ? 31
@@ -1949,9 +1951,9 @@ export default function GeneralDaily() {
 
                       fontSize:
                         isPhone
-                          ? 8.5
-                          : 10.5
-                    }}
+                          ? 12
+                          : 12
+                    }, uiLayout.buttonSx)}
                   >
                     مسح الفلاتر
                   </Button>
@@ -1971,8 +1973,8 @@ export default function GeneralDaily() {
                       900,
                     fontSize:
                       isPhone
-                        ? 8
-                        : 10
+                        ? 12
+                        : 12
                   }}
                 />
               </Stack>
@@ -2068,8 +2070,8 @@ export default function GeneralDaily() {
                       fontWeight: 900,
                       fontSize:
                         isPhone
-                          ? 9
-                          : 11
+                          ? 12
+                          : 12
                     }}
                   >
                     جاري تحميل اليومية العامة...
@@ -2149,8 +2151,8 @@ export default function GeneralDaily() {
                           900,
                         fontSize:
                           isPhone
-                            ? 8
-                            : 10
+                            ? 12
+                            : 12
                       }}
                     >
                       {item.title}
@@ -2190,7 +2192,7 @@ export default function GeneralDaily() {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? 430
@@ -2201,7 +2203,7 @@ export default function GeneralDaily() {
                 // لا يوجد Scroll أفقي خارجي
                 overflowX:
                   "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={
@@ -2271,7 +2273,7 @@ export default function GeneralDaily() {
                     : "odd-row"
                 }
 
-                sx={{
+                sx={uiLayout.withUiSx({
                   border:
                     `1px solid ${borderColor}`,
 
@@ -2284,7 +2286,7 @@ export default function GeneralDaily() {
                   "& .MuiDataGrid-virtualScroller":
                     {
                       overflowX:
-                        "hidden !important"
+                        "auto"
                     },
 
                   "& .MuiDataGrid-columnHeaders":
@@ -2303,10 +2305,10 @@ export default function GeneralDaily() {
                         950,
                       fontSize:
                         isDesktop
-                          ? 11.5
+                          ? 12
                           : isPhone
-                            ? 7.8
-                            : 9.6,
+                            ? 12
+                            : 12,
                       textAlign:
                         "center"
                     },
@@ -2325,10 +2327,10 @@ export default function GeneralDaily() {
                         800,
                       fontSize:
                         isDesktop
-                          ? 11.5
+                          ? 12
                           : isPhone
-                            ? 7.8
-                            : 9.5,
+                            ? 12
+                            : 12,
                       px: isPhone
                         ? 0.12
                         : 0.35,
@@ -2387,14 +2389,14 @@ export default function GeneralDaily() {
                       outline:
                         "none"
                     }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>
         </Paper>
       </Box>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={detailOpen}
         onClose={() =>
           setDetailOpen(
@@ -2508,7 +2510,7 @@ export default function GeneralDaily() {
                         "Cairo",
                       fontWeight:
                         800,
-                      fontSize: 9
+                      fontSize: 12
                     }}
                   >
                     {label}
@@ -2550,7 +2552,7 @@ export default function GeneralDaily() {
                     "Cairo",
                   fontWeight:
                     800,
-                  fontSize: 9
+                  fontSize: 12
                 }}
               >
                 البيان
@@ -2575,8 +2577,8 @@ export default function GeneralDaily() {
           </Box>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setDetailOpen(
                 false

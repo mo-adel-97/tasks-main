@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -224,7 +225,7 @@ const StudentOperationsDialog = ({
       maxWidth="md"
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone
             ? "58px"
@@ -248,7 +249,7 @@ const StudentOperationsDialog = ({
             ? "stretch"
             : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone
@@ -346,9 +347,9 @@ const StudentOperationsDialog = ({
                 fontWeight: 950,
 
                 fontSize: isPhone
-                  ? "0.58rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.7rem"
+                    ? "0.75rem"
                     : "1.05rem",
 
                 lineHeight: 1.15,
@@ -364,9 +365,9 @@ const StudentOperationsDialog = ({
             <Typography
               sx={{
                 fontSize: isPhone
-                  ? "0.4rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.48rem"
+                    ? "0.75rem"
                     : "0.78rem",
 
                 opacity: 0.92,
@@ -480,9 +481,9 @@ const StudentOperationsDialog = ({
               textAlign: "center",
 
               fontSize: isPhone
-                ? "0.5rem"
+                ? "0.75rem"
                 : isTablet
-                  ? "0.58rem"
+                  ? "0.75rem"
                   : undefined
             }}
           >
@@ -490,7 +491,7 @@ const StudentOperationsDialog = ({
           </Box>
         ) : (
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               width: "100%",
               height: "100%",
               minHeight: 0,
@@ -498,7 +499,7 @@ const StudentOperationsDialog = ({
               mt: isCompact
                 ? 0
                 : 1
-            }}
+            }, uiLayout.tableContainerSx)}
           >
             <DataGrid
               rows={rows}
@@ -531,7 +532,7 @@ const StudentOperationsDialog = ({
                   "لا توجد عمليات مسجلة على الطالب"
               }}
 
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: "100%",
 
@@ -585,9 +586,9 @@ const StudentOperationsDialog = ({
                     fontWeight: 950,
 
                     fontSize: isPhone
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.51rem"
+                        ? "0.75rem"
                         : undefined,
 
                     lineHeight: 1,
@@ -604,9 +605,9 @@ const StudentOperationsDialog = ({
                   textAlign: "center",
 
                   fontSize: isPhone
-                    ? "0.43rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
 
                   px: isPhone
@@ -661,26 +662,26 @@ const StudentOperationsDialog = ({
                         : undefined,
 
                     fontSize: isPhone
-                      ? "0.44rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.52rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
                 "& .MuiTablePagination-root": {
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
                   {
                     fontSize: isPhone
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.5rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
@@ -702,14 +703,14 @@ const StudentOperationsDialog = ({
                         ? 17
                         : undefined
                   }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         )}
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone
             ? 0.45
             : isTablet
@@ -723,13 +724,13 @@ const StudentOperationsDialog = ({
               : 1,
 
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="outlined"
           color="error"
           onClick={onClose}
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: isPhone
               ? 65
               : isTablet
@@ -745,11 +746,11 @@ const StudentOperationsDialog = ({
             fontWeight: 900,
 
             fontSize: isPhone
-              ? "0.46rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.54rem"
+                ? "0.75rem"
                 : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

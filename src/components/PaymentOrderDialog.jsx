@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -165,7 +166,7 @@ const InfoField = ({
       sx={{
         color: primaryDark,
         fontWeight: 950,
-        fontSize: compact ? "0.56rem" : "0.72rem",
+        fontSize: compact ? "0.75rem" : "0.75rem",
         mb: 0.25,
         lineHeight: 1.2
       }}
@@ -177,7 +178,7 @@ const InfoField = ({
       sx={{
         color: "#1f2d3d",
         fontWeight: 900,
-        fontSize: compact ? "0.68rem" : "0.83rem",
+        fontSize: compact ? "0.75rem" : "0.83rem",
         lineHeight: 1.45,
         minHeight: compact ? 19 : 24,
         overflowWrap: "anywhere",
@@ -1110,12 +1111,12 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
         maxWidth="xl"
         fullScreen={isPhone}
         dir="rtl"
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             alignItems: isPhone ? "stretch" : "center",
             p: isPhone ? 0 : isTablet ? 1 : 1.5
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -1158,7 +1159,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
               طلب سداد {data?.code ? `#${data.code}` : ""}
             </Typography>
             {!isPhone && (
-              <Typography sx={{ opacity: 0.86, fontSize: "0.62rem", mt: 0.2 }}>
+              <Typography sx={{ opacity: 0.86, fontSize: "0.75rem", mt: 0.2 }}>
                 جميع بيانات الطلب والتفاصيل المحاسبية
               </Typography>
             )}
@@ -1183,7 +1184,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
           }}
         >
           {error ? (
-            <Alert severity="error" sx={{ mb: 1, fontSize: { xs: ".65rem", sm: ".78rem" } }}>
+            <Alert severity="error" sx={{ mb: 1, fontSize: { xs: "0.75rem", sm: ".78rem" } }}>
               {error}
             </Alert>
           ) : null}
@@ -1203,7 +1204,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
             <Stack spacing={{ xs: 0.9, sm: 1.2 }}>
               {/* بيانات الطلب - كروت مرتبة، صفين جنب بعض على الموبايل */}
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "repeat(2, minmax(0, 1fr))",
@@ -1211,7 +1212,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                     lg: "repeat(5, minmax(0, 1fr))"
                   },
                   gap: { xs: 0.55, sm: 0.75, md: 0.9 }
-                }}
+                }, uiLayout.formGridSx)}
               >
                 <InfoField compact={isCompact} label="اسم الطالب" value={data.studentName} span={isPhone ? 2 : 1} />
                 <InfoField compact={isCompact} label="الكود" value={data.code} />
@@ -1219,7 +1220,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                 <InfoField compact={isCompact} label="التاريخ" value={formatDate(data.orderDate)} span={isPhone ? 2 : 1} />
                 <InfoField compact={isCompact} label="رقم الجوال" value={data.studentTel} />
                 {editMode ? (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx}
                     size="small"
                     label="رقم المرجع"
                     value={editReference}
@@ -1239,7 +1240,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                 )}
 
                 {editMode ? (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx}
                     size="small"
                     type="date"
                     label="تاريخ الحوالة"
@@ -1289,13 +1290,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                       );
                     }}
                     InputLabelProps={{ shrink: true }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       gridColumn: {
                         xs: "span 2",
                         sm: "span 2",
                         lg: "span 1"
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   >
                     {cashBoxesLoading && (
                       <MenuItem disabled>
@@ -1352,13 +1353,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                       )
                     }
                     InputLabelProps={{ shrink: true }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       gridColumn: {
                         xs: "span 2",
                         sm: "span 3",
                         lg: "span 5"
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 ) : (
                   <InfoField
@@ -1379,7 +1380,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                     sx={{
                       fontWeight: 1000,
                       color: primaryDark,
-                      fontSize: { xs: ".68rem", sm: ".8rem" }
+                      fontSize: { xs: "0.75rem", sm: ".8rem" }
                     }}
                   >
                     تفاصيل الطلب
@@ -1401,7 +1402,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                           sx={{
                             fontWeight: 1000,
                             color: "#263238",
-                            fontSize: { xs: ".68rem", sm: ".78rem" },
+                            fontSize: { xs: "0.75rem", sm: ".78rem" },
                             mb: 0.55,
                             overflowWrap: "anywhere"
                           }}
@@ -1435,14 +1436,14 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                 minWidth: 0
                               }}
                             >
-                              <Typography sx={{ color: "#68776f", fontSize: { xs: ".48rem", sm: ".56rem" } }}>
+                              <Typography sx={{ color: "#68776f", fontSize: { xs: "0.75rem", sm: "0.75rem" } }}>
                                 {label}
                               </Typography>
 
                               {editMode &&
                               field &&
                               Number(data?.status) === 0 ? (
-                                <TextField
+                                <TextField InputLabelProps={{ shrink: true }}
                                   size="small"
                                   type="number"
                                   value={value ?? 0}
@@ -1461,21 +1462,21 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                       padding: "4px"
                                     , direction: "ltr", unicodeBidi: "isolate" }
                                   , dir: "ltr" }}
-                                  sx={{
+                                  sx={uiLayout.withUiSx({
                                     mt: 0.2,
                                     "& .MuiInputBase-root": {
                                       fontSize: {
-                                        xs: ".56rem",
-                                        sm: ".66rem"
+                                        xs: "0.75rem",
+                                        sm: "0.75rem"
                                       }
                                     }
-                                  }}
+                                  }, uiLayout.formFieldSx)}
                                 />
                               ) : (
                                 <Typography
                                   sx={{
                                     fontWeight: 950,
-                                    fontSize: { xs: ".58rem", sm: ".67rem" },
+                                    fontSize: { xs: "0.75rem", sm: "0.75rem" },
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
                                     whiteSpace: "nowrap"
@@ -1501,11 +1502,11 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                 <TableContainer
                   component={Paper}
                   variant="outlined"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     maxHeight: 310,
                     borderRadius: 2,
                     overflowX: "auto"
-                  }}
+                  }, uiLayout.tableContainerSx)}
                 >
                   <Table stickyHeader size="small">
                     <TableHead>
@@ -1536,7 +1537,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                           <TableCell align="center">
                             {editMode &&
                             Number(data?.status) === 0 ? (
-                              <TextField
+                              <TextField InputLabelProps={{ shrink: true }}
                                 size="small"
                                 type="number"
                                 value={item.cost}
@@ -1554,7 +1555,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                     textAlign: "center"
                                   , direction: "ltr", unicodeBidi: "isolate" }
                                 , dir: "ltr" }}
-                                sx={{ width: 95 }}
+                                sx={uiLayout.withUiSx({ width: 95 }, uiLayout.formFieldSx)}
                               />
                             ) : (
                               money(item.cost)
@@ -1568,7 +1569,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                           <TableCell align="center">
                             {editMode &&
                             Number(data?.status) === 0 ? (
-                              <TextField
+                              <TextField InputLabelProps={{ shrink: true }}
                                 size="small"
                                 type="number"
                                 value={item.tax}
@@ -1586,7 +1587,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                     textAlign: "center"
                                   , direction: "ltr", unicodeBidi: "isolate" }
                                 , dir: "ltr" }}
-                                sx={{ width: 95 }}
+                                sx={uiLayout.withUiSx({ width: 95 }, uiLayout.formFieldSx)}
                               />
                             ) : (
                               money(item.tax)
@@ -1599,7 +1600,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                           >
                             {editMode &&
                             Number(data?.status) === 0 ? (
-                              <TextField
+                              <TextField InputLabelProps={{ shrink: true }}
                                 size="small"
                                 type="number"
                                 value={item.subTotal}
@@ -1617,7 +1618,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                     textAlign: "center"
                                   , direction: "ltr", unicodeBidi: "isolate" }
                                 , dir: "ltr" }}
-                                sx={{ width: 95 }}
+                                sx={uiLayout.withUiSx({ width: 95 }, uiLayout.formFieldSx)}
                               />
                             ) : (
                               money(item.subTotal)
@@ -1676,14 +1677,14 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                         textAlign: "center"
                       }}
                     >
-                      <Typography sx={{ fontWeight: 900, color: "#66756e", fontSize: { xs: ".5rem", sm: ".62rem" } }}>
+                      <Typography sx={{ fontWeight: 900, color: "#66756e", fontSize: { xs: "0.75rem", sm: "0.75rem" } }}>
                         {label}
                       </Typography>
                       <Typography
                         sx={{
                           fontWeight: 1000,
                           color: accentColor,
-                          fontSize: { xs: ".68rem", sm: ".86rem" }
+                          fontSize: { xs: "0.75rem", sm: ".86rem" }
                         }}
                       >
                         {money(value)}
@@ -1695,14 +1696,14 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
 
               {/* الإجراءات الثانوية داخل المحتوى */}
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "repeat(2, minmax(0, 1fr))",
                     sm: "repeat(4, minmax(0, 1fr))"
                   },
                   gap: 0.55
-                }}
+                }, uiLayout.actionBarSx)}
               >
                 <Button
                   size="small"
@@ -1710,7 +1711,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                   startIcon={<ReceiptLongIcon />}
                   onClick={() => onOpenInvoice?.(data)}
                   disabled={!data.billGuid}
-                  sx={{ fontSize: { xs: ".56rem", sm: ".68rem" }, minHeight: 34 }}
+                  sx={uiLayout.withUiSx({ fontSize: { xs: "0.75rem", sm: "0.75rem" }, minHeight: 34 }, uiLayout.buttonSx)}
                 >
                   عرض الفاتورة
                 </Button>
@@ -1719,7 +1720,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                   variant="outlined"
                   startIcon={<AccountBalanceWalletIcon />}
                   onClick={() => onOpenStatement?.(data)}
-                  sx={{ fontSize: { xs: ".56rem", sm: ".68rem" }, minHeight: 34 }}
+                  sx={uiLayout.withUiSx({ fontSize: { xs: "0.75rem", sm: "0.75rem" }, minHeight: 34 }, uiLayout.buttonSx)}
                 >
                   كشف الحساب
                 </Button>
@@ -1728,7 +1729,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                   variant="outlined"
                   startIcon={<HistoryIcon />}
                   onClick={() => onOpenOperations?.(data)}
-                  sx={{ fontSize: { xs: ".56rem", sm: ".68rem" }, minHeight: 34 }}
+                  sx={uiLayout.withUiSx({ fontSize: { xs: "0.75rem", sm: "0.75rem" }, minHeight: 34 }, uiLayout.buttonSx)}
                 >
                   العمليات
                 </Button>
@@ -1738,7 +1739,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                   startIcon={<AttachFileIcon />}
                   onClick={() => attachmentUrl && window.open(attachmentUrl, "_blank", "noopener,noreferrer")}
                   disabled={!attachmentUrl}
-                  sx={{ fontSize: { xs: ".56rem", sm: ".68rem" }, minHeight: 34 }}
+                  sx={uiLayout.withUiSx({ fontSize: { xs: "0.75rem", sm: "0.75rem" }, minHeight: 34 }, uiLayout.buttonSx)}
                 >
                   مستند الدفع
                 </Button>
@@ -1754,13 +1755,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                       order?.billCode
                     )
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontSize: {
-                      xs: ".56rem",
-                      sm: ".68rem"
+                      xs: "0.75rem",
+                      sm: "0.75rem"
                     },
                     minHeight: 34
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   نسخ رقم الفاتورة
                 </Button>
@@ -1773,13 +1774,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                     startIcon={<EditIcon />}
                     onClick={startEdit}
                     disabled={!canEdit}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontSize: {
-                        xs: ".56rem",
-                        sm: ".68rem"
+                        xs: "0.75rem",
+                        sm: "0.75rem"
                       },
                       minHeight: 34
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     تعديل الطلب
                   </Button>
@@ -1801,13 +1802,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                       }
                       onClick={saveEdit}
                       disabled={savingEdit}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         fontSize: {
-                          xs: ".56rem",
-                          sm: ".68rem"
+                          xs: "0.75rem",
+                          sm: "0.75rem"
                         },
                         minHeight: 34
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       حفظ التعديل
                     </Button>
@@ -1818,13 +1819,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                       color="error"
                       onClick={cancelEdit}
                       disabled={savingEdit}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         fontSize: {
-                          xs: ".56rem",
-                          sm: ".68rem"
+                          xs: "0.75rem",
+                          sm: "0.75rem"
                         },
                         minHeight: 34
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       إلغاء التعديل
                     </Button>
@@ -1836,7 +1837,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: { xs: 0.8, sm: 1.4, md: 2 },
             py: { xs: 0.65, sm: 0.9 },
             borderTop: "1px solid #e5ebe8",
@@ -1844,32 +1845,32 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
             flex: "0 0 auto",
             gap: 0.6,
             justifyContent: "space-between"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={onClose}
             disabled={confirming || savingEdit}
-            sx={{
+            sx={uiLayout.withUiSx({
               color: accentColor,
               fontWeight: 900,
               minWidth: { xs: 58, sm: 75 },
-              fontSize: { xs: ".58rem", sm: ".72rem" }
-            }}
+              fontSize: { xs: "0.75rem", sm: "0.75rem" }
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
 
-          <Stack direction="row" spacing={0.55}>
+          <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.55}>
             <Button
               size="small"
               variant="contained"
               onClick={printOrder}
               startIcon={<PrintIcon />}
               disabled={!data}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minHeight: { xs: 34, sm: 38 },
-                fontSize: { xs: ".58rem", sm: ".72rem" }
-              }}
+                fontSize: { xs: "0.75rem", sm: "0.75rem" }
+              }, uiLayout.buttonSx)}
             >
               طباعة
             </Button>
@@ -1885,10 +1886,10 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                   : <CheckCircleIcon />
               }
               disabled={!canConfirm || confirming || editMode || savingEdit}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minHeight: { xs: 34, sm: 38 },
-                fontSize: { xs: ".56rem", sm: ".72rem" }
-              }}
+                fontSize: { xs: "0.75rem", sm: "0.75rem" }
+              }, uiLayout.buttonSx)}
             >
               {confirming
                 ? "جاري التأكيد..."

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React from 'react';
 import {
   Dialog,
@@ -27,7 +28,7 @@ export default function UpdateDialog({
   if (!update) return null;
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       TransitionComponent={Transition}
       keepMounted
@@ -122,23 +123,23 @@ export default function UpdateDialog({
 
       {/* ================= Actions ================= */}
       <Box
-        sx={{
+        sx={uiLayout.withUiSx({
           p: 3,
           pt: 0,
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 2
-        }}
+        }, uiLayout.actionBarSx)}
       >
         <Button
           variant="contained"
           startIcon={<DownloadIcon />}
           onClick={onDownload}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 3,
             px: 3,
             background: 'linear-gradient(135deg, #2563eb, #1e40af)'
-          }}
+          }, uiLayout.buttonSx)}
         >
           تحميل التحديث
         </Button>
@@ -146,7 +147,7 @@ export default function UpdateDialog({
         <Button
           variant="outlined"
           onClick={onClose}
-          sx={{ borderRadius: 3, px: 3 }}
+          sx={uiLayout.withUiSx({ borderRadius: 3, px: 3 }, uiLayout.buttonSx)}
         >
           لاحقًا
         </Button>

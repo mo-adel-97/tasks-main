@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentStyle } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -453,10 +454,10 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             أهلاً {user.fullName} بك في خدمة العملاء
                         </Typography>
 
-                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+                        <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap', mb: 2 }, uiLayout.actionBarSx)}>
                             <Button
                                 variant="outlined"
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                     borderColor: primaryColor,
                                     color: primaryColor,
                                     fontFamily: "Cairo",
@@ -468,7 +469,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                         color: primaryDark,
                                         backgroundColor: `${primaryLight}20`
                                     }
-                                }}
+                                }, uiLayout.buttonSx)}
                                 onClick={() => window.dispatchEvent(new Event('openMyCallsDialog'))}
                             >
                                 سجل اتصالاتي
@@ -478,7 +479,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                 <Badge badgeContent={followUpCount} color="error" max={99}>
                                     <Button
                                         variant="outlined"
-                                        sx={{
+                                        sx={uiLayout.withUiSx({
                                             borderColor: '#e74c3c',
                                             color: '#e74c3c',
                                             fontFamily: "Cairo",
@@ -490,7 +491,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                 color: '#c0392b',
                                                 backgroundColor: '#ffeaea'
                                             }
-                                        }}
+                                        }, uiLayout.buttonSx)}
                                         onClick={() => setOpenFollowUpDialogOnlyForSales(true)}
                                     >
                                         مكالمات تحتاج إلى متابعة
@@ -500,7 +501,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                             <Button
                                 variant="contained"
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                     backgroundColor: '#25D366',
                                     color: 'white',
                                     fontFamily: 'Cairo',
@@ -511,7 +512,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                         transform: 'translateY(-2px)',
                                         boxShadow: '0 6px 12px rgba(37, 211, 102, 0.3)'
                                     }
-                                }}
+                                }, uiLayout.buttonSx)}
                                 onClick={() => setOpenWhatsAppDialog(true)}
                                 startIcon={<WhatsAppIcon sx={{ fontSize: '24px' }} />}
                             >
@@ -539,7 +540,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             🔍 البحث عن طالب
                         </Typography>
 
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                             label="أدخل رقم الهوية"
                             variant="outlined"
                             fullWidth
@@ -551,7 +552,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                 }
                             }}
                             inputProps={{ style: { textAlign: 'right' , direction: "ltr", unicodeBidi: "isolate" }, dir: "ltr" }}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
                                         borderColor: primaryLight,
@@ -567,7 +568,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     }
                                 },
                                 mb: 2
-                            }}
+                            }, uiLayout.formFieldSx)}
                         />
 
                         {loading && <CircularProgress sx={{ display: 'block', margin: '20px auto', color: primaryColor }} />}
@@ -625,7 +626,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                 }}>
                                                     معلومات الطالب
                                                 </Typography>
-                                                <TableContainer>
+                                                <TableContainer sx={uiLayout.tableContainerSx}>
     <Table>
         <TableBody>
             <TableRow>
@@ -678,10 +679,10 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                             </CardContent>
                                         </Card>
 
-                                        <Box mt={3} display="flex" gap={2} flexWrap="wrap">
+                                        <Box sx={uiLayout.actionBarSx} mt={3} display="flex" gap={2} flexWrap="wrap">
                                             <Button
                                                 variant="contained"
-                                                sx={{
+                                                sx={uiLayout.withUiSx({
                                                     backgroundColor: primaryColor,
                                                     color: 'white',
                                                     fontFamily: "Cairo",
@@ -689,7 +690,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                     '&:hover': {
                                                         backgroundColor: primaryDark
                                                     }
-                                                }}
+                                                }, uiLayout.buttonSx)}
                                                 onClick={() => setOpenCallForm(true)}
                                                 startIcon={<AddIcCall />}
                                             >
@@ -698,7 +699,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                                             <Button
                                                 variant="contained"
-                                                sx={{
+                                                sx={uiLayout.withUiSx({
                                                     backgroundColor: primaryColor,
                                                     color: 'white',
                                                     fontFamily: "Cairo",
@@ -706,7 +707,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                     '&:hover': {
                                                         backgroundColor: primaryDark
                                                     }
-                                                }}
+                                                }, uiLayout.buttonSx)}
                                                 onClick={fetchStudyInfo}
                                                 startIcon={<School />}
                                             >
@@ -715,7 +716,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                                             <Button
                                                 variant="contained"
-                                                sx={{ 
+                                                sx={uiLayout.withUiSx({ 
                                                     backgroundColor: primaryColor, 
                                                     color: 'white', 
                                                     fontFamily: "Cairo", 
@@ -723,7 +724,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                     '&:hover': {
                                                         backgroundColor: primaryDark
                                                     }
-                                                }}
+                                                }, uiLayout.buttonSx)}
                                                 onClick={() => setOpenStatementDialog(true)}
                                                 startIcon={<ReceiptLong />}
                                             >
@@ -734,7 +735,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                 <Button
                                                     onClick={() => setOpenFollowUpDialog(true)}
                                                     variant="contained"
-                                                    sx={{
+                                                    sx={uiLayout.withUiSx({
                                                         backgroundColor: '#e74c3c',
                                                         color: 'white',
                                                         fontFamily: "Cairo",
@@ -744,7 +745,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                         '&:hover': {
                                                             backgroundColor: '#c0392b',
                                                         }
-                                                    }}
+                                                    }, uiLayout.buttonSx)}
                                                 >
                                                     <Badge badgeContent={followUpCalls.length} color="error">
                                                         <NotificationsIcon />
@@ -783,11 +784,11 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                         لا توجد مكالمات مسجلة لهذا الطالب
                                                     </Typography>
                                                 ) : (
-                                                    <TableContainer component={Paper} sx={{ 
+                                                    <TableContainer component={Paper} sx={uiLayout.withUiSx({ 
                                                         borderRadius: 2, 
                                                         overflow: 'hidden',
                                                         border: `1px solid ${primaryLight}`
-                                                    }}>
+                                                    }, uiLayout.tableContainerSx)}>
                                                         <Table>
                                                             <TableHead sx={{ backgroundColor: '#f0f7f4' }}>
                                                                 <TableRow>
@@ -880,7 +881,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                           <Button
                                             onClick={() => setShowCallHistory(!showCallHistory)}
                                             variant="outlined"
-                                            sx={{
+                                            sx={uiLayout.withUiSx({
                                                 color: primaryColor,
                                                 borderColor: primaryColor,
                                                 fontFamily: 'Cairo, sans-serif',
@@ -893,7 +894,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                     color: primaryDark,
                                                     backgroundColor: `${primaryLight}20`
                                                 }
-                                            }}
+                                            }, uiLayout.buttonSx)}
                                             endIcon={
                                               <span style={{
                                                 display: 'inline-block',
@@ -936,7 +937,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                 </Card>
 
                 {/* Dialog for adding new call */}
-                <Dialog
+                <Dialog sx={uiLayout.dialogLayoutSx}
                     open={openCallForm}
                     onClose={() => setOpenCallForm(false)}
                     fullWidth
@@ -960,7 +961,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         📞 إضافة اتصال جديد
                     </DialogTitle>
                     <DialogContent sx={{ direction: 'rtl', pt: 3 }}>
-                        <FormControl fullWidth margin="normal" error={!!errors.callType}>
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal" error={!!errors.callType}>
                             <InputLabel id="call-type-label" style={{ fontFamily: "Cairo", color: primaryDark }}>نوع الاتصال</InputLabel>
                             <Select
                                 labelId="call-type-label"
@@ -986,7 +987,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                         {callForm.callType === 'study' && (
                             <>
-                                <FormControl fullWidth margin="normal">
+                                <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                                     <InputLabel id="program-inquiry-label" style={{ fontFamily: "Cairo", color: primaryDark }}>البرنامج</InputLabel>
                                     <Select
                                         labelId="program-inquiry-label"
@@ -1009,7 +1010,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     </Select>
                                 </FormControl>
 
-                                <FormControl fullWidth margin="normal">
+                                <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                                     <InputLabel id="study-topic-label" style={{ fontFamily: "Cairo", color: primaryDark }}>موضوع الاستفسار</InputLabel>
                                     <Select
                                         labelId="study-topic-label"
@@ -1036,7 +1037,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                         {callForm.callType === 'complain' && (
                             <>
-                                <FormControl fullWidth margin="normal">
+                                <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                                     <InputLabel id="complain-source-label" style={{ fontFamily: "Cairo", color: primaryDark }}>شكوى من</InputLabel>
                                     <Select
                                         labelId="complain-source-label"
@@ -1059,7 +1060,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     </Select>
                                 </FormControl>
 
-                                <TextField
+                                <TextField InputLabelProps={{ shrink: true }}
                                     label="تفاصيل الشكوى"
                                     fullWidth
                                     multiline
@@ -1068,7 +1069,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     style={{ fontFamily: "Cairo" }}
                                     value={callForm.complainDetails}
                                     onChange={(e) => setCallForm({ ...callForm, complainDetails: e.target.value })}
-                                    sx={{
+                                    sx={uiLayout.withUiSx({
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {
                                                 borderColor: primaryLight,
@@ -1077,12 +1078,12 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                 borderColor: primaryColor,
                                             }
                                         }
-                                    }}
+                                    }, uiLayout.formFieldSx)}
                                 />
                             </>
                         )}
 
-                        <FormControl fullWidth margin="normal" error={!!errors.callStatus}>
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal" error={!!errors.callStatus}>
                             <InputLabel id="call-status-label" style={{ fontFamily: "Cairo", color: primaryDark }}>حالة الاتصال</InputLabel>
                             <Select
                                 labelId="call-status-label"
@@ -1107,7 +1108,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             {errors.callStatus && <FormHelperText>{errors.callStatus}</FormHelperText>}
                         </FormControl>
 
-                        <FormControl fullWidth margin="normal">
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                             <InputLabel id="forward-call-label" style={{ fontFamily: "Cairo", color: primaryDark }}>هل تريد تمرير الاتصال؟</InputLabel>
                             <Select
                                 labelId="forward-call-label"
@@ -1131,7 +1132,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                         {callForm.forwardCall === "yes" && (
                             <>
-                                <FormControl fullWidth margin="normal">
+                                <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                                     <InputLabel id="forward-to-label" style={{ fontFamily: "Cairo", color: primaryDark }}>تمرير إلى</InputLabel>
                                     <Select
                                         labelId="forward-to-label"
@@ -1154,7 +1155,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                 </FormControl>
 
                                 {callForm.forwardTo === "supervisor" && (
-                                    <FormControl fullWidth margin="normal">
+                                    <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                                         <InputLabel id="supervisor-label" style={{ fontFamily: "Cairo", color: primaryDark }}>اختر المشرف</InputLabel>
                                         <Select
                                             labelId="supervisor-label"
@@ -1183,7 +1184,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                 )}
 
                                 {callForm.forwardTo === "sales" && (
-                                    <FormControl fullWidth margin="normal">
+                                    <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                                         <InputLabel id="sales-label" style={{ fontFamily: "Cairo", color: primaryDark }}>اختر موظف المبيعات</InputLabel>
                                         <Select
                                             labelId="sales-label"
@@ -1213,7 +1214,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             </>
                         )}
 
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                             label="ملاحظات إضافية"
                             fullWidth
                             margin="normal"
@@ -1222,7 +1223,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             style={{ fontFamily: "Cairo" }}
                             value={callForm.notes}
                             onChange={(e) => setCallForm({ ...callForm, notes: e.target.value })}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
                                         borderColor: primaryLight,
@@ -1231,13 +1232,13 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                         borderColor: primaryColor,
                                     }
                                 }
-                            }}
+                            }, uiLayout.formFieldSx)}
                         />
                     </DialogContent>
-                    <DialogActions sx={{ p: 3, borderTop: `1px solid ${primaryLight}` }}>
+                    <DialogActions sx={uiLayout.withUiSx({ p: 3, borderTop: `1px solid ${primaryLight}` }, uiLayout.dialogActionsSx)}>
                         <Button
                             onClick={() => setOpenCallForm(false)}
-                            sx={{ 
+                            sx={uiLayout.withUiSx({ 
                                 fontFamily: "Cairo", 
                                 borderRadius: 2,
                                 color: primaryColor,
@@ -1247,7 +1248,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     color: primaryDark,
                                     backgroundColor: `${primaryLight}20`
                                 }
-                            }}
+                            }, uiLayout.buttonSx)}
                             variant="outlined"
                         >
                             إلغاء
@@ -1255,14 +1256,14 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         <Button
                             onClick={submitCallForm}
                             variant="contained"
-                            sx={{ 
+                            sx={uiLayout.withUiSx({ 
                                 fontFamily: "Cairo", 
                                 borderRadius: 2,
                                 backgroundColor: primaryColor,
                                 '&:hover': {
                                     backgroundColor: primaryDark
                                 }
-                            }}
+                            }, uiLayout.buttonSx)}
                         >
                             إرسال
                         </Button>
@@ -1270,7 +1271,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                 </Dialog>
 
                 {/* Dialog for follow-up calls */}
-                <Dialog open={openFollowUpDialog} onClose={() => setOpenFollowUpDialog(false)} fullWidth maxWidth="md" PaperProps={{ 
+                <Dialog sx={uiLayout.dialogLayoutSx} open={openFollowUpDialog} onClose={() => setOpenFollowUpDialog(false)} fullWidth maxWidth="md" PaperProps={{ 
                     sx: { 
                         borderRadius: 3,
                         background: `linear-gradient(135deg, ${surfaceColor} 0%, #f0f7f4 100%)`,
@@ -1290,7 +1291,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         {followUpCalls.length === 0 ? (
                             <Typography style={{ fontFamily: "Cairo, sans-serif" }} align="center" mt={2}>لا توجد مكالمات متابعة لاحقًا.</Typography>
                         ) : (
-                            <TableContainer component={Paper} sx={{ mt: 2, borderRadius: 2, border: `1px solid ${primaryLight}` }}>
+                            <TableContainer component={Paper} sx={uiLayout.withUiSx({ mt: 2, borderRadius: 2, border: `1px solid ${primaryLight}` }, uiLayout.tableContainerSx)}>
                                 <Table>
                                     <TableHead sx={{ backgroundColor: '#f0f7f4' }}>
                                         <TableRow>
@@ -1317,7 +1318,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                 </Dialog>
 
                 {/* Dialog for study info */}
-                <Dialog open={openStudyDialog} onClose={() => setOpenStudyDialog(false)} fullWidth maxWidth="md" PaperProps={{ 
+                <Dialog sx={uiLayout.dialogLayoutSx} open={openStudyDialog} onClose={() => setOpenStudyDialog(false)} fullWidth maxWidth="md" PaperProps={{ 
                     sx: { 
                         borderRadius: 3,
                         background: `linear-gradient(135deg, ${surfaceColor} 0%, #f0f7f4 100%)`,
@@ -1338,7 +1339,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         {studyInfo.length === 0 ? (
                             <Typography align="center" mt={2}>لا توجد بيانات متاحة.</Typography>
                         ) : (
-                            <TableContainer component={Paper} style={{ marginTop: 10, borderRadius: 2, border: `1px solid ${primaryLight}` }}>
+                            <TableContainer sx={uiLayout.tableContainerSx} component={Paper} style={{ marginTop: 10, borderRadius: 2, border: `1px solid ${primaryLight}` }}>
                                 <Table>
                                     <TableBody>
                                         {studyInfo.map((item, index) => (
@@ -1359,8 +1360,8 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         )}
                     </DialogContent>
 
-                    <DialogActions sx={{ borderTop: `1px solid ${primaryLight}` }}>
-                        <Button onClick={() => setOpenStudyDialog(false)} sx={{ color: primaryColor }}>إغلاق</Button>
+                    <DialogActions sx={uiLayout.withUiSx({ borderTop: `1px solid ${primaryLight}` }, uiLayout.dialogActionsSx)}>
+                        <Button onClick={() => setOpenStudyDialog(false)} sx={uiLayout.withUiSx({ color: primaryColor }, uiLayout.buttonSx)}>إغلاق</Button>
                     </DialogActions>
                 </Dialog>
 
@@ -1372,7 +1373,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                 />
 
                 {/* WhatsApp Dialog */}
-                <Dialog
+                <Dialog sx={uiLayout.dialogLayoutSx}
                     open={openWhatsAppDialog}
                     onClose={() => {
                         setOpenWhatsAppDialog(false);
@@ -1399,7 +1400,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         إرسال تفاصيل عبر واتساب
                     </DialogTitle>
                     <DialogContent sx={{ direction: 'rtl', pt: 3 }}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                             label="الاسم"
                             fullWidth
                             margin="normal"
@@ -1407,7 +1408,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             value={whatsappData.name}
                             onChange={(e) => setWhatsappData({ ...whatsappData, name: e.target.value })}
                             required
-                            sx={{
+                            sx={uiLayout.withUiSx({
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
                                         borderColor: primaryLight,
@@ -1416,9 +1417,9 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                         borderColor: primaryColor,
                                     }
                                 }
-                            }}
+                            }, uiLayout.formFieldSx)}
                         />
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                             label="رقم الجوال"
                             fullWidth
                             margin="normal"
@@ -1427,7 +1428,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             onChange={(e) => setWhatsappData({ ...whatsappData, phone: e.target.value })}
                             helperText="يجب أن يبدأ بـ 05 ويتكون من 10 أرقام"
                             required
-                            sx={{
+                            sx={uiLayout.withUiSx({
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
                                         borderColor: primaryLight,
@@ -1436,9 +1437,9 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                         borderColor: primaryColor,
                                     }
                                 }
-                            }}
+                            }, uiLayout.formFieldSx)}
                          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                             label="ملاحظات"
                             fullWidth
                             multiline
@@ -1447,7 +1448,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             style={{ fontFamily: "Cairo" }}
                             value={whatsappData.notes}
                             onChange={(e) => setWhatsappData({ ...whatsappData, notes: e.target.value })}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
                                         borderColor: primaryLight,
@@ -1456,7 +1457,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                         borderColor: primaryColor,
                                     }
                                 }
-                            }}
+                            }, uiLayout.formFieldSx)}
                         />
 
                         {/* إضافة حالة لإظهار أي الرسائل تم إرسالها */}
@@ -1471,9 +1472,9 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             </Alert>
                         )}
                     </DialogContent>
-                    <DialogActions style={{ justifyContent: 'space-between', p: 3, borderTop: `1px solid ${primaryLight}` }}>
+                    <DialogActions sx={uiLayout.dialogActionsSx} style={{ justifyContent: 'space-between', p: 3, borderTop: `1px solid ${primaryLight}` }}>
                         <div>
-                            <Button
+                            <Button sx={uiLayout.buttonSx}
                                 style={{
                                     fontFamily: "Cairo",
                                     backgroundColor: whatsappData.sentToStudent ? '#4caf50' : '#25D366',
@@ -1529,7 +1530,7 @@ hr@administration.sstli.com
                                 {whatsappData.sentToStudent ? 'تم الإرسال للطالب' : 'إرسال للطالب'}
                             </Button>
 
-                            <Button
+                            <Button sx={uiLayout.buttonSx}
                                 style={{
                                     fontFamily: "Cairo",
                                     backgroundColor: whatsappData.sentToHR ? '#4caf50' : primaryColor,
@@ -1579,7 +1580,7 @@ hr@administration.sstli.com
                             </Button>
                         </div>
 
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                             style={{ 
                                 fontFamily: "Cairo",
                                 color: primaryColor,

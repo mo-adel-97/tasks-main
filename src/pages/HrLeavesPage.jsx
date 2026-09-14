@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1998,7 +2000,7 @@ export default function HrLeavesPage() {
                 <Typography
                   sx={{
                     opacity: .75,
-                    fontSize: 11
+                    fontSize: 12
                   }}
                 >
                   الطلبات ومسار موافقة المدير المباشر والموارد البشرية والأرصدة والعطلات
@@ -2022,14 +2024,14 @@ export default function HrLeavesPage() {
                   setCalculation(null);
                   setRequestOpen(true);
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: "#fff",
                   color: primaryDark,
                   fontWeight: 950,
                   "&:hover": {
                     bgcolor: "#f1fff8"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 طلب إجازة جديد
               </Button>
@@ -2139,7 +2141,7 @@ export default function HrLeavesPage() {
                   >
                     <Typography
                       color="text.secondary"
-                      sx={{ fontSize: 10 }}
+                      sx={{ fontSize: 12 }}
                     >
                       {label}
                     </Typography>
@@ -2165,14 +2167,14 @@ export default function HrLeavesPage() {
                 border: `1px solid ${border}`
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.formGridSx}
                 direction={{
                   xs: "column",
                   lg: "row"
                 }}
                 spacing={.7}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   value={
@@ -2199,7 +2201,7 @@ export default function HrLeavesPage() {
 
                 <FormControl
                   size="small"
-                  sx={{ minWidth: 190 }}
+                  sx={uiLayout.withUiSx({ minWidth: 190 }, uiLayout.formFieldSx)}
                 >
                   <InputLabel>
                     الحالة
@@ -2240,7 +2242,7 @@ export default function HrLeavesPage() {
 
                 <FormControl
                   size="small"
-                  sx={{ minWidth: 210 }}
+                  sx={uiLayout.withUiSx({ minWidth: 210 }, uiLayout.formFieldSx)}
                 >
                   <InputLabel>
                     نوع الإجازة
@@ -2284,7 +2286,7 @@ export default function HrLeavesPage() {
 
                 <FormControl
                   size="small"
-                  sx={{ minWidth: 220 }}
+                  sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}
                 >
                   <InputLabel>
                     الفرع
@@ -2347,7 +2349,7 @@ export default function HrLeavesPage() {
                   <CircularProgress />
                 </Box>
               ) : (
-                <TableContainer>
+                <TableContainer sx={uiLayout.tableContainerSx}>
                   <Table
                     size="small"
                     sx={{
@@ -2411,7 +2413,7 @@ export default function HrLeavesPage() {
                               <Typography
                                 color="text.secondary"
                                 sx={{
-                                  fontSize: 9.5
+                                  fontSize: 12
                                 }}
                               >
                                 {formatDateTime(
@@ -2431,7 +2433,7 @@ export default function HrLeavesPage() {
                               <Typography
                                 color="text.secondary"
                                 sx={{
-                                  fontSize: 9.5
+                                  fontSize: 12
                                 }}
                               >
                                 #{row.employeeCode}
@@ -2456,7 +2458,7 @@ export default function HrLeavesPage() {
                                   sx={{
                                     mt: .2,
                                     height: 20,
-                                    fontSize: 9
+                                    fontSize: 12
                                   }}
                                 />
                               )}
@@ -2500,7 +2502,7 @@ export default function HrLeavesPage() {
 
                             <TableCell>
                               {row.attachmentOriginalName ? (
-                                <Button
+                                <Button sx={uiLayout.buttonSx}
                                   size="small"
                                   startIcon={
                                     <FolderRoundedIcon />
@@ -2519,7 +2521,7 @@ export default function HrLeavesPage() {
                             </TableCell>
 
                             <TableCell>
-                              <Stack
+                              <Stack sx={uiLayout.actionBarSx}
                                 direction="row"
                                 spacing={.4}
                                 flexWrap="wrap"
@@ -2528,7 +2530,7 @@ export default function HrLeavesPage() {
                                 {row.status ===
                                   "Pending" && (
                                   <>
-                                    <Button
+                                    <Button sx={uiLayout.buttonSx}
                                       size="small"
                                       color="success"
                                       variant="contained"
@@ -2541,7 +2543,7 @@ export default function HrLeavesPage() {
                                     >
                                       اعتماد
                                     </Button>
-                                    <Button
+                                    <Button sx={uiLayout.buttonSx}
                                       size="small"
                                       color="error"
                                       variant="outlined"
@@ -2561,7 +2563,7 @@ export default function HrLeavesPage() {
                                   "Pending" ||
                                   row.status ===
                                     "Approved") && (
-                                  <Button
+                                  <Button sx={uiLayout.buttonSx}
                                     size="small"
                                     variant="text"
                                     onClick={() =>
@@ -2626,14 +2628,14 @@ export default function HrLeavesPage() {
                 border: `1px solid ${border}`
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.filterBarSx}
                 direction={{
                   xs: "column",
                   md: "row"
                 }}
                 spacing={.7}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   fullWidth
                   placeholder="بحث بالموظف..."
@@ -2660,12 +2662,12 @@ export default function HrLeavesPage() {
                   InputLabelProps={{
                     shrink: true
                   }}
-                  sx={{ width: 130 }}
+                  sx={uiLayout.withUiSx({ width: 130 }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <FormControl
                   size="small"
-                  sx={{ minWidth: 220 }}
+                  sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}
                 >
                   <InputLabel>
                     نوع الإجازة
@@ -2708,7 +2710,7 @@ export default function HrLeavesPage() {
                   variant="contained"
                   startIcon={<TuneRoundedIcon />}
                   onClick={() => setInitOpen(true)}
-                  sx={{ bgcolor: primary, fontWeight: 900, whiteSpace: "nowrap" }}
+                  sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 900, whiteSpace: "nowrap" }, uiLayout.buttonSx)}
                 >
                   تهيئة أرصدة الموظفين
                 </Button>
@@ -2734,7 +2736,7 @@ export default function HrLeavesPage() {
                   <CircularProgress />
                 </Box>
               ) : (
-                <TableContainer>
+                <TableContainer sx={uiLayout.tableContainerSx}>
                   <Table size="small">
                     <TableHead>
                       <TableRow
@@ -2777,7 +2779,7 @@ export default function HrLeavesPage() {
                             <Typography
                               color="text.secondary"
                               sx={{
-                                fontSize: 9.5
+                                fontSize: 12
                               }}
                             >
                               {row.branchName}
@@ -2822,7 +2824,7 @@ export default function HrLeavesPage() {
                             />
                           </TableCell>
                           <TableCell>
-                            <Button
+                            <Button sx={uiLayout.buttonSx}
                               size="small"
                               onClick={() =>
                                 openBalance(row)
@@ -2866,10 +2868,10 @@ export default function HrLeavesPage() {
                 variant="contained"
                 startIcon={<AddRoundedIcon />}
                 onClick={() => openType()}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: primary,
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 نوع إجازة جديد
               </Button>
@@ -2883,7 +2885,7 @@ export default function HrLeavesPage() {
                 overflow: "hidden"
               }}
             >
-              <TableContainer>
+              <TableContainer sx={uiLayout.tableContainerSx}>
                 <Table size="small">
                   <TableHead>
                     <TableRow
@@ -3001,7 +3003,7 @@ export default function HrLeavesPage() {
                 border: `1px solid ${border}`
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.filterBarSx}
                 direction="row"
                 spacing={.7}
                 alignItems="center"
@@ -3020,7 +3022,7 @@ export default function HrLeavesPage() {
                   InputLabelProps={{
                     shrink: true
                   }}
-                  sx={{ width: 140 }}
+                  sx={uiLayout.withUiSx({ width: 140 }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
@@ -3029,10 +3031,10 @@ export default function HrLeavesPage() {
                   onClick={() =>
                     openHoliday()
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor: primary,
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إضافة عطلة
                 </Button>
@@ -3047,7 +3049,7 @@ export default function HrLeavesPage() {
                 overflow: "hidden"
               }}
             >
-              <TableContainer>
+              <TableContainer sx={uiLayout.tableContainerSx}>
                 <Table size="small">
                   <TableHead>
                     <TableRow
@@ -3156,7 +3158,7 @@ export default function HrLeavesPage() {
           >
             <Box sx={{p:1.4,borderBottom:`1px solid ${border}`}}>
               <Typography sx={{fontWeight:950,fontSize:15}}>طلبات بانتظار موافقتي</Typography>
-              <Typography color="text.secondary" sx={{fontSize:11}}>
+              <Typography color="text.secondary" sx={{fontSize:12}}>
                 يظهر لك الطلب عندما تصل الموافقة إلى خطوتك فقط، وبعد الموافقة ينتقل تلقائيًا للخطوة التالية.
               </Typography>
             </Box>
@@ -3165,7 +3167,7 @@ export default function HrLeavesPage() {
             ) : myApprovals.length === 0 ? (
               <Box sx={{p:5,textAlign:"center"}}><Typography color="text.secondary">لا توجد طلبات بانتظار موافقتك حاليًا</Typography></Box>
             ) : (
-              <TableContainer sx={{width:"100%",maxWidth:"100%",overflowX:"auto"}}>
+              <TableContainer sx={uiLayout.withUiSx({width:"100%",maxWidth:"100%",overflowX:"auto"}, uiLayout.tableContainerSx)}>
                 <Table size="small" sx={{direction:LEAVES_GRID_DIRECTION,minWidth:820}}>
                   <TableHead><TableRow>
                     <TableCell>الطلب</TableCell><TableCell>الموظف</TableCell><TableCell>النوع</TableCell>
@@ -3176,15 +3178,15 @@ export default function HrLeavesPage() {
                       const [label,color]=statusInfo(row.status);
                       return <TableRow key={row.leaveRequestGuid} hover>
                         <TableCell>#{row.requestNumber}</TableCell>
-                        <TableCell><Typography sx={{fontWeight:900,fontSize:12}}>{row.employeeName}</Typography><Typography color="text.secondary" sx={{fontSize:10}}>{row.employeeCode}</Typography></TableCell>
+                        <TableCell><Typography sx={{fontWeight:900,fontSize:12}}>{row.employeeName}</Typography><Typography color="text.secondary" sx={{fontSize:12}}>{row.employeeCode}</Typography></TableCell>
                         <TableCell>{row.leaveTypeName}</TableCell>
                         <TableCell sx={{direction:LEAVES_DATE_DIRECTION,textAlign:"center"}}>{formatDate(row.fromDate)} - {formatDate(row.toDate)}</TableCell>
                         <TableCell>{row.requestedDays}</TableCell>
                         <TableCell><Chip size="small" label={label} color={color}/></TableCell>
                         <TableCell align="center">
-                          <Stack direction="row" spacing={.5} justifyContent="center">
-                            <Button size="small" variant="contained" color="success" onClick={()=>decideWorkflow(row,"approve")}>موافقة</Button>
-                            <Button size="small" variant="outlined" color="error" onClick={()=>decideWorkflow(row,"reject")}>رفض</Button>
+                          <Stack sx={uiLayout.actionBarSx} direction="row" spacing={.5} justifyContent="center">
+                            <Button sx={uiLayout.buttonSx} size="small" variant="contained" color="success" onClick={()=>decideWorkflow(row,"approve")}>موافقة</Button>
+                            <Button sx={uiLayout.buttonSx} size="small" variant="outlined" color="error" onClick={()=>decideWorkflow(row,"reject")}>رفض</Button>
                           </Stack>
                         </TableCell>
                       </TableRow>;
@@ -3229,13 +3231,13 @@ export default function HrLeavesPage() {
                   <Typography sx={{ fontWeight: 950, fontSize: 15 }}>
                     مسارات الموافقة
                   </Typography>
-                  <Typography color="text.secondary" sx={{ fontSize: 11 }}>
+                  <Typography color="text.secondary" sx={{ fontSize: 12 }}>
                     مثال: مدرب ← مشرف فرع في نفس الفرع ← مدير قسم الإشراف العام ← الموارد البشرية
                   </Typography>
                 </Box>
 
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-                  <FormControl size="small" sx={{ minWidth: 240 }}>
+                <Stack sx={uiLayout.filterBarSx} direction={{ xs: "column", sm: "row" }} spacing={1}>
+                  <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 240 }, uiLayout.formFieldSx)}>
                     <InputLabel>نوع الإجازة</InputLabel>
                     <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3252,7 +3254,7 @@ export default function HrLeavesPage() {
                     </Select>
                   </FormControl>
 
-                  <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={openNewPolicy}>
+                  <Button sx={uiLayout.buttonSx} variant="contained" startIcon={<AddRoundedIcon />} onClick={openNewPolicy}>
                     إضافة مسار
                   </Button>
                 </Stack>
@@ -3260,7 +3262,7 @@ export default function HrLeavesPage() {
             </Paper>
 
             <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.6, overflow: "hidden" }}>
-              <TableContainer sx={{ overflowX: "auto" }}>
+              <TableContainer sx={uiLayout.withUiSx({ overflowX: "auto" }, uiLayout.tableContainerSx)}>
                 <Table size="small" sx={{minWidth:1320}}>
                   <TableHead>
                     <TableRow>
@@ -3282,12 +3284,12 @@ export default function HrLeavesPage() {
                           <TableCell>
                             <Typography sx={{fontWeight:900,fontSize:12}}>{row.sourceJobTitleName}</Typography>
                             {row.sourceLegacyJobCode !== null && row.sourceLegacyJobCode !== undefined && (
-                              <Typography color="text.secondary" sx={{fontSize:10}}>Legacy: {row.sourceLegacyJobCode}</Typography>
+                              <Typography color="text.secondary" sx={{fontSize:12}}>Legacy: {row.sourceLegacyJobCode}</Typography>
                             )}
                           </TableCell>
                           <TableCell>
                             <Typography sx={{fontWeight:800,fontSize:12}}>{row.sourceDepartmentName || "غير مربوط"}</Typography>
-                            <Typography color="text.secondary" sx={{fontSize:10}}>المدير الحالي: {row.sourceDepartmentManagerName || "غير محدد"}</Typography>
+                            <Typography color="text.secondary" sx={{fontSize:12}}>المدير الحالي: {row.sourceDepartmentManagerName || "غير محدد"}</Typography>
                           </TableCell>
                           <TableCell>
                             {row.branchGuid
@@ -3318,9 +3320,9 @@ export default function HrLeavesPage() {
                           </TableCell>
                           <TableCell><Chip size="small" label={row.isActive ? "فعال" : "متوقف"} color={row.isActive ? "success" : "default"}/></TableCell>
                           <TableCell align="center">
-                            <Stack direction="row" spacing={.5} justifyContent="center">
-                              <Button size="small" onClick={() => openEditPolicy(row)}>تعديل</Button>
-                              {row.isActive && <Button size="small" color="error" onClick={() => disablePolicy(row)}>تعطيل</Button>}
+                            <Stack sx={uiLayout.actionBarSx} direction="row" spacing={.5} justifyContent="center">
+                              <Button sx={uiLayout.buttonSx} size="small" onClick={() => openEditPolicy(row)}>تعديل</Button>
+                              {row.isActive && <Button sx={uiLayout.buttonSx} size="small" color="error" onClick={() => disablePolicy(row)}>تعطيل</Button>}
                             </Stack>
                           </TableCell>
                         </TableRow>
@@ -3338,7 +3340,7 @@ export default function HrLeavesPage() {
       </Box>
 
         <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
           open={policyOpen}
           onClose={() => setPolicyOpen(false)}
           fullWidth
@@ -3354,8 +3356,8 @@ export default function HrLeavesPage() {
                 اختر <b>نوع الإجازة + المسمى الوظيفي</b>. القسم ومديره سيظهران تلقائيًا من الإعدادات الموجودة بالفعل.
               </Alert>
 
-              <Box sx={{display:"grid",gridTemplateColumns:{xs:"1fr",md:"1fr 1fr 1fr"},gap:1.2}}>
-                <FormControl size="small">
+              <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"1fr 1fr 1fr"},gap:1.2}, uiLayout.formGridSx)}>
+                <FormControl sx={uiLayout.formFieldSx} size="small">
                   <InputLabel>نوع الإجازة</InputLabel>
                   <Select
                   MenuProps={RTL_MENU_PROPS} label="نوع الإجازة" value={policyForm.leaveTypeGuid} onChange={(e) => setPolicyForm((value) => ({...value,leaveTypeGuid:e.target.value}))}>
@@ -3370,9 +3372,9 @@ export default function HrLeavesPage() {
                   getOptionLabel={(option) => `${option.jobTitleName || ""}${option.legacyJobCode !== null && option.legacyJobCode !== undefined ? ` - ${option.legacyJobCode}` : ""}`}
                   isOptionEqualToValue={(a,b) => a.jobTitleGuid === b.jobTitleGuid}
                   onChange={(_,value) => setPolicyForm((form) => ({...form,sourceJobTitleGuid:value?.jobTitleGuid || ""}))}
-                  renderInput={(params) => <TextField {...params} size="small" label="المسمى الوظيفي" placeholder="مثال: مدرب"/>}
+                  renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" label="المسمى الوظيفي" placeholder="مثال: مدرب"/>}
                 />
-                <FormControl size="small">
+                <FormControl sx={uiLayout.formFieldSx} size="small">
                   <InputLabel>الفرع - اختياري</InputLabel>
                   <Select
                   MenuProps={RTL_MENU_PROPS} label="الفرع - اختياري" value={policyForm.branchGuid} onChange={(e) => setPolicyForm((value) => ({...value,branchGuid:e.target.value}))}>
@@ -3388,10 +3390,10 @@ export default function HrLeavesPage() {
                 return (
                   <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 2, bgcolor: "#f8fbf9" }}>
                     <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(4,1fr)" }, gap: 1 }}>
-                      <Box><Typography color="text.secondary" sx={{ fontSize: 10 }}>المسمى</Typography><Typography sx={{ fontWeight: 950 }}>{source.jobTitleName}</Typography></Box>
-                      <Box><Typography color="text.secondary" sx={{ fontSize: 10 }}>القسم الموجود بالفعل</Typography><Typography sx={{ fontWeight: 950 }}>{source.departmentName || "غير مربوط بقسم"}</Typography></Box>
-                      <Box><Typography color="text.secondary" sx={{ fontSize: 10 }}>مدير القسم الموجود بالفعل</Typography><Typography sx={{ fontWeight: 950 }}>{source.departmentManagerName || "غير محدد"}</Typography></Box>
-                      <Box><Typography color="text.secondary" sx={{ fontSize: 10 }}>نطاق المسار</Typography><Typography sx={{ fontWeight: 950 }}>{policyForm.branchGuid ? (getWorkflowBranch(policyForm.branchGuid)?.branchName || "فرع محدد") : "كل الفروع"}</Typography></Box>
+                      <Box><Typography color="text.secondary" sx={{ fontSize: 12 }}>المسمى</Typography><Typography sx={{ fontWeight: 950 }}>{source.jobTitleName}</Typography></Box>
+                      <Box><Typography color="text.secondary" sx={{ fontSize: 12 }}>القسم الموجود بالفعل</Typography><Typography sx={{ fontWeight: 950 }}>{source.departmentName || "غير مربوط بقسم"}</Typography></Box>
+                      <Box><Typography color="text.secondary" sx={{ fontSize: 12 }}>مدير القسم الموجود بالفعل</Typography><Typography sx={{ fontWeight: 950 }}>{source.departmentManagerName || "غير محدد"}</Typography></Box>
+                      <Box><Typography color="text.secondary" sx={{ fontSize: 12 }}>نطاق المسار</Typography><Typography sx={{ fontWeight: 950 }}>{policyForm.branchGuid ? (getWorkflowBranch(policyForm.branchGuid)?.branchName || "فرع محدد") : "كل الفروع"}</Typography></Box>
                     </Box>
                   </Paper>
                 );
@@ -3400,9 +3402,9 @@ export default function HrLeavesPage() {
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
                 <Box>
                   <Typography sx={{ fontWeight: 950 }}>خطوات الموافقة</Typography>
-                  <Typography color="text.secondary" sx={{ fontSize: 11 }}>رتب الخطوات كما تريد. آخر خطوة هي الاعتماد النهائي.</Typography>
+                  <Typography color="text.secondary" sx={{ fontSize: 12 }}>رتب الخطوات كما تريد. آخر خطوة هي الاعتماد النهائي.</Typography>
                 </Box>
-                <Button size="small" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addPolicyStep}>إضافة خطوة</Button>
+                <Button sx={uiLayout.buttonSx} size="small" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addPolicyStep}>إضافة خطوة</Button>
               </Box>
 
               {policyForm.steps.map((step,index) => {
@@ -3415,9 +3417,9 @@ export default function HrLeavesPage() {
                 return (
                   <Paper key={index} variant="outlined" sx={{p:1.25,borderRadius:2}}>
                     <Stack spacing={1}>
-                      <Box sx={{display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px minmax(210px,1fr) minmax(250px,1.3fr) minmax(180px,1fr) auto"},gap:1,alignItems:"center"}}>
-                        <TextField size="small" label="الخطوة" value={index+1} disabled/>
-                        <FormControl size="small">
+                      <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px minmax(210px,1fr) minmax(250px,1.3fr) minmax(180px,1fr) auto"},gap:1,alignItems:"center"}, uiLayout.formGridSx)}>
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الخطوة" value={index+1} disabled/>
+                        <FormControl sx={uiLayout.formFieldSx} size="small">
                           <InputLabel>تذهب إلى</InputLabel>
                           <Select
                   MenuProps={RTL_MENU_PROPS} label="تذهب إلى" value={step.approverType} onChange={(e) => {
@@ -3447,10 +3449,10 @@ export default function HrLeavesPage() {
                             getOptionLabel={(option) => option.jobTitleName || ""}
                             isOptionEqualToValue={(a,b) => a.jobTitleGuid === b.jobTitleGuid}
                             onChange={(_,value) => updatePolicyStep(index,{targetJobTitleGuid:value?.jobTitleGuid || "",targetDepartmentGuid:value?.departmentGuid || "",approverUserGuid:"",approverUserGuids:[],stepName:value ? `${value.jobTitleName} - نفس الفرع` : "وظيفة في نفس الفرع"})}
-                            renderInput={(params) => <TextField {...params} size="small" label="المسمى داخل نفس الفرع" placeholder="مثال: مشرف فرع"/>}
+                            renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" label="المسمى داخل نفس الفرع" placeholder="مثال: مشرف فرع"/>}
                           />
                         ) : (step.approverType === "TARGET_DEPARTMENT_MANAGER" || step.approverType === "TARGET_DEPARTMENT_PEOPLE") ? (
-                          <FormControl size="small">
+                          <FormControl sx={uiLayout.formFieldSx} size="small">
                             <InputLabel>القسم المطلوب</InputLabel>
                             <Select
                   MenuProps={RTL_MENU_PROPS} label="القسم المطلوب" value={step.targetDepartmentGuid} onChange={(e) => {
@@ -3461,10 +3463,10 @@ export default function HrLeavesPage() {
                             </Select>
                           </FormControl>
                         ) : (
-                          <TextField size="small" value={step.approverType === "ORG_DIRECT_MANAGER" ? "يتحدد من الهيكل الإداري الموحد" : step.approverType === "ORG_PARENT_MANAGER" ? "أقرب وحدة أعلى في الهيكل" : step.approverType === "ORG_ROOT_MANAGER" ? "مسؤول جذر الهيكل" : (step.approverType === "SOURCE_DEPARTMENT_MANAGER" || step.approverType === "SOURCE_DEPARTMENT_PEOPLE") ? (source?.departmentName ? `قسم ${source.departmentName}` : "القسم المرتبط بالمسمى") : step.approverType === "EXECUTIVE_MANAGER" ? "قسم الإدارة التنفيذية" : "قسم الموارد البشرية"} disabled/>
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" value={step.approverType === "ORG_DIRECT_MANAGER" ? "يتحدد من الهيكل الإداري الموحد" : step.approverType === "ORG_PARENT_MANAGER" ? "أقرب وحدة أعلى في الهيكل" : step.approverType === "ORG_ROOT_MANAGER" ? "مسؤول جذر الهيكل" : (step.approverType === "SOURCE_DEPARTMENT_MANAGER" || step.approverType === "SOURCE_DEPARTMENT_PEOPLE") ? (source?.departmentName ? `قسم ${source.departmentName}` : "القسم المرتبط بالمسمى") : step.approverType === "EXECUTIVE_MANAGER" ? "قسم الإدارة التنفيذية" : "قسم الموارد البشرية"} disabled/>
                         )}
 
-                        <TextField size="small" label="اسم الخطوة" value={step.stepName} onChange={(e) => updatePolicyStep(index,{stepName:e.target.value})}/>
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم الخطوة" value={step.stepName} onChange={(e) => updatePolicyStep(index,{stepName:e.target.value})}/>
                         <Stack direction="row" spacing={.25}>
                           <IconButton size="small" onClick={() => movePolicyStep(index,-1)} disabled={index===0}>↑</IconButton>
                           <IconButton size="small" onClick={() => movePolicyStep(index,1)} disabled={index===policyForm.steps.length-1}>↓</IconButton>
@@ -3489,7 +3491,7 @@ export default function HrLeavesPage() {
                               getOptionLabel={(option) => `${option.employeeName || ""}${option.employeeCode ? ` - ${option.employeeCode}` : ""}${option.jobTitleName ? ` • ${option.jobTitleName}` : ""}${option.branchName ? ` • ${option.branchName}` : ""}`}
                               isOptionEqualToValue={(a,b) => a.employeeGuid === b.employeeGuid}
                               onChange={(_,values) => updatePolicyStep(index,{approverUserGuid:values?.[0]?.employeeGuid || "",approverUserGuids:(values || []).map((x) => x.employeeGuid).filter(Boolean)})}
-                              renderInput={(params) => <TextField {...params} size="small" label="الموافقون بالاسم - اختياري" placeholder={stepDepartment?.departmentName ? `أسماء من قسم ${stepDepartment.departmentName}` : "حدد القسم/المسمى أولاً"} helperText={step.approverType === "SAME_BRANCH_JOB_TITLE" && !policyForm.branchGuid ? "الأسماء هنا من قسم المسمى فقط. عند التنفيذ سيُقبل منهم الموجودون في نفس فرع مقدم الطلب." : "يمكن اختيار أكثر من شخص من نفس القسم؛ موافقة أي واحد منهم تنفذ الخطوة."}/>} 
+                              renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" label="الموافقون بالاسم - اختياري" placeholder={stepDepartment?.departmentName ? `أسماء من قسم ${stepDepartment.departmentName}` : "حدد القسم/المسمى أولاً"} helperText={step.approverType === "SAME_BRANCH_JOB_TITLE" && !policyForm.branchGuid ? "الأسماء هنا من قسم المسمى فقط. عند التنفيذ سيُقبل منهم الموجودون في نفس فرع مقدم الطلب." : "يمكن اختيار أكثر من شخص من نفس القسم؛ موافقة أي واحد منهم تنفذ الخطوة."}/>} 
                             />
                             <Alert severity={selectedPeople.length ? "success" : "info"} sx={{py:.25,borderRadius:1.5}}>
                               <b>الموافق الفعلي:</b>{" "}{getStepAutoApproverText(step)}
@@ -3502,34 +3504,34 @@ export default function HrLeavesPage() {
                 );
               })}
 
-              <TextField size="small" multiline minRows={2} label="ملاحظات المسار" value={policyForm.notes} onChange={(e) => setPolicyForm((value) => ({ ...value, notes: e.target.value }))} />
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" multiline minRows={2} label="ملاحظات المسار" value={policyForm.notes} onChange={(e) => setPolicyForm((value) => ({ ...value, notes: e.target.value }))} />
             </Stack>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setPolicyOpen(false)}>إلغاء</Button>
-            <Button variant="contained" onClick={savePolicy}>حفظ المسار</Button>
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx} onClick={() => setPolicyOpen(false)}>إلغاء</Button>
+            <Button sx={uiLayout.buttonSx} variant="contained" onClick={savePolicy}>حفظ المسار</Button>
           </DialogActions>
         </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX} open={initOpen} onClose={()=>!initSaving&&setInitOpen(false)} fullWidth maxWidth="sm" dir={LEAVES_PAGE_DIRECTION}>
-        <DialogTitle sx={{fontWeight:950}}>تهيئة أرصدة الموظفين</DialogTitle><DialogContent dividers><Stack spacing={1}>
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)} open={initOpen} onClose={()=>!initSaving&&setInitOpen(false)} fullWidth maxWidth="sm" dir={LEAVES_PAGE_DIRECTION}>
+        <DialogTitle sx={{fontWeight:950}}>تهيئة أرصدة الموظفين</DialogTitle><DialogContent dividers><Stack sx={uiLayout.formGridSx} spacing={1}>
           <Alert severity="info">اختار السنة ونوع الإجازة والرصيد. بدون فرع أو موظف = كل الموظفين النشطين. الافتراضي لا يلمس أي رصيد موجود مسبقًا.</Alert>
-          <Stack direction={{xs:"column",sm:"row"}} spacing={1}><TextField fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /><TextField fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /></Stack>
-          <FormControl fullWidth><InputLabel>نوع الإجازة</InputLabel><Select
+          <Stack sx={uiLayout.formGridSx} direction={{xs:"column",sm:"row"}} spacing={1}><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /></Stack>
+          <FormControl sx={uiLayout.formFieldSx} fullWidth><InputLabel>نوع الإجازة</InputLabel><Select
                   MenuProps={RTL_MENU_PROPS} label="نوع الإجازة" value={initForm.leaveTypeGuid} onChange={e=>setInitForm(x=>({...x,leaveTypeGuid:e.target.value}))}>{lookups.leaveTypes.filter(x=>x.requiresBalance).map(x=><MenuItem key={x.leaveTypeGuid} value={x.leaveTypeGuid}>{x.leaveTypeName}</MenuItem>)}</Select></FormControl>
-          <FormControl fullWidth><InputLabel>الفرع - اختياري</InputLabel><Select
+          <FormControl sx={uiLayout.formFieldSx} fullWidth><InputLabel>الفرع - اختياري</InputLabel><Select
                   MenuProps={RTL_MENU_PROPS} label="الفرع - اختياري" value={initForm.branchGuid} onChange={e=>setInitForm(x=>({...x,branchGuid:e.target.value}))}><MenuItem value="">كل الفروع</MenuItem>{lookups.branches.map(x=><MenuItem key={x.branchGuid} value={x.branchGuid}>{x.branchName}</MenuItem>)}</Select></FormControl>
           <Autocomplete
-              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS} options={lookups.employees} value={initForm.employee} onChange={(_,v)=>setInitForm(x=>({...x,employee:v}))} getOptionLabel={o=>`${o.employeeName||""} • #${o.employeeCode||"-"}`} renderInput={params=><TextField {...params} label="موظف محدد - اختياري"/>}/>
-          <FormControlLabel control={<Checkbox checked={initForm.overwriteExisting} onChange={e=>setInitForm(x=>({...x,overwriteExisting:e.target.checked}))}/>} label="استبدال الرصيد الافتتاحي الموجود بالفعل (استخدمها بحذر)"/>
-          <TextField label="سبب التهيئة" value={initForm.reason} onChange={e=>setInitForm(x=>({...x,reason:e.target.value}))}/>
-        </Stack></DialogContent><DialogActions><Button onClick={()=>setInitOpen(false)}>إلغاء</Button><Button variant="contained" disabled={initSaving} onClick={initializeBalances}>تنفيذ التهيئة</Button></DialogActions>
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS} options={lookups.employees} value={initForm.employee} onChange={(_,v)=>setInitForm(x=>({...x,employee:v}))} getOptionLabel={o=>`${o.employeeName||""} • #${o.employeeCode||"-"}`} renderInput={params=><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="موظف محدد - اختياري"/>}/>
+          <FormControlLabel sx={uiLayout.checkboxFieldSx} control={<Checkbox checked={initForm.overwriteExisting} onChange={e=>setInitForm(x=>({...x,overwriteExisting:e.target.checked}))}/>} label="استبدال الرصيد الافتتاحي الموجود بالفعل (استخدمها بحذر)"/>
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="سبب التهيئة" value={initForm.reason} onChange={e=>setInitForm(x=>({...x,reason:e.target.value}))}/>
+        </Stack></DialogContent><DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={()=>setInitOpen(false)}>إلغاء</Button><Button sx={uiLayout.buttonSx} variant="contained" disabled={initSaving} onClick={initializeBalances}>تنفيذ التهيئة</Button></DialogActions>
       </Dialog>
 
       {/* Request dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={requestOpen}
         onClose={() =>
           !requestSaving &&
@@ -3546,7 +3548,7 @@ export default function HrLeavesPage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack spacing={1.2}>
+          <Stack sx={uiLayout.filterBarSx} spacing={1.2}>
             <Autocomplete
               ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
               options={lookups.employees}
@@ -3563,7 +3565,7 @@ export default function HrLeavesPage() {
                 `${option.employeeName || ""} • #${option.employeeCode || "-"} • ${option.branchName || ""}`
               }
               renderInput={(params) => (
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   {...params}
                   label="الموظف"
                   placeholder="ابحث باسم الموظف..."
@@ -3571,7 +3573,7 @@ export default function HrLeavesPage() {
               )}
             />
 
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>
                 نوع الإجازة
               </InputLabel>
@@ -3612,14 +3614,14 @@ export default function HrLeavesPage() {
               </Select>
             </FormControl>
 
-            <Stack
+            <Stack sx={uiLayout.formGridSx}
               direction={{
                 xs: "column",
                 sm: "row"
               }}
               spacing={1}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 type="date"
                 label="من تاريخ"
@@ -3644,7 +3646,7 @@ export default function HrLeavesPage() {
                 , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 type="date"
                 label="إلى تاريخ"
@@ -3671,7 +3673,7 @@ export default function HrLeavesPage() {
             {selectedType?.allowsHalfDay &&
               requestForm.fromDate ===
                 requestForm.toDate && (
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>
                     نوع اليوم
                   </InputLabel>
@@ -3755,7 +3757,7 @@ export default function HrLeavesPage() {
               </Alert>
             ) : null}
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               multiline
               minRows={3}
               label="السبب / الملاحظات"
@@ -3771,7 +3773,7 @@ export default function HrLeavesPage() {
               }
             />
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               component="label"
               variant="outlined"
               startIcon={
@@ -3802,8 +3804,8 @@ export default function HrLeavesPage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setRequestOpen(false)
             }
@@ -3819,10 +3821,10 @@ export default function HrLeavesPage() {
               calculating ||
               Boolean(calculation?.error)
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primary,
               fontWeight: 950
-            }}
+            }, uiLayout.buttonSx)}
           >
             {requestSaving
               ? "جاري الإرسال..."
@@ -3833,7 +3835,7 @@ export default function HrLeavesPage() {
 
       {/* Balance dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={balanceOpen}
         onClose={() =>
           !balanceSaving &&
@@ -3849,7 +3851,7 @@ export default function HrLeavesPage() {
           تعديل رصيد الإجازة
         </DialogTitle>
         <DialogContent dividers>
-          <Stack spacing={1}>
+          <Stack sx={uiLayout.formGridSx} spacing={1}>
             <Alert severity="info">
               {balanceRow?.employeeName}
               {" • "}
@@ -3860,14 +3862,14 @@ export default function HrLeavesPage() {
               {balanceRow?.usedDays ?? 0}
             </Alert>
 
-            <Stack
+            <Stack sx={uiLayout.formGridSx}
               direction={{
                 xs: "column",
                 sm: "row"
               }}
               spacing={1}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 type="number"
                 label="الرصيد الافتتاحي"
@@ -3884,7 +3886,7 @@ export default function HrLeavesPage() {
                   )
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 type="number"
                 label="المكتسب"
@@ -3901,14 +3903,14 @@ export default function HrLeavesPage() {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Stack>
 
-            <Stack
+            <Stack sx={uiLayout.formGridSx}
               direction={{
                 xs: "column",
                 sm: "row"
               }}
               spacing={1}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 type="number"
                 label="المرحّل"
@@ -3925,7 +3927,7 @@ export default function HrLeavesPage() {
                   )
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 type="number"
                 label="التسويات"
@@ -3944,7 +3946,7 @@ export default function HrLeavesPage() {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Stack>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               required
               multiline
               minRows={2}
@@ -3960,7 +3962,7 @@ export default function HrLeavesPage() {
               }
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               multiline
               minRows={2}
               label="ملاحظات"
@@ -3976,15 +3978,15 @@ export default function HrLeavesPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setBalanceOpen(false)
             }
           >
             إلغاء
           </Button>
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="contained"
             onClick={saveBalance}
             disabled={
@@ -3999,7 +4001,7 @@ export default function HrLeavesPage() {
 
       {/* Type dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={typeOpen}
         onClose={() =>
           !typeSaving &&
@@ -4017,15 +4019,15 @@ export default function HrLeavesPage() {
             : "نوع إجازة جديد"}
         </DialogTitle>
         <DialogContent dividers>
-          <Stack spacing={1}>
-            <Stack
+          <Stack sx={uiLayout.formGridSx} spacing={1}>
+            <Stack sx={uiLayout.formGridSx}
               direction={{
                 xs: "column",
                 sm: "row"
               }}
               spacing={1}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="الكود"
                 value={typeForm.code}
@@ -4039,7 +4041,7 @@ export default function HrLeavesPage() {
                   )
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="اسم الإجازة"
                 value={
@@ -4057,7 +4059,7 @@ export default function HrLeavesPage() {
               />
             </Stack>
 
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>
                 طريقة احتساب الأيام
               </InputLabel>
@@ -4188,7 +4190,7 @@ export default function HrLeavesPage() {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "1fr",
@@ -4196,9 +4198,9 @@ export default function HrLeavesPage() {
                     "repeat(4,minmax(0,1fr))"
                 },
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="إشعار مسبق - يوم"
                 value={
@@ -4214,7 +4216,7 @@ export default function HrLeavesPage() {
                   )
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="حد أقصى للطلب"
                 value={
@@ -4230,7 +4232,7 @@ export default function HrLeavesPage() {
                   )
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="استحقاق افتراضي"
                 value={
@@ -4246,7 +4248,7 @@ export default function HrLeavesPage() {
                   )
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="أقصى ترحيل"
                 value={
@@ -4264,7 +4266,7 @@ export default function HrLeavesPage() {
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               multiline
               minRows={2}
               label="ملاحظات"
@@ -4280,15 +4282,15 @@ export default function HrLeavesPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setTypeOpen(false)
             }
           >
             إلغاء
           </Button>
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="contained"
             onClick={saveType}
             disabled={typeSaving}
@@ -4300,7 +4302,7 @@ export default function HrLeavesPage() {
 
       {/* Holiday dialog */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={holidayOpen}
         onClose={() =>
           !holidaySaving &&
@@ -4316,8 +4318,8 @@ export default function HrLeavesPage() {
           عطلة رسمية
         </DialogTitle>
         <DialogContent dividers>
-          <Stack spacing={1}>
-            <TextField
+          <Stack sx={uiLayout.formGridSx} spacing={1}>
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="التاريخ"
               value={
@@ -4336,7 +4338,7 @@ export default function HrLeavesPage() {
                 shrink: true
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم العطلة"
               value={
                 holidayForm.holidayName
@@ -4351,7 +4353,7 @@ export default function HrLeavesPage() {
                 )
               }
             />
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>
                 الفرع
               </InputLabel>
@@ -4391,7 +4393,7 @@ export default function HrLeavesPage() {
               </Select>
             </FormControl>
 
-            <FormControlLabel
+            <FormControlLabel sx={uiLayout.checkboxFieldSx}
               control={
                 <Checkbox
                   checked={
@@ -4411,7 +4413,7 @@ export default function HrLeavesPage() {
               label="نشطة"
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               multiline
               minRows={2}
               label="ملاحظات"
@@ -4429,15 +4431,15 @@ export default function HrLeavesPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setHolidayOpen(false)
             }
           >
             إلغاء
           </Button>
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="contained"
             onClick={saveHoliday}
             disabled={holidaySaving}

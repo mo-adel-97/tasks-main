@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -202,7 +204,7 @@ const BatchSeatsCounter = () => {
                 textAlign: "center",
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: isPhone ? "0.38rem" : "0.48rem"
+                fontSize: isPhone ? "0.75rem" : "0.75rem"
               }}
             >
               {params.value || "-"}
@@ -360,7 +362,7 @@ const BatchSeatsCounter = () => {
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.38rem" : "0.48rem"
+                  fontSize: isPhone ? "0.75rem" : "0.75rem"
                 }}
               >
                 {params.value || "-"}
@@ -843,7 +845,7 @@ const BatchSeatsCounter = () => {
                 flex: 1,
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.7rem",
+                  xs: "0.75rem",
                   sm: "0.8rem",
                   md: "0.88rem"
                 },
@@ -980,7 +982,7 @@ const BatchSeatsCounter = () => {
                     fontWeight: 950,
                     color: "#034d31",
                     fontSize: isPhone
-                      ? "0.72rem"
+                      ? "0.75rem"
                       : isTablet
                         ? "0.88rem"
                         : "1.5rem",
@@ -996,9 +998,9 @@ const BatchSeatsCounter = () => {
                     fontFamily: "Cairo",
                     color: "#61756d",
                     fontSize: isPhone
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.52rem"
+                        ? "0.75rem"
                         : undefined,
                     lineHeight: 1.35,
                     display: isPhone
@@ -1025,7 +1027,7 @@ const BatchSeatsCounter = () => {
             {/* Filters */}
             <Paper
               elevation={0}
-              sx={{
+              sx={uiLayout.withUiSx({
                 mb: isPhone
                   ? 0.65
                   : isTablet
@@ -1049,7 +1051,7 @@ const BatchSeatsCounter = () => {
 
                 background:
                   "linear-gradient(135deg,#ffffff 0%,#f3faf6 100%)"
-              }}
+              }, uiLayout.pageHeaderSx)}
             >
               <Typography
                 sx={{
@@ -1064,9 +1066,9 @@ const BatchSeatsCounter = () => {
                   color: "#034d31",
 
                   fontSize: isPhone
-                    ? "0.52rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.62rem"
+                      ? "0.75rem"
                       : undefined
                 }}
               >
@@ -1074,7 +1076,7 @@ const BatchSeatsCounter = () => {
               </Typography>
 
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "repeat(2,minmax(0,1fr))",
@@ -1087,9 +1089,9 @@ const BatchSeatsCounter = () => {
                       ? 0.65
                       : 1.5,
                   alignItems: "center"
-                }}
+                }, uiLayout.filterBarSx)}
               >
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   select
                   size="small"
                   label="نوع البرنامج"
@@ -1097,7 +1099,7 @@ const BatchSeatsCounter = () => {
                   onChange={
                     handleProgramTypeChange
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     gridColumn: {
                       xs: "1 / 2",
                       sm: "1 / 2"
@@ -1105,17 +1107,17 @@ const BatchSeatsCounter = () => {
 
                     "& .MuiInputLabel-root": {
                       fontSize: isPhone
-                        ? "0.42rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.5rem"
+                          ? "0.75rem"
                           : undefined
                     },
 
                     "& .MuiSelect-select": {
                       fontSize: isPhone
-                        ? "0.46rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.55rem"
+                          ? "0.75rem"
                           : undefined,
 
                       py: isPhone
@@ -1124,7 +1126,7 @@ const BatchSeatsCounter = () => {
                           ? 0.55
                           : undefined
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 >
                   {PROGRAM_TYPES.map(
                     (item) => (
@@ -1139,9 +1141,9 @@ const BatchSeatsCounter = () => {
                               : undefined,
 
                           fontSize: isPhone
-                            ? "0.48rem"
+                            ? "0.75rem"
                             : isTablet
-                              ? "0.56rem"
+                              ? "0.75rem"
                               : undefined,
 
                           py: isPhone
@@ -1189,17 +1191,17 @@ const BatchSeatsCounter = () => {
 
                     "& .MuiInputLabel-root": {
                       fontSize: isPhone
-                        ? "0.42rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.5rem"
+                          ? "0.75rem"
                           : undefined
                     },
 
                     "& .MuiInputBase-input": {
                       fontSize: isPhone
-                        ? "0.43rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.52rem"
+                          ? "0.75rem"
                           : undefined
                     }
                   }}
@@ -1247,7 +1249,7 @@ const BatchSeatsCounter = () => {
                     }
                   }}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       label="الفرع"
@@ -1297,7 +1299,7 @@ const BatchSeatsCounter = () => {
                     loadingSummary ||
                     !selectedBranch?.guid
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     background: "#057546",
@@ -1309,11 +1311,11 @@ const BatchSeatsCounter = () => {
                         : undefined,
 
                     fontSize: isPhone
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.54rem"
+                        ? "0.75rem"
                         : undefined
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -1337,7 +1339,7 @@ const BatchSeatsCounter = () => {
                     loadingBranches ||
                     loadingSummary
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
 
@@ -1348,11 +1350,11 @@ const BatchSeatsCounter = () => {
                         : undefined,
 
                     fontSize: isPhone
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.54rem"
+                        ? "0.75rem"
                         : undefined
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -1429,9 +1431,9 @@ const BatchSeatsCounter = () => {
                       fontWeight: 950,
                       color: item.color,
                       fontSize: isPhone
-                        ? "0.38rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.47rem"
+                          ? "0.75rem"
                           : "0.78rem",
 
                       lineHeight: 1.2
@@ -1447,9 +1449,9 @@ const BatchSeatsCounter = () => {
                       fontWeight: 950,
                       color: item.color,
                       fontSize: isPhone
-                        ? "0.58rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.68rem"
+                          ? "0.75rem"
                           : "1rem"
                     }}
                   >
@@ -1524,9 +1526,9 @@ const BatchSeatsCounter = () => {
                         : "#71837c",
 
                       fontSize: isPhone
-                        ? "0.44rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.53rem"
+                          ? "0.75rem"
                           : undefined
                     }}
                   >
@@ -1542,9 +1544,9 @@ const BatchSeatsCounter = () => {
                         fontFamily: "Cairo",
                         color: "#71837c",
                         fontSize: isPhone
-                          ? "0.38rem"
+                          ? "0.75rem"
                           : isTablet
-                            ? "0.46rem"
+                            ? "0.75rem"
                             : "0.82rem",
 
                         whiteSpace: "nowrap",
@@ -1622,9 +1624,9 @@ const BatchSeatsCounter = () => {
                   fontWeight: 950,
                   color: "#034d31",
                   fontSize: isPhone
-                    ? "0.52rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.62rem"
+                      ? "0.75rem"
                       : undefined
                 }}
               >
@@ -1636,9 +1638,9 @@ const BatchSeatsCounter = () => {
                   fontFamily: "Cairo",
                   color: "#71837c",
                   fontSize: isPhone
-                    ? "0.38rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : "0.82rem",
 
                   display: isPhone
@@ -1652,7 +1654,7 @@ const BatchSeatsCounter = () => {
 
             {/* Summary grid */}
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 height: isPhone
                   ? 350
                   : isTablet
@@ -1680,7 +1682,7 @@ const BatchSeatsCounter = () => {
 
                 overflow: "hidden",
                 background: "#fff"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={summaryRows}
@@ -1780,7 +1782,7 @@ const BatchSeatsCounter = () => {
                   toolbarQuickFilterPlaceholder:
                     "بحث داخل الدفعات..."
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   ...gridSx,
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -1808,9 +1810,9 @@ const BatchSeatsCounter = () => {
                       "& .MuiDataGrid-columnHeaderTitle"
                     ],
                     fontSize: isPhone
-                      ? "0.36rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.46rem"
+                        ? "0.75rem"
                         : undefined,
                     whiteSpace: "nowrap",
                     lineHeight: 1
@@ -1822,9 +1824,9 @@ const BatchSeatsCounter = () => {
                     ],
 
                     fontSize: isPhone
-                      ? "0.37rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.47rem"
+                        ? "0.75rem"
                         : "0.92rem",
 
                     px: isPhone
@@ -1857,9 +1859,9 @@ const BatchSeatsCounter = () => {
 
                   "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                     fontSize: isPhone
-                      ? "0.4rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.49rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
@@ -1869,7 +1871,7 @@ const BatchSeatsCounter = () => {
                     color: "#7a4d00",
                     fontWeight: 900
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
@@ -1939,9 +1941,9 @@ const BatchSeatsCounter = () => {
                         : "#71837c",
 
                       fontSize: isPhone
-                        ? "0.48rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.57rem"
+                          ? "0.75rem"
                           : undefined
                     }}
                   >
@@ -1955,9 +1957,9 @@ const BatchSeatsCounter = () => {
                       color: "#71837c",
 
                       fontSize: isPhone
-                        ? "0.37rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.45rem"
+                          ? "0.75rem"
                           : "0.82rem",
 
                       whiteSpace: "nowrap",
@@ -1975,7 +1977,7 @@ const BatchSeatsCounter = () => {
 
             {/* Details grid */}
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 height: isPhone
                   ? 340
                   : isTablet
@@ -1995,7 +1997,7 @@ const BatchSeatsCounter = () => {
 
                 overflow: "hidden",
                 background: "#fff"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={detailsRows}
@@ -2083,7 +2085,7 @@ const BatchSeatsCounter = () => {
                   toolbarQuickFilterPlaceholder:
                     "بحث داخل التفاصيل..."
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   ...gridSx,
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -2114,9 +2116,9 @@ const BatchSeatsCounter = () => {
                     ],
 
                     fontSize: isPhone
-                      ? "0.36rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.46rem"
+                        ? "0.75rem"
                         : undefined,
 
                     whiteSpace: "nowrap",
@@ -2129,9 +2131,9 @@ const BatchSeatsCounter = () => {
                     ],
 
                     fontSize: isPhone
-                      ? "0.37rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.47rem"
+                        ? "0.75rem"
                         : "0.92rem",
 
                     px: isPhone
@@ -2164,12 +2166,12 @@ const BatchSeatsCounter = () => {
 
                   "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                     fontSize: isPhone
-                      ? "0.4rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.49rem"
+                        ? "0.75rem"
                         : undefined
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>

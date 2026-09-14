@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Button, Dialog, DialogTitle, DialogContent, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, Chip, Paper
@@ -53,12 +54,12 @@ export default function TaskTrail({ subTaskGuid, currentUserGuid }) {
       <Button
         variant="outlined"
         size="small"
-        sx={{ ml: 2, fontSize: 14, borderRadius: 2, py: 0.5, px: 2 }}
+        sx={uiLayout.withUiSx({ ml: 2, fontSize: 14, borderRadius: 2, py: 0.5, px: 2 }, uiLayout.buttonSx)}
         onClick={handleOpen}
       >
         عرض مسار المهمة
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 700, color: "#2563eb" }}>
           🧭 مسار المهمة
         </DialogTitle>
@@ -72,14 +73,14 @@ export default function TaskTrail({ subTaskGuid, currentUserGuid }) {
               لا يوجد سجل لمسار المهمة بعد.
             </Typography>
           ) : (
-            <Paper elevation={0} sx={{
+            <Paper elevation={0} sx={uiLayout.withUiSx({
               borderRadius: 3,
               boxShadow: '0 1px 8px #e0e7ef44',
               maxWidth: 700,
               mx: 'auto',
               mb: 2,
               overflowX: 'auto'
-            }}>
+            }, uiLayout.tableContainerSx)}>
               <Table
                 size="small"
                 sx={{

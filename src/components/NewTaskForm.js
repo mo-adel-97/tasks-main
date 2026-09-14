@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from "react";
@@ -177,18 +178,18 @@ for (const att of form.requiredAttachments) {
           </Typography>
           <Divider sx={{ mb: 3 }} />
           <form onSubmit={handleSubmit}>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               name="taskName"
               label="اسم المهمة"
               fullWidth
               required
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
               value={form.taskName}
               onChange={handleChange}
             />
 
             {/* Task Group Dropdown - Added Here */}
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}>
               <InputLabel id="taskGroup-label">المجموعة</InputLabel>
               <Select
                 labelId="taskGroup-label"
@@ -206,7 +207,7 @@ for (const att of form.requiredAttachments) {
               </Select>
             </FormControl>
 
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}>
               <InputLabel id="department-label">القسم المختص</InputLabel>
               <Select
                 labelId="department-label"
@@ -222,18 +223,18 @@ for (const att of form.requiredAttachments) {
               </Select>
             </FormControl>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               name="expectedDuration"
               label="الوقت المتوقع (ساعة/يوم)"
               type="text"
               fullWidth
               required
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
               value={form.expectedDuration}
               onChange={handleChange}
             />
 
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}>
               <InputLabel id="approvalLevel-label">مستوى الموافقة</InputLabel>
               <Select
                 labelId="approvalLevel-label"
@@ -250,7 +251,7 @@ for (const att of form.requiredAttachments) {
               </Select>
             </FormControl>
 
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}>
               <InputLabel id="implementor-label">الجهة المنفذة</InputLabel>
               <Select
                 labelId="implementor-label"
@@ -275,23 +276,23 @@ for (const att of form.requiredAttachments) {
                 />
               }
               label="مطلوب إرفاق أو توضيح"
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.checkboxFieldSx)}
             />
 
 {form.needAttachment && (
-  <Box sx={{ mb: 2 }}>
+  <Box sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.pageHeaderSx)}>
     <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
       أسماء المرفقات/التوضيحات المطلوبة للمُنفذ
     </Typography>
 
-    <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-      <TextField
+    <Box sx={uiLayout.withUiSx({ display: "flex", gap: 1, mb: 2 }, uiLayout.filterBarSx)}>
+      <TextField InputLabelProps={{ shrink: true }}
         label="اسم المرفق أو التوضيح"
         value={attachmentInput}
         onChange={e => setAttachmentInput(e.target.value)}
-        sx={{ flex: 1 }}
+        sx={uiLayout.withUiSx({ flex: 1 }, uiLayout.formFieldSx)}
       />
-      <Button
+      <Button sx={uiLayout.buttonSx}
         variant="contained"
         onClick={handleAddAttachment}
         disabled={!attachmentInput.trim()}
@@ -336,7 +337,7 @@ for (const att of form.requiredAttachments) {
 
             {/* زر رفع ملف توضيحي اختياري */}
             <Box>
-              <Button variant="outlined" component="label">
+              <Button sx={uiLayout.buttonSx} variant="outlined" component="label">
                 ارفق ملف توضيحي (اختياري)
                 <input
                   type="file"
@@ -374,7 +375,7 @@ for (const att of form.requiredAttachments) {
               fullWidth
               variant="contained"
               disabled={loading}
-              sx={{ py: 1.2, fontWeight: 700, mt: 2 }}
+              sx={uiLayout.withUiSx({ py: 1.2, fontWeight: 700, mt: 2 }, uiLayout.buttonSx)}
             >
               {loading ? "جارٍ الحفظ..." : "إضافة المهمة"}
             </Button>

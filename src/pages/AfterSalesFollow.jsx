@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -280,9 +282,9 @@ const AfterSalesFollow = () => {
             borderRadius: 999,
             fontWeight: 900,
             fontSize: isPhone
-              ? "0.34rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.42rem"
+                ? "0.75rem"
                 : undefined,
             color:
               params.value === "تم الرد"
@@ -1104,7 +1106,7 @@ const AfterSalesFollow = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.67rem",
+                  xs: "0.75rem",
                   sm: "0.79rem"
                 },
                 color: "#17372b",
@@ -1181,7 +1183,7 @@ const AfterSalesFollow = () => {
                 fontWeight: 900,
                 color: "#034d31",
                 fontSize: isPhone
-                  ? "0.72rem"
+                  ? "0.75rem"
                   : isTablet
                     ? "0.88rem"
                     : undefined
@@ -1196,9 +1198,9 @@ const AfterSalesFollow = () => {
                 fontFamily: "Cairo",
                 color: "#61756d",
                 fontSize: isPhone
-                  ? "0.4rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.5rem"
+                    ? "0.75rem"
                     : undefined,
                 display: isPhone
                   ? "none"
@@ -1219,7 +1221,7 @@ const AfterSalesFollow = () => {
             }}
           >
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: isPhone
                   ? "repeat(2,minmax(0,1fr))"
@@ -1241,18 +1243,18 @@ const AfterSalesFollow = () => {
                 "& .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiInputBase-input": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   py: isPhone
                     ? 0.45
@@ -1281,9 +1283,9 @@ const AfterSalesFollow = () => {
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   fontSize: isPhone
-                    ? "0.43rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.51rem"
+                      ? "0.75rem"
                       : undefined,
                   px: isPhone
                     ? 0.55
@@ -1299,9 +1301,9 @@ const AfterSalesFollow = () => {
                       ? 16
                       : undefined
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="من تاريخ"
@@ -1315,7 +1317,7 @@ const AfterSalesFollow = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="إلى تاريخ"
@@ -1329,7 +1331,7 @@ const AfterSalesFollow = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 fullWidth
                 size="small"
@@ -1351,7 +1353,7 @@ const AfterSalesFollow = () => {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 fullWidth
                 size="small"
@@ -1375,7 +1377,7 @@ const AfterSalesFollow = () => {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 fullWidth
                 size="small"
@@ -1399,7 +1401,7 @@ const AfterSalesFollow = () => {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 fullWidth
                 size="small"
@@ -1423,7 +1425,7 @@ const AfterSalesFollow = () => {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 size="small"
                 label="بحث شامل"
@@ -1433,11 +1435,11 @@ const AfterSalesFollow = () => {
                     event.target.value
                   )
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.formFieldSx)}
               />
 
               <Button
@@ -1445,14 +1447,14 @@ const AfterSalesFollow = () => {
                 startIcon={<SearchIcon />}
                 onClick={loadData}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   background: "#057546"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 عرض
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 onClick={loadData}
@@ -1465,13 +1467,13 @@ const AfterSalesFollow = () => {
                 variant="outlined"
                 startIcon={<ClearAllIcon />}
                 onClick={clearFilters}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#ae1e21",
                   borderColor: "#ae1e21",
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 مسح الفلاتر
               </Button>
@@ -1496,9 +1498,9 @@ const AfterSalesFollow = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   textAlign: "center",
                   whiteSpace: "nowrap",
@@ -1512,7 +1514,7 @@ const AfterSalesFollow = () => {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 430px)"
@@ -1528,7 +1530,7 @@ const AfterSalesFollow = () => {
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1639,7 +1641,7 @@ const AfterSalesFollow = () => {
                   columnMenuUnsort:
                     "إلغاء الترتيب"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1651,15 +1653,11 @@ const AfterSalesFollow = () => {
                   },
 
                   "& .MuiDataGrid-virtualScroller": {
-                    overflowX: isCompact
-                      ? "hidden !important"
-                      : undefined
+                    overflowX: "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: isCompact
-                      ? "none"
-                      : undefined
+                    display: "block"
                   },
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -1682,9 +1680,9 @@ const AfterSalesFollow = () => {
                     textAlign: "center",
                     width: "100%",
                     fontSize: isPhone
-                      ? "0.39rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.47rem"
+                        ? "0.75rem"
                         : undefined,
                     lineHeight: 1.2
                   },
@@ -1708,9 +1706,9 @@ const AfterSalesFollow = () => {
                         ? 0.55
                         : undefined,
                     fontSize: isPhone
-                      ? "0.39rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.47rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
@@ -1742,7 +1740,7 @@ const AfterSalesFollow = () => {
                     fontWeight: 800,
                     color: "#057546",
                     fontSize: isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined,
                     minWidth: isTablet
                       ? 0
@@ -1754,7 +1752,7 @@ const AfterSalesFollow = () => {
 
                   "& .MuiDataGrid-toolbarContainer .MuiInputBase-input": {
                     fontSize: isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined
                   },
 
@@ -1767,12 +1765,12 @@ const AfterSalesFollow = () => {
                         ? 38
                         : undefined,
                     fontSize: isPhone
-                      ? "0.4rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.48rem"
+                        ? "0.75rem"
                         : undefined
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>

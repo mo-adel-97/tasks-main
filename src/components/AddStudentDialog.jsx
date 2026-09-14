@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -121,13 +122,13 @@ const FieldLabel = ({ children }) => (
       textAlign: "start",
 
       "@media (max-width:1599px)": {
-        fontSize: "0.62rem",
+        fontSize: "0.75rem",
         mb: 0.22,
         lineHeight: 1.2
       },
 
       "@media (max-width:599px)": {
-        fontSize: "0.54rem",
+        fontSize: "0.75rem",
         mb: 0.16
       }
     }}
@@ -643,13 +644,13 @@ const AddStudentDialog = ({
         fullWidth
         maxWidth="lg"
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             alignItems: isPhone ? "stretch" : "center",
             justifyContent: "center",
             p: isPhone ? 0 : isTablet ? 0.7 : 1.5
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -703,7 +704,7 @@ const AddStudentDialog = ({
             },
 
             "& .MuiSelect-select": {
-              fontSize: isPhone ? "0.55rem" : isTablet ? "0.62rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               py: isPhone ? 0.55 : isTablet ? 0.7 : undefined
             }
           }}
@@ -719,7 +720,7 @@ const AddStudentDialog = ({
                 sx={{
                   mt: isPhone ? 0.8 : 2,
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.58rem" : isTablet ? "0.66rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 }}
               >
                 جاري تجهيز شاشة إضافة الطالب...
@@ -764,39 +765,39 @@ const AddStudentDialog = ({
                   container
                   spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}
                 >
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>كود</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.acadmyId}
                       placeholder="يتولد تلقائي"
                       disabled
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         ...inputSx,
                         "& .MuiInputBase-input.Mui-disabled": {
                           WebkitTextFillColor: "#777",
                           fontWeight: 900,
                           cursor: "not-allowed"
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FieldLabel>اسم الطالب</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.studentName}
                       onChange={(e) => setValue("studentName", e.target.value)}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>رقم الجوال</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.studentTel}
@@ -805,13 +806,13 @@ const AddStudentDialog = ({
                         const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setValue("studentTel", value);
                       }}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FieldLabel>الاسم بالإنجليزية</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.studentNameEn}
@@ -820,13 +821,13 @@ const AddStudentDialog = ({
                         const value = e.target.value.replace(/[^A-Za-z0-9 ]/g, "");
                         setValue("studentNameEn", value);
                       }}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>رقم جوال آخر</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.studentTel2}
@@ -835,13 +836,13 @@ const AddStudentDialog = ({
                         const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setValue("studentTel2", value);
                       }}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>رقم الهوية</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.nationalId}
@@ -850,13 +851,13 @@ const AddStudentDialog = ({
                         const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setValue("nationalId", value);
                       }}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>الجنسية</FieldLabel>
-                    <FormControl fullWidth size="small">
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                       <Select
                         value={form.studentNational}
                         MenuProps={selectMenuProps}
@@ -872,9 +873,9 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>نوع العميل</FieldLabel>
-                    <FormControl fullWidth size="small">
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                       <Select
                         value={form.customerType}
                         MenuProps={selectMenuProps}
@@ -890,9 +891,9 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>النوع</FieldLabel>
-                    <FormControl fullWidth size="small">
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                       <Select
                         value={form.studentType}
                         MenuProps={selectMenuProps}
@@ -905,7 +906,7 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>تاريخ الميلاد ميلادي</FieldLabel>
                     <DatePicker
                       value={birthDatePickerValue}
@@ -955,21 +956,21 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FieldLabel>الإيميل</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={form.email}
                       inputProps={{ dir: "ltr" }}
                       onChange={(e) => setValue("email", e.target.value)}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>نوع الدراسة</FieldLabel>
-                    <FormControl fullWidth size="small">
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                       <Select
                         value={form.studyType}
                         MenuProps={selectMenuProps}
@@ -982,9 +983,9 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>القطاع</FieldLabel>
-                    <FormControl fullWidth size="small" error={!form.companyGuid}>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small" error={!form.companyGuid}>
                       <Select
                         value={form.companyGuid}
                         MenuProps={selectMenuProps}
@@ -1016,7 +1017,7 @@ const AddStudentDialog = ({
                         <Typography
                           sx={{
                             color: accentColor,
-                            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.75rem",
+                            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                             mt: isPhone ? 0.15 : isTablet ? 0.25 : 0.5,
                             textAlign: "start"
                           }}
@@ -1027,9 +1028,9 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>مندوب البيع</FieldLabel>
-                    <FormControl fullWidth size="small" error={!form.sellerGuid}>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small" error={!form.sellerGuid}>
                       <Select
                         value={form.sellerGuid}
                         MenuProps={selectMenuProps}
@@ -1061,7 +1062,7 @@ const AddStudentDialog = ({
                         <Typography
                           sx={{
                             color: accentColor,
-                            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.75rem",
+                            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                             mt: isPhone ? 0.15 : isTablet ? 0.25 : 0.5,
                             textAlign: "start"
                           }}
@@ -1072,33 +1073,33 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={6} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <FieldLabel>الحساب الرئيسي</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       value={context?.parentName || "العملاء"}
                       disabled
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         ...inputSx,
                         "& .MuiInputBase-input": {
                           color: accentColor,
                           fontWeight: 900,
                           WebkitTextFillColor: accentColor
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                     />
                   </Grid>
 
                   <Grid item xs={12}>
                     <FieldLabel>ملاحظات</FieldLabel>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       multiline
                       minRows={isPhone ? 2 : isTablet ? 3 : 4}
                       value={form.notes}
                       onChange={(e) => setValue("notes", e.target.value)}
-                      sx={inputSx}
+                      sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
                 </Grid>
@@ -1108,7 +1109,7 @@ const AddStudentDialog = ({
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
             gap: isPhone ? 0.45 : isTablet ? 0.65 : 1,
             backgroundColor: whiteColor,
@@ -1118,21 +1119,21 @@ const AddStudentDialog = ({
             "& .MuiButton-root": {
               minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
               px: isPhone ? 1 : isTablet ? 1.3 : undefined,
-              fontSize: isPhone ? "0.55rem" : isTablet ? "0.64rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             variant="outlined"
             startIcon={<CloseIcon />}
             onClick={onClose}
             disabled={saving}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 900,
               color: accentColor,
               borderColor: "#ffcdd2"
-            }}
+            }, uiLayout.buttonSx)}
           >
             خروج
           </Button>
@@ -1144,7 +1145,7 @@ const AddStudentDialog = ({
             }
             onClick={handleSave}
             disabled={saving || loadingContext}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 900,
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
@@ -1157,7 +1158,7 @@ const AddStudentDialog = ({
                 ml: 0.5,
                 mr: 0
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             حفظ
           </Button>

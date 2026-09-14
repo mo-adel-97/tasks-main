@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -628,18 +629,18 @@ const P2PMarketing = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: "flex", gap: 1.25, flexWrap: "wrap" }}>
+              <Box sx={uiLayout.withUiSx({ display: "flex", gap: 1.25, flexWrap: "wrap" }, uiLayout.actionBarSx)}>
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => setOpenDialog(true)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor: "#ffffff",
                     color: brand.primaryDark,
                     fontWeight: 800,
                     "&:hover": { backgroundColor: brand.primaryLight },
                     gap: 1,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إضافة جديد
                 </Button>
@@ -648,12 +649,12 @@ const P2PMarketing = () => {
                   variant="outlined"
                   startIcon={<DownloadIcon />}
                   onClick={handleExport}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color: "white",
                     borderColor: "rgba(255,255,255,0.7)",
                     "&:hover": { borderColor: "white" },
                     gap: 1,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -694,13 +695,13 @@ const P2PMarketing = () => {
           <Paper elevation={0} sx={{ p: 2, mb: 3, borderRadius: 3, border: `1px solid ${brand.border}`, backgroundColor: brand.paper }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={10}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   placeholder="بحث في السجلات..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   inputProps={{ dir: arabicDir }}
-                  sx={{ "& .MuiInputBase-root": { borderRadius: 2 } }}
+                  sx={uiLayout.withUiSx({ "& .MuiInputBase-root": { borderRadius: 2 } }, uiLayout.formFieldSx)}
                   InputProps={{
                     startAdornment: (
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1, pl: 1 }}>
@@ -716,13 +717,13 @@ const P2PMarketing = () => {
                   fullWidth
                   variant="contained"
                   onClick={() => setSearchTerm("")}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     height: 56,
                     backgroundColor: brand.primary,
                     fontWeight: 800,
                     "&:hover": { backgroundColor: brand.primaryDark },
                     gap: 1,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إعادة الضبط
                 </Button>
@@ -743,7 +744,7 @@ const P2PMarketing = () => {
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ height: 520, width: "100%" }}>
+              <Box sx={uiLayout.withUiSx({ height: 520, width: "100%" }, uiLayout.tableContainerSx)}>
                 <DataGrid
                   rows={filteredRecords}
                   columns={columns}
@@ -751,7 +752,7 @@ const P2PMarketing = () => {
                   disableRowSelectionOnClick
                   pageSizeOptions={[10, 25, 50]}
                   initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     border: "none",
                     "& .MuiDataGrid-columnHeaders": { backgroundColor: brand.primary, color: "white", fontWeight: 900 },
                     "& .MuiDataGrid-columnHeaderTitle": { fontWeight: 900 },
@@ -759,7 +760,7 @@ const P2PMarketing = () => {
                     "& .MuiDataGrid-row:hover": { backgroundColor: "rgba(128,180,158,0.10)" },
                     "& .MuiDataGrid-footerContainer": { borderTop: `1px solid ${brand.border}` },
                     "& .MuiDataGrid-cellContent": { direction: "rtl", textAlign: "start", width: "100%" },
-                  }}
+                  }, uiLayout.dataGridSx)}
                 />
               </Box>
             )}
@@ -792,7 +793,7 @@ const P2PMarketing = () => {
         </Container>
 
         {/* Add/Edit Dialog */}
-        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth dir={arabicDir}>
+        <Dialog sx={uiLayout.dialogLayoutSx} open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth dir={arabicDir}>
           <DialogTitle sx={{ backgroundColor: brand.primary, color: "white" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <HandshakeIcon />
@@ -803,7 +804,7 @@ const P2PMarketing = () => {
           <DialogContent>
             <Grid sx={{ pt: "20px" }} container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="اسم الشركة"
@@ -822,7 +823,7 @@ const P2PMarketing = () => {
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="المنطقة"
                   name="region"
@@ -840,7 +841,7 @@ const P2PMarketing = () => {
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="النشاط"
                   name="activity"
@@ -862,7 +863,7 @@ const P2PMarketing = () => {
                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, borderColor: brand.border }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                     <Typography sx={{ fontWeight: 900 }}>أرقام التواصل (متعدد)</Typography>
-                    <Button size="small" onClick={addContactNumber} startIcon={<AddIcon />}>
+                    <Button sx={uiLayout.buttonSx} size="small" onClick={addContactNumber} startIcon={<AddIcon />}>
                       إضافة رقم
                     </Button>
                   </Box>
@@ -870,7 +871,7 @@ const P2PMarketing = () => {
                   <Stack spacing={1}>
                     {formData.contactNumbers.map((val, idx) => (
                       <Box key={idx} sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           fullWidth
                           required={idx === 0}
                           label={idx === 0 ? "رقم التواصل (أساسي)" : `رقم تواصل ${idx + 1}`}
@@ -908,7 +909,7 @@ const P2PMarketing = () => {
                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, borderColor: brand.border }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                     <Typography sx={{ fontWeight: 900 }}>الإيميلات (متعدد)</Typography>
-                    <Button size="small" onClick={addEmail} startIcon={<AddIcon />}>
+                    <Button sx={uiLayout.buttonSx} size="small" onClick={addEmail} startIcon={<AddIcon />}>
                       إضافة إيميل
                     </Button>
                   </Box>
@@ -916,7 +917,7 @@ const P2PMarketing = () => {
                   <Stack spacing={1}>
                     {formData.emails.map((val, idx) => (
                       <Box key={idx} sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           fullWidth
                           label={idx === 0 ? "إيميل (اختياري)" : `إيميل ${idx + 1}`}
                           value={val}
@@ -949,7 +950,7 @@ const P2PMarketing = () => {
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="اسم مسئول التواصل"
@@ -968,7 +969,7 @@ const P2PMarketing = () => {
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="نوع الخدمة"
                   name="serviceType"
@@ -979,7 +980,7 @@ const P2PMarketing = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="الحالة"
                   name="status"
@@ -991,7 +992,7 @@ const P2PMarketing = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="ملاحظات"
                   name="notes"
@@ -1012,20 +1013,20 @@ const P2PMarketing = () => {
             </Grid>
           </DialogContent>
 
-          <DialogActions sx={{ p: 2 }}>
-            <Button onClick={handleCloseDialog} color="inherit" sx={{ gap: 1 }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
+            <Button onClick={handleCloseDialog} color="inherit" sx={uiLayout.withUiSx({ gap: 1 }, uiLayout.buttonSx)}>
               إلغاء
             </Button>
             <Button
               onClick={handleSubmit}
               variant="contained"
               disabled={saving}
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor: brand.primary,
                 "&:hover": { backgroundColor: brand.primaryDark },
                 fontWeight: 900,
                 gap: 1,
-              }}
+              }, uiLayout.buttonSx)}
             >
               {saving ? <CircularProgress size={22} color="inherit" /> : editMode ? "تحديث" : "حفظ"}
             </Button>
@@ -1033,7 +1034,7 @@ const P2PMarketing = () => {
         </Dialog>
 
         {/* View Details Dialog */}
-        <Dialog open={openView} onClose={handleCloseView} maxWidth="sm" fullWidth dir={arabicDir}>
+        <Dialog sx={uiLayout.dialogLayoutSx} open={openView} onClose={handleCloseView} maxWidth="sm" fullWidth dir={arabicDir}>
           <DialogTitle sx={{ backgroundColor: brand.primary, color: "white" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <VisibilityIcon />
@@ -1149,8 +1150,8 @@ const P2PMarketing = () => {
             )}
           </DialogContent>
 
-          <DialogActions sx={{ p: 2 }}>
-            <Button onClick={handleCloseView} sx={{ gap: 1 }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
+            <Button onClick={handleCloseView} sx={uiLayout.withUiSx({ gap: 1 }, uiLayout.buttonSx)}>
               إغلاق
             </Button>
           </DialogActions>

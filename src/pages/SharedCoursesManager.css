@@ -1,7 +1,21 @@
 /* تنسيقات المواد المشتركة */
 .shared-courses-manager {
   margin: 20px 0;
+  min-width: 0;
+  text-align: start;
+  overflow-wrap: anywhere;
 }
+
+.shared-courses-manager .card-title,
+.shared-courses-manager .exam-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.shared-courses-manager .btn { min-height: 44px; white-space: normal; }
 
 .shared-course-item {
   border: 1px solid #eaeaea;
@@ -62,6 +76,8 @@
 
 .question-text {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
@@ -76,7 +92,7 @@
 }
 
 .options-preview {
-  margin-right: 20px;
+  margin-inline-start: 20px;
 }
 
 .option-preview {

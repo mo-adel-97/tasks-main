@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React from "react";
 import {
   Dialog,
@@ -28,7 +29,7 @@ export default function AttachmentViewer({ open, onClose, filePath, sourceType =
       : `https://api3.sstli.com/api/SubTaskStatus/CompletedFile?filePath=${encodeURIComponent(filePath)}`;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         عرض المرفق
         <IconButton onClick={onClose} size="small">
@@ -54,7 +55,7 @@ export default function AttachmentViewer({ open, onClose, filePath, sourceType =
               variant="contained"
               href={fileUrl}
               download
-              sx={{ mt: 2 }}
+              sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.buttonSx)}
             >
               تحميل الملف
             </Button>

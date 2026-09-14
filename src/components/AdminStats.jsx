@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -119,7 +120,7 @@ export default function AdminStats() {
                 onChange={(e, newVal) => setSelectedUser(newVal)}
                 inputValue={searchInput}
                 onInputChange={(e, newInput) => setSearchInput(newInput)}
-                renderInput={(params) => <TextField {...params} label=" تصفية بالمستخدمين " variant="outlined" />}
+                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label=" تصفية بالمستخدمين " variant="outlined" />}
               />
             </Grid>
             <Grid item xs={12} md={4}>

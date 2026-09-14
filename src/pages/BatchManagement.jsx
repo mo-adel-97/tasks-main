@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -119,7 +121,7 @@ function BatchLookupDialog({
   onPick
 }) {
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -147,7 +149,7 @@ function BatchLookupDialog({
         dividers
         sx={{ p: { xs: 0.65, sm: 1.2 } }}
       >
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -161,15 +163,15 @@ function BatchLookupDialog({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: 0.7,
             "& .MuiInputBase-root": {
               minHeight: { xs: 34, sm: 38 }
             },
             "& input": {
-              fontSize: { xs: 11, sm: 13 }
+              fontSize: { xs: 12, sm: 13 }
             }
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         {loading ? (
@@ -209,14 +211,14 @@ function BatchLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: { xs: 8, sm: 10 } }}
+                      sx={{ fontSize: { xs: 12, sm: 12 } }}
                     >
                       الكود
                     </Typography>
                     <Typography
                       sx={{
                         fontWeight: 900,
-                        fontSize: { xs: 10.8, sm: 13 }
+                        fontSize: { xs: 12, sm: 13 }
                       }}
                     >
                       {row.code || "-"}
@@ -227,7 +229,7 @@ function BatchLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: { xs: 8, sm: 10 } }}
+                      sx={{ fontSize: { xs: 12, sm: 12 } }}
                     >
                       اسم الدفعة
                     </Typography>
@@ -235,7 +237,7 @@ function BatchLookupDialog({
                       noWrap
                       sx={{
                         fontWeight: 800,
-                        fontSize: { xs: 10.8, sm: 13 }
+                        fontSize: { xs: 12, sm: 13 }
                       }}
                     >
                       {row.name || "-"}
@@ -246,7 +248,7 @@ function BatchLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: 10 }}
+                      sx={{ fontSize: 12 }}
                     >
                       الحالة
                     </Typography>
@@ -259,7 +261,7 @@ function BatchLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: 10 }}
+                      sx={{ fontSize: 12 }}
                     >
                       التسجيل
                     </Typography>
@@ -271,11 +273,11 @@ function BatchLookupDialog({
                   <Button
                     size="small"
                     onClick={() => onPick(row)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 0,
                       px: 0.25,
-                      fontSize: { xs: 9.5, sm: 11.5 }
-                    }}
+                      fontSize: { xs: 12, sm: 12 }
+                    }, uiLayout.buttonSx)}
                   >
                     اختيار
                   </Button>
@@ -288,7 +290,7 @@ function BatchLookupDialog({
                 severity="info"
                 sx={{
                   py: 0.25,
-                  fontSize: { xs: 10, sm: 12 }
+                  fontSize: { xs: 12, sm: 12 }
                 }}
               >
                 لا توجد دفعات مطابقة للبحث.
@@ -298,8 +300,8 @@ function BatchLookupDialog({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ py: 0.45 }}>
-        <Button onClick={onClose} sx={{ fontSize: { xs: 10.5, sm: 13 } }}>
+      <DialogActions sx={uiLayout.withUiSx({ py: 0.45 }, uiLayout.dialogActionsSx)}>
+        <Button onClick={onClose} sx={uiLayout.withUiSx({ fontSize: { xs: 12, sm: 13 } }, uiLayout.buttonSx)}>
           إغلاق
         </Button>
       </DialogActions>
@@ -846,15 +848,15 @@ export default function BatchManagement() {
             minHeight: { xs: 33, sm: 38 }
           },
           "& .MuiInputBase-input": {
-            fontSize: { xs: 10.8, sm: 13.2 },
+            fontSize: { xs: 12, sm: 13.2 },
             py: { xs: 0.45, sm: 0.7 }
           },
           "& .MuiInputLabel-root": {
-            fontSize: { xs: 9.8, sm: 12 }
+            fontSize: { xs: 12, sm: 12 }
           },
           "& .MuiButton-root": {
             minHeight: { xs: 30, sm: 36 },
-            fontSize: { xs: 10, sm: 13 },
+            fontSize: { xs: 12, sm: 13 },
             lineHeight: 1.1
           },
           "& .MuiSvgIcon-root": {
@@ -903,7 +905,7 @@ export default function BatchManagement() {
               bgcolor: "#fff",
               color: primaryDark,
               fontWeight: 900,
-              fontSize: { xs: 8.8, sm: 11 }
+              fontSize: { xs: 12, sm: 12 }
             }}
           />
         </Box>
@@ -921,7 +923,7 @@ export default function BatchManagement() {
               px: { xs: 0.25, sm: 1 },
               py: { xs: 0.3, sm: 0.65 },
               fontWeight: 900,
-              fontSize: { xs: 9.4, sm: 12.8 }
+              fontSize: { xs: 12, sm: 12.8 }
             }
           }}
         >
@@ -943,7 +945,7 @@ export default function BatchManagement() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(3,minmax(0,1fr))",
@@ -951,19 +953,19 @@ export default function BatchManagement() {
               },
               gap: { xs: 0.35, sm: 0.65 },
               justifyContent: { sm: "start" }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={() => resetForType(type)}
               disabled={!ops.canAdd && !isEdit}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#1976d2",
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.35, sm: 1.4 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -976,11 +978,11 @@ export default function BatchManagement() {
                 setLookupSearch("");
                 setLookupOpen(true);
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.35, sm: 1.4 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               بحث
             </Button>
@@ -999,11 +1001,11 @@ export default function BatchManagement() {
                 (isEdit ? !ops.canEdit : !ops.canAdd)
               }
               onClick={save}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.35, sm: 1.4 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {isEdit ? "حفظ التعديل" : "حفظ"}
             </Button>
@@ -1021,7 +1023,7 @@ export default function BatchManagement() {
             }}
           >
             <CircularProgress size={16} />
-            <Typography sx={{ fontSize: 10.5 }}>
+            <Typography sx={{ fontSize: 12 }}>
               جاري التحميل...
             </Typography>
           </Box>
@@ -1030,23 +1032,23 @@ export default function BatchManagement() {
         <Box sx={{ p: { xs: 0.65, sm: 1 } }}>
           {/* كل 2 فيلد جنب بعض على الموبايل */}
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(2,minmax(0,1fr))",
                 md: "repeat(4,minmax(0,1fr))"
               },
               gap: { xs: 0.4, sm: 0.7 }
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               label="كود"
               value={model.code}
               disabled
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               label="اسم الدفعة"
               value={model.name}
@@ -1054,16 +1056,16 @@ export default function BatchManagement() {
             />
 
             <FormControlLabel
-              sx={{
+              sx={uiLayout.withUiSx({
                 m: 0,
                 px: 0.45,
                 border: `1px solid ${border}`,
                 borderRadius: 1,
                 minHeight: { xs: 33, sm: 38 },
                 "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: 10.5, sm: 12.5 }
+                  fontSize: { xs: 12, sm: 12.5 }
                 }
-              }}
+              }, uiLayout.checkboxFieldSx)}
               control={
                 <Checkbox
                   checked={model.isUse}
@@ -1075,16 +1077,16 @@ export default function BatchManagement() {
             />
 
             <FormControlLabel
-              sx={{
+              sx={uiLayout.withUiSx({
                 m: 0,
                 px: 0.45,
                 border: `1px solid ${border}`,
                 borderRadius: 1,
                 minHeight: { xs: 33, sm: 38 },
                 "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: 10.5, sm: 12.5 }
+                  fontSize: { xs: 12, sm: 12.5 }
                 }
-              }}
+              }, uiLayout.checkboxFieldSx)}
               control={
                 <Checkbox
                   checked={model.isRegOn}
@@ -1096,7 +1098,7 @@ export default function BatchManagement() {
             />
           </Box>
 
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             multiline
             minRows={1}
@@ -1105,7 +1107,7 @@ export default function BatchManagement() {
             label="ملاحظات"
             value={model.notes}
             onChange={(e) => setField("notes", e.target.value)}
-            sx={{ mt: { xs: 0.45, sm: 0.7 } }}
+            sx={uiLayout.withUiSx({ mt: { xs: 0.45, sm: 0.7 } }, uiLayout.formFieldSx)}
           />
 
           <Box
@@ -1122,7 +1124,7 @@ export default function BatchManagement() {
             <Paper variant="outlined" sx={{ p: 0.55, textAlign: "center" }}>
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: { xs: 8.8, sm: 10.5 } }}
+                sx={{ fontSize: { xs: 12, sm: 12 } }}
               >
                 عدد الفروع
               </Typography>
@@ -1134,7 +1136,7 @@ export default function BatchManagement() {
             <Paper variant="outlined" sx={{ p: 0.55, textAlign: "center" }}>
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: { xs: 8.8, sm: 10.5 } }}
+                sx={{ fontSize: { xs: 12, sm: 12 } }}
               >
                 إجمالي عدد المقاعد
               </Typography>
@@ -1153,7 +1155,7 @@ export default function BatchManagement() {
             >
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: { xs: 8.8, sm: 10.5 } }}
+                sx={{ fontSize: { xs: 12, sm: 12 } }}
               >
                 إجمالي عدد الموافقات
               </Typography>
@@ -1180,7 +1182,7 @@ export default function BatchManagement() {
                 px: { xs: 0.4, sm: 0.7 },
                 py: { xs: 0.4, sm: 0.6 },
                 fontWeight: 900,
-                fontSize: { xs: 9.5, sm: 12.2 },
+                fontSize: { xs: 12, sm: 12.2 },
                 gap: 0.4
               }}
             >
@@ -1198,7 +1200,7 @@ export default function BatchManagement() {
               {branches.map((branch) => (
                 <Box
                   key={branch.guid}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     display: "grid",
                     gridTemplateColumns: "minmax(120px,1fr) 84px 84px",
                     alignItems: "center",
@@ -1206,20 +1208,20 @@ export default function BatchManagement() {
                     px: { xs: 0.4, sm: 0.7 },
                     py: { xs: 0.3, sm: 0.45 },
                     borderTop: "1px solid #edf2ef"
-                  }}
+                  }, uiLayout.formGridSx)}
                 >
                   <Typography
                     noWrap
                     title={branch.name}
                     sx={{
                       fontWeight: 750,
-                      fontSize: { xs: 10, sm: 12.5 }
+                      fontSize: { xs: 12, sm: 12.5 }
                     }}
                   >
                     {branch.name}
                   </Typography>
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     type="number"
                     size="small"
                     value={branch.studentCount}
@@ -1234,19 +1236,19 @@ export default function BatchManagement() {
                       min: 0,
                       style: { textAlign: "center" , direction: "ltr", unicodeBidi: "isolate" }
                     , dir: "ltr" }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       "& .MuiInputBase-root": {
                         minHeight: { xs: 29, sm: 33 }
                       },
                       "& input": {
                         px: 0.25,
                         py: 0.2,
-                        fontSize: { xs: 10, sm: 12 }
+                        fontSize: { xs: 12, sm: 12 }
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     type="number"
                     size="small"
                     value={branch.aprovCount}
@@ -1261,16 +1263,16 @@ export default function BatchManagement() {
                       min: 0,
                       style: { textAlign: "center" , direction: "ltr", unicodeBidi: "isolate" }
                     , dir: "ltr" }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       "& .MuiInputBase-root": {
                         minHeight: { xs: 29, sm: 33 }
                       },
                       "& input": {
                         px: 0.25,
                         py: 0.2,
-                        fontSize: { xs: 10, sm: 12 }
+                        fontSize: { xs: 12, sm: 12 }
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 </Box>
               ))}

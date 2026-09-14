@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -358,14 +360,14 @@ const CircularsList = () => {
                 startIcon={<RefreshRoundedIcon />}
                 onClick={loadTree}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   borderRadius: 2.5,
                   borderColor: BORDER,
                   color: PRIMARY,
                   "& .MuiButton-startIcon": { ml: 0.7, mr: 0 },
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تحديث
               </Button>
@@ -499,14 +501,14 @@ const CircularsList = () => {
                         <Button
                           onClick={leaveFolder}
                           startIcon={<ArrowBackRoundedIcon />}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             minWidth: "auto",
                             px: 1,
                             color: PRIMARY,
                             fontFamily: "Cairo",
                             fontWeight: 900,
                             "& .MuiButton-startIcon": { ml: 0.4, mr: 0 },
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           رجوع
                         </Button>
@@ -558,7 +560,7 @@ const CircularsList = () => {
                       )}
                     </Stack>
 
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       size="small"
                       value={searchText}
                       onChange={(event) => setSearchText(event.target.value)}
@@ -567,14 +569,14 @@ const CircularsList = () => {
                           ? "ابحث في الملفات..."
                           : "ابحث في المجلدات..."
                       }
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         width: { xs: "100%", md: 330 },
                         "& .MuiOutlinedInput-root": {
                           borderRadius: 2.5,
                           bgcolor: WHITE,
                         },
                         "& input": { fontFamily: "Cairo" },
-                      }}
+                      }, uiLayout.formFieldSx)}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -901,7 +903,7 @@ const CircularsList = () => {
                                 variant="contained"
                                 startIcon={<OpenInNewRoundedIcon />}
                                 onClick={() => openFile(file.guid)}
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   flex: 1,
                                   minHeight: 34,
                                   borderRadius: 2.2,
@@ -917,7 +919,7 @@ const CircularsList = () => {
                                     ml: 0.5,
                                     mr: 0,
                                   },
-                                }}
+                                }, uiLayout.buttonSx)}
                               >
                                 فتح
                               </Button>
@@ -927,12 +929,12 @@ const CircularsList = () => {
                                   size="small"
                                   variant="outlined"
                                   onClick={() => downloadFile(file.guid)}
-                                  sx={{
+                                  sx={uiLayout.withUiSx({
                                     minWidth: 42,
                                     borderRadius: 2.2,
                                     borderColor: BORDER,
                                     color: PRIMARY,
-                                  }}
+                                  }, uiLayout.buttonSx)}
                                 >
                                   <DownloadRoundedIcon fontSize="small" />
                                 </Button>

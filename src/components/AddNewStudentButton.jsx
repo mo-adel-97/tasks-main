@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, CircularProgress } from '@mui/material';
 import Swal from 'sweetalert2';
@@ -128,19 +129,19 @@ if (!validateNationalId(formData.NationalId)) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} variant="contained" color="primary" style={{ fontWeight: 'bold', marginTop: '15px' }}>
+      <Button sx={uiLayout.buttonSx} onClick={() => setOpen(true)} variant="contained" color="primary" style={{ fontWeight: 'bold', marginTop: '15px' }}>
         ➕ إضافة طالب جديد
       </Button>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle style={{ textAlign: 'center', fontWeight: 'bold' }}>📝 إضافة طالب جديد</DialogTitle>
         <DialogContent style={{ direction: 'rtl' }}>
-          <TextField fullWidth label="الاسم الكامل" name="StudentName" margin="normal" value={formData.StudentName} onChange={handleChange} />
-          <TextField fullWidth label="رقم الهوية" name="NationalId" margin="normal" value={formData.NationalId} onChange={handleChange} />
-          <TextField fullWidth label="رقم الجوال" name="StudentTel" margin="normal" value={formData.StudentTel} onChange={handleChange} />
-          <TextField fullWidth label="الإيميل" name="Email" margin="normal" value={formData.Email} onChange={handleChange} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth label="الاسم الكامل" name="StudentName" margin="normal" value={formData.StudentName} onChange={handleChange} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth label="رقم الهوية" name="NationalId" margin="normal" value={formData.NationalId} onChange={handleChange} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth label="رقم الجوال" name="StudentTel" margin="normal" value={formData.StudentTel} onChange={handleChange} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth label="الإيميل" name="Email" margin="normal" value={formData.Email} onChange={handleChange} />
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             select
             fullWidth
             label="النوع"
@@ -153,7 +154,7 @@ if (!validateNationalId(formData.NationalId)) {
             <MenuItem value="1">أنثى</MenuItem>
           </TextField>
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             select
             fullWidth
             label="الجنسية"
@@ -165,7 +166,7 @@ if (!validateNationalId(formData.NationalId)) {
             <MenuItem value="0">مواطن</MenuItem>
             <MenuItem value="1">مقيم</MenuItem>
           </TextField>
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             select fullWidth label="القطاع"
             name="CompanyGuid" margin="normal"
             value={formData.CompanyGuid} onChange={handleChange}>
@@ -176,22 +177,22 @@ if (!validateNationalId(formData.NationalId)) {
             ))}
           </TextField>
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             select fullWidth label="نوع الدراسة"
             name="StudyType" margin="normal"
             value={formData.StudyType} onChange={handleChange}>
             <MenuItem value="0">حضوري</MenuItem>
             <MenuItem value="1">عن بعد</MenuItem>
           </TextField>
-          <TextField fullWidth label="ملاحظات" name="Notes" margin="normal" value={formData.Notes} onChange={handleChange} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth label="ملاحظات" name="Notes" margin="normal" value={formData.Notes} onChange={handleChange} />
 
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="secondary">إلغاء</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setOpen(false)} color="secondary">إلغاء</Button>
           {
             isSubmitting
               ? <CircularProgress size={28} color="primary" />
-              : <Button onClick={handleSave} variant="contained" color="primary">حفظ</Button>
+              : <Button sx={uiLayout.buttonSx} onClick={handleSave} variant="contained" color="primary">حفظ</Button>
           }
         </DialogActions>
       </Dialog>

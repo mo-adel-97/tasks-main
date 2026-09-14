@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -108,7 +109,7 @@ const DocumentHistoryDialog = ({
   ];
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -176,7 +177,7 @@ const DocumentHistoryDialog = ({
             {error}
           </Box>
         ) : (
-          <Box sx={{ height: 360, mt: 1 }}>
+          <Box sx={uiLayout.withUiSx({ height: 360, mt: 1 }, uiLayout.tableContainerSx)}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -193,7 +194,7 @@ const DocumentHistoryDialog = ({
               localeText={{
                 noRowsLabel: "لا توجد عمليات مسجلة"
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderRadius: 2,
                 direction: "rtl",
                 "& .MuiDataGrid-columnHeaders": {
@@ -208,18 +209,18 @@ const DocumentHistoryDialog = ({
                   textAlign: "center",
                   fontWeight: 750
                 }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 2, pb: 2 }}>
+      <DialogActions sx={uiLayout.withUiSx({ px: 2, pb: 2 }, uiLayout.dialogActionsSx)}>
         <Button
           variant="outlined"
           color="error"
           onClick={onClose}
-          sx={{ minWidth: 110, fontWeight: 900 }}
+          sx={uiLayout.withUiSx({ minWidth: 110, fontWeight: 900 }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

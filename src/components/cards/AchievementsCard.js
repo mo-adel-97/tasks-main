@@ -19,7 +19,7 @@ export default function AchievementsCard() {
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.7, color: "#1f2d3d" }}>
         <EmojiEvents sx={{ fontSize: 17, color: "#057546" }} />
-        <Typography sx={{ fontSize: "0.68rem", fontWeight: 900 }}>
+        <Typography sx={{ fontSize: "0.75rem", fontWeight: 900 }}>
           الإنجازات الأخيرة
         </Typography>
       </Box>
@@ -36,10 +36,10 @@ export default function AchievementsCard() {
         }}
       >
         <Lock sx={{ fontSize: 21, color: "#057546", opacity: 0.72 }} />
-        <Typography sx={{ fontSize: "0.7rem", fontWeight: 900, color: "#1f2d3d" }}>
+        <Typography sx={{ fontSize: "0.75rem", fontWeight: 900, color: "#1f2d3d" }}>
           قريبًا
         </Typography>
-        <Typography sx={{ fontSize: "0.56rem" }}>
+        <Typography sx={{ fontSize: "0.75rem" }}>
           سيتم الإعلان عن هذه الخدمة لاحقًا
         </Typography>
       </Box>

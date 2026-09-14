@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState } from "react";
 import { Box, Typography, Grid, Card, CardContent, Chip, Button, TextField } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -26,15 +27,15 @@ export default function TasksCalendarView({ tasks, userMap, subTaskNameMap, curr
   return (
     <Box sx={{ mb: 4, mt: 2 }}>
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arLocale}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2, flexWrap: 'wrap' }}>
-          <Button
+        <Box sx={uiLayout.withUiSx({ display: "flex", alignItems: "center", gap: 2, mb: 2, flexWrap: 'wrap' }, uiLayout.filterBarSx)}>
+          <Button sx={uiLayout.buttonSx}
             variant="contained"
             size="small"
             onClick={() => setSelectedDate(new Date())}
           >
             اليوم
           </Button>
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="outlined"
             size="small"
             onClick={() => {
@@ -49,7 +50,7 @@ export default function TasksCalendarView({ tasks, userMap, subTaskNameMap, curr
             label="اختيار يوم"
             value={selectedDate}
             onChange={(newValue) => setSelectedDate(newValue)}
-            renderInput={(params) => <TextField {...params} size="small" />}
+            renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" />}
             inputFormat="yyyy-MM-dd"
           />
           <Typography sx={{ marginInlineStart: "auto", fontWeight: 600, color: "#6366f1" }}>

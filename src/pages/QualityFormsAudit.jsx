@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -461,13 +463,13 @@ export default function QualityFormsAudit() {
               color: primaryDark,
               fontFamily: "Cairo",
               fontWeight: 900,
-              fontSize: { xs: 8.5, sm: 11 }
+              fontSize: { xs: 12, sm: 12 }
             }}
           />
         </Box>
 
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             p: { xs: 0.6, sm: 1 },
             display: "grid",
             gridTemplateColumns: {
@@ -476,9 +478,9 @@ export default function QualityFormsAudit() {
             },
             gap: { xs: 0.45, sm: 0.75 },
             alignItems: "center"
-          }}
+          }, uiLayout.filterBarSx)}
         >
-          <TextField
+          <TextField sx={uiLayout.formFieldSx}
             type="date"
             size="small"
             label="الفترة من"
@@ -487,7 +489,7 @@ export default function QualityFormsAudit() {
             InputLabelProps={{ shrink: true }}
            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx}
             type="date"
             size="small"
             label="الفترة إلى"
@@ -496,7 +498,7 @@ export default function QualityFormsAudit() {
             InputLabelProps={{ shrink: true }}
            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             select
             size="small"
             label="منشئ النموذج"
@@ -515,7 +517,7 @@ export default function QualityFormsAudit() {
             ))}
           </TextField>
 
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             select
             size="small"
             label="نوع النموذج"
@@ -545,12 +547,12 @@ export default function QualityFormsAudit() {
             }
             disabled={loading}
             onClick={search}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: "#1565c0",
               fontFamily: "Cairo",
               fontWeight: 900,
               minHeight: 40
-            }}
+            }, uiLayout.buttonSx)}
           >
             عرض
           </Button>
@@ -559,13 +561,13 @@ export default function QualityFormsAudit() {
             variant="contained"
             onClick={showToday}
             disabled={loading}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: "#9a151b",
               fontFamily: "Cairo",
               fontWeight: 900,
               minHeight: 40,
               "&:hover": { bgcolor: "#7f1015" }
-            }}
+            }, uiLayout.buttonSx)}
           >
             اليوم
           </Button>
@@ -576,11 +578,11 @@ export default function QualityFormsAudit() {
             startIcon={<FileDownloadIcon />}
             onClick={exportExcel}
             disabled={!rows.length}
-            sx={{
+            sx={uiLayout.withUiSx({
               fontFamily: "Cairo",
               fontWeight: 900,
               minHeight: 40
-            }}
+            }, uiLayout.buttonSx)}
           >
             Excel
           </Button>
@@ -639,7 +641,7 @@ export default function QualityFormsAudit() {
                   color: "#17352c",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: { xs: 8.5, sm: 11.5 },
+                  fontSize: { xs: 12, sm: 12 },
                   textAlign: "center",
                   whiteSpace: "nowrap",
                   minWidth: 120,
@@ -650,7 +652,7 @@ export default function QualityFormsAudit() {
                 "& td": {
                   fontFamily: "Cairo",
                   fontWeight: 600,
-                  fontSize: { xs: 8.3, sm: 11 },
+                  fontSize: { xs: 12, sm: 12 },
                   textAlign: "center",
                   verticalAlign: "middle",
                   whiteSpace: "nowrap",
@@ -715,7 +717,7 @@ export default function QualityFormsAudit() {
         )}
       </Paper>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
         fullWidth

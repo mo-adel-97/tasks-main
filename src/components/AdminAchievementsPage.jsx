@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -591,19 +592,19 @@ export default function AdminAchievementsPage() {
                 </Box>
               </Stack>
 
-              <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
+              <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
                 <Button
                   variant={viewMode === VIEW_MODES.TABLE ? "contained" : "outlined"}
                   startIcon={<TableIcon />}
                   onClick={() => setViewMode(VIEW_MODES.TABLE)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderRadius: 2,
                     px: 2,
                     ...(viewMode === VIEW_MODES.TABLE && {
                       bgcolor: ADMIN_ACCENT,
                       '&:hover': { bgcolor: '#6aa992' }
                     })
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   جدول
                 </Button>
@@ -612,14 +613,14 @@ export default function AdminAchievementsPage() {
                   variant={viewMode === VIEW_MODES.CARD ? "contained" : "outlined"}
                   startIcon={<GridIcon />}
                   onClick={() => setViewMode(VIEW_MODES.CARD)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderRadius: 2,
                     px: 2,
                     ...(viewMode === VIEW_MODES.CARD && {
                       bgcolor: ADMIN_ACCENT,
                       '&:hover': { bgcolor: '#6aa992' }
                     })
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   بطاقات
                 </Button>
@@ -631,12 +632,12 @@ export default function AdminAchievementsPage() {
                   startIcon={<RefreshIcon />}
                   onClick={fetchAllAchievements}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor: ADMIN_ACCENT,
                     "&:hover": { bgcolor: "#6aa992" },
                     borderRadius: 2,
                     px: 2,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -645,13 +646,13 @@ export default function AdminAchievementsPage() {
                   variant="outlined"
                   startIcon={<ClearIcon />}
                   onClick={clearFilters}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderColor: "#cbd5e1",
                     color: "#334155",
                     "&:hover": { borderColor: ADMIN_ACCENT, bgcolor: alpha(ADMIN_ACCENT, 0.05) },
                     borderRadius: 2,
                     px: 2,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   مسح الفلاتر
                 </Button>
@@ -660,13 +661,13 @@ export default function AdminAchievementsPage() {
                   variant="outlined"
                   startIcon={<DownloadIcon />}
                   onClick={handleExportData}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderColor: "#cbd5e1",
                     color: "#334155",
                     "&:hover": { borderColor: ADMIN_ACCENT, bgcolor: alpha(ADMIN_ACCENT, 0.05) },
                     borderRadius: 2,
                     px: 2,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -688,7 +689,7 @@ export default function AdminAchievementsPage() {
           >
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={3}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   placeholder="بحث في الإنتاجية الأسبوعية..."
                   value={searchTerm}
@@ -705,7 +706,7 @@ export default function AdminAchievementsPage() {
               </Grid>
 
               <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>الحالة</InputLabel>
                   <Select 
                     value={filterStatus} 
@@ -727,7 +728,7 @@ export default function AdminAchievementsPage() {
               </Grid>
 
               <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>الفرع</InputLabel>
                   <Select 
                     value={branchGuidFilter} 
@@ -753,7 +754,7 @@ export default function AdminAchievementsPage() {
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
                   InputLabelProps={{ shrink: true }}
-                  sx={{ borderRadius: 2 }}
+                  sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
@@ -765,7 +766,7 @@ export default function AdminAchievementsPage() {
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
                   InputLabelProps={{ shrink: true }}
-                  sx={{ borderRadius: 2 }}
+                  sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
@@ -800,7 +801,7 @@ export default function AdminAchievementsPage() {
                 mb: 3,
               }}
             >
-              <TableContainer sx={{ maxHeight: 600 }}>
+              <TableContainer sx={uiLayout.withUiSx({ maxHeight: 600 }, uiLayout.tableContainerSx)}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow sx={{ bgcolor: '#f8fafc' }}>
@@ -815,7 +816,7 @@ export default function AdminAchievementsPage() {
                           size="small"
                           endIcon={<SortIcon />}
                           onClick={() => handleSort('priority')}
-                          sx={{ color: '#334155', fontWeight: 800 }}
+                          sx={uiLayout.withUiSx({ color: '#334155', fontWeight: 800 }, uiLayout.buttonSx)}
                         >
                           الأولوية
                         </Button>
@@ -825,7 +826,7 @@ export default function AdminAchievementsPage() {
                           size="small"
                           endIcon={<SortIcon />}
                           onClick={() => handleSort('completionPercentage')}
-                          sx={{ color: '#334155', fontWeight: 800 }}
+                          sx={uiLayout.withUiSx({ color: '#334155', fontWeight: 800 }, uiLayout.buttonSx)}
                         >
                           التقدم
                         </Button>
@@ -838,7 +839,7 @@ export default function AdminAchievementsPage() {
                           size="small"
                           endIcon={<SortIcon />}
                           onClick={() => handleSort('createdAt')}
-                          sx={{ color: '#334155', fontWeight: 800 }}
+                          sx={uiLayout.withUiSx({ color: '#334155', fontWeight: 800 }, uiLayout.buttonSx)}
                         >
                           التاريخ
                         </Button>
@@ -906,7 +907,7 @@ export default function AdminAchievementsPage() {
                                 <Typography sx={{ fontSize: 12, fontWeight: 600, color: '#0f172a' }}>
                                   {progress}%
                                 </Typography>
-                                <Typography sx={{ fontSize: 11, color: '#64748b' }}>
+                                <Typography sx={{ fontSize: 12, color: '#64748b' }}>
                                   {a.completedItems || 0}/{a.itemCount || 0}
                                 </Typography>
                               </Stack>
@@ -955,7 +956,7 @@ export default function AdminAchievementsPage() {
                               <Typography sx={{ fontSize: 12, fontWeight: 600, color: '#0f172a' }}>
                                 {formatDate(a.startDate)} - {formatDate(a.endDate)}
                               </Typography>
-                              <Typography sx={{ fontSize: 11, color: '#94a3b8' }}>
+                              <Typography sx={{ fontSize: 12, color: '#94a3b8' }}>
                                 {formatDateTime(a.createdAt)}
                               </Typography>
                             </Box>
@@ -1034,10 +1035,10 @@ export default function AdminAchievementsPage() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 labelRowsPerPage="عدد الصفوف:"
                 labelDisplayedRows={({ from, to, count }) => `${from}-${to} من ${count}`}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderTop: '1px solid #e2e8f0',
                   bgcolor: '#f8fafc'
-                }}
+                }, uiLayout.tablePaginationSx)}
               />
             </Paper>
           ) : (
@@ -1148,7 +1149,7 @@ export default function AdminAchievementsPage() {
                             
                             <Stack direction="row" alignItems="center" spacing={0.5}>
                               <AttachFileIcon sx={{ fontSize: 14, color: '#64748b' }} />
-                              <Typography sx={{ fontSize: 11, color: '#64748b' }}>
+                              <Typography sx={{ fontSize: 12, color: '#64748b' }}>
                                 {totalFiles} ملف
                               </Typography>
                             </Stack>
@@ -1181,7 +1182,7 @@ export default function AdminAchievementsPage() {
 
                           {a.notes && (
                             <Box sx={{ mt: 1 }}>
-                              <Typography sx={{ fontSize: 11, color: '#94a3b8', mb: 0.5 }}>
+                              <Typography sx={{ fontSize: 12, color: '#94a3b8', mb: 0.5 }}>
                                 الملاحظات:
                               </Typography>
                               <Typography sx={{ fontSize: 12, color: '#475569', lineHeight: 1.5 }}>
@@ -1198,13 +1199,13 @@ export default function AdminAchievementsPage() {
                           variant="contained"
                           startIcon={<VisibilityIcon />}
                           onClick={() => handleViewDetails(a)}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             bgcolor: ADMIN_ACCENT,
                             '&:hover': { bgcolor: '#6aa992' },
                             borderRadius: 2,
                             py: 1,
                             fontWeight: 700
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           عرض التفاصيل
                         </Button>
@@ -1238,7 +1239,7 @@ export default function AdminAchievementsPage() {
           )}
 
           {/* Details Dialog */}
-          <Dialog
+          <Dialog sx={uiLayout.dialogLayoutSx}
             open={detailsDialogOpen}
             onClose={() => setDetailsDialogOpen(false)}
             maxWidth="md"
@@ -1513,7 +1514,7 @@ export default function AdminAchievementsPage() {
                                                 >
                                                   {file.name}
                                                 </Typography>
-                                                <Typography sx={{ fontSize: 11, color: '#94a3b8' }}>
+                                                <Typography sx={{ fontSize: 12, color: '#94a3b8' }}>
                                                   {file.type?.split('/')[1]?.toUpperCase() || 'FILE'}
                                                 </Typography>
                                               </Box>
@@ -1568,13 +1569,13 @@ export default function AdminAchievementsPage() {
                   </Stack>
                 </DialogContent>
 
-                <DialogActions sx={{ p: 2.5, borderTop: '1px solid #e2e8f0' }}>
+                <DialogActions sx={uiLayout.withUiSx({ p: 2.5, borderTop: '1px solid #e2e8f0' }, uiLayout.dialogActionsSx)}>
                   <Button
                     onClick={() => setDetailsDialogOpen(false)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       color: '#64748b',
                       '&:hover': { bgcolor: '#f1f5f9' }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     إغلاق
                   </Button>
@@ -1598,7 +1599,7 @@ export default function AdminAchievementsPage() {
           </Dialog>
 
           {/* Image Viewer Dialog */}
-          <Dialog
+          <Dialog sx={uiLayout.dialogLayoutSx}
             open={imageViewerOpen}
             onClose={() => setImageViewerOpen(false)}
             maxWidth="lg"

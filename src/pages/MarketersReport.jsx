@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -994,7 +996,7 @@ const MarketersReport = () => {
                   "#fbfdfc"
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.filterBarSx}
                 direction={{
                   xs: "column",
                   lg: "row"
@@ -1005,7 +1007,7 @@ const MarketersReport = () => {
                   lg: "center"
                 }}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="الفترة من"
@@ -1020,7 +1022,7 @@ const MarketersReport = () => {
                   }}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="الفترة إلى"
@@ -1042,11 +1044,11 @@ const MarketersReport = () => {
                   }
                   onClick={loadReport}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     background: "#057546"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -1058,10 +1060,10 @@ const MarketersReport = () => {
                   }
                   onClick={loadReport}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -1076,12 +1078,12 @@ const MarketersReport = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     color: "#ae1e21",
                     borderColor: "#ae1e21"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -1099,11 +1101,11 @@ const MarketersReport = () => {
                     migrating ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     background: "#184f90"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {migrating
                     ? "جارٍ الترحيل..."
@@ -1152,14 +1154,14 @@ const MarketersReport = () => {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: 690,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1224,7 +1226,7 @@ const MarketersReport = () => {
                   filterPanelInputLabel:
                     "القيمة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1277,7 +1279,7 @@ const MarketersReport = () => {
                     fontWeight: 800,
                     color: "#057546"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
@@ -1438,7 +1440,7 @@ const MarketersReport = () => {
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: {
-                xs: "0.67rem",
+                xs: "0.75rem",
                 sm: "0.79rem"
               },
               color: "#17372b",
@@ -1519,7 +1521,7 @@ const MarketersReport = () => {
                     fontWeight: 950,
                     color: "#034d31",
                     fontSize: isPhone
-                      ? "0.68rem"
+                      ? "0.75rem"
                       : "0.82rem"
                   }}
                 >
@@ -1532,7 +1534,7 @@ const MarketersReport = () => {
                       mt: 0.15,
                       fontFamily: "Cairo",
                       color: "#61756d",
-                      fontSize: "0.44rem"
+                      fontSize: "0.75rem"
                     }}
                   >
                     متابعة التسجيلات والعمولات وترحيل عمولة التسجيل لشيت المكافآت
@@ -1559,7 +1561,7 @@ const MarketersReport = () => {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: isPhone
                     ? "repeat(2,minmax(0,1fr))"
@@ -1569,8 +1571,8 @@ const MarketersReport = () => {
                   "& .MuiInputLabel-root": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.38rem"
-                      : "0.46rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiInputBase-root": {
@@ -1579,8 +1581,8 @@ const MarketersReport = () => {
                       : 34,
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.46rem"
-                      : "0.54rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiButton-root": {
@@ -1594,8 +1596,8 @@ const MarketersReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.4rem"
-                      : "0.5rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiSvgIcon-root": {
@@ -1603,9 +1605,9 @@ const MarketersReport = () => {
                       ? 14
                       : 16
                   }
-                }}
+                }, uiLayout.filterBarSx)}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="الفترة من"
@@ -1621,7 +1623,7 @@ const MarketersReport = () => {
                   fullWidth
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="الفترة إلى"
@@ -1642,14 +1644,14 @@ const MarketersReport = () => {
                   startIcon={<SearchIcon />}
                   onClick={loadReport}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background: "#057546"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
 
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   variant="outlined"
                   startIcon={<RefreshIcon />}
                   onClick={loadReport}
@@ -1666,10 +1668,10 @@ const MarketersReport = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color: "#ae1e21",
                     borderColor: "#ae1e21"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -1683,12 +1685,12 @@ const MarketersReport = () => {
                     migrating ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background: "#184f90",
                     gridColumn: isPhone
                       ? "span 1"
                       : "span 2"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {migrating
                     ? "جارٍ الترحيل..."
@@ -1713,8 +1715,8 @@ const MarketersReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.36rem"
-                    : "0.44rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   background: "#edf8f3",
                   color: "#034d31",
                   "& .MuiChip-label": {
@@ -1730,8 +1732,8 @@ const MarketersReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.36rem"
-                    : "0.44rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   background: "#fff7cc",
                   color: "#735c00",
                   "& .MuiChip-label": {
@@ -1747,8 +1749,8 @@ const MarketersReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.36rem"
-                    : "0.44rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                   background: "#eef4ff",
                   color: "#184f90",
                   "& .MuiChip-label": {
@@ -1759,7 +1761,7 @@ const MarketersReport = () => {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 292px)"
@@ -1771,7 +1773,7 @@ const MarketersReport = () => {
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 1.4,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1805,7 +1807,7 @@ const MarketersReport = () => {
                   noResultsOverlayLabel:
                     "لا توجد نتائج مطابقة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1825,8 +1827,8 @@ const MarketersReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.34rem"
-                      : "0.56rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     lineHeight: 1,
                     whiteSpace: "nowrap",
@@ -1848,8 +1850,8 @@ const MarketersReport = () => {
                   "& .MuiDataGrid-cell": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.4rem"
-                      : "0.54rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     justifyContent: "center",
                     px: isPhone ? 0.06 : 0.35,
@@ -1865,11 +1867,11 @@ const MarketersReport = () => {
                   },
 
                   "& .MuiDataGrid-virtualScroller": {
-                    overflowX: "hidden !important"
+                    overflowX: "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: "none"
+                    display: "block"
                   },
 
                   "& .MuiDataGrid-footerContainer": {
@@ -1884,10 +1886,10 @@ const MarketersReport = () => {
                   "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.42rem"
-                      : "0.54rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
@@ -1910,8 +1912,8 @@ const MarketersReport = () => {
                     fontWeight: 900,
                     color: "#034d31",
                     fontSize: isPhone
-                      ? "0.48rem"
-                      : "0.56rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   }}
                 >
                   إجماليات التقرير
@@ -1933,8 +1935,8 @@ const MarketersReport = () => {
                           fontFamily: "Cairo",
                           fontWeight: 800,
                           fontSize: isPhone
-                            ? "0.34rem"
-                            : "0.42rem"
+                            ? "0.75rem"
+                            : "0.75rem"
                         }}
                       />
                     ))}
@@ -1942,7 +1944,7 @@ const MarketersReport = () => {
               </Paper>
             )}
 
-            <Dialog
+            <Dialog sx={uiLayout.dialogLayoutSx}
               open={detailsOpen}
               onClose={closeDetails}
               fullWidth
@@ -2047,8 +2049,8 @@ const MarketersReport = () => {
                               fontWeight: 900,
                               color: "#60756d",
                               fontSize: isPhone
-                                ? "0.4rem"
-                                : "0.5rem"
+                                ? "0.75rem"
+                                : "0.75rem"
                             }}
                           >
                             {field}
@@ -2060,8 +2062,8 @@ const MarketersReport = () => {
                               fontWeight: 800,
                               color: "#1f2d3d",
                               fontSize: isPhone
-                                ? "0.52rem"
-                                : "0.64rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               wordBreak: "break-word"
                             }}
                           >
@@ -2077,22 +2079,22 @@ const MarketersReport = () => {
               </DialogContent>
 
               <DialogActions
-                sx={{
+                sx={uiLayout.withUiSx({
                   px: isPhone ? 1 : 1.5,
                   py: isPhone ? 0.7 : 1
-                }}
+                }, uiLayout.dialogActionsSx)}
               >
                 <Button
                   variant="contained"
                   onClick={closeDetails}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor: "#057546",
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.48rem"
-                      : "0.58rem"
-                  }}
+                      ? "0.75rem"
+                      : "0.75rem"
+                  }, uiLayout.buttonSx)}
                 >
                   إغلاق
                 </Button>

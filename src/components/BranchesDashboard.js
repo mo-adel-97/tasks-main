@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box, Typography, Card, Button, CircularProgress
@@ -259,7 +260,7 @@ const BranchesDashboardReport = () => {
                 </span>
               </Typography>
             </Box>
-            <Box flex={1.4} display="flex" alignItems="center" gap={2} justifyContent="center" flexWrap="wrap">
+            <Box sx={uiLayout.formGridSx} flex={1.4} display="flex" alignItems="center" gap={2} justifyContent="center" flexWrap="wrap">
               <DatePicker
                 label="من تاريخ"
                 value={fromDate}
@@ -374,10 +375,10 @@ const BranchesDashboardReport = () => {
 
           {/* Table */}
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               mt: 5, width: "100%", minWidth: 1300, maxWidth: 1800, mx: "auto",
               bgcolor: "#fff", borderRadius: 4, boxShadow: 1, p: 2.5,
-            }}
+            }, uiLayout.tableContainerSx)}
           >
             <Typography
               variant="h6"
@@ -394,14 +395,14 @@ const BranchesDashboardReport = () => {
               autoHeight
               disableRowSelectionOnClick
               loading={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "inherit",
                 background: "#fff",
                 "& .MuiDataGrid-columnHeaderTitle": { fontWeight: "bold" },
                 "& .MuiDataGrid-cell": { fontSize: 17 },
                 direction: "rtl",
                 minWidth: 1300
-              }}
+              }, uiLayout.dataGridSx)}
               localeText={{
                 noRowsLabel: "لا توجد بيانات",
               }}
@@ -410,7 +411,7 @@ const BranchesDashboardReport = () => {
         </Box>
 
         {/* Actions Footer - لن يظهر في التقرير المطبوع */}
-        <Box sx={{
+        <Box sx={uiLayout.withUiSx({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -420,16 +421,16 @@ const BranchesDashboardReport = () => {
           "@media print": {
             display: "none !important"
           }
-        }}>
+        }, uiLayout.actionBarSx)}>
           <Button
             variant="contained"
             onClick={() => navigate("/dashboard")}
             startIcon={<ArrowBackIcon />}
-            sx={{
+            sx={uiLayout.withUiSx({
               fontWeight: "bold",
               backgroundColor: "#1976d2",
               "&:hover": { backgroundColor: "#1565c0" }
-            }}
+            }, uiLayout.buttonSx)}
           >
             رجوع
           </Button>
@@ -439,14 +440,14 @@ const BranchesDashboardReport = () => {
             color="primary"
             variant="contained"
             disabled={isGenerating}
-            sx={{
+            sx={uiLayout.withUiSx({
               fontWeight: "bold",
               gap: 1,
               px: 3,
               backgroundColor: "#4caf50",
               "&:hover": { backgroundColor: "#388e3c" },
               "&:disabled": { backgroundColor: "#81c784" }
-            }}
+            }, uiLayout.buttonSx)}
             startIcon={isGenerating ? <CircularProgress size={20} color="inherit" /> : <PrintIcon />}
           >
             {isGenerating ? 'جاري التصدير...' : 'طباعة التقرير PDF'}

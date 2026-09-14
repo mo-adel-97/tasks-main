@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -289,7 +290,7 @@ const DynamicItemsSection = ({
 
       <Grid container spacing={1.5}>
         <Grid item xs={12} md={withLevel ? 4 : 5}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             required
             label={titleLabel}
@@ -302,13 +303,13 @@ const DynamicItemsSection = ({
               }));
             }}
             error={!!draftError && isEmpty(draft.title)}
-            sx={inputSx}
+            sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
           />
         </Grid>
 
         {withLevel && (
           <Grid item xs={12} md={3}>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               fullWidth
               required
@@ -322,7 +323,7 @@ const DynamicItemsSection = ({
                 }));
               }}
               error={!!draftError && isEmpty(draft.level)}
-              sx={inputSx}
+              sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
             >
               {languageLevels.map((level) => (
                 <MenuItem key={level} value={level}>
@@ -334,7 +335,7 @@ const DynamicItemsSection = ({
         )}
 
         <Grid item xs={12} md={withLevel ? 5 : 7}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             required
             multiline
@@ -349,7 +350,7 @@ const DynamicItemsSection = ({
               }));
             }}
             error={!!draftError && isEmpty(draft.details)}
-            sx={inputSx}
+            sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
           />
         </Grid>
 
@@ -358,7 +359,7 @@ const DynamicItemsSection = ({
             variant="outlined"
             startIcon={<AddIcon />}
             onClick={addItem}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: "12px",
               fontWeight: 900,
               px: 2.5,
@@ -369,7 +370,7 @@ const DynamicItemsSection = ({
                 borderColor: "#04633b",
                 backgroundColor: "rgba(5, 116, 69, 0.06)"
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             {addText}
           </Button>
@@ -410,7 +411,7 @@ const DynamicItemsSection = ({
                   >
                     <Grid container spacing={1.5} sx={{ flex: 1 }}>
                       <Grid item xs={12} md={withLevel ? 4 : 5}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           required
                           size="small"
@@ -421,13 +422,13 @@ const DynamicItemsSection = ({
                           }
                           error={titleError}
                           helperText={titleError ? "مطلوب" : ""}
-                          sx={inputSx}
+                          sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                         />
                       </Grid>
 
                       {withLevel && (
                         <Grid item xs={12} md={3}>
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             select
                             fullWidth
                             required
@@ -439,7 +440,7 @@ const DynamicItemsSection = ({
                             }
                             error={levelError}
                             helperText={levelError ? "مطلوب" : ""}
-                            sx={inputSx}
+                            sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                           >
                             {languageLevels.map((level) => (
                               <MenuItem key={level} value={level}>
@@ -451,7 +452,7 @@ const DynamicItemsSection = ({
                       )}
 
                       <Grid item xs={12} md={withLevel ? 5 : 7}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           required
                           size="small"
@@ -464,7 +465,7 @@ const DynamicItemsSection = ({
                           }
                           error={detailsError}
                           helperText={detailsError ? "مطلوب" : ""}
-                          sx={inputSx}
+                          sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                         />
                       </Grid>
                     </Grid>
@@ -671,7 +672,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
   };
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open
       fullWidth
       maxWidth="lg"
@@ -789,7 +790,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
 
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="الاسم بالكامل"
@@ -797,12 +798,12 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("fullName", e.target.value)}
                   error={fieldError("fullName")}
                   helperText={fieldError("fullName") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="رقم الجوال"
@@ -811,12 +812,12 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("mobile", e.target.value)}
                   error={fieldError("mobile")}
                   helperText={fieldError("mobile") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="البريد الإلكتروني"
@@ -825,7 +826,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("email", e.target.value)}
                   error={fieldError("email")}
                   helperText={fieldError("email") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
 
@@ -841,12 +842,12 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("birthDate", e.target.value)}
                   error={fieldError("birthDate")}
                   helperText={fieldError("birthDate") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="مدينة الميلاد"
@@ -855,7 +856,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("birthCity", e.target.value)}
                   error={fieldError("birthCity")}
                   helperText={fieldError("birthCity") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
 
@@ -871,7 +872,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("graduationDate", e.target.value)}
                   error={fieldError("graduationDate")}
                   helperText={fieldError("graduationDate") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
             </Grid>
@@ -896,7 +897,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
 
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   select
                   fullWidth
                   required
@@ -905,7 +906,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("qualification", e.target.value)}
                   error={fieldError("qualification")}
                   helperText={fieldError("qualification") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 >
                   <MenuItem value="ثانوي">ثانوي</MenuItem>
                   <MenuItem value="دبلوم">دبلوم</MenuItem>
@@ -917,7 +918,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="التخصص"
@@ -926,12 +927,12 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("specialization", e.target.value)}
                   error={fieldError("specialization")}
                   helperText={fieldError("specialization") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   required
                   label="الجامعة / الجهة التعليمية"
@@ -940,7 +941,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   onChange={(e) => setValue("university", e.target.value)}
                   error={fieldError("university")}
                   helperText={fieldError("university") ? "مطلوب" : ""}
-                  sx={inputSx}
+                  sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
                 />
               </Grid>
             </Grid>
@@ -963,7 +964,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               subtitle="هذا الحقل مطلوب."
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               required
               multiline
@@ -974,7 +975,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               onChange={(e) => setValue("professionalSummary", e.target.value)}
               error={fieldError("professionalSummary")}
               helperText={fieldError("professionalSummary") ? "مطلوب" : ""}
-              sx={inputSx}
+              sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
             />
           </Paper>
 
@@ -1072,7 +1073,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               variant="contained"
               disabled={saving}
               onClick={handleSave}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 220,
                 height: 48,
                 borderRadius: "14px",
@@ -1083,7 +1084,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                 "&:hover": {
                   backgroundColor: "#04633b"
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {saving ? (
                 <>

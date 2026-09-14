@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { hrChipSx, hrEmployeeFieldSx, hrTabIconSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -3205,7 +3207,7 @@ const HrEmployeesPage = () => {
             fontFamily: "Cairo",
             fontWeight: 900,
             fontSize: {
-              xs: ".70rem",
+              xs: "0.75rem",
               sm: ".80rem"
             },
             lineHeight: 1.4,
@@ -3230,8 +3232,8 @@ const HrEmployeesPage = () => {
             minWidth: 0,
             fontFamily: "Cairo",
             fontSize: {
-              xs: ".49rem",
-              sm: ".57rem"
+              xs: "0.75rem",
+              sm: "0.75rem"
             },
             fontWeight: 500,
             color: "#6f8179",
@@ -3585,12 +3587,12 @@ const HrEmployeesPage = () => {
                 onClick={() =>
                   setAdvancedFiltersOpen((current) => !current)
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   minHeight: 32,
                   borderRadius: 2.2,
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: { xs: ".59rem", sm: ".68rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.75rem" },
                   color: advancedFiltersOpen ? "#fff" : primaryColor,
                   bgcolor: advancedFiltersOpen ? primaryColor : "#fff",
                   borderColor: "rgba(5,117,70,.22)",
@@ -3602,14 +3604,14 @@ const HrEmployeesPage = () => {
                       ? primaryDark
                       : primaryLight
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 الفلاتر المتقدمة
               </Button>
             )}
           </Stack>
 
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             size="small"
             fullWidth
             label="بحث"
@@ -3630,7 +3632,7 @@ const HrEmployeesPage = () => {
                 </InputAdornment>
               )
             }}
-            sx={[EMPLOYEE_PAGE_FIELD_SX, {
+            sx={uiLayout.withUiSx([EMPLOYEE_PAGE_FIELD_SX, {
               mb: { xs: 1.5, lg: 1.3 },
               "& .MuiInputBase-root": {
                 transition: "box-shadow .2s ease, border-color .2s ease"
@@ -3638,7 +3640,7 @@ const HrEmployeesPage = () => {
               "& .MuiInputBase-root.Mui-focused": {
                 boxShadow: "0 0 0 4px rgba(5,117,70,.07)"
               }
-            }]}
+            }], uiLayout.formFieldSx)}
           />
 
           <Collapse
@@ -3647,7 +3649,7 @@ const HrEmployeesPage = () => {
             unmountOnExit={!isDesktop}
           >
             <Box
-              sx={[EMPLOYEE_PAGE_FIELD_GAP, EMPLOYEE_PAGE_FIELD_SX, {
+              sx={uiLayout.withUiSx([EMPLOYEE_PAGE_FIELD_GAP, EMPLOYEE_PAGE_FIELD_SX, {
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "repeat(2, minmax(0, 1fr))",
@@ -3662,9 +3664,9 @@ const HrEmployeesPage = () => {
                 "& .MuiInputBase-root.Mui-focused": {
                   boxShadow: "0 0 0 4px rgba(5,117,70,.06)"
                 }
-              }]}
+              }], uiLayout.formGridSx)}
             >
-              <FormControl size="small" fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>الفرع</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3683,7 +3685,7 @@ const HrEmployeesPage = () => {
                 </Select>
               </FormControl>
 
-              <FormControl size="small" fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>القسم</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3705,7 +3707,7 @@ const HrEmployeesPage = () => {
                 </Select>
               </FormControl>
 
-              <FormControl size="small" fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>الوظيفة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3724,7 +3726,7 @@ const HrEmployeesPage = () => {
                 </Select>
               </FormControl>
 
-              <FormControl size="small" fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>الحالة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -3745,25 +3747,25 @@ const HrEmployeesPage = () => {
           <Stack
             direction="row"
             spacing={0.7}
-            sx={{
+            sx={uiLayout.withUiSx({
               mt: { xs: .8, sm: 1, lg: 1.6 },
               width: { xs: "100%", lg: "auto" },
               "& .MuiButton-root": {
                 flex: { xs: 1, lg: "initial" },
                 minHeight: { xs: 34, sm: 36 },
                 borderRadius: 2.2,
-                fontSize: { xs: ".64rem", sm: ".7rem", lg: ".78rem" },
+                fontSize: { xs: "0.75rem", sm: "0.75rem", lg: ".78rem" },
                 px: { xs: .7, sm: 1, lg: 2 },
                 transition: "transform .2s ease, box-shadow .2s ease"
               }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<SearchIcon />}
               onClick={applyFilters}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 bgcolor: primaryColor,
@@ -3773,7 +3775,7 @@ const HrEmployeesPage = () => {
                   transform: isDesktop ? "translateY(-1px)" : "none",
                   boxShadow: "0 9px 20px rgba(5,117,70,.20)"
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               تطبيق
             </Button>
@@ -3782,7 +3784,7 @@ const HrEmployeesPage = () => {
               variant="outlined"
               onClick={resetFilters}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 color: accentColor,
@@ -3792,7 +3794,7 @@ const HrEmployeesPage = () => {
                   borderColor: accentColor,
                   bgcolor: "rgba(174,30,33,.035)"
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح الفلاتر
             </Button>
@@ -3845,7 +3847,7 @@ const HrEmployeesPage = () => {
                 color="text.secondary"
                 sx={{
                   fontFamily: "Cairo",
-                  fontSize: { xs: ".50rem", sm: ".56rem", lg: ".68rem" }
+                  fontSize: { xs: "0.75rem", sm: "0.75rem", lg: "0.75rem" }
                 }}
               >
                 عدد النتائج: {employees.length}
@@ -3854,9 +3856,9 @@ const HrEmployeesPage = () => {
 
             <FormControl
               size="small"
-              sx={[EMPLOYEE_PAGE_FIELD_SX, {
+              sx={uiLayout.withUiSx([EMPLOYEE_PAGE_FIELD_SX, {
                 minWidth: { xs: 96, sm: 104, lg: 132 }
-              }]}
+              }], uiLayout.formFieldSx)}
             >
               <InputLabel>عدد الصفوف</InputLabel>
               <Select
@@ -3957,11 +3959,11 @@ const HrEmployeesPage = () => {
             </Box>
           ) : (
             <TableContainer
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 maxWidth: "100%",
                 overflowX: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <Table
                 stickyHeader
@@ -4046,7 +4048,7 @@ const HrEmployeesPage = () => {
                           color: primaryDark,
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          fontSize: ".72rem",
+                          fontSize: "0.75rem",
                           lineHeight: 1.3,
                           whiteSpace: "normal",
                           borderBottom:
@@ -4110,7 +4112,7 @@ const HrEmployeesPage = () => {
                           sx={{
                             width: "100%",
                             fontFamily: "Cairo",
-                            fontSize: ".73rem",
+                            fontSize: "0.75rem",
                             lineHeight: 1.45,
                             textAlign: PAGE_TEXT_ALIGN,
                             mx: "auto",
@@ -4128,7 +4130,7 @@ const HrEmployeesPage = () => {
                           sx={{
                             width: "100%",
                             fontFamily: "Cairo",
-                            fontSize: ".73rem",
+                            fontSize: "0.75rem",
                             lineHeight: 1.45,
                             whiteSpace: "normal",
                             overflowWrap: "anywhere"
@@ -4158,7 +4160,7 @@ const HrEmployeesPage = () => {
                               py: .25,
                               whiteSpace: "normal",
                               lineHeight: 1.35,
-                              fontSize: ".68rem"
+                              fontSize: "0.75rem"
                             },
                             "& .MuiChip-icon": {
                               fontSize: 15
@@ -4271,7 +4273,7 @@ const HrEmployeesPage = () => {
 
 
         <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
           disablePortal
           disableEnforceFocus
           dir={EMPLOYEE_DIALOG_DIRECTION}
@@ -4388,9 +4390,9 @@ const HrEmployeesPage = () => {
                     fontFamily: "Cairo",
                     color: "#78877f",
                     fontSize: {
-                      xs: ".52rem",
-                      sm: ".62rem",
-                      lg: ".68rem"
+                      xs: "0.75rem",
+                      sm: "0.75rem",
+                      lg: "0.75rem"
                     },
                     textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                   }}
@@ -4569,8 +4571,8 @@ const HrEmployeesPage = () => {
                             mt: .18,
                             fontFamily: "Cairo",
                             fontSize: {
-                              xs: ".58rem",
-                              sm: ".66rem"
+                              xs: "0.75rem",
+                              sm: "0.75rem"
                             },
                             fontWeight: 700,
                             opacity: .9
@@ -4588,8 +4590,8 @@ const HrEmployeesPage = () => {
                             mt: .15,
                             fontFamily: "Cairo",
                             fontSize: {
-                              xs: ".5rem",
-                              sm: ".58rem"
+                              xs: "0.75rem",
+                              sm: "0.75rem"
                             },
                             opacity: .76,
                             maxWidth: {
@@ -4630,7 +4632,7 @@ const HrEmployeesPage = () => {
                             "1px solid rgba(255,255,255,.18)",
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          fontSize: ".6rem"
+                          fontSize: "0.75rem"
                         }}
                       />
 
@@ -4648,7 +4650,7 @@ const HrEmployeesPage = () => {
                           color: "#fff",
                           fontFamily: "Cairo",
                           fontWeight: 800,
-                          fontSize: ".58rem"
+                          fontSize: "0.75rem"
                         }}
                       />
                     </Stack>
@@ -4695,7 +4697,7 @@ const HrEmployeesPage = () => {
                         <Typography
                           sx={{
                             fontFamily: "Cairo",
-                            fontSize: { xs: ".48rem", sm: ".54rem" },
+                            fontSize: { xs: "0.75rem", sm: "0.75rem" },
                             opacity: .72,
                             textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                           }}
@@ -4706,7 +4708,7 @@ const HrEmployeesPage = () => {
                           sx={{
                             mt: .12,
                             fontFamily: "Cairo",
-                            fontSize: { xs: ".58rem", sm: ".65rem" },
+                            fontSize: { xs: "0.75rem", sm: "0.75rem" },
                             fontWeight: 900,
                             whiteSpace: "nowrap",
                             overflow: "hidden",
@@ -4761,8 +4763,8 @@ const HrEmployeesPage = () => {
                         fontFamily: "Cairo",
                         fontWeight: 900,
                         fontSize: {
-                          xs: ".53rem",
-                          sm: ".64rem"
+                          xs: "0.75rem",
+                          sm: "0.75rem"
                         },
                         color: "#697870",
                         gap: .5
@@ -4903,14 +4905,14 @@ const HrEmployeesPage = () => {
                               <EditOutlinedIcon />
                             }
                             onClick={startEditingEmployee}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               color: primaryColor,
                               borderColor:
                                 "rgba(5,117,70,.25)",
                               borderRadius: 2.2
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             تعديل البيانات
                           </Button>
@@ -4918,7 +4920,7 @@ const HrEmployeesPage = () => {
                           <Typography
                             sx={{
                               fontFamily: "Cairo",
-                              fontSize: ".62rem",
+                              fontSize: "0.75rem",
                               color: "#718078",
                               textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             }}
@@ -4944,7 +4946,7 @@ const HrEmployeesPage = () => {
                       {editMode ? (
                         <>
                           <Box
-                            sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
+                            sx={uiLayout.withUiSx([EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
                               display: "grid",
                               gridTemplateColumns: {
                                 xs: "1fr",
@@ -4957,9 +4959,9 @@ const HrEmployeesPage = () => {
                               "& .MuiSelect-select": {
                                 textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                               }
-                            }]}
+                            }], uiLayout.formGridSx)}
                           >
-                            <TextField
+                            <TextField InputLabelProps={{ shrink: true }}
                               size="small"
                               label="اسم الموظف"
                               value={editForm.fullName}
@@ -4969,12 +4971,12 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 gridColumn: "1 / -1"
-                              }}
+                              }, uiLayout.formFieldSx)}
                             />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               size="small"
                               label="رقم الهوية"
                               value={editForm.nationalId}
@@ -4986,7 +4988,7 @@ const HrEmployeesPage = () => {
                               }
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               size="small"
                               label="الجوال"
                               value={editForm.mobile}
@@ -4998,7 +5000,7 @@ const HrEmployeesPage = () => {
                               }
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               size="small"
                               label="الجوال الإضافي"
                               value={editForm.mobile2}
@@ -5010,7 +5012,7 @@ const HrEmployeesPage = () => {
                               }
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               size="small"
                               label="البريد الإلكتروني"
                               value={editForm.email}
@@ -5022,7 +5024,7 @@ const HrEmployeesPage = () => {
                               }
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField InputLabelProps={{ shrink: true }}
                               size="small"
                               label="IBAN"
                               value={editForm.iban}
@@ -5032,12 +5034,12 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 gridColumn: "1 / -1"
-                              }}
+                              }, uiLayout.formFieldSx)}
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <FormControl
+                            <FormControl sx={uiLayout.formFieldSx}
                               size="small"
                               fullWidth
                             >
@@ -5067,7 +5069,7 @@ const HrEmployeesPage = () => {
                               </Select>
                             </FormControl>
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               size="small"
                               type="number"
                               label="ساعات الدوام اليومية"
@@ -5088,12 +5090,12 @@ const HrEmployeesPage = () => {
                             <FormControl
                               size="small"
                               fullWidth
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 gridColumn: {
                                   xs: "auto",
                                   sm: "1 / -1"
                                 }
-                              }}
+                              }, uiLayout.formFieldSx)}
                             >
                               <InputLabel>
                                 الفرع
@@ -5128,7 +5130,7 @@ const HrEmployeesPage = () => {
                               </Select>
                             </FormControl>
 
-                            <FormControl
+                            <FormControl sx={uiLayout.formFieldSx}
                               size="small"
                               fullWidth
                             >
@@ -5171,7 +5173,7 @@ const HrEmployeesPage = () => {
                               </Select>
                             </FormControl>
 
-                            <FormControl
+                            <FormControl sx={uiLayout.formFieldSx}
                               size="small"
                               fullWidth
                             >
@@ -5205,7 +5207,7 @@ const HrEmployeesPage = () => {
                               </Select>
                             </FormControl>
 
-                            <FormControl
+                            <FormControl sx={uiLayout.formFieldSx}
                               size="small"
                               fullWidth
                             >
@@ -5242,7 +5244,7 @@ const HrEmployeesPage = () => {
                             direction="row"
                             spacing={.8}
                             justifyContent="flex-start"
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               mt: {
                                 xs: 1,
                                 sm: 1.4
@@ -5250,7 +5252,7 @@ const HrEmployeesPage = () => {
                               pt: 1,
                               borderTop:
                                 "1px solid rgba(5,117,70,.08)"
-                            }}
+                            }, uiLayout.actionBarSx)}
                           >
                             <Button
                               variant="contained"
@@ -5272,7 +5274,7 @@ const HrEmployeesPage = () => {
                                 saveEmployeeChanges
                               }
                               disabled={savingEmployee}
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 minHeight: 40,
                                 px: 2,
                                 borderRadius: 2.2,
@@ -5282,7 +5284,7 @@ const HrEmployeesPage = () => {
                                 "&:hover": {
                                   bgcolor: primaryDark
                                 }
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               {savingEmployee
                                 ? "جاري الحفظ..."
@@ -5298,7 +5300,7 @@ const HrEmployeesPage = () => {
                                 cancelEditingEmployee
                               }
                               disabled={savingEmployee}
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 minHeight: 40,
                                 borderRadius: 2.2,
                                 fontFamily: "Cairo",
@@ -5306,7 +5308,7 @@ const HrEmployeesPage = () => {
                                 color: accentColor,
                                 borderColor:
                                   "rgba(174,30,33,.28)"
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               إلغاء
                             </Button>
@@ -5480,13 +5482,13 @@ const HrEmployeesPage = () => {
                             setProfileEditMode(true);
                           }}
                           disabled={profileLoading}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             fontFamily: "Cairo",
                             fontWeight: 900,
                             color: primaryColor,
                             borderColor:
                               "rgba(5,117,70,.25)"
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           تعديل البيانات
                         </Button>
@@ -5494,7 +5496,7 @@ const HrEmployeesPage = () => {
                         <Typography
                           sx={{
                             fontFamily: "Cairo",
-                            fontSize: ".62rem",
+                            fontSize: "0.75rem",
                             color: "#718078",
                             textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                           }}
@@ -5522,7 +5524,7 @@ const HrEmployeesPage = () => {
                     ) : profileEditMode ? (
                       <>
                         <Box
-                          sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
+                          sx={uiLayout.withUiSx([EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
                             display: "grid",
                             direction: EMPLOYEE_DIALOG_DIRECTION,
                             gridTemplateColumns: {
@@ -5536,9 +5538,9 @@ const HrEmployeesPage = () => {
                             "& .MuiSelect-select": {
                               textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             }
-                          }]}
+                          }], uiLayout.formGridSx)}
                         >
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx}
                             size="small"
                             type="date"
                             label="تاريخ الميلاد"
@@ -5555,7 +5557,7 @@ const HrEmployeesPage = () => {
                             }}
                            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                             size="small"
                             label="الجنسية"
                             value={
@@ -5570,7 +5572,7 @@ const HrEmployeesPage = () => {
                             }
                           />
 
-                          <FormControl
+                          <FormControl sx={uiLayout.formFieldSx}
                             size="small"
                             fullWidth
                           >
@@ -5615,7 +5617,7 @@ const HrEmployeesPage = () => {
                             </Select>
                           </FormControl>
 
-                          <FormControl
+                          <FormControl sx={uiLayout.formFieldSx}
                             size="small"
                             fullWidth
                           >
@@ -5654,7 +5656,7 @@ const HrEmployeesPage = () => {
                             </Select>
                           </FormControl>
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                             size="small"
                             label="مدينة السكن"
                             value={profileForm.city}
@@ -5666,7 +5668,7 @@ const HrEmployeesPage = () => {
                             }
                           />
 
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             size="small"
                             label="العنوان"
                             value={profileForm.address}
@@ -5677,15 +5679,15 @@ const HrEmployeesPage = () => {
                                   e.target.value
                               }))
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               gridColumn: {
                                 xs: "auto",
                                 sm: "1 / -1"
                               }
-                            }}
+                            }, uiLayout.formFieldSx)}
                           />
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                             size="small"
                             label="اسم شخص الطوارئ"
                             value={
@@ -5700,7 +5702,7 @@ const HrEmployeesPage = () => {
                             }
                           />
 
-                          <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                             size="small"
                             label="جوال الطوارئ"
                             value={
@@ -5715,7 +5717,7 @@ const HrEmployeesPage = () => {
                             }
                           />
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                             size="small"
                             label="صلة القرابة"
                             value={
@@ -5730,7 +5732,7 @@ const HrEmployeesPage = () => {
                             }
                           />
 
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             size="small"
                             multiline
                             minRows={2}
@@ -5742,21 +5744,21 @@ const HrEmployeesPage = () => {
                                 notes: e.target.value
                               }))
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               gridColumn: "1 / -1"
-                            }}
+                            }, uiLayout.formFieldSx)}
                           />
                         </Box>
 
                         <Stack
                           direction="row"
                           spacing={.8}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             mt: 1.2,
                             pt: 1,
                             borderTop:
                               "1px solid rgba(5,117,70,.08)"
-                          }}
+                          }, uiLayout.actionBarSx)}
                         >
                           <Button
                             variant="contained"
@@ -5778,14 +5780,14 @@ const HrEmployeesPage = () => {
                               saveEmployeeProfile
                             }
                             disabled={profileSaving}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               bgcolor: primaryColor,
                               "&:hover": {
                                 bgcolor: primaryDark
                               }
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             {profileSaving
                               ? "جاري الحفظ..."
@@ -5801,13 +5803,13 @@ const HrEmployeesPage = () => {
                               setProfileEditMode(false);
                             }}
                             disabled={profileSaving}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               color: accentColor,
                               borderColor:
                                 "rgba(174,30,33,.28)"
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             إلغاء
                           </Button>
@@ -5953,7 +5955,7 @@ const HrEmployeesPage = () => {
                         <Typography
                           sx={{
                             fontFamily: "Cairo",
-                            fontSize: ".54rem",
+                            fontSize: "0.75rem",
                             color: "#7b8982"
                           }}
                         >
@@ -5971,14 +5973,14 @@ const HrEmployeesPage = () => {
                             (value) => !value
                           )
                         }
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           fontFamily: "Cairo",
                           fontWeight: 900,
                           bgcolor: primaryColor,
                           "&:hover": {
                             bgcolor: primaryDark
                           }
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         إضافة مرفق
                       </Button>
@@ -6004,7 +6006,7 @@ const HrEmployeesPage = () => {
                         }}
                       >
                         <Box
-                          sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
+                          sx={uiLayout.withUiSx([EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
                             display: "grid",
                             direction: EMPLOYEE_DIALOG_DIRECTION,
                             gridTemplateColumns: {
@@ -6018,7 +6020,7 @@ const HrEmployeesPage = () => {
                             "& .MuiSelect-select": {
                               textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             }
-                          }]}
+                          }], uiLayout.filterBarSx)}
                         >
                           <Button
                             component="label"
@@ -6026,7 +6028,7 @@ const HrEmployeesPage = () => {
                             startIcon={
                               <CloudUploadOutlinedIcon />
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               gridColumn: "1 / -1",
                               minHeight: 48,
                               justifyContent:
@@ -6039,7 +6041,7 @@ const HrEmployeesPage = () => {
                                 : primaryColor,
                               borderColor:
                                 "rgba(5,117,70,.28)"
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             {documentForm.file
                               ? documentForm.file.name
@@ -6063,7 +6065,7 @@ const HrEmployeesPage = () => {
                             />
                           </Button>
 
-                          <FormControl
+                          <FormControl sx={uiLayout.formFieldSx}
                             size="small"
                             fullWidth
                           >
@@ -6102,7 +6104,7 @@ const HrEmployeesPage = () => {
                             </Select>
                           </FormControl>
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx}
                             size="small"
                             type="date"
                             label="تاريخ الإصدار"
@@ -6123,7 +6125,7 @@ const HrEmployeesPage = () => {
                             }}
                            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx}
                             size="small"
                             type="date"
                             label="تاريخ الانتهاء"
@@ -6144,7 +6146,7 @@ const HrEmployeesPage = () => {
                             }}
                            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                          <TextField
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                             size="small"
                             label="ملاحظات"
                             value={documentForm.notes}
@@ -6163,7 +6165,7 @@ const HrEmployeesPage = () => {
                         <Stack
                           direction="row"
                           spacing={.7}
-                          sx={{ mt: .9 }}
+                          sx={uiLayout.withUiSx({ mt: .9 }, uiLayout.actionBarSx)}
                         >
                           <Button
                             variant="contained"
@@ -6188,14 +6190,14 @@ const HrEmployeesPage = () => {
                                   <CloudUploadOutlinedIcon />
                                 )
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               bgcolor: primaryColor,
                               "&:hover": {
                                 bgcolor: primaryDark
                               }
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             {documentUploading
                               ? "جاري الرفع..."
@@ -6209,11 +6211,11 @@ const HrEmployeesPage = () => {
                                 false
                               )
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 800,
                               color: "#748079"
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             إلغاء
                           </Button>
@@ -6271,7 +6273,7 @@ const HrEmployeesPage = () => {
                               mt: .2,
                               fontFamily: "Cairo",
                               color: "#8a9790",
-                              fontSize: ".56rem"
+                              fontSize: "0.75rem"
                             }}
                           >
                             أضف مستندات الموظف لتظهر هنا بشكل منظم
@@ -6427,7 +6429,7 @@ const HrEmployeesPage = () => {
                                       height: 20,
                                       fontFamily: "Cairo",
                                       fontWeight: 900,
-                                      fontSize: ".48rem",
+                                      fontSize: "0.75rem",
                                       bgcolor: canPreview ? "#e9f6f0" : "#f2f4f3",
                                       color: canPreview ? primaryColor : "#6f7974"
                                     }}
@@ -6436,7 +6438,7 @@ const HrEmployeesPage = () => {
                                     sx={{
                                       fontFamily: "Cairo",
                                       fontWeight: 1000,
-                                      fontSize: { xs: ".69rem", sm: ".73rem" },
+                                      fontSize: { xs: "0.75rem", sm: "0.75rem" },
                                       color: "#17352a",
                                       whiteSpace: "nowrap",
                                       overflow: "hidden",
@@ -6453,7 +6455,7 @@ const HrEmployeesPage = () => {
                                   sx={{
                                     mt: .45,
                                     fontFamily: "Cairo",
-                                    fontSize: ".57rem",
+                                    fontSize: "0.75rem",
                                     color: "#718078",
                                     whiteSpace: "nowrap",
                                     overflow: "hidden",
@@ -6472,7 +6474,7 @@ const HrEmployeesPage = () => {
                                   <Typography
                                     sx={{
                                       fontFamily: "Cairo",
-                                      fontSize: ".5rem",
+                                      fontSize: "0.75rem",
                                       color: "#87938d"
                                     }}
                                   >
@@ -6482,7 +6484,7 @@ const HrEmployeesPage = () => {
                                     <Typography
                                       sx={{
                                         fontFamily: "Cairo",
-                                        fontSize: ".5rem",
+                                        fontSize: "0.75rem",
                                         color: "#87938d"
                                       }}
                                     >
@@ -6493,7 +6495,7 @@ const HrEmployeesPage = () => {
                                     <Typography
                                       sx={{
                                         fontFamily: "Cairo",
-                                        fontSize: ".5rem",
+                                        fontSize: "0.75rem",
                                         color: "#9b6635"
                                       }}
                                     >
@@ -6512,18 +6514,18 @@ const HrEmployeesPage = () => {
                                   previewEmployeeDocument(document);
                                 }}
                                 startIcon={<VisibilityOutlinedIcon />}
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   mt: 1,
                                   borderRadius: 2,
                                   fontFamily: "Cairo",
                                   fontWeight: 900,
-                                  fontSize: ".58rem",
+                                  fontSize: "0.75rem",
                                   color: primaryColor,
                                   bgcolor: "rgba(5,117,70,.045)",
                                   "&:hover": {
                                     bgcolor: "rgba(5,117,70,.09)"
                                   }
-                                }}
+                                }, uiLayout.buttonSx)}
                               >
                                 {canPreview ? "معاينة داخل البرنامج" : "تفاصيل المرفق"}
                               </Button>
@@ -6613,8 +6615,8 @@ const HrEmployeesPage = () => {
                                 mt: .15,
                                 fontFamily: "Cairo",
                                 fontSize: {
-                                  xs: ".58rem",
-                                  sm: ".68rem"
+                                  xs: "0.75rem",
+                                  sm: "0.75rem"
                                 },
                                 color: "#718078",
                                 textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
@@ -6634,7 +6636,7 @@ const HrEmployeesPage = () => {
                             )
                           }
                           disabled={contractUploading}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             fontFamily: "Cairo",
                             fontWeight: 900,
                             bgcolor: primaryColor,
@@ -6643,7 +6645,7 @@ const HrEmployeesPage = () => {
                             "&:hover": {
                               bgcolor: primaryDark
                             }
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           {employeeContract
                             ? "رفع عقد جديد"
@@ -6671,7 +6673,7 @@ const HrEmployeesPage = () => {
                           }}
                         >
                           <Box
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               display: "grid",
                               gridTemplateColumns: {
                                 xs: "1fr",
@@ -6679,7 +6681,7 @@ const HrEmployeesPage = () => {
                                 lg: "repeat(3,minmax(0,1fr))"
                               },
                               gap: 1
-                            }}
+                            }, uiLayout.filterBarSx)}
                           >
                             <Button
                               component="label"
@@ -6687,7 +6689,7 @@ const HrEmployeesPage = () => {
                               startIcon={
                                 <CloudUploadOutlinedIcon />
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 gridColumn: "1 / -1",
                                 minHeight: 54,
                                 justifyContent: "space-between",
@@ -6699,7 +6701,7 @@ const HrEmployeesPage = () => {
                                   : primaryColor,
                                 borderColor:
                                   "rgba(5,117,70,.30)"
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               {contractForm.file
                                 ? contractForm.file.name
@@ -6722,7 +6724,7 @@ const HrEmployeesPage = () => {
                               />
                             </Button>
 
-                            <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                               size="small"
                               label="رقم العقد"
                               value={contractForm.contractNumber}
@@ -6737,7 +6739,7 @@ const HrEmployeesPage = () => {
                               }
                             />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx}
                               size="small"
                               type="date"
                               label="تاريخ بداية العقد"
@@ -6754,7 +6756,7 @@ const HrEmployeesPage = () => {
                               InputLabelProps={{ shrink: true }}
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx}
                               size="small"
                               type="date"
                               label="تاريخ نهاية العقد"
@@ -6771,7 +6773,7 @@ const HrEmployeesPage = () => {
                               InputLabelProps={{ shrink: true }}
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                               size="small"
                               type="number"
                               label="الراتب الأساسي"
@@ -6787,7 +6789,7 @@ const HrEmployeesPage = () => {
                               }
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                            <TextField
+                            <TextField InputLabelProps={{ shrink: true }}
                               size="small"
                               label="ملاحظات"
                               value={contractForm.notes}
@@ -6800,19 +6802,19 @@ const HrEmployeesPage = () => {
                                   })
                                 )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 gridColumn: {
                                   xs: "1 / -1",
                                   lg: "span 2"
                                 }
-                              }}
+                              }, uiLayout.formFieldSx)}
                             />
                           </Box>
 
                           <Stack
                             direction="row"
                             spacing={1}
-                            sx={{ mt: 1.2 }}
+                            sx={uiLayout.withUiSx({ mt: 1.2 }, uiLayout.actionBarSx)}
                           >
                             <Button
                               variant="outlined"
@@ -6820,13 +6822,13 @@ const HrEmployeesPage = () => {
                                 setContractUploadOpen(false)
                               }
                               disabled={contractUploading}
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 fontFamily: "Cairo",
                                 fontWeight: 900,
                                 color: accentColor,
                                 borderColor:
                                   "rgba(174,30,33,.28)"
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               إلغاء
                             </Button>
@@ -6847,14 +6849,14 @@ const HrEmployeesPage = () => {
                                     <SaveOutlinedIcon />
                                   )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 fontFamily: "Cairo",
                                 fontWeight: 900,
                                 bgcolor: primaryColor,
                                 "&:hover": {
                                   bgcolor: primaryDark
                                 }
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               {contractUploading
                                 ? "جاري رفع العقد..."
@@ -6926,7 +6928,7 @@ const HrEmployeesPage = () => {
                                   sx={{
                                     mt: .15,
                                     fontFamily: "Cairo",
-                                    fontSize: ".62rem",
+                                    fontSize: "0.75rem",
                                     color: "#7b8982",
                                     textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                   }}
@@ -7039,7 +7041,7 @@ const HrEmployeesPage = () => {
                                     sx={{
                                       mt: .2,
                                       fontFamily: "Cairo",
-                                      fontSize: ".60rem",
+                                      fontSize: "0.75rem",
                                       color: "#7a8982",
                                       textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                     }}
@@ -7067,13 +7069,13 @@ const HrEmployeesPage = () => {
                                     onClick={() =>
                                       openEmployeeContract()
                                     }
-                                    sx={{
+                                    sx={uiLayout.withUiSx({
                                       fontFamily: "Cairo",
                                       fontWeight: 900,
                                       color: primaryColor,
                                       borderColor:
                                         "rgba(5,117,70,.25)"
-                                    }}
+                                    }, uiLayout.buttonSx)}
                                   >
                                     معاينة العقد
                                   </Button>
@@ -7098,7 +7100,7 @@ const HrEmployeesPage = () => {
                                 sx={{
                                   mt: 1,
                                   fontFamily: "Cairo",
-                                  fontSize: ".68rem",
+                                  fontSize: "0.75rem",
                                   color: "#67776f",
                                   textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                 }}
@@ -7141,7 +7143,7 @@ const HrEmployeesPage = () => {
                                   sx={{
                                     py: 2,
                                     fontFamily: "Cairo",
-                                    fontSize: ".68rem",
+                                    fontSize: "0.75rem",
                                     color: "#85918b",
                                     textAlign: CENTER_TEXT_ALIGN
                                   }}
@@ -7172,7 +7174,7 @@ const HrEmployeesPage = () => {
                                           sx={{
                                             fontFamily: "Cairo",
                                             fontWeight: 800,
-                                            fontSize: ".67rem",
+                                            fontSize: "0.75rem",
                                             color: "#32463d",
                                             textAlign:
                                               EMPLOYEE_DIALOG_TEXT_ALIGN,
@@ -7189,7 +7191,7 @@ const HrEmployeesPage = () => {
                                           sx={{
                                             mt: .1,
                                             fontFamily: "Cairo",
-                                            fontSize: ".55rem",
+                                            fontSize: "0.75rem",
                                             color: "#839088",
                                             textAlign:
                                               EMPLOYEE_DIALOG_TEXT_ALIGN
@@ -7256,7 +7258,7 @@ const HrEmployeesPage = () => {
                             sx={{
                               mt: .35,
                               fontFamily: "Cairo",
-                              fontSize: ".66rem",
+                              fontSize: "0.75rem",
                               color: "#849089"
                             }}
                           >
@@ -7325,7 +7327,7 @@ const HrEmployeesPage = () => {
                           <Typography
                             sx={{
                               fontFamily: "Cairo",
-                              fontSize: ".62rem",
+                              fontSize: "0.75rem",
                               color: "#718078",
                               mt: .15
                             }}
@@ -7334,7 +7336,7 @@ const HrEmployeesPage = () => {
                           </Typography>
                         </Box>
 
-                        <Stack
+                        <Stack sx={uiLayout.actionBarSx}
                           direction="row"
                           spacing={.65}
                           flexWrap="wrap"
@@ -7349,10 +7351,10 @@ const HrEmployeesPage = () => {
                             onClick={() =>
                               openCareerAction("transfer")
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 900
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             نقل وظيفي
                           </Button>
@@ -7366,14 +7368,14 @@ const HrEmployeesPage = () => {
                             onClick={() =>
                               openCareerAction("promotion")
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               bgcolor: primaryColor,
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               "&:hover": {
                                 bgcolor: primaryDark
                               }
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             ترقية
                           </Button>
@@ -7387,10 +7389,10 @@ const HrEmployeesPage = () => {
                             onClick={() =>
                               openCareerAction("plan")
                             }
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontFamily: "Cairo",
                               fontWeight: 900
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             خطة ترقية
                           </Button>
@@ -7425,7 +7427,7 @@ const HrEmployeesPage = () => {
                             <Typography
                               sx={{
                                 fontFamily: "Cairo",
-                                fontSize: ".61rem",
+                                fontSize: "0.75rem",
                                 textAlign: "start",
                                 color: "#718078"
                               }}
@@ -7540,7 +7542,7 @@ const HrEmployeesPage = () => {
                                         sx={{
                                           mt: .25,
                                           fontFamily: "Cairo",
-                                          fontSize: ".61rem",
+                                          fontSize: "0.75rem",
                                           color: "#718078"
                                         }}
                                       >
@@ -7562,7 +7564,7 @@ const HrEmployeesPage = () => {
                                           sx={{
                                             mt: .2,
                                             fontFamily: "Cairo",
-                                            fontSize: ".6rem",
+                                            fontSize: "0.75rem",
                                             color: accentColor
                                           }}
                                         >
@@ -7574,7 +7576,7 @@ const HrEmployeesPage = () => {
 
                                     {plan.status ===
                                       "Pending" && (
-                                      <Stack
+                                      <Stack sx={uiLayout.actionBarSx}
                                         direction="row"
                                         spacing={.5}
                                       >
@@ -7586,13 +7588,13 @@ const HrEmployeesPage = () => {
                                               plan
                                             )
                                           }
-                                          sx={{
+                                          sx={uiLayout.withUiSx({
                                             bgcolor:
                                               primaryColor,
                                             fontFamily:
                                               "Cairo",
                                             fontWeight: 900
-                                          }}
+                                          }, uiLayout.buttonSx)}
                                         >
                                           تنفيذ
                                         </Button>
@@ -7605,11 +7607,11 @@ const HrEmployeesPage = () => {
                                               plan
                                             )
                                           }
-                                          sx={{
+                                          sx={uiLayout.withUiSx({
                                             fontFamily:
                                               "Cairo",
                                             fontWeight: 900
-                                          }}
+                                          }, uiLayout.buttonSx)}
                                         >
                                           إلغاء
                                         </Button>
@@ -7709,7 +7711,7 @@ const HrEmployeesPage = () => {
                                         sx={{
                                           fontFamily: "Cairo",
                                           fontWeight: 950,
-                                          fontSize: ".73rem"
+                                          fontSize: "0.75rem"
                                         }}
                                       >
                                         {movement.fromJobTitleName ||
@@ -7723,7 +7725,7 @@ const HrEmployeesPage = () => {
                                         sx={{
                                           mt: .2,
                                           fontFamily: "Cairo",
-                                          fontSize: ".6rem",
+                                          fontSize: "0.75rem",
                                           color: "#718078"
                                         }}
                                       >
@@ -7752,7 +7754,7 @@ const HrEmployeesPage = () => {
                                           sx={{
                                             mt: .28,
                                             fontFamily: "Cairo",
-                                            fontSize: ".61rem",
+                                            fontSize: "0.75rem",
                                             color: "#526159"
                                           }}
                                         >
@@ -7875,8 +7877,8 @@ const HrEmployeesPage = () => {
                                   sx={{
                                     mt: .1,
                                     fontSize: {
-                                      xs: ".58rem",
-                                      sm: ".64rem"
+                                      xs: "0.75rem",
+                                      sm: "0.75rem"
                                     }
                                   }}
                                 >
@@ -7929,7 +7931,7 @@ const HrEmployeesPage = () => {
                                 },
                                 fontFamily: "Cairo",
                                 fontWeight: 900,
-                                fontSize: ".58rem",
+                                fontSize: "0.75rem",
                                 bgcolor: "#fff",
                                 borderColor:
                                   "rgba(5,117,70,.16)"
@@ -7948,7 +7950,7 @@ const HrEmployeesPage = () => {
                           }}
                         >
                           <Stack spacing={.9}>
-                            <Stack
+                            <Stack sx={uiLayout.filterBarSx}
                               direction={{
                                 xs: "column",
                                 md: "row"
@@ -7978,7 +7980,7 @@ const HrEmployeesPage = () => {
                                 InputLabelProps={{
                                   shrink: true
                                 }}
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   minWidth: {
                                     md: 185
                                   },
@@ -7993,7 +7995,7 @@ const HrEmployeesPage = () => {
                                     fontVariantNumeric:
                                       "tabular-nums"
                                   }
-                                }}
+                                }, uiLayout.formFieldSx)}
                                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                               <TextField
@@ -8015,7 +8017,7 @@ const HrEmployeesPage = () => {
                                 InputLabelProps={{
                                   shrink: true
                                 }}
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   minWidth: {
                                     md: 185
                                   },
@@ -8030,7 +8032,7 @@ const HrEmployeesPage = () => {
                                     fontVariantNumeric:
                                       "tabular-nums"
                                   }
-                                }}
+                                }, uiLayout.formFieldSx)}
                                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                               <Button
@@ -8051,7 +8053,7 @@ const HrEmployeesPage = () => {
                                 disabled={
                                   employeeAttendanceLoading
                                 }
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   minHeight: 40,
                                   px: 2.2,
                                   borderRadius: 2,
@@ -8062,7 +8064,7 @@ const HrEmployeesPage = () => {
                                   "&:hover": {
                                     bgcolor: primaryDark
                                   }
-                                }}
+                                }, uiLayout.buttonSx)}
                               >
                                 عرض الفترة
                               </Button>
@@ -8079,19 +8081,19 @@ const HrEmployeesPage = () => {
                                 disabled={
                                   employeeAttendanceLoading
                                 }
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   minHeight: 40,
                                   borderRadius: 2,
                                   fontFamily: "Cairo",
                                   fontWeight: 900,
                                   whiteSpace: "nowrap"
-                                }}
+                                }, uiLayout.buttonSx)}
                               >
                                 تحديث
                               </Button>
                             </Stack>
 
-                            <Stack
+                            <Stack sx={uiLayout.actionBarSx}
                               direction="row"
                               spacing={.55}
                               flexWrap="wrap"
@@ -8105,12 +8107,12 @@ const HrEmployeesPage = () => {
                                     currentMonthAttendanceRange()
                                   )
                                 }
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   borderRadius: 999,
                                   fontFamily: "Cairo",
                                   fontWeight: 900,
-                                  fontSize: ".58rem"
-                                }}
+                                  fontSize: "0.75rem"
+                                }, uiLayout.buttonSx)}
                               >
                                 الشهر الحالي
                               </Button>
@@ -8123,12 +8125,12 @@ const HrEmployeesPage = () => {
                                     previousDaysAttendanceRange(7)
                                   )
                                 }
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   borderRadius: 999,
                                   fontFamily: "Cairo",
                                   fontWeight: 850,
-                                  fontSize: ".58rem"
-                                }}
+                                  fontSize: "0.75rem"
+                                }, uiLayout.buttonSx)}
                               >
                                 آخر 7 أيام
                               </Button>
@@ -8141,12 +8143,12 @@ const HrEmployeesPage = () => {
                                     previousDaysAttendanceRange(30)
                                   )
                                 }
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   borderRadius: 999,
                                   fontFamily: "Cairo",
                                   fontWeight: 850,
-                                  fontSize: ".58rem"
-                                }}
+                                  fontSize: "0.75rem"
+                                }, uiLayout.buttonSx)}
                               >
                                 آخر 30 يوم
                               </Button>
@@ -8157,7 +8159,7 @@ const HrEmployeesPage = () => {
                                 severity="error"
                                 sx={{
                                   borderRadius: 2,
-                                  fontSize: ".62rem"
+                                  fontSize: "0.75rem"
                                 }}
                               >
                                 {employeeAttendanceError}
@@ -8186,7 +8188,7 @@ const HrEmployeesPage = () => {
                             <CircularProgress size={30} />
                             <Typography
                               color="text.secondary"
-                              sx={{ fontSize: ".65rem" }}
+                              sx={{ fontSize: "0.75rem" }}
                             >
                               جاري تحميل حضور الفترة...
                             </Typography>
@@ -8220,7 +8222,7 @@ const HrEmployeesPage = () => {
                               <Box>
                                 <Typography
                                   color="text.secondary"
-                                  sx={{ fontSize: ".54rem" }}
+                                  sx={{ fontSize: "0.75rem" }}
                                 >
                                   الوردية الحالية
                                 </Typography>
@@ -8252,7 +8254,7 @@ const HrEmployeesPage = () => {
                                       employeeAttendanceShift.endTime
                                     ).slice(0, 5)}`}
                                     sx={{
-                                      fontSize: ".54rem",
+                                      fontSize: "0.75rem",
                                       fontWeight: 850
                                     }}
                                   />
@@ -8263,7 +8265,7 @@ const HrEmployeesPage = () => {
                                       employeeAttendanceShift.graceMinutes || 0
                                     )} د`}
                                     sx={{
-                                      fontSize: ".54rem",
+                                      fontSize: "0.75rem",
                                       fontWeight: 850
                                     }}
                                   />
@@ -8335,7 +8337,7 @@ const HrEmployeesPage = () => {
                                   <Typography
                                     color="text.secondary"
                                     sx={{
-                                      fontSize: ".52rem"
+                                      fontSize: "0.75rem"
                                     }}
                                   >
                                     {label}
@@ -8370,7 +8372,7 @@ const HrEmployeesPage = () => {
                                 employeeAttendanceMetrics.lateMinutes
                               )}`}
                               sx={{
-                                fontSize: ".54rem",
+                                fontSize: "0.75rem",
                                 fontWeight: 850
                               }}
                             />
@@ -8381,7 +8383,7 @@ const HrEmployeesPage = () => {
                                 employeeAttendanceMetrics.earlyLeaveMinutes
                               )}`}
                               sx={{
-                                fontSize: ".54rem",
+                                fontSize: "0.75rem",
                                 fontWeight: 850
                               }}
                             />
@@ -8390,7 +8392,7 @@ const HrEmployeesPage = () => {
                               variant="outlined"
                               label={`أيام بها حضور: ${employeeAttendanceMetrics.daysWithCheckIn}`}
                               sx={{
-                                fontSize: ".54rem",
+                                fontSize: "0.75rem",
                                 fontWeight: 850
                               }}
                             />
@@ -8399,7 +8401,7 @@ const HrEmployeesPage = () => {
                               variant="outlined"
                               label={`أيام بها انصراف: ${employeeAttendanceMetrics.daysWithCheckOut}`}
                               sx={{
-                                fontSize: ".54rem",
+                                fontSize: "0.75rem",
                                 fontWeight: 850
                               }}
                             />
@@ -8447,7 +8449,7 @@ const HrEmployeesPage = () => {
                                   sx={{
                                     fontWeight: 950,
                                     color: primaryDark,
-                                    fontSize: ".56rem"
+                                    fontSize: "0.75rem"
                                   }}
                                 >
                                   {title}
@@ -8563,7 +8565,7 @@ const HrEmployeesPage = () => {
                                             },
                                             color:
                                               "text.secondary",
-                                            fontSize: ".48rem",
+                                            fontSize: "0.75rem",
                                             direction: "rtl",
                                             textAlign:
                                               ATTENDANCE_DATE_TEXT_ALIGN
@@ -8575,7 +8577,7 @@ const HrEmployeesPage = () => {
                                           dir="rtl"
                                           sx={{
                                             fontWeight: 950,
-                                            fontSize: ".62rem",
+                                            fontSize: "0.75rem",
                                             unicodeBidi: "isolate",
                                             textAlign:
                                               ATTENDANCE_DATE_TEXT_ALIGN
@@ -8596,7 +8598,7 @@ const HrEmployeesPage = () => {
                                             },
                                             color:
                                               "text.secondary",
-                                            fontSize: ".48rem"
+                                            fontSize: "0.75rem"
                                           }}
                                         >
                                           الحضور
@@ -8604,7 +8606,7 @@ const HrEmployeesPage = () => {
                                         <Typography
                                           sx={{
                                             fontWeight: 950,
-                                            fontSize: ".66rem",
+                                            fontSize: "0.75rem",
                                             color:
                                               item.checkInAt
                                                 ? primaryDark
@@ -8626,7 +8628,7 @@ const HrEmployeesPage = () => {
                                             },
                                             color:
                                               "text.secondary",
-                                            fontSize: ".48rem"
+                                            fontSize: "0.75rem"
                                           }}
                                         >
                                           الانصراف
@@ -8634,7 +8636,7 @@ const HrEmployeesPage = () => {
                                         <Typography
                                           sx={{
                                             fontWeight: 950,
-                                            fontSize: ".66rem",
+                                            fontSize: "0.75rem",
                                             color:
                                               item.checkOutAt
                                                 ? primaryDark
@@ -8656,7 +8658,7 @@ const HrEmployeesPage = () => {
                                             },
                                             color:
                                               "text.secondary",
-                                            fontSize: ".48rem",
+                                            fontSize: "0.75rem",
                                             mb: .2
                                           }}
                                         >
@@ -8673,7 +8675,7 @@ const HrEmployeesPage = () => {
                                           sx={{
                                             height: 23,
                                             minWidth: 72,
-                                            fontSize: ".52rem",
+                                            fontSize: "0.75rem",
                                             fontWeight: 950
                                           }}
                                         />
@@ -8688,7 +8690,7 @@ const HrEmployeesPage = () => {
                                             },
                                             color:
                                               "text.secondary",
-                                            fontSize: ".48rem"
+                                            fontSize: "0.75rem"
                                           }}
                                         >
                                           ساعات العمل
@@ -8696,7 +8698,7 @@ const HrEmployeesPage = () => {
                                         <Typography
                                           sx={{
                                             fontWeight: 900,
-                                            fontSize: ".6rem"
+                                            fontSize: "0.75rem"
                                           }}
                                         >
                                           {Number(
@@ -8725,7 +8727,7 @@ const HrEmployeesPage = () => {
                                             },
                                             color:
                                               "text.secondary",
-                                            fontSize: ".48rem"
+                                            fontSize: "0.75rem"
                                           }}
                                         >
                                           التفاصيل
@@ -8735,7 +8737,7 @@ const HrEmployeesPage = () => {
                                           <Typography
                                             color="text.secondary"
                                             sx={{
-                                              fontSize: ".53rem",
+                                              fontSize: "0.75rem",
                                               lineHeight: 1.7
                                             }}
                                           >
@@ -8747,7 +8749,7 @@ const HrEmployeesPage = () => {
                                           <Typography
                                             color="text.secondary"
                                             sx={{
-                                              fontSize: ".53rem"
+                                              fontSize: "0.75rem"
                                             }}
                                           >
                                             لا توجد ملاحظات
@@ -8765,7 +8767,7 @@ const HrEmployeesPage = () => {
                                     severity="info"
                                     sx={{
                                       borderRadius: 2,
-                                      fontSize: ".62rem"
+                                      fontSize: "0.75rem"
                                     }}
                                   >
                                     لا توجد سجلات حضور محفوظة للموظف خلال الفترة من{" "}
@@ -8859,14 +8861,14 @@ const HrEmployeesPage = () => {
                               color="text.secondary"
                               sx={{
                                 mt: .1,
-                                fontSize: ".58rem"
+                                fontSize: "0.75rem"
                               }}
                             >
                               رصيد الموظف وطلبات الإجازات خلال السنة المحددة
                             </Typography>
                           </Box>
 
-                          <Stack
+                          <Stack sx={uiLayout.filterBarSx}
                             direction="row"
                             spacing={.6}
                             alignItems="center"
@@ -8888,7 +8890,7 @@ const HrEmployeesPage = () => {
                               InputLabelProps={{
                                 shrink: true
                               }}
-                              sx={{ width: 110 }}
+                              sx={uiLayout.withUiSx({ width: 110 }, uiLayout.formFieldSx)}
                              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <Button
@@ -8906,10 +8908,10 @@ const HrEmployeesPage = () => {
                               disabled={
                                 employeeLeavesLoading
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 fontFamily: "Cairo",
                                 fontWeight: 900
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               تحديث
                             </Button>
@@ -8978,7 +8980,7 @@ const HrEmployeesPage = () => {
                                   <Typography
                                     color="text.secondary"
                                     sx={{
-                                      fontSize: ".52rem"
+                                      fontSize: "0.75rem"
                                     }}
                                   >
                                     {balance.leaveTypeName}
@@ -9005,7 +9007,7 @@ const HrEmployeesPage = () => {
                                     color="text.secondary"
                                     sx={{
                                       mt: .2,
-                                      fontSize: ".5rem"
+                                      fontSize: "0.75rem"
                                     }}
                                   >
                                     المستخدم:{" "}
@@ -9068,7 +9070,7 @@ const HrEmployeesPage = () => {
                                 <Typography
                                   key={title}
                                   sx={{
-                                    fontSize: ".54rem",
+                                    fontSize: "0.75rem",
                                     fontWeight: 950,
                                     color: primaryDark
                                   }}
@@ -9142,7 +9144,7 @@ const HrEmployeesPage = () => {
                                       <Typography
                                         sx={{
                                           fontWeight: 950,
-                                          fontSize: ".6rem"
+                                          fontSize: "0.75rem"
                                         }}
                                       >
                                         #
@@ -9152,7 +9154,7 @@ const HrEmployeesPage = () => {
                                       <Typography
                                         sx={{
                                           fontWeight: 900,
-                                          fontSize: ".6rem"
+                                          fontSize: "0.75rem"
                                         }}
                                       >
                                         {item.leaveTypeName}
@@ -9161,7 +9163,7 @@ const HrEmployeesPage = () => {
                                       <Typography
                                         dir="ltr"
                                         sx={{
-                                          fontSize: ".57rem",
+                                          fontSize: "0.75rem",
                                           fontWeight: 850,
                                           textAlign: "center"
                                         }}
@@ -9188,7 +9190,7 @@ const HrEmployeesPage = () => {
                                       <Typography
                                         sx={{
                                           fontWeight: 950,
-                                          fontSize: ".6rem"
+                                          fontSize: "0.75rem"
                                         }}
                                       >
                                         {item.requestedDays}
@@ -9200,7 +9202,7 @@ const HrEmployeesPage = () => {
                                         color={color}
                                         sx={{
                                           height: 22,
-                                          fontSize: ".5rem",
+                                          fontSize: "0.75rem",
                                           fontWeight: 900
                                         }}
                                       />
@@ -9208,7 +9210,7 @@ const HrEmployeesPage = () => {
                                       <Typography
                                         color="text.secondary"
                                         sx={{
-                                          fontSize: ".52rem",
+                                          fontSize: "0.75rem",
                                           gridColumn: {
                                             xs: "1 / -1",
                                             md: "auto"
@@ -9289,7 +9291,7 @@ const HrEmployeesPage = () => {
                           sx={{
                             mt: .08,
                             fontFamily: "Cairo",
-                            fontSize: { xs: ".48rem", sm: ".56rem" },
+                            fontSize: { xs: "0.75rem", sm: "0.75rem" },
                             color: "#7d8b84",
                             textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                           }}
@@ -9343,7 +9345,7 @@ const HrEmployeesPage = () => {
                             fontFamily: "Cairo",
                             fontWeight: 900,
                             color: "#68766f",
-                            fontSize: { xs: ".68rem", sm: ".76rem" }
+                            fontSize: { xs: "0.75rem", sm: ".76rem" }
                           }}
                         >
                           لا يوجد سجل تعديلات حتى الآن
@@ -9507,7 +9509,7 @@ const HrEmployeesPage = () => {
                                           sx={{
                                             fontFamily: "Cairo",
                                             fontWeight: 1000,
-                                            fontSize: { xs: ".64rem", sm: ".72rem" },
+                                            fontSize: { xs: "0.75rem", sm: "0.75rem" },
                                             color: "#183228",
                                             textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                           }}
@@ -9521,7 +9523,7 @@ const HrEmployeesPage = () => {
                                             height: 20,
                                             fontFamily: "Cairo",
                                             fontWeight: 800,
-                                            fontSize: ".46rem",
+                                            fontSize: "0.75rem",
                                             bgcolor: isDelete ? "#fff1f1" : isUpload ? "#eef4ff" : "#eaf6f0",
                                             color: isDelete ? accentColor : isUpload ? "#315b9a" : primaryDark
                                           }}
@@ -9531,7 +9533,7 @@ const HrEmployeesPage = () => {
                                         sx={{
                                           mt: .12,
                                           fontFamily: "Cairo",
-                                          fontSize: { xs: ".47rem", sm: ".52rem" },
+                                          fontSize: { xs: "0.75rem", sm: "0.75rem" },
                                           color: "#75827b",
                                           textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                         }}
@@ -9544,7 +9546,7 @@ const HrEmployeesPage = () => {
                                       sx={{
                                         flexShrink: 0,
                                         fontFamily: "Cairo",
-                                        fontSize: { xs: ".43rem", sm: ".48rem" },
+                                        fontSize: { xs: "0.75rem", sm: "0.75rem" },
                                         color: "#8a958f",
                                         textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                       }}
@@ -9578,10 +9580,10 @@ const HrEmployeesPage = () => {
                                           textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                         }}
                                       >
-                                        <Typography sx={{ fontFamily: "Cairo", fontSize: ".43rem", color: "#8b9690", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+                                        <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#8b9690", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
                                           السابق
                                         </Typography>
-                                        <Typography sx={{ mt: .08, fontFamily: "Cairo", fontSize: { xs: ".55rem", sm: ".59rem" }, fontWeight: 800, color: "#58655f", wordBreak: "break-word", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+                                        <Typography sx={{ mt: .08, fontFamily: "Cairo", fontSize: { xs: "0.75rem", sm: "0.75rem" }, fontWeight: 800, color: "#58655f", wordBreak: "break-word", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
                                           {item.oldValue || "-"}
                                         </Typography>
                                       </Box>
@@ -9597,10 +9599,10 @@ const HrEmployeesPage = () => {
                                           textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                                         }}
                                       >
-                                        <Typography sx={{ fontFamily: "Cairo", fontSize: ".43rem", color: "#6f897c", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+                                        <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#6f897c", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
                                           الجديد
                                         </Typography>
-                                        <Typography sx={{ mt: .08, fontFamily: "Cairo", fontSize: { xs: ".55rem", sm: ".59rem" }, fontWeight: 900, color: primaryDark, wordBreak: "break-word", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+                                        <Typography sx={{ mt: .08, fontFamily: "Cairo", fontSize: { xs: "0.75rem", sm: "0.75rem" }, fontWeight: 900, color: primaryDark, wordBreak: "break-word", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
                                           {item.newValue || "-"}
                                         </Typography>
                                       </Box>
@@ -9624,7 +9626,7 @@ const HrEmployeesPage = () => {
             Dialog - نقل / ترقية / خطة ترقية من ملف الموظف
         ====================================================== */}
         <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
           open={careerActionOpen}
           onClose={() => {
             if (!careerActionSaving) {
@@ -9663,7 +9665,7 @@ const HrEmployeesPage = () => {
               direction: EMPLOYEE_DIALOG_DIRECTION
             }}
           >
-            <Stack spacing={1.1}>
+            <Stack sx={uiLayout.formGridSx} spacing={1.1}>
               <Paper
                 variant="outlined"
                 sx={{
@@ -9689,7 +9691,7 @@ const HrEmployeesPage = () => {
                   sx={{
                     mt: .2,
                     fontFamily: "Cairo",
-                    fontSize: ".66rem",
+                    fontSize: "0.75rem",
                     color: "#718078",
                     textAlign:
                       EMPLOYEE_DIALOG_TEXT_ALIGN
@@ -9703,7 +9705,7 @@ const HrEmployeesPage = () => {
                 </Typography>
               </Paper>
 
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel>
                   المسمى الوظيفي المستهدف
                 </InputLabel>
@@ -9731,7 +9733,7 @@ const HrEmployeesPage = () => {
                 </Select>
               </FormControl>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 size="small"
                 type="date"
                 label={
@@ -9750,7 +9752,7 @@ const HrEmployeesPage = () => {
                 }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label={
                   careerActionMode === "plan"
@@ -9770,7 +9772,7 @@ const HrEmployeesPage = () => {
                 required
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="ملاحظات"
                 value={careerActionNotes}
@@ -9786,26 +9788,26 @@ const HrEmployeesPage = () => {
           </DialogContent>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               p: 1.2,
               display: "flex",
               gap: .7,
                         borderTop:
                 "1px solid rgba(5,117,70,.08)"
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               onClick={saveCareerAction}
               disabled={careerActionSaving}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: primaryColor,
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 "&:hover": {
                   bgcolor: primaryDark
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {careerActionSaving
                 ? "جاري الحفظ..."
@@ -9821,10 +9823,10 @@ const HrEmployeesPage = () => {
                 setCareerActionOpen(false)
               }
               disabled={careerActionSaving}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               إلغاء
             </Button>
@@ -9832,7 +9834,7 @@ const HrEmployeesPage = () => {
         </Dialog>
 
         <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
           open={documentPreviewOpen}
           onClose={closeEmployeeDocumentPreview}
           maxWidth={false}
@@ -9886,7 +9888,7 @@ const HrEmployeesPage = () => {
                     mt: .1,
                     fontFamily: "Cairo",
                     color: "#7c8983",
-                    fontSize: ".54rem",
+                    fontSize: "0.75rem",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis"
@@ -9938,12 +9940,12 @@ const HrEmployeesPage = () => {
                   variant="outlined"
                   startIcon={<OpenInNewRoundedIcon />}
                   onClick={openPreviewFileExternally}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     color: primaryColor,
                     borderColor: "rgba(5,117,70,.22)"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   فتح الملف
                 </Button>
@@ -9954,7 +9956,7 @@ const HrEmployeesPage = () => {
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     color: "#51645b",
-                    fontSize: ".58rem",
+                    fontSize: "0.75rem",
                     textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -9988,7 +9990,7 @@ const HrEmployeesPage = () => {
                           fontFamily: "Cairo",
                           fontWeight: 800,
                           color: "#687970",
-                          fontSize: ".62rem"
+                          fontSize: "0.75rem"
                         }}
                       >
                         جاري تجهيز المعاينة...
@@ -10017,7 +10019,7 @@ const HrEmployeesPage = () => {
                           mt: .35,
                           fontFamily: "Cairo",
                           color: "#7b8982",
-                          fontSize: ".58rem",
+                          fontSize: "0.75rem",
                           lineHeight: 1.8
                         }}
                       >
@@ -10334,7 +10336,7 @@ const EmployeeDetail = ({
     <Typography
       sx={{
         fontFamily: "Cairo",
-        fontSize: { xs: ".55rem", sm: ".64rem" },
+        fontSize: { xs: "0.75rem", sm: "0.75rem" },
         fontWeight: 800,
         color: "#7b8982",
         mb: .28,
@@ -10419,8 +10421,8 @@ const StatCard = ({
             fontFamily: "Cairo",
             fontWeight: 800,
             fontSize: {
-              xs: ".57rem",
-              sm: ".64rem",
+              xs: "0.75rem",
+              sm: "0.75rem",
               md: ".75rem"
             }
           }}

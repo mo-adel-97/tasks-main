@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useMemo, useState } from "react";
 import {
   Box,
@@ -135,7 +136,7 @@ if (!["zip", "rar"].includes(ext)) {
 
   return (
     <Box sx={{ p: 2, direction: "rtl" }}>
-      <Paper sx={{ p: 3, borderRadius: 3 }}>
+      <Paper sx={uiLayout.withUiSx({ p: 3, borderRadius: 3 }, uiLayout.pageHeaderSx)}>
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
           <SystemUpdateAltIcon />
           <Typography variant="h6" sx={{ fontFamily: "Cairo", fontWeight: 800 }}>
@@ -153,12 +154,12 @@ if (!["zip", "rar"].includes(ext)) {
           </Alert>
         )}
 
-        <Stack spacing={2}>
+        <Stack sx={uiLayout.actionBarSx} spacing={2}>
           <Button
             variant="outlined"
             component="label"
             startIcon={<CloudUploadIcon />}
-            sx={{ fontFamily: "Cairo", borderRadius: 2, py: 1.2 }}
+            sx={uiLayout.withUiSx({ fontFamily: "Cairo", borderRadius: 2, py: 1.2 }, uiLayout.buttonSx)}
             disabled={loading}
           >
             {file ? `تم اختيار: ${file.name}` : "اختيار ملف ZIP"}
@@ -176,7 +177,7 @@ if (!["zip", "rar"].includes(ext)) {
             variant="contained"
             onClick={handleUpload}
             disabled={loading || !file || !userGuid}
-            sx={{ fontFamily: "Cairo", borderRadius: 2, py: 1.2 }}
+            sx={uiLayout.withUiSx({ fontFamily: "Cairo", borderRadius: 2, py: 1.2 }, uiLayout.buttonSx)}
           >
             رفع التحديث
           </Button>

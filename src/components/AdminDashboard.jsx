@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -131,27 +132,27 @@ export default function AdminDashboard() {
         </Typography>
 
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
-          <Box sx={{
+          <Box sx={uiLayout.withUiSx({
             display: 'flex',
             flexWrap: 'wrap',
             gap: 2,
             justifyContent: 'space-between',
             alignItems: 'center',
             mb: 4
-          }}>
+          }, uiLayout.formGridSx)}>
             <DatePicker
               label="اختر التاريخ"
               value={selectedDate}
               onChange={(newDate) => setSelectedDate(newDate)}
               sx={{ width: 200 }}
             />
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="بحث باسم المستلم"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              sx={{ width: 240 }}
+              sx={uiLayout.withUiSx({ width: 240 }, uiLayout.formFieldSx)}
             />
-            <FormControl sx={{ width: 180 }}>
+            <FormControl sx={uiLayout.withUiSx({ width: 180 }, uiLayout.formFieldSx)}>
               <InputLabel>فلترة بالحالة</InputLabel>
               <Select
                 value={statusFilter}
@@ -192,18 +193,18 @@ export default function AdminDashboard() {
                     <Typography sx={{ mt: 1 }}>عدد المهام الفرعية: {task.subTasks.length}</Typography>
                     <Box sx={{ mt: 2 }}>
                       {task.subTasks.map(sub => (
-                        <Box key={sub.guid} sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, mb: 1 }}>
+                        <Box key={sub.guid} sx={uiLayout.withUiSx({ border: '1px solid #ddd', borderRadius: 2, p: 2, mb: 1 }, uiLayout.pageHeaderSx)}>
                           <Typography>المهمة الفرعية: <b><bdi dir="ltr">{subTaskNames[sub.taskSmallGuid] || "بدون اسم"}</bdi></b></Typography>
                           <Typography>المستلمون: <b>{sub.userReceiverGuids?.split(',').map(id => usersMap[id] || id).join(', ')}</b></Typography>
                           <Typography>الحالة: <Chip label={sub.status} /></Typography>
-                          <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          <Box sx={uiLayout.withUiSx({ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }, uiLayout.actionBarSx)}>
                             {sub.attachmentPath && (
-                              <Button onClick={() => handleShowFile(sub.attachmentPath, "main")} variant="outlined">📎 عرض المرفق</Button>
+                              <Button sx={uiLayout.buttonSx} onClick={() => handleShowFile(sub.attachmentPath, "main")} variant="outlined">📎 عرض المرفق</Button>
                             )}
                             {sub.completionReplyPath && (
-                              <Button onClick={() => handleShowFile(sub.completionReplyPath, "final")} variant="outlined" color="success">✅ الرد النهائي</Button>
+                              <Button sx={uiLayout.buttonSx} onClick={() => handleShowFile(sub.completionReplyPath, "final")} variant="outlined" color="success">✅ الرد النهائي</Button>
                             )}
-                            <Button onClick={() => handleShowFlows(sub.guid)} variant="outlined" color="info">🧭 عرض المسار</Button>
+                            <Button sx={uiLayout.buttonSx} onClick={() => handleShowFlows(sub.guid)} variant="outlined" color="info">🧭 عرض المسار</Button>
                           </Box>
                         </Box>
                       ))}
@@ -222,7 +223,7 @@ export default function AdminDashboard() {
           onClose={() => setFileDialog({ open: false, filePath: '', sourceType: 'main' })}
         />
 
-        <Dialog open={flowDialog.open} onClose={() => setFlowDialog({ open: false, flows: [] })} maxWidth="md" fullWidth>
+        <Dialog sx={uiLayout.dialogLayoutSx} open={flowDialog.open} onClose={() => setFlowDialog({ open: false, flows: [] })} maxWidth="md" fullWidth>
           <DialogTitle>مسار المهمة</DialogTitle>
           <DialogContent>
             {flowDialog.flows.length === 0 ? (

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -201,12 +202,12 @@ if (taskData) {
         width: "100%",
         ...navigationContentSx
       }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }, uiLayout.pageHeaderSx)}>
           <Typography variant="h4" fontWeight={700}>
             المهام التي أرسلتها ({filteredTasks.length})
           </Typography>
           
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 2 }, uiLayout.actionBarSx)}>
             {filterByDate ? (
               <>
                 <Chip 
@@ -214,7 +215,7 @@ if (taskData) {
                   onDelete={showAllTasks}
                   color="primary"
                 />
-                <Button 
+                <Button sx={uiLayout.buttonSx} 
                   variant="outlined"
                   onClick={showAllTasks}
                 >
@@ -222,7 +223,7 @@ if (taskData) {
                 </Button>
               </>
             ) : (
-              <Button 
+              <Button sx={uiLayout.buttonSx} 
                 variant="outlined"
                 onClick={showTodayTasks}
               >
@@ -234,7 +235,7 @@ if (taskData) {
               variant="outlined"
               startIcon={<CalendarMonthIcon />}
               onClick={handleCalendarOpen}
-              sx={{ fontWeight: 700 }}
+              sx={uiLayout.withUiSx({ fontWeight: 700 }, uiLayout.buttonSx)}
             >
               اختر تاريخ
             </Button>
@@ -406,10 +407,10 @@ const isExpanded = expandedTasks[task?.id] || false;
                                   variant={att?.isRequired ? 'contained' : 'outlined'}
                                   size="small"
                                   startIcon={<VisibilityIcon />}
-                                  sx={{
+                                  sx={uiLayout.withUiSx({
                                     minWidth: 120, fontWeight: 700,
                                     mb: 0.5, background: att?.isRequired ? "#0288d1" : "#fff"
-                                  }}
+                                  }, uiLayout.buttonSx)}
                                   onClick={() => setOpenAttachment({ ...att, url: ATTACHMENT_API(task?.taskGuid, att?.id) })}
                                 >
                                   {att?.name}
@@ -429,7 +430,7 @@ const isExpanded = expandedTasks[task?.id] || false;
                       startIcon={<HistoryIcon />}
                       endIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                       onClick={() => toggleTaskExpansion(task?.id)}
-                      sx={{ justifyContent: 'space-between' }}
+                      sx={uiLayout.withUiSx({ justifyContent: 'space-between' }, uiLayout.buttonSx)}
                     >
                       سجل التغييرات
                     </Button>
@@ -505,7 +506,7 @@ const isExpanded = expandedTasks[task?.id] || false;
           })}
         </Grid>
 
-        <Dialog open={!!openAttachment} onClose={() => setOpenAttachment(null)} maxWidth="md" fullWidth>
+        <Dialog sx={uiLayout.dialogLayoutSx} open={!!openAttachment} onClose={() => setOpenAttachment(null)} maxWidth="md" fullWidth>
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {openAttachment?.name}
             <IconButton onClick={() => setOpenAttachment(null)}><CloseIcon /></IconButton>
@@ -527,7 +528,7 @@ const isExpanded = expandedTasks[task?.id] || false;
                 return (
                   <Box display="flex" flexDirection="column" alignItems="center">
                     <Typography>هذا الملف غير قابل للعرض المباشر. يمكنك تحميله:</Typography>
-                    <Button href={openAttachment.url} target="_blank" download variant="contained" sx={{ mt: 2 }}>تحميل الملف</Button>
+                    <Button href={openAttachment.url} target="_blank" download variant="contained" sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.buttonSx)}>تحميل الملف</Button>
                   </Box>
                 );
               }

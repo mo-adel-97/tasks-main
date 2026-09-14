@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -72,21 +73,21 @@ const ReportViewerPage = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ar}>
           <Container maxWidth="xl" sx={{ py: 4 }}>
             <Paper elevation={3} sx={styles.paperContainer}>
-              <Box sx={styles.headerContainer}>
+              <Box sx={uiLayout.withUiSx(styles.headerContainer, uiLayout.pageHeaderSx)}>
                 <Typography variant="h4" component="h1" sx={styles.title}>
                   تقارير المتابعة اليومية
                 </Typography>
                 
-                <Box sx={styles.searchContainer}>
+                <Box sx={uiLayout.withUiSx(styles.searchContainer, uiLayout.filterBarSx)}>
                   <DatePicker
                     label="اختر تاريخ التقرير"
                     value={selectedDate}
                     onChange={handleDateChange}
                     renderInput={(params) => (
-                      <TextField 
+                      <TextField InputLabelProps={{ shrink: true }} 
                         {...params} 
                         size="small"
-                        sx={styles.datePicker}
+                        sx={uiLayout.withUiSx(styles.datePicker, uiLayout.formFieldSx)}
                       />
                     )}
                     inputFormat="yyyy-MM-dd"
@@ -96,7 +97,7 @@ const ReportViewerPage = () => {
                     variant="contained"
                     onClick={fetchReports}
                     disabled={loading}
-                    sx={styles.searchButton}
+                    sx={uiLayout.withUiSx(styles.searchButton, uiLayout.buttonSx)}
                   >
                     بحث
                   </Button>
@@ -127,7 +128,7 @@ const ReportViewerPage = () => {
                   <Button 
                     variant="outlined" 
                     onClick={handleBackToList}
-                    sx={styles.backButton}
+                    sx={uiLayout.withUiSx(styles.backButton, uiLayout.buttonSx)}
                   >
                     العودة إلى القائمة
                   </Button>

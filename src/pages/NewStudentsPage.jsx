@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1350,7 +1352,7 @@ const NewStudentsPage = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.67rem",
+                  xs: "0.75rem",
                   sm: "0.79rem"
                 },
                 color: "#17372b",
@@ -1414,11 +1416,11 @@ const NewStudentsPage = () => {
             direction="row"
             spacing={isPhone ? 0.65 : isTablet ? 0.8 : 1.2}
             alignItems="center"
-            sx={{
+            sx={uiLayout.withUiSx({
               flexWrap: isCompact ? "wrap" : "nowrap",
               rowGap: isPhone ? 0.75 : isTablet ? 0.9 : 0,
               columnGap: isPhone ? 0.55 : isTablet ? 0.7 : 0
-            }}
+            }, uiLayout.filterBarSx)}
           >
             <Stack
               direction="row"
@@ -1445,7 +1447,7 @@ const NewStudentsPage = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.7rem"
+                      ? "0.75rem"
                       : isTablet
                         ? "0.86rem"
                         : "1.25rem",
@@ -1460,9 +1462,9 @@ const NewStudentsPage = () => {
                     fontFamily: "Cairo",
                     color: "#708179",
                     fontSize: isPhone
-                      ? "0.38rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.48rem"
+                        ? "0.75rem"
                         : ".78rem",
                     display: isPhone ? "none" : "block"
                   }}
@@ -1472,7 +1474,7 @@ const NewStudentsPage = () => {
               </Box>
             </Stack>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               label="الفرع"
               value={branchGuid}
@@ -1522,32 +1524,32 @@ const NewStudentsPage = () => {
                   }
                 }
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 flex: isCompact ? "1 1 100%" : "0 0 360px",
 
                 "& .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiInputBase-input": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.52rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.62rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiOutlinedInput-root": {
                   minHeight: isPhone ? 31 : isTablet ? 34 : undefined
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             >
               {branches.map((branch) => (
                 <MenuItem
@@ -1565,18 +1567,18 @@ const NewStudentsPage = () => {
               startIcon={<RefreshIcon />}
               onClick={loadStudents}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
                 minWidth: 0,
                 minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 fontSize: isPhone
-                  ? "0.52rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.62rem"
+                    ? "0.75rem"
                     : undefined
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -1586,18 +1588,18 @@ const NewStudentsPage = () => {
               size={isCompact ? "small" : "medium"}
               startIcon={<FileDownloadIcon />}
               onClick={exportCsv}
-              sx={{
+              sx={uiLayout.withUiSx({
                 flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
                 minWidth: 0,
                 minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 fontSize: isPhone
-                  ? "0.52rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.62rem"
+                    ? "0.75rem"
                     : undefined
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصدير
             </Button>
@@ -1639,9 +1641,9 @@ const NewStudentsPage = () => {
                 minWidth: 0,
                 px: isPhone ? 0.25 : isTablet ? 0.5 : 1,
                 fontSize: isPhone
-                  ? "0.36rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.46rem"
+                    ? "0.75rem"
                     : undefined,
                 lineHeight: 1.25
               }
@@ -1658,7 +1660,7 @@ const NewStudentsPage = () => {
           </Tabs>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               width: "100%",
               minHeight: isPhone
                 ? 360
@@ -1666,7 +1668,7 @@ const NewStudentsPage = () => {
                   ? 430
                   : 520,
               overflow: "hidden"
-            }}
+            }, uiLayout.tableContainerSx)}
           >
             <DataGrid
               key={gridKey}
@@ -1712,7 +1714,7 @@ const NewStudentsPage = () => {
                   }
                 }
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 border: 0,
                 direction: "rtl",
                 width: "100%",
@@ -1731,14 +1733,14 @@ const NewStudentsPage = () => {
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   fontSize: isTablet
-                    ? "0.45rem"
+                    ? "0.75rem"
                     : undefined,
                   minWidth: isTablet ? 0 : undefined,
                   px: isTablet ? 0.45 : undefined
                 },
 
                 "& .MuiDataGrid-virtualScroller": {
-                  overflowX: "hidden !important",
+                  overflowX: "auto",
                   overflowY: "hidden !important"
                 },
 
@@ -1770,9 +1772,9 @@ const NewStudentsPage = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.31rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : "0.78rem",
                   whiteSpace: "normal",
                   lineHeight: 1.25,
@@ -1783,9 +1785,9 @@ const NewStudentsPage = () => {
                   fontFamily: "Cairo",
                   fontWeight: 700,
                   fontSize: isPhone
-                    ? "0.31rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : "0.78rem",
                   px: isPhone ? 0.08 : isTablet ? 0.3 : 0.7,
                   overflow: "hidden",
@@ -1801,20 +1803,20 @@ const NewStudentsPage = () => {
                 "& .MuiDataGrid-footerContainer": {
                   minHeight: isPhone ? 31 : isTablet ? 36 : 54,
                   fontSize: isPhone
-                    ? "0.38rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiDataGrid-scrollbar--horizontal, & .MuiDataGrid-scrollbar--vertical": {
-                  display: "none !important"
+                  display: "block"
                 },
 
                 "& .MuiDataGrid-filler": {
                   display: "none"
                 }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         </Paper>
@@ -1961,7 +1963,7 @@ const NewStudentsPage = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.68rem"
+                  ? "0.75rem"
                   : isTablet
                     ? "0.84rem"
                     : "1.08rem",
@@ -1987,9 +1989,9 @@ const NewStudentsPage = () => {
                 mt: 1.2,
                 fontFamily: "Cairo",
                 fontSize: isPhone
-                  ? "0.42rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.52rem"
+                    ? "0.75rem"
                     : ".78rem",
                 color: "#8a9690"
               }}

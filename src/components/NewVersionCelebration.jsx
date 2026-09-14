@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Chip, Button } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
@@ -503,7 +504,7 @@ const NewVersionCelebration = ({ onClose }) => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }}>
               <Button
                 variant="contained" size="large" onClick={handleClose} startIcon={<Whatshot />}
-                sx={{
+                sx={uiLayout.withUiSx({
                   background: `linear-gradient(45deg, ${COLOR_SCHEME.gold}, ${COLOR_SCHEME.warning})`,
                   color: 'white', fontSize: '1.2rem', padding: '12px 40px', borderRadius: 3,
                   boxShadow: '0 10px 30px rgba(255,215,0,0.4)',
@@ -512,7 +513,7 @@ const NewVersionCelebration = ({ onClose }) => {
                     boxShadow: '0 15px 40px rgba(255,215,0,0.6)', transform: 'translateY(-2px)'
                   },
                   transition: 'all 0.3s ease'
-                }}
+                }, uiLayout.buttonSx)}
               >
                 ابدأ الاستخدام
               </Button>
@@ -521,7 +522,7 @@ const NewVersionCelebration = ({ onClose }) => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }} style={{ marginTop: 20 }}>
               <Button
                 onClick={handleClose} startIcon={<Close />}
-                sx={{ color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.1)' } }}
+                sx={uiLayout.withUiSx({ color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.1)' } }, uiLayout.buttonSx)}
               >
                 تخطي
               </Button>

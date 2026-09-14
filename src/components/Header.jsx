@@ -49,6 +49,9 @@ const Header = ({ user, branch, onLogout }) => {
 
 // === التنسيقات ===
 const headerStyles = {
+  flexWrap: 'wrap',
+  gap: '16px',
+  minWidth: 0,
   direction: 'rtl',
   display: 'flex',
   textAlign: 'start',
@@ -64,6 +67,8 @@ const headerStyles = {
 };
 
 const leftSectionStyles = {
+  flexWrap: 'wrap',
+  minWidth: 0,
   display: 'flex',
   alignItems: 'center',
   gap: '20px',
@@ -107,12 +112,17 @@ const branchTextStyles = {
 };
 
 const rightSectionStyles = {
+  flexWrap: 'wrap',
+  minWidth: 0,
+  maxWidth: '100%',
   display: 'flex',
   alignItems: 'center',
   gap: '20px',
 };
 
 const navStyles = {
+  flexWrap: 'wrap',
+  minWidth: 0,
   display: 'flex',
   gap: '8px',
   background: 'rgba(255, 255, 255, 0.1)',
@@ -140,6 +150,8 @@ const navLinkActiveStyles = {
 };
 
 const userInfoStyles = {
+  minWidth: 0,
+  maxWidth: '100%',
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
@@ -164,6 +176,7 @@ const avatarIconStyles = {
 };
 
 const userNameStyles = {
+  overflowWrap: 'anywhere',
   color: 'white',
   fontSize: '14px',
   fontWeight: '500',

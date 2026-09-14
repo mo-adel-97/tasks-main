@@ -1,3 +1,4 @@
+import * as uiLayout from './components/common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from './config/sidebarLayout';
 import NavigationShell from './components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -599,14 +600,14 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
@@ -693,35 +694,35 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
             >
               <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.5}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="اسم الطالب"
                     value={data.studentName || ""}
                     InputProps={{ readOnly: true }}
-                    sx={compactFieldSx}
+                    sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={4}>
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="رقم الهوية"
                     value={data.nationalId || ""}
                     InputProps={{ readOnly: true }}
-                    sx={compactFieldSx}
+                    sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={4}>
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="حالة الطلب"
                     value={orderStatus}
                     InputProps={{ readOnly: true }}
-                    sx={compactFieldSx}
+                    sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                   />
                 </Grid>
 
@@ -732,33 +733,33 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
                   ["الدفعة", data.batchName],
                   ["الباكدج", data.packageName]
                 ].map(([label, value]) => (
-                  <Grid item xs={6} sm={6} md={4} key={label}>
-                    <TextField
+                  <Grid item xs={12} sm={6} md={4} key={label}>
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       label={label}
                       value={value || ""}
                       InputProps={{ readOnly: true }}
-                      sx={compactFieldSx}
+                      sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
                 ))}
 
                 <Grid item xs={12}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     multiline
                     minRows={isPhone ? 2 : isTablet ? 2 : 3}
                     label="ملاحظات المبيعات"
                     value={salesNotes}
                     InputProps={{ readOnly: true }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...compactFieldSx,
                       "& .MuiInputBase-inputMultiline": {
                         fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                         lineHeight: 1.45
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 </Grid>
               </Grid>
@@ -806,12 +807,12 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.55 : isTablet ? 0.8 : 3,
           py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
           justifyContent: "space-between",
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
@@ -836,13 +837,13 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
               />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             fontWeight: 900,
             minWidth: isPhone ? 105 : isTablet ? 125 : 150,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           {isCompact
             ? "تصدير طلب الالتحاق PDF"
@@ -852,12 +853,12 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
         <Button
           onClick={onClose}
           disabled={loading}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -917,14 +918,14 @@ function PaymentDetailsDialog({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
@@ -1011,35 +1012,35 @@ function PaymentDetailsDialog({
             >
               <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.5}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="اسم الطالب"
                     value={data.studentName || ""}
                     InputProps={{ readOnly: true }}
-                    sx={compactFieldSx}
+                    sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={4}>
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="رقم الهوية"
                     value={data.nationalId || ""}
                     InputProps={{ readOnly: true }}
-                    sx={compactFieldSx}
+                    sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={4}>
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="حالة الطلب"
                     value={orderStatus}
                     InputProps={{ readOnly: true }}
-                    sx={compactFieldSx}
+                    sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                   />
                 </Grid>
 
@@ -1052,33 +1053,33 @@ function PaymentDetailsDialog({
                   ["تاريخ الحوالة", formatDateTime(data.paymentDate)],
                   ["نوع المستند", data.documentName]
                 ].map(([label, value]) => (
-                  <Grid item xs={6} sm={6} md={4} key={label}>
-                    <TextField
+                  <Grid item xs={12} sm={6} md={4} key={label}>
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       label={label}
                       value={value || ""}
                       InputProps={{ readOnly: true }}
-                      sx={compactFieldSx}
+                      sx={uiLayout.withUiSx(compactFieldSx, uiLayout.formFieldSx)}
                     />
                   </Grid>
                 ))}
 
                 <Grid item xs={12}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     multiline
                     minRows={isPhone ? 2 : isTablet ? 2 : 3}
                     label="ملاحظات الحسابات"
                     value={accountNotes}
                     InputProps={{ readOnly: true }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       ...compactFieldSx,
                       "& .MuiInputBase-inputMultiline": {
                         fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                         lineHeight: 1.45
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 </Grid>
               </Grid>
@@ -1178,12 +1179,12 @@ function PaymentDetailsDialog({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.55 : isTablet ? 0.8 : 3,
           py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
           justifyContent: "space-between",
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
@@ -1208,13 +1209,13 @@ function PaymentDetailsDialog({
               />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             fontWeight: 900,
             minWidth: isPhone ? 100 : isTablet ? 120 : 145,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           {isCompact
             ? "تصدير طلب السداد PDF"
@@ -1224,12 +1225,12 @@ function PaymentDetailsDialog({
         <Button
           onClick={onClose}
           disabled={loading}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -1255,7 +1256,7 @@ function ConvertVipDialog({
   }, [open, row?.id]);
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={saving ? undefined : onClose}
       maxWidth="sm"
@@ -1305,7 +1306,7 @@ function ConvertVipDialog({
           </Stack>
         </Paper>
 
-        <TextField
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
           fullWidth
           multiline
           minRows={4}
@@ -1316,7 +1317,7 @@ function ConvertVipDialog({
         />
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2.5 }}>
+      <DialogActions sx={uiLayout.withUiSx({ px: 3, pb: 2.5 }, uiLayout.dialogActionsSx)}>
         <Button
           variant="contained"
           onClick={() => onConfirm(notes)}
@@ -1326,11 +1327,11 @@ function ConvertVipDialog({
               ? <CircularProgress size={18} color="inherit" />
               : <WorkspacePremiumIcon />
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             minWidth: 140,
             backgroundColor: primaryColor,
             fontWeight: 950
-          }}
+          }, uiLayout.buttonSx)}
         >
           تحويل
         </Button>
@@ -1338,7 +1339,7 @@ function ConvertVipDialog({
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{ color: accentColor, fontWeight: 900 }}
+          sx={uiLayout.withUiSx({ color: accentColor, fontWeight: 900 }, uiLayout.buttonSx)}
         >
           إلغاء
         </Button>
@@ -2224,7 +2225,7 @@ export default function MyRequests() {
                 ? <CircularProgress size={16} color="inherit" />
                 : <SendIcon />
             }
-            sx={{ backgroundColor: primaryColor, fontWeight: 900 }}
+            sx={uiLayout.withUiSx({ backgroundColor: primaryColor, fontWeight: 900 }, uiLayout.buttonSx)}
           >
             إرسال
           </Button>
@@ -2600,11 +2601,11 @@ export default function MyRequests() {
                     ? <CircularProgress size={16} color="inherit" />
                     : <NoteAddIcon />
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   backgroundColor: primaryColor,
                   fontWeight: 900,
                   whiteSpace: "nowrap"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 موقف المتدرب
               </Button>
@@ -3101,20 +3102,20 @@ export default function MyRequests() {
                   sx={{ mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.6 }}
                 >
                   <Box
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       width: "100%",
                       display: isCompact ? "grid" : "flex",
                       gridTemplateColumns: isCompact ? "repeat(2, minmax(0, 1fr))" : undefined,
                       gap: isPhone ? 0.45 : isTablet ? 0.6 : 1.2,
                       alignItems: "center"
-                    }}
+                    }, uiLayout.formGridSx)}
                   >
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       size="small"
                       value={searchText}
                       onChange={(event) => setSearchText(event.target.value)}
                       placeholder="بحث بالاسم أو الهوية أو الجوال..."
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         width: isCompact ? "100%" : 390,
                         gridColumn: isCompact ? "1 / -1" : undefined,
                         "& .MuiInputBase-input": {
@@ -3127,7 +3128,7 @@ export default function MyRequests() {
                         "& .MuiSvgIcon-root": {
                           fontSize: isPhone ? 14 : isTablet ? 16 : undefined
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -3148,7 +3149,7 @@ export default function MyRequests() {
                           InputLabelProps={{ shrink: true }}
                           disabled={showAll}
                           inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             width: "100%",
                             minWidth: 0,
                             "& .MuiInputLabel-root": {
@@ -3162,7 +3163,7 @@ export default function MyRequests() {
                             "& .MuiOutlinedInput-root": {
                               minHeight: isPhone ? 30 : isTablet ? 33 : undefined
                             }
-                          }}
+                          }, uiLayout.formFieldSx)}
                         />
                         <TextField
                           size="small"
@@ -3173,7 +3174,7 @@ export default function MyRequests() {
                           InputLabelProps={{ shrink: true }}
                           disabled={showAll}
                           inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             width: "100%",
                             minWidth: 0,
                             "& .MuiInputLabel-root": {
@@ -3187,7 +3188,7 @@ export default function MyRequests() {
                             "& .MuiOutlinedInput-root": {
                               minHeight: isPhone ? 30 : isTablet ? 33 : undefined
                             }
-                          }}
+                          }, uiLayout.formFieldSx)}
                         />
                         <FormControlLabel
                           control={<Checkbox checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />}
@@ -3223,13 +3224,13 @@ export default function MyRequests() {
                         ? <CircularProgress size={18} color="inherit" />
                         : <RefreshIcon />
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: isPhone ? 82 : isTablet ? 100 : 135,
                       minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
                       backgroundColor: primaryColor,
                       fontWeight: 900,
                       fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     عرض
                   </Button>
@@ -3238,12 +3239,12 @@ export default function MyRequests() {
                 {error ? <Alert severity="error" sx={{ mb: 1.5 }}>{error}</Alert> : null}
 
                 <Box
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     height: isPhone ? "calc(100dvh - 300px)" : isTablet ? "calc(100dvh - 330px)" : 590,
                     minHeight: isPhone ? 360 : isTablet ? 430 : 590,
                     width: "100%",
                     direction: "rtl"
-                  }}
+                  }, uiLayout.tableContainerSx)}
                 >
                   <DataGrid
                     rows={filteredRows}
@@ -3271,7 +3272,7 @@ export default function MyRequests() {
                     localeText={{
                       noRowsLabel: `لا توجد بيانات في ${selectedTab?.label || "هذا التبويب"}${showAll ? "" : " خلال الفترة المحددة"}`
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderRadius: 3,
                       backgroundColor: "#fff",
                       "& .MuiDataGrid-columnHeaders": {
@@ -3313,7 +3314,7 @@ export default function MyRequests() {
                       "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                         fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
                       }
-                    }}
+                    }, uiLayout.dataGridSx)}
                   />
                 </Box>
               </>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -295,20 +297,20 @@ const handleDeleteCourse = async (courseId) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={handleOpenDialog}
-        sx={{ 
+        sx={uiLayout.withUiSx({ 
           borderColor: '#80b49e', 
           color: '#80b49e',
           '&:hover': {
             borderColor: '#6a9c8a',
             backgroundColor: 'rgba(128, 180, 158, 0.04)'
           }
-        }}
+        }, uiLayout.buttonSx)}
       >
         إدارة المقررات
       </Button>
 
       {/* دايلوج إدارة المقررات */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={showCourseDialog} 
         onClose={() => setShowCourseDialog(false)}
         maxWidth="md"
@@ -331,7 +333,7 @@ const handleDeleteCourse = async (courseId) => {
                 
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={4}>
-                    <FormControl fullWidth>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth>
                       <InputLabel>الدبلوم</InputLabel>
                       <Select
                         value={courseForm.diploma_name}
@@ -347,7 +349,7 @@ const handleDeleteCourse = async (courseId) => {
                   </Grid>
 
                   <Grid item xs={12} md={4}>
-                    <FormControl fullWidth disabled={!courseForm.diploma_name}>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth disabled={!courseForm.diploma_name}>
                       <InputLabel>المستوى</InputLabel>
                       <Select
                         value={courseForm.level_name}
@@ -365,7 +367,7 @@ const handleDeleteCourse = async (courseId) => {
                   </Grid>
 
                   <Grid item xs={12} md={4}>
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       label="اسم المقرر"
                       value={courseForm.course_name}
                       onChange={(e) => setCourseForm(prev => ({ ...prev, course_name: e.target.value }))}
@@ -379,10 +381,10 @@ const handleDeleteCourse = async (courseId) => {
                       variant="contained"
                       onClick={handleCreateCourse}
                       disabled={loading || !courseForm.course_name}
-                      sx={{ 
+                      sx={uiLayout.withUiSx({ 
                         backgroundColor: '#80b49e',
                         '&:hover': { backgroundColor: '#6a9c8a' }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {loading ? 'جاري الإضافة...' : 'إضافة المقرر'}
                     </Button>
@@ -445,8 +447,8 @@ const handleDeleteCourse = async (courseId) => {
           </Stack>
         </DialogContent>
         
-        <DialogActions>
-          <Button onClick={() => setShowCourseDialog(false)}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setShowCourseDialog(false)}>
             إغلاق
           </Button>
         </DialogActions>
@@ -461,7 +463,7 @@ const BasicFilters = ({ form, setForm, diplomas, levels, filteredCourses, setExa
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={3}>
-        <FormControl fullWidth>
+        <FormControl sx={uiLayout.formFieldSx} fullWidth>
           <InputLabel>الدبلوم</InputLabel>
           <Select
             value={form.diploma_id}
@@ -481,7 +483,7 @@ const BasicFilters = ({ form, setForm, diplomas, levels, filteredCourses, setExa
       </Grid>
 
       <Grid item xs={12} md={3}>
-        <FormControl fullWidth disabled={!form.diploma_id}>
+        <FormControl sx={uiLayout.formFieldSx} fullWidth disabled={!form.diploma_id}>
           <InputLabel>المستوى</InputLabel>
           <Select
             value={form.level_id}
@@ -501,7 +503,7 @@ const BasicFilters = ({ form, setForm, diplomas, levels, filteredCourses, setExa
       </Grid>
 
              <Grid item xs={12} md={3}>
-        <FormControl fullWidth disabled={!form.level_id}>
+        <FormControl sx={uiLayout.formFieldSx} fullWidth disabled={!form.level_id}>
           <InputLabel>المقرر</InputLabel>
           <Select
             value={form.course_id}
@@ -526,28 +528,28 @@ const BasicFilters = ({ form, setForm, diplomas, levels, filteredCourses, setExa
 
       <Grid item xs={12} md={3}>
         <Stack spacing={2}>
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             label="عنوان الاختبار"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             size="small"
           />
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <TextField
+          <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1 }, uiLayout.formGridSx)}>
+            <TextField InputLabelProps={{ shrink: true }}
               label="الدرجة الكلية"
               type="number"
               value={form.total_grade}
               onChange={(e) => setForm({ ...form, total_grade: e.target.value })}
               size="small"
-              sx={{ flex: 1 }}
+              sx={uiLayout.withUiSx({ flex: 1 }, uiLayout.formFieldSx)}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="المدة (دقيقة)"
               type="number"
               value={form.duration_minutes}
               onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })}
               size="small"
-              sx={{ flex: 1 }}
+              sx={uiLayout.withUiSx({ flex: 1 }, uiLayout.formFieldSx)}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
           </Box>
         </Stack>
@@ -569,7 +571,7 @@ const SharedCourseFilters = ({
  editExamFromCombination}) => {
   return (
     <Stack spacing={3}>
-      <FormControl fullWidth>
+      <FormControl sx={uiLayout.formFieldSx} fullWidth>
         <InputLabel>المادة المشتركة</InputLabel>
         <Select
           value={selectedSharedCourse}
@@ -603,13 +605,13 @@ const SharedCourseFilters = ({
                         {combination.diploma} - {combination.level}
                       </Typography>
                     </Box>
-                    <Stack direction="row" spacing={1}>
+                    <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1}>
                       <Button
                         size="small"
                         startIcon={<ViewIcon />}
                         onClick={() => viewExam(combination)}
                         disabled={busy}
-                        sx={{ color: '#80b49e' }}
+                        sx={uiLayout.withUiSx({ color: '#80b49e' }, uiLayout.buttonSx)}
                       >
                         عرض
                       </Button>
@@ -618,7 +620,7 @@ const SharedCourseFilters = ({
                         startIcon={<CheckCircleIcon />}
                         onClick={() => viewAnswerKey(combination)}
                         disabled={busy}
-                        sx={{ color: '#80b49e' }}
+                        sx={uiLayout.withUiSx({ color: '#80b49e' }, uiLayout.buttonSx)}
                       >
                         الإجابة
                       </Button>
@@ -627,7 +629,7 @@ const SharedCourseFilters = ({
    startIcon={<EditIcon />}
    onClick={() => editExamFromCombination(combination)}
    disabled={busy}
-   sx={{ color: '#80b49e' }}
+   sx={uiLayout.withUiSx({ color: '#80b49e' }, uiLayout.buttonSx)}
  >
    تعديل
  </Button>
@@ -640,22 +642,22 @@ const SharedCourseFilters = ({
         </Box>
       )}
 
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <TextField
+      <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 2, flexWrap: 'wrap' }, uiLayout.formGridSx)}>
+        <TextField InputLabelProps={{ shrink: true }}
           label="الدرجة الكلية"
           type="number"
           value={form.total_grade}
           onChange={(e) => setForm({ ...form, total_grade: e.target.value })}
           size="small"
-          sx={{ width: 120 }}
+          sx={uiLayout.withUiSx({ width: 120 }, uiLayout.formFieldSx)}
          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           label="المدة (دقيقة)"
           type="number"
           value={form.duration_minutes}
           onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })}
           size="small"
-          sx={{ width: 120 }}
+          sx={uiLayout.withUiSx({ width: 120 }, uiLayout.formFieldSx)}
          inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
       </Box>
     </Stack>
@@ -691,7 +693,7 @@ const QuestionForm = ({
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>نوع السؤال</InputLabel>
               <Select
                 value={qType}
@@ -705,7 +707,7 @@ const QuestionForm = ({
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="الدرجة"
               type="number"
               value={score}
@@ -716,7 +718,7 @@ const QuestionForm = ({
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="نص السؤال"
               value={qText}
               onChange={(e) => setQText(e.target.value)}
@@ -728,9 +730,9 @@ const QuestionForm = ({
 
           {qType === "TF" && (
             <Grid item xs={12}>
-              <FormControl component="fieldset">
+              <FormControl sx={uiLayout.formFieldSx} component="fieldset">
                 <FormLabel component="legend">الإجابة الصحيحة</FormLabel>
-                <RadioGroup
+                <RadioGroup sx={uiLayout.radioGroupSx}
                   row
                   value={tfCorrect}
                   onChange={(e) => setTfCorrect(e.target.value)}
@@ -755,7 +757,7 @@ const QuestionForm = ({
                       onChange={() => setCorrectOnly(opt.id)}
                       sx={{ color: '#80b49e' }}
                     />
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       value={opt.text}
                       onChange={(e) => updateOpt(opt.id, { text: e.target.value })}
                       placeholder={`الخيار ${index + 1}`}
@@ -776,7 +778,7 @@ const QuestionForm = ({
                 <Button
                   startIcon={<AddIcon />}
                   onClick={addOpt}
-                  sx={{ color: '#80b49e', alignSelf: 'flex-start' }}
+                  sx={uiLayout.withUiSx({ color: '#80b49e', alignSelf: 'flex-start' }, uiLayout.buttonSx)}
                 >
                   إضافة خيار
                 </Button>
@@ -790,10 +792,10 @@ const QuestionForm = ({
               startIcon={busy ? <CircularProgress size={20} /> : <SaveIcon />}
               onClick={submitQuestion}
               disabled={busy || !qText.trim()}
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 backgroundColor: '#80b49e',
                 '&:hover': { backgroundColor: '#6a9c8a' }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {busy ? "جاري الحفظ..." : (editingId ? "تحديث السؤال" : "إضافة السؤال")}
             </Button>
@@ -822,18 +824,18 @@ const QuestionList = ({
   return (
     <Card>
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }, uiLayout.pageHeaderSx)}>
           <Typography variant="h5" sx={{ color: '#80b49e', fontWeight: 'bold' }}>
             قائمة الأسئلة ({questions.length} سؤال)
           </Typography>
           
-          <Stack direction="row" spacing={1}>
+          <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1}>
             <Button
               startIcon={<ReorderIcon />}
               onClick={() => reorderQuestions('tfFirst')}
               variant="outlined"
               size="small"
-              sx={{ color: '#80b49e', borderColor: '#80b49e' }}
+              sx={uiLayout.withUiSx({ color: '#80b49e', borderColor: '#80b49e' }, uiLayout.buttonSx)}
             >
               صح/خطأ أولاً
             </Button>
@@ -842,7 +844,7 @@ const QuestionList = ({
               onClick={() => reorderQuestions('mcqFirst')}
               variant="outlined"
               size="small"
-              sx={{ color: '#80b49e', borderColor: '#80b49e' }}
+              sx={uiLayout.withUiSx({ color: '#80b49e', borderColor: '#80b49e' }, uiLayout.buttonSx)}
             >
               اختياري أولاً
             </Button>
@@ -851,7 +853,7 @@ const QuestionList = ({
               onClick={() => reorderQuestions('shuffle')}
               variant="outlined"
               size="small"
-              sx={{ color: '#80b49e', borderColor: '#80b49e' }}
+              sx={uiLayout.withUiSx({ color: '#80b49e', borderColor: '#80b49e' }, uiLayout.buttonSx)}
             >
               خلط
             </Button>
@@ -869,10 +871,10 @@ const QuestionList = ({
                 startIcon={busy ? <CircularProgress size={20} /> : <SaveIcon />}
                 onClick={saveExam}
                 disabled={busy || questions.length === 0}
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   backgroundColor: '#80b49e',
                   '&:hover': { backgroundColor: '#6a9c8a' }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {busy ? "جاري الحفظ..." : "حفظ الاختبار نهائياً"}
               </Button>
@@ -1019,7 +1021,7 @@ const ExamViewer = ({ examData, onClose, onCopyToAll }) => {
   if (!examData) return null;
 
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog sx={uiLayout.dialogLayoutSx} open={true} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h5" fontWeight="bold">
@@ -1035,15 +1037,15 @@ const ExamViewer = ({ examData, onClose, onCopyToAll }) => {
         <ExamViewerContent examData={examData} />
       </DialogContent>
       
-      <DialogActions>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
         <Button
           startIcon={<CopyIcon />}
           onClick={() => onCopyToAll(examData)}
-          sx={{ color: '#80b49e' }}
+          sx={uiLayout.withUiSx({ color: '#80b49e' }, uiLayout.buttonSx)}
         >
           نسخ لجميع التركيبات
         </Button>
-        <Button onClick={onClose} variant="contained" sx={{ backgroundColor: '#80b49e' }}>
+        <Button onClick={onClose} variant="contained" sx={uiLayout.withUiSx({ backgroundColor: '#80b49e' }, uiLayout.buttonSx)}>
           إغلاق
         </Button>
       </DialogActions>
@@ -1175,7 +1177,7 @@ const AnswerKeyViewer = ({ examData, onClose }) => {
   if (!examData) return null;
 
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog sx={uiLayout.dialogLayoutSx} open={true} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h5" fontWeight="bold">
@@ -1191,8 +1193,8 @@ const AnswerKeyViewer = ({ examData, onClose }) => {
         <AnswerKeyContent examData={examData} />
       </DialogContent>
       
-      <DialogActions>
-        <Button onClick={onClose} variant="contained" sx={{ backgroundColor: '#80b49e' }}>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button onClick={onClose} variant="contained" sx={uiLayout.withUiSx({ backgroundColor: '#80b49e' }, uiLayout.buttonSx)}>
           إغلاق
         </Button>
       </DialogActions>
@@ -2394,11 +2396,11 @@ const createExam = async () => {
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Box sx={{ mb: 3 }}>
-                <Stack direction="row" spacing={1} sx={{ bgcolor: 'grey.100', p: 1, borderRadius: 1 }}>
+                <Stack direction="row" spacing={1} sx={uiLayout.withUiSx({ bgcolor: 'grey.100', p: 1, borderRadius: 1 }, uiLayout.actionBarSx)}>
                   <Button
                     variant={!sharedCourseMode ? "contained" : "outlined"}
                     onClick={() => setSharedCourseMode(false)}
-                    sx={{ 
+                    sx={uiLayout.withUiSx({ 
                       flex: 1,
                       backgroundColor: !sharedCourseMode ? '#80b49e' : 'transparent',
                       color: !sharedCourseMode ? 'white' : '#80b49e',
@@ -2406,14 +2408,14 @@ const createExam = async () => {
                       '&:hover': {
                         backgroundColor: !sharedCourseMode ? '#6a9c8a' : 'grey.200'
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     الوضع العادي
                   </Button>
                   <Button
                     variant={sharedCourseMode ? "contained" : "outlined"}
                     onClick={() => setSharedCourseMode(true)}
-                    sx={{ 
+                    sx={uiLayout.withUiSx({ 
                       flex: 1,
                       backgroundColor: sharedCourseMode ? '#80b49e' : 'transparent',
                       color: sharedCourseMode ? 'white' : '#80b49e',
@@ -2421,7 +2423,7 @@ const createExam = async () => {
                       '&:hover': {
                         backgroundColor: sharedCourseMode ? '#6a9c8a' : 'grey.200'
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     المواد المشتركة
                   </Button>
@@ -2451,15 +2453,15 @@ const createExam = async () => {
                     setQuestions={setQuestions}
                   />
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                  <Box sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 2, mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }, uiLayout.actionBarSx)}>
                     <Button
                       variant="contained"
                       onClick={createExam}
                       disabled={busy || !canCreate}
-                      sx={{ 
+                      sx={uiLayout.withUiSx({ 
                         backgroundColor: '#80b49e',
                         '&:hover': { backgroundColor: '#6a9c8a' }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {busy ? <CircularProgress size={24} /> : (examId ? "الاختبار موجود" : "إنشاء اختبار")}
                     </Button>
@@ -2508,11 +2510,11 @@ const createExam = async () => {
       setBusy(false);
     }
   }}
-  sx={{
+  sx={uiLayout.withUiSx({
     borderColor: '#80b49e',
     color: '#80b49e',
     '&:hover': { borderColor: '#6a9c8a', backgroundColor: 'rgba(128, 180, 158, 0.04)' }
-  }}
+  }, uiLayout.buttonSx)}
 >
   نموذج الإجابة
 </Button>
@@ -2543,10 +2545,10 @@ const createExam = async () => {
                       variant="contained"
                       onClick={createSharedExam}
                       disabled={busy || !canCreateShared}
-                      sx={{ 
+                      sx={uiLayout.withUiSx({ 
                         backgroundColor: '#80b49e',
                         '&:hover': { backgroundColor: '#6a9c8a' }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {busy ? <CircularProgress size={24} /> : `إنشاء ${filteredCombinations.length} اختبار`}
                     </Button>

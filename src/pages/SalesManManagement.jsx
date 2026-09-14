@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -88,7 +90,7 @@ function SalesManLookupDialog({
   onPick
 }) {
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -116,7 +118,7 @@ function SalesManLookupDialog({
         dividers
         sx={{ p: { xs: 0.8, sm: 1.5 } }}
       >
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -130,15 +132,15 @@ function SalesManLookupDialog({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: 0.7,
             "& .MuiInputBase-root": {
               minHeight: { xs: 34, sm: 38 }
             },
             "& input": {
-              fontSize: { xs: 11.5, sm: 13 }
+              fontSize: { xs: 12, sm: 13 }
             }
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         {loading ? (
@@ -178,14 +180,14 @@ function SalesManLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: { xs: 8.5, sm: 10.5 } }}
+                      sx={{ fontSize: { xs: 12, sm: 12 } }}
                     >
                       الكود
                     </Typography>
                     <Typography
                       sx={{
                         fontWeight: 900,
-                        fontSize: { xs: 11, sm: 13 }
+                        fontSize: { xs: 12, sm: 13 }
                       }}
                     >
                       {row.code || "-"}
@@ -196,7 +198,7 @@ function SalesManLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: { xs: 8.5, sm: 10.5 } }}
+                      sx={{ fontSize: { xs: 12, sm: 12 } }}
                     >
                       اسم المندوب
                     </Typography>
@@ -204,7 +206,7 @@ function SalesManLookupDialog({
                       noWrap
                       sx={{
                         fontWeight: 800,
-                        fontSize: { xs: 11, sm: 13 }
+                        fontSize: { xs: 12, sm: 13 }
                       }}
                     >
                       {row.name || "-"}
@@ -215,7 +217,7 @@ function SalesManLookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: 10.5 }}
+                      sx={{ fontSize: 12 }}
                     >
                       الحالة
                     </Typography>
@@ -232,11 +234,11 @@ function SalesManLookupDialog({
                   <Button
                     size="small"
                     onClick={() => onPick(row)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 0,
                       px: 0.35,
-                      fontSize: { xs: 9.8, sm: 11.5 }
-                    }}
+                      fontSize: { xs: 12, sm: 12 }
+                    }, uiLayout.buttonSx)}
                   >
                     اختيار
                   </Button>
@@ -249,7 +251,7 @@ function SalesManLookupDialog({
                 severity="info"
                 sx={{
                   py: 0.4,
-                  fontSize: { xs: 10.5, sm: 12 }
+                  fontSize: { xs: 12, sm: 12 }
                 }}
               >
                 لا توجد نتائج.
@@ -259,10 +261,10 @@ function SalesManLookupDialog({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ py: 0.5 }}>
+      <DialogActions sx={uiLayout.withUiSx({ py: 0.5 }, uiLayout.dialogActionsSx)}>
         <Button
           onClick={onClose}
-          sx={{ fontSize: { xs: 11, sm: 13 } }}
+          sx={uiLayout.withUiSx({ fontSize: { xs: 12, sm: 13 } }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -827,15 +829,15 @@ export default function SalesManManagement() {
             minHeight: { xs: 34, sm: 38 }
           },
           "& .MuiInputBase-input": {
-            fontSize: { xs: 11.5, sm: 13.5 },
+            fontSize: { xs: 12, sm: 13.5 },
             py: { xs: 0.5, sm: 0.75 }
           },
           "& .MuiInputLabel-root": {
-            fontSize: { xs: 10.5, sm: 12.5 }
+            fontSize: { xs: 12, sm: 12.5 }
           },
           "& .MuiButton-root": {
             minHeight: { xs: 31, sm: 36 },
-            fontSize: { xs: 10.5, sm: 13.2 },
+            fontSize: { xs: 12, sm: 13.2 },
             lineHeight: 1.1
           },
           "& .MuiSvgIcon-root": {
@@ -894,7 +896,7 @@ export default function SalesManManagement() {
               bgcolor: "#fff",
               color: primaryDark,
               fontWeight: 900,
-              fontSize: { xs: 9.5, sm: 11.5 }
+              fontSize: { xs: 12, sm: 12 }
             }}
           />
         </Box>
@@ -906,7 +908,7 @@ export default function SalesManManagement() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(3,minmax(0,1fr))",
@@ -914,19 +916,19 @@ export default function SalesManManagement() {
               },
               gap: { xs: 0.4, sm: 0.7 },
               justifyContent: { sm: "start" }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={newSalesMan}
               disabled={!ops.canAdd && !isEdit}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#1976d2",
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.5, sm: 1.5 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -939,11 +941,11 @@ export default function SalesManManagement() {
                 setLookupSearch("");
                 setLookupOpen(true);
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.5, sm: 1.5 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               بحث
             </Button>
@@ -964,11 +966,11 @@ export default function SalesManManagement() {
                   : !ops.canAdd)
               }
               onClick={save}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.5, sm: 1.5 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {isEdit ? "حفظ التعديل" : "حفظ"}
             </Button>
@@ -986,7 +988,7 @@ export default function SalesManManagement() {
             }}
           >
             <CircularProgress size={17} />
-            <Typography sx={{ fontSize: 11 }}>
+            <Typography sx={{ fontSize: 12 }}>
               جاري التحميل...
             </Typography>
           </Box>
@@ -995,16 +997,16 @@ export default function SalesManManagement() {
         <Box sx={{ p: { xs: 0.7, sm: 1.2 } }}>
           {/* بيانات أساسية - كل 2 فيلد جنب بعض على الموبايل */}
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(2,minmax(0,1fr))",
                 md: "repeat(4,minmax(0,1fr))"
               },
               gap: { xs: 0.45, sm: 0.7 }
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               label="كود"
               value={model.code}
@@ -1012,16 +1014,16 @@ export default function SalesManManagement() {
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <FormControlLabel
-              sx={{
+              sx={uiLayout.withUiSx({
                 m: 0,
                 px: 0.5,
                 border: `1px solid ${border}`,
                 borderRadius: 1,
                 minHeight: { xs: 34, sm: 38 },
                 "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: 11, sm: 13 }
+                  fontSize: { xs: 12, sm: 13 }
                 }
-              }}
+              }, uiLayout.checkboxFieldSx)}
               control={
                 <Checkbox
                   checked={model.isUse}
@@ -1037,7 +1039,7 @@ export default function SalesManManagement() {
               label="نشط"
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               label="اسم المندوب"
               value={model.fullName}
@@ -1049,7 +1051,7 @@ export default function SalesManManagement() {
               }
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               label="اسم مختصر"
               value={model.useName}
@@ -1091,7 +1093,7 @@ export default function SalesManManagement() {
                 قائمة الفروع
               </Typography>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 size="small"
                 value={branchSearch}
@@ -1106,7 +1108,7 @@ export default function SalesManManagement() {
                     </InputAdornment>
                   )
                 }}
-                sx={{ mb: 0.45 }}
+                sx={uiLayout.withUiSx({ mb: 0.45 }, uiLayout.formFieldSx)}
               />
 
               <Box
@@ -1126,14 +1128,14 @@ export default function SalesManManagement() {
                     key={branch.guid}
                     variant="text"
                     onClick={() => addBranch(branch)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       justifyContent: "space-between",
                       color: "text.primary",
                       minHeight: { xs: 28, sm: 33 },
                       px: { xs: 0.35, sm: 0.7 },
                       py: 0.1,
-                      fontSize: { xs: 10.5, sm: 12.5 }
-                    }}
+                      fontSize: { xs: 12, sm: 12.5 }
+                    }, uiLayout.buttonSx)}
                   >
                     <span>{branch.name}</span>
                     <AddIcon fontSize="small" />
@@ -1145,7 +1147,7 @@ export default function SalesManManagement() {
                     severity="info"
                     sx={{
                       py: 0.3,
-                      fontSize: 10
+                      fontSize: 12
                     }}
                   >
                     لا توجد فروع متاحة.
@@ -1192,13 +1194,13 @@ export default function SalesManManagement() {
                     onClick={() =>
                       removeBranch(branch.guid)
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       justifyContent: "space-between",
                       minHeight: { xs: 28, sm: 33 },
                       px: { xs: 0.35, sm: 0.7 },
                       py: 0.1,
-                      fontSize: { xs: 10.5, sm: 12.5 }
-                    }}
+                      fontSize: { xs: 12, sm: 12.5 }
+                    }, uiLayout.buttonSx)}
                   >
                     <span>{branch.name}</span>
                     <CloseIcon fontSize="small" />
@@ -1210,7 +1212,7 @@ export default function SalesManManagement() {
                     severity="info"
                     sx={{
                       py: 0.3,
-                      fontSize: 10
+                      fontSize: 12
                     }}
                   >
                     لم يتم اختيار فروع.

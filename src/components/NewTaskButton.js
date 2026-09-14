@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState } from 'react';
 import { 
   Button,
@@ -95,21 +96,21 @@ const NewTaskButton = ({
           variant="contained" 
           onClick={handleAddTask}
           startIcon={<AddIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             px: { xs: 1.5, sm: 2.2, md: 3 },
             py: { xs: 0.65, sm: 0.8, md: 1 },
             borderRadius: '10px',
             boxShadow: `0 4px 12px ${colorPalette.primary}40`,
             fontWeight: 600,
             textTransform: 'none',
-            fontSize: { xs: '0.64rem', sm: '0.74rem', md: '0.84rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.84rem' },
             backgroundColor: colorPalette.primary,
             '&:hover': {
               backgroundColor: colorPalette.primaryDark,
               boxShadow: `0 6px 20px ${colorPalette.primary}60`
             },
             ...buttonProps.sx
-          }}
+          }, uiLayout.buttonSx)}
           {...buttonProps}
         >
           إضافة مهمة جديدة
@@ -117,7 +118,7 @@ const NewTaskButton = ({
       </motion.div>
 
       {/* Task Type Selection Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={selectTaskTypeOpen} 
         onClose={handleClose}
         fullWidth
@@ -219,7 +220,7 @@ const NewTaskButton = ({
                     <Typography variant="h5" fontWeight={600} sx={{ color: colorPalette.textDark, fontFamily: '"Cairo", sans-serif', fontSize: { xs: '0.82rem', sm: '0.95rem', md: '1.08rem' } }} gutterBottom>
                       مهمة عامة
                     </Typography>
-                    <Typography variant="body1" sx={{ color: colorPalette.textLight, mb: { xs: 1, md: 1.5 }, fontFamily: '"Cairo", sans-serif', lineHeight: 1.6, fontSize: { xs: '0.64rem', sm: '0.72rem', md: '0.82rem' } }}>
+                    <Typography variant="body1" sx={{ color: colorPalette.textLight, mb: { xs: 1, md: 1.5 }, fontFamily: '"Cairo", sans-serif', lineHeight: 1.6, fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' } }}>
                       إنشاء مهمة يدوية مخصصة لمستخدم أو مجموعة مستخدمين
                     </Typography>
                     <Chip 

@@ -1,4 +1,6 @@
+import * as uiLayout from '../components/common/uiLayout';
 // MeetingPageRtc.jsx
+import './rtl-forms-fix.css';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box, Typography, Container, Button, IconButton, Avatar, Chip,
@@ -510,7 +512,7 @@ const remoteVideoTiles = participants
         <Button
           variant="contained"
           onClick={() => (window.location.href = "/meetings")}
-          sx={{ bgcolor: COLOR_SCHEME.primary }}
+          sx={uiLayout.withUiSx({ bgcolor: COLOR_SCHEME.primary }, uiLayout.buttonSx)}
         >
           العودة إلى الاجتماعات
         </Button>
@@ -778,7 +780,7 @@ const remoteVideoTiles = participants
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ color: "#aaa", fontSize: "0.7rem" }}
+                              sx={{ color: "#aaa", fontSize: "0.75rem" }}
                             >
                               {m.time}
                             </Typography>
@@ -795,7 +797,7 @@ const remoteVideoTiles = participants
                     </Box>
 
                     <Box sx={{ p: 2, borderTop: "1px solid #2d2d2d", bgcolor: "#2d2d2d" }}>
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         fullWidth
                         placeholder="اكتب رسالة..."
                         value={newMessage}
@@ -803,7 +805,7 @@ const remoteVideoTiles = participants
                         onKeyPress={handleKeyPress}
                         multiline
                         maxRows={3}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           "& .MuiInputBase-root": {
                             color: "white",
                             bgcolor: "#404040",
@@ -811,7 +813,7 @@ const remoteVideoTiles = participants
                             "&:hover": { bgcolor: "#4a4a4a" },
                           },
                           "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                        }}
+                        }, uiLayout.formFieldSx)}
                         InputProps={{
                           endAdornment: (
                             <IconButton

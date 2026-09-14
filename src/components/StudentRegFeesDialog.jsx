@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Autocomplete,
@@ -121,8 +122,8 @@ const MoneyCell = ({ value }) => (
       width: "100%",
       fontWeight: 900,
       fontSize: "0.9rem",
-      "@media (max-width:1599px)": { fontSize: "0.55rem" },
-      "@media (max-width:599px)": { fontSize: "0.47rem" },
+      "@media (max-width:1599px)": { fontSize: "0.75rem" },
+      "@media (max-width:599px)": { fontSize: "0.75rem" },
       textAlign: "center",
       direction: "ltr",
       color: textColor
@@ -178,8 +179,8 @@ const InfoCard = ({ label, value }) => (
         color: "#6f8a81",
         mb: 0.4,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.5rem", mb: 0.15 },
-        "@media (max-width:599px)": { fontSize: "0.43rem", mb: 0.1 }
+        "@media (max-width:1599px)": { fontSize: "0.75rem", mb: 0.15 },
+        "@media (max-width:599px)": { fontSize: "0.75rem", mb: 0.1 }
       }}
     >
       {label}
@@ -189,8 +190,8 @@ const InfoCard = ({ label, value }) => (
         fontSize: "0.9rem",
         fontWeight: 900,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.6rem" },
-        "@media (max-width:599px)": { fontSize: "0.52rem" },
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" },
         color: textColor,
         wordBreak: "break-word"
       }}
@@ -226,8 +227,8 @@ const TotalBox = ({ label, value, color = textColor }) => (
         fontWeight: 900,
         color: "#6f8a81",
         mb: 0.4,
-        "@media (max-width:1599px)": { fontSize: "0.49rem", mb: 0.1 },
-        "@media (max-width:599px)": { fontSize: "0.42rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem", mb: 0.1 },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {label}
@@ -238,8 +239,8 @@ const TotalBox = ({ label, value, color = textColor }) => (
         fontWeight: 1000,
         color,
         direction: "ltr",
-        "@media (max-width:1599px)": { fontSize: "0.68rem" },
-        "@media (max-width:599px)": { fontSize: "0.58rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {formatMoney(value)}
@@ -939,14 +940,14 @@ const StudentRegFeesDialog = ({
       fullWidth
       maxWidth="xl"
       fullScreen={isPhone}
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -986,7 +987,7 @@ const StudentRegFeesDialog = ({
                 sx={{
                   fontWeight: 1000,
                   color: textColor,
-                  fontSize: isPhone ? "0.66rem" : isTablet ? "0.76rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.76rem" : undefined,
                   lineHeight: 1.15
                 }}
               >
@@ -994,7 +995,7 @@ const StudentRegFeesDialog = ({
               </Typography>
               <Typography
                 sx={{
-                  fontSize: isPhone ? "0.43rem" : isTablet ? "0.51rem" : "0.8rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.8rem",
                   fontWeight: 800,
                   color: "#6f8a81",
                   lineHeight: 1.15
@@ -1027,10 +1028,10 @@ const StudentRegFeesDialog = ({
           minHeight: 0,
 
           "& .MuiInputLabel-root": {
-            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           },
           "& .MuiInputBase-input, & .MuiAutocomplete-input": {
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
           },
           "& .MuiOutlinedInput-root": {
@@ -1039,7 +1040,7 @@ const StudentRegFeesDialog = ({
           },
           "& .MuiChip-root": {
             height: isPhone ? 20 : isTablet ? 23 : undefined,
-            fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           }
         }}
       >
@@ -1051,7 +1052,7 @@ const StudentRegFeesDialog = ({
                 mt: isCompact ? 0.7 : 2,
                 fontWeight: 900,
                 color: textColor,
-                fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               }}
             >
               جاري تجهيز استمارة الرسوم...
@@ -1081,7 +1082,7 @@ const StudentRegFeesDialog = ({
                   <InfoCard label="رقم الجوال" value={studentTel} />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={3}>
                   <TextField
                     fullWidth
                     type="datetime-local"
@@ -1090,12 +1091,12 @@ const StudentRegFeesDialog = ({
                     onChange={(e) => setRegDate(e.target.value)}
                     InputLabelProps={{ shrink: true }}
                     size="small"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       "& .MuiInputBase-input": {
                         fontWeight: 900,
                         direction: "ltr"
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
               </Grid>
@@ -1111,7 +1112,7 @@ const StudentRegFeesDialog = ({
               }}
             >
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5} alignItems="center">
-                <Grid item xs={7} sm={7} md={5}>
+                <Grid item xs={12} sm={7} md={5}>
                   <Autocomplete
                     {...compactAutocompleteProps}
                     options={documents}
@@ -1127,7 +1128,7 @@ const StudentRegFeesDialog = ({
                       String(option?.docGuid || "") === String(value?.docGuid || "")
                     }
                     renderInput={(params) => (
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         {...params}
                         label="نوع المستند"
                         placeholder="اختر نوع المستند"
@@ -1157,21 +1158,21 @@ const StudentRegFeesDialog = ({
                     startIcon={<SearchIcon />}
                     onClick={() => loadDocuments(docSearch)}
                     disabled={documentsLoading}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       height: isPhone ? 31 : isTablet ? 35 : 40,
                       borderRadius: isCompact ? 1.25 : 2,
                       fontWeight: 900,
-                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       color: primaryDark,
                       borderColor: primaryLight,
                       direction: "rtl"
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     بحث
                   </Button>
                 </Grid>
 
-                <Grid item xs={7} sm={7} md={4}>
+                <Grid item xs={12} sm={7} md={4}>
                   <Autocomplete
                     {...compactAutocompleteProps}
                     options={salesmen}
@@ -1184,7 +1185,7 @@ const StudentRegFeesDialog = ({
                       String(option?.salesManGuid || "") === String(value?.salesManGuid || "")
                     }
                     renderInput={(params) => (
-  <TextField
+  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
     {...params}
     label="مندوب البيع"
     placeholder="اختر مندوب البيع"
@@ -1228,19 +1229,19 @@ const StudentRegFeesDialog = ({
                 {docInfo && (
                   <>
                     <Grid item xs={12} md={6}>
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         fullWidth
                         size="small"
                         label="الفرع"
                         value={docInfo?.branchName || ""}
                         InputProps={{ readOnly: true }}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           "& .MuiInputBase-input": {
                             fontWeight: 900,
                             color: textColor,
                             textAlign: "start"
                           }
-                        }}
+                        }, uiLayout.formFieldSx)}
                       />
                     </Grid>
 
@@ -1277,7 +1278,7 @@ const StudentRegFeesDialog = ({
                     height: "100%"
                   }}
                 >
-                  <Stack
+                  <Stack sx={uiLayout.pageHeaderSx}
                     direction="row"
                     justifyContent="space-between"
                     alignItems="center"
@@ -1288,14 +1289,14 @@ const StudentRegFeesDialog = ({
                       sx={{
                         fontWeight: 1000,
                         color: textColor,
-                        fontSize: isPhone ? "0.48rem" : isTablet ? "0.57rem" : undefined
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                       }}
                     >
                       الرسوم المتاحة
                     </Typography>
 
-                    <Stack direction="row" gap={isCompact ? 0.25 : 1} sx={{ minWidth: 0 }}>
-                      <TextField
+                    <Stack direction="row" gap={isCompact ? 0.25 : 1} sx={uiLayout.withUiSx({ minWidth: 0 }, uiLayout.filterBarSx)}>
+                      <TextField InputLabelProps={{ shrink: true }}
                         size="small"
                         placeholder="بحث في الرسوم"
                         value={feesSearch}
@@ -1303,27 +1304,27 @@ const StudentRegFeesDialog = ({
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleSearchFees();
                         }}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           width: isPhone ? 92 : isTablet ? 135 : 210,
                           "& .MuiInputBase-input": {
-                            fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+                            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                           }
-                        }}
+                        }, uiLayout.formFieldSx)}
                       />
 
                       <Button
                         variant="outlined"
                         onClick={handleSearchFees}
                         disabled={feesLoading || !selectedDoc?.docGuid}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           borderRadius: isCompact ? 1.2 : 2,
                           fontWeight: 900,
                           minWidth: isPhone ? 44 : isTablet ? 52 : undefined,
                           px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
-                          fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           color: primaryDark,
                           borderColor: primaryLight
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         بحث
                       </Button>
@@ -1331,11 +1332,11 @@ const StudentRegFeesDialog = ({
                   </Stack>
 
                   <Box
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       height: isPhone ? 235 : isTablet ? 285 : 355,
                       minWidth: 0,
                       width: "100%"
-                    }}
+                    }, uiLayout.tableContainerSx)}
                   >
                     <DataGrid
                       rows={availableFees}
@@ -1353,14 +1354,14 @@ const StudentRegFeesDialog = ({
                           paginationModel: { pageSize: 5, page: 0 }
                         }
                       }}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         border: "1px solid #e4eeea",
                         borderRadius: isCompact ? 1.2 : 2,
                         direction: "rtl",
                         width: "100%",
                         minWidth: 0,
                         overflow: "hidden",
-                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.55rem" : undefined,
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
 
                         "& .MuiDataGrid-main": {
                           minWidth: 0
@@ -1379,7 +1380,7 @@ const StudentRegFeesDialog = ({
 
                         "& .MuiDataGrid-columnHeaderTitle": {
                           fontWeight: 1000,
-                          fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           lineHeight: 1.05,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -1389,7 +1390,7 @@ const StudentRegFeesDialog = ({
 
                         "& .MuiDataGrid-cell": {
                           fontWeight: 800,
-                          fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           px: isPhone ? 0.12 : isTablet ? 0.28 : undefined,
                           lineHeight: 1.1,
                           overflow: "hidden"
@@ -1426,9 +1427,9 @@ const StudentRegFeesDialog = ({
                         },
 
                         "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                          fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                         }
-                      }}
+                      }, uiLayout.dataGridSx)}
                     />
                   </Box>
                 </Paper>
@@ -1456,7 +1457,7 @@ const StudentRegFeesDialog = ({
                       sx={{
                         fontWeight: 1000,
                         color: textColor,
-                        fontSize: isPhone ? "0.48rem" : isTablet ? "0.57rem" : undefined
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                       }}
                     >
                       الرسوم المختارة
@@ -1467,27 +1468,27 @@ const StudentRegFeesDialog = ({
                       startIcon={<RefreshIcon />}
                       onClick={() => setSelectedFees([])}
                       disabled={selectedFees.length === 0}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         borderRadius: isCompact ? 1.2 : 2,
                         fontWeight: 900,
                         minWidth: isPhone ? 48 : isTablet ? 58 : undefined,
                         px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
-                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                         color: "#d32f2f",
                         borderColor: "#ffcdd2",
                         direction: "rtl"
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       تفريغ
                     </Button>
                   </Stack>
 
                   <Box
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       height: isPhone ? 235 : isTablet ? 285 : 355,
                       minWidth: 0,
                       width: "100%"
-                    }}
+                    }, uiLayout.tableContainerSx)}
                   >
                     <DataGrid
                       rows={selectedFees}
@@ -1504,14 +1505,14 @@ const StudentRegFeesDialog = ({
                           paginationModel: { pageSize: 5, page: 0 }
                         }
                       }}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         border: "1px solid #e4eeea",
                         borderRadius: isCompact ? 1.2 : 2,
                         direction: "rtl",
                         width: "100%",
                         minWidth: 0,
                         overflow: "hidden",
-                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.55rem" : undefined,
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
 
                         "& .MuiDataGrid-main": {
                           minWidth: 0
@@ -1530,7 +1531,7 @@ const StudentRegFeesDialog = ({
 
                         "& .MuiDataGrid-columnHeaderTitle": {
                           fontWeight: 1000,
-                          fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           lineHeight: 1.05,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -1540,7 +1541,7 @@ const StudentRegFeesDialog = ({
 
                         "& .MuiDataGrid-cell": {
                           fontWeight: 800,
-                          fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           px: isPhone ? 0.12 : isTablet ? 0.28 : undefined,
                           lineHeight: 1.1,
                           overflow: "hidden"
@@ -1577,9 +1578,9 @@ const StudentRegFeesDialog = ({
                         },
 
                         "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                          fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                         }
-                      }}
+                      }, uiLayout.dataGridSx)}
                     />
                   </Box>
                 </Paper>
@@ -1597,7 +1598,7 @@ const StudentRegFeesDialog = ({
             >
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
                 <Grid item xs={12} md={6}>
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     multiline
                     minRows={isPhone ? 1 : isTablet ? 2 : 3}
@@ -1629,28 +1630,28 @@ const StudentRegFeesDialog = ({
       <Divider />
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           p: isPhone ? 0.35 : isTablet ? 0.55 : 2,
           gap: isCompact ? 0.4 : 1,
           backgroundColor: "#fff",
           flexShrink: 0,
           justifyContent: "space-between",
           direction: "rtl"
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           onClick={onClose}
           disabled={saving}
           variant="outlined"
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: isCompact ? 1.2 : 2,
             fontWeight: 900,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 1 : isTablet ? 1.3 : undefined,
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             color: "#d32f2f",
             borderColor: "#ffcdd2"
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -1660,18 +1661,18 @@ const StudentRegFeesDialog = ({
           disabled={saving || loadingContext}
           variant="contained"
           startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: isCompact ? 1.2 : 2,
             fontWeight: 1000,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 1.2 : isTablet ? 1.6 : 4,
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             backgroundColor: primaryColor,
             direction: "rtl",
             "&:hover": {
               backgroundColor: primaryDark
             }
-          }}
+          }, uiLayout.buttonSx)}
         >
           {saving ? "جاري الحفظ..." : "حفظ"}
         </Button>

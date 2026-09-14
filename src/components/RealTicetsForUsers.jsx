@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -782,7 +783,7 @@ const TechnicalSupport = () => {
                     fetchUserTickets();
                   }
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
               >
                 تحديث
               </Button>
@@ -874,7 +875,7 @@ const TechnicalSupport = () => {
                     onClick={() => {
                       document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       bgcolor: '#2196f3',
                       py: 1.5,
                       px: 4,
@@ -884,7 +885,7 @@ const TechnicalSupport = () => {
                       '&:hover': {
                         bgcolor: '#1976d2',
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     عرض تذكرتي الحالية
                   </Button>
@@ -930,7 +931,7 @@ const TechnicalSupport = () => {
                   <Grid item xs={12}>
                     <Grid container spacing={3}>
                       <Grid item xs={12} md={6}>
-                        <FormControl fullWidth required sx={{ bgcolor: 'white', borderRadius: 1 }}>
+                        <FormControl fullWidth required sx={uiLayout.withUiSx({ bgcolor: 'white', borderRadius: 1 }, uiLayout.formFieldSx)}>
                           <InputLabel sx={{ fontWeight: 'medium', color: '#555' }}>نوع التذكرة</InputLabel>
                           <Select
                             value={ticketType}
@@ -961,7 +962,7 @@ const TechnicalSupport = () => {
                       </Grid>
 
                       <Grid item xs={12} md={6}>
-                        <FormControl fullWidth sx={{ bgcolor: 'white', borderRadius: 1 }}>
+                        <FormControl fullWidth sx={uiLayout.withUiSx({ bgcolor: 'white', borderRadius: 1 }, uiLayout.formFieldSx)}>
                           <InputLabel sx={{ fontWeight: 'medium', color: '#555' }}>درجة الأولوية</InputLabel>
                           <Select
                             value={priority}
@@ -996,7 +997,7 @@ const TechnicalSupport = () => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       required
                       label="عنوان التذكرة"
@@ -1004,12 +1005,12 @@ const TechnicalSupport = () => {
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder="مثال: مشكلة في تسجيل الدخول إلى النظام الأساسي"
                       helperText="اكتب عنواناً واضحاً يصف المشكلة بشكل مختصر"
-                      sx={{ 
+                      sx={uiLayout.withUiSx({ 
                         bgcolor: 'white',
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 1,
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                       InputProps={{
                         sx: { height: '56px', fontSize: '1rem' }
                       }}
@@ -1018,7 +1019,7 @@ const TechnicalSupport = () => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       required
                       multiline
@@ -1028,12 +1029,12 @@ const TechnicalSupport = () => {
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="صف المشكلة بالتفصيل..."
                       helperText="كلما كان الوصف أكثر تفصيلاً، كان حل المشكلة أسرع وأكثر دقة"
-                      sx={{ 
+                      sx={uiLayout.withUiSx({ 
                         bgcolor: 'white',
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 1,
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                       disabled={hasPendingTicket && !isSupervisor}
                     />
                   </Grid>
@@ -1059,7 +1060,7 @@ const TechnicalSupport = () => {
                         component="label"
                         variant="contained"
                         startIcon={<CloudUpload />}
-                        sx={{ 
+                        sx={uiLayout.withUiSx({ 
                           bgcolor: '#2196f3',
                           borderRadius: 2,
                           px: 4,
@@ -1067,7 +1068,7 @@ const TechnicalSupport = () => {
                           '&:hover': {
                             bgcolor: '#1976d2',
                           }
-                        }}
+                        }, uiLayout.buttonSx)}
                         disabled={hasPendingTicket && !isSupervisor}
                       >
                         اختر الملفات
@@ -1161,7 +1162,7 @@ const TechnicalSupport = () => {
                       </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                    <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'center', gap: 2 }, uiLayout.actionBarSx)}>
                       <Button
                         variant="outlined"
                         onClick={() => {
@@ -1171,13 +1172,13 @@ const TechnicalSupport = () => {
                           setPriority('medium');
                           setFiles([]);
                         }}
-                        sx={{ 
+                        sx={uiLayout.withUiSx({ 
                           py: 1.5, 
                           px: 6,
                           borderRadius: 2,
                           fontSize: '1rem',
                           fontWeight: 'medium'
-                        }}
+                        }, uiLayout.buttonSx)}
                         disabled={hasPendingTicket && !isSupervisor}
                       >
                         مسح النموذج
@@ -1187,7 +1188,7 @@ const TechnicalSupport = () => {
                         variant="contained"
                         disabled={loading || uploading || (hasPendingTicket && !isSupervisor)}
                         startIcon={(loading || uploading) ? <CircularProgress size={20} color="inherit" /> : <Send />}
-                        sx={{ 
+                        sx={uiLayout.withUiSx({ 
                           py: 1.5, 
                           px: 8,
                           borderRadius: 2,
@@ -1202,7 +1203,7 @@ const TechnicalSupport = () => {
                           },
                           transition: 'all 0.3s ease',
                           cursor: (hasPendingTicket && !isSupervisor) ? 'not-allowed' : 'pointer'
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         {(hasPendingTicket && !isSupervisor) 
                           ? 'طلب قيد الانتظار' 
@@ -1251,20 +1252,20 @@ const TechnicalSupport = () => {
                 </Box>
               </Box>
               
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1, alignItems: 'center' }, uiLayout.filterBarSx)}>
                 {isSupportStaff && viewAllTickets && (
                   <>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       size="small"
                       placeholder="ابحث في التذاكر..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      sx={{ width: 200 }}
+                      sx={uiLayout.withUiSx({ width: 200 }, uiLayout.formFieldSx)}
                       InputProps={{
                         startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />,
                       }}
                     />
-                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)}>
                       <Select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -1289,7 +1290,7 @@ const TechnicalSupport = () => {
                     }
                   }}
                   startIcon={<Refresh />}
-                  sx={{ borderRadius: 2 }}
+                  sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -1323,7 +1324,7 @@ const TechnicalSupport = () => {
             ) : (
               <>
                 {/* جدول التذاكر */}
-                <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+                <TableContainer component={Paper} variant="outlined" sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.tableContainerSx)}>
                   <Table>
                     <TableHead sx={{ bgcolor: '#f5f5f5' }}>
                       <TableRow>
@@ -1568,7 +1569,7 @@ const TechnicalSupport = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   labelRowsPerPage="صفوف لكل صفحة:"
                   labelDisplayedRows={({ from, to, count }) => `${from}-${to} من ${count}`}
-                  sx={{ direction: "rtl" }}
+                  sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.tablePaginationSx)}
                 />
               </>
             )}
@@ -1576,7 +1577,7 @@ const TechnicalSupport = () => {
         </Container>
 
         {/* ديالوج تفاصيل التذكرة */}
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={detailsDialogOpen}
           onClose={() => setDetailsDialogOpen(false)}
           maxWidth="md"
@@ -1761,8 +1762,8 @@ const TechnicalSupport = () => {
                   )}
                 </Grid>
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setDetailsDialogOpen(false)}>
+              <DialogActions sx={uiLayout.dialogActionsSx}>
+                <Button sx={uiLayout.buttonSx} onClick={() => setDetailsDialogOpen(false)}>
                   إغلاق
                 </Button>
                 {(isSupportStaff || ticketDetails.user_guid === userGuid) && (
@@ -1782,7 +1783,7 @@ const TechnicalSupport = () => {
                           openReplyDialog(ticketDetails);
                         }}
                         disabled={!isSupportStaff && ticketDetails.status === 'closed'}
-                        sx={{ bgcolor: '#2196f3' }}
+                        sx={uiLayout.withUiSx({ bgcolor: '#2196f3' }, uiLayout.buttonSx)}
                       >
                         إضافة رد
                       </Button>
@@ -1795,7 +1796,7 @@ const TechnicalSupport = () => {
         </Dialog>
 
         {/* ديالوج إضافة رد */}
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={replyDialogOpen}
           onClose={() => setReplyDialogOpen(false)}
           maxWidth="sm"
@@ -1808,7 +1809,7 @@ const TechnicalSupport = () => {
             </Box>
           </DialogTitle>
           <DialogContent dividers>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               autoFocus
               multiline
               rows={4}
@@ -1816,11 +1817,11 @@ const TechnicalSupport = () => {
               label="رسالة الرد"
               value={replyMessage}
               onChange={(e) => setReplyMessage(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
             />
             
             <Box sx={{ mb: 2 }}>
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 component="label"
                 variant="outlined"
                 startIcon={<CloudUpload />}
@@ -1866,8 +1867,8 @@ const TechnicalSupport = () => {
               )}
             </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setReplyDialogOpen(false)}>
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx} onClick={() => setReplyDialogOpen(false)}>
               إلغاء
             </Button>
             <Button
@@ -1875,7 +1876,7 @@ const TechnicalSupport = () => {
               onClick={handleSubmitReply}
               disabled={sendingReply || !replyMessage.trim()}
               startIcon={sendingReply ? <CircularProgress size={20} /> : <Send />}
-              sx={{ bgcolor: '#2196f3' }}
+              sx={uiLayout.withUiSx({ bgcolor: '#2196f3' }, uiLayout.buttonSx)}
             >
               {sendingReply ? 'جاري الإرسال...' : 'إرسال الرد'}
             </Button>
@@ -1883,7 +1884,7 @@ const TechnicalSupport = () => {
         </Dialog>
 
         {/* ديالوج طلب قيد الانتظار */}
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={pendingTicketDialogOpen}
           onClose={() => setPendingTicketDialogOpen(false)}
           maxWidth="sm"
@@ -1934,14 +1935,14 @@ const TechnicalSupport = () => {
               </Card>
             ))}
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+          <DialogActions sx={uiLayout.withUiSx({ justifyContent: 'center', pb: 3 }, uiLayout.dialogActionsSx)}>
             <Button
               variant="contained"
               onClick={() => {
                 setPendingTicketDialogOpen(false);
                 document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: '#2196f3',
                 py: 1.2,
                 px: 4,
@@ -1949,13 +1950,13 @@ const TechnicalSupport = () => {
                 fontSize: '1rem',
                 fontWeight: 'bold',
                 minWidth: 200,
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض تذكرتي الحالية
             </Button>
             <Button
               onClick={() => setPendingTicketDialogOpen(false)}
-              sx={{ color: '#666' }}
+              sx={uiLayout.withUiSx({ color: '#666' }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell } from 'recharts';
 import { Box, Typography, Button } from '@mui/material';
@@ -49,7 +50,7 @@ const TrainerCollectionRate = ({ rows }) => {
         variant="contained"
         startIcon={<ArrowBackIosIcon />}
         onClick={() => navigate('/dashboard')}
-        sx={{
+        sx={uiLayout.withUiSx({
           backgroundColor: '#3f51b5',
           color: 'white',
           borderRadius: '8px',
@@ -64,7 +65,7 @@ const TrainerCollectionRate = ({ rows }) => {
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
-        }}
+        }, uiLayout.buttonSx)}
       >
         رجوع
       </Button>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -119,11 +121,11 @@ const getStatusChip = (isStillRegistered) => {
             whiteSpace: "normal",
             "@media (max-width:599px)": {
               px: 0.5,
-              fontSize: "0.32rem"
+              fontSize: "0.75rem"
             },
             "@media (min-width:600px) and (max-width:1599px)": {
               px: 0.7,
-              fontSize: "0.38rem"
+              fontSize: "0.75rem"
             }
           },
           "@media (max-width:599px)": {
@@ -480,7 +482,7 @@ export default function OtherInstituteRegistrationsPage() {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.68rem",
+                  xs: "0.75rem",
                   sm: "0.8rem"
                 },
                 color: textColor,
@@ -566,7 +568,7 @@ export default function OtherInstituteRegistrationsPage() {
                     textAlign: "start",
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.62rem"
+                      ? "0.75rem"
                       : isTablet
                         ? "0.76rem"
                         : "1.3rem"
@@ -582,9 +584,9 @@ export default function OtherInstituteRegistrationsPage() {
                   color: "#607d70",
                   fontWeight: 600,
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.5rem"
+                      ? "0.75rem"
                       : "0.82rem",
                   display: isPhone ? "none" : "block",
                   textAlign: "start",
@@ -600,7 +602,7 @@ export default function OtherInstituteRegistrationsPage() {
               startIcon={<RefreshIcon />}
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderRadius: 3,
                 fontWeight: 900,
                 background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
@@ -609,11 +611,11 @@ export default function OtherInstituteRegistrationsPage() {
                 minHeight: isPhone ? 30 : isTablet ? 33 : 38,
                 px: isPhone ? 0.8 : isTablet ? 1.1 : 1.6,
                 fontSize: isPhone
-                  ? "0.44rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.52rem"
+                    ? "0.75rem"
                     : "0.75rem"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -644,10 +646,10 @@ export default function OtherInstituteRegistrationsPage() {
                       fontWeight: 900,
                       textAlign: "start",
                       fontSize: isPhone
-                        ? "0.32rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.4rem"
-                          : "0.72rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                     }}
                   >
                     إجمالي السجلات
@@ -658,9 +660,9 @@ export default function OtherInstituteRegistrationsPage() {
                       fontWeight: 900,
                       color: primaryDark,
                       fontSize: isPhone
-                        ? "0.62rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.74rem"
+                          ? "0.75rem"
                           : "1.25rem"
                     }}
                   >
@@ -690,10 +692,10 @@ export default function OtherInstituteRegistrationsPage() {
                       fontWeight: 900,
                       textAlign: "start",
                       fontSize: isPhone
-                        ? "0.32rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.4rem"
-                          : "0.72rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                     }}
                   >
                     مازالوا مسجلين
@@ -704,9 +706,9 @@ export default function OtherInstituteRegistrationsPage() {
                       fontWeight: 900,
                       color: primaryDark,
                       fontSize: isPhone
-                        ? "0.62rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.74rem"
+                          ? "0.75rem"
                           : "1.25rem"
                     }}
                   >
@@ -736,10 +738,10 @@ export default function OtherInstituteRegistrationsPage() {
                       fontWeight: 900,
                       textAlign: "start",
                       fontSize: isPhone
-                        ? "0.32rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.4rem"
-                          : "0.72rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                     }}
                   >
                     لم يعودوا مسجلين
@@ -750,9 +752,9 @@ export default function OtherInstituteRegistrationsPage() {
                       fontWeight: 900,
                       color: dangerColor,
                       fontSize: isPhone
-                        ? "0.62rem"
+                        ? "0.75rem"
                         : isTablet
-                          ? "0.74rem"
+                          ? "0.75rem"
                           : "1.25rem"
                     }}
                   >
@@ -781,7 +783,7 @@ export default function OtherInstituteRegistrationsPage() {
             alignItems="center"
           >
             <Grid item xs={12} sm={8} md={8}>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -790,7 +792,7 @@ export default function OtherInstituteRegistrationsPage() {
                   startAdornment: <SearchIcon sx={{ color: "#8aa99c", mr: 1 }} />
                 }}
                 size={isCompact ? "small" : "medium"}
-                sx={{
+                sx={uiLayout.withUiSx({
                   direction: "rtl",
                   "& .MuiOutlinedInput-root": {
                     minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
@@ -801,21 +803,21 @@ export default function OtherInstituteRegistrationsPage() {
                     fontFamily: "Cairo",
                     fontWeight: 700,
                     fontSize: isPhone
-                      ? "0.44rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.52rem"
+                        ? "0.75rem"
                         : undefined,
                     py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
                   },
                   "& .MuiSvgIcon-root": {
                     fontSize: isPhone ? 14 : isTablet ? 16 : undefined
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Grid>
 
             <Grid item xs={12} sm={4} md={4}>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 select
                 fullWidth
                 label="الحالة"
@@ -839,7 +841,7 @@ export default function OtherInstituteRegistrationsPage() {
                     }
                   }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   direction: "rtl",
                   "& .MuiOutlinedInput-root": {
                     minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
@@ -850,9 +852,9 @@ export default function OtherInstituteRegistrationsPage() {
                     fontFamily: "Cairo",
                     fontWeight: 700,
                     fontSize: isPhone
-                      ? "0.44rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.52rem"
+                        ? "0.75rem"
                         : undefined,
                     py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
                   },
@@ -861,12 +863,12 @@ export default function OtherInstituteRegistrationsPage() {
                     right: "auto",
                     transformOrigin: "left",
                     fontSize: isPhone
-                      ? "0.4rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.48rem"
+                        ? "0.75rem"
                         : undefined
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               >
                 <MenuItem value="all">الكل</MenuItem>
                 <MenuItem value="active">مازال مسجلاً</MenuItem>
@@ -924,8 +926,8 @@ export default function OtherInstituteRegistrationsPage() {
                     fontWeight: 800,
                     color: "#789",
                     fontSize: isPhone
-                      ? "0.48rem"
-                      : "0.56rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   }}
                 >
                   لا توجد بيانات للعرض
@@ -941,12 +943,12 @@ export default function OtherInstituteRegistrationsPage() {
                     <Paper
                       key={id}
                       variant="outlined"
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         p: isPhone ? 0.45 : 0.65,
                         borderRadius: isPhone ? 1 : 1.3,
                         borderColor: "#e4eeea",
                         background: "#fff"
-                      }}
+                      }, uiLayout.pageHeaderSx)}
                     >
                       <Stack
                         direction="row"
@@ -960,8 +962,8 @@ export default function OtherInstituteRegistrationsPage() {
                               fontFamily: "Cairo",
                               fontWeight: 950,
                               fontSize: isPhone
-                                ? "0.41rem"
-                                : "0.48rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               color: textColor,
                               whiteSpace: "nowrap",
                               overflow: "hidden",
@@ -976,8 +978,8 @@ export default function OtherInstituteRegistrationsPage() {
                               mt: 0.15,
                               fontFamily: "Cairo",
                               fontSize: isPhone
-                                ? "0.34rem"
-                                : "0.42rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               color: "#789"
                             }}
                           >
@@ -1002,8 +1004,8 @@ export default function OtherInstituteRegistrationsPage() {
                             sx={{
                               fontFamily: "Cairo",
                               fontSize: isPhone
-                                ? "0.31rem"
-                                : "0.38rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               color: "#8a9993"
                             }}
                           >
@@ -1014,8 +1016,8 @@ export default function OtherInstituteRegistrationsPage() {
                               fontFamily: "Cairo",
                               fontWeight: 800,
                               fontSize: isPhone
-                                ? "0.41rem"
-                                : "0.48rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               color: textColor
                             }}
                           >
@@ -1028,8 +1030,8 @@ export default function OtherInstituteRegistrationsPage() {
                             sx={{
                               fontFamily: "Cairo",
                               fontSize: isPhone
-                                ? "0.31rem"
-                                : "0.38rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               color: "#8a9993"
                             }}
                           >
@@ -1040,8 +1042,8 @@ export default function OtherInstituteRegistrationsPage() {
                               fontFamily: "Cairo",
                               fontWeight: 800,
                               fontSize: isPhone
-                                ? "0.46rem"
-                                : "0.54rem"
+                                ? "0.75rem"
+                                : "0.75rem"
                             }}
                           >
                             {safeText(row.sellerName) || "-"}
@@ -1058,8 +1060,8 @@ export default function OtherInstituteRegistrationsPage() {
                             background: "#f7faf9",
                             fontFamily: "Cairo",
                             fontSize: isPhone
-                              ? "0.35rem"
-                              : "0.42rem",
+                              ? "0.75rem"
+                              : "0.75rem",
                             lineHeight: 1.45,
                             color: "#5e6f68"
                           }}
@@ -1087,8 +1089,8 @@ export default function OtherInstituteRegistrationsPage() {
                             minWidth: 0,
                             fontFamily: "Cairo",
                             fontSize: isPhone
-                              ? "0.31rem"
-                              : "0.38rem",
+                              ? "0.75rem"
+                              : "0.75rem",
                             color: "#789"
                           }}
                         >
@@ -1101,7 +1103,7 @@ export default function OtherInstituteRegistrationsPage() {
                             variant="contained"
                             onClick={() => openConfirm(row)}
                             disabled={savingId === id}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               minHeight: isPhone ? 24 : 27,
                               minWidth: isPhone ? 52 : 62,
                               px: isPhone ? 0.45 : 0.65,
@@ -1109,12 +1111,12 @@ export default function OtherInstituteRegistrationsPage() {
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               fontSize: isPhone
-                                ? "0.34rem"
-                                : "0.4rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               borderRadius: isPhone ? 1 : 1.2,
                               boxShadow: "none",
                               backgroundColor: warningColor
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             طي القيد
                           </Button>
@@ -1125,8 +1127,8 @@ export default function OtherInstituteRegistrationsPage() {
                             sx={{
                               height: isPhone ? 20 : 23,
                               fontSize: isPhone
-                                ? "0.31rem"
-                                : "0.37rem",
+                                ? "0.75rem"
+                                : "0.75rem",
                               fontWeight: 900,
                               "& .MuiChip-label": {
                                 px: isPhone ? 0.55 : 0.7
@@ -1142,11 +1144,11 @@ export default function OtherInstituteRegistrationsPage() {
             </Box>
           ) : (
             <TableContainer
-              sx={{
+              sx={uiLayout.withUiSx({
                 maxHeight: "calc(100vh - 300px)",
                 overflowX: "hidden",
                 width: "100%"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <Table
                 stickyHeader
@@ -1219,7 +1221,7 @@ export default function OtherInstituteRegistrationsPage() {
                               {row.statusUpdatedAt && (
                                 <Typography
                                   sx={{
-                                    fontSize: "0.72rem",
+                                    fontSize: "0.75rem",
                                     color: "#789",
                                     fontWeight: 700,
                                     textAlign: "start"
@@ -1241,7 +1243,7 @@ export default function OtherInstituteRegistrationsPage() {
                                     startIcon={<DoneAllIcon />}
                                     disabled={savingId === id}
                                     onClick={() => openConfirm(row)}
-                                    sx={{
+                                    sx={uiLayout.withUiSx({
                                       fontWeight: 900,
                                       borderRadius: 2,
                                       backgroundColor: warningColor,
@@ -1253,7 +1255,7 @@ export default function OtherInstituteRegistrationsPage() {
                                       "&:hover": {
                                         backgroundColor: "#c75a00"
                                       }
-                                    }}
+                                    }, uiLayout.buttonSx)}
                                   >
                                    تحديث حالته
                                   </Button>
@@ -1368,7 +1370,7 @@ export default function OtherInstituteRegistrationsPage() {
                                 sx={{
                                   fontFamily: "Cairo",
                                   fontWeight: 700,
-                                  fontSize: "0.72rem",
+                                  fontSize: "0.75rem",
                                   color: "#789",
                                   textAlign: "start"
                                 }}
@@ -1393,12 +1395,12 @@ export default function OtherInstituteRegistrationsPage() {
           maxWidth="sm"
           fullWidth
           fullScreen={isPhone}
-          sx={{
+          sx={uiLayout.withUiSx({
             "& .MuiDialog-container": {
               pt: isPhone ? "50px" : isTablet ? "58px" : 0,
               alignItems: isPhone ? "stretch" : "center"
             }
-          }}
+          }, uiLayout.dialogLayoutSx)}
           PaperProps={{
             sx: {
               direction: "rtl",
@@ -1421,7 +1423,7 @@ export default function OtherInstituteRegistrationsPage() {
               textAlign: "start",
               color: textColor,
               fontSize: isPhone
-                ? "0.68rem"
+                ? "0.75rem"
                 : isTablet
                   ? "0.8rem"
                   : undefined,
@@ -1465,7 +1467,7 @@ export default function OtherInstituteRegistrationsPage() {
               </Paper>
             )}
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               multiline
               minRows={3}
@@ -1473,7 +1475,7 @@ export default function OtherInstituteRegistrationsPage() {
               placeholder="مثال: تم طي قيده من المعهد الآخر بناءً على الإفادة"
               value={updateNote}
               onChange={(e) => setUpdateNote(e.target.value)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 direction: "rtl",
                 "& textarea": {
                   textAlign: "start",
@@ -1485,24 +1487,24 @@ export default function OtherInstituteRegistrationsPage() {
                   right: "auto",
                   transformOrigin: "left"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
           </DialogContent>
 
           <Divider />
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               justifyContent: "flex-start",
               p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
               gap: isPhone ? 0.35 : 0.55
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               onClick={closeConfirm}
               size={isCompact ? "small" : "medium"}
               disabled={!!savingId}
-              sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+              sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}
             >
               إلغاء
             </Button>
@@ -1513,7 +1515,7 @@ export default function OtherInstituteRegistrationsPage() {
               onClick={markAsNotRegistered}
               disabled={!!savingId}
               startIcon={savingId ? <CircularProgress size={16} /> : <DoneAllIcon />}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 borderRadius: 2,
@@ -1521,7 +1523,7 @@ export default function OtherInstituteRegistrationsPage() {
                 "&:hover": {
                   backgroundColor: "#c75a00"
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               تأكيد طي القيد
             </Button>

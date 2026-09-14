@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1101,20 +1103,20 @@ export default function TaxSalesReport() {
                 event.stopPropagation();
                 openInvoiceDialog(params.row);
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 78,
                 px: 0.8,
                 py: 0.2,
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: 9,
+                fontSize: 12,
                 color: primaryColor,
                 borderColor: "rgba(5,117,70,.35)",
                 "&:hover": {
                   borderColor: primaryColor,
                   bgcolor: "#eef8f3"
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -1488,7 +1490,7 @@ export default function TaxSalesReport() {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns:
                     isDesktop
@@ -1502,9 +1504,9 @@ export default function TaxSalesReport() {
                       : 0.6,
                   alignItems:
                     "center"
-                }}
+                }, uiLayout.filterBarSx)}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   label="الفترة من"
                   value={fromDate}
@@ -1524,7 +1526,7 @@ export default function TaxSalesReport() {
                   size="small"
                 />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   label="الفترة إلى"
                   value={toDate}
@@ -1567,7 +1569,7 @@ export default function TaxSalesReport() {
                         <RefreshIcon />
                       )
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor:
                       primaryColor,
                     fontWeight: 900,
@@ -1575,7 +1577,7 @@ export default function TaxSalesReport() {
                       bgcolor:
                         primaryDark
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {loading
                     ? "جاري..."
@@ -1593,14 +1595,14 @@ export default function TaxSalesReport() {
                   startIcon={
                     <FileDownloadIcon />
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير Excel
                 </Button>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   value={search}
                   onChange={(e) =>
                     setSearch(
@@ -1616,23 +1618,23 @@ export default function TaxSalesReport() {
                       </InputAdornment>
                     )
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     gridColumn:
                       isPhone
                         ? "1 / -1"
                         : "auto"
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
               </Box>
 
               <Stack
                 direction="row"
                 spacing={0.5}
-                sx={{
+                sx={uiLayout.withUiSx({
                   mt: 0.55,
                   flexWrap: "wrap",
                   gap: 0.4
-                }}
+                }, uiLayout.actionBarSx)}
               >
                 <Button
                   variant={
@@ -1657,13 +1659,13 @@ export default function TaxSalesReport() {
                         <ExpandMoreRoundedIcon />
                       )
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     bgcolor:
                       advancedOpen
                         ? primaryColor
                         : undefined,
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   فلاتر متقدمة
                   {activeFilterCount
@@ -1673,7 +1675,7 @@ export default function TaxSalesReport() {
 
                 {activeFilterCount >
                   0 && (
-                  <Button
+                  <Button sx={uiLayout.buttonSx}
                     color="error"
                     onClick={
                       clearAdvancedFilters
@@ -1745,7 +1747,7 @@ export default function TaxSalesReport() {
                           startIcon={
                             <FilterAltOutlinedIcon />
                           }
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             justifyContent:
                               "flex-start",
                             minWidth: 0,
@@ -1763,8 +1765,8 @@ export default function TaxSalesReport() {
                               900,
                             fontSize:
                               isPhone
-                                ? 8.3
-                                : 10.5,
+                                ? 12
+                                : 12,
                             color:
                               selected.length
                                 ? primaryColor
@@ -1779,7 +1781,7 @@ export default function TaxSalesReport() {
                                 : "#fff",
                             overflow:
                               "hidden"
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           <Box
                             component="span"
@@ -1863,7 +1865,7 @@ export default function TaxSalesReport() {
                           mutedColor,
                         fontWeight:
                           900,
-                        fontSize: 10
+                        fontSize: 12
                       }}
                     >
                       {title}
@@ -1894,7 +1896,7 @@ export default function TaxSalesReport() {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height:
                   isPhone
@@ -1904,7 +1906,7 @@ export default function TaxSalesReport() {
                       : 610,
                 overflowX:
                   "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={
@@ -1969,7 +1971,7 @@ export default function TaxSalesReport() {
                     ? "even-row"
                     : "odd-row"
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   border:
                     `1px solid ${borderColor}`,
                   direction:
@@ -1977,7 +1979,7 @@ export default function TaxSalesReport() {
                   "& .MuiDataGrid-virtualScroller":
                     {
                       overflowX:
-                        "hidden !important"
+                        "auto"
                     },
                   "& .MuiDataGrid-columnHeaders":
                     {
@@ -1994,10 +1996,10 @@ export default function TaxSalesReport() {
                         950,
                       fontSize:
                         isDesktop
-                          ? 11
+                          ? 12
                           : isPhone
-                            ? 7.5
-                            : 9.2
+                            ? 12
+                            : 12
                     },
                   "& .MuiDataGrid-cell":
                     {
@@ -2007,10 +2009,10 @@ export default function TaxSalesReport() {
                         800,
                       fontSize:
                         isDesktop
-                          ? 10.8
+                          ? 12
                           : isPhone
-                            ? 7.5
-                            : 9,
+                            ? 12
+                            : 12,
                       px:
                         isPhone
                           ? 0.1
@@ -2038,7 +2040,7 @@ export default function TaxSalesReport() {
                       bgcolor:
                         "#eef7f2 !important"
                     }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>
@@ -2060,7 +2062,7 @@ export default function TaxSalesReport() {
           لا يتم إنشاء آلاف MenuItem داخل الصفحة.
           البحث هنا محلي 100% ولا يرسل أي طلب للسيرفر.
           ===================================================== */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={
           Boolean(
             filterPickerField
@@ -2133,7 +2135,7 @@ export default function TaxSalesReport() {
         <DialogContent
           dividers
         >
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus
             fullWidth
             value={
@@ -2153,9 +2155,9 @@ export default function TaxSalesReport() {
                 </InputAdornment>
               )
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               mb: 1
-            }}
+            }, uiLayout.formFieldSx)}
           />
 
           <Stack
@@ -2201,7 +2203,7 @@ export default function TaxSalesReport() {
                     "Cairo",
                   color:
                     mutedColor,
-                  fontSize: 9,
+                  fontSize: 12,
                   alignSelf:
                     "center"
                 }}
@@ -2316,10 +2318,10 @@ export default function TaxSalesReport() {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             p: 1,
             gap: 1
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           {selectedPickerValues
             .length > 0 && (
@@ -2337,11 +2339,11 @@ export default function TaxSalesReport() {
                   })
                 );
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily:
                   "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح هذا الفلتر
             </Button>
@@ -2358,20 +2360,20 @@ export default function TaxSalesReport() {
             onClick={
               closeFilterPicker
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor:
                 primaryColor,
               fontFamily:
                 "Cairo",
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             تم
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={
           detailOpen
         }
@@ -2499,7 +2501,7 @@ export default function TaxSalesReport() {
                     sx={{
                       color:
                         mutedColor,
-                      fontSize: 9,
+                      fontSize: 12,
                       fontWeight:
                         800
                     }}
@@ -2524,8 +2526,8 @@ export default function TaxSalesReport() {
           </Box>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setDetailOpen(
                 false

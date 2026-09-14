@@ -370,7 +370,7 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
               {userName}
             </Typography>
 
-            <Typography variant="body1" sx={{ opacity: 0.84, fontWeight: 750, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.88rem' } }}>
+            <Typography variant="body1" sx={{ opacity: 0.84, fontWeight: 750, fontSize: { xs: "0.75rem", sm: '0.78rem', md: '0.88rem' } }}>
               {department} • {employeeCode}
             </Typography>
 
@@ -415,7 +415,7 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
               backdropFilter: "blur(10px)"
             }}
           >
-            <Typography variant="body1" sx={{ opacity: 0.92, mb: 0.7, fontWeight: 900, fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.84rem' } }}>
+            <Typography variant="body1" sx={{ opacity: 0.92, mb: 0.7, fontWeight: 900, fontSize: { xs: "0.75rem", sm: '0.76rem', md: '0.84rem' } }}>
               {new Date().toLocaleDateString("ar-EG", {
                 day: "numeric",
                 month: "long",

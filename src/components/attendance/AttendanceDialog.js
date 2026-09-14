@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import {
   Dialog,
@@ -169,7 +170,7 @@ const AttendanceDialog = ({
   };
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       maxWidth="md"
@@ -377,7 +378,7 @@ const AttendanceDialog = ({
               {/* Study Program Selection */}
               {studyInfo.length > 0 && (
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth>
                     <InputLabel sx={{ 
                       fontFamily: '"Cairo", sans-serif',
                       fontSize: "1rem",
@@ -448,7 +449,7 @@ const AttendanceDialog = ({
 
               {/* Attendance Details Section */}
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel sx={{ 
                     fontFamily: '"Cairo", sans-serif',
                     fontSize: "1rem",
@@ -514,7 +515,7 @@ const AttendanceDialog = ({
               </Grid>
               
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel sx={{ 
                     fontFamily: '"Cairo", sans-serif',
                     fontSize: "1rem",
@@ -587,7 +588,7 @@ const AttendanceDialog = ({
                   value={attendanceData.course}
                   onChange={handleAttendanceChange}
                   required
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: '"Cairo", sans-serif',
                     borderRadius: "10px",
                     "& .MuiOutlinedInput-notchedOutline": {
@@ -600,14 +601,14 @@ const AttendanceDialog = ({
                       borderColor: colorPalette.primary,
                       borderWidth: "2px"
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                   InputLabelProps={{
                     style: { 
                       fontFamily: '"Cairo", sans-serif',
                       color: colorPalette.textLight,
                       fontWeight: 600
                     }
-                  }}
+                  , shrink: true }}
                   inputProps={{
                     style: { fontFamily: '"Cairo", sans-serif' }
                   }}
@@ -633,7 +634,7 @@ const AttendanceDialog = ({
                     step: 300,
                     style: { fontFamily: '"Cairo", sans-serif' , direction: "ltr", unicodeBidi: "isolate" }
                   , dir: "ltr" }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: '"Cairo", sans-serif',
                     borderRadius: "10px",
                     "& .MuiOutlinedInput-notchedOutline": {
@@ -646,7 +647,7 @@ const AttendanceDialog = ({
                       borderColor: colorPalette.primary,
                       borderWidth: "2px"
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
               </Grid>
               
@@ -664,7 +665,7 @@ const AttendanceDialog = ({
                       fontWeight: 600
                     }
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: '"Cairo", sans-serif',
                     borderRadius: "10px",
                     "& .MuiOutlinedInput-notchedOutline": {
@@ -677,7 +678,7 @@ const AttendanceDialog = ({
                       borderColor: colorPalette.primary,
                       borderWidth: "2px"
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
               
@@ -752,18 +753,18 @@ const AttendanceDialog = ({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ 
+      <DialogActions sx={uiLayout.withUiSx({ 
         padding: "24px 0 0 0", 
         justifyContent: "center",
         gap: 2,
         borderTop: `1px solid ${colorPalette.primaryLighter}`,
         marginTop: 2
-      }}>
+      }, uiLayout.dialogActionsSx)}>
         <Button
           onClick={onClose}
           variant="outlined"
           startIcon={<Close />}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: "10px",
             padding: "12px 32px",
             fontWeight: 700,
@@ -783,7 +784,7 @@ const AttendanceDialog = ({
               boxShadow: `0 4px 12px ${noBranchData ? colorPalette.primary + '20' : colorPalette.textDark + '20'}`
             },
             transition: "all 0.3s ease"
-          }}
+          }, uiLayout.buttonSx)}
         >
           {noBranchData ? "حسناً" : "إلغاء"}
         </Button>
@@ -814,7 +815,7 @@ const AttendanceDialog = ({
               variant="contained"
               startIcon={<Check />}
               disabled={!attendanceData.confirmed}
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderRadius: "10px",
                 padding: "12px 32px",
                 fontWeight: 700,
@@ -839,7 +840,7 @@ const AttendanceDialog = ({
                   boxShadow: "none"
                 },
                 transition: "all 0.3s ease"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تأكيد الحضور
             </Button>

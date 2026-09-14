@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -550,7 +552,7 @@ const AdminViewTasksByBranches = () => {
               </Typography>
             </Box>
             
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 2 }, uiLayout.filterBarSx)}>
               <TextField
                 label="من تاريخ"
                 type="date"
@@ -560,7 +562,7 @@ const AdminViewTasksByBranches = () => {
                   shrink: true,
                   sx: { color: 'white' }
                 }}
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   width: 150,
                   '& .MuiOutlinedInput-root': {
                     color: 'white',
@@ -571,7 +573,7 @@ const AdminViewTasksByBranches = () => {
                       borderColor: 'white',
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                 inputProps={{ 
                   max: format(new Date(), 'yyyy-MM-dd'),
                   sx: { color: 'white' }
@@ -586,7 +588,7 @@ const AdminViewTasksByBranches = () => {
                   shrink: true,
                   sx: { color: 'white' }
                 }}
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   width: 150,
                   '& .MuiOutlinedInput-root': {
                     color: 'white',
@@ -597,7 +599,7 @@ const AdminViewTasksByBranches = () => {
                       borderColor: 'white',
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                 inputProps={{ 
                   max: format(new Date(), 'yyyy-MM-dd'),
                   min: dateRange.start,
@@ -609,13 +611,13 @@ const AdminViewTasksByBranches = () => {
                 variant="contained"
                 onClick={fetchAllData}
                 disabled={!dateRange.start || !dateRange.end}
-                sx={{ 
+                sx={uiLayout.withUiSx({ 
                   backgroundColor: 'white',
                   color: colors.primary,
                   '&:hover': {
                     backgroundColor: 'rgba(255,255,255,0.9)',
                   }
-                }}
+                }, uiLayout.buttonSx)}
                 startIcon={<Search />}
               >
                 بحث
@@ -647,7 +649,7 @@ const AdminViewTasksByBranches = () => {
               
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormControl fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth>
                     <InputLabel>حالة المهمة</InputLabel>
                     <Select
                       value={filters.status}
@@ -664,7 +666,7 @@ const AdminViewTasksByBranches = () => {
                 </Grid>
                 
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormControl fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth>
                     <InputLabel>الفرع</InputLabel>
                     <Select
                       value={filters.branch}
@@ -682,7 +684,7 @@ const AdminViewTasksByBranches = () => {
                 </Grid>
                 
                 <Grid item xs={12} sm={6} md={3}>
-                  <FormControl fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth>
                     <InputLabel>الفترة الزمنية</InputLabel>
                     <Select
                       value={filters.timeRange}
@@ -732,12 +734,12 @@ const AdminViewTasksByBranches = () => {
                   variant="contained" 
                   size="large"
                   startIcon={<CalendarMonth />}
-                  sx={{ 
+                  sx={uiLayout.withUiSx({ 
                     backgroundColor: colors.primary,
                     '&:hover': {
                       backgroundColor: colors.primaryDark,
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديد الفترة الزمنية
                 </Button>
@@ -842,7 +844,7 @@ const AdminViewTasksByBranches = () => {
                           <Button 
                             fullWidth 
                             variant="outlined" 
-                            sx={{ mt: 2 }}
+                            sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.buttonSx)}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleBranchClick(branchData);
@@ -861,7 +863,7 @@ const AdminViewTasksByBranches = () => {
         </Stack>
 
         {/* Branch Details Dialog */}
-        <Dialog 
+        <Dialog sx={uiLayout.dialogLayoutSx} 
           open={branchDialogOpen} 
           onClose={handleCloseBranchDialog} 
           maxWidth="lg" 
@@ -1164,17 +1166,17 @@ const AdminViewTasksByBranches = () => {
               </Box>
             )}
           </DialogContent>
-          <DialogActions sx={{ p: 2 }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
             <Button 
               onClick={handleCloseBranchDialog} 
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 minWidth: 120,
                 backgroundColor: colors.primary,
                 color: 'white',
                 '&:hover': {
                   backgroundColor: colors.primaryDark,
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
@@ -1182,7 +1184,7 @@ const AdminViewTasksByBranches = () => {
         </Dialog>
 
         {/* Task Details Dialog */}
-        <Dialog 
+        <Dialog sx={uiLayout.dialogLayoutSx} 
           open={openDialog} 
           onClose={handleCloseDialog} 
           maxWidth="md" 
@@ -1286,7 +1288,7 @@ const AdminViewTasksByBranches = () => {
                 </Typography>
                 
                 {taskUpdates.length > 0 ? (
-                  <TableContainer component={Paper} elevation={0} variant="outlined">
+                  <TableContainer sx={uiLayout.tableContainerSx} component={Paper} elevation={0} variant="outlined">
                     <Table size="small">
                       <TableHead sx={{ backgroundColor: 'rgba(0, 0, 0, 0.04)' }}>
                         <TableRow>
@@ -1349,17 +1351,17 @@ const AdminViewTasksByBranches = () => {
               </Stack>
             )}
           </DialogContent>
-          <DialogActions sx={{ p: 2 }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
             <Button 
               onClick={handleCloseDialog} 
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 minWidth: 120,
                 backgroundColor: colors.primary,
                 color: 'white',
                 '&:hover': {
                   backgroundColor: colors.primaryDark,
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>

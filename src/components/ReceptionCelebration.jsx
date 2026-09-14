@@ -245,7 +245,7 @@ const ReceptionCelebration = ({
                 <Typography
                   sx={{
                     mt: 0.25,
-                    fontSize: { xs: "0.74rem", sm: "0.82rem" },
+                    fontSize: { xs: "0.75rem", sm: "0.82rem" },
                     fontWeight: 900,
                     color: "#547068",
                     whiteSpace: { xs: "normal", sm: "nowrap" },

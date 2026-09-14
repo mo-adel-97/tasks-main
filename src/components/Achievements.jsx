@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -714,7 +715,7 @@ const AchievementsPage = () => {
                       startIcon={isCurrentWeekAlreadySubmitted ? <EditIcon /> : <AddIcon />}
                       onClick={() => handleOpenDialog(null)}
                       disabled={loading}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         background: 'white',
                         color: '#764ba2',
                         borderRadius: 2,
@@ -727,7 +728,7 @@ const AchievementsPage = () => {
                           boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
                         },
                         transition: 'all 0.3s ease'
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {isCurrentWeekAlreadySubmitted
                         ? 'الأسبوع مسجل - افتح للتعديل'
@@ -847,7 +848,7 @@ const AchievementsPage = () => {
           }}>
             <Grid container spacing={3} alignItems="center">
               <Grid item xs={12} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   placeholder="ابحث في البنود أو الوصف..."
                   value={searchTerm}
@@ -871,16 +872,16 @@ const AchievementsPage = () => {
                     startIcon={<RefreshIcon />}
                     onClick={fetchAchievements}
                     disabled={loading}
-                    sx={{ borderRadius: 2 }}
+                    sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
                   >
                     تحديث
                   </Button>
-                  <Box sx={{ display: 'flex', border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                  <Box sx={uiLayout.withUiSx({ display: 'flex', border: '1px solid', borderColor: 'divider', borderRadius: 2 }, uiLayout.actionBarSx)}>
                     <Button
                       variant={viewMode === 'grid' ? 'contained' : 'text'}
                       size="small"
                       onClick={() => setViewMode('grid')}
-                      sx={{ minWidth: 40, borderRadius: '8px 0 0 8px' }}
+                      sx={uiLayout.withUiSx({ minWidth: 40, borderRadius: '8px 0 0 8px' }, uiLayout.buttonSx)}
                     >
                       <GridViewIcon fontSize="small" />
                     </Button>
@@ -888,7 +889,7 @@ const AchievementsPage = () => {
                       variant={viewMode === 'list' ? 'contained' : 'text'}
                       size="small"
                       onClick={() => setViewMode('list')}
-                      sx={{ minWidth: 40, borderRadius: '0 8px 8px 0' }}
+                      sx={uiLayout.withUiSx({ minWidth: 40, borderRadius: '0 8px 8px 0' }, uiLayout.buttonSx)}
                     >
                       <ViewListIcon fontSize="small" />
                     </Button>
@@ -920,12 +921,12 @@ const AchievementsPage = () => {
                 variant="contained"
                 startIcon={isCurrentWeekAlreadySubmitted ? <EditIcon /> : <AddIcon />}
                 onClick={() => handleOpenDialog(null)}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: 2,
                   px: 4,
                   py: 1.5,
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {isCurrentWeekAlreadySubmitted ? 'الأسبوع مسجل - افتح للتعديل' : 'إضافة الإنتاجية الأسبوعية'}
               </Button>
@@ -1039,13 +1040,13 @@ const AchievementsPage = () => {
                         </Box>
 
                         {/* Actions */}
-                        <Box sx={{ display: 'flex', gap: 1, mt: 'auto' }}>
+                        <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1, mt: 'auto' }, uiLayout.actionBarSx)}>
                           <Button
                             variant="outlined"
                             size="small"
                             startIcon={<VisibilityIcon />}
                             onClick={() => handleOpenDetailModal(achievement)}
-                            sx={{ flex: 1, borderRadius: 2 }}
+                            sx={uiLayout.withUiSx({ flex: 1, borderRadius: 2 }, uiLayout.buttonSx)}
                           >
                             التفاصيل
                           </Button>
@@ -1054,7 +1055,7 @@ const AchievementsPage = () => {
                             size="small"
                             startIcon={<EditIcon />}
                             onClick={() => handleOpenDialog(index)}
-                            sx={{ borderRadius: 2 }}
+                            sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
                           >
                             تعديل
                           </Button>
@@ -1240,7 +1241,7 @@ const AchievementsPage = () => {
       </Box>
 
       {/* Dialog for Add/Edit */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={openDialog}
         onClose={handleCloseDialog}
         maxWidth="md"
@@ -1304,7 +1305,7 @@ const AchievementsPage = () => {
                 size="small"
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={addAchievementItem}
-                sx={{ borderRadius: 2 }}
+                sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
               >
                 إضافة بند
               </Button>
@@ -1352,19 +1353,19 @@ const AchievementsPage = () => {
 
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           label="عنوان البند"
                           value={item.title}
                           onChange={(e) => updateAchievementItem(item.id, 'title', e.target.value)}
                           required
                           size="small"
-                          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                          sx={uiLayout.withUiSx({ '& .MuiOutlinedInput-root': { borderRadius: 2 } }, uiLayout.formFieldSx)}
                         />
                       </Grid>
 
                       <Grid item xs={12}>
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           label="وصف البند"
                           value={item.description}
@@ -1372,12 +1373,12 @@ const AchievementsPage = () => {
                           multiline
                           rows={2}
                           size="small"
-                          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                          sx={uiLayout.withUiSx({ '& .MuiOutlinedInput-root': { borderRadius: 2 } }, uiLayout.formFieldSx)}
                         />
                       </Grid>
 
                       <Grid item xs={12} md={6}>
-                        <FormControl fullWidth size="small">
+                        <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                           <InputLabel>حالة البند</InputLabel>
                           <Select
                             value={item.status}
@@ -1443,7 +1444,7 @@ const AchievementsPage = () => {
                               size="small"
                               startIcon={<PhotoCameraIcon />}
                               onClick={() => fileInputRefs.current[item.id]?.click()}
-                              sx={{ borderRadius: 2 }}
+                              sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
                             >
                               إضافة ملفات
                             </Button>
@@ -1487,17 +1488,17 @@ const AchievementsPage = () => {
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ p: 3, pt: 2, bgcolor: '#f8fafc' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 3, pt: 2, bgcolor: '#f8fafc' }, uiLayout.dialogActionsSx)}>
+          <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }, uiLayout.pageHeaderSx)}>
             <Typography variant="body2" color="textSecondary">
               إجمالي البنود: <strong>{achievementItems.length}</strong>
             </Typography>
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 2 }, uiLayout.actionBarSx)}>
               <Button
                 onClick={handleCloseDialog}
                 startIcon={<CancelIcon />}
-                sx={{ color: 'text.secondary', borderRadius: 2, px: 3 }}
+                sx={uiLayout.withUiSx({ color: 'text.secondary', borderRadius: 2, px: 3 }, uiLayout.buttonSx)}
               >
                 إلغاء
               </Button>
@@ -1506,7 +1507,7 @@ const AchievementsPage = () => {
                 variant="contained"
                 startIcon={<SaveIcon />}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   borderRadius: 2,
                   px: 4,
@@ -1514,7 +1515,7 @@ const AchievementsPage = () => {
                   '&:hover': {
                     background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {editingIndex !== null ? 'تحديث الإنتاجية الأسبوعية' : 'حفظ الإنتاجية الأسبوعية'}
               </Button>

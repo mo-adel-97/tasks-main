@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -862,7 +864,7 @@ const VipCustomers = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.67rem",
+                  xs: "0.75rem",
                   sm: "0.79rem"
                 },
                 color: "#17372b",
@@ -944,7 +946,7 @@ const VipCustomers = () => {
                 fontWeight: 900,
                 color: "#057546",
                 fontSize: isPhone
-                  ? "0.72rem"
+                  ? "0.75rem"
                   : isTablet
                     ? "0.88rem"
                     : undefined
@@ -964,7 +966,7 @@ const VipCustomers = () => {
             }}
           >
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: isPhone
                   ? "repeat(2,minmax(0,1fr))"
@@ -986,18 +988,18 @@ const VipCustomers = () => {
                 "& .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiInputBase-input": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   py: isPhone
                     ? 0.45
@@ -1026,9 +1028,9 @@ const VipCustomers = () => {
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   fontSize: isPhone
-                    ? "0.43rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.51rem"
+                      ? "0.75rem"
                       : undefined,
                   px: isPhone
                     ? 0.55
@@ -1044,9 +1046,9 @@ const VipCustomers = () => {
                       ? 16
                       : undefined
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="من تاريخ"
@@ -1062,7 +1064,7 @@ const VipCustomers = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="إلى تاريخ"
@@ -1078,7 +1080,7 @@ const VipCustomers = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 size="small"
                 label="بحث"
                 placeholder="الاسم / الهوية / الجوال / الفرع / الدبلوم"
@@ -1089,11 +1091,11 @@ const VipCustomers = () => {
                   )
                 }
                 fullWidth
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.formFieldSx)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -1121,14 +1123,14 @@ const VipCustomers = () => {
                 startIcon={<SearchIcon />}
                 onClick={loadData}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   background: "#057546"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 بحث
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 onClick={refreshData}
@@ -1145,13 +1147,13 @@ const VipCustomers = () => {
                   loading ||
                   filteredRows.length === 0
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#ae1e21",
                   borderColor: "#ae1e21",
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير Excel
               </Button>
@@ -1175,9 +1177,9 @@ const VipCustomers = () => {
                   fontWeight: 900,
                   color: "#057546",
                   fontSize: isPhone
-                    ? "0.38rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined,
                   lineHeight: 1.5
                 }}
@@ -1198,9 +1200,9 @@ const VipCustomers = () => {
                   fontWeight: 900,
                   color: "#d4a017",
                   fontSize: isPhone
-                    ? "0.38rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined,
                   lineHeight: 1.5
                 }}
@@ -1221,9 +1223,9 @@ const VipCustomers = () => {
                   fontWeight: 900,
                   color: "#ae1e21",
                   fontSize: isPhone
-                    ? "0.38rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined,
                   lineHeight: 1.5
                 }}
@@ -1277,8 +1279,8 @@ const VipCustomers = () => {
                         fontWeight: 800,
                         color: "#789",
                         fontSize: isPhone
-                          ? "0.48rem"
-                          : "0.56rem"
+                          ? "0.75rem"
+                          : "0.75rem"
                       }}
                     >
                       لا توجد بيانات
@@ -1317,8 +1319,8 @@ const VipCustomers = () => {
                                   fontFamily: "Cairo",
                                   fontWeight: 950,
                                   fontSize: isPhone
-                                    ? "0.5rem"
-                                    : "0.58rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                   color: "#1f2d3d",
                                   whiteSpace: "nowrap",
                                   overflow: "hidden",
@@ -1333,8 +1335,8 @@ const VipCustomers = () => {
                                   mt: 0.1,
                                   fontFamily: "Cairo",
                                   fontSize: isPhone
-                                    ? "0.36rem"
-                                    : "0.43rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                   color: "#789"
                                 }}
                               >
@@ -1350,8 +1352,8 @@ const VipCustomers = () => {
                                 fontFamily: "Cairo",
                                 fontWeight: 900,
                                 fontSize: isPhone
-                                  ? "0.34rem"
-                                  : "0.41rem",
+                                  ? "0.75rem"
+                                  : "0.75rem",
                                 whiteSpace: "nowrap",
                                 color: confirmed
                                   ? "#1b5e20"
@@ -1379,8 +1381,8 @@ const VipCustomers = () => {
                                 sx={{
                                   fontFamily: "Cairo",
                                   fontSize: isPhone
-                                    ? "0.31rem"
-                                    : "0.38rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                   color: "#8a9993"
                                 }}
                               >
@@ -1391,8 +1393,8 @@ const VipCustomers = () => {
                                   fontFamily: "Cairo",
                                   fontWeight: 850,
                                   fontSize: isPhone
-                                    ? "0.42rem"
-                                    : "0.49rem"
+                                    ? "0.75rem"
+                                    : "0.75rem"
                                 }}
                               >
                                 {row.registerUserName || "-"}
@@ -1404,8 +1406,8 @@ const VipCustomers = () => {
                                 sx={{
                                   fontFamily: "Cairo",
                                   fontSize: isPhone
-                                    ? "0.31rem"
-                                    : "0.38rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                   color: "#8a9993"
                                 }}
                               >
@@ -1416,8 +1418,8 @@ const VipCustomers = () => {
                                   fontFamily: "Cairo",
                                   fontWeight: 850,
                                   fontSize: isPhone
-                                    ? "0.42rem"
-                                    : "0.49rem"
+                                    ? "0.75rem"
+                                    : "0.75rem"
                                 }}
                               >
                                 {row.diplomName || "-"}
@@ -1430,7 +1432,7 @@ const VipCustomers = () => {
                                   <Typography
                                     sx={{
                                       fontFamily: "Cairo",
-                                      fontSize: "0.38rem",
+                                      fontSize: "0.75rem",
                                       color: "#8a9993"
                                     }}
                                   >
@@ -1440,7 +1442,7 @@ const VipCustomers = () => {
                                     sx={{
                                       fontFamily: "Cairo",
                                       fontWeight: 850,
-                                      fontSize: "0.49rem"
+                                      fontSize: "0.75rem"
                                     }}
                                   >
                                     {row.branchName || "-"}
@@ -1451,7 +1453,7 @@ const VipCustomers = () => {
                                   <Typography
                                     sx={{
                                       fontFamily: "Cairo",
-                                      fontSize: "0.38rem",
+                                      fontSize: "0.75rem",
                                       color: "#8a9993"
                                     }}
                                   >
@@ -1461,7 +1463,7 @@ const VipCustomers = () => {
                                     sx={{
                                       fontFamily: "Cairo",
                                       fontWeight: 850,
-                                      fontSize: "0.49rem"
+                                      fontSize: "0.75rem"
                                     }}
                                   >
                                     {row.batchName || "-"}
@@ -1482,8 +1484,8 @@ const VipCustomers = () => {
                                 fontFamily: "Cairo",
                                 fontWeight: 800,
                                 fontSize: isPhone
-                                  ? "0.36rem"
-                                  : "0.43rem",
+                                  ? "0.75rem"
+                                  : "0.75rem",
                                 lineHeight: 1.4
                               }}
                             >
@@ -1502,8 +1504,8 @@ const VipCustomers = () => {
                               sx={{
                                 fontFamily: "Cairo",
                                 fontSize: isPhone
-                                  ? "0.31rem"
-                                  : "0.38rem",
+                                  ? "0.75rem"
+                                  : "0.75rem",
                                 color: "#789"
                               }}
                             >
@@ -1768,7 +1770,7 @@ const VipCustomers = () => {
               }) =>
                 `${from}-${to} من ${count}`
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 direction: "rtl",
                 minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
                 "& .MuiTablePagination-toolbar": {
@@ -1778,16 +1780,16 @@ const VipCustomers = () => {
                 "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.38rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined
                 },
                 "& .MuiTablePagination-select": {
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                 },
                 "& .MuiIconButton-root": {
@@ -1795,7 +1797,7 @@ const VipCustomers = () => {
                   height: isPhone ? 28 : isTablet ? 31 : undefined
                 },
 
-              }}
+              }, uiLayout.tablePaginationSx)}
             />
           </Box>
         </Paper>

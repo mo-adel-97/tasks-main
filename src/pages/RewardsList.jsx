@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -820,7 +822,7 @@ const RewardsList = () => {
                 background: "#fbfdfc"
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.filterBarSx}
                 direction={{
                   xs: "column",
                   md: "row"
@@ -831,7 +833,7 @@ const RewardsList = () => {
                   md: "center"
                 }}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="month"
                   size="small"
                   label="فترة عرض البدلات"
@@ -851,11 +853,11 @@ const RewardsList = () => {
                   startIcon={<SearchIcon />}
                   onClick={loadData}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     background: "#057546"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -865,10 +867,10 @@ const RewardsList = () => {
                   startIcon={<RefreshIcon />}
                   onClick={loadData}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -883,12 +885,12 @@ const RewardsList = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     color: "#ae1e21",
                     borderColor: "#ae1e21"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -945,14 +947,14 @@ const RewardsList = () => {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: 730,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1017,7 +1019,7 @@ const RewardsList = () => {
                   filterPanelInputLabel:
                     "القيمة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1079,7 +1081,7 @@ const RewardsList = () => {
                     fontWeight: 800,
                     color: "#057546"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>
@@ -1182,7 +1184,7 @@ const RewardsList = () => {
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: {
-                xs: "0.66rem",
+                xs: "0.75rem",
                 sm: "0.78rem"
               },
               color: "#17372b",
@@ -1263,7 +1265,7 @@ const RewardsList = () => {
                     fontWeight: 950,
                     color: "#034d31",
                     fontSize: isPhone
-                      ? "0.68rem"
+                      ? "0.75rem"
                       : "0.82rem"
                   }}
                 >
@@ -1276,7 +1278,7 @@ const RewardsList = () => {
                       mt: 0.15,
                       fontFamily: "Cairo",
                       color: "#61756d",
-                      fontSize: "0.44rem"
+                      fontSize: "0.75rem"
                     }}
                   >
                     عرض التسجيلات والتحصيلات والبدلات والمكافآت الشهرية للموظفين
@@ -1309,7 +1311,7 @@ const RewardsList = () => {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: isPhone
                     ? "repeat(2,minmax(0,1fr))"
@@ -1321,8 +1323,8 @@ const RewardsList = () => {
                   "& .MuiInputLabel-root": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.38rem"
-                      : "0.46rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiInputBase-root": {
@@ -1331,8 +1333,8 @@ const RewardsList = () => {
                       : 34,
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.46rem"
-                      : "0.54rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiButton-root": {
@@ -1346,8 +1348,8 @@ const RewardsList = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.4rem"
-                      : "0.5rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiSvgIcon-root": {
@@ -1355,7 +1357,7 @@ const RewardsList = () => {
                       ? 14
                       : 16
                   }
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <TextField
                   type="month"
@@ -1371,11 +1373,11 @@ const RewardsList = () => {
                     shrink: true
                   }}
                   fullWidth
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     gridColumn: isPhone
                       ? "1 / -1"
                       : "span 2"
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
                 <Button
@@ -1383,14 +1385,14 @@ const RewardsList = () => {
                   startIcon={<SearchIcon />}
                   onClick={loadData}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background: "#057546"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
 
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   variant="outlined"
                   startIcon={<RefreshIcon />}
                   onClick={loadData}
@@ -1407,13 +1409,13 @@ const RewardsList = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     gridColumn: isPhone
                       ? "1 / -1"
                       : "span 2",
                     color: "#ae1e21",
                     borderColor: "#ae1e21"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -1475,8 +1477,8 @@ const RewardsList = () => {
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.32rem"
-                        : "0.42rem",
+                        ? "0.75rem"
+                        : "0.75rem",
                       background,
                       color,
 
@@ -1492,7 +1494,7 @@ const RewardsList = () => {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 310px)"
@@ -1504,7 +1506,7 @@ const RewardsList = () => {
                   "1px solid rgba(5,117,70,.14)",
                 borderRadius: 1.4,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1537,7 +1539,7 @@ const RewardsList = () => {
                   noResultsOverlayLabel:
                     "لا توجد نتائج مطابقة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1561,8 +1563,8 @@ const RewardsList = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.34rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     lineHeight: 1,
                     whiteSpace: "nowrap",
@@ -1587,8 +1589,8 @@ const RewardsList = () => {
                   "& .MuiDataGrid-cell": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.39rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     justifyContent: "center",
                     px: isPhone
@@ -1607,17 +1609,17 @@ const RewardsList = () => {
 
                   "& .MuiDataGrid-virtualScroller": {
                     overflowX:
-                      "hidden !important"
+                      "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: "none"
+                    display: "block"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
-            <Dialog
+            <Dialog sx={uiLayout.dialogLayoutSx}
               open={detailsOpen}
               onClose={closeDetails}
               fullWidth
@@ -1743,8 +1745,8 @@ const RewardsList = () => {
                                 color: "#60756d",
                                 fontSize:
                                   isPhone
-                                    ? "0.39rem"
-                                    : "0.49rem"
+                                    ? "0.75rem"
+                                    : "0.75rem"
                               }}
                             >
                               {COLUMN_CAPTIONS[field] || field}
@@ -1758,8 +1760,8 @@ const RewardsList = () => {
                                 color: "#1f2d3d",
                                 fontSize:
                                   isPhone
-                                    ? "0.5rem"
-                                    : "0.62rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                 wordBreak:
                                   "break-word"
                               }}
@@ -1783,27 +1785,27 @@ const RewardsList = () => {
               </DialogContent>
 
               <DialogActions
-                sx={{
+                sx={uiLayout.withUiSx({
                   px: isPhone
                     ? 1
                     : 1.5,
                   py: isPhone
                     ? 0.7
                     : 1
-                }}
+                }, uiLayout.dialogActionsSx)}
               >
                 <Button
                   variant="contained"
                   onClick={closeDetails}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor:
                       "#057546",
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.47rem"
-                      : "0.58rem"
-                  }}
+                      ? "0.75rem"
+                      : "0.75rem"
+                  }, uiLayout.buttonSx)}
                 >
                   إغلاق
                 </Button>

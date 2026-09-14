@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from "react";
 import {
   Box, Container, CircularProgress, Alert, Typography, useTheme, useMediaQuery, Button
@@ -386,11 +387,11 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
           "& .MuiTypography-h4": { fontSize: { xs: "1.05rem", sm: "1.25rem", md: "1.55rem" } },
           "& .MuiTypography-h5": { fontSize: { xs: "0.92rem", sm: "1.05rem", md: "1.3rem" } },
           "& .MuiTypography-h6": { fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1.05rem" } },
-          "& .MuiTypography-body1": { fontSize: { xs: "0.7rem", sm: "0.78rem", md: "0.9rem" } },
-          "& .MuiTypography-body2": { fontSize: { xs: "0.64rem", sm: "0.72rem", md: "0.82rem" } },
-          "& .MuiButton-root": { fontSize: { xs: "0.68rem", sm: "0.75rem", md: "0.84rem" }, minHeight: { xs: 34, sm: 38 } },
-          "& .MuiTab-root": { minHeight: { xs: 38, sm: 42 }, px: { xs: 0.8, sm: 1.2 }, fontSize: { xs: "0.66rem", sm: "0.74rem", md: "0.82rem" } },
-          "& .MuiChip-root": { height: { xs: 24, sm: 28 }, fontSize: { xs: "0.62rem", sm: "0.7rem" } },
+          "& .MuiTypography-body1": { fontSize: { xs: "0.75rem", sm: "0.78rem", md: "0.9rem" } },
+          "& .MuiTypography-body2": { fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.82rem" } },
+          "& .MuiButton-root": { fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.84rem" }, minHeight: { xs: 34, sm: 38 } },
+          "& .MuiTab-root": { minHeight: { xs: 38, sm: 42 }, px: { xs: 0.8, sm: 1.2 }, fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.82rem" } },
+          "& .MuiChip-root": { height: { xs: 24, sm: 28 }, fontSize: { xs: "0.75rem", sm: "0.75rem" } },
           position: "relative",
           zIndex: 1,
           '& .MuiCard-root, & .MuiPaper-root': {
@@ -402,11 +403,11 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
           '& .MuiTypography-h3': { fontSize: { xs: '1.12rem', sm: '1.35rem', md: '1.7rem', lg: '1.3rem' } },
           '& .MuiTypography-h4': { fontSize: { xs: '1rem', sm: '1.18rem', md: '1.45rem', lg: '1.08rem' } },
           '& .MuiTypography-h5': { fontSize: { xs: '0.84rem', sm: '0.96rem', md: '1.12rem', lg: '0.92rem' } },
-          '& .MuiTypography-h6': { fontSize: { xs: '0.74rem', sm: '0.82rem', md: '0.94rem', lg: '0.68rem' } },
-          '& .MuiTypography-body1': { fontSize: { xs: '0.66rem', sm: '0.72rem', md: '0.82rem', lg: '0.68rem' } },
-          '& .MuiTypography-body2': { fontSize: { xs: '0.59rem', sm: '0.64rem', md: '0.72rem', lg: '0.68rem' } },
-          '& .MuiChip-root': { height: { xs: 21, sm: 23, md: 25 }, fontSize: { xs: '0.56rem', sm: '0.61rem', md: '0.68rem' } },
-          '& .MuiButton-root': { minHeight: { xs: 31, sm: 34, md: 37 }, fontSize: { xs: '0.63rem', sm: '0.69rem', md: '0.78rem' } },
+          '& .MuiTypography-h6': { fontSize: { xs: "0.75rem", sm: '0.82rem', md: '0.94rem', lg: "0.75rem" } },
+          '& .MuiTypography-body1': { fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem', lg: "0.75rem" } },
+          '& .MuiTypography-body2': { fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem", lg: "0.75rem" } },
+          '& .MuiChip-root': { height: { xs: 21, sm: 23, md: 25 }, fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } },
+          '& .MuiButton-root': { minHeight: { xs: 31, sm: 34, md: 37 }, fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.78rem' } },
           '& .MuiAvatar-root': { width: { xs: 76, sm: 96, md: 120 }, height: { xs: 76, sm: 96, md: 120 } }
         }}
       >
@@ -495,7 +496,7 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                         variant="contained"
                         size="large"
                         onClick={handleOpenPostsDialog}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           bgcolor: "#80b49e",
                           "&:hover": {
                             bgcolor: "#5a8f7a",
@@ -507,7 +508,7 @@ const classifyTasksForUser = async (tasksData, userGuid) => {
                           fontSize: "1.1rem",
                           borderRadius: 2,
                           transition: "all 0.3s ease",
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         فتح الإعلانات والمنشورات
                       </Button>

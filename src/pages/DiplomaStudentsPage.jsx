@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -2802,7 +2804,7 @@ ${record.map((value) =>
                 flex: 1,
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: { xs: ".67rem", sm: ".79rem" },
+                fontSize: { xs: "0.75rem", sm: ".79rem" },
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -2864,10 +2866,10 @@ ${record.map((value) =>
             direction="row"
             spacing={isPhone ? .55 : isTablet ? .7 : 1}
             alignItems="center"
-            sx={{
+            sx={uiLayout.withUiSx({
               flexWrap: isCompact ? "wrap" : "nowrap",
               rowGap: isPhone ? .65 : isTablet ? .8 : 0
-            }}
+            }, uiLayout.filterBarSx)}
           >
             <Stack
               direction="row"
@@ -2890,7 +2892,7 @@ ${record.map((value) =>
                   sx={{
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    fontSize: isPhone ? ".68rem" : isTablet ? ".84rem" : "1.18rem"
+                    fontSize: isPhone ? "0.75rem" : isTablet ? ".84rem" : "1.18rem"
                   }}
                 >
                   قائمة طلاب الدبلومات
@@ -2899,7 +2901,7 @@ ${record.map((value) =>
                 <Typography
                   sx={{
                     fontFamily: "Cairo",
-                    fontSize: isPhone ? ".38rem" : isTablet ? ".48rem" : ".74rem",
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                     display: isPhone ? "none" : "block",
                     color: "#718078"
                   }}
@@ -2909,7 +2911,7 @@ ${record.map((value) =>
               </Box>
             </Stack>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="الفرع"
@@ -2936,12 +2938,12 @@ ${record.map((value) =>
                   }
                 }
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 flex: isPhone ? "1 1 100%" : isTablet ? "1 1 58%" : "0 0 310px",
-                "& .MuiInputBase-input": { fontSize: isPhone ? ".52rem" : isTablet ? ".62rem" : undefined },
-                "& .MuiInputLabel-root": { fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined }
-              }}
+                "& .MuiInputBase-input": { fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }
+              }, uiLayout.formFieldSx)}
             >
               {branches.map((branch) => (
                 <MenuItem
@@ -2953,7 +2955,7 @@ ${record.map((value) =>
               ))}
             </TextField>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="المستوى الجديد"
@@ -2975,12 +2977,12 @@ ${record.map((value) =>
                   }
                 }
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 flex: isPhone ? "1 1 58%" : isTablet ? "1 1 28%" : "0 0 190px",
-                "& .MuiInputBase-input": { fontSize: isPhone ? ".52rem" : isTablet ? ".62rem" : undefined },
-                "& .MuiInputLabel-root": { fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined }
-              }}
+                "& .MuiInputBase-input": { fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }
+              }, uiLayout.formFieldSx)}
             >
               {levels.map((level) => (
                 <MenuItem
@@ -2998,12 +3000,12 @@ ${record.map((value) =>
               onClick={loadStudents}
               disabled={loading}
               size={isCompact ? "small" : "medium"}
-              sx={{
+              sx={uiLayout.withUiSx({
                 flex: isPhone ? "1 1 36%" : undefined,
                 minWidth: 0,
                 fontFamily: "Cairo",
-                fontSize: isPhone ? ".5rem" : isTablet ? ".58rem" : undefined
-              }}
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -3014,19 +3016,19 @@ ${record.map((value) =>
             spacing={0.8}
             flexWrap="wrap"
             useFlexGap
-            sx={{
+            sx={uiLayout.withUiSx({
               mt: isPhone ? .65 : isTablet ? .8 : 1,
               gap: isPhone ? .35 : isTablet ? .5 : .8,
               "& .MuiButton-root": {
                 minHeight: isPhone ? 28 : isTablet ? 31 : undefined,
                 px: isPhone ? .5 : isTablet ? .7 : undefined,
                 fontFamily: "Cairo",
-                fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               },
               "& .MuiSvgIcon-root": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined }
-            }}
+            }, uiLayout.actionBarSx)}
           >
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<SelectAllIcon />}
@@ -3039,7 +3041,7 @@ ${record.map((value) =>
               تحديد الكل
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<DeselectIcon />}
@@ -3056,12 +3058,12 @@ ${record.map((value) =>
               startIcon={<UpgradeIcon />}
               onClick={moveSelected}
               disabled={selectedRows.length === 0}
-              sx={{ bgcolor: "#057546" }}
+              sx={uiLayout.withUiSx({ bgcolor: "#057546" }, uiLayout.buttonSx)}
             >
               ترحيل المحدد ({selectedRows.length})
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<FileDownloadIcon />}
@@ -3070,7 +3072,7 @@ ${record.map((value) =>
               تصدير Excel
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<CorporateFareIcon />}
@@ -3085,7 +3087,7 @@ ${record.map((value) =>
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 color: "#ae1e21",
-                fontSize: isPhone ? ".44rem" : isTablet ? ".52rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               }}
             >
               عدد الطلاب: {filteredRows.length}
@@ -3106,7 +3108,7 @@ ${record.map((value) =>
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isPhone
                 ? "1fr"
@@ -3115,7 +3117,7 @@ ${record.map((value) =>
                   : "minmax(260px,1fr) minmax(250px,340px) minmax(170px,210px) auto",
               gap: isPhone ? 0.7 : isTablet ? 0.85 : 1,
               alignItems: "center"
-            }}
+            }, uiLayout.filterBarSx)}
           >
             <Stack
               direction="row"
@@ -3138,7 +3140,7 @@ ${record.map((value) =>
                     fontFamily: "Cairo",
                     fontWeight: 950,
                     fontSize: isPhone
-                      ? "0.68rem"
+                      ? "0.75rem"
                       : isTablet
                         ? "0.84rem"
                         : "1.08rem",
@@ -3155,8 +3157,8 @@ ${record.map((value) =>
                     sx={{
                       fontFamily: "Cairo",
                       fontSize: isTablet
-                        ? "0.46rem"
-                        : "0.68rem",
+                        ? "0.75rem"
+                        : "0.75rem",
                       color: "#718078"
                     }}
                   >
@@ -3166,7 +3168,7 @@ ${record.map((value) =>
               </Box>
             </Stack>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="الفرع"
@@ -3215,25 +3217,25 @@ ${record.map((value) =>
                   }
                 }
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 "& .MuiInputBase-input": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.5rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.6rem"
+                      ? "0.75rem"
                       : "0.78rem"
                 },
                 "& .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
-                      : "0.7rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             >
               {branches.map((branch) => (
                 <MenuItem
@@ -3245,7 +3247,7 @@ ${record.map((value) =>
               ))}
             </TextField>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="المستوى الجديد"
@@ -3279,9 +3281,9 @@ ${record.map((value) =>
                   }
                 }
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0
-              }}
+              }, uiLayout.formFieldSx)}
             >
               {levels.map((level) => (
                 <MenuItem
@@ -3299,23 +3301,23 @@ ${record.map((value) =>
               onClick={loadStudents}
               disabled={loading}
               size="small"
-              sx={{
+              sx={uiLayout.withUiSx({
                 minHeight: 34,
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.48rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.56rem"
-                    : "0.72rem"
-              }}
+                    ? "0.75rem"
+                    : "0.75rem"
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
           </Box>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isPhone
                 ? "repeat(3,minmax(0,1fr))"
@@ -3333,18 +3335,18 @@ ${record.map((value) =>
                 fontFamily: "Cairo",
                 fontWeight: 850,
                 fontSize: isPhone
-                  ? "0.36rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.46rem"
-                    : "0.68rem"
+                    ? "0.75rem"
+                    : "0.75rem"
               },
 
               "& .MuiSvgIcon-root": {
                 fontSize: isPhone ? 13 : isTablet ? 15 : 17
               }
-            }}
+            }, uiLayout.actionBarSx)}
           >
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<SelectAllIcon />}
@@ -3359,7 +3361,7 @@ ${record.map((value) =>
               تحديد الكل
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<DeselectIcon />}
@@ -3378,14 +3380,14 @@ ${record.map((value) =>
               disabled={
                 selectedRows.length === 0
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#057546"
-              }}
+              }, uiLayout.buttonSx)}
             >
               ترحيل ({selectedRows.length})
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<FileDownloadIcon />}
@@ -3394,7 +3396,7 @@ ${record.map((value) =>
               Excel
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               size="small"
               variant="outlined"
               startIcon={<CorporateFareIcon />}
@@ -3415,10 +3417,10 @@ ${record.map((value) =>
                 fontWeight: 950,
                 color: "#ae1e21",
                 fontSize: isPhone
-                  ? "0.43rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.52rem"
-                    : "0.72rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                 textAlign: isPhone
                   ? "center"
                   : "right"
@@ -3433,12 +3435,12 @@ ${record.map((value) =>
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             p: isPhone ? 0.65 : isTablet ? 0.85 : 1,
             mb: isPhone ? 0.6 : isTablet ? 0.8 : 1,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(5,117,70,.14)"
-          }}
+          }, uiLayout.pageHeaderSx)}
         >
           <Stack
             direction="row"
@@ -3452,9 +3454,9 @@ ${record.map((value) =>
                 fontFamily: "Cairo",
                 fontWeight: 950,
                 fontSize: isPhone
-                  ? "0.56rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.66rem"
+                    ? "0.75rem"
                     : "0.82rem"
               }}
             >
@@ -3491,7 +3493,7 @@ ${record.map((value) =>
           </Stack>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isPhone
                 ? "repeat(2,minmax(0,1fr))"
@@ -3504,24 +3506,24 @@ ${record.map((value) =>
               "& .MuiInputLabel-root": {
                 fontFamily: "Cairo",
                 fontSize: isPhone
-                  ? "0.38rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.46rem"
-                    : "0.64rem"
+                    ? "0.75rem"
+                    : "0.75rem"
               },
 
               "& .MuiInputBase-root": {
                 minHeight: isPhone ? 31 : isTablet ? 34 : 36,
                 fontFamily: "Cairo",
                 fontSize: isPhone
-                  ? "0.44rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.52rem"
-                    : "0.7rem"
+                    ? "0.75rem"
+                    : "0.75rem"
               }
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="المستوى"
@@ -3547,7 +3549,7 @@ ${record.map((value) =>
               ))}
             </TextField>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="الدبلوم"
@@ -3579,7 +3581,7 @@ ${record.map((value) =>
                 justifySelf: "end",
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: "0.68rem",
+                fontSize: "0.75rem",
                 color: "#455a64"
               }}
             >
@@ -3589,7 +3591,7 @@ ${record.map((value) =>
 
           {filterLevelGuid && filterDiplomaGuid ? (
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 mt: isPhone ? 0.6 : 0.75,
                 pt: isPhone ? 0.55 : 0.7,
                 borderTop: "1px dashed rgba(5,117,70,.18)",
@@ -3609,18 +3611,18 @@ ${record.map((value) =>
                   fontFamily: "Cairo",
                   fontWeight: 850,
                   fontSize: isPhone
-                    ? "0.35rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.44rem"
-                      : "0.62rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                 },
 
                 "& .MuiSvgIcon-root": {
                   fontSize: isPhone ? 13 : isTablet ? 15 : 17
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 select
                 size="small"
                 label="الشعبة المستهدفة"
@@ -3628,28 +3630,28 @@ ${record.map((value) =>
                 onChange={(event) =>
                   setTargetSectionGuid(event.target.value)
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: isPhone ? "1 / -1" : undefined,
 
                   "& .MuiInputLabel-root": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.38rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.46rem"
-                        : "0.62rem"
+                        ? "0.75rem"
+                        : "0.75rem"
                   },
 
                   "& .MuiInputBase-root": {
                     minHeight: isPhone ? 31 : isTablet ? 34 : 36,
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.44rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.52rem"
-                        : "0.68rem"
+                        ? "0.75rem"
+                        : "0.75rem"
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               >
                 {sections.map((section) => (
                   <MenuItem
@@ -3668,17 +3670,17 @@ ${record.map((value) =>
                   !targetSectionGuid ||
                   selectedRows.length === 0
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: "#057546",
                   "&:hover": {
                     bgcolor: "#034d31"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إسناد ({selectedRows.length})
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 onClick={createSection}
               >
@@ -3688,12 +3690,12 @@ ${record.map((value) =>
               <Button
                 variant="contained"
                 onClick={distributeAllRandomly}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: "#7a4b00",
                   "&:hover": {
                     bgcolor: "#5f3a00"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 توزيع عشوائي
               </Button>
@@ -3706,7 +3708,7 @@ ${record.map((value) =>
                 onChange={handleSectionExcelUpload}
               />
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 startIcon={<DescriptionIcon />}
                 onClick={downloadSectionExcelTemplate}
@@ -3721,17 +3723,17 @@ ${record.map((value) =>
                   sectionExcelInputRef.current?.click()
                 }
                 disabled={!branchGuid}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: "#1565c0",
                   "&:hover": {
                     bgcolor: "#0d47a1"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 توزيع Excel
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 color="error"
                 variant="outlined"
                 onClick={removeSelectedFromSection}
@@ -3747,10 +3749,10 @@ ${record.map((value) =>
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 fontSize: isPhone
-                  ? "0.36rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.44rem"
-                    : "0.62rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                 color: "#7a5500"
               }}
             >
@@ -3761,13 +3763,13 @@ ${record.map((value) =>
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
             border:
               "1px solid rgba(5,117,70,.14)",
             overflow: "hidden",
             minHeight: isPhone ? 360 : isTablet ? 430 : "calc(100vh - 155px)"
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <DataGrid
             autoHeight
@@ -3799,7 +3801,7 @@ ${record.map((value) =>
                 showQuickFilter: false
               }
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               border: 0,
               direction: "rtl",
               width: "100%",
@@ -3809,12 +3811,12 @@ ${record.map((value) =>
               },
 
               "& .MuiDataGrid-virtualScroller": {
-                overflowX: "hidden !important",
+                overflowX: "auto",
                 overflowY: "hidden !important"
               },
 
               "& .MuiDataGrid-scrollbar--horizontal, & .MuiDataGrid-scrollbar--vertical": {
-                display: "none !important"
+                display: "block"
               },
 
               "& .MuiDataGrid-columnHeader": {
@@ -3849,7 +3851,7 @@ ${record.map((value) =>
               "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
                 fontFamily: "Cairo",
                 fontWeight: 800,
-                fontSize: isTablet ? ".45rem" : undefined,
+                fontSize: isTablet ? "0.75rem" : undefined,
                 minWidth: isTablet ? 0 : undefined,
                 px: isTablet ? .45 : undefined
               },
@@ -3857,7 +3859,7 @@ ${record.map((value) =>
               "& .MuiDataGrid-columnHeaderTitle": {
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: isPhone ? ".31rem" : isTablet ? ".42rem" : ".75rem",
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".75rem",
                 whiteSpace: "normal",
                 lineHeight: 1.2,
                 textAlign: "center"
@@ -3866,7 +3868,7 @@ ${record.map((value) =>
               "& .MuiDataGrid-cell": {
                 fontFamily: "Cairo",
                 fontWeight: 700,
-                fontSize: isPhone ? ".31rem" : isTablet ? ".42rem" : ".75rem",
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".75rem",
                 px: isPhone ? .08 : isTablet ? .3 : .45,
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -3886,11 +3888,11 @@ ${record.map((value) =>
               "& .MuiDataGrid-footerContainer": {
                 minHeight: isPhone ? 31 : isTablet ? 36 : 48
               }
-            }}
+            }, uiLayout.dataGridSx)}
           />
         </Paper>
 
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
   open={advancedFiltersOpen}
   onClose={(event, reason) => {
     if (reason === "backdropClick") {
@@ -3973,7 +3975,7 @@ ${record.map((value) =>
       color: "#057546",
 
       fontSize: isPhone
-        ? "0.72rem"
+        ? "0.75rem"
         : isTablet
           ? "0.84rem"
           : "1.25rem"
@@ -4039,7 +4041,7 @@ ${record.map((value) =>
     }}
   >
     <Box
-      sx={{
+      sx={uiLayout.withUiSx({
         display: "grid",
 
         gridTemplateColumns: isPhone
@@ -4058,9 +4060,9 @@ ${record.map((value) =>
           fontFamily: "Cairo",
 
           fontSize: isPhone
-            ? "0.4rem"
+            ? "0.75rem"
             : isTablet
-              ? "0.48rem"
+              ? "0.75rem"
               : "0.85rem"
         },
 
@@ -4074,9 +4076,9 @@ ${record.map((value) =>
           fontFamily: "Cairo",
 
           fontSize: isPhone
-            ? "0.46rem"
+            ? "0.75rem"
             : isTablet
-              ? "0.54rem"
+              ? "0.75rem"
               : "0.92rem"
         },
 
@@ -4084,13 +4086,13 @@ ${record.map((value) =>
           display: "flex",
           alignItems: "center"
         }
-      }}
+      }, uiLayout.formGridSx)}
     >
       {/* ========================= */}
       {/* البحث العام */}
       {/* ========================= */}
 
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         size="small"
         label="بحث عام"
         placeholder="الاسم، الهوية، الجوال، الدبلوم، الحالة..."
@@ -4100,16 +4102,16 @@ ${record.map((value) =>
             event.target.value
           )
         }
-        sx={{
+        sx={uiLayout.withUiSx({
           gridColumn: "1 / -1"
-        }}
+        }, uiLayout.formFieldSx)}
       />
 
       {/* ========================= */}
       {/* المستويات */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="المستويات"
@@ -4215,7 +4217,7 @@ ${record.map((value) =>
       {/* الدبلومات */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="الدبلومات"
@@ -4323,7 +4325,7 @@ ${record.map((value) =>
       {/* الدفعات */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="الدفعات"
@@ -4409,7 +4411,7 @@ ${record.map((value) =>
       {/* الشعب */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="الشعب"
@@ -4493,7 +4495,7 @@ ${record.map((value) =>
       {/* حالة الدراسة */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="حالة الدراسة"
@@ -4568,7 +4570,7 @@ ${record.map((value) =>
       {/* النوع */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="النوع"
@@ -4641,7 +4643,7 @@ ${record.map((value) =>
       {/* حالة التوزيع */}
       {/* ========================= */}
 
-      <TextField
+      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         select
         size="small"
         label="حالة التوزيع"
@@ -4697,7 +4699,7 @@ ${record.map((value) =>
     onClick={(event) => {
       event.stopPropagation();
     }}
-    sx={{
+    sx={uiLayout.withUiSx({
       px: isPhone
         ? 1
         : isTablet
@@ -4713,7 +4715,7 @@ ${record.map((value) =>
       gap: isPhone
         ? 0.6
         : 1
-    }}
+    }, uiLayout.dialogActionsSx)}
   >
     <Button
       variant="outlined"
@@ -4724,7 +4726,7 @@ ${record.map((value) =>
 
         clearAdvancedFilters();
       }}
-      sx={{
+      sx={uiLayout.withUiSx({
         minHeight: isDesktop
           ? 42
           : undefined,
@@ -4737,11 +4739,11 @@ ${record.map((value) =>
         fontWeight: 900,
 
         fontSize: isPhone
-          ? "0.46rem"
+          ? "0.75rem"
           : isTablet
-            ? "0.62rem"
+            ? "0.75rem"
             : "0.82rem"
-      }}
+      }, uiLayout.buttonSx)}
     >
       مسح الفلاتر
     </Button>
@@ -4754,7 +4756,7 @@ ${record.map((value) =>
 
         setAdvancedFiltersOpen(false);
       }}
-      sx={{
+      sx={uiLayout.withUiSx({
         minHeight: isDesktop
           ? 42
           : undefined,
@@ -4773,11 +4775,11 @@ ${record.map((value) =>
         fontWeight: 900,
 
         fontSize: isPhone
-          ? "0.46rem"
+          ? "0.75rem"
           : isTablet
-            ? "0.62rem"
+            ? "0.75rem"
             : "0.82rem"
-      }}
+      }, uiLayout.buttonSx)}
     >
       تطبيق وإغلاق
     </Button>
@@ -4936,7 +4938,7 @@ ${record.map((value) =>
           onSaved={loadStudents}
         />
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={notesOpen}
           onClose={() => setNotesOpen(false)}
           fullWidth
@@ -4955,12 +4957,12 @@ ${record.map((value) =>
           </DialogTitle>
 
           <DialogContent>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               autoFocus
               fullWidth
               multiline
               minRows={5}
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.formFieldSx)}
               label="الملاحظة"
               value={notesText}
               onChange={(event) =>
@@ -4969,8 +4971,8 @@ ${record.map((value) =>
             />
           </DialogContent>
 
-          <DialogActions>
-            <Button
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx}
               onClick={() => setNotesOpen(false)}
               color="error"
             >
@@ -4980,14 +4982,14 @@ ${record.map((value) =>
             <Button
               variant="contained"
               onClick={saveNotes}
-              sx={{ bgcolor: "#057546" }}
+              sx={uiLayout.withUiSx({ bgcolor: "#057546" }, uiLayout.buttonSx)}
             >
               تأكيد
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={transferPasswordOpen}
           onClose={() => {
             setTransferPasswordOpen(false);
@@ -5010,7 +5012,7 @@ ${record.map((value) =>
           </DialogTitle>
 
           <DialogContent>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               autoFocus
               fullWidth
               type="password"
@@ -5027,12 +5029,12 @@ ${record.map((value) =>
                   confirmTransferPassword();
                 }
               }}
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.formFieldSx)}
             />
           </DialogContent>
 
-          <DialogActions>
-            <Button
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx}
               onClick={() => {
                 setTransferPasswordOpen(false);
                 setPendingTransferRow(null);
@@ -5046,14 +5048,14 @@ ${record.map((value) =>
             <Button
               variant="contained"
               onClick={confirmTransferPassword}
-              sx={{ bgcolor: "#057546" }}
+              sx={uiLayout.withUiSx({ bgcolor: "#057546" }, uiLayout.buttonSx)}
             >
               تأكيد
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={transferOpen}
           onClose={() =>
             setTransferOpen(false)
@@ -5086,7 +5088,7 @@ ${record.map((value) =>
             </Typography>
 
             <Stack spacing={1.5}>              <Box>
-                <FormControlLabel
+                <FormControlLabel sx={uiLayout.checkboxFieldSx}
                   control={
                     <Checkbox
                       checked={
@@ -5112,7 +5114,7 @@ ${record.map((value) =>
                   label="تغيير فرع الدراسة"
                 />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   select
                   fullWidth
                   size="small"
@@ -5153,7 +5155,7 @@ ${record.map((value) =>
               </Box>
 
               <Box>
-                <FormControlLabel
+                <FormControlLabel sx={uiLayout.checkboxFieldSx}
                   control={
                     <Checkbox
                       checked={
@@ -5179,7 +5181,7 @@ ${record.map((value) =>
                   label="تغيير الدبلوم"
                 />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   select
                   fullWidth
                   size="small"
@@ -5217,7 +5219,7 @@ ${record.map((value) =>
               </Box>
 
               <Box>
-                <FormControlLabel
+                <FormControlLabel sx={uiLayout.checkboxFieldSx}
                   control={
                     <Checkbox
                       checked={
@@ -5242,7 +5244,7 @@ ${record.map((value) =>
                   label="تغيير الدفعة"
                 />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   select
                   fullWidth
                   size="small"
@@ -5279,7 +5281,7 @@ ${record.map((value) =>
                 </TextField>
               </Box>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 multiline
                 minRows={2}
@@ -5299,8 +5301,8 @@ ${record.map((value) =>
             </Stack>
           </DialogContent>
 
-          <DialogActions>
-            <Button
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx}
               onClick={() =>
                 setTransferOpen(false)
               }
@@ -5312,7 +5314,7 @@ ${record.map((value) =>
             <Button
               variant="contained"
               onClick={transferStudent}
-              sx={{ bgcolor: "#057546" }}
+              sx={uiLayout.withUiSx({ bgcolor: "#057546" }, uiLayout.buttonSx)}
             >
               حفظ النقل
             </Button>
@@ -5360,7 +5362,7 @@ ${record.map((value) =>
               sx={{
                 mt: 1,
                 fontFamily: "Cairo",
-                fontSize: isPhone ? ".42rem" : isTablet ? ".52rem" : ".8rem",
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".8rem",
                 color: "#78857f"
               }}
             >

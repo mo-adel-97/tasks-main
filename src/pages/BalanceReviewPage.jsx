@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
@@ -953,7 +955,7 @@ export default function BalanceReviewPage() {
           }}
         >
           <Toolbar
-            sx={{
+            sx={uiLayout.withUiSx({
               gap: isDesktop ? 1.1 : isPhone ? 0.45 : 0.55,
               minHeight: isDesktop ? 64 : isPhone ? 50 : 56,
               flexWrap: "wrap",
@@ -961,7 +963,7 @@ export default function BalanceReviewPage() {
               direction: "rtl",
               px: isDesktop ? 1.5 : isPhone ? 0.55 : 0.65,
               py: isDesktop ? 0.4 : isPhone ? 0.55 : 0.25
-            }}
+            }, uiLayout.filterBarSx)}
           >
             {!isDesktop && (
               <IconButton onClick={() => setMobileSidebarOpen(true)} edge="start">
@@ -991,7 +993,7 @@ export default function BalanceReviewPage() {
                 <Typography
                   sx={{
                     color: mutedColor,
-                    fontSize: isDesktop ? 13 : 10,
+                    fontSize: isDesktop ? 13 : 12,
                     fontWeight: 700
                   }}
                 >
@@ -1008,12 +1010,12 @@ export default function BalanceReviewPage() {
               onChange={(e) => setFromDate(e.target.value)}
               inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputLabelProps={{ shrink: true }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: isPhone ? "calc(50% - 3px)" : 145,
                 "& .MuiInputBase-root": { height: isPhone ? 34 : 40 },
-                "& .MuiInputBase-input": { fontSize: isPhone ? "0.68rem" : undefined },
-                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.64rem" : undefined }
-              }}
+                "& .MuiInputBase-input": { fontSize: isPhone ? "0.75rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.75rem" : undefined }
+              }, uiLayout.formFieldSx)}
             />
             <TextField
               label="إلى"
@@ -1023,40 +1025,40 @@ export default function BalanceReviewPage() {
               onChange={(e) => setToDate(e.target.value)}
               inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputLabelProps={{ shrink: true }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: isPhone ? "calc(50% - 3px)" : 145,
                 "& .MuiInputBase-root": { height: isPhone ? 34 : 40 },
-                "& .MuiInputBase-input": { fontSize: isPhone ? "0.68rem" : undefined },
-                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.64rem" : undefined }
-              }}
+                "& .MuiInputBase-input": { fontSize: isPhone ? "0.75rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.75rem" : undefined }
+              }, uiLayout.formFieldSx)}
             />
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="سماحية الفرق"
               size="small"
               value={tolerance}
               onChange={(e) => setTolerance(e.target.value)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: isPhone ? "calc(50% - 3px)" : 125,
                 "& .MuiInputBase-root": { height: isPhone ? 34 : 40 },
-                "& .MuiInputBase-input": { fontSize: isPhone ? "0.68rem" : undefined },
-                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.64rem" : undefined }
-              }}
+                "& .MuiInputBase-input": { fontSize: isPhone ? "0.75rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? "0.75rem" : undefined }
+              }, uiLayout.formFieldSx)}
             />
             <Button
               variant="contained"
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <RefreshIcon />}
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: primaryColor,
                 fontWeight: 900,
                 px: isDesktop ? 3 : 1.2,
                 minHeight: isPhone ? 34 : 40,
                 width: isPhone ? "calc(50% - 3px)" : "auto",
-                fontSize: isPhone ? "0.68rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : undefined,
                 flex: "none",
                 "&:hover": { bgcolor: primaryDark }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {loading ? "جاري الفحص..." : "عرض"}
             </Button>
@@ -1093,7 +1095,7 @@ export default function BalanceReviewPage() {
                   sx={{
                     fontWeight: 900,
                     color: primaryColor,
-                    fontSize: isPhone ? 10 : 13
+                    fontSize: isPhone ? 12 : 13
                   }}
                 >
                   جاري تجهيز مراجعة الميزان...
@@ -1103,7 +1105,7 @@ export default function BalanceReviewPage() {
                   sx={{
                     color: mutedColor,
                     fontWeight: 700,
-                    fontSize: isPhone ? 8 : 10.5
+                    fontSize: isPhone ? 12 : 12
                   }}
                 >
                   يتم تشغيل الفحوصات بالتوازي — مرّ {loadingSeconds} ثانية
@@ -1160,7 +1162,7 @@ export default function BalanceReviewPage() {
                     fontWeight: 900,
                     color: mutedColor,
                     mb: isPhone ? 0.35 : 0.7,
-                    fontSize: isPhone ? 9 : isTablet ? 11 : 12
+                    fontSize: isPhone ? 12 : isTablet ? 12 : 12
                   }}
                 >
                   {card.title}
@@ -1181,7 +1183,7 @@ export default function BalanceReviewPage() {
                     fontWeight: 700,
                     color: textColor,
                     mt: isPhone ? 0.35 : 0.7,
-                    fontSize: isPhone ? 8.5 : isTablet ? 9.5 : 11,
+                    fontSize: isPhone ? 12 : isTablet ? 12 : 12,
                     lineHeight: 1.35
                   }}
                 >
@@ -1221,7 +1223,7 @@ export default function BalanceReviewPage() {
                   sx={{
                     color: mutedColor,
                     fontWeight: 750,
-                    fontSize: isPhone ? 8 : 10.5,
+                    fontSize: isPhone ? 12 : 12,
                     mt: 0.2
                   }}
                 >
@@ -1258,11 +1260,11 @@ export default function BalanceReviewPage() {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone ? 320 : isTablet ? 360 : 420,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={zatcaComparison.map((row, index) => ({
@@ -1289,7 +1291,7 @@ export default function BalanceReviewPage() {
                     ? "zatca-match-row"
                     : "zatca-error-row"
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   "& .MuiDataGrid-columnHeaders": {
@@ -1299,14 +1301,14 @@ export default function BalanceReviewPage() {
                   "& .MuiDataGrid-cell": {
                     fontWeight: 750,
                     borderColor: "#edf2ef",
-                    fontSize: isDesktop ? 12 : isPhone ? 9 : 10,
+                    fontSize: isDesktop ? 12 : isPhone ? 12 : 12,
                     px: isPhone ? 0.15 : 0.45,
                     justifyContent: !isDesktop ? "center" : undefined,
                     textAlign: !isDesktop ? "center" : undefined
                   },
                   "& .MuiDataGrid-columnHeaderTitle": {
                     fontWeight: 900,
-                    fontSize: isDesktop ? 12 : isPhone ? 9 : 10,
+                    fontSize: isDesktop ? 12 : isPhone ? 12 : 12,
                     textAlign: "center"
                   },
                   "& .MuiDataGrid-columnHeaderTitleContainer": {
@@ -1324,7 +1326,7 @@ export default function BalanceReviewPage() {
                   "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": {
                     outline: "none"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Paper>
@@ -1345,17 +1347,17 @@ export default function BalanceReviewPage() {
                   startIcon={<FileDownloadIcon />}
                   onClick={exportCsv}
                   fullWidth={isPhone}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: isPhone ? 34 : 36,
-                    fontSize: isPhone ? "0.7rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : undefined,
                     fontWeight: 850
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير المشاكل
                 </Button>
               </Tooltip>
             </Stack>
-            <Box sx={{ width: "100%", height: isPhone ? 300 : isTablet ? 330 : 360, overflow: "hidden" }}>
+            <Box sx={uiLayout.withUiSx({ width: "100%", height: isPhone ? 300 : isTablet ? 330 : 360, overflow: "hidden" }, uiLayout.tableContainerSx)}>
               <DataGrid
                 rows={checks.map((row, index) => ({ ...row, id: row.checkKey || row.id || index + 1 }))}
                 columns={isDesktop ? checkColumns : compactCheckColumns}
@@ -1366,21 +1368,21 @@ export default function BalanceReviewPage() {
                 disableRowSelectionOnClick
                 pageSizeOptions={[5, 10, 25]}
                 initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   "& .MuiDataGrid-columnHeaders": { bgcolor: "#eef7f2", fontWeight: 900 },
                   "& .MuiDataGrid-cell": {
                     fontWeight: 700,
                     borderColor: "#edf2ef",
-                    fontSize: isDesktop ? 12 : isPhone ? 9 : 10,
+                    fontSize: isDesktop ? 12 : isPhone ? 12 : 12,
                     px: isPhone ? 0.15 : 0.45,
                     justifyContent: !isDesktop ? "center" : undefined,
                     textAlign: !isDesktop ? "center" : undefined
                   },
                   "& .MuiDataGrid-columnHeaderTitle": {
                     fontWeight: 900,
-                    fontSize: isDesktop ? 12 : isPhone ? 9 : 10,
+                    fontSize: isDesktop ? 12 : isPhone ? 12 : 12,
                     textAlign: "center"
                   },
                   "& .MuiDataGrid-columnHeaderTitleContainer": { justifyContent: "center" },
@@ -1389,7 +1391,7 @@ export default function BalanceReviewPage() {
                   },
                   "& .MuiDataGrid-row:hover": { bgcolor: "rgba(5,117,70,0.035)" },
                   "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": { outline: "none" }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Paper>
@@ -1404,22 +1406,22 @@ export default function BalanceReviewPage() {
               <Typography sx={{ fontWeight: 950, fontSize: isPhone ? 12 : isTablet ? 15 : 18, flexGrow: 1 }}>
                 تفاصيل المراجعة
               </Typography>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 size="small"
                 placeholder="بحث برقم مستند / قيد / طالب / هوية"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 InputProps={{ startAdornment: <SearchIcon sx={{ color: "#8aa79a", ml: 1 }} /> }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: { xs: "100%", sm: 280, xl: 360 },
                   direction: "rtl",
                   "& .MuiInputBase-root": { height: isPhone ? 36 : 38 },
-                  "& .MuiInputBase-input": { fontSize: isPhone ? "0.72rem" : undefined }
-                }}
+                  "& .MuiInputBase-input": { fontSize: isPhone ? "0.75rem" : undefined }
+                }, uiLayout.formFieldSx)}
               />
             </Stack>
 
-            <Box sx={{ width: "100%", height: isPhone ? 430 : isTablet ? 500 : 600, overflow: "hidden" }}>
+            <Box sx={uiLayout.withUiSx({ width: "100%", height: isPhone ? 430 : isTablet ? 500 : 600, overflow: "hidden" }, uiLayout.tableContainerSx)}>
               <DataGrid
                 rows={filteredProblems.map((row, index) => ({ ...row, id: `${row.problemType || "p"}-${row.billCode || ""}-${row.day1Code || ""}-${index}` }))}
                 columns={isDesktop ? problemColumns : compactProblemColumns}
@@ -1438,7 +1440,7 @@ export default function BalanceReviewPage() {
                       ? "critical-row"
                       : "warning-row"
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   minHeight: 300,
@@ -1446,14 +1448,14 @@ export default function BalanceReviewPage() {
                   "& .MuiDataGrid-cell": {
                     fontWeight: 700,
                     borderColor: "#edf2ef",
-                    fontSize: isDesktop ? 12 : isPhone ? 9 : 10,
+                    fontSize: isDesktop ? 12 : isPhone ? 12 : 12,
                     px: isPhone ? 0.15 : 0.45,
                     justifyContent: !isDesktop ? "center" : undefined,
                     textAlign: !isDesktop ? "center" : undefined
                   },
                   "& .MuiDataGrid-columnHeaderTitle": {
                     fontWeight: 900,
-                    fontSize: isDesktop ? 12 : isPhone ? 9 : 10,
+                    fontSize: isDesktop ? 12 : isPhone ? 12 : 12,
                     textAlign: "center"
                   },
                   "& .MuiDataGrid-columnHeaderTitleContainer": { justifyContent: "center" },
@@ -1465,13 +1467,13 @@ export default function BalanceReviewPage() {
                   "& .warning-row": { bgcolor: "rgba(245,158,11,0.055)" },
                   "& .stopped-row": { bgcolor: "rgba(245,158,11,0.08)" },
                   "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": { outline: "none" }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Paper>
         </Box>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={checkDetailsOpen}
           onClose={() => setCheckDetailsOpen(false)}
           fullWidth
@@ -1519,10 +1521,10 @@ export default function BalanceReviewPage() {
                   ["التوضيح", checkDetailsRow.notes]
                 ].map(([label, value]) => (
                   <Paper key={label} elevation={0} sx={{ p: 0.65, border: `1px solid ${borderColor}`, borderRadius: 1.4 }}>
-                    <Typography sx={{ fontWeight: 900, color: mutedColor, fontSize: isPhone ? "0.38rem" : "0.5rem" }}>
+                    <Typography sx={{ fontWeight: 900, color: mutedColor, fontSize: isPhone ? "0.75rem" : "0.75rem" }}>
                       {label}
                     </Typography>
-                    <Typography sx={{ mt: 0.2, fontWeight: 850, color: textColor, fontSize: isPhone ? "0.5rem" : "0.64rem", wordBreak: "break-word" }}>
+                    <Typography sx={{ mt: 0.2, fontWeight: 850, color: textColor, fontSize: isPhone ? "0.75rem" : "0.75rem", wordBreak: "break-word" }}>
                       {String(value ?? "-")}
                     </Typography>
                   </Paper>
@@ -1530,12 +1532,12 @@ export default function BalanceReviewPage() {
               </Box>
             )}
           </DialogContent>
-          <DialogActions>
-            <Button variant="contained" onClick={() => setCheckDetailsOpen(false)} sx={{ bgcolor: primaryColor, fontWeight: 900 }}>إغلاق</Button>
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button variant="contained" onClick={() => setCheckDetailsOpen(false)} sx={uiLayout.withUiSx({ bgcolor: primaryColor, fontWeight: 900 }, uiLayout.buttonSx)}>إغلاق</Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={problemDetailsOpen}
           onClose={() => setProblemDetailsOpen(false)}
           fullWidth
@@ -1589,10 +1591,10 @@ export default function BalanceReviewPage() {
                   ["البيان", problemDetailsRow.notes]
                 ].map(([label, value]) => (
                   <Paper key={label} elevation={0} sx={{ p: 0.65, border: `1px solid ${borderColor}`, borderRadius: 1.4 }}>
-                    <Typography sx={{ fontWeight: 900, color: mutedColor, fontSize: isPhone ? "0.38rem" : "0.5rem" }}>
+                    <Typography sx={{ fontWeight: 900, color: mutedColor, fontSize: isPhone ? "0.75rem" : "0.75rem" }}>
                       {label}
                     </Typography>
-                    <Typography sx={{ mt: 0.2, fontWeight: 850, color: textColor, fontSize: isPhone ? "0.5rem" : "0.64rem", wordBreak: "break-word" }}>
+                    <Typography sx={{ mt: 0.2, fontWeight: 850, color: textColor, fontSize: isPhone ? "0.75rem" : "0.75rem", wordBreak: "break-word" }}>
                       {String(value ?? "-")}
                     </Typography>
                   </Paper>
@@ -1600,8 +1602,8 @@ export default function BalanceReviewPage() {
               </Box>
             )}
           </DialogContent>
-          <DialogActions>
-            <Button variant="contained" onClick={() => setProblemDetailsOpen(false)} sx={{ bgcolor: primaryColor, fontWeight: 900 }}>إغلاق</Button>
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button variant="contained" onClick={() => setProblemDetailsOpen(false)} sx={uiLayout.withUiSx({ bgcolor: primaryColor, fontWeight: 900 }, uiLayout.buttonSx)}>إغلاق</Button>
           </DialogActions>
         </Dialog>
       </Box>

@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -179,7 +180,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 flex: 1,
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: { xs: "0.68rem", sm: "0.8rem" },
+                fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 color: "#17372b",
                 textAlign: "start",
                 whiteSpace: "nowrap",
@@ -253,7 +254,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 mt: isPhone ? 0.2 : 0.5,
                 fontFamily: "Cairo",
                 color: "#60756d",
-                fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 display: isPhone ? "none" : "block"
               }}
             >
@@ -263,18 +264,18 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
 
           <Box sx={{ p: isPhone ? 0.65 : isTablet ? 0.9 : 3 }}>
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: isCompact ? "repeat(2,minmax(0,1fr))" : "auto auto auto auto auto 1fr auto",
                 gap: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
                 mb: isPhone ? 0.8 : isTablet ? 1 : 2.5,
                 alignItems: "center",
                 "& .MuiInputLabel-root": {
-                  fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   fontFamily: "Cairo"
                 },
                 "& .MuiInputBase-input": {
-                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   py: isPhone ? 0.55 : isTablet ? 0.65 : undefined
                 },
                 "& .MuiOutlinedInput-root": {
@@ -283,19 +284,19 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 },
                 "& .MuiButton-root": {
                   minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
-                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   px: isPhone ? 0.65 : isTablet ? 0.9 : undefined
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField type="date" label="من تاريخ" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField type="date" label="إلى تاريخ" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+              <TextField sx={uiLayout.formFieldSx} type="date" label="من تاريخ" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+              <TextField sx={uiLayout.formFieldSx} type="date" label="إلى تاريخ" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <Button variant="contained" startIcon={<SearchIcon />} onClick={loadData} disabled={loading} sx={{ fontFamily: "Cairo", fontWeight: 800, background: "#057546" }}>
+              <Button variant="contained" startIcon={<SearchIcon />} onClick={loadData} disabled={loading} sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800, background: "#057546" }, uiLayout.buttonSx)}>
                 عرض
               </Button>
 
-              <Button variant="outlined" startIcon={<RefreshIcon />} onClick={loadData} disabled={loading} sx={{ fontFamily: "Cairo", fontWeight: 800 }}>
+              <Button variant="outlined" startIcon={<RefreshIcon />} onClick={loadData} disabled={loading} sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800 }, uiLayout.buttonSx)}>
                 تحديث
               </Button>
 
@@ -304,13 +305,13 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 startIcon={<FileDownloadIcon />}
                 onClick={() => exportCsv(rows, exportFileName)}
                 disabled={loading || rows.length === 0}
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   color: "#ae1e21",
                   borderColor: "#ae1e21",
                   gridColumn: isCompact ? "1 / -1" : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير Excel
               </Button>
@@ -326,7 +327,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                   color: "#034d31",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   textAlign: "center",
                   gridColumn: isCompact ? "1 / -1" : undefined
                 }}
@@ -341,7 +342,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 sx={{
                   mb: isPhone ? 0.65 : 2,
                   fontFamily: "Cairo",
-                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   py: isPhone ? 0.25 : undefined
                 }}
               >
@@ -364,7 +365,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
               ) : isCompact ? (
                 <Box sx={{ display: "grid", gap: isPhone ? 0.45 : 0.65, p: isPhone ? 0.45 : 0.65 }}>
                   {rows.length === 0 ? (
-                    <Box sx={{ minHeight: 300, display: "grid", placeItems: "center", fontFamily: "Cairo", color: "#60756d", fontSize: isPhone ? "0.5rem" : "0.58rem" }}>
+                    <Box sx={{ minHeight: 300, display: "grid", placeItems: "center", fontFamily: "Cairo", color: "#60756d", fontSize: isPhone ? "0.75rem" : "0.75rem" }}>
                       لا توجد بيانات خلال الفترة المحددة
                     </Box>
                   ) : (
@@ -387,14 +388,14 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                             ["المدينة", row.city || "-"]
                           ].map(([label, value]) => (
                             <Box key={label}>
-                              <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.38rem" : "0.45rem", color: "#7a8b84" }}>{label}</Typography>
-                              <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.5rem" : "0.58rem", color: "#1f2d3d" }}>{value}</Typography>
+                              <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#7a8b84" }}>{label}</Typography>
+                              <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#1f2d3d" }}>{value}</Typography>
                             </Box>
                           ))}
 
                           <Box sx={{ gridColumn: "1 / -1", pt: 0.2 }}>
-                            <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.38rem" : "0.45rem", color: "#7a8b84" }}>الدبلوم / الدورة</Typography>
-                            <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.5rem" : "0.58rem", color: "#057546" }}>{row.diploma || "-"}</Typography>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#7a8b84" }}>الدبلوم / الدورة</Typography>
+                            <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#057546" }}>{row.diploma || "-"}</Typography>
                           </Box>
                         </Box>
                       </Paper>

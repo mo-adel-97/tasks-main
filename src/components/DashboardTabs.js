@@ -67,7 +67,7 @@ const DashboardTabs = ({
               backgroundColor: COLOR_SCHEME.accent,
               color: "white",
               fontWeight: 900,
-              fontSize: { xs: "0.55rem", sm: "0.62rem", md: "0.68rem" },
+              fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               minWidth: { xs: 16, sm: 18, md: 20 },
               height: { xs: 16, sm: 18, md: 20 },
               borderRadius: 999,
@@ -134,7 +134,7 @@ const DashboardTabs = ({
           "& .MuiTab-root": {
             fontFamily: 'Cairo, Arial, sans-serif',
             fontWeight: 900,
-            fontSize: { xs: "0.62rem", sm: "0.71rem", md: "0.82rem", lg: "0.9rem" },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.82rem", lg: "0.9rem" },
             minHeight: { xs: 42, sm: 48, md: 54 },
             minWidth: { xs: 90, sm: 108, md: 126, lg: 138 },
             mx: { xs: 0.1, sm: 0.2, md: 0.35 },

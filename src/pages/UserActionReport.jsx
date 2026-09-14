@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useMemo, useState } from "react";
@@ -825,15 +827,15 @@ export default function UserActionReport() {
               color: primaryDark,
               fontWeight: 900,
               fontSize: {
-                xs: 8.5,
-                sm: 11
+                xs: 12,
+                sm: 12
               }
             }}
           />
         </Box>
 
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             p: {
               xs: 0.55,
               sm: 0.9
@@ -849,7 +851,7 @@ export default function UserActionReport() {
               sm: 0.7
             },
             alignItems: "center"
-          }}
+          }, uiLayout.filterBarSx)}
         >
           <TextField
             type="date"
@@ -862,11 +864,11 @@ export default function UserActionReport() {
             InputLabelProps={{
               shrink: true
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiInputBase-input":
                 {
                   fontSize: {
-                    xs: 10,
+                    xs: 12,
                     sm: 12.5
                   },
                   py: {
@@ -877,11 +879,11 @@ export default function UserActionReport() {
               "& .MuiInputLabel-root":
                 {
                   fontSize: {
-                    xs: 9,
-                    sm: 11.5
+                    xs: 12,
+                    sm: 12
                   }
                 }
-            }}
+            }, uiLayout.formFieldSx)}
            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
           <TextField
@@ -895,11 +897,11 @@ export default function UserActionReport() {
             InputLabelProps={{
               shrink: true
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiInputBase-input":
                 {
                   fontSize: {
-                    xs: 10,
+                    xs: 12,
                     sm: 12.5
                   },
                   py: {
@@ -910,11 +912,11 @@ export default function UserActionReport() {
               "& .MuiInputLabel-root":
                 {
                   fontSize: {
-                    xs: 9,
-                    sm: 11.5
+                    xs: 12,
+                    sm: 12
                   }
                 }
-            }}
+            }, uiLayout.formFieldSx)}
            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
           <Button
@@ -931,19 +933,19 @@ export default function UserActionReport() {
             }
             disabled={loading}
             onClick={search}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: "#1565c0",
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: {
-                xs: 9,
-                sm: 11.5
+                xs: 12,
+                sm: 12
               },
               minHeight: {
                 xs: 32,
                 sm: 40
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             عرض
           </Button>
@@ -957,18 +959,18 @@ export default function UserActionReport() {
               rows.length === 0
             }
             onClick={exportExcel}
-            sx={{
+            sx={uiLayout.withUiSx({
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: {
-                xs: 8.7,
-                sm: 11.5
+                xs: 12,
+                sm: 12
               },
               minHeight: {
                 xs: 32,
                 sm: 40
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             Excel
           </Button>
@@ -1032,18 +1034,18 @@ export default function UserActionReport() {
                     (current) => !current
                   )
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: 8.8,
-                    sm: 11
+                    xs: 12,
+                    sm: 12
                   },
                   px: {
                     xs: 0.7,
                     sm: 1
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 فلاتر متقدمة
               </Button>
@@ -1057,8 +1059,8 @@ export default function UserActionReport() {
                   sx={{
                     fontFamily: "Cairo",
                     fontSize: {
-                      xs: 8,
-                      sm: 10
+                      xs: 12,
+                      sm: 12
                     }
                   }}
                 />
@@ -1086,7 +1088,7 @@ export default function UserActionReport() {
 
             {showAdvancedFilters && (
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   p: {
                     xs: 0.55,
                     sm: 0.8
@@ -1101,9 +1103,9 @@ export default function UserActionReport() {
                     xs: 0.45,
                     sm: 0.65
                   }
-                }}
+                }, uiLayout.formGridSx)}
               >
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   size="small"
                   label="بحث شامل"
                   value={filterText}
@@ -1124,26 +1126,26 @@ export default function UserActionReport() {
                       </InputAdornment>
                     )
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiInputBase-input": {
                       textAlign: "center",
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 9.2,
-                        sm: 11
+                        xs: 12,
+                        sm: 12
                       }
                     },
                     "& .MuiInputLabel-root": {
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 8.5,
-                        sm: 10.5
+                        xs: 12,
+                        sm: 12
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   select
                   size="small"
                   label="المستخدم"
@@ -1151,16 +1153,16 @@ export default function UserActionReport() {
                   onChange={(e) =>
                     setFilterUser(e.target.value)
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiSelect-select": {
                       textAlign: "center",
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 9,
-                        sm: 11
+                        xs: 12,
+                        sm: 12
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 >
                   <MenuItem value="">
                     الكل
@@ -1182,7 +1184,7 @@ export default function UserActionReport() {
                   )}
                 </TextField>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   select
                   size="small"
                   label="نوع الإجراء"
@@ -1190,16 +1192,16 @@ export default function UserActionReport() {
                   onChange={(e) =>
                     setFilterAction(e.target.value)
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiSelect-select": {
                       textAlign: "center",
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 9,
-                        sm: 11
+                        xs: 12,
+                        sm: 12
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 >
                   <MenuItem value="">
                     الكل
@@ -1221,7 +1223,7 @@ export default function UserActionReport() {
                   )}
                 </TextField>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   select
                   size="small"
                   label="الشاشة"
@@ -1229,16 +1231,16 @@ export default function UserActionReport() {
                   onChange={(e) =>
                     setFilterScreen(e.target.value)
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiSelect-select": {
                       textAlign: "center",
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 9,
-                        sm: 11
+                        xs: 12,
+                        sm: 12
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 >
                   <MenuItem value="">
                     الكل
@@ -1260,7 +1262,7 @@ export default function UserActionReport() {
                   )}
                 </TextField>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   select
                   size="small"
                   label="الجهاز"
@@ -1268,16 +1270,16 @@ export default function UserActionReport() {
                   onChange={(e) =>
                     setFilterDevice(e.target.value)
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiSelect-select": {
                       textAlign: "center",
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 9,
-                        sm: 11
+                        xs: 12,
+                        sm: 12
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 >
                   <MenuItem value="">
                     الكل
@@ -1299,36 +1301,36 @@ export default function UserActionReport() {
                   )}
                 </TextField>
 
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   size="small"
                   label="IP"
                   value={filterIp}
                   onChange={(e) =>
                     setFilterIp(e.target.value)
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiInputBase-input": {
                       textAlign: "center",
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 9.2,
-                        sm: 11
+                        xs: 12,
+                        sm: 12
                       }
                     },
                     "& .MuiInputLabel-root": {
                       fontFamily: "Cairo",
                       fontSize: {
-                        xs: 8.5,
-                        sm: 10.5
+                        xs: 12,
+                        sm: 12
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
 
 
                 {dynamicFilterColumns.map(
                   ({ key, caption }) => (
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       key={`filter-${key}`}
                       size="small"
                       label={caption}
@@ -1344,23 +1346,23 @@ export default function UserActionReport() {
                         )
                       }
                       placeholder={`فلتر ${caption}`}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         "& .MuiInputBase-input": {
                           textAlign: "center",
                           fontFamily: "Cairo",
                           fontSize: {
-                            xs: 9,
-                            sm: 10.8
+                            xs: 12,
+                            sm: 12
                           }
                         },
                         "& .MuiInputLabel-root": {
                           fontFamily: "Cairo",
                           fontSize: {
-                            xs: 8.3,
-                            sm: 10.3
+                            xs: 12,
+                            sm: 12
                           }
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                     />
                   )
                 )}
@@ -1380,7 +1382,7 @@ export default function UserActionReport() {
               mb: 0.8,
               fontFamily: "Cairo",
               fontSize: {
-                xs: 9,
+                xs: 12,
                 sm: 12
               }
             }}
@@ -1402,7 +1404,7 @@ export default function UserActionReport() {
                 mb: 0.8,
                 fontFamily: "Cairo",
                 fontSize: {
-                  xs: 9,
+                  xs: 12,
                   sm: 12
                 }
               }}
@@ -1425,7 +1427,7 @@ export default function UserActionReport() {
                 mb: 0.8,
                 fontFamily: "Cairo",
                 fontSize: {
-                  xs: 9,
+                  xs: 12,
                   sm: 12
                 }
               }}
@@ -1473,8 +1475,8 @@ export default function UserActionReport() {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: 8.7,
-                    sm: 11.5
+                    xs: 12,
+                    sm: 12
                   },
                   whiteSpace: "nowrap",
                   textAlign: "center",
@@ -1495,8 +1497,8 @@ export default function UserActionReport() {
                   fontFamily: "Cairo",
                   fontWeight: 600,
                   fontSize: {
-                    xs: 8.5,
-                    sm: 11
+                    xs: 12,
+                    sm: 12
                   },
                   whiteSpace: "nowrap",
                   textAlign: "center",

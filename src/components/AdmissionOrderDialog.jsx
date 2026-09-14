@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -480,8 +481,8 @@ const TextInfo = ({ label, value, strong = false }) => (
         color: primaryColor,
         fontWeight: 900,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.52rem" },
-        "@media (max-width:599px)": { fontSize: "0.45rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {label}
@@ -494,11 +495,11 @@ const TextInfo = ({ label, value, strong = false }) => (
         color: strong ? accentColor : textColor,
         "@media (max-width:1599px)": {
           mt: 0.12,
-          fontSize: "0.62rem",
+          fontSize: "0.75rem",
           lineHeight: 1.2
         },
         "@media (max-width:599px)": {
-          fontSize: "0.54rem"
+          fontSize: "0.75rem"
         },
         fontWeight: 1000,
         wordBreak: "break-word",
@@ -542,8 +543,8 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         color: primaryColor,
         fontWeight: 900,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.5rem" },
-        "@media (max-width:599px)": { fontSize: "0.43rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {label}
@@ -555,8 +556,8 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         color,
         fontWeight: 1000,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.72rem" },
-        "@media (max-width:599px)": { fontSize: "0.64rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {money(value)}
@@ -572,8 +573,8 @@ const MoneyCell = ({ value, color = textColor }) => (
       fontWeight: 1000,
       color,
       fontSize: "0.84rem",
-      "@media (max-width:1599px)": { fontSize: "0.55rem" },
-      "@media (max-width:599px)": { fontSize: "0.47rem" }
+      "@media (max-width:1599px)": { fontSize: "0.75rem" },
+      "@media (max-width:599px)": { fontSize: "0.75rem" }
     }}
   >
     {money(value)}
@@ -589,8 +590,8 @@ const EllipsisCell = ({ value, align = "start" }) => (
         direction: "rtl",
         fontWeight: 900,
         fontSize: "0.8rem",
-        "@media (max-width:1599px)": { fontSize: "0.54rem" },
-        "@media (max-width:599px)": { fontSize: "0.46rem" },
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -608,11 +609,11 @@ const EmptyBox = ({ text }) => (
       height: 220,
       "@media (max-width:1599px)": {
         height: 115,
-        fontSize: "0.58rem"
+        fontSize: "0.75rem"
       },
       "@media (max-width:599px)": {
         height: 96,
-        fontSize: "0.5rem"
+        fontSize: "0.75rem"
       },
       display: "flex",
       alignItems: "center",
@@ -645,7 +646,7 @@ const StepPointer = ({ show }) => {
         "@media (max-width:599px)": {
           width: 19,
           height: 19,
-          fontSize: "0.72rem"
+          fontSize: "0.75rem"
         },
         borderRadius: "50%",
         background: "linear-gradient(135deg, #fff7e6, #fff)",
@@ -721,12 +722,12 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
               "@media (max-width:1599px)": {
                 width: 20,
                 height: 20,
-                fontSize: "0.58rem"
+                fontSize: "0.75rem"
               },
               "@media (max-width:599px)": {
                 width: 18,
                 height: 18,
-                fontSize: "0.5rem"
+                fontSize: "0.75rem"
               },
               borderRadius: "50%",
               display: "flex",
@@ -751,8 +752,8 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
                 color: active ? accentColor : textColor,
                 fontSize: "0.95rem",
                 lineHeight: 1.1,
-                "@media (max-width:1599px)": { fontSize: "0.58rem" },
-                "@media (max-width:599px)": { fontSize: "0.5rem" }
+                "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                "@media (max-width:599px)": { fontSize: "0.75rem" }
               }}
             >
               {title}
@@ -761,10 +762,10 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
               sx={{
                 fontWeight: 800,
                 color: "#667085",
-                fontSize: "0.74rem",
+                fontSize: "0.75rem",
                 lineHeight: 1.1,
-                "@media (max-width:1599px)": { fontSize: "0.46rem" },
-                "@media (max-width:599px)": { fontSize: "0.4rem" }
+                "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                "@media (max-width:599px)": { fontSize: "0.75rem" }
               }}
             >
               {hint}
@@ -790,12 +791,12 @@ const InlineHint = ({ children, color = primaryColor }) => (
       lineHeight: 1.7,
       "@media (max-width:1599px)": {
         mt: 0.28,
-        fontSize: "0.48rem",
+        fontSize: "0.75rem",
         lineHeight: 1.35
       },
       "@media (max-width:599px)": {
         mt: 0.2,
-        fontSize: "0.42rem"
+        fontSize: "0.75rem"
       }
     }}
   >
@@ -820,14 +821,14 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
       backgroundColor: required && !file ? "#fff7f7" : "#fff"
     }}
   >
-    <Stack spacing={1}>
+    <Stack sx={uiLayout.pageHeaderSx} spacing={1}>
       <Typography
         sx={{
           fontWeight: 1000,
           color: required && !file ? accentColor : textColor,
           fontSize: "0.86rem",
-          "@media (max-width:1599px)": { fontSize: "0.55rem" },
-          "@media (max-width:599px)": { fontSize: "0.48rem" }
+          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
         {label} {required ? "*" : ""}
@@ -839,21 +840,21 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
           variant="outlined"
           disabled={disabled}
           startIcon={<AttachFileIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 2,
             fontWeight: 900,
             "@media (max-width:1599px)": {
               minHeight: 29,
               px: 0.55,
-              fontSize: "0.52rem"
+              fontSize: "0.75rem"
             },
             "@media (max-width:599px)": {
               minHeight: 27,
               px: 0.4,
-              fontSize: "0.46rem"
+              fontSize: "0.75rem"
             },
             "& .MuiButton-startIcon": { ml: 1, mr: 0 }
-          }}
+          }, uiLayout.buttonSx)}
         >
           اختيار ملف
           <input
@@ -875,8 +876,8 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
         sx={{
           fontSize: "0.76rem",
           fontWeight: 800,
-          "@media (max-width:1599px)": { fontSize: "0.48rem" },
-          "@media (max-width:599px)": { fontSize: "0.42rem" },
+          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          "@media (max-width:599px)": { fontSize: "0.75rem" },
           color: file ? primaryDark : "#8795a1",
           direction: "ltr",
           textAlign: "left",
@@ -2728,7 +2729,7 @@ const openAdmissionPrint = async (printData) => {
               variant="contained"
               onClick={() => addDiploma(params.row)}
               disabled={!canChooseDiploma}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: isPhone ? 26 : isTablet ? 30 : 62,
                 width: isPhone ? 26 : isTablet ? 30 : "auto",
                 height: isPhone ? 26 : isTablet ? 30 : "auto",
@@ -2748,7 +2749,7 @@ const openAdmissionPrint = async (printData) => {
                 "&:hover": {
                   background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {isCompact ? "+" : "إضافة"}
             </Button>
@@ -2860,7 +2861,7 @@ const openAdmissionPrint = async (printData) => {
               size="small"
               variant="contained"
               onClick={() => addFee(params.row)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: isPhone ? 26 : isTablet ? 30 : 62,
                 width: isPhone ? 26 : isTablet ? 30 : "auto",
                 height: isPhone ? 26 : isTablet ? 30 : "auto",
@@ -2880,7 +2881,7 @@ const openAdmissionPrint = async (printData) => {
                 "&:hover": {
                   background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {isCompact ? "+" : "إضافة"}
             </Button>
@@ -2989,12 +2990,12 @@ const openAdmissionPrint = async (printData) => {
             setSelectedBank(params.row);
             setBankDialogOpen(false);
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 2,
             fontWeight: 900,
             background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
             "&:hover": { background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})` }
-          }}
+          }, uiLayout.buttonSx)}
         >
           اختيار
         </Button>
@@ -3118,14 +3119,14 @@ const openAdmissionPrint = async (printData) => {
         fullWidth
         maxWidth="xl"
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
             px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -3166,7 +3167,7 @@ const openAdmissionPrint = async (printData) => {
                 sx={{
                   fontWeight: 1000,
                   color: whiteColor,
-                  fontSize: isPhone ? "0.72rem" : isTablet ? "0.84rem" : "1.2rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.84rem" : "1.2rem",
                   lineHeight: 1.15
                 }}
               >
@@ -3188,7 +3189,7 @@ const openAdmissionPrint = async (printData) => {
                     maxWidth: isPhone ? 145 : isTablet ? 210 : undefined,
                     "& .MuiChip-label": {
                       px: isPhone ? 0.55 : isTablet ? 0.75 : undefined,
-                      fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       overflow: "hidden",
                       textOverflow: "ellipsis"
                     }
@@ -3203,7 +3204,7 @@ const openAdmissionPrint = async (printData) => {
                     height: isPhone ? 22 : isTablet ? 25 : undefined,
                     "& .MuiChip-label": {
                       px: isPhone ? 0.5 : isTablet ? 0.7 : undefined,
-                      fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }
                   }}
                 />
@@ -3216,7 +3217,7 @@ const openAdmissionPrint = async (printData) => {
                       color: primaryColor,
                       height: isTablet ? 25 : undefined,
                       "& .MuiChip-label": {
-                        fontSize: isTablet ? "0.53rem" : undefined
+                        fontSize: isTablet ? "0.75rem" : undefined
                       }
                     }}
                   />
@@ -3303,10 +3304,10 @@ const openAdmissionPrint = async (printData) => {
             minHeight: 0,
 
             "& .MuiInputLabel-root": {
-              fontSize: isPhone ? "0.48rem" : isTablet ? "0.57rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             },
             "& .MuiSelect-select, & .MuiInputBase-input": {
-              fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               py: isPhone ? 0.55 : isTablet ? 0.7 : undefined
             },
             "& .MuiOutlinedInput-root": {
@@ -3314,14 +3315,14 @@ const openAdmissionPrint = async (printData) => {
               borderRadius: isCompact ? 1.3 : undefined
             },
             "& .MuiFormHelperText-root": {
-              fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               mt: isCompact ? 0.15 : undefined
             },
             "& .MuiRadio-root": {
               p: isCompact ? 0.25 : undefined
             },
             "& .MuiFormControlLabel-label": {
-              fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }
           }}
         >
@@ -3332,7 +3333,7 @@ const openAdmissionPrint = async (printData) => {
                 mb: isCompact ? 0.35 : 1.5,
                 py: isCompact ? 0.15 : undefined,
                 fontWeight: 900,
-                fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               }}
             >
               {error}
@@ -3387,7 +3388,7 @@ const openAdmissionPrint = async (printData) => {
                       sx={{
                         fontWeight: 900,
                         color: primaryColor,
-                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                       }}
                     >
                       جاري تحميل البيانات...
@@ -3405,7 +3406,7 @@ const openAdmissionPrint = async (printData) => {
                     active={currentStep === 1}
                     done={Boolean(branchGuid)}
                   >
-                    <FormControl fullWidth size="small">
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                       <InputLabel>فرع الدراسة</InputLabel>
                       <Select
                         label="فرع الدراسة"
@@ -3437,7 +3438,7 @@ const openAdmissionPrint = async (printData) => {
                     active={currentStep === 2}
                     done={regType !== "" && regType !== null && regType !== undefined}
                   >
-                    <FormControl fullWidth size="small" disabled={!branchGuid}>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth size="small" disabled={!branchGuid}>
                       <InputLabel>نوع التسجيل</InputLabel>
                       <Select
                         label="نوع التسجيل"
@@ -3464,7 +3465,7 @@ const openAdmissionPrint = async (printData) => {
                     active={currentStep === 3}
                     done={studyType !== "" && studyType !== null && studyType !== undefined}
                   >
-                    <FormControl
+                    <FormControl sx={uiLayout.formFieldSx}
                       fullWidth
                       size="small"
                       disabled={!branchGuid || regType === "" || regType === null || regType === undefined}
@@ -3494,7 +3495,7 @@ const openAdmissionPrint = async (printData) => {
                     active={currentStep === 4}
                     done={Boolean(batchGuid)}
                   >
-                    <FormControl
+                    <FormControl sx={uiLayout.formFieldSx}
                       fullWidth
                       size="small"
                       disabled={
@@ -3556,7 +3557,7 @@ const openAdmissionPrint = async (printData) => {
                         sx={{
                           fontWeight: 1000,
                           color: currentStep === 5 ? accentColor : primaryColor,
-                          fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           lineHeight: 1.2
                         }}
                       >
@@ -3595,7 +3596,7 @@ const openAdmissionPrint = async (printData) => {
 >
   <Typography
     sx={{
-      fontSize: isPhone ? "0.43rem" : isTablet ? "0.5rem" : "0.76rem",
+      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.76rem",
       color: primaryColor,
       fontWeight: 900,
       lineHeight: 1.15
@@ -3606,7 +3607,7 @@ const openAdmissionPrint = async (printData) => {
 
   <Typography
     sx={{
-      fontSize: isPhone ? "0.64rem" : isTablet ? "0.72rem" : "1.15rem",
+      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1.15rem",
       lineHeight: 1.15,
       color:
         Number(regType) === 0 && contextData?.ramadanOfferEnabled
@@ -3623,7 +3624,7 @@ const openAdmissionPrint = async (printData) => {
               <TextInfo label="نوع السداد الحالي" value={currentPaymentName} />
             </Grid>
             <Grid item xs={12} md={3.4}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 size="small"
                 label="الملاحظات"
@@ -3670,7 +3671,7 @@ const openAdmissionPrint = async (printData) => {
                     sx={{
                       fontWeight: 1000,
                       color: textColor,
-                      fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem",
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1rem",
                       lineHeight: 1.2
                     }}
                   >
@@ -3687,7 +3688,7 @@ const openAdmissionPrint = async (printData) => {
                     height: isPhone ? 20 : isTablet ? 23 : undefined,
                     "& .MuiChip-label": {
                       px: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
-                      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }
                   }}
                 />
@@ -3701,7 +3702,7 @@ const openAdmissionPrint = async (printData) => {
                     py: isCompact ? 0.12 : undefined,
                     fontWeight: 900,
                     borderRadius: isCompact ? 1.2 : 2,
-                    fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   }}
                 >
                   {branchGuid
@@ -3717,13 +3718,13 @@ const openAdmissionPrint = async (printData) => {
                       mb: isCompact ? 0.3 : 0.8,
                       fontWeight: 1000,
                       color: primaryColor,
-                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }}
                   >
                     الدبلومات / الدورات المتاحة
                   </Typography>
 
-                  <Box sx={{ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }}>
+                  <Box sx={uiLayout.withUiSx({ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }, uiLayout.tableContainerSx)}>
                     {availableDiplomas.length ? (
                       <DataGrid
                         rows={availableDiplomas}
@@ -3740,7 +3741,7 @@ const openAdmissionPrint = async (printData) => {
                             paginationModel: { pageSize: 10, page: 0 }
                           }
                         }}
-                        sx={gridSx}
+                        sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
                       />
                     ) : (
                       <EmptyBox text="لا توجد دبلومات / دورات متاحة حتى الآن" />
@@ -3755,13 +3756,13 @@ const openAdmissionPrint = async (printData) => {
                       mb: isCompact ? 0.3 : 0.8,
                       fontWeight: 1000,
                       color: primaryColor,
-                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }}
                   >
                       الرسوم المتاحة
                     </Typography>
 
-                    <Box sx={{ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }}>
+                    <Box sx={uiLayout.withUiSx({ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }, uiLayout.tableContainerSx)}>
                       {availableFees.length ? (
                         <DataGrid
                           rows={availableFees}
@@ -3774,7 +3775,7 @@ const openAdmissionPrint = async (printData) => {
                               paginationModel: { pageSize: 10, page: 0 }
                             }
                           }}
-                          sx={gridSx}
+                          sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
                         />
                       ) : (
                         <EmptyBox text="لا توجد رسوم متاحة" />
@@ -3807,7 +3808,7 @@ const openAdmissionPrint = async (printData) => {
                     sx={{
                       fontWeight: 1000,
                       color: textColor,
-                      fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem",
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1rem",
                       lineHeight: 1.2
                     }}
                   >
@@ -3824,7 +3825,7 @@ const openAdmissionPrint = async (printData) => {
                     height: isPhone ? 20 : isTablet ? 23 : undefined,
                     "& .MuiChip-label": {
                       px: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
-                      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }
                   }}
                 />
@@ -3837,13 +3838,13 @@ const openAdmissionPrint = async (printData) => {
                       mb: isCompact ? 0.3 : 0.8,
                       fontWeight: 1000,
                       color: primaryColor,
-                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }}
                   >
                     الدبلوم / الدورة المختارة
                   </Typography>
 
-                  <Box sx={{ height: isPhone ? 125 : isTablet ? 155 : (selectedDiplomas.length ? 210 : 180), minWidth: 0 }}>
+                  <Box sx={uiLayout.withUiSx({ height: isPhone ? 125 : isTablet ? 155 : (selectedDiplomas.length ? 210 : 180), minWidth: 0 }, uiLayout.tableContainerSx)}>
                     {selectedDiplomas.length ? (
                       <DataGrid
                         rows={selectedDiplomas}
@@ -3855,7 +3856,7 @@ const openAdmissionPrint = async (printData) => {
                         rowHeight={isPhone ? 34 : isTablet ? 40 : undefined}
                         columnHeaderHeight={isPhone ? 32 : isTablet ? 38 : undefined}
                         hideFooter
-                        sx={gridSx}
+                        sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
                       />
                     ) : (
                       <EmptyBox text="لم يتم اختيار دبلوم / دورة" />
@@ -3870,13 +3871,13 @@ const openAdmissionPrint = async (printData) => {
                       mb: isCompact ? 0.3 : 0.8,
                       fontWeight: 1000,
                       color: primaryColor,
-                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }}
                   >
                       الرسوم المختارة
                     </Typography>
 
-                    <Box sx={{ height: isPhone ? 125 : isTablet ? 155 : (selectedFees.length ? 210 : 180), minWidth: 0 }}>
+                    <Box sx={uiLayout.withUiSx({ height: isPhone ? 125 : isTablet ? 155 : (selectedFees.length ? 210 : 180), minWidth: 0 }, uiLayout.tableContainerSx)}>
                       {selectedFees.length ? (
                         <DataGrid
                           rows={selectedFees}
@@ -3889,7 +3890,7 @@ const openAdmissionPrint = async (printData) => {
                               paginationModel: { pageSize: 10, page: 0 }
                             }
                           }}
-                          sx={gridSx}
+                          sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
                         />
                       ) : (
                         <EmptyBox text="لم يتم اختيار رسوم" />
@@ -3915,15 +3916,15 @@ const openAdmissionPrint = async (printData) => {
                   mb: isCompact ? 0.4 : 1,
                   fontWeight: 1000,
                   color: textColor,
-                  fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem"
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1rem"
                 }}
               >
                 4) السداد وبيانات التعارف
               </Typography>
 
               <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5} alignItems="center">
-                <Grid item xs={6} sm={6} md={2.2}>
-                   <TextField
+                <Grid item xs={12} sm={6} md={2.2}>
+                   <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
   fullWidth
   size="small"
   label="قيمة الدفعة المقدمة"
@@ -3957,14 +3958,14 @@ const openAdmissionPrint = async (printData) => {
 />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={3.5}>
-                  <FormControl>
+                <Grid item xs={12} sm={6} md={3.5}>
+                  <FormControl sx={uiLayout.formFieldSx}>
                     <Typography
                       sx={{
                         fontWeight: 1000,
                         color: textColor,
                         mb: isCompact ? 0.2 : 0.5,
-                        fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       }}
                     >
                       نوع السداد
@@ -3972,14 +3973,14 @@ const openAdmissionPrint = async (printData) => {
                     <RadioGroup
                       row
                       value={payType}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         flexWrap: "nowrap",
                         gap: isCompact ? 0.15 : undefined,
                         "& .MuiFormControlLabel-root": {
                           mr: isCompact ? 0.2 : undefined,
                           ml: isCompact ? 0.2 : undefined
                         }
-                      }}
+                      }, uiLayout.radioGroupSx)}
                       onChange={(e) => handlePayTypeChange(e.target.value)}
                     >
                       <FormControlLabel value={0} control={<Radio />} label="نقدي" />
@@ -3989,8 +3990,8 @@ const openAdmissionPrint = async (printData) => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={2.2}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={2.2}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="كود ماكينة الشبكة"
@@ -4000,8 +4001,8 @@ const openAdmissionPrint = async (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={2.2}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={2.2}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="رقم المرجع"
@@ -4011,8 +4012,8 @@ const openAdmissionPrint = async (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={1.9}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={1.9}>
+                  <TextField sx={uiLayout.formFieldSx}
                     fullWidth
                     size="small"
                     label="تاريخ الحوالة"
@@ -4024,8 +4025,8 @@ const openAdmissionPrint = async (printData) => {
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={3}>
-                  <FormControl fullWidth size="small">
+                <Grid item xs={12} sm={6} md={3}>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                     <InputLabel>منصة التعارف</InputLabel>
                     <Select
                       label="منصة التعارف"
@@ -4058,13 +4059,13 @@ const openAdmissionPrint = async (printData) => {
                       loadBanks(bankSearch);
                       setBankDialogOpen(true);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       height: isPhone ? 31 : isTablet ? 35 : 40,
                       borderRadius: isCompact ? 1.3 : 2,
-                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       fontWeight: 1000,
                       "& .MuiButton-startIcon": { ml: 1, mr: 0 }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     اختيار بنك
                   </Button>
@@ -4087,7 +4088,7 @@ const openAdmissionPrint = async (printData) => {
                   mb: isCompact ? 0.4 : 1,
                   fontWeight: 1000,
                   color: textColor,
-                  fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem"
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1rem"
                 }}
               >
                 5) المرفقات المطلوبة
@@ -4130,7 +4131,7 @@ const openAdmissionPrint = async (printData) => {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
             py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
             gap: isCompact ? 0.4 : 1,
@@ -4140,16 +4141,16 @@ const openAdmissionPrint = async (printData) => {
 
             "& .MuiButton-root": {
               minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
-              fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={handleSave}
             variant="contained"
             startIcon={<SaveIcon />}
             disabled={saving}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 1000,
               px: isPhone ? 1.2 : isTablet ? 1.6 : 4,
@@ -4159,7 +4160,7 @@ const openAdmissionPrint = async (printData) => {
                 ml: 1,
                 mr: 0
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             {saving ? "جاري الحفظ..." : "حفظ طلب الالتحاق"}
           </Button>
@@ -4167,11 +4168,11 @@ const openAdmissionPrint = async (printData) => {
           <Button
             onClick={onClose}
             variant="outlined"
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 1000,
               px: isPhone ? 1 : isTablet ? 1.4 : 4
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -4184,7 +4185,7 @@ const openAdmissionPrint = async (printData) => {
         fullWidth
         maxWidth="sm"
         fullScreen={isPhone}
-        sx={{ zIndex: 1850 }}
+        sx={uiLayout.withUiSx({ zIndex: 1850 }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,
@@ -4200,15 +4201,15 @@ const openAdmissionPrint = async (printData) => {
             fontWeight: 1000,
             py: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
             px: isPhone ? 0.7 : isTablet ? 1 : 2,
-            fontSize: isPhone ? "0.66rem" : isTablet ? "0.78rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.78rem" : undefined
           }}
         >
           قائمة البنوك
         </DialogTitle>
 
         <DialogContent sx={{ p: isPhone ? 0.4 : isTablet ? 0.65 : 2 }}>
-          <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-            <TextField
+          <Stack direction="row" spacing={1} sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.filterBarSx)}>
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               fullWidth
               size="small"
               label="بحث"
@@ -4222,12 +4223,12 @@ const openAdmissionPrint = async (printData) => {
             <Button
               variant="contained"
               onClick={() => loadBanks(bankSearch)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderRadius: 2,
                 fontWeight: 900,
                 backgroundColor: primaryColor,
                 "&:hover": { backgroundColor: primaryDark }
-              }}
+              }, uiLayout.buttonSx)}
             >
               بحث
             </Button>
@@ -4238,24 +4239,24 @@ const openAdmissionPrint = async (printData) => {
               <CircularProgress />
             </Box>
           ) : (
-            <Box sx={{ height: isPhone ? "72dvh" : isTablet ? "62dvh" : 450 }}>
+            <Box sx={uiLayout.withUiSx({ height: isPhone ? "72dvh" : isTablet ? "62dvh" : 450 }, uiLayout.tableContainerSx)}>
               <DataGrid
                 rows={banks}
                 columns={bankColumns}
                 density="compact"
                 disableRowSelectionOnClick
                 hideFooter
-                sx={gridSx}
+                sx={uiLayout.withUiSx(gridSx, uiLayout.dataGridSx)}
               />
             </Box>
           )}
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           <Button
             variant="outlined"
             onClick={() => setBankDialogOpen(false)}
-            sx={{ borderRadius: 2, fontWeight: 1000 }}
+            sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 1000 }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

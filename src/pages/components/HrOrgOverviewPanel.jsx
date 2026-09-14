@@ -1,3 +1,5 @@
+import * as uiLayout from '../../components/common/uiLayout';
+import '../rtl-forms-fix.css';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -95,7 +97,7 @@ function Metric({ title, value, icon, tone = "default", onClick }) {
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
         <Box>
-          <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>{title}</Typography>
+          <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{title}</Typography>
           <Typography sx={{ fontWeight: 1000, fontSize: 22, color: primaryDark }}>{value ?? 0}</Typography>
         </Box>
         <Box sx={{ color: primary }}>{icon}</Box>
@@ -114,7 +116,7 @@ function UnitCard({ row, onOpen }) {
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={1}>
         <Box sx={{ minWidth: 0 }}>
           <Typography sx={{ fontWeight: 1000, color: primaryDark }}>{row.unitName}</Typography>
-          <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>{unitTypeName(row.unitType)}</Typography>
+          <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{unitTypeName(row.unitType)}</Typography>
         </Box>
         <Chip size="small" label={`${row.totalEmployees || 0} موظف`} />
       </Stack>
@@ -126,7 +128,7 @@ function UnitCard({ row, onOpen }) {
         <Chip size="small" color="secondary" variant="outlined" label={`إذن ${row.permissionToday || 0}`} />
       </Stack>
       {(row.managers || []).length > 0 && (
-        <Typography sx={{ fontSize: 10.5, color: "text.secondary", mt: 1 }}>
+        <Typography sx={{ fontSize: 12, color: "text.secondary", mt: 1 }}>
           المسؤولون: {(row.managers || []).map((m) => m.managerName).join("، ")}
         </Typography>
       )}
@@ -245,11 +247,11 @@ export default function HrOrgOverviewPanel({ userGuid }) {
               <AccountTreeRoundedIcon sx={{ color: primary }} />
               <Typography sx={{ fontWeight: 1000, fontSize: 18, color: primaryDark }}>نظرتي الإدارية اليوم</Typography>
             </Stack>
-            <Typography sx={{ fontSize: 10.5, color: "text.secondary", mt: 0.4 }}>
+            <Typography sx={{ fontSize: 12, color: "text.secondary", mt: 0.4 }}>
               الرؤية ناتجة من الهيكل الإداري الموحد؛ اضغط على أي وحدة للنزول للتفاصيل.
             </Typography>
           </Box>
-          <Button size="small" variant="outlined" onClick={load}>تحديث النظرة</Button>
+          <Button sx={uiLayout.buttonSx} size="small" variant="outlined" onClick={load}>تحديث النظرة</Button>
         </Stack>
       </Paper>
 
@@ -275,19 +277,19 @@ export default function HrOrgOverviewPanel({ userGuid }) {
                 <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" gap={1} alignItems={{ md: "center" }}>
                   <Box>
                     <Typography sx={{ fontWeight: 900 }}>{row.employeeName}</Typography>
-                    <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>
+                    <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
                       {row.stepName || "موافقة"} • {row.permissionDate ? String(row.permissionDate).slice(0, 10) : "-"} • {row.reason || "بدون سبب"}
                     </Typography>
                   </Box>
-                  <Stack direction="row" spacing={0.6}>
-                    <Button
+                  <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.6}>
+                    <Button sx={uiLayout.buttonSx}
                       size="small"
                       color="error"
                       variant="outlined"
                       disabled={decisionLoading === row.permissionGuid}
                       onClick={() => decidePermission(row, "REJECT")}
                     >رفض</Button>
-                    <Button
+                    <Button sx={uiLayout.buttonSx}
                       size="small"
                       color="success"
                       variant="contained"
@@ -310,14 +312,14 @@ export default function HrOrgOverviewPanel({ userGuid }) {
         {!topUnits.length && <Alert severity="info">النطاق الإداري موجود ولكن لا توجد وحدات تابعة أو أعضاء حتى الآن.</Alert>}
       </Paper>
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="lg" dir="rtl">
+      <Dialog sx={uiLayout.dialogLayoutSx} open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="lg" dir="rtl">
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={0.6} alignItems="center">
               {unitStack.length > 1 && <IconButton onClick={goBack}><ArrowBackRoundedIcon /></IconButton>}
               <Box>
                 <Typography sx={{ fontWeight: 1000 }}>{unitData?.unit?.unitName || unitStack.at(-1)?.unitName || "تفاصيل الوحدة"}</Typography>
-                <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>
+                <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
                   {unitStack.map((x) => x.unitName).join(" ← ")}
                 </Typography>
               </Box>
@@ -347,13 +349,13 @@ export default function HrOrgOverviewPanel({ userGuid }) {
 
               <Box>
                 <Typography sx={{ fontWeight: 950, mb: 0.8 }}>حالة الفريق اليوم</Typography>
-                <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 440 }}>
+                <TableContainer component={Paper} variant="outlined" sx={uiLayout.withUiSx({ maxHeight: 440 }, uiLayout.tableContainerSx)}>
                   <Table size="small" stickyHeader>
                     <TableHead><TableRow><TableCell>الموظف</TableCell><TableCell>المسمى</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell></TableRow></TableHead>
                     <TableBody>
                       {(unitData?.team || []).map((row) => (
                         <TableRow key={row.employeeGuid} hover>
-                          <TableCell><Typography sx={{ fontWeight: 900, fontSize: 11 }}>{row.employeeName}</Typography><Typography sx={{ fontSize: 9.5, color: "text.secondary" }}>{row.employeeCode}</Typography></TableCell>
+                          <TableCell><Typography sx={{ fontWeight: 900, fontSize: 12 }}>{row.employeeName}</Typography><Typography sx={{ fontSize: 12, color: "text.secondary" }}>{row.employeeCode}</Typography></TableCell>
                           <TableCell>{row.jobTitleName || "-"}</TableCell>
                           <TableCell><Chip size="small" color={statusColor(row.status)} label={statusName(row.status)} /></TableCell>
                           <TableCell>{fmtTime(row.checkInAt)}</TableCell>
@@ -368,7 +370,7 @@ export default function HrOrgOverviewPanel({ userGuid }) {
             </Stack>
           )}
         </DialogContent>
-        <DialogActions><Button onClick={() => setDialogOpen(false)}>إغلاق</Button></DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={() => setDialogOpen(false)}>إغلاق</Button></DialogActions>
       </Dialog>
     </Box>
   );

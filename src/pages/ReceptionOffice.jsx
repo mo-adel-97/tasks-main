@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -298,7 +300,7 @@ const HeaderButton = ({ icon, label, onClick, color = primaryColor }) => (
     variant="outlined"
     startIcon={icon}
     onClick={onClick}
-    sx={{
+    sx={uiLayout.withUiSx({
       height: { xs: 42, sm: 46 },
       minWidth: { xs: 0, sm: 125 },
       width: { xs: "100%", sm: "auto" },
@@ -318,7 +320,7 @@ const HeaderButton = ({ icon, label, onClick, color = primaryColor }) => (
         backgroundColor: color === accentColor ? "#fff4f4" : "#f0faf5",
         boxShadow: "0 10px 24px rgba(5,117,70,0.14)"
       }
-    }}
+    }, uiLayout.buttonSx)}
   >
     {label}
   </Button>
@@ -418,7 +420,7 @@ const ComingSoonMenuItem = ({ icon, label }) => (
             size="small"
             sx={{
               height: 20,
-              fontSize: "0.68rem",
+              fontSize: "0.75rem",
               fontWeight: 950,
               color: "#777",
               backgroundColor: "#eeeeee",
@@ -728,7 +730,7 @@ const OldStudentStatementDialog = ({
   );
 
   return (
-    <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="xl" fullWidth dir="rtl">
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={loading ? undefined : onClose} maxWidth="xl" fullWidth dir="rtl">
       <DialogTitle sx={{ fontWeight: 950, color: primaryColor }}>كشف حساب سابق</DialogTitle>
       <DialogContent dividers>
         {loading ? (
@@ -769,12 +771,12 @@ const OldStudentStatementDialog = ({
           </Stack>
         ) : null}
       </DialogContent>
-      <DialogActions sx={{ p: { xs: 1, sm: 2 }, justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" }, gap: 1, "& .MuiButton-root": { width: { xs: "100%", sm: "auto" } } }}>
+      <DialogActions sx={uiLayout.withUiSx({ p: { xs: 1, sm: 2 }, justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" }, gap: 1, "& .MuiButton-root": { width: { xs: "100%", sm: "auto" } } }, uiLayout.dialogActionsSx)}>
         <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint} disabled={!data || loading}
-          sx={{ backgroundColor: primaryColor, fontWeight: 900 }}>
+          sx={uiLayout.withUiSx({ backgroundColor: primaryColor, fontWeight: 900 }, uiLayout.buttonSx)}>
           طباعة
         </Button>
-        <Button onClick={onClose} disabled={loading} sx={{ color: accentColor, fontWeight: 900 }}>إغلاق</Button>
+        <Button onClick={onClose} disabled={loading} sx={uiLayout.withUiSx({ color: accentColor, fontWeight: 900 }, uiLayout.buttonSx)}>إغلاق</Button>
       </DialogActions>
     </Dialog>
   );
@@ -2263,7 +2265,7 @@ const handleAcceptOrder = (row) => {
             variant="contained"
             endIcon={<MoreVertIcon />}
             onClick={(event) => handleOpenActionMenu(event, params.row)}
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: 95,
               height: 32,
               borderRadius: 999,
@@ -2276,7 +2278,7 @@ const handleAcceptOrder = (row) => {
                 boxShadow: "0 8px 20px rgba(5,117,70,0.28)"
               },
               "& .MuiButton-endIcon": { ml: 0, mr: 0.5 }
-            }}
+            }, uiLayout.buttonSx)}
           >
             الإجراءات
           </Button>
@@ -2388,7 +2390,7 @@ const handleAcceptOrder = (row) => {
             sx={{
               width: "100%",
               fontWeight: 900,
-              fontSize: isPhone ? "0.48rem" : isTablet ? "0.58rem" : "0.72rem",
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
               lineHeight: 1.2,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -2412,7 +2414,7 @@ const handleAcceptOrder = (row) => {
         <Typography
           sx={{
             fontWeight: 900,
-            fontSize: isPhone ? "0.46rem" : isTablet ? "0.56rem" : "0.7rem",
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
             whiteSpace: "nowrap"
           }}
         >
@@ -2433,7 +2435,7 @@ const handleAcceptOrder = (row) => {
             sx={{
               width: "100%",
               fontWeight: 900,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.56rem" : "0.68rem",
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
               lineHeight: 1.2,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -2490,7 +2492,7 @@ const handleAcceptOrder = (row) => {
           sx={{
             width: "100%",
             fontWeight: 900,
-            fontSize: isPhone ? "0.48rem" : "0.58rem",
+            fontSize: isPhone ? "0.75rem" : "0.75rem",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -2553,12 +2555,12 @@ const handleAcceptOrder = (row) => {
         overflowX: "hidden",
         '& .MuiTypography-h3': { fontSize: isDesktop ? undefined : { xs: '0.86rem', sm: '1rem', md: '1.15rem' } },
         '& .MuiTypography-h4': { fontSize: isDesktop ? undefined : { xs: '0.78rem', sm: '0.9rem', md: '1.05rem' } },
-        '& .MuiTypography-h5': { fontSize: isDesktop ? undefined : { xs: '0.68rem', sm: '0.8rem', md: '0.94rem' } },
-        '& .MuiTypography-h6': { fontSize: isDesktop ? undefined : { xs: '0.58rem', sm: '0.68rem', md: '0.8rem' } },
-        '& .MuiTypography-body1': { fontSize: isDesktop ? undefined : { xs: '0.50rem', sm: '0.58rem', md: '0.68rem' } },
-        '& .MuiTypography-body2': { fontSize: isDesktop ? undefined : { xs: '0.46rem', sm: '0.54rem', md: '0.62rem' } },
-        '& .MuiButton-root': { fontSize: isDesktop ? undefined : { xs: '0.48rem', sm: '0.56rem', md: '0.64rem' } },
-        '& .MuiChip-root': { fontSize: isDesktop ? undefined : { xs: '0.42rem', sm: '0.5rem', md: '0.58rem' } }
+        '& .MuiTypography-h5': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: '0.8rem', md: '0.94rem' } },
+        '& .MuiTypography-h6': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: '0.8rem' } },
+        '& .MuiTypography-body1': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } },
+        '& .MuiTypography-body2': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } },
+        '& .MuiButton-root': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } },
+        '& .MuiChip-root': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } }
       }}
     >
       {!isDesktop && (
@@ -2615,7 +2617,7 @@ const handleAcceptOrder = (row) => {
               sx={{
                 flex: 1,
                 fontWeight: 900,
-                fontSize: { xs: "0.72rem", sm: "0.8rem", md: "0.88rem" },
+                fontSize: { xs: "0.75rem", sm: "0.8rem", md: "0.88rem" },
                 color: "#17372b",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -2734,54 +2736,8 @@ const handleAcceptOrder = (row) => {
               direction="row"
               spacing={isDesktop ? 1.2 : 0}
               alignItems="center"
-              sx={{
-                direction: "rtl",
-
-                // الديسكتوب يرجع Flex عادي زي الشكل القديم.
-                // الموبايل والتابلت فقط يستخدموا Grid من 3 أزرار.
-                display: isDesktop ? "flex" : "grid",
-                gridTemplateColumns: isDesktop
-                  ? "none"
-                  : "repeat(3, minmax(0, 1fr))",
-
-                width: isDesktop ? "auto" : "100%",
-                gap: isDesktop
-                  ? 0
-                  : { xs: 0.35, sm: 0.55, md: 0.7 },
-
-                "& > *": {
-                  width: isDesktop ? "auto" : "100%"
-                },
-
-                "& .MuiButton-root": {
-                  minWidth: isDesktop ? 125 : 0,
-                  width: isDesktop ? "auto" : "100%",
-                  height: isDesktop
-                    ? 46
-                    : { xs: 30, sm: 33, md: 36 },
-
-                  px: isDesktop
-                    ? 1.5
-                    : { xs: 0.35, sm: 0.55, md: 0.75 },
-
-                  fontSize: isDesktop
-                    ? "0.82rem"
-                    : { xs: "0.47rem", sm: "0.55rem", md: "0.63rem" },
-
-                  whiteSpace: "nowrap"
-                },
-
-                "& .MuiButton-startIcon": {
-                  mr: isDesktop ? 0.5 : 0.2,
-                  ml: 0
-                },
-
-                "& .MuiSvgIcon-root": {
-                  fontSize: isDesktop
-                    ? 18
-                    : { xs: 14, sm: 16, md: 18 }
-                }
-              }}
+              sx={{ ...uiLayout.actionBarSx, width: { xs: '100%', md: 'auto' },
+          '& > .MuiButton-root': { flex: { xs: '1 1 120px', md: '0 0 auto' }, width: 'auto', minHeight: 44, px: 2, fontSize: '0.875rem' } }}
             >
               <HeaderButton
                 label="طالب جديد"
@@ -2828,7 +2784,7 @@ const handleAcceptOrder = (row) => {
                   row
                   value={searchType}
                   onChange={(e) => setSearchType(e.target.value)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     justifyContent: "flex-start",
                     direction: "rtl",
                     gap: isDesktop ? 1 : { xs: 0.25, sm: 0.45, md: 0.65 },
@@ -2842,9 +2798,9 @@ const handleAcceptOrder = (row) => {
                       fontSize: isDesktop ? undefined : { xs: 16, sm: 18, md: 20 }
                     },
                     "& .MuiFormControlLabel-label": {
-                      fontSize: isDesktop ? undefined : { xs: "0.49rem", sm: "0.57rem", md: "0.65rem" }
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
                     }
-                  }}
+                  }, uiLayout.radioGroupSx)}
                 >
                   <FormControlLabel
                     value="nationalId"
@@ -2903,25 +2859,25 @@ const handleAcceptOrder = (row) => {
     transformOrigin: "top left",
 
     fontSize: isPhone
-      ? "0.55rem"
+      ? "0.75rem"
       : isTablet
-        ? "0.65rem"
+        ? "0.75rem"
         : undefined,
   }
-}}
+, shrink: true }}
                   inputProps={{
   style: {
     textAlign: "right",
     fontWeight: 900,
     direction: "rtl",
     fontSize: isPhone
-      ? "0.72rem"
+      ? "0.75rem"
       : isTablet
         ? "0.82rem"
         : "1rem",
   }
 }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor: whiteColor,
                     borderRadius: 3,
                     direction: "rtl",
@@ -2937,13 +2893,13 @@ const handleAcceptOrder = (row) => {
                     "& legend": {
                       textAlign: "start"
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
               </Grid>
 
               <Grid item xs={12} md={4} sx={{ width: "100%" }}>
                 <Box
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     direction: "rtl",
                     width: "100%",
 
@@ -2967,10 +2923,10 @@ const handleAcceptOrder = (row) => {
                       height: isDesktop ? 40 : { xs: 30, sm: 33, md: 36 },
                       fontSize: isDesktop
                         ? "0.82rem"
-                        : { xs: "0.47rem", sm: "0.55rem", md: "0.63rem" },
+                        : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       whiteSpace: "nowrap"
                     }
-                  }}
+                  }, uiLayout.actionBarSx)}
                 >
                   <Typography
                     sx={{
@@ -2981,7 +2937,7 @@ const handleAcceptOrder = (row) => {
                       minWidth: isDesktop ? 120 : "auto",
                       fontSize: isDesktop
                         ? "0.9rem"
-                        : { xs: "0.48rem", sm: "0.56rem", md: "0.64rem" },
+                        : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       textAlign: "center"
                     }}
                   >
@@ -3013,7 +2969,7 @@ const handleAcceptOrder = (row) => {
                     }
                     disabled={loading}
                     onClick={handleSearch}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: isDesktop ? 110 : 0,
                       borderRadius: 2,
                       fontWeight: 900,
@@ -3028,7 +2984,7 @@ const handleAcceptOrder = (row) => {
                         background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`,
                         boxShadow: "0 10px 24px rgba(5,117,70,0.28)"
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     بحث
                   </Button>
@@ -3036,7 +2992,7 @@ const handleAcceptOrder = (row) => {
                   <Button
                     variant="outlined"
                     onClick={handleRefresh}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: isDesktop ? 95 : 0,
                       borderRadius: 2,
                       fontWeight: 900,
@@ -3047,7 +3003,7 @@ const handleAcceptOrder = (row) => {
                         borderColor: accentColor,
                         backgroundColor: "#fff4f4"
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     مسح
                   </Button>
@@ -3068,9 +3024,9 @@ const handleAcceptOrder = (row) => {
   textAlign: "start",
 
   fontSize: isPhone
-    ? "0.52rem"
+    ? "0.75rem"
     : isTablet
-      ? "0.62rem"
+      ? "0.75rem"
       : undefined,
 
   py: isPhone ? 0.25 : isTablet ? 0.4 : undefined,
@@ -3114,12 +3070,12 @@ const handleAcceptOrder = (row) => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               width: "100%",
               overflowX: isDesktop ? "auto" : "hidden",
               WebkitOverflowScrolling: "touch",
               minWidth: 0
-            }}
+            }, uiLayout.tableContainerSx)}
           >
           <DataGrid
             rows={showOldGrid ? oldStudents : students}
@@ -3150,7 +3106,7 @@ const handleAcceptOrder = (row) => {
                 labelRowsPerPage: "عدد الصفوف"
               }
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               border: "none",
               width: "100%",
               maxWidth: "100%",
@@ -3163,7 +3119,7 @@ const handleAcceptOrder = (row) => {
               },
 
               "& .MuiDataGrid-virtualScroller": {
-                overflowX: "hidden !important"
+                overflowX: "auto"
               },
 
               "& .MuiDataGrid-columnHeaders": {
@@ -3175,7 +3131,7 @@ const handleAcceptOrder = (row) => {
 
               "& .MuiDataGrid-columnHeaderTitle": {
                 fontWeight: 950,
-                fontSize: isDesktop ? "0.82rem" : { xs: "0.43rem", sm: "0.52rem", md: "0.60rem" },
+                fontSize: isDesktop ? "0.82rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                 whiteSpace: "normal",
                 lineHeight: 1.2,
                 textAlign: "center",
@@ -3187,7 +3143,7 @@ const handleAcceptOrder = (row) => {
                 fontWeight: 800,
                 outline: "none !important",
                 px: isDesktop ? 0.5 : { xs: 0.15, sm: 0.35, md: 0.45 },
-                fontSize: isDesktop ? undefined : { xs: "0.44rem", sm: "0.53rem", md: "0.61rem" },
+                fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                 overflow: "hidden"
               },
 
@@ -3202,7 +3158,7 @@ const handleAcceptOrder = (row) => {
               "& .MuiDataGrid-footerContainer": {
                 direction: "rtl"
               }
-            }}
+            }, uiLayout.dataGridSx)}
           />
 
           </Box>        </Paper>
@@ -3260,7 +3216,7 @@ const handleAcceptOrder = (row) => {
           <Typography
             sx={{
               fontWeight: 950,
-              fontSize: isDesktop ? "0.92rem" : { xs: "0.62rem", sm: "0.68rem", md: "0.74rem" },
+              fontSize: isDesktop ? "0.92rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               lineHeight: 1.2,
               textAlign: "start"
             }}
@@ -3272,7 +3228,7 @@ const handleAcceptOrder = (row) => {
             sx={{
               mt: isDesktop ? 0.2 : 0.1,
               opacity: 0.9,
-              fontSize: isDesktop ? "0.72rem" : { xs: "0.48rem", sm: "0.54rem", md: "0.6rem" },
+              fontSize: isDesktop ? "0.75rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               fontWeight: 800,
               lineHeight: 1.25,
               textAlign: "start",
@@ -3364,7 +3320,7 @@ const handleAcceptOrder = (row) => {
         </Paper>
       </Backdrop>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={detailsOpen}
         onClose={() => !detailsLoading && setDetailsOpen(false)}
         fullWidth
@@ -3418,8 +3374,8 @@ const handleAcceptOrder = (row) => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ px: 2, py: 1.5 }}>
-          <Button onClick={() => setDetailsOpen(false)} disabled={detailsLoading} sx={{ fontWeight: 900, color: "#c62828" }}>
+        <DialogActions sx={uiLayout.withUiSx({ px: 2, py: 1.5 }, uiLayout.dialogActionsSx)}>
+          <Button onClick={() => setDetailsOpen(false)} disabled={detailsLoading} sx={uiLayout.withUiSx({ fontWeight: 900, color: "#c62828" }, uiLayout.buttonSx)}>
             إغلاق
           </Button>
         </DialogActions>

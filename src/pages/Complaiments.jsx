@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import deepmerge from '@mui/utils/deepmerge';
 import { rtlComponents } from '../config/rtlComponents';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -752,7 +754,7 @@ const Complaints = () => {
               />
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-              <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+              <FormControl variant="outlined" sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)}>
                 <InputLabel>عدد الصفوف</InputLabel>
                 <Select
                   value={currentRowsPerPage}
@@ -806,7 +808,7 @@ const Complaints = () => {
   };
 
   const renderAddComplaintDialog = () => (
-    <Dialog 
+    <Dialog sx={uiLayout.dialogLayoutSx} 
       open={openDialog} 
       onClose={() => setOpenDialog(false)}
       maxWidth="md"
@@ -830,8 +832,8 @@ const Complaints = () => {
         </Box>
       </DialogTitle>
       <DialogContent dividers sx={{ py: 3, bgcolor: '#f8fbf9' }}>
-        <Box component="form" onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ mb: 3 }}>
+        <Box sx={uiLayout.formGridSx} component="form" onSubmit={handleSubmit}>
+          <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}>
             <InputLabel>الشكوى من</InputLabel>
             <Select
               name="complaintFromGuid"
@@ -853,7 +855,7 @@ const Complaints = () => {
             </Select>
           </FormControl>
           
-          <FormControl fullWidth sx={{ mb: 3 }}>
+          <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}>
             <InputLabel>الشكوى إلى</InputLabel>
             <Select
               name="complaintToGuid"
@@ -875,18 +877,18 @@ const Complaints = () => {
             </Select>
           </FormControl>
           
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             label="عنوان الشكوى"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
             required
-            sx={{ mb: 3 }}
+            sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
             variant="outlined"
           />
           
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             label="تفاصيل الشكوى"
             name="details"
@@ -895,17 +897,17 @@ const Complaints = () => {
             required
             multiline
             rows={6}
-            sx={{ mb: 3 }}
+            sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
             variant="outlined"
           />
         </Box>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, bgcolor: '#f8fbf9' }}>
+      <DialogActions sx={uiLayout.withUiSx({ px: 3, py: 2, bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
         <Button 
           onClick={() => setOpenDialog(false)}
           color="error"
           variant="outlined"
-          sx={{ borderRadius: 2 }}
+          sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
         >
           إلغاء
         </Button>
@@ -921,7 +923,7 @@ const Complaints = () => {
   );
 
   const renderStatusDialog = () => (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={statusDialogOpen}
       onClose={handleStatusDialogClose}
       maxWidth="sm"
@@ -974,8 +976,8 @@ const Complaints = () => {
           onChange={(e) => setComment(e.target.value)}
         />
       </DialogContent>
-      <DialogActions sx={{ bgcolor: '#f8fbf9' }}>
-        <Button onClick={handleStatusDialogClose} color="error" variant="outlined" sx={{ borderRadius: 2 }}>
+      <DialogActions sx={uiLayout.withUiSx({ bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
+        <Button onClick={handleStatusDialogClose} color="error" variant="outlined" sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}>
           إلغاء
         </Button>
         <GradientButton 
@@ -990,7 +992,7 @@ const Complaints = () => {
   );
 
   const renderCommentDialog = () => (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={commentDialogOpen}
       onClose={handleCommentDialogClose}
       maxWidth="sm"
@@ -1020,7 +1022,7 @@ const Complaints = () => {
           {selectedComment || 'لا يوجد تعليق'}
         </Typography>
       </DialogContent>
-      <DialogActions sx={{ bgcolor: '#f8fbf9' }}>
+      <DialogActions sx={uiLayout.withUiSx({ bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
         <GradientButton onClick={handleCommentDialogClose}>
           إغلاق
         </GradientButton>
@@ -1029,7 +1031,7 @@ const Complaints = () => {
   );
 
   const renderDetailsDialog = () => (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={detailsDialogOpen}
       onClose={handleDetailsDialogClose}
       maxWidth="md"
@@ -1060,7 +1062,7 @@ const Complaints = () => {
           {selectedDetails}
         </Typography>
       </DialogContent>
-      <DialogActions sx={{ bgcolor: '#f8fbf9' }}>
+      <DialogActions sx={uiLayout.withUiSx({ bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
         <GradientButton onClick={handleDetailsDialogClose}>
           إغلاق
         </GradientButton>

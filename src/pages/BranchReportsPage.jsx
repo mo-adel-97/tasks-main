@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import deepmerge from '@mui/utils/deepmerge';
 import { rtlComponents } from '../config/rtlComponents';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -331,7 +333,7 @@ const BranchReportsPage = () => {
         {title}
         <Chip label={items.length} size="small" sx={{ ml: 1 }} />
       </Typography>
-      <TableContainer sx={{ maxHeight: 300 }}>
+      <TableContainer sx={uiLayout.withUiSx({ maxHeight: 300 }, uiLayout.tableContainerSx)}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -414,14 +416,14 @@ const BranchReportsPage = () => {
               >
                 {/* Header Section - Compact */}
                 <Box sx={{ mb: 3 }}>
-                  <Box sx={{ 
+                  <Box sx={uiLayout.withUiSx({ 
                     display: 'flex', 
                     flexDirection: isMobile ? 'column' : 'row',
                     justifyContent: 'space-between',
                     alignItems: isMobile ? 'flex-start' : 'center',
                     gap: isMobile ? 2 : 0,
                     mb: 2
-                  }}>
+                  }, uiLayout.pageHeaderSx)}>
                     <Typography 
                       variant={isMobile ? "h5" : "h4"} 
                       component="h1" 
@@ -445,24 +447,24 @@ const BranchReportsPage = () => {
                       تقارير الفروع
                     </Typography>
                     
-                    <Box sx={{ 
+                    <Box sx={uiLayout.withUiSx({ 
                       display: 'flex', 
                       flexDirection: isMobile ? 'column' : 'row',
                       gap: 2,
                       width: isMobile ? '100%' : 'auto'
-                    }}>
+                    }, uiLayout.filterBarSx)}>
                       <Button
   variant="contained"
   startIcon={<CloudDownloadIcon />}
   onClick={() => setExportOpen(true)}
-  sx={{
+  sx={uiLayout.withUiSx({
     backgroundColor: customTheme.palette.primary.main,
     "&:hover": { backgroundColor: customTheme.palette.primary.dark },
     borderRadius: 2,
     height: isMobile ? "48px" : "44px",
     fontWeight: 800,
     whiteSpace: "nowrap",
-  }}
+  }, uiLayout.buttonSx)}
 >
   تصدير التقارير PDF
 </Button>
@@ -478,9 +480,9 @@ const BranchReportsPage = () => {
                           }
                         }}
                         renderInput={(params) => (
-                          <TextField 
+                          <TextField InputLabelProps={{ shrink: true }} 
                             {...params}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               '& .MuiInputBase-root': { 
                                 height: isMobile ? '48px' : '44px',
                                 fontSize: isMobile ? '14px' : '13px',
@@ -493,7 +495,7 @@ const BranchReportsPage = () => {
                                   borderColor: customTheme.palette.primary.main,
                                 },
                               }
-                            }}
+                            }, uiLayout.formFieldSx)}
                             size="small"
                           />
                         )}
@@ -501,7 +503,7 @@ const BranchReportsPage = () => {
                       />
                       
                       {!selectedBranch && (
-                        <TextField
+                        <TextField InputLabelProps={{ shrink: true }}
                           variant="outlined"
                           placeholder="ابحث عن فرع..."
                           value={searchText}
@@ -514,7 +516,7 @@ const BranchReportsPage = () => {
                               borderRadius: 2
                             }
                           }}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             minWidth: isMobile ? '100%' : 220,
                             maxWidth: isMobile ? '100%' : 220,
                             '& .MuiOutlinedInput-root': {
@@ -522,7 +524,7 @@ const BranchReportsPage = () => {
                                 borderColor: customTheme.palette.primary.main,
                               },
                             }
-                          }}
+                          }, uiLayout.formFieldSx)}
                           size="small"
                         />
                       )}
@@ -561,7 +563,7 @@ const BranchReportsPage = () => {
                           <Button
                             variant="outlined"
                             onClick={handleBackToList}
-                            sx={{ 
+                            sx={uiLayout.withUiSx({ 
                               mb: 2,
                               borderRadius: 2,
                               borderColor: customTheme.palette.primary.main,
@@ -570,7 +572,7 @@ const BranchReportsPage = () => {
                                 borderColor: customTheme.palette.primary.dark,
                                 backgroundColor: alpha(customTheme.palette.primary.light, 0.1)
                               }
-                            }}
+                            }, uiLayout.buttonSx)}
                             startIcon={<ArrowBackIosIcon sx={{ fontSize: '1rem' }} />}
                             size="small"
                           >
@@ -641,7 +643,7 @@ const BranchReportsPage = () => {
                             حضور الموظفين
                             <Chip label={currentReport.employee_attendance.length} size="small" sx={{ ml: 1, backgroundColor: customTheme.palette.primary.light, color: customTheme.palette.primary.dark }} />
                           </Typography>
-                          <TableContainer sx={{ maxHeight: 400, borderRadius: 1 }}>
+                          <TableContainer sx={uiLayout.withUiSx({ maxHeight: 400, borderRadius: 1 }, uiLayout.tableContainerSx)}>
                             <Table stickyHeader>
                               <TableHead>
                                 <TableRow>
@@ -709,13 +711,13 @@ const BranchReportsPage = () => {
                         <Button
                           variant="contained"
                           onClick={handleBackToList}
-                          sx={{ 
+                          sx={uiLayout.withUiSx({ 
                             mt: 2,
                             backgroundColor: customTheme.palette.primary.main,
                             '&:hover': {
                               backgroundColor: customTheme.palette.primary.dark,
                             }
-                          }}
+                          }, uiLayout.buttonSx)}
                           startIcon={<ArrowBackIosIcon sx={{ fontSize: '1rem' }} />}
                         >
                           العودة إلى قائمة الفروع
@@ -1049,14 +1051,14 @@ const BranchReportsPage = () => {
                       <Box>
                         <TableContainer 
                           component={Paper} 
-                          sx={{ 
+                          sx={uiLayout.withUiSx({ 
                             borderRadius: 2,
                             border: `1px solid ${alpha(customTheme.palette.primary.light, 0.3)}`,
                             boxShadow: `0 4px 12px ${alpha(customTheme.palette.primary.light, 0.1)}`,
                             mb: 2,
                             maxHeight: 'none',
                             overflow: 'visible'
-                          }}
+                          }, uiLayout.tableContainerSx)}
                         >
                           <Table stickyHeader>
                             <TableHead>
@@ -1164,7 +1166,7 @@ const BranchReportsPage = () => {
                                       startIcon={<DescriptionIcon />}
                                       onClick={() => fetchReports(branch.guid)}
                                       disabled={loading || dateLoading || !branchesWithReports.includes(branch.guid)}
-                                      sx={{
+                                      sx={uiLayout.withUiSx({
                                         backgroundColor: branchesWithReports.includes(branch.guid) 
                                           ? customTheme.palette.primary.main 
                                           : alpha(customTheme.palette.grey[400], 0.5),
@@ -1182,7 +1184,7 @@ const BranchReportsPage = () => {
                                           backgroundColor: alpha(customTheme.palette.grey[400], 0.3),
                                           color: alpha(customTheme.palette.text.disabled, 0.5)
                                         }
-                                      }}
+                                      }, uiLayout.buttonSx)}
                                     >
                                       {branchesWithReports.includes(branch.guid) ? 'عرض التقرير' : 'غير متاح'}
                                     </Button>
@@ -1211,12 +1213,12 @@ const BranchReportsPage = () => {
                             <Typography variant="body2" color="textSecondary">
                               الصفوف لكل صفحة:
                             </Typography>
-                            <TextField
+                            <TextField InputLabelProps={{ shrink: true }}
                               select
                               value={rowsPerPage}
                               onChange={handleChangeRowsPerPage}
                               size="small"
-                              sx={{ width: 80 }}
+                              sx={uiLayout.withUiSx({ width: 80 }, uiLayout.formFieldSx)}
                               SelectProps={{
                                 native: true,
                               }}

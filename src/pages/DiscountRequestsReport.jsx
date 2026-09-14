@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -261,11 +263,11 @@ const TextCell = ({
         fontSize: "0.76rem",
         fontWeight: 700,
         "@media (max-width: 599px)": {
-          fontSize: "0.28rem",
+          fontSize: "0.75rem",
           lineHeight: 1.05
         },
         "@media (min-width: 600px) and (max-width: 1599px)": {
-          fontSize: "0.42rem",
+          fontSize: "0.75rem",
           lineHeight: 1.15
         }
       }}
@@ -315,14 +317,14 @@ const StatusChip = ({
         },
         "@media (max-width: 599px)": {
           height: 20,
-          fontSize: "0.26rem",
+          fontSize: "0.75rem",
           "& .MuiChip-label": {
             px: 0.35
           }
         },
         "@media (min-width: 600px) and (max-width: 1599px)": {
           height: 24,
-          fontSize: "0.4rem"
+          fontSize: "0.75rem"
         }
       }}
     />
@@ -341,14 +343,14 @@ const MultiValueFilter = ({
 
   return (
     <Paper elevation={0} sx={{ p: 1.35, borderRadius: 3, border: "1px solid #dce8e2", backgroundColor: "#fff" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mb: 1 }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.pageHeaderSx)}>
         <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#173b2b" }}>{label}</Typography>
-        <Stack direction="row" spacing={0.5}>
-          <Button size="small" startIcon={<DoneAllIcon />} onClick={() => onChange(allSelected ? [] : options)} sx={{ minWidth: 0, fontFamily: "Cairo", fontWeight: 800 }}>
+        <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.5}>
+          <Button size="small" startIcon={<DoneAllIcon />} onClick={() => onChange(allSelected ? [] : options)} sx={uiLayout.withUiSx({ minWidth: 0, fontFamily: "Cairo", fontWeight: 800 }, uiLayout.buttonSx)}>
             {allSelected ? "إلغاء الكل" : "تحديد الكل"}
           </Button>
           {selected.length > 0 && (
-            <Button size="small" color="error" onClick={() => onChange([])} sx={{ minWidth: 0, fontFamily: "Cairo", fontWeight: 800 }}>مسح</Button>
+            <Button size="small" color="error" onClick={() => onChange([])} sx={uiLayout.withUiSx({ minWidth: 0, fontFamily: "Cairo", fontWeight: 800 }, uiLayout.buttonSx)}>مسح</Button>
           )}
         </Stack>
       </Stack>
@@ -371,7 +373,7 @@ const MultiValueFilter = ({
           <Chip {...getTagProps({ index })} key={option} label={option} size="small" sx={{ fontFamily: "Cairo", fontWeight: 700 }} />
         ))}
         renderInput={(params) => (
-          <TextField {...params} size="small" placeholder="ابحث وحدد أكثر من قيمة" helperText={selected.length > 0 ? `تم اختيار ${selected.length} من ${options.length}` : `الكل ظاهر (${options.length})`} sx={{ "& .MuiInputBase-root": { fontFamily: "Cairo" }, "& .MuiFormHelperText-root": { fontFamily: "Cairo", textAlign: "right" } }} />
+          <TextField InputLabelProps={{ shrink: true }} {...params} size="small" placeholder="ابحث وحدد أكثر من قيمة" helperText={selected.length > 0 ? `تم اختيار ${selected.length} من ${options.length}` : `الكل ظاهر (${options.length})`} sx={uiLayout.withUiSx({ "& .MuiInputBase-root": { fontFamily: "Cairo" }, "& .MuiFormHelperText-root": { fontFamily: "Cairo", textAlign: "right" } }, uiLayout.formFieldSx)} />
         )}
       />
     </Paper>
@@ -512,12 +514,12 @@ const PromoStudentsDialog = ({
               params.row
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             fontFamily: "Cairo",
             fontWeight: 900,
             backgroundColor:
               "#057546"
-          }}
+          }, uiLayout.buttonSx)}
         >
           عرض
         </Button>
@@ -526,7 +528,7 @@ const PromoStudentsDialog = ({
   ];
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -618,11 +620,11 @@ const PromoStudentsDialog = ({
 
             <Paper
               elevation={0}
-              sx={{
+              sx={uiLayout.withUiSx({
                 height: 390,
                 border:
                   "1px solid #dce8e2"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={rows}
@@ -638,7 +640,7 @@ const PromoStudentsDialog = ({
                 pageSizeOptions={[
                   25, 50, 100
                 ]}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -649,7 +651,7 @@ const PromoStudentsDialog = ({
                       color: "#173b2b",
                       fontWeight: 900
                     }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Paper>
 
@@ -681,13 +683,13 @@ const PromoStudentsDialog = ({
         )}
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
         <Button
           onClick={onClose}
-          sx={{
+          sx={uiLayout.withUiSx({
             fontFamily: "Cairo",
             fontWeight: 900
-          }}
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -1225,12 +1227,12 @@ const DiscountRequestsReport = () => {
                     true
                   );
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   fontFamily:
                     "Cairo",
                   fontWeight: 900,
                   color: "#057546"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 عرض
               </Button>
@@ -1317,8 +1319,8 @@ const DiscountRequestsReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     fontSize: isPhone
-                      ? "0.29rem"
-                      : "0.44rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     lineHeight: 1.1,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -1654,7 +1656,7 @@ const DiscountRequestsReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: "0.66rem",
+                    xs: "0.75rem",
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
@@ -1704,7 +1706,7 @@ const DiscountRequestsReport = () => {
             useFlexGap
             flexWrap={isDesktop ? "nowrap" : "wrap"}
             alignItems={isDesktop ? "center" : "stretch"}
-            sx={{
+            sx={uiLayout.withUiSx({
               ...(!isDesktop
                 ? {
                     display: "grid",
@@ -1744,8 +1746,8 @@ const DiscountRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.32rem"
-                    : "0.43rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 lineHeight: 1.1
               },
@@ -1761,8 +1763,8 @@ const DiscountRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.31rem"
-                    : "0.42rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
 
@@ -1773,7 +1775,7 @@ const DiscountRequestsReport = () => {
                     : 15
                   : undefined
               }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Stack
               direction="row"
@@ -1800,8 +1802,8 @@ const DiscountRequestsReport = () => {
                     fontSize: isDesktop
                       ? "1.15rem"
                       : isPhone
-                        ? "0.55rem"
-                        : "0.72rem",
+                        ? "0.75rem"
+                        : "0.75rem",
                     fontWeight: 900,
                     color: "#173b2b"
                   }}
@@ -1817,7 +1819,7 @@ const DiscountRequestsReport = () => {
               variant={activeFilterCount > 0 ? "contained" : "outlined"}
               startIcon={<FilterAltIcon />}
               onClick={() => setFilterDialogOpen(true)}
-              sx={{ fontFamily: "Cairo", fontWeight: 800, ...(activeFilterCount > 0 ? { background: "linear-gradient(135deg,#057546,#034d31)" } : {}) }}
+              sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800, ...(activeFilterCount > 0 ? { background: "linear-gradient(135deg,#057546,#034d31)" } : {}) }, uiLayout.buttonSx)}
             >
               فلاتر متقدمة{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
             </Button>
@@ -1828,13 +1830,13 @@ const DiscountRequestsReport = () => {
                 <FileDownloadIcon />
               }
               onClick={exportCsv}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: isPhone
                   ? "1 / -1"
                   : "auto",
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصدير
             </Button>
@@ -1845,10 +1847,10 @@ const DiscountRequestsReport = () => {
                 <RefreshIcon />
               }
               onClick={loadData}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -1872,7 +1874,7 @@ const DiscountRequestsReport = () => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isDesktop
                 ? "repeat(2,minmax(0,1fr)) auto"
@@ -1888,8 +1890,8 @@ const DiscountRequestsReport = () => {
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.4rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiInputBase-root": {
@@ -1901,8 +1903,8 @@ const DiscountRequestsReport = () => {
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.38rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiButton-root": {
@@ -1913,13 +1915,13 @@ const DiscountRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.34rem"
-                    : "0.44rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               }
-            }}
+            }, uiLayout.filterBarSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="من تاريخ"
               value={fromDate}
@@ -1934,7 +1936,7 @@ const DiscountRequestsReport = () => {
               size="small"
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="إلى تاريخ"
               value={toDate}
@@ -1963,12 +1965,12 @@ const DiscountRequestsReport = () => {
               }
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -1977,7 +1979,7 @@ const DiscountRequestsReport = () => {
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             height: isDesktop
               ? "calc(100vh - 240px)"
               : isPhone
@@ -1992,7 +1994,7 @@ const DiscountRequestsReport = () => {
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.13)"
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <DataGrid
             rows={filteredGridRows}
@@ -2062,7 +2064,7 @@ const DiscountRequestsReport = () => {
                   ? "rejected-row"
                   : "pending-row"
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               border: 0,
               direction: "rtl",
               fontFamily: "Cairo",
@@ -2084,8 +2086,8 @@ const DiscountRequestsReport = () => {
                 fontWeight: 900,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.26rem"
-                    : "0.4rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 whiteSpace: !isDesktop
                   ? "nowrap"
@@ -2106,8 +2108,8 @@ const DiscountRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.28rem"
-                    : "0.42rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 justifyContent: !isDesktop
                   ? "center"
@@ -2135,10 +2137,10 @@ const DiscountRequestsReport = () => {
                     "& .MuiDataGrid-virtualScroller": {
                       direction: "rtl",
                       overflowX:
-                        "hidden !important"
+                        "auto"
                     },
                     "& .MuiDataGrid-scrollbar--horizontal": {
-                      display: "none"
+                      display: "block"
                     }
                   }
                 : {}),
@@ -2157,11 +2159,11 @@ const DiscountRequestsReport = () => {
                   backgroundColor:
                     "#fff9ec"
                 }
-            }}
+            }, uiLayout.dataGridSx)}
           />
         </Paper>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={detailsOpen}
           onClose={closeDetails}
           fullWidth
@@ -2276,8 +2278,8 @@ const DiscountRequestsReport = () => {
                           fontWeight: 900,
                           color: "#60756d",
                           fontSize: isPhone
-                            ? "0.38rem"
-                            : "0.49rem"
+                            ? "0.75rem"
+                            : "0.75rem"
                         }}
                       >
                         {label}
@@ -2289,8 +2291,8 @@ const DiscountRequestsReport = () => {
                           fontWeight: 800,
                           color: "#1f2d3d",
                           fontSize: isPhone
-                            ? "0.49rem"
-                            : "0.62rem",
+                            ? "0.75rem"
+                            : "0.75rem",
                           wordBreak:
                             "break-word"
                         }}
@@ -2306,7 +2308,7 @@ const DiscountRequestsReport = () => {
                   spacing={0.5}
                   useFlexGap
                   flexWrap="wrap"
-                  sx={{ mt: 0.8 }}
+                  sx={uiLayout.withUiSx({ mt: 0.8 }, uiLayout.actionBarSx)}
                 >
                   <Button
                     size="small"
@@ -2317,13 +2319,13 @@ const DiscountRequestsReport = () => {
                     onClick={() => {
                       openStatement(detailsRow);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     كشف حساب
                   </Button>
@@ -2335,13 +2337,13 @@ const DiscountRequestsReport = () => {
                     onClick={() =>
                       openAttachments(detailsRow)
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     المرفقات
                   </Button>
@@ -2356,15 +2358,15 @@ const DiscountRequestsReport = () => {
                       setMenuRow(detailsRow);
                       openStatusDialog(detailsRow);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       backgroundColor:
                         "#057546",
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     تنفيذ
                   </Button>
@@ -2381,13 +2383,13 @@ const DiscountRequestsReport = () => {
                         setMenuRow(detailsRow);
                         setPromoDialogOpen(true);
                       }}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         fontFamily: "Cairo",
                         fontWeight: 900,
                         fontSize: isPhone
-                          ? "0.4rem"
-                          : "0.5rem"
-                      }}
+                          ? "0.75rem"
+                          : "0.75rem"
+                      }, uiLayout.buttonSx)}
                     >
                       طلاب الخصم
                     </Button>
@@ -2398,29 +2400,29 @@ const DiscountRequestsReport = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: isPhone ? 1 : 1.5,
               py: isPhone ? 0.7 : 1
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="contained"
               onClick={closeDetails}
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.47rem"
-                  : "0.58rem"
-              }}
+                  ? "0.75rem"
+                  : "0.75rem"
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={filterDialogOpen}
           onClose={() => setFilterDialogOpen(false)}
           fullWidth
@@ -2445,7 +2447,7 @@ const DiscountRequestsReport = () => {
           <DialogTitle sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#173b2b", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
             <Box>
               الفلاتر المتقدمة
-              <Typography component="div" sx={{ mt: 0.35, fontFamily: "Cairo", fontSize: "0.72rem", color: "#708179", fontWeight: 700 }}>
+              <Typography component="div" sx={{ mt: 0.35, fontFamily: "Cairo", fontSize: "0.75rem", color: "#708179", fontWeight: 700 }}>
                 يمكنك تحديد أكثر من حالة أو نوع خصم في الوقت نفسه
               </Typography>
             </Box>
@@ -2460,10 +2462,10 @@ const DiscountRequestsReport = () => {
               <MultiValueFilter label="طلاب الخصم الترويجي" options={filterOptions.hasPromoStudents} value={advancedFilters.hasPromoStudents} onChange={(values) => updateAdvancedFilter("hasPromoStudents", values)} />
             </Box>
           </DialogContent>
-          <DialogActions sx={{ px: 2, py: 1.4 }}>
-            <Button color="error" startIcon={<RestartAltIcon />} onClick={resetAdvancedFilters} disabled={activeFilterCount === 0} sx={{ fontFamily: "Cairo", fontWeight: 800 }}>مسح الفلاتر</Button>
+          <DialogActions sx={uiLayout.withUiSx({ px: 2, py: 1.4 }, uiLayout.dialogActionsSx)}>
+            <Button color="error" startIcon={<RestartAltIcon />} onClick={resetAdvancedFilters} disabled={activeFilterCount === 0} sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800 }, uiLayout.buttonSx)}>مسح الفلاتر</Button>
             <Box sx={{ flex: 1 }} />
-            <Button variant="contained" onClick={() => setFilterDialogOpen(false)} sx={{ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#057546,#034d31)" }}>تطبيق وإغلاق</Button>
+            <Button variant="contained" onClick={() => setFilterDialogOpen(false)} sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#057546,#034d31)" }, uiLayout.buttonSx)}>تطبيق وإغلاق</Button>
           </DialogActions>
         </Dialog>
 
@@ -2553,7 +2555,7 @@ const DiscountRequestsReport = () => {
           }
         />
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={statusDialogOpen}
           onClose={() => {
             if (!savingStatus) {
@@ -2581,8 +2583,8 @@ const DiscountRequestsReport = () => {
           </DialogTitle>
 
           <DialogContent dividers>
-            <Stack spacing={1.5}>
-              <TextField
+            <Stack sx={uiLayout.formGridSx} spacing={1.5}>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 label="حالة التنفيذ"
                 value={selectedStatus}
@@ -2611,7 +2613,7 @@ const DiscountRequestsReport = () => {
                 )}
               </TextField>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 label="ملاحظات"
                 value={statusNotes}
                 onChange={(event) =>
@@ -2645,8 +2647,8 @@ const DiscountRequestsReport = () => {
             </Stack>
           </DialogContent>
 
-          <DialogActions>
-            <Button
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx}
               onClick={() =>
                 setStatusDialogOpen(
                   false
@@ -2677,12 +2679,12 @@ const DiscountRequestsReport = () => {
                     <PlayCircleOutlineIcon />
                   )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 backgroundColor:
                   "#057546"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تأكيد
             </Button>

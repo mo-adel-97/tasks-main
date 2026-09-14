@@ -1,3 +1,5 @@
+import * as uiLayout from '../../components/common/uiLayout';
+import '../rtl-forms-fix.css';
 import { hrChipSx } from "../../components/hrControlStyles";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -133,10 +135,10 @@ function TreeNode({ node, childrenMap, managersByUnit, onEdit, depth = 0 }) {
                   color={m.isPrimary ? "success" : "default"}
                   label={`${m.managerName} • ${roleName(m.managerRole)}${m.isPrimary ? " • أساسي" : ""}`}
                 />
-              )) : <Typography sx={{ fontSize: 11, color: "text.secondary" }}>لا يوجد مسؤول محدد</Typography>}
+              )) : <Typography sx={{ fontSize: 12, color: "text.secondary" }}>لا يوجد مسؤول محدد</Typography>}
             </Stack>
           </Box>
-          <Button size="small" startIcon={<EditRoundedIcon />} onClick={() => onEdit(node)}>
+          <Button sx={uiLayout.buttonSx} size="small" startIcon={<EditRoundedIcon />} onClick={() => onEdit(node)}>
             تعديل الوحدة
           </Button>
         </Stack>
@@ -317,7 +319,7 @@ export default function HrOrganizationDesigner() {
         </Tabs>
         <Stack direction="row" spacing={0.7}>
           <IconButton onClick={loadAll} disabled={loading}><RefreshRoundedIcon /></IconButton>
-          <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => { setUnitForm(emptyUnit()); setUnitOpen(true); }} sx={{ bgcolor: primary }}>
+          <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => { setUnitForm(emptyUnit()); setUnitOpen(true); }} sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}>
             وحدة جديدة
           </Button>
         </Stack>
@@ -342,8 +344,8 @@ export default function HrOrganizationDesigner() {
       {tab === 1 && !loading && (
         <Stack spacing={1}>
           <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 2.5 }}>
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.2fr 1.4fr 1fr auto" }, gap: 1 }}>
-              <FormControl size="small">
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.2fr 1.4fr 1fr auto" }, gap: 1 }, uiLayout.filterBarSx)}>
+              <FormControl sx={uiLayout.formFieldSx} size="small">
                 <InputLabel>الوحدة</InputLabel>
                 <Select label="الوحدة" value={managerForm.orgUnitGuid} onChange={(e) => setManagerForm((x) => ({ ...x, orgUnitGuid: e.target.value }))}>
                   {lookups.units.map((u) => <MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}
@@ -352,8 +354,8 @@ export default function HrOrganizationDesigner() {
               <Autocomplete size="small" options={lookups.employees} getOptionLabel={(o) => `${o.employeeName}${o.jobTitleName ? ` - ${o.jobTitleName}` : ""}`}
                 value={lookups.employees.find((e) => e.employeeGuid === managerForm.managerUserGuid) || null}
                 onChange={(_, v) => setManagerForm((x) => ({ ...x, managerUserGuid: v?.employeeGuid || "" }))}
-                renderInput={(params) => <TextField {...params} label="المسؤول" />} />
-              <FormControl size="small">
+                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="المسؤول" />} />
+              <FormControl sx={uiLayout.formFieldSx} size="small">
                 <InputLabel>الصفة</InputLabel>
                 <Select label="الصفة" value={managerForm.managerRole} onChange={(e) => setManagerForm((x) => ({ ...x, managerRole: e.target.value }))}>
                   <MenuItem value="EXECUTIVE_MANAGER">مدير تنفيذي</MenuItem>
@@ -365,7 +367,7 @@ export default function HrOrganizationDesigner() {
                   <MenuItem value="MANAGER">مسؤول</MenuItem>
                 </Select>
               </FormControl>
-              <Button variant="contained" onClick={saveManager} startIcon={<SupervisorAccountRoundedIcon />}>حفظ المسؤول</Button>
+              <Button sx={uiLayout.buttonSx} variant="contained" onClick={saveManager} startIcon={<SupervisorAccountRoundedIcon />}>حفظ المسؤول</Button>
             </Box>
             <Stack direction="row" flexWrap="wrap" gap={0.6} sx={{ mt: 1 }}>
               {[
@@ -388,7 +390,7 @@ export default function HrOrganizationDesigner() {
                     <Stack key={m.orgUnitManagerGuid} direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} gap={0.7}>
                       <Box>
                         <Typography sx={{ fontWeight: 900 }}>{m.managerName} — {roleName(m.managerRole)}</Typography>
-                        <Typography sx={{ fontSize: 10.5, color: "text.secondary" }}>
+                        <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
                           {m.canViewTeam ? "رؤية الفريق" : "بدون رؤية"} • {m.canApproveLeaves ? "إجازات" : ""} {m.canApprovePermissions ? "• أذونات" : ""} {m.canReviewAttendance ? "• حضور" : ""}
                         </Typography>
                       </Box>
@@ -406,8 +408,8 @@ export default function HrOrganizationDesigner() {
         <Stack spacing={1}>
           <Alert severity="info">العضوية هي التي تحدد مكان الموظف الحقيقي في الهيكل. يمكن نقله لأي وحدة بغض النظر عن الفرع أو القسم القديم.</Alert>
           <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 2.5 }}>
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1.5fr auto auto" }, gap: 1, alignItems: "center" }}>
-              <FormControl size="small">
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1.5fr auto auto" }, gap: 1, alignItems: "center" }, uiLayout.filterBarSx)}>
+              <FormControl sx={uiLayout.formFieldSx} size="small">
                 <InputLabel>الوحدة</InputLabel>
                 <Select label="الوحدة" value={memberUnitGuid} onChange={(e) => setMemberUnitGuid(e.target.value)}>
                   {lookups.units.map((u) => <MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}
@@ -416,9 +418,9 @@ export default function HrOrganizationDesigner() {
               <Autocomplete size="small" options={lookups.employees} getOptionLabel={(o) => `${o.employeeName}${o.jobTitleName ? ` - ${o.jobTitleName}` : ""}`}
                 value={lookups.employees.find((e) => e.employeeGuid === memberEmployeeGuid) || null}
                 onChange={(_, v) => setMemberEmployeeGuid(v?.employeeGuid || "")}
-                renderInput={(params) => <TextField {...params} label="الموظف" />} />
-              <FormControlLabel control={<Checkbox checked={memberPrimary} onChange={(e) => setMemberPrimary(e.target.checked)} />} label="الوحدة الأساسية" />
-              <Button variant="contained" onClick={saveMember} startIcon={<GroupsRoundedIcon />}>ربط الموظف</Button>
+                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="الموظف" />} />
+              <FormControlLabel sx={uiLayout.checkboxFieldSx} control={<Checkbox checked={memberPrimary} onChange={(e) => setMemberPrimary(e.target.checked)} />} label="الوحدة الأساسية" />
+              <Button sx={uiLayout.buttonSx} variant="contained" onClick={saveMember} startIcon={<GroupsRoundedIcon />}>ربط الموظف</Button>
             </Box>
           </Paper>
           {tree.units.map((u) => {
@@ -435,13 +437,13 @@ export default function HrOrganizationDesigner() {
       )}
 
       {tab === 3 && !loading && (
-        <Stack spacing={1}>
+        <Stack sx={uiLayout.filterBarSx} spacing={1}>
           <Alert severity="info">اختَر موظفًا لتشاهد السلسلة الفعلية التي سيستخدمها النظام في الرؤية والموافقات.</Alert>
           <Autocomplete options={lookups.employees} getOptionLabel={(o) => `${o.employeeName}${o.jobTitleName ? ` - ${o.jobTitleName}` : ""}`}
             value={lookups.employees.find((e) => e.employeeGuid === previewEmployeeGuid) || null}
             onChange={(_, v) => { setPreviewEmployeeGuid(v?.employeeGuid || ""); setPreview(null); }}
-            renderInput={(params) => <TextField {...params} label="الموظف" />} />
-          <Button variant="contained" onClick={testEmployee} disabled={!previewEmployeeGuid} startIcon={<AccountTreeRoundedIcon />}>عرض السلسلة الإدارية</Button>
+            renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="الموظف" />} />
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={testEmployee} disabled={!previewEmployeeGuid} startIcon={<AccountTreeRoundedIcon />}>عرض السلسلة الإدارية</Button>
           {preview && <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 2.5 }}>
             <Typography sx={{ fontWeight: 950, mb: 1 }}>السلسلة الإدارية الفعلية</Typography>
             {(preview.chain || []).map((level) => (
@@ -449,7 +451,7 @@ export default function HrOrganizationDesigner() {
                 <Typography sx={{ fontWeight: 900 }}>{level.unitName} <Chip size="small" label={unitTypeName(level.unitType)} /></Typography>
                 <Stack direction="row" gap={0.5} flexWrap="wrap" sx={{ mt: 0.5 }}>
                   {(level.managers || []).map((m) => <Chip key={m.managerUserGuid} label={`${m.managerName} • ${roleName(m.managerRole)}`} color={m.isPrimary ? "success" : "default"} />)}
-                  {!(level.managers || []).length && <Typography sx={{ fontSize: 11, color: "text.secondary" }}>لا يوجد مسؤول في هذا المستوى</Typography>}
+                  {!(level.managers || []).length && <Typography sx={{ fontSize: 12, color: "text.secondary" }}>لا يوجد مسؤول في هذا المستوى</Typography>}
                 </Stack>
               </Box>
             ))}
@@ -457,7 +459,7 @@ export default function HrOrganizationDesigner() {
         </Stack>
       )}
 
-      <Dialog open={unitOpen} onClose={() => setUnitOpen(false)} fullWidth maxWidth="sm" dir="rtl">
+      <Dialog sx={uiLayout.dialogLayoutSx} open={unitOpen} onClose={() => setUnitOpen(false)} fullWidth maxWidth="sm" dir="rtl">
         <DialogTitle sx={{ fontWeight: 950 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <span>{unitForm.orgUnitGuid ? "تعديل الوحدة التنظيمية" : "وحدة تنظيمية جديدة"}</span>
@@ -465,26 +467,26 @@ export default function HrOrganizationDesigner() {
           </Stack>
         </DialogTitle>
         <DialogContent dividers>
-          <Stack spacing={1} sx={{ pt: 0.5 }}>
-            <TextField label="اسم الوحدة" value={unitForm.unitName} onChange={(e) => setUnitForm((x) => ({ ...x, unitName: e.target.value }))} />
-            <FormControl>
+          <Stack spacing={1} sx={uiLayout.withUiSx({ pt: 0.5 }, uiLayout.formGridSx)}>
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="اسم الوحدة" value={unitForm.unitName} onChange={(e) => setUnitForm((x) => ({ ...x, unitName: e.target.value }))} />
+            <FormControl sx={uiLayout.formFieldSx}>
               <InputLabel>نوع الوحدة</InputLabel>
               <Select label="نوع الوحدة" value={unitForm.unitType} onChange={(e) => setUnitForm((x) => ({ ...x, unitType: e.target.value }))}>
                 <MenuItem value="COMPANY">شركة / جذر</MenuItem><MenuItem value="DEPARTMENT">إدارة / قسم</MenuItem><MenuItem value="BRANCH">فرع</MenuItem><MenuItem value="TEAM">فريق</MenuItem><MenuItem value="CUSTOM">وحدة مخصصة</MenuItem>
               </Select>
             </FormControl>
-            <FormControl>
+            <FormControl sx={uiLayout.formFieldSx}>
               <InputLabel>تحت أي وحدة؟</InputLabel>
               <Select label="تحت أي وحدة؟" value={unitForm.parentOrgUnitGuid || ""} onChange={(e) => setUnitForm((x) => ({ ...x, parentOrgUnitGuid: e.target.value }))}>
                 <MenuItem value="">بدون أب / جذر</MenuItem>
                 {lookups.units.filter((u) => u.orgUnitGuid !== unitForm.orgUnitGuid).map((u) => <MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}
               </Select>
             </FormControl>
-            <TextField type="number" label="الترتيب" value={unitForm.sortOrder} onChange={(e) => setUnitForm((x) => ({ ...x, sortOrder: Number(e.target.value || 100) }))}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField multiline minRows={2} label="ملاحظات" value={unitForm.notes || ""} onChange={(e) => setUnitForm((x) => ({ ...x, notes: e.target.value }))} />
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} type="number" label="الترتيب" value={unitForm.sortOrder} onChange={(e) => setUnitForm((x) => ({ ...x, sortOrder: Number(e.target.value || 100) }))}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} multiline minRows={2} label="ملاحظات" value={unitForm.notes || ""} onChange={(e) => setUnitForm((x) => ({ ...x, notes: e.target.value }))} />
           </Stack>
         </DialogContent>
-        <DialogActions><Button onClick={() => setUnitOpen(false)}>إلغاء</Button><Button variant="contained" onClick={saveUnit}>حفظ</Button></DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={() => setUnitOpen(false)}>إلغاء</Button><Button sx={uiLayout.buttonSx} variant="contained" onClick={saveUnit}>حفظ</Button></DialogActions>
       </Dialog>
     </Box>
   );

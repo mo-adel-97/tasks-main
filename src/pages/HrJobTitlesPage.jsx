@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -1495,7 +1497,7 @@ export default function HrJobTitlesPage() {
                 <Typography
                   sx={{
                     opacity: 0.78,
-                    fontSize: { xs: 10.5, sm: 12.5 },
+                    fontSize: { xs: 12, sm: 12.5 },
                     mt: 0.25
                   }}
                 >
@@ -1504,7 +1506,7 @@ export default function HrJobTitlesPage() {
               </Box>
             </Stack>
 
-            <Stack
+            <Stack sx={uiLayout.actionBarSx}
               direction="row"
               spacing={0.8}
               alignItems="center"
@@ -1532,7 +1534,7 @@ export default function HrJobTitlesPage() {
                   setPromotionPlansStatus("Pending");
                   setPromotionPlansOpen(true);
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.42)",
                   fontWeight: 900,
@@ -1541,7 +1543,7 @@ export default function HrJobTitlesPage() {
                     borderColor: "#fff",
                     bgcolor: "rgba(255,255,255,.08)"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 خطة الترقيات
               </Button>
@@ -1550,7 +1552,7 @@ export default function HrJobTitlesPage() {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openCreate}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: "#fff",
                   color: primaryDark,
                   fontWeight: 900,
@@ -1561,7 +1563,7 @@ export default function HrJobTitlesPage() {
                     bgcolor: "#eef8f3",
                     boxShadow: "none"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 مسمى جديد
               </Button>
@@ -1601,7 +1603,7 @@ export default function HrJobTitlesPage() {
               <Typography
                 color="text.secondary"
                 sx={{
-                  fontSize: { xs: 10.5, sm: 11.5 },
+                  fontSize: { xs: 12, sm: 12 },
                   fontWeight: 800,
                   mb: 0.2
                 }}
@@ -1635,16 +1637,16 @@ export default function HrJobTitlesPage() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
                 sm: "minmax(260px,1fr) 180px"
               },
               gap: 1
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               value={search}
               onChange={(e) =>
@@ -1660,7 +1662,7 @@ export default function HrJobTitlesPage() {
               }}
             />
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الحالة</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1767,7 +1769,7 @@ export default function HrJobTitlesPage() {
                         sx={{
                           height: 22,
                           fontWeight: 800,
-                          fontSize: 10.5
+                          fontSize: 12
                         }}
                       />
                     </Stack>
@@ -1775,7 +1777,7 @@ export default function HrJobTitlesPage() {
                     <Typography
                       color="text.secondary"
                       sx={{
-                        fontSize: 11.5,
+                        fontSize: 12,
                         display: "flex",
                         alignItems: "center",
                         gap: 0.5,
@@ -1863,7 +1865,7 @@ export default function HrJobTitlesPage() {
                     >
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 9.8 }}
+                        sx={{ fontSize: 12 }}
                       >
                         {label}
                       </Typography>
@@ -1898,7 +1900,7 @@ export default function HrJobTitlesPage() {
                     variant="outlined"
                     sx={{
                       height: 24,
-                      fontSize: 10.5
+                      fontSize: 12
                     }}
                   />
 
@@ -1912,7 +1914,7 @@ export default function HrJobTitlesPage() {
                     variant="outlined"
                     sx={{
                       height: 24,
-                      fontSize: 10.5
+                      fontSize: 12
                     }}
                   />
 
@@ -1925,7 +1927,7 @@ export default function HrJobTitlesPage() {
                         variant="outlined"
                         sx={{
                           height: 24,
-                          fontSize: 10.5
+                          fontSize: 12
                         }}
                       />
                     )}
@@ -1936,7 +1938,7 @@ export default function HrJobTitlesPage() {
                     color="text.secondary"
                     sx={{
                       mt: 0.9,
-                      fontSize: 11.5,
+                      fontSize: 12,
                       lineHeight: 1.65,
                       display: "-webkit-box",
                       WebkitLineClamp: 2,
@@ -1979,7 +1981,7 @@ export default function HrJobTitlesPage() {
           Create / Edit dialog
           ======================================================= */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={editOpen}
         onClose={closeEdit}
         fullWidth
@@ -2007,7 +2009,7 @@ export default function HrJobTitlesPage() {
         <DialogContent dividers>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -2016,9 +2018,9 @@ export default function HrJobTitlesPage() {
               gap: 1.2,
               textAlign:
                 DIALOG_TEXT_ALIGN
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم المسمى الوظيفي"
               value={form.jobTitleName}
               onChange={(e) =>
@@ -2030,7 +2032,7 @@ export default function HrJobTitlesPage() {
               required
             />
 
-            <FormControl fullWidth>
+            <FormControl sx={uiLayout.formFieldSx} fullWidth>
               <InputLabel>القسم</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -2068,7 +2070,7 @@ export default function HrJobTitlesPage() {
                 )}
               </Select>
             </FormControl>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="الوصف"
               multiline
               minRows={3}
@@ -2079,14 +2081,14 @@ export default function HrJobTitlesPage() {
                   e.target.value
                 )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: {
                   md: "span 2"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="المهام والمسؤوليات"
               multiline
               minRows={4}
@@ -2099,7 +2101,7 @@ export default function HrJobTitlesPage() {
               }
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="المتطلبات"
               multiline
               minRows={4}
@@ -2174,8 +2176,8 @@ export default function HrJobTitlesPage() {
           </Box>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={closeEdit}
             disabled={saving}
           >
@@ -2186,12 +2188,12 @@ export default function HrJobTitlesPage() {
             variant="contained"
             onClick={save}
             disabled={saving}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primary,
               "&:hover": {
                 bgcolor: primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             {saving
               ? "جاري الحفظ..."
@@ -2204,7 +2206,7 @@ export default function HrJobTitlesPage() {
           Employees dialog
           ======================================================= */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={employeesOpen}
         onClose={() =>
           setEmployeesOpen(false)
@@ -2260,7 +2262,7 @@ export default function HrJobTitlesPage() {
           ) : (
             <>
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "1fr",
@@ -2268,9 +2270,9 @@ export default function HrJobTitlesPage() {
                   },
                   gap: 1,
                   mb: 1.2
-                }}
+                }, uiLayout.formGridSx)}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   value={employeeSearch}
                   onChange={(e) => {
@@ -2289,7 +2291,7 @@ export default function HrJobTitlesPage() {
                   }}
                 />
 
-                <FormControl size="small">
+                <FormControl sx={uiLayout.formFieldSx} size="small">
                   <InputLabel>
                     عدد الصفوف
                   </InputLabel>
@@ -2344,7 +2346,7 @@ export default function HrJobTitlesPage() {
                         }}
                       >
                         <Box
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             display: "grid",
                             gridTemplateColumns: {
                               xs: "1fr",
@@ -2355,7 +2357,7 @@ export default function HrJobTitlesPage() {
                             alignItems: "center",
                             textAlign:
                               DIALOG_TEXT_ALIGN
-                          }}
+                          }, uiLayout.pageHeaderSx)}
                         >
                           <Typography
                             fontWeight={900}
@@ -2380,7 +2382,7 @@ export default function HrJobTitlesPage() {
                             <Typography
                               color="text.secondary"
                               sx={{
-                                fontSize: 11
+                                fontSize: 12
                               }}
                             >
                               {employee.departmentName ||
@@ -2405,7 +2407,7 @@ export default function HrJobTitlesPage() {
                             }
                           />
 
-                          <Stack
+                          <Stack sx={uiLayout.actionBarSx}
                             direction="row"
                             spacing={0.5}
                             justifyContent="flex-end"
@@ -2422,10 +2424,10 @@ export default function HrJobTitlesPage() {
                                   "transfer"
                                 )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 fontWeight: 800,
                                 whiteSpace: "nowrap"
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               نقل
                             </Button>
@@ -2442,10 +2444,10 @@ export default function HrJobTitlesPage() {
                                   "promotion"
                                 )
                               }
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 fontWeight: 800,
                                 whiteSpace: "nowrap"
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               ترقية
                             </Button>
@@ -2492,8 +2494,8 @@ export default function HrJobTitlesPage() {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setEmployeesOpen(false)
             }
@@ -2507,7 +2509,7 @@ export default function HrJobTitlesPage() {
           Employee movement / promotion dialog
           ======================================================= */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={jobMoveOpen}
         onClose={() => {
           if (!jobMoveSaving) {
@@ -2527,7 +2529,7 @@ export default function HrJobTitlesPage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack spacing={1.2}>
+          <Stack sx={uiLayout.filterBarSx} spacing={1.2}>
             <Paper
               variant="outlined"
               sx={{
@@ -2552,16 +2554,16 @@ export default function HrJobTitlesPage() {
             </Paper>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "1fr",
                   sm: "repeat(2,minmax(0,1fr))"
                 },
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>
                   المسمى الوظيفي الجديد
                 </InputLabel>
@@ -2588,7 +2590,7 @@ export default function HrJobTitlesPage() {
                 </Select>
               </FormControl>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label={
                   jobMoveMode === "plan"
@@ -2608,7 +2610,7 @@ export default function HrJobTitlesPage() {
             </Box>
 
             {jobMoveMode !== "transfer" && (
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>نوع الإجراء</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -2630,7 +2632,7 @@ export default function HrJobTitlesPage() {
               </FormControl>
             )}
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label={
                 jobMoveMode === "plan"
                   ? "سبب خطة الترقية"
@@ -2647,7 +2649,7 @@ export default function HrJobTitlesPage() {
               required
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات"
               value={jobMoveNotes}
               onChange={(event) =>
@@ -2666,10 +2668,10 @@ export default function HrJobTitlesPage() {
                 onClick={() =>
                   setJobMoveMode("plan")
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   alignSelf: "flex-start",
                   fontWeight: 900
-                }}
+                }, uiLayout.buttonSx)}
               >
                 بدل التنفيذ الآن، أضفها لخطة الترقيات
               </Button>
@@ -2677,8 +2679,8 @@ export default function HrJobTitlesPage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setJobMoveOpen(false)
             }
@@ -2691,12 +2693,12 @@ export default function HrJobTitlesPage() {
             variant="contained"
             onClick={saveJobMove}
             disabled={jobMoveSaving}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primary,
               "&:hover": {
                 bgcolor: primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             {jobMoveSaving
               ? "جاري الحفظ..."
@@ -2713,7 +2715,7 @@ export default function HrJobTitlesPage() {
           Promotion plans dialog
           ======================================================= */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={promotionPlansOpen}
         onClose={() =>
           setPromotionPlansOpen(false)
@@ -2755,7 +2757,7 @@ export default function HrJobTitlesPage() {
 
         <DialogContent dividers>
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -2763,9 +2765,9 @@ export default function HrJobTitlesPage() {
               },
               gap: 1,
               mb: 1.2
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               value={promotionPlansSearch}
               onChange={(event) =>
@@ -2783,7 +2785,7 @@ export default function HrJobTitlesPage() {
               }}
             />
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الحالة</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -2834,7 +2836,7 @@ export default function HrJobTitlesPage() {
                   }}
                 >
                   <Box
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       display: "grid",
                       gridTemplateColumns: {
                         xs: "1fr",
@@ -2843,7 +2845,7 @@ export default function HrJobTitlesPage() {
                       },
                       gap: 1,
                       alignItems: "center"
-                    }}
+                    }, uiLayout.pageHeaderSx)}
                   >
                     <Box>
                       <Typography fontWeight={950}>
@@ -2851,7 +2853,7 @@ export default function HrJobTitlesPage() {
                       </Typography>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 11 }}
+                        sx={{ fontSize: 12 }}
                       >
                         كود الموظف:{" "}
                         {plan.employeeCode || "-"}
@@ -2871,7 +2873,7 @@ export default function HrJobTitlesPage() {
                       </Typography>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 11 }}
+                        sx={{ fontSize: 12 }}
                       >
                         {plan.reason}
                       </Typography>
@@ -2913,7 +2915,7 @@ export default function HrJobTitlesPage() {
                     />
 
                     {plan.status === "Pending" && (
-                      <Stack
+                      <Stack sx={uiLayout.actionBarSx}
                         direction="row"
                         spacing={0.5}
                       >
@@ -2925,15 +2927,15 @@ export default function HrJobTitlesPage() {
                               plan
                             )
                           }
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             bgcolor: primary,
                             whiteSpace: "nowrap"
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           تنفيذ
                         </Button>
 
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           size="small"
                           color="error"
                           onClick={() =>
@@ -2959,8 +2961,8 @@ export default function HrJobTitlesPage() {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setPromotionPlansOpen(false)
             }
@@ -2974,7 +2976,7 @@ export default function HrJobTitlesPage() {
           History dialog
           ======================================================= */}
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={historyOpen}
         onClose={() =>
           setHistoryOpen(false)
@@ -3036,7 +3038,7 @@ export default function HrJobTitlesPage() {
                   <Typography
                     color="text.secondary"
                     sx={{
-                      fontSize: 11,
+                      fontSize: 12,
                       mt: 0.4
                     }}
                   >
@@ -3066,8 +3068,8 @@ export default function HrJobTitlesPage() {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setHistoryOpen(false)
             }

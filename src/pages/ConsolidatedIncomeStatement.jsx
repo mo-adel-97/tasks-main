@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -558,7 +560,7 @@ export default function ConsolidatedIncomeStatement() {
         </Box>
 
         <Box sx={{ p: 1 }}>
-          <Stack
+          <Stack sx={uiLayout.filterBarSx}
             direction={{
               xs: "column",
               md: "row"
@@ -575,7 +577,7 @@ export default function ConsolidatedIncomeStatement() {
                 setFromDate(e.target.value)
               }
               InputLabelProps={{ shrink: true }}
-              sx={{ minWidth: { md: 170 } }}
+              sx={uiLayout.withUiSx({ minWidth: { md: 170 } }, uiLayout.formFieldSx)}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
@@ -587,7 +589,7 @@ export default function ConsolidatedIncomeStatement() {
                 setToDate(e.target.value)
               }
               InputLabelProps={{ shrink: true }}
-              sx={{ minWidth: { md: 170 } }}
+              sx={uiLayout.withUiSx({ minWidth: { md: 170 } }, uiLayout.formFieldSx)}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Button
@@ -604,11 +606,11 @@ export default function ConsolidatedIncomeStatement() {
               }
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#1976d2",
                 fontWeight: 900,
                 minWidth: 105
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -619,7 +621,7 @@ export default function ConsolidatedIncomeStatement() {
               startIcon={<FileDownloadIcon />}
               onClick={exportExcel}
               disabled={!rows.length}
-              sx={{ fontWeight: 900 }}
+              sx={uiLayout.withUiSx({ fontWeight: 900 }, uiLayout.buttonSx)}
             >
               EXCEL
             </Button>
@@ -674,10 +676,10 @@ export default function ConsolidatedIncomeStatement() {
               </Box>
             ) : (
               <TableContainer
-                sx={{
+                sx={uiLayout.withUiSx({
                   maxHeight: "calc(100vh - 175px)",
                   borderTop: `1px solid ${border}`
-                }}
+                }, uiLayout.tableContainerSx)}
               >
                 <Table
                   stickyHeader

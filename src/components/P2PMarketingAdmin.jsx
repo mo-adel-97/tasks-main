@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -489,12 +490,12 @@ const P2PMarketingAdmin = () => {
                   variant="outlined"
                   startIcon={<DownloadIcon />}
                   onClick={handleExport}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color: "white",
                     borderColor: "rgba(255,255,255,0.7)",
                     "&:hover": { borderColor: "white" },
                     gap: 1,
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -557,13 +558,13 @@ const P2PMarketingAdmin = () => {
           >
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={10}>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   placeholder="بحث في الطلبات (شركة / منطقة / حالة / أرقام / إيميلات / مقدم الطلب ...)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   inputProps={{ dir: arabicDir }}
-                  sx={{ "& .MuiInputBase-root": { borderRadius: 2 } }}
+                  sx={uiLayout.withUiSx({ "& .MuiInputBase-root": { borderRadius: 2 } }, uiLayout.formFieldSx)}
                   InputProps={{
                     startAdornment: (
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1, pl: 1 }}>
@@ -579,12 +580,12 @@ const P2PMarketingAdmin = () => {
                   fullWidth
                   variant="contained"
                   onClick={() => setSearchTerm("")}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     height: 56,
                     backgroundColor: brand.primary,
                     fontWeight: 800,
                     "&:hover": { backgroundColor: brand.primaryDark },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إعادة الضبط
                 </Button>
@@ -613,7 +614,7 @@ const P2PMarketingAdmin = () => {
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ height: 560, width: "100%" }}>
+              <Box sx={uiLayout.withUiSx({ height: 560, width: "100%" }, uiLayout.tableContainerSx)}>
                 <DataGrid
                   rows={filteredRecords}
                   columns={columns}
@@ -623,7 +624,7 @@ const P2PMarketingAdmin = () => {
                   initialState={{
                     pagination: { paginationModel: { pageSize: 10, page: 0 } },
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     border: "none",
                     "& .MuiDataGrid-columnHeaders": {
                       backgroundColor: brand.primary,
@@ -646,7 +647,7 @@ const P2PMarketingAdmin = () => {
                       textAlign: "start",
                       width: "100%",
                     },
-                  }}
+                  }, uiLayout.dataGridSx)}
                 />
               </Box>
             )}
@@ -662,7 +663,7 @@ const P2PMarketingAdmin = () => {
         </Container>
 
         {/* View Dialog */}
-        <Dialog open={openView} onClose={handleCloseView} maxWidth="sm" fullWidth dir={arabicDir}>
+        <Dialog sx={uiLayout.dialogLayoutSx} open={openView} onClose={handleCloseView} maxWidth="sm" fullWidth dir={arabicDir}>
           <DialogTitle sx={{ backgroundColor: brand.primary, color: "white" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <BusinessIcon />
@@ -776,8 +777,8 @@ const P2PMarketingAdmin = () => {
             )}
           </DialogContent>
 
-          <DialogActions sx={{ p: 2 }}>
-            <Button onClick={handleCloseView}>إغلاق</Button>
+          <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
+            <Button sx={uiLayout.buttonSx} onClick={handleCloseView}>إغلاق</Button>
           </DialogActions>
         </Dialog>
 

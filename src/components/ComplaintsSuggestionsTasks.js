@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState } from 'react';
 import{ useEffect } from 'react';
 
@@ -153,7 +154,7 @@ console.log(theme.palette.primary.main);
                 >
                   {index + 1}
                 </Box>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   variant="outlined"
                   value={complaint}
@@ -232,7 +233,7 @@ console.log(theme.palette.primary.main);
                 >
                   {index + 1}
                 </Box>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   variant="outlined"
                   value={suggestion}

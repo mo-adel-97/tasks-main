@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 // RegistrationCommissions.jsx
@@ -217,8 +218,8 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
                 fontWeight={700}
                 sx={{
                   color: colorPalette.textDark,
-                  "@media (max-width:1599px)": { fontSize: "0.72rem" },
-                  "@media (max-width:599px)": { fontSize: "0.6rem" }
+                  "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                  "@media (max-width:599px)": { fontSize: "0.75rem" }
                 }}
               >
                 {title}
@@ -228,8 +229,8 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
                   variant="caption"
                   sx={{
                     color: colorPalette.textLight,
-                    "@media (max-width:1599px)": { fontSize: "0.5rem" },
-                    "@media (max-width:599px)": { fontSize: "0.42rem" }
+                    "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                    "@media (max-width:599px)": { fontSize: "0.75rem" }
                   }}
                 >
                   {subtitle}
@@ -283,8 +284,8 @@ const StatCard = ({ title, value, icon, color, hint }) => {
               variant="subtitle2"
               sx={{
                 color: colorPalette.textLight,
-                "@media (max-width:1599px)": { fontSize: "0.52rem" },
-                "@media (max-width:599px)": { fontSize: "0.44rem" }
+                "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                "@media (max-width:599px)": { fontSize: "0.75rem" }
               }}
             >
               {title}
@@ -305,8 +306,8 @@ const StatCard = ({ title, value, icon, color, hint }) => {
                 variant="caption"
                 sx={{
                   color: colorPalette.textLight,
-                  "@media (max-width:1599px)": { fontSize: "0.45rem" },
-                  "@media (max-width:599px)": { fontSize: "0.38rem" }
+                  "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                  "@media (max-width:599px)": { fontSize: "0.75rem" }
                 }}
               >
                 {hint}
@@ -355,8 +356,8 @@ const Row = ({ label, value, color, isCurrency }) => (
       variant="body2"
       sx={{
         color: colorPalette.textLight,
-        "@media (max-width:1599px)": { fontSize: "0.52rem" },
-        "@media (max-width:599px)": { fontSize: "0.44rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {label}
@@ -366,8 +367,8 @@ const Row = ({ label, value, color, isCurrency }) => (
       fontWeight={600}
       sx={{
         color: color || colorPalette.textDark,
-        "@media (max-width:1599px)": { fontSize: "0.58rem" },
-        "@media (max-width:599px)": { fontSize: "0.49rem" }
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
       {isCurrency ? `${Number(value || 0).toLocaleString()} ر.س` : Number(value ?? 0).toLocaleString()}
@@ -431,8 +432,8 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
           variant="body2"
           sx={{
             color: colorPalette.textLight,
-            "@media (max-width:1599px)": { fontSize: "0.5rem" },
-            "@media (max-width:599px)": { fontSize: "0.42rem" }
+            "@media (max-width:1599px)": { fontSize: "0.75rem" },
+            "@media (max-width:599px)": { fontSize: "0.75rem" }
           }}
         >
           {label}
@@ -444,8 +445,8 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
         fontWeight={800}
         sx={{
           color: t.fg,
-          "@media (max-width:1599px)": { fontSize: "0.62rem" },
-          "@media (max-width:599px)": { fontSize: "0.54rem" }
+          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
         {Number(value ?? 0).toLocaleString()}
@@ -860,7 +861,7 @@ setData(zeroizeForHamza(json[0]));
                   fontFamily: "Tajawal",
                   fontWeight: 900,
                   fontSize: {
-                    xs: "0.7rem",
+                    xs: "0.75rem",
                     sm: "0.8rem"
                   },
                   color: colorPalette.textDark,
@@ -941,7 +942,7 @@ setData(zeroizeForHamza(json[0]));
                 variant="body2"
                 sx={{
                   color: colorPalette.textLight,
-                  fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   display: isPhone ? "none" : "block"
                 }}
               >
@@ -961,14 +962,14 @@ setData(zeroizeForHamza(json[0]));
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: isCompact ? "grid" : "flex",
                   gridTemplateColumns: isCompact
                     ? "repeat(2,minmax(0,1fr))"
                     : undefined,
                   gap: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
                   alignItems: "center"
-                }}
+                }, uiLayout.formGridSx)}
               >
                 <DatePicker
                   label="تاريخ البداية"
@@ -1060,15 +1061,15 @@ setData(zeroizeForHamza(json[0]));
                       onClick={openDetailsDialog}
                       startIcon={<ViewIcon />}
                       variant="contained"
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         bgcolor: colorPalette.primary,
                         "&:hover": { bgcolor: colorPalette.primaryDark },
                         borderRadius: isCompact ? 1.2 : 2,
                         whiteSpace: "nowrap",
                         gridColumn: isCompact ? "1 / -1" : undefined,
                         minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
-                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
-                      }}
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
+                      }, uiLayout.buttonSx)}
                       disabled={!startDate || !endDate}
                     >
                       عرض التفاصيل
@@ -1087,7 +1088,7 @@ setData(zeroizeForHamza(json[0]));
                 sx={{
                   "& .MuiChip-root": {
                     height: isPhone ? 24 : isTablet ? 27 : undefined,
-                    fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   },
                   "& .MuiChip-icon": {
                     fontSize: isPhone ? 14 : isTablet ? 16 : undefined
@@ -1354,13 +1355,13 @@ setData(zeroizeForHamza(json[0]));
             fullWidth
             fullScreen={isPhone}
             maxWidth="lg"
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiDialog-container": {
                 pt: isPhone ? "52px" : isTablet ? "62px" : 0,
                 px: isPhone ? 0 : isTablet ? 0.6 : undefined,
                 alignItems: isPhone ? "stretch" : "center"
               }
-            }}
+            }, uiLayout.dialogLayoutSx)}
             PaperProps={{
               sx: {
                 borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
@@ -1392,7 +1393,7 @@ setData(zeroizeForHamza(json[0]));
                   fontWeight={900}
                   sx={{
                     color: colorPalette.textDark,
-                    fontSize: isPhone ? "0.65rem" : isTablet ? "0.78rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.78rem" : undefined
                   }}
                 >
                   تفاصيل الخصم / الإضافة
@@ -1401,7 +1402,7 @@ setData(zeroizeForHamza(json[0]));
                   variant="caption"
                   sx={{
                     color: colorPalette.textLight,
-                    fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   }}
                 >
                   {startDate && endDate
@@ -1433,7 +1434,7 @@ setData(zeroizeForHamza(json[0]));
                     gap: 1.5,
                   }}
                 >
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="بحث بالاسم / الهوية / مندوب الطالب / مندوب الاستمارة"
@@ -1446,15 +1447,15 @@ setData(zeroizeForHamza(json[0]));
                         </InputAdornment>
                       ),
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       "& .MuiOutlinedInput-root": {
                         borderRadius: isCompact ? 1.2 : 2,
                         minHeight: isPhone ? 31 : isTablet ? 34 : undefined
                       },
                       "& .MuiInputBase-input": {
-                        fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                       },
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
 
                   <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
@@ -1462,13 +1463,13 @@ setData(zeroizeForHamza(json[0]));
                       onClick={fetchSharedDetails}
                       startIcon={<RefreshIcon />}
                       variant="outlined"
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         borderRadius: isCompact ? 1.2 : 2,
                   minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
-                  fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                         borderColor: colorPalette.primaryLight,
                         color: colorPalette.primaryDark,
-                      }}
+                      }, uiLayout.buttonSx)}
                       disabled={detailsLoading}
                     >
                       تحديث
@@ -1496,7 +1497,7 @@ setData(zeroizeForHamza(json[0]));
                         borderRadius: isCompact ? 1.2 : 2,
                         minWidth: isPhone ? 72 : isTablet ? 90 : undefined,
                         px: isPhone ? 0.55 : isTablet ? 0.8 : undefined,
-                        fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                       },
                       "& .MuiSvgIcon-root": {
                         fontSize: isPhone ? 14 : isTablet ? 16 : undefined
@@ -1543,7 +1544,7 @@ setData(zeroizeForHamza(json[0]));
                     sx={{
                       "& .MuiChip-root": {
                         height: isTablet ? 25 : undefined,
-                        fontSize: isTablet ? "0.48rem" : undefined
+                        fontSize: isTablet ? "0.75rem" : undefined
                       }
                     }}
                   >
@@ -1588,7 +1589,7 @@ setData(zeroizeForHamza(json[0]));
                 variant="caption"
                 sx={{
                   color: colorPalette.textLight,
-                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 }}
               >
                       جرّب تغيير الفلتر أو البحث.
@@ -1600,12 +1601,12 @@ setData(zeroizeForHamza(json[0]));
                   <TableContainer
                     component={Paper}
                     variant="outlined"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       mt: 1,
                       borderRadius: 2,
                       borderColor: colorPalette.primaryLighter,
                       overflow: "hidden",
-                    }}
+                    }, uiLayout.tableContainerSx)}
                   >
                     <Table size="small">
                       <TableHead>
@@ -1614,7 +1615,7 @@ setData(zeroizeForHamza(json[0]));
                             sx={{
                               fontWeight: 800,
                               color: colorPalette.textDark,
-                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                               px: isPhone ? 0.45 : isTablet ? 0.65 : 2
                             }}
                           >
@@ -1625,7 +1626,7 @@ setData(zeroizeForHamza(json[0]));
                             sx={{
                               fontWeight: 800,
                               color: colorPalette.textDark,
-                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                               px: isPhone ? 0.45 : isTablet ? 0.65 : 2
                             }}
                           >
@@ -1637,7 +1638,7 @@ setData(zeroizeForHamza(json[0]));
                               sx={{
                                 fontWeight: 800,
                                 color: colorPalette.textDark,
-                                fontSize: isTablet ? "0.5rem" : undefined,
+                                fontSize: isTablet ? "0.75rem" : undefined,
                                 px: isTablet ? 0.65 : 2
                               }}
                             >
@@ -1660,7 +1661,7 @@ setData(zeroizeForHamza(json[0]));
                             sx={{
                               fontWeight: 900,
                               color: colorPalette.textDark,
-                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                               px: isPhone ? 0.45 : isTablet ? 0.65 : 2
                             }}
                           >
@@ -1678,7 +1679,7 @@ setData(zeroizeForHamza(json[0]));
                                 sx={{
                                   fontWeight: 700,
                                   color: colorPalette.textDark,
-                                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined,
+                                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                                   px: isPhone ? 0.45 : isTablet ? 0.65 : 2,
                                   maxWidth: isPhone ? 105 : isTablet ? 150 : undefined,
                                   whiteSpace: "nowrap",
@@ -1692,7 +1693,7 @@ setData(zeroizeForHamza(json[0]));
                               <TableCell
                                 sx={{
                                   color: colorPalette.textLight,
-                                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined,
+                                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                                   px: isPhone ? 0.45 : isTablet ? 0.65 : 2
                                 }}
                               >
@@ -1703,7 +1704,7 @@ setData(zeroizeForHamza(json[0]));
                                 <TableCell
                                   sx={{
                                     color: colorPalette.textLight,
-                                    fontSize: isTablet ? "0.48rem" : undefined,
+                                    fontSize: isTablet ? "0.75rem" : undefined,
                                     px: isTablet ? 0.65 : 2
                                   }}
                                 >
@@ -1734,7 +1735,7 @@ setData(zeroizeForHamza(json[0]));
                                   sx={{
                                     fontWeight: 900,
                                     height: isPhone ? 22 : isTablet ? 25 : undefined,
-                                    fontSize: isPhone ? "0.38rem" : isTablet ? "0.46rem" : undefined,
+                                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                                     "& .MuiChip-icon": {
                                       fontSize: isPhone ? 13 : isTablet ? 15 : undefined
                                     },
@@ -1756,13 +1757,13 @@ setData(zeroizeForHamza(json[0]));
             </DialogContent>
 
             <DialogActions
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "white",
                 borderTop: `1px solid ${colorPalette.primaryLighter}`,
                 p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
                 justifyContent: "space-between",
                 gap: isPhone ? 0.5 : isTablet ? 0.75 : 2,
-              }}
+              }, uiLayout.dialogActionsSx)}
             >
               <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
                 عدد الصفوف المعروضة: {filteredDetails.length.toLocaleString()}
@@ -1772,11 +1773,11 @@ setData(zeroizeForHamza(json[0]));
                 onClick={closeDetailsDialog}
                 variant="contained"
                 startIcon={<CloseIcon />}
-                sx={{
+                sx={uiLayout.withUiSx({
                   bgcolor: colorPalette.primary,
                   "&:hover": { bgcolor: colorPalette.primaryDark },
                   borderRadius: 2,
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إغلاق
               </Button>

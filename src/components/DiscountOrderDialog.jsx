@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -119,17 +120,17 @@ const showSuccess = (message) =>
   });
 
 const StudentField = ({ label, value }) => (
-  <TextField
+  <TextField InputLabelProps={{ shrink: true }}
     fullWidth
     size="small"
     label={label}
     value={value || ""}
     InputProps={{ readOnly: true }}
-    sx={{
+    sx={uiLayout.withUiSx({
       "@media (max-width:1599px)": {
-        "& .MuiInputLabel-root": { fontSize: "0.54rem" },
+        "& .MuiInputLabel-root": { fontSize: "0.75rem" },
         "& .MuiInputBase-input": {
-          fontSize: "0.58rem",
+          fontSize: "0.75rem",
           py: 0.65
         },
         "& .MuiOutlinedInput-root": {
@@ -138,16 +139,16 @@ const StudentField = ({ label, value }) => (
         }
       },
       "@media (max-width:599px)": {
-        "& .MuiInputLabel-root": { fontSize: "0.46rem" },
+        "& .MuiInputLabel-root": { fontSize: "0.75rem" },
         "& .MuiInputBase-input": {
-          fontSize: "0.5rem",
+          fontSize: "0.75rem",
           py: 0.5
         },
         "& .MuiOutlinedInput-root": {
           minHeight: 31
         }
       }
-    }}
+    }, uiLayout.formFieldSx)}
   />
 );
 
@@ -274,14 +275,14 @@ const PromoStudentsDialog = ({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
@@ -302,7 +303,7 @@ const PromoStudentsDialog = ({
           color: primaryColor,
           py: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
           px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
-          fontSize: isPhone ? "0.66rem" : isTablet ? "0.78rem" : undefined,
+          fontSize: isPhone ? "0.75rem" : isTablet ? "0.78rem" : undefined,
           flexShrink: 0
         }}
       >
@@ -322,9 +323,9 @@ const PromoStudentsDialog = ({
           direction="row"
           spacing={isCompact ? 0.3 : 1.5}
           alignItems="center"
-          sx={{ mb: isCompact ? 0.4 : 2 }}
+          sx={uiLayout.withUiSx({ mb: isCompact ? 0.4 : 2 }, uiLayout.filterBarSx)}
         >
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             label="رقم الهوية"
             value={nationalId}
             onChange={(event) =>
@@ -356,13 +357,13 @@ const PromoStudentsDialog = ({
                 <PersonAddAlt1Icon />
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: isPhone ? 54 : isTablet ? 66 : 120,
               height: isPhone ? 31 : isTablet ? 35 : 55,
               px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               backgroundColor: primaryColor
-            }}
+            }, uiLayout.buttonSx)}
           >
             إضافة
           </Button>
@@ -371,13 +372,13 @@ const PromoStudentsDialog = ({
             variant="contained"
             onClick={handleDelete}
             startIcon={<DeleteOutlineIcon />}
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: isPhone ? 54 : isTablet ? 66 : 120,
               height: isPhone ? 31 : isTablet ? 35 : 55,
               px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               backgroundColor: accentColor
-            }}
+            }, uiLayout.buttonSx)}
           >
             حذف
           </Button>
@@ -386,16 +387,16 @@ const PromoStudentsDialog = ({
         <TableContainer
           component={Paper}
           variant="outlined"
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: isCompact ? 1.3 : undefined,
             overflowX: "auto",
             "& .MuiTableCell-root": {
               py: isPhone ? 0.4 : isTablet ? 0.55 : undefined,
               px: isPhone ? 0.3 : isTablet ? 0.5 : undefined,
-              fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               whiteSpace: "nowrap"
             }
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <Table size="small">
             <TableHead>
@@ -446,7 +447,7 @@ const PromoStudentsDialog = ({
             textAlign: "center",
             fontWeight: 950,
             color: accentColor,
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : "1.1rem"
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1.1rem"
           }}
         >
           عدد الطلاب: {students.length} | إجمالي الخصم:{" "}
@@ -454,16 +455,16 @@ const PromoStudentsDialog = ({
         </Typography>
       </DialogContent>
 
-      <DialogActions sx={{ px: isPhone ? 0.35 : isTablet ? 0.55 : 3, py: isPhone ? 0.28 : isTablet ? 0.42 : 2, gap: isCompact ? 0.35 : 1, flexShrink: 0 }}>
+      <DialogActions sx={uiLayout.withUiSx({ px: isPhone ? 0.35 : isTablet ? 0.55 : 3, py: isPhone ? 0.28 : isTablet ? 0.42 : 2, gap: isCompact ? 0.35 : 1, flexShrink: 0 }, uiLayout.dialogActionsSx)}>
         <Button
           variant="contained"
           onClick={handleConfirm}
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             minWidth: isPhone ? 78 : isTablet ? 92 : 120,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           اعتماد
         </Button>
@@ -471,12 +472,12 @@ const PromoStudentsDialog = ({
         <Button
           variant="contained"
           onClick={onClose}
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: "#888",
             minWidth: isPhone ? 72 : isTablet ? 86 : 120,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           إلغاء
         </Button>
@@ -545,13 +546,13 @@ const PromoDetailsDialog = ({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : "92vw",
@@ -572,7 +573,7 @@ const PromoDetailsDialog = ({
           fontWeight: 950,
           color: primaryColor,
           textAlign: "center",
-          fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : "1.5rem",
+          fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : "1.5rem",
           py: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
           flexShrink: 0
         }}
@@ -602,7 +603,7 @@ const PromoDetailsDialog = ({
                 sx={{
                   fontWeight: 950,
                   color: accentColor,
-                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : "1.1rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1.1rem",
                   lineHeight: 1.25
                 }}
               >
@@ -617,16 +618,16 @@ const PromoDetailsDialog = ({
             <TableContainer
               component={Paper}
               variant="outlined"
-              sx={{
+              sx={uiLayout.withUiSx({
                 maxHeight: isPhone ? "52dvh" : isTablet ? "50dvh" : "48vh",
                 borderRadius: isCompact ? 1.3 : undefined,
                 "& .MuiTableCell-root": {
                   py: isPhone ? 0.4 : isTablet ? 0.55 : undefined,
                   px: isPhone ? 0.28 : isTablet ? 0.45 : undefined,
-                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   whiteSpace: "nowrap"
                 }
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <Table stickyHeader>
                 <TableHead>
@@ -657,7 +658,7 @@ const PromoDetailsDialog = ({
                       </TableCell>
 
                       <TableCell align="center" sx={{ display: isPhone ? "none" : "table-cell" }}>
-                        <Button
+                        <Button sx={uiLayout.buttonSx}
                           variant="outlined"
                           size="small"
                           disabled
@@ -672,28 +673,28 @@ const PromoDetailsDialog = ({
               </Table>
             </TableContainer>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               multiline
               minRows={isPhone ? 2 : isTablet ? 2 : 3}
               value={details.notes || ""}
               InputProps={{ readOnly: true }}
-              sx={{ mt: 2 }}
+              sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formFieldSx)}
             />
           </>
         ) : null}
       </DialogContent>
 
-      <DialogActions sx={{ px: isPhone ? 0.35 : isTablet ? 0.55 : 3, py: isPhone ? 0.28 : isTablet ? 0.42 : 2, flexShrink: 0 }}>
+      <DialogActions sx={uiLayout.withUiSx({ px: isPhone ? 0.35 : isTablet ? 0.55 : 3, py: isPhone ? 0.28 : isTablet ? 0.42 : 2, flexShrink: 0 }, uiLayout.dialogActionsSx)}>
         <Button
           variant="contained"
           onClick={onClose}
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: "#888",
             minWidth: isPhone ? 72 : isTablet ? 86 : 120,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>
@@ -1014,14 +1015,14 @@ const DiscountOrderDialog = ({
         fullWidth
         fullScreen={isPhone}
         dir="rtl"
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
             px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : "94vw",
@@ -1046,7 +1047,7 @@ const DiscountOrderDialog = ({
             gap: isCompact ? 0.35 : 1,
             py: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
             px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
-            fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : undefined,
             flexShrink: 0
           }}
         >
@@ -1062,10 +1063,10 @@ const DiscountOrderDialog = ({
             flex: 1,
             minHeight: 0,
             "& .MuiInputLabel-root": {
-              fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             },
             "& .MuiInputBase-input, & .MuiSelect-select": {
-              fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
             },
             "& .MuiOutlinedInput-root": {
@@ -1073,12 +1074,12 @@ const DiscountOrderDialog = ({
               borderRadius: isCompact ? 1.25 : undefined
             },
             "& .MuiFormHelperText-root": {
-              fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }
           }}
         >
           {loadError ? (
-            <Alert severity="error" sx={{ mb: isCompact ? 0.35 : 2, py: isCompact ? 0.15 : undefined, fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined }}>
+            <Alert severity="error" sx={{ mb: isCompact ? 0.35 : 2, py: isCompact ? 0.15 : undefined, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
               {loadError}
             </Alert>
           ) : null}
@@ -1116,7 +1117,7 @@ const DiscountOrderDialog = ({
             <>
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
                 <Grid item xs={12} sm={6} md={6}>
-                  <FormControl fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth>
                     <InputLabel>نوع الخصم</InputLabel>
 
                     <Select
@@ -1197,8 +1198,8 @@ const DiscountOrderDialog = ({
                   ) : null}
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={3}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={3}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label={
                       selectedType?.isPromo
@@ -1217,9 +1218,9 @@ const DiscountOrderDialog = ({
                     variant="outlined"
                     startIcon={<AttachFileIcon />}
                     disabled={!selectedType}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       height: isPhone ? 31 : isTablet ? 35 : 56,
-                      fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
                       color: selectedType?.requiresAttachment
                         ? accentColor
@@ -1227,7 +1228,7 @@ const DiscountOrderDialog = ({
                       borderColor: selectedType?.requiresAttachment
                         ? accentColor
                         : primaryColor
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     {attachment
                       ? attachment.name
@@ -1252,7 +1253,7 @@ const DiscountOrderDialog = ({
                 <Alert
                   severity="info"
                   action={
-                    <Button
+                    <Button sx={uiLayout.buttonSx}
                       color="inherit"
                       size="small"
                       onClick={() => setPromoOpen(true)}
@@ -1263,14 +1264,14 @@ const DiscountOrderDialog = ({
                   sx={{
                     mt: isCompact ? 0.4 : 2,
                     py: isCompact ? 0.15 : undefined,
-                    fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     "& .MuiAlert-action": {
                       pt: isCompact ? 0 : undefined,
                       alignItems: "center"
                     },
                     "& .MuiButton-root": {
                       minWidth: isPhone ? 58 : isTablet ? 68 : undefined,
-                      fontSize: isPhone ? "0.43rem" : isTablet ? "0.51rem" : undefined
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                     }
                   }}
                 >
@@ -1280,7 +1281,7 @@ const DiscountOrderDialog = ({
                 </Alert>
               ) : null}
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 multiline
                 minRows={isPhone ? 2 : isTablet ? 2 : 4}
@@ -1292,7 +1293,7 @@ const DiscountOrderDialog = ({
                   )
                 }
                 helperText={`${requesterNote.length}/1000`}
-                sx={{ mt: isCompact ? 0.45 : 2 }}
+                sx={uiLayout.withUiSx({ mt: isCompact ? 0.45 : 2 }, uiLayout.formFieldSx)}
               />
 
               <Divider sx={{ my: isCompact ? 0.5 : 2 }}>
@@ -1300,7 +1301,7 @@ const DiscountOrderDialog = ({
                   sx={{
                     fontWeight: 950,
                     color: primaryColor,
-                    fontSize: isPhone ? "0.54rem" : isTablet ? "0.62rem" : undefined
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                   }}
                 >
                   طلبات الخصم السابقة
@@ -1310,17 +1311,17 @@ const DiscountOrderDialog = ({
               <TableContainer
                 component={Paper}
                 variant="outlined"
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: isCompact ? 1.3 : undefined,
                   overflowX: "auto",
                   maxHeight: isPhone ? "40dvh" : isTablet ? "42dvh" : undefined,
                   "& .MuiTableCell-root": {
                     py: isPhone ? 0.4 : isTablet ? 0.55 : undefined,
                     px: isPhone ? 0.28 : isTablet ? 0.45 : undefined,
-                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     whiteSpace: "nowrap"
                   }
-                }}
+                }, uiLayout.tableContainerSx)}
               >
                 <Table size="small">
                   <TableHead>
@@ -1381,12 +1382,12 @@ const DiscountOrderDialog = ({
                                   setPromoDetailsGuid(item.guid);
                                   setPromoDetailsOpen(true);
                                 }}
-                                sx={{
+                                sx={uiLayout.withUiSx({
                                   backgroundColor: primaryColor,
                                   minWidth: isPhone ? 46 : isTablet ? 56 : 90,
                                   px: isPhone ? 0.35 : isTablet ? 0.5 : undefined,
-                                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
-                                }}
+                                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+                                }, uiLayout.buttonSx)}
                               >
                                 عرض
                               </Button>
@@ -1404,7 +1405,7 @@ const DiscountOrderDialog = ({
           )}
         </DialogContent>
 
-        <DialogActions sx={{ px: isPhone ? 0.35 : isTablet ? 0.55 : 3, py: isPhone ? 0.28 : isTablet ? 0.42 : 2, gap: isCompact ? 0.35 : 1, flexShrink: 0 }}>
+        <DialogActions sx={uiLayout.withUiSx({ px: isPhone ? 0.35 : isTablet ? 0.55 : 3, py: isPhone ? 0.28 : isTablet ? 0.42 : 2, gap: isCompact ? 0.35 : 1, flexShrink: 0 }, uiLayout.dialogActionsSx)}>
           <Button
             onClick={handleSave}
             disabled={
@@ -1421,13 +1422,13 @@ const DiscountOrderDialog = ({
                 <SaveIcon />
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               backgroundColor: primaryColor,
               minWidth: isPhone ? 90 : isTablet ? 110 : 140,
               minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
               px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-              fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-            }}
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+            }, uiLayout.buttonSx)}
           >
             حفظ الطلب
           </Button>
@@ -1435,14 +1436,14 @@ const DiscountOrderDialog = ({
           <Button
             onClick={onClose}
             disabled={saving}
-            sx={{
+            sx={uiLayout.withUiSx({
               color: "#333",
               minWidth: isPhone ? 64 : isTablet ? 74 : 90,
               minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
               px: isPhone ? 0.7 : isTablet ? 1 : undefined,
-              fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

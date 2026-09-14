@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -829,7 +831,7 @@ export default function CourseStudentsPage() {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.67rem",
+                  xs: "0.75rem",
                   sm: "0.79rem"
                 },
                 color: "#17372b",
@@ -850,7 +852,7 @@ export default function CourseStudentsPage() {
         ...navigationContentSx
       }}>
         <Paper elevation={0} sx={{ p: 1.2, borderRadius: 3, border: "1px solid #dbece4" }}>
-          <Stack direction={{ xs: "column", lg: "row" }} spacing={1} alignItems="center" mb={1}>
+          <Stack sx={uiLayout.filterBarSx} direction={{ xs: "column", lg: "row" }} spacing={1} alignItems="center" mb={1}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
               <SchoolIcon sx={{ color: "#057546", fontSize: 34 }} />
               <Box dir="rtl">
@@ -861,38 +863,38 @@ export default function CourseStudentsPage() {
               </Box>
             </Stack>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select size="small" label="الفرع" value={branchGuid}
               onChange={(event) => setBranchGuid(event.target.value)}
-              sx={{ minWidth: 280 }}
+              sx={uiLayout.withUiSx({ minWidth: 280 }, uiLayout.formFieldSx)}
             >
               {branches.map((item) => (
                 <MenuItem key={item.guid} value={item.guid}>{item.branchName}</MenuItem>
               ))}
             </TextField>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select size="small" label="الدفعة" value={batchKey}
               onChange={(event) => setBatchKey(event.target.value)}
-              sx={{ minWidth: 220 }}
+              sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}
             >
               {batches.map((item) => (
                 <MenuItem key={item.key} value={item.key}>{item.name}</MenuItem>
               ))}
             </TextField>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               select size="small" label="الدورة" value={courseGuid}
               onChange={(event) => setCourseGuid(event.target.value)}
-              sx={{ minWidth: 260 }}
+              sx={uiLayout.withUiSx({ minWidth: 260 }, uiLayout.formFieldSx)}
             >
               {courses.map((item) => (
                 <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>
               ))}
             </TextField>
 
-            <Button startIcon={<RefreshIcon />} onClick={loadStudents}>تحديث</Button>
-            <Button startIcon={<FileDownloadIcon />} onClick={exportXlsx}>تصدير Excel</Button>
+            <Button sx={uiLayout.buttonSx} startIcon={<RefreshIcon />} onClick={loadStudents}>تحديث</Button>
+            <Button sx={uiLayout.buttonSx} startIcon={<FileDownloadIcon />} onClick={exportXlsx}>تصدير Excel</Button>
           </Stack>
 
           <Tabs
@@ -905,14 +907,14 @@ export default function CourseStudentsPage() {
             <Tab value={2} label="الدورات التطويرية" />
           </Tabs>
 
-          <Stack direction="row" spacing={1} mb={.5} dir="rtl">
-            <Button startIcon={<SelectAllIcon />} onClick={() => setSelectionModel(rows.map((x) => x.id))}>
+          <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1} mb={.5} dir="rtl">
+            <Button sx={uiLayout.buttonSx} startIcon={<SelectAllIcon />} onClick={() => setSelectionModel(rows.map((x) => x.id))}>
               تحديد الكل
             </Button>
-            <Button startIcon={<DeselectIcon />} onClick={() => setSelectionModel([])}>
+            <Button sx={uiLayout.buttonSx} startIcon={<DeselectIcon />} onClick={() => setSelectionModel([])}>
               إلغاء التحديد
             </Button>
-            <Button
+            <Button sx={uiLayout.buttonSx}
               startIcon={<DriveFileMoveIcon />}
               disabled={!selectedRows.length}
               onClick={() => openTransferPassword(selectedRows)}
@@ -924,7 +926,7 @@ export default function CourseStudentsPage() {
             </Typography>
           </Stack>
 
-          <Box sx={{ height: "calc(100vh - 225px)", minHeight: 520 }}>
+          <Box sx={uiLayout.withUiSx({ height: "calc(100vh - 225px)", minHeight: 520 }, uiLayout.tableContainerSx)}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -938,13 +940,13 @@ export default function CourseStudentsPage() {
               pageSizeOptions={[15, 25, 50, 100]}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              sx={{
+              sx={uiLayout.withUiSx({
                 direction: "rtl",
                 border: 0,
                 "& .MuiDataGrid-columnHeaders": { bgcolor: "#edf8f3", fontWeight: 900 },
                 "& .MuiDataGrid-row:nth-of-type(odd)": { bgcolor: "#fff4ea" },
                 "& .MuiDataGrid-cell": { fontWeight: 700, fontSize: 12.5 }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         </Paper>
@@ -994,10 +996,10 @@ export default function CourseStudentsPage() {
             spacing={isPhone ? 0.55 : isTablet ? 0.7 : 1}
             alignItems="center"
             mb={isPhone ? 0.7 : 1}
-            sx={{
+            sx={uiLayout.withUiSx({
               flexWrap: isCompact ? "wrap" : "nowrap",
               rowGap: isPhone ? 0.6 : isTablet ? 0.75 : 0
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Stack
               direction="row"
@@ -1048,7 +1050,7 @@ export default function CourseStudentsPage() {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 display: "grid",
                 gridTemplateColumns: {
@@ -1062,9 +1064,9 @@ export default function CourseStudentsPage() {
                 flexBasis: isCompact ? "100%" : "auto",
                 flexGrow: isCompact ? 1 : 0,
                 minWidth: 0
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 select
                 size="small"
                 label="الفرع"
@@ -1111,13 +1113,13 @@ export default function CourseStudentsPage() {
                     }
                   }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   ...compactFilterSx,
                   gridColumn: {
                     xs: "1 / -1",
                     sm: "auto"
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               >
                 {branches.map((item) => (
                   <MenuItem
@@ -1129,7 +1131,7 @@ export default function CourseStudentsPage() {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 select
                 size="small"
                 label="الدفعة"
@@ -1176,7 +1178,7 @@ export default function CourseStudentsPage() {
                     }
                   }
                 }}
-                sx={compactFilterSx}
+                sx={uiLayout.withUiSx(compactFilterSx, uiLayout.formFieldSx)}
               >
                 {batches.map((item) => (
                   <MenuItem
@@ -1188,7 +1190,7 @@ export default function CourseStudentsPage() {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 select
                 size="small"
                 label="الدورة"
@@ -1235,7 +1237,7 @@ export default function CourseStudentsPage() {
                     }
                   }
                 }}
-                sx={compactFilterSx}
+                sx={uiLayout.withUiSx(compactFilterSx, uiLayout.formFieldSx)}
               >
                 {courses.map((item) => (
                   <MenuItem
@@ -1252,17 +1254,17 @@ export default function CourseStudentsPage() {
               size="small"
               startIcon={<RefreshIcon />}
               onClick={loadStudents}
-              sx={{
+              sx={uiLayout.withUiSx({
                 flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
                 minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 fontSize: isPhone
-                  ? "0.48rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.58rem"
+                    ? "0.75rem"
                     : undefined
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -1270,17 +1272,17 @@ export default function CourseStudentsPage() {
               size="small"
               startIcon={<FileDownloadIcon />}
               onClick={exportXlsx}
-              sx={{
+              sx={uiLayout.withUiSx({
                 flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
                 minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 fontSize: isPhone
-                  ? "0.48rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.58rem"
+                    ? "0.75rem"
                     : undefined
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصدير Excel
             </Button>
@@ -1300,9 +1302,9 @@ export default function CourseStudentsPage() {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.44rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.54rem"
+                    ? "0.75rem"
                     : undefined
               }
             }}
@@ -1316,19 +1318,19 @@ export default function CourseStudentsPage() {
             spacing={isPhone ? 0.35 : isTablet ? 0.5 : 1}
             mb={.5}
             dir="rtl"
-            sx={{
+            sx={uiLayout.withUiSx({
               flexWrap: isCompact ? "wrap" : "nowrap",
               rowGap: isPhone ? 0.4 : 0
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               size="small"
               startIcon={<SelectAllIcon />}
               onClick={() => setSelectionModel(rows.map((x) => x.id))}
-              sx={{
-                fontSize: isPhone ? "0.38rem" : isTablet ? "0.48rem" : undefined,
+              sx={uiLayout.withUiSx({
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 minWidth: 0
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديد الكل
             </Button>
@@ -1336,10 +1338,10 @@ export default function CourseStudentsPage() {
               size="small"
               startIcon={<DeselectIcon />}
               onClick={() => setSelectionModel([])}
-              sx={{
-                fontSize: isPhone ? "0.38rem" : isTablet ? "0.48rem" : undefined,
+              sx={uiLayout.withUiSx({
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 minWidth: 0
-              }}
+              }, uiLayout.buttonSx)}
             >
               إلغاء التحديد
             </Button>
@@ -1348,10 +1350,10 @@ export default function CourseStudentsPage() {
               disabled={!selectedRows.length}
               onClick={() => openTransferPassword(selectedRows)}
               size="small"
-              sx={{
-                fontSize: isPhone ? "0.38rem" : isTablet ? "0.48rem" : undefined,
+              sx={uiLayout.withUiSx({
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 minWidth: 0
-              }}
+              }, uiLayout.buttonSx)}
             >
               نقل المحدد ({selectedRows.length})
             </Button>
@@ -1361,7 +1363,7 @@ export default function CourseStudentsPage() {
                 flexBasis: isPhone ? "100%" : undefined,
                 fontWeight: 900,
                 color: "#ae1e21",
-                fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 textAlign: isPhone ? "center" : "start"
               }}
             >
@@ -1370,14 +1372,14 @@ export default function CourseStudentsPage() {
           </Stack>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               height: isPhone
                 ? "calc(100dvh - 300px)"
                 : isTablet
                   ? "calc(100dvh - 270px)"
                   : "calc(100vh - 225px)",
               minHeight: isPhone ? 360 : isTablet ? 430 : 520
-            }}
+            }, uiLayout.tableContainerSx)}
           >
             <DataGrid
               rows={rows}
@@ -1400,7 +1402,7 @@ export default function CourseStudentsPage() {
               pageSizeOptions={[15, 25, 50, 100]}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              sx={{
+              sx={uiLayout.withUiSx({
                 direction: "rtl",
                 border: 0,
                 "& .MuiDataGrid-columnHeaders": {
@@ -1414,9 +1416,9 @@ export default function CourseStudentsPage() {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.29rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : undefined
                 },
                 "& .MuiDataGrid-row:nth-of-type(odd)": {
@@ -1425,9 +1427,9 @@ export default function CourseStudentsPage() {
                 "& .MuiDataGrid-cell": {
                   fontWeight: 700,
                   fontSize: isPhone
-                    ? "0.29rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.42rem"
+                      ? "0.75rem"
                       : 12.5,
                   px: isPhone ? 0.08 : isTablet ? 0.3 : 0.7
                 },
@@ -1440,10 +1442,10 @@ export default function CourseStudentsPage() {
                   gap: isTablet ? 0.4 : 1
                 },
                 "& .MuiDataGrid-scrollbar--horizontal": {
-                  display: isCompact ? "none" : undefined
+                  display: "block"
                 },
                 "& .MuiDataGrid-virtualScroller": {
-                  overflowX: isCompact ? "hidden !important" : undefined
+                  overflowX: "auto"
                 },
                 "& .MuiDataGrid-main": {
                   overflowX: isCompact ? "hidden !important" : undefined
@@ -1460,7 +1462,7 @@ export default function CourseStudentsPage() {
                 "& .MuiCheckbox-root .MuiSvgIcon-root": {
                   fontSize: isPhone ? 13 : isTablet ? 17 : undefined
                 }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         </Paper>
@@ -1534,7 +1536,7 @@ export default function CourseStudentsPage() {
         </MenuItem>
       </Menu>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={notesOpen}
         onClose={() => setNotesOpen(false)}
         fullWidth
@@ -1544,14 +1546,14 @@ export default function CourseStudentsPage() {
       >
         <DialogTitle>إضافة ملاحظة</DialogTitle>
         <DialogContent>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus fullWidth multiline minRows={5} value={notesText}
-            onChange={(event) => setNotesText(event.target.value)} sx={{ mt: 1 }}
+            onChange={(event) => setNotesText(event.target.value)} sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.formFieldSx)}
           />
         </DialogContent>
-        <DialogActions>
-          <Button color="error" onClick={() => setNotesOpen(false)}>إلغاء</Button>
-          <Button variant="contained" onClick={async () => {
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} color="error" onClick={() => setNotesOpen(false)}>إلغاء</Button>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={async () => {
             if (!notesText.trim()) {
               await alertError("برجاء إدخال الملاحظة المراد إضافتها");
               return;
@@ -1591,7 +1593,7 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={statusOpen}
         onClose={() => setStatusOpen(false)}
         fullWidth
@@ -1601,14 +1603,14 @@ export default function CourseStudentsPage() {
       >
         <DialogTitle>تغيير حالة الطالب</DialogTitle>
         <DialogContent>
-          <TextField select fullWidth label="حالة التسجيل" value={statusGuid}
-            onChange={(event) => setStatusGuid(event.target.value)} sx={{ mt: 1 }}>
+          <TextField InputLabelProps={{ shrink: true }} select fullWidth label="حالة التسجيل" value={statusGuid}
+            onChange={(event) => setStatusGuid(event.target.value)} sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.formFieldSx)}>
             {statuses.map((item) => <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>)}
           </TextField>
         </DialogContent>
-        <DialogActions>
-          <Button color="error" onClick={() => setStatusOpen(false)}>إلغاء</Button>
-          <Button variant="contained" onClick={async () => {
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} color="error" onClick={() => setStatusOpen(false)}>إلغاء</Button>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={async () => {
             if (!isValidGuid(statusGuid)) {
               await alertError("برجاء اختيار حالة التسجيل");
               return;
@@ -1631,7 +1633,7 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={finishOpen}
         onClose={() => setFinishOpen(false)}
         fullWidth
@@ -1641,20 +1643,20 @@ export default function CourseStudentsPage() {
       >
         <DialogTitle>إنهاء دراسة طالب</DialogTitle>
         <DialogContent>
-          <Stack spacing={1.5} mt={1}>
-            <TextField select fullWidth label="حالة التسجيل" value={finishStatusGuid}
+          <Stack sx={uiLayout.formGridSx} spacing={1.5} mt={1}>
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} select fullWidth label="حالة التسجيل" value={finishStatusGuid}
               onChange={(event) => setFinishStatusGuid(event.target.value)}>
               {statuses.map((item) => <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>)}
             </TextField>
-            <TextField type="number" label="النسبة" value={finishMark}
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} type="number" label="النسبة" value={finishMark}
               onChange={(event) => setFinishMark(event.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField multiline minRows={5} label="ملاحظات" value={finishNotes}
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} multiline minRows={5} label="ملاحظات" value={finishNotes}
               onChange={(event) => setFinishNotes(event.target.value)} />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button color="error" onClick={() => setFinishOpen(false)}>إلغاء</Button>
-          <Button variant="contained" onClick={async () => {
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} color="error" onClick={() => setFinishOpen(false)}>إلغاء</Button>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={async () => {
             if (!isValidGuid(finishStatusGuid)) {
               await alertError("برجاء اختيار حالة التسجيل");
               return;
@@ -1686,7 +1688,7 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={ahliOpen}
         onClose={() => setAhliOpen(false)}
         fullWidth
@@ -1696,15 +1698,15 @@ export default function CourseStudentsPage() {
       >
         <DialogTitle>موقف الطالب من التدريب الأهلي</DialogTitle>
         <DialogContent>
-          <Stack spacing={1.5} mt={1}>
+          <Stack sx={uiLayout.formGridSx} spacing={1.5} mt={1}>
             <Typography fontWeight={900} textAlign="left">هل تم رفع الطالب على التدريب الأهلي؟</Typography>
-            <TextField select fullWidth label="اختر الحالة" value={ahliStatus}
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} select fullWidth label="اختر الحالة" value={ahliStatus}
               onChange={(event) => setAhliStatus(event.target.value)}>
               <MenuItem value="1">نعم - تم الرفع</MenuItem>
               <MenuItem value="2">لا - لم يتم الرفع</MenuItem>
               <MenuItem value="3">مؤجل</MenuItem>
             </TextField>
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               multiline minRows={4}
               label={String(ahliStatus) === "1" ? "رقم الدورة" : String(ahliStatus) === "3" ? "سبب التأجيل" : "سبب عدم الرفع"}
               value={ahliDetails}
@@ -1712,9 +1714,9 @@ export default function CourseStudentsPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button color="error" onClick={() => setAhliOpen(false)}>إلغاء</Button>
-          <Button variant="contained" onClick={async () => {
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} color="error" onClick={() => setAhliOpen(false)}>إلغاء</Button>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={async () => {
             if (!isValidGuid(ahliRow?.studentLevelGuid)) {
               await alertError("تعذر قراءة قيد دراسة الطالب من الصف المحدد");
               return;
@@ -1742,7 +1744,7 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={passwordOpen}
         onClose={() => setPasswordOpen(false)}
         fullWidth
@@ -1757,20 +1759,20 @@ export default function CourseStudentsPage() {
       >
         <DialogTitle>التحقق من كلمة المرور</DialogTitle>
         <DialogContent>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus fullWidth type="password" label="كلمة المرور"
             value={password} onChange={(event) => setPassword(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter") confirmPassword(); }}
-            sx={{ mt: 1 }}
+            sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.formFieldSx)}
           />
         </DialogContent>
-        <DialogActions>
-          <Button color="error" onClick={() => setPasswordOpen(false)}>إلغاء</Button>
-          <Button variant="contained" onClick={confirmPassword}>تأكيد</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} color="error" onClick={() => setPasswordOpen(false)}>إلغاء</Button>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={confirmPassword}>تأكيد</Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={transferOpen}
         onClose={() => setTransferOpen(false)}
         fullWidth
@@ -1792,7 +1794,7 @@ export default function CourseStudentsPage() {
               ["updateBatch", "newBatchGuid", "الدفعة", transferLookups.batches, "Name"]
             ].map(([checkKey, valueKey, label, items, nameKey]) => (
               <Box key={checkKey}>
-                <FormControlLabel
+                <FormControlLabel sx={uiLayout.checkboxFieldSx}
                   control={
                     <Checkbox
                       checked={Boolean(transferForm[checkKey])}
@@ -1805,7 +1807,7 @@ export default function CourseStudentsPage() {
                   }
                   label={`تغيير ${label}`}
                 />
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   select fullWidth size="small" label={`${label} الجديد`}
                   disabled={!transferForm[checkKey]}
                   value={transferForm[valueKey]}
@@ -1821,7 +1823,7 @@ export default function CourseStudentsPage() {
                 </TextField>
               </Box>
             ))}
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               multiline minRows={3} label="سبب النقل — اختياري"
               value={transferForm.reason}
               onChange={(event) => setTransferForm((current) => ({
@@ -1830,9 +1832,9 @@ export default function CourseStudentsPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button color="error" onClick={() => setTransferOpen(false)}>إلغاء</Button>
-          <Button variant="contained" onClick={saveTransfer}>حفظ النقل</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} color="error" onClick={() => setTransferOpen(false)}>إلغاء</Button>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={saveTransfer}>حفظ النقل</Button>
         </DialogActions>
       </Dialog>
 

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -195,14 +197,14 @@ const LineCard = memo(function LineCard({ row, index, onChange, onDelete, onCost
     <Paper variant="outlined" sx={{ p: 1, borderRadius: 2, borderColor: border }}>
       <Stack spacing={1}>
         <Stack direction="row" spacing={1} alignItems="center">
-          <TextField fullWidth size="small" label="الحساب" value={row.accountName} InputProps={{ readOnly: true }} />
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth size="small" label="الحساب" value={row.accountName} InputProps={{ readOnly: true }} />
           <IconButton color="error" onClick={() => onDelete(index)}><DeleteOutlineIcon /></IconButton>
         </Stack>
-        <TextField size="small" label="البيان" value={row.notes} onChange={(e) => onChange(index, "notes", e.target.value)} />
-        <Stack direction="row" spacing={1}>
-          <TextField fullWidth size="small" type="number" label="المبلغ" value={row.amount}
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="البيان" value={row.notes} onChange={(e) => onChange(index, "notes", e.target.value)} />
+        <Stack sx={uiLayout.filterBarSx} direction="row" spacing={1}>
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth size="small" type="number" label="المبلغ" value={row.amount}
             inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} onChange={(e) => onChange(index, "amount", e.target.value)} />
-          <Button fullWidth variant="outlined" onClick={() => onCost(index)} sx={{ color: primary, borderColor: border }}>
+          <Button fullWidth variant="outlined" onClick={() => onCost(index)} sx={uiLayout.withUiSx({ color: primary, borderColor: border }, uiLayout.buttonSx)}>
             {row.costName || "مركز التكلفة"}
           </Button>
         </Stack>
@@ -633,16 +635,16 @@ export default function CashDisbursement() {
             <Chip label={code ? `رقم السند: ${code}` : "سند جديد"} sx={{ bgcolor: "white", color: primaryDark, fontWeight: 900 }} />
           </Box>
           <Box sx={{ p: { xs: 1, sm: 1.5 } }}>
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "repeat(4,minmax(120px,1fr))", lg: "repeat(4,150px)" }, gap: 1, mb: 1.5 }}>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={reset} sx={{ bgcolor: primary, fontWeight: 900 }}>جديد</Button>
-              <Button variant="outlined" startIcon={<SearchIcon />} onClick={() => setListOpen(true)} sx={{ color: primary, borderColor: primary, fontWeight: 900 }}>بحث عن سند</Button>
-              <Button variant="contained" startIcon={saving ? <CircularProgress size={17} color="inherit" /> : <SaveIcon />} disabled={saving} onClick={save} sx={{ bgcolor: primary, fontWeight: 900 }}>{guid ? "حفظ التعديل" : "حفظ"}</Button>
-              <Button variant="outlined" startIcon={<PrintIcon />} disabled={!guid} onClick={printDoc} sx={{ fontWeight: 900 }}>طباعة</Button>
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "repeat(4,minmax(120px,1fr))", lg: "repeat(4,150px)" }, gap: 1, mb: 1.5 }, uiLayout.actionBarSx)}>
+              <Button variant="contained" startIcon={<AddIcon />} onClick={reset} sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 900 }, uiLayout.buttonSx)}>جديد</Button>
+              <Button variant="outlined" startIcon={<SearchIcon />} onClick={() => setListOpen(true)} sx={uiLayout.withUiSx({ color: primary, borderColor: primary, fontWeight: 900 }, uiLayout.buttonSx)}>بحث عن سند</Button>
+              <Button variant="contained" startIcon={saving ? <CircularProgress size={17} color="inherit" /> : <SaveIcon />} disabled={saving} onClick={save} sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 900 }, uiLayout.buttonSx)}>{guid ? "حفظ التعديل" : "حفظ"}</Button>
+              <Button variant="outlined" startIcon={<PrintIcon />} disabled={!guid} onClick={printDoc} sx={uiLayout.withUiSx({ fontWeight: 900 }, uiLayout.buttonSx)}>طباعة</Button>
             </Box>
 
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "150px 180px minmax(220px,1fr)", lg: "150px 190px minmax(220px,1fr) minmax(260px,1fr)" }, gap: 1, mb: 1 }}>
-              <TextField size="small" label="رقم السند" value={code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <TextField
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "150px 180px minmax(220px,1fr)", lg: "150px 190px minmax(220px,1fr) minmax(260px,1fr)" }, gap: 1, mb: 1 }, uiLayout.formGridSx)}>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="رقم السند" value={code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+              <TextField sx={uiLayout.formFieldSx}
                 size="small"
                 type="date"
                 label="التاريخ الميلادي"
@@ -655,17 +657,17 @@ export default function CashDisbursement() {
                   dir: "ltr"
                 }}
               />
-              <TextField size="small" label="الخزينة / البنك" value={cashBoxName} InputProps={{ readOnly: true, endAdornment: <InputAdornment position="end"><IconButton size="small" onClick={() => setCashBoxOpen(true)}><SearchIcon fontSize="small" /></IconButton></InputAdornment> }} />
-              <TextField size="small" label="ملاحظات" value={notes} onChange={e => setNotes(e.target.value)} sx={{ gridColumn: { xs: "1 / -1", lg: "auto" } }} />
-              <TextField size="small" label="المورد" value={vendorName} onChange={e => setVendorName(e.target.value)} />
-              <TextField size="small" label="الرقم الضريبي" value={vendorTax} onChange={e => setVendorTax(e.target.value)} />
-              <TextField size="small" label="رقم الهاتف" value={vendorTel} onChange={e => setVendorTel(e.target.value)} />
-              <FormControlLabel sx={{ m: 0, border: `1px solid ${border}`, borderRadius: 1, px: 1 }} control={<Switch checked={isUse} onChange={e => setIsUse(e.target.checked)} />} label={isUse ? "نشط" : "غير نشط"} />
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الخزينة / البنك" value={cashBoxName} InputProps={{ readOnly: true, endAdornment: <InputAdornment position="end"><IconButton size="small" onClick={() => setCashBoxOpen(true)}><SearchIcon fontSize="small" /></IconButton></InputAdornment> }} />
+              <TextField InputLabelProps={{ shrink: true }} size="small" label="ملاحظات" value={notes} onChange={e => setNotes(e.target.value)} sx={uiLayout.withUiSx({ gridColumn: { xs: "1 / -1", lg: "auto" } }, uiLayout.formFieldSx)} />
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="المورد" value={vendorName} onChange={e => setVendorName(e.target.value)} />
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الرقم الضريبي" value={vendorTax} onChange={e => setVendorTax(e.target.value)} />
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="رقم الهاتف" value={vendorTel} onChange={e => setVendorTel(e.target.value)} />
+              <FormControlLabel sx={uiLayout.withUiSx({ m: 0, border: `1px solid ${border}`, borderRadius: 1, px: 1 }, uiLayout.checkboxFieldSx)} control={<Switch checked={isUse} onChange={e => setIsUse(e.target.checked)} />} label={isUse ? "نشط" : "غير نشط"} />
             </Box>
 
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 190px" }, gap: 1, mb: 1.5 }}>
-              <TextField size="small" label="مركز تكلفة الخزينة / البنك" value={cashBoxCostName || cashBoxCostGuid} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              <Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color: primary, borderColor: primary, fontWeight: 800 }}>
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 190px" }, gap: 1, mb: 1.5 }, uiLayout.filterBarSx)}>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="مركز تكلفة الخزينة / البنك" value={cashBoxCostName || cashBoxCostGuid} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+              <Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={uiLayout.withUiSx({ color: primary, borderColor: primary, fontWeight: 800 }, uiLayout.buttonSx)}>
                 {attachment ? attachment.name : "المرفق"}
                 <input ref={fileRef} hidden type="file" accept=".pdf,.jpg,.jpeg" onChange={e => setAttachment(e.target.files?.[0] || null)} />
               </Button>
@@ -673,7 +675,7 @@ export default function CashDisbursement() {
 
             <Divider sx={{ my: 1 }} />
             <Stack direction={{ xs: "column", sm: "row" }} spacing={1} justifyContent="space-between" alignItems={{ xs: "stretch", sm: "center" }} sx={{ mb: 1 }}>
-              <Button startIcon={<AddIcon />} onClick={() => setAccountOpen(true)} sx={{ color: primary, fontWeight: 900 }}>إضافة حساب</Button>
+              <Button startIcon={<AddIcon />} onClick={() => setAccountOpen(true)} sx={uiLayout.withUiSx({ color: primary, fontWeight: 900 }, uiLayout.buttonSx)}>إضافة حساب</Button>
               <Paper variant="outlined" sx={{ px: 2, py: .7, minWidth: 180, textAlign: "center" }}><Typography variant="caption">الإجمالي</Typography><Typography sx={{ fontWeight: 950, color: primaryDark, fontSize: 18 }}>{money(total)}</Typography></Paper>
             </Stack>
 
@@ -684,24 +686,24 @@ export default function CashDisbursement() {
                 {rows.map((row, index) => <LineCard key={row.id} row={row} index={index} onChange={updateRow} onDelete={deleteRow} onCost={openCost} />)}
               </Box>
             ) : (
-              <TableContainer sx={{ border: `1px solid ${border}`, borderRadius: 2 }}><Table size="small"><TableHead><TableRow sx={{ "& th": { bgcolor: "#eaf3ef", fontWeight: 950 } }}><TableCell>الحساب</TableCell><TableCell>البيان</TableCell><TableCell sx={{ width: 140 }}>المبلغ</TableCell><TableCell sx={{ width: 220 }}>مركز التكلفة</TableCell><TableCell sx={{ width: 55 }} /></TableRow></TableHead><TableBody>
-                {rows.map((row, index) => <TableRow key={row.id}><TableCell><b>{row.accountName}</b></TableCell><TableCell><TextField fullWidth size="small" value={row.notes} onChange={e => updateRow(index, "notes", e.target.value)} /></TableCell><TableCell><TextField fullWidth size="small" type="number" inputProps={{ min: 0, step: ".01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} value={row.amount} onChange={e => updateRow(index, "amount", e.target.value)} /></TableCell><TableCell><Button fullWidth variant="outlined" onClick={() => openCost(index)} sx={{ color: primary, borderColor: border }}>{row.costName || "اختيار"}</Button></TableCell><TableCell><Tooltip title="حذف"><IconButton color="error" onClick={() => deleteRow(index)}><DeleteOutlineIcon fontSize="small" /></IconButton></Tooltip></TableCell></TableRow>)}
+              <TableContainer sx={uiLayout.withUiSx({ border: `1px solid ${border}`, borderRadius: 2 }, uiLayout.tableContainerSx)}><Table size="small"><TableHead><TableRow sx={{ "& th": { bgcolor: "#eaf3ef", fontWeight: 950 } }}><TableCell>الحساب</TableCell><TableCell>البيان</TableCell><TableCell sx={{ width: 140 }}>المبلغ</TableCell><TableCell sx={{ width: 220 }}>مركز التكلفة</TableCell><TableCell sx={{ width: 55 }} /></TableRow></TableHead><TableBody>
+                {rows.map((row, index) => <TableRow key={row.id}><TableCell><b>{row.accountName}</b></TableCell><TableCell><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth size="small" value={row.notes} onChange={e => updateRow(index, "notes", e.target.value)} /></TableCell><TableCell><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth size="small" type="number" inputProps={{ min: 0, step: ".01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} value={row.amount} onChange={e => updateRow(index, "amount", e.target.value)} /></TableCell><TableCell><Button fullWidth variant="outlined" onClick={() => openCost(index)} sx={uiLayout.withUiSx({ color: primary, borderColor: border }, uiLayout.buttonSx)}>{row.costName || "اختيار"}</Button></TableCell><TableCell><Tooltip title="حذف"><IconButton color="error" onClick={() => deleteRow(index)}><DeleteOutlineIcon fontSize="small" /></IconButton></Tooltip></TableCell></TableRow>)}
               </TableBody></Table></TableContainer>
             )}
           </Box>
         </Paper>
       </Box>
 
-      <Dialog open={accountOpen} onClose={() => setAccountOpen(false)} fullScreen={isMobile} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={accountOpen} onClose={() => setAccountOpen(false)} fullScreen={isMobile} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 900 }}>قائمة الحسابات<IconButton onClick={() => setAccountOpen(false)} sx={{ position: "absolute", left: 12, top: 10 }}><CloseIcon /></IconButton></DialogTitle>
-        <DialogContent dividers><TextField autoFocus fullWidth size="small" value={accountSearch} onChange={e => setAccountSearch(e.target.value)} placeholder="اكتب حرفين على الأقل من اسم الحساب..." InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} sx={{ mb: 1 }} />
-          {accountsLoading ? <Box sx={{ p: 4, textAlign: "center" }}><CircularProgress size={28} /></Box> : <Stack spacing={.7}>{accounts.map(a => <Button key={a.guid} variant="outlined" onClick={() => chooseAccount(a)} sx={{ justifyContent: "flex-start", color: primaryDark, borderColor: border }}>{a.name}</Button>)}</Stack>}
+        <DialogContent dividers><TextField InputLabelProps={{ shrink: true }} autoFocus fullWidth size="small" value={accountSearch} onChange={e => setAccountSearch(e.target.value)} placeholder="اكتب حرفين على الأقل من اسم الحساب..." InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)} />
+          {accountsLoading ? <Box sx={{ p: 4, textAlign: "center" }}><CircularProgress size={28} /></Box> : <Stack spacing={.7}>{accounts.map(a => <Button key={a.guid} variant="outlined" onClick={() => chooseAccount(a)} sx={uiLayout.withUiSx({ justifyContent: "flex-start", color: primaryDark, borderColor: border }, uiLayout.buttonSx)}>{a.name}</Button>)}</Stack>}
         </DialogContent>
       </Dialog>
 
-      <Dialog open={cashBoxOpen} onClose={() => setCashBoxOpen(false)} fullScreen={isMobile} maxWidth="sm" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={cashBoxOpen} onClose={() => setCashBoxOpen(false)} fullScreen={isMobile} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 900 }}>قائمة الخزائن / البنوك</DialogTitle>
-        <DialogContent dividers><TextField autoFocus fullWidth size="small" value={cashBoxSearch} onChange={e => setCashBoxSearch(e.target.value)} placeholder="بحث..." sx={{ mb: 1 }} />
+        <DialogContent dividers><TextField InputLabelProps={{ shrink: true }} autoFocus fullWidth size="small" value={cashBoxSearch} onChange={e => setCashBoxSearch(e.target.value)} placeholder="بحث..." sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)} />
           {cashBoxesLoading ? (
             <Box sx={{ p: 4, textAlign: "center" }}>
               <CircularProgress size={28} />
@@ -719,11 +721,11 @@ export default function CashDisbursement() {
                   key={b.guid || `${b.code}-${index}`}
                   variant="outlined"
                   onClick={() => chooseCashBox(b)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     justifyContent: "space-between",
                     color: primaryDark,
                     borderColor: border
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   <span>{b.name}</span>
                   <small>
@@ -734,19 +736,19 @@ export default function CashDisbursement() {
               ))}
             </Stack>
           )}
-        </DialogContent><DialogActions><Button onClick={() => setCashBoxOpen(false)}>إغلاق</Button></DialogActions>
+        </DialogContent><DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={() => setCashBoxOpen(false)}>إغلاق</Button></DialogActions>
       </Dialog>
 
-      <Dialog open={costOpen} onClose={() => setCostOpen(false)} fullScreen={isMobile} maxWidth="sm" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={costOpen} onClose={() => setCostOpen(false)} fullScreen={isMobile} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 900 }}>مراكز التكلفة</DialogTitle>
-        <DialogContent dividers><TextField fullWidth size="small" value={costSearch} onChange={e => setCostSearch(e.target.value)} placeholder="بحث..." sx={{ mb: 1 }} />
-          <Stack spacing={.6}>{costs.filter(c => `${c.name} ${c.code}`.toLowerCase().includes(costSearch.toLowerCase())).map(c => <Button key={c.guid} variant="outlined" onClick={() => chooseCost(c)} sx={{ justifyContent: "space-between", color: primaryDark, borderColor: border }}><span>{c.name}</span><small>{c.code}</small></Button>)}</Stack>
-        </DialogContent><DialogActions><Button onClick={() => setCostOpen(false)}>إغلاق</Button></DialogActions>
+        <DialogContent dividers><TextField InputLabelProps={{ shrink: true }} fullWidth size="small" value={costSearch} onChange={e => setCostSearch(e.target.value)} placeholder="بحث..." sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)} />
+          <Stack spacing={.6}>{costs.filter(c => `${c.name} ${c.code}`.toLowerCase().includes(costSearch.toLowerCase())).map(c => <Button key={c.guid} variant="outlined" onClick={() => chooseCost(c)} sx={uiLayout.withUiSx({ justifyContent: "space-between", color: primaryDark, borderColor: border }, uiLayout.buttonSx)}><span>{c.name}</span><small>{c.code}</small></Button>)}</Stack>
+        </DialogContent><DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={() => setCostOpen(false)}>إغلاق</Button></DialogActions>
       </Dialog>
 
-      <Dialog open={listOpen} onClose={() => setListOpen(false)} fullScreen={isMobile} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={listOpen} onClose={() => setListOpen(false)} fullScreen={isMobile} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 900 }}>سندات الصرف</DialogTitle>
-        <DialogContent dividers><TextField autoFocus fullWidth size="small" value={listSearch} onChange={e => setListSearch(e.target.value)} placeholder="بحث بالحساب أو الوصف..." sx={{ mb: 1 }} />
+        <DialogContent dividers><TextField InputLabelProps={{ shrink: true }} autoFocus fullWidth size="small" value={listSearch} onChange={e => setListSearch(e.target.value)} placeholder="بحث بالحساب أو الوصف..." sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)} />
           {listLoading ? (
             <Box sx={{ p: 4, textAlign: "center" }}>
               <CircularProgress size={28} />
@@ -790,7 +792,7 @@ export default function CashDisbursement() {
               ))}
             </Stack>
           ) : (
-            <TableContainer>
+            <TableContainer sx={uiLayout.tableContainerSx}>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -822,7 +824,7 @@ export default function CashDisbursement() {
               </Table>
             </TableContainer>
           )}
-        </DialogContent><DialogActions><Button onClick={() => setListOpen(false)}>إغلاق</Button></DialogActions>
+        </DialogContent><DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={() => setListOpen(false)}>إغلاق</Button></DialogActions>
       </Dialog>
     </Box></NavigationShell>
   );

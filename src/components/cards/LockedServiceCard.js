@@ -107,7 +107,7 @@ export default function LockedServiceCard({
 
         <Typography
           sx={{
-            fontSize: { xs: "0.72rem", sm: "0.76rem" },
+            fontSize: { xs: "0.75rem", sm: "0.76rem" },
             fontWeight: 1000,
             color: "#1f2d3d",
           }}
@@ -119,7 +119,7 @@ export default function LockedServiceCard({
           sx={{
             maxWidth: 230,
             textAlign: "center",
-            fontSize: { xs: "0.56rem", sm: "0.6rem" },
+            fontSize: { xs: "0.75rem", sm: "0.75rem" },
             fontWeight: 700,
             lineHeight: 1.55,
             color: "#6b7c73",

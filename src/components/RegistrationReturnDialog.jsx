@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -434,14 +435,14 @@ export default function RegistrationReturnDialog({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
@@ -474,7 +475,7 @@ export default function RegistrationReturnDialog({
           fontWeight: 950,
           py: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
           px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
-          fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : undefined,
+          fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : undefined,
           flexShrink: 0
         }}
       >
@@ -491,10 +492,10 @@ export default function RegistrationReturnDialog({
           minHeight: 0,
 
           "& .MuiInputLabel-root": {
-            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           },
           "& .MuiInputBase-input, & .MuiSelect-select": {
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             py: isPhone ? 0.52 : isTablet ? 0.67 : undefined
           },
           "& .MuiOutlinedInput-root": {
@@ -502,7 +503,7 @@ export default function RegistrationReturnDialog({
             borderRadius: isCompact ? 1.25 : undefined
           },
           "& .MuiFormHelperText-root": {
-            fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           }
         }}
       >
@@ -512,7 +513,7 @@ export default function RegistrationReturnDialog({
             sx={{
               mb: isCompact ? 0.35 : 2,
               py: isCompact ? 0.15 : undefined,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }}
           >
             {error}
@@ -538,7 +539,7 @@ export default function RegistrationReturnDialog({
                   color: primaryColor,
                   fontWeight: 950,
                   textAlign: "center",
-                  fontSize: isPhone ? "0.54rem" : isTablet ? "0.64rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 }}
               >
                 بيانات الطالب
@@ -546,7 +547,7 @@ export default function RegistrationReturnDialog({
 
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="اسم الطالب"
                     value={studentName || ""}
@@ -554,8 +555,8 @@ export default function RegistrationReturnDialog({
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={4}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="رقم الهوية"
                     value={nationalId || ""}
@@ -563,8 +564,8 @@ export default function RegistrationReturnDialog({
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
-                <Grid item xs={6} sm={3} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={3} md={4}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="رقم الجوال"
                     value={studentTel || ""}
@@ -575,8 +576,8 @@ export default function RegistrationReturnDialog({
             </Paper>
 
             <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
-              <Grid item xs={6} sm={6} md={4}>
-                <TextField
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField sx={uiLayout.formFieldSx}
                   fullWidth
                   type="datetime-local"
                   label="التاريخ"
@@ -586,8 +587,8 @@ export default function RegistrationReturnDialog({
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
-              <Grid item xs={6} sm={6} md={4}>
-                <FormControl fullWidth disabled={loadingDocs}>
+              <Grid item xs={12} sm={6} md={4}>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth disabled={loadingDocs}>
                   <InputLabel>نوع المستند</InputLabel>
                   <Select
                     value={selectedDocGuid}
@@ -620,7 +621,7 @@ export default function RegistrationReturnDialog({
               </Grid>
 
               <Grid item xs={12} sm={12} md={4}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="مندوب البيع"
                   value={context?.salesManName || ""}
@@ -629,7 +630,7 @@ export default function RegistrationReturnDialog({
               </Grid>
             </Grid>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               fullWidth
               multiline
               minRows={isPhone ? 2 : isTablet ? 2 : 3}
@@ -641,20 +642,20 @@ export default function RegistrationReturnDialog({
             <TableContainer
               component={Paper}
               variant="outlined"
-              sx={{
+              sx={uiLayout.withUiSx({
                 borderRadius: isCompact ? 1.3 : undefined,
                 overflowX: "auto",
                 "& .MuiTableCell-root": {
                   py: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
                   px: isPhone ? 0.35 : isTablet ? 0.55 : undefined,
-                  fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   whiteSpace: "nowrap"
                 },
                 "& .MuiTableHead-root .MuiTableCell-root": {
-                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   lineHeight: 1.1
                 }
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <Table size="small">
                 <TableHead>
@@ -740,7 +741,7 @@ export default function RegistrationReturnDialog({
                     textAlign: "center"
                   }}
                 >
-                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>الإجمالي</Typography>
+                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>الإجمالي</Typography>
                   <Typography sx={{ color: "#d71920", fontSize: isPhone ? 14 : isTablet ? 17 : 25, fontWeight: 950 }}>
                     {money(totals.total)}
                   </Typography>
@@ -757,7 +758,7 @@ export default function RegistrationReturnDialog({
                     textAlign: "center"
                   }}
                 >
-                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>الضريبة</Typography>
+                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>الضريبة</Typography>
                   <Typography sx={{ color: "#d71920", fontSize: isPhone ? 14 : isTablet ? 17 : 25, fontWeight: 950 }}>
                     {money(totals.tax)}
                   </Typography>
@@ -774,7 +775,7 @@ export default function RegistrationReturnDialog({
                     textAlign: "center"
                   }}
                 >
-                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>الصافي</Typography>
+                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>الصافي</Typography>
                   <Typography sx={{ color: "#d71920", fontSize: isPhone ? 14 : isTablet ? 17 : 25, fontWeight: 950 }}>
                     {money(totals.subTotal)}
                   </Typography>
@@ -786,12 +787,12 @@ export default function RegistrationReturnDialog({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.35 : isTablet ? 0.55 : 3,
           py: isPhone ? 0.28 : isTablet ? 0.42 : 2,
           gap: isCompact ? 0.35 : 1,
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
@@ -804,13 +805,13 @@ export default function RegistrationReturnDialog({
               <SaveIcon />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             minWidth: isPhone ? 92 : isTablet ? 110 : 140,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           حفظ
         </Button>
@@ -818,13 +819,13 @@ export default function RegistrationReturnDialog({
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

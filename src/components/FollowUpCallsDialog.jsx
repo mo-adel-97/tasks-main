@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState, useMemo } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography,
@@ -319,7 +320,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="xl" sx={{ '& .MuiDialog-paper': { borderRadius: 3 } }}>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="xl" sx={uiLayout.withUiSx({ '& .MuiDialog-paper': { borderRadius: 3 } }, uiLayout.dialogLayoutSx)}>
         <DialogTitle sx={{ 
           textAlign: 'center', 
           fontWeight: 'bold', 
@@ -439,7 +440,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
               
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="🔍 بحث شامل"
                     value={searchTerm}
@@ -455,7 +456,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={2}>
-                  <FormControl fullWidth size="small">
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                     <InputLabel>نوع المكالمة</InputLabel>
                     <Select
                       value={typeFilter}
@@ -470,7 +471,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6} md={2}>
-                  <FormControl fullWidth size="small">
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                     <InputLabel>حالة التوجيه</InputLabel>
                     <Select
                       value={forwardFilter}
@@ -486,7 +487,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6} md={2}>
-                  <FormControl fullWidth size="small">
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                     <InputLabel>الفترة</InputLabel>
                     <Select
                       value={dateFilter}
@@ -501,15 +502,15 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <Box display="flex" gap={1} sx={{ mt: 0.5 }}>
+                  <Box display="flex" gap={1} sx={uiLayout.withUiSx({ mt: 0.5 }, uiLayout.actionBarSx)}>
                     <Button 
                       variant="contained" 
                       onClick={() => {}} 
-                      sx={{ flex: 1 }}
+                      sx={uiLayout.withUiSx({ flex: 1 }, uiLayout.buttonSx)}
                     >
                       تطبيق
                     </Button>
-                    <Button 
+                    <Button sx={uiLayout.buttonSx} 
                       variant="outlined" 
                       color="error" 
                       onClick={resetFilters}
@@ -543,7 +544,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
             </Box>
           ) : (
             <>
-              <TableContainer component={Paper} sx={{ borderRadius: 2, border: 1, borderColor: 'divider' }}>
+              <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, border: 1, borderColor: 'divider' }, uiLayout.tableContainerSx)}>
                 <Table>
                   <TableHead sx={{ bgcolor: 'background.default' }}>
                     <TableRow>
@@ -673,14 +674,14 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                                 color="primary" 
                                 size="small" 
                                 onClick={() => handleOpenFollowForm(call)} 
-                                sx={{ 
+                                sx={uiLayout.withUiSx({ 
                                   fontFamily: "Cairo",
                                   borderRadius: 2,
                                   px: 2,
                                   boxShadow: 'none',
                                   '&:hover': { boxShadow: 'none' },
-                                  fontSize: '0.7rem'
-                                }}
+                                  fontSize: "0.75rem"
+                                }, uiLayout.buttonSx)}
                                 startIcon={<PendingActions fontSize="small" />}
                               >
                                 متابعة
@@ -691,14 +692,14 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                           <TableRow>
                             <TableCell colSpan={9} sx={{ p: 0, borderTop: 0 }}>
                               <Collapse in={expandedRow === index} timeout="auto" unmountOnExit>
-                                <Box sx={{ 
+                                <Box sx={uiLayout.withUiSx({ 
                                   margin: 2,
                                   p: 2,
                                   backgroundColor: 'background.default',
                                   borderRadius: 2,
                                   border: 1,
                                   borderColor: 'divider'
-                                }}>
+                                }, uiLayout.tableContainerSx)}>
                                   <Box sx={{ 
                                     display: 'flex', 
                                     justifyContent: 'space-between',
@@ -759,7 +760,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                                                     height: 24, 
                                                     marginInlineEnd: 1,
                                                     bgcolor: 'secondary.main',
-                                                    fontSize: '0.7rem'
+                                                    fontSize: "0.75rem"
                                                   }}
                                                 >
                                                   {follow.userFullName?.charAt(0) || '—'}
@@ -825,7 +826,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   rowsPerPageOptions={[5, 10, 25]}
                   labelRowsPerPage="صفوف لكل صفحة:"
-                  sx={{ fontFamily: 'Cairo' }}
+                  sx={uiLayout.withUiSx({ fontFamily: 'Cairo' }, uiLayout.tablePaginationSx)}
                   labelDisplayedRows={({ from, to, count }) => (
                     <Typography fontFamily="Cairo">
                       {from}-{to} من {count}
@@ -837,18 +838,18 @@ export default function FollowUpCallsDialog({ open, onClose }) {
           )}
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2, borderTop: 1, borderColor: 'divider' }}>
+        <DialogActions sx={uiLayout.withUiSx({ px: 3, py: 2, borderTop: 1, borderColor: 'divider' }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={onClose} 
             color="secondary" 
             variant="outlined"
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               fontFamily: "Cairo",
               borderRadius: 2,
               px: 3,
               borderWidth: 2,
               '&:hover': { borderWidth: 2 }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -861,7 +862,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
         onClose={handleCloseFollowForm} 
         fullWidth 
         maxWidth="sm"
-        sx={{ '& .MuiDialog-paper': { borderRadius: 3 } }}
+        sx={uiLayout.withUiSx({ '& .MuiDialog-paper': { borderRadius: 3 } }, uiLayout.dialogLayoutSx)}
       >
         <DialogTitle sx={{ 
           fontFamily: "Cairo", 
@@ -906,11 +907,11 @@ export default function FollowUpCallsDialog({ open, onClose }) {
             margin="normal"
             value={followUpNote}
             onChange={(e) => setFollowUpNote(e.target.value)}
-            sx={{ fontFamily: 'Cairo', '& textarea': { fontFamily: 'Cairo' } }}
-            InputLabelProps={{ sx: { fontFamily: 'Cairo' } }}
+            sx={uiLayout.withUiSx({ fontFamily: 'Cairo', '& textarea': { fontFamily: 'Cairo' } }, uiLayout.formFieldSx)}
+            InputLabelProps={{ sx: { fontFamily: 'Cairo' } , shrink: true }}
           />
           
-          <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
+          <FormControl fullWidth margin="normal" sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formFieldSx)}>
             <InputLabel sx={{ fontFamily: 'Cairo' }}>الحالة</InputLabel>
             <Select
               value={followUpStatus}
@@ -935,17 +936,17 @@ export default function FollowUpCallsDialog({ open, onClose }) {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: 1, borderColor: 'divider' }}>
+        <DialogActions sx={uiLayout.withUiSx({ px: 3, py: 2, borderTop: 1, borderColor: 'divider' }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={handleCloseFollowForm} 
             color="secondary" 
             variant="outlined"
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               fontFamily: "Cairo",
               borderRadius: 2,
               px: 3,
               '&:hover': { borderWidth: 2 }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -957,13 +958,13 @@ export default function FollowUpCallsDialog({ open, onClose }) {
               color="primary" 
               variant="contained"
               disabled={!followUpStatus}
-              sx={{ 
+              sx={uiLayout.withUiSx({ 
                 fontFamily: "Cairo",
                 borderRadius: 2,
                 px: 3,
                 boxShadow: 'none',
                 '&:hover': { boxShadow: 'none' }
-              }}
+              }, uiLayout.buttonSx)}
               startIcon={<PendingActions />}
             >
               حفظ المتابعة

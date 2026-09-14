@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -293,8 +294,8 @@ const handleUpdateCall = async () => {
 
   return (
     <Box sx={{ fontFamily: 'Cairo, sans-serif' }}>
-      <Box display="flex" flexWrap="wrap" gap={2} mb={2}>
-        <FormControl sx={{ minWidth: 160 }}>
+      <Box sx={uiLayout.formGridSx} display="flex" flexWrap="wrap" gap={2} mb={2}>
+        <FormControl sx={uiLayout.withUiSx({ minWidth: 160 }, uiLayout.formFieldSx)}>
           <InputLabel>نوع الاتصال</InputLabel>
           <Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} label="نوع الاتصال">
             <MenuItem value="">الكل</MenuItem>
@@ -304,7 +305,7 @@ const handleUpdateCall = async () => {
           </Select>
         </FormControl>
 
-      <FormControl fullWidth margin="normal">
+      <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
   <InputLabel>الحالة</InputLabel>
   <Select
     value={followUpStatus}
@@ -318,7 +319,7 @@ const handleUpdateCall = async () => {
   </Select>
 </FormControl>
 
-        <FormControl sx={{ minWidth: 160 }}>
+        <FormControl sx={uiLayout.withUiSx({ minWidth: 160 }, uiLayout.formFieldSx)}>
           <InputLabel>المستخدم</InputLabel>
           <Select value={userFilter} onChange={(e) => setUserFilter(e.target.value)} label="المستخدم">
             <MenuItem value="">الكل</MenuItem>
@@ -328,16 +329,16 @@ const handleUpdateCall = async () => {
           </Select>
         </FormControl>
 
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           label="بحث عام"
           variant="outlined"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          sx={{ minWidth: 200 }}
+          sx={uiLayout.withUiSx({ minWidth: 200 }, uiLayout.formFieldSx)}
         />
       </Box>
 
-      <TableContainer component={Paper} sx={{ width: '100%', mt: 2, borderRadius: 2, boxShadow: 3 }}>
+      <TableContainer component={Paper} sx={uiLayout.withUiSx({ width: '100%', mt: 2, borderRadius: 2, boxShadow: 3 }, uiLayout.tableContainerSx)}>
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f1f1f1' }}>
@@ -376,12 +377,12 @@ const handleUpdateCall = async () => {
                   </TableCell>
                   <TableCell align="center">{call.userFullName}</TableCell>
                   <TableCell align="center">
-                    <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+                    <Box sx={uiLayout.actionBarSx} display="flex" justifyContent="center" alignItems="center" gap={1}>
                       {call.status !== 'مكتملة' && (
-                        <Button size="small" variant="contained" color="primary" onClick={() => handleFollowUp(call)}>متابعة</Button>
+                        <Button sx={uiLayout.buttonSx} size="small" variant="contained" color="primary" onClick={() => handleFollowUp(call)}>متابعة</Button>
                       )}
-                      <Button size="small" variant="outlined" color="secondary" onClick={() => handleViewDetails(call)}>عرض</Button>
-                      <Button size="small" variant="outlined" color="warning" onClick={() => handleEditCall(call)}>تعديل</Button>
+                      <Button sx={uiLayout.buttonSx} size="small" variant="outlined" color="secondary" onClick={() => handleViewDetails(call)}>عرض</Button>
+                      <Button sx={uiLayout.buttonSx} size="small" variant="outlined" color="warning" onClick={() => handleEditCall(call)}>تعديل</Button>
                       {getFollowUpsForCall(call.guid).length > 0 && (
                         <IconButton color="success" size="small" onClick={() => setExpandedRow(expandedRow === call.guid ? null : call.guid)}>
                           {expandedRow === call.guid ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -424,7 +425,7 @@ const handleUpdateCall = async () => {
           </TableBody>
         </Table>
 
-        <TablePagination
+        <TablePagination sx={uiLayout.tablePaginationSx}
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={filteredCalls.length}
@@ -436,10 +437,10 @@ const handleUpdateCall = async () => {
       </TableContainer>
 
       {/* متابعة جديدة Dialog */}
-      <Dialog open={openFollowForm} onClose={handleClose} fullWidth maxWidth="sm">
+      <Dialog sx={uiLayout.dialogLayoutSx} open={openFollowForm} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>📝 إضافة متابعة للمكالمة</DialogTitle>
         <DialogContent>
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             label="ملاحظات المتابعة"
             multiline
             fullWidth
@@ -448,7 +449,7 @@ const handleUpdateCall = async () => {
             value={followUpNote}
             onChange={(e) => setFollowUpNote(e.target.value)}
           />
-          <FormControl fullWidth margin="normal">
+          <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
             <InputLabel>الحالة</InputLabel>
             <Select
               value={followUpStatus}
@@ -462,18 +463,18 @@ const handleUpdateCall = async () => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">إلغاء</Button>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleClose} color="secondary">إلغاء</Button>
           {isSubmitting ? (
             <CircularProgress size={24} color="primary" />
           ) : (
-            <Button onClick={submitFollowUp} color="primary" variant="contained">حفظ</Button>
+            <Button sx={uiLayout.buttonSx} onClick={submitFollowUp} color="primary" variant="contained">حفظ</Button>
           )}
         </DialogActions>
       </Dialog>
 
       {/* تفاصيل المكالمة Dialog */}
-      <Dialog open={detailsDialogOpen} onClose={() => setDetailsDialogOpen(false)} fullWidth maxWidth="md" dir="rtl">
+      <Dialog sx={uiLayout.dialogLayoutSx} open={detailsDialogOpen} onClose={() => setDetailsDialogOpen(false)} fullWidth maxWidth="md" dir="rtl">
         <DialogTitle sx={{ fontWeight: 'bold', color: '#1976d2', textAlign: 'center', fontSize: 22 }}>
           📞 تفاصيل المكالمة
         </DialogTitle>
@@ -481,7 +482,7 @@ const handleUpdateCall = async () => {
           {dialogCall && (
             <>
               <Typography variant="h6" sx={{ mt: 1, mb: 2, fontWeight: 'bold', color: '#333' }}>🔹 معلومات المكالمة</Typography>
-              <TableContainer component={Paper} sx={{ mb: 3, borderRadius: 2, boxShadow: 2 }}>
+              <TableContainer component={Paper} sx={uiLayout.withUiSx({ mb: 3, borderRadius: 2, boxShadow: 2 }, uiLayout.tableContainerSx)}>
                 <Table size="small">
                   <TableBody>
                     <TableRow><TableCell sx={{ fontWeight: 'bold' }}>رقم الاتصال</TableCell><TableCell>{dialogCall.code}</TableCell></TableRow>
@@ -498,7 +499,7 @@ const handleUpdateCall = async () => {
               {getFollowUpsForCall(dialogCall.guid).length > 0 && (
                 <>
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>📝 المتابعات المسجلة</Typography>
-                  <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 2 }}>
+                  <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, boxShadow: 2 }, uiLayout.tableContainerSx)}>
                     <Table size="small">
                       <TableHead>
                         <TableRow sx={{ backgroundColor: '#f1f1f1' }}>
@@ -525,8 +526,8 @@ const handleUpdateCall = async () => {
             </>
           )}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
-          <Button onClick={() => setDetailsDialogOpen(false)} variant="contained" color="secondary">
+        <DialogActions sx={uiLayout.withUiSx({ justifyContent: 'flex-start', px: 3, pb: 2 }, uiLayout.dialogActionsSx)}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setDetailsDialogOpen(false)} variant="contained" color="secondary">
             إغلاق
           </Button>
         </DialogActions>
@@ -535,13 +536,13 @@ const handleUpdateCall = async () => {
       {/* تعديل المكالمة Dialog */}
 {/* تعديل المكالمة Dialog */}
 {/* تعديل المكالمة Dialog */}
-<Dialog open={editDialogOpen} onClose={handleCloseEdit} fullWidth maxWidth="md">
+<Dialog sx={uiLayout.dialogLayoutSx} open={editDialogOpen} onClose={handleCloseEdit} fullWidth maxWidth="md">
   <DialogTitle sx={{ fontWeight: 'bold', color: '#1976d2', textAlign: 'center', fontFamily: 'Cairo' }}>
     ✏️ تعديل بيانات المكالمة
   </DialogTitle>
   <DialogContent sx={{ pt: 3, fontFamily: 'Cairo' }}>
     {editingCall && (
-      <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box component="form" sx={uiLayout.withUiSx({ display: 'flex', flexDirection: 'column', gap: 2 }, uiLayout.formGridSx)}>
 
 
         {/* معلومات المكالمة الأساسية */}
@@ -550,7 +551,7 @@ const handleUpdateCall = async () => {
         </Typography>
         
         {/* نوع الاتصال (غير قابل للتعديل) */}
-        <TextField
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
           label="نوع الاتصال"
           fullWidth
           margin="normal"
@@ -567,7 +568,7 @@ const handleUpdateCall = async () => {
         {/* حقول إضافية بناءً على نوع الاتصال */}
         {editingCall.type === 'study' && (
           <>
-            <FormControl fullWidth margin="normal">
+            <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
               <InputLabel id="program-inquiry-label">البرنامج</InputLabel>
               <Select
                 labelId="program-inquiry-label"
@@ -581,7 +582,7 @@ const handleUpdateCall = async () => {
               </Select>
             </FormControl>
 
-            <FormControl fullWidth margin="normal">
+            <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
               <InputLabel id="study-topic-label">موضوع الاستفسار</InputLabel>
               <Select
                 labelId="study-topic-label"
@@ -599,7 +600,7 @@ const handleUpdateCall = async () => {
 
         {editingCall.type === 'complain' && (
           <>
-            <FormControl fullWidth margin="normal">
+            <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
               <InputLabel id="complain-source-label">شكوى من</InputLabel>
               <Select
                 labelId="complain-source-label"
@@ -613,7 +614,7 @@ const handleUpdateCall = async () => {
               </Select>
             </FormControl>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="تفاصيل الشكوى"
               fullWidth
               multiline
@@ -626,7 +627,7 @@ const handleUpdateCall = async () => {
         )}
 
         {/* معلومات المكالمة الثابتة */}
-        <TableContainer component={Paper} sx={{ mb: 3 }}>
+        <TableContainer component={Paper} sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.tableContainerSx)}>
           <Table size="small">
             <TableBody>
               <TableRow>
@@ -662,7 +663,7 @@ const handleUpdateCall = async () => {
               معلومات التحويل الحالية
             </Typography>
             
-            <TableContainer component={Paper} sx={{ mb: 3 }}>
+            <TableContainer component={Paper} sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.tableContainerSx)}>
               <Table size="small">
                 <TableBody>
                   <TableRow>
@@ -695,7 +696,7 @@ const handleUpdateCall = async () => {
         </Typography>
 
         {/* Forwarding Options */}
-        <FormControl fullWidth margin="normal">
+        <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
           <InputLabel>تمرير الاتصال</InputLabel>
           <Select
             value={editingCall.forwardCall ? "yes" : "no"}
@@ -709,7 +710,7 @@ const handleUpdateCall = async () => {
 
         {editingCall.forwardCall && (
           <>
-            <FormControl fullWidth margin="normal">
+            <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
               <InputLabel>تمرير إلى</InputLabel>
               <Select
                 value={editingCall.forwardTo || ''}
@@ -722,7 +723,7 @@ const handleUpdateCall = async () => {
             </FormControl>
             
           {editingCall.forwardCall && editingCall.forwardTo === "supervisor" && (
-          <FormControl fullWidth margin="normal">
+          <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
             <InputLabel>اختر المشرف</InputLabel>
             <Select
               value={editingCall.supervisorGuid || ''}
@@ -742,7 +743,7 @@ const handleUpdateCall = async () => {
         )}
 
             {editingCall.forwardTo === "sales" && (
-              <FormControl fullWidth margin="normal">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
                 <InputLabel>اختر موظف المبيعات</InputLabel>
                 <Select
                   value={editingCall.supervisorGuid || ''}
@@ -762,7 +763,7 @@ const handleUpdateCall = async () => {
         )}
 
         {/* ملاحظات إضافية */}
-        <TextField
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
           label="ملاحظات"
           fullWidth
           multiline
@@ -774,12 +775,12 @@ const handleUpdateCall = async () => {
       </Box>
     )}
   </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseEdit} color="secondary">إلغاء</Button>
+  <DialogActions sx={uiLayout.dialogActionsSx}>
+    <Button sx={uiLayout.buttonSx} onClick={handleCloseEdit} color="secondary">إلغاء</Button>
     {isSubmitting ? (
       <CircularProgress size={24} />
     ) : (
-      <Button onClick={handleUpdateCall} variant="contained" color="primary">
+      <Button sx={uiLayout.buttonSx} onClick={handleUpdateCall} variant="contained" color="primary">
         حفظ التعديلات
       </Button>
     )}

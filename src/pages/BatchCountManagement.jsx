@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -94,7 +96,7 @@ function SelectDialog({
   }, [rows, search]);
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -119,7 +121,7 @@ function SelectDialog({
       </DialogTitle>
 
       <DialogContent dividers sx={{ p: { xs: 0.65, sm: 1.1 } }}>
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -133,11 +135,11 @@ function SelectDialog({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: 0.65,
             "& .MuiInputBase-root": { minHeight: { xs: 34, sm: 38 } },
-            "& input": { fontSize: { xs: 10.5, sm: 13 } }
-          }}
+            "& input": { fontSize: { xs: 12, sm: 13 } }
+          }, uiLayout.formFieldSx)}
         />
 
         {loading ? (
@@ -172,14 +174,14 @@ function SelectDialog({
                     gap: 0.45
                   }}
                 >
-                  <Typography sx={{ fontSize: { xs: 10, sm: 12.5 }, fontWeight: 900 }}>
+                  <Typography sx={{ fontSize: { xs: 12, sm: 12.5 }, fontWeight: 900 }}>
                     {row.code || "-"}
                   </Typography>
 
                   <Typography
                     noWrap
                     title={row.name}
-                    sx={{ fontSize: { xs: 10.5, sm: 13 }, fontWeight: 800 }}
+                    sx={{ fontSize: { xs: 12, sm: 13 }, fontWeight: 800 }}
                   >
                     {row.name || "-"}
                   </Typography>
@@ -209,7 +211,7 @@ function SelectDialog({
                   <Button
                     size="small"
                     onClick={() => onPick(row)}
-                    sx={{ minWidth: 0, px: 0.2, fontSize: { xs: 9, sm: 11.5 } }}
+                    sx={uiLayout.withUiSx({ minWidth: 0, px: 0.2, fontSize: { xs: 12, sm: 12 } }, uiLayout.buttonSx)}
                   >
                     اختيار
                   </Button>
@@ -218,7 +220,7 @@ function SelectDialog({
             ))}
 
             {!filtered.length && (
-              <Alert severity="info" sx={{ fontSize: { xs: 10, sm: 12 } }}>
+              <Alert severity="info" sx={{ fontSize: { xs: 12, sm: 12 } }}>
                 لا توجد بيانات مطابقة.
               </Alert>
             )}
@@ -226,8 +228,8 @@ function SelectDialog({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ py: 0.35 }}>
-        <Button onClick={onClose} sx={{ fontSize: { xs: 10, sm: 13 } }}>
+      <DialogActions sx={uiLayout.withUiSx({ py: 0.35 }, uiLayout.dialogActionsSx)}>
+        <Button onClick={onClose} sx={uiLayout.withUiSx({ fontSize: { xs: 12, sm: 13 } }, uiLayout.buttonSx)}>
           إغلاق
         </Button>
       </DialogActions>
@@ -708,15 +710,15 @@ export default function BatchCountManagement() {
             minHeight: { xs: 33, sm: 38 }
           },
           "& .MuiInputBase-input": {
-            fontSize: { xs: 10.4, sm: 13 },
+            fontSize: { xs: 12, sm: 13 },
             py: { xs: 0.4, sm: 0.7 }
           },
           "& .MuiInputLabel-root": {
-            fontSize: { xs: 9.5, sm: 12 }
+            fontSize: { xs: 12, sm: 12 }
           },
           "& .MuiButton-root": {
             minHeight: { xs: 30, sm: 36 },
-            fontSize: { xs: 9.8, sm: 12.8 }
+            fontSize: { xs: 12, sm: 12.8 }
           }
         }}
       >
@@ -761,13 +763,13 @@ export default function BatchCountManagement() {
               bgcolor: "#fff",
               color: primaryDark,
               fontWeight: 900,
-              fontSize: { xs: 8.5, sm: 11 }
+              fontSize: { xs: 12, sm: 12 }
             }}
           />
         </Box>
 
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             p: { xs: 0.55, sm: 0.8 },
             display: "grid",
             gridTemplateColumns: {
@@ -776,13 +778,13 @@ export default function BatchCountManagement() {
             },
             gap: { xs: 0.4, sm: 0.7 },
             borderBottom: `1px solid ${border}`
-          }}
+          }, uiLayout.actionBarSx)}
         >
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={resetAll}
-            sx={{ bgcolor: "#1976d2", fontWeight: 900 }}
+            sx={uiLayout.withUiSx({ bgcolor: "#1976d2", fontWeight: 900 }, uiLayout.buttonSx)}
           >
             جديد
           </Button>
@@ -797,7 +799,7 @@ export default function BatchCountManagement() {
             }
             disabled={saving || loading || !ops.canEdit}
             onClick={save}
-            sx={{ fontWeight: 900 }}
+            sx={uiLayout.withUiSx({ fontWeight: 900 }, uiLayout.buttonSx)}
           >
             حفظ
           </Button>
@@ -809,10 +811,10 @@ export default function BatchCountManagement() {
               setBranchSearch("");
               setBranchDialogOpen(true);
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               gridColumn: { xs: "1 / -1", md: "auto" },
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             اختيار الفرع
           </Button>
@@ -833,16 +835,16 @@ export default function BatchCountManagement() {
         <Box sx={{ p: { xs: 0.55, sm: 0.9 } }}>
           {/* كل 2 فيلد جنب بعض على الموبايل */}
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(2,minmax(0,1fr))",
                 md: "repeat(3,minmax(0,1fr))"
               },
               gap: { xs: 0.4, sm: 0.7 }
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               label="الفرع"
               value={branch?.name || ""}
@@ -853,7 +855,7 @@ export default function BatchCountManagement() {
               InputProps={{ readOnly: true }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               size="small"
               label="نوع البرنامج"
@@ -870,7 +872,7 @@ export default function BatchCountManagement() {
               ))}
             </TextField>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               size="small"
               label="الدفعة"
               value={batch?.name || ""}
@@ -889,7 +891,7 @@ export default function BatchCountManagement() {
                 setBatchDialogOpen(true);
               }}
               InputProps={{ readOnly: true }}
-              sx={{ gridColumn: { xs: "1 / -1", md: "auto" } }}
+              sx={uiLayout.withUiSx({ gridColumn: { xs: "1 / -1", md: "auto" } }, uiLayout.formFieldSx)}
             />
           </Box>
 
@@ -904,7 +906,7 @@ export default function BatchCountManagement() {
             <Paper variant="outlined" sx={{ p: 0.6, textAlign: "center" }}>
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: { xs: 8.5, sm: 10.5 } }}
+                sx={{ fontSize: { xs: 12, sm: 12 } }}
               >
                 المقاعد المتاحة
               </Typography>
@@ -922,7 +924,7 @@ export default function BatchCountManagement() {
             <Paper variant="outlined" sx={{ p: 0.6, textAlign: "center" }}>
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: { xs: 8.5, sm: 10.5 } }}
+                sx={{ fontSize: { xs: 12, sm: 12 } }}
               >
                 المقاعد المتبقية
               </Typography>
@@ -945,7 +947,7 @@ export default function BatchCountManagement() {
               textAlign: "center",
               fontWeight: 900,
               color: "#d32f2f",
-              fontSize: { xs: 10.5, sm: 15 }
+              fontSize: { xs: 12, sm: 15 }
             }}
           >
             عدد الطلاب المتاح تسجيلهم في كل تخصص
@@ -966,7 +968,7 @@ export default function BatchCountManagement() {
                 px: { xs: 0.45, sm: 0.75 },
                 py: { xs: 0.42, sm: 0.6 },
                 fontWeight: 900,
-                fontSize: { xs: 9.5, sm: 12.5 }
+                fontSize: { xs: 12, sm: 12.5 }
               }}
             >
               <Box>التخصص</Box>
@@ -995,7 +997,7 @@ export default function BatchCountManagement() {
                   <Typography
                     title={item.name}
                     sx={{
-                      fontSize: { xs: 10, sm: 12.8 },
+                      fontSize: { xs: 12, sm: 12.8 },
                       fontWeight: 750,
                       lineHeight: 1.35
                     }}
@@ -1003,7 +1005,7 @@ export default function BatchCountManagement() {
                     {item.name}
                   </Typography>
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     type="number"
                     size="small"
                     value={item.count}
@@ -1014,22 +1016,22 @@ export default function BatchCountManagement() {
                       min: 0,
                       style: { textAlign: "center" , direction: "ltr", unicodeBidi: "isolate" }
                     , dir: "ltr" }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       "& .MuiInputBase-root": {
                         minHeight: { xs: 29, sm: 33 }
                       },
                       "& input": {
                         px: 0.25,
                         py: 0.2,
-                        fontSize: { xs: 10, sm: 12 }
+                        fontSize: { xs: 12, sm: 12 }
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 </Box>
               ))}
 
               {!loading && batch && specialties.length === 0 && (
-                <Alert severity="info" sx={{ m: 0.6, fontSize: { xs: 10, sm: 12 } }}>
+                <Alert severity="info" sx={{ m: 0.6, fontSize: { xs: 12, sm: 12 } }}>
                   لا توجد تخصصات متاحة لهذا النوع.
                 </Alert>
               )}

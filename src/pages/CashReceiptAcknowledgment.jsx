@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -662,7 +664,7 @@ const CashReceiptAcknowledgment = () => {
               "1px solid rgba(5,117,70,0.14)"
           }}
         >
-          <Stack
+          <Stack sx={uiLayout.actionBarSx}
             direction={{
               xs: "column",
               md: "row"
@@ -703,7 +705,7 @@ const CashReceiptAcknowledgment = () => {
               </Typography>
             </Box>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="outlined"
               startIcon={
                 <AddCircleOutlineIcon />
@@ -713,7 +715,7 @@ const CashReceiptAcknowledgment = () => {
               جديد
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="outlined"
               startIcon={<SearchIcon />}
               onClick={findOrder}
@@ -738,15 +740,15 @@ const CashReceiptAcknowledgment = () => {
                 saving ||
                 isExisting
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               حفظ
             </Button>
 
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="outlined"
               startIcon={<PrintIcon />}
               onClick={printOrder}
@@ -770,7 +772,7 @@ const CashReceiptAcknowledgment = () => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -778,9 +780,9 @@ const CashReceiptAcknowledgment = () => {
                   "repeat(2,minmax(0,1fr))"
               },
               gap: 1.5
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود الإقرار"
               value={form.code}
               InputProps={{
@@ -793,7 +795,7 @@ const CashReceiptAcknowledgment = () => {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="التاريخ"
               value={form.orderDate}
@@ -863,7 +865,7 @@ const CashReceiptAcknowledgment = () => {
               }}
               disabled={isExisting}
               renderInput={(params) => (
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   {...params}
                   label="الفرع"
                   InputProps={{
@@ -883,7 +885,7 @@ const CashReceiptAcknowledgment = () => {
               )}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="استلمت أنا"
               value={form.receiptMan}
               onChange={(event) =>
@@ -902,7 +904,7 @@ const CashReceiptAcknowledgment = () => {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="رقم الهوية"
               value={form.nationalId}
               onChange={(event) =>
@@ -921,7 +923,7 @@ const CashReceiptAcknowledgment = () => {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="رقم الجوال"
               value={form.receiptTel}
               onChange={(event) =>
@@ -940,7 +942,7 @@ const CashReceiptAcknowledgment = () => {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               type="number"
               label="المبلغ"
               value={form.amount}
@@ -964,7 +966,7 @@ const CashReceiptAcknowledgment = () => {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="المبلغ كتابة"
               value={form.amountText}
               InputProps={{
@@ -987,7 +989,7 @@ const CashReceiptAcknowledgment = () => {
               }}
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="وذلك مقابل"
               value={form.orderFor}
               onChange={(event) =>
@@ -999,15 +1001,15 @@ const CashReceiptAcknowledgment = () => {
               disabled={isExisting}
               multiline
               minRows={5}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: {
                   xs: "auto",
                   md: "1 / -1"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
-            <FormControlLabel
+            <FormControlLabel sx={uiLayout.checkboxFieldSx}
               control={
                 <Switch
                   checked={form.isUse}

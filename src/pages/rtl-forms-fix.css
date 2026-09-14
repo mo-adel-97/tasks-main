@@ -1,0 +1,5 @@
+/* Compatibility entry point for existing page imports.
+ * Form geometry is explicitly applied in JSX with common/uiLayout.js.
+ * Do not force direction, label transforms, colours or MUI internals here.
+ * Explicit dir attributes and validation colours keep their native meaning.
+ */

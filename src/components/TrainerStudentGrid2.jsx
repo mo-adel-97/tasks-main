@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState, useRef } from 'react';
@@ -2125,8 +2126,8 @@ const getStatusDisplayText = (status) => {
               fontSize: isDesktop
                 ? undefined
                 : isPhone
-                  ? '0.48rem'
-                  : { sm: '0.58rem', md: '0.66rem' },
+                  ? "0.75rem"
+                  : { sm: "0.75rem", md: "0.75rem" },
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -2389,7 +2390,7 @@ const getStatusDisplayText = (status) => {
               sx={{
                 flex: 1,
                 fontWeight: 900,
-                fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' },
+                fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.88rem' },
                 color: '#17372b',
               }}
             >
@@ -2439,25 +2440,25 @@ const getStatusDisplayText = (status) => {
             },
             '& .MuiTypography-h6': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.64rem',
-                sm: '0.74rem',
+                xs: "0.75rem",
+                sm: "0.75rem",
                 md: '0.84rem'
               },
               lineHeight: 1.35
             },
             '& .MuiTypography-body1, & .MuiTypography-body2': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.54rem',
-                sm: '0.62rem',
-                md: '0.7rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               },
               lineHeight: 1.45
             },
             '& .MuiButton-root': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.46rem',
-                sm: '0.53rem',
-                md: '0.61rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               },
               minHeight: isDesktop ? undefined : {
                 xs: 25,
@@ -2467,9 +2468,9 @@ const getStatusDisplayText = (status) => {
             },
             '& .MuiChip-root': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.47rem',
-                sm: '0.54rem',
-                md: '0.62rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               },
               height: isDesktop ? undefined : {
                 xs: 19,
@@ -2479,9 +2480,9 @@ const getStatusDisplayText = (status) => {
             },
             '& .MuiInputBase-root, & .MuiInputLabel-root': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.49rem',
-                sm: '0.56rem',
-                md: '0.64rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               }
             },
             ...navigationContentSx
@@ -2506,7 +2507,7 @@ const getStatusDisplayText = (status) => {
                     sx={{
                       color: PRIMARY_COLOR,
                       mb: isDesktop ? undefined : 0.15,
-                      fontSize: isDesktop ? undefined : { xs: '0.74rem', sm: '0.86rem', md: '0.98rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: '0.86rem', md: '0.98rem' },
                     }}
                   >
                     قائمة الطلاب
@@ -2530,7 +2531,7 @@ const getStatusDisplayText = (status) => {
                       minWidth: 0,
                       px: isDesktop ? undefined : { xs: 0.35, sm: 0.7, md: 1 },
                       py: isDesktop ? undefined : { xs: 0.45, sm: 0.55, md: 0.7 },
-                      fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.64rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       whiteSpace: 'nowrap',
                     },
                     '& .MuiButton-startIcon': {
@@ -2547,14 +2548,14 @@ const getStatusDisplayText = (status) => {
                       variant="outlined"
                       startIcon={<SummarizeIcon />}
                       onClick={handlePreviewReport}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         borderColor: PRIMARY_COLOR,
                         color: PRIMARY_COLOR,
                         '&:hover': {
                           borderColor: PRIMARY_COLOR_DARK,
                           backgroundColor: PRIMARY_COLOR_LIGHT + '20',
                         }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       عرض التقرير
                     </Button>
@@ -2566,11 +2567,11 @@ const getStatusDisplayText = (status) => {
                       startIcon={exportLoading ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <PictureAsPdfIcon />}
                       onClick={handleExportSimplePdf}
                       disabled={exportLoading}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         backgroundColor: '#d32f2f',
                         px: 3,
                         '&:hover': { backgroundColor: '#b71c1c' }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {exportLoading ? 'جاري التصدير...' : 'تصدير PDF'}
                     </Button>
@@ -2582,11 +2583,11 @@ const getStatusDisplayText = (status) => {
                       startIcon={exportLoading ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <DownloadIcon />}
                       onClick={handleExportExcelReport}
                       disabled={exportLoading}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         backgroundColor: PRIMARY_COLOR,
                         px: 3,
                         '&:hover': { backgroundColor: PRIMARY_COLOR_DARK }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {exportLoading ? 'جاري التصدير...' : 'تصدير Excel'}
                     </Button>
@@ -2619,7 +2620,7 @@ const getStatusDisplayText = (status) => {
                     lineHeight: 1.05,
                   },
                   '& .MuiTypography-body2': {
-                    fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.62rem' },
+                    fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                     lineHeight: 1.25,
                   },
                 }}
@@ -2771,7 +2772,7 @@ const getStatusDisplayText = (status) => {
                   <Typography
                     sx={{
                       fontWeight: 800,
-                      fontSize: { xs: '0.49rem', sm: '0.57rem', md: '0.65rem' },
+                      fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       lineHeight: 1.3,
                     }}
                   >
@@ -2782,7 +2783,7 @@ const getStatusDisplayText = (status) => {
 
               {/* Filters Section */}
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: 'grid',
                   gridTemplateColumns: isDesktop
                     ? 'repeat(4, max-content)'
@@ -2803,7 +2804,7 @@ const getStatusDisplayText = (status) => {
                     width: isDesktop ? 'auto' : '100%',
                     minHeight: isDesktop ? undefined : { xs: 32, sm: 36, md: 38 },
                   },
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <DatePicker
                   label="من تاريخ"
@@ -2818,11 +2819,11 @@ const getStatusDisplayText = (status) => {
                   sx={{ minWidth: isDesktop ? 150 : 0, width: '100%' }}
                 />
                 <FormControl
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minWidth: isDesktop ? 180 : 0,
                     width: '100%',
                     gridColumn: isPhone ? '1 / -1' : 'auto',
-                  }}
+                  }, uiLayout.formFieldSx)}
                 >
                   <InputLabel id="filter-status-label">فلترة حسب الحالة</InputLabel>
                     <Select
@@ -2845,14 +2846,14 @@ const getStatusDisplayText = (status) => {
                 <Button 
                   variant="contained" 
                   onClick={fetchData} 
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     px: isDesktop ? 3 : { xs: 0.8, sm: 1.2 },
                     gridColumn: isPhone ? '1 / -1' : 'auto',
                     backgroundColor: PRIMARY_COLOR,
                     '&:hover': {
                       backgroundColor: PRIMARY_COLOR_DARK,
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث البيانات
                 </Button>
@@ -2895,7 +2896,7 @@ const getStatusDisplayText = (status) => {
                 '& .MuiAlert-message': { py: 0.35 },
               }}
             >
-              <Typography sx={{ fontSize: { xs: '0.51rem', sm: '0.59rem', md: '0.67rem' }, fontWeight: 700 }}>
+              <Typography sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }, fontWeight: 700 }}>
                 راجع «آخر طلب سداد» قبل التواصل مع الطالب.
               </Typography>
             </Alert>
@@ -2912,7 +2913,7 @@ const getStatusDisplayText = (status) => {
             }}
           >
             <CardContent sx={{ p: 0 }}>
-              <Box sx={{ height: isDesktop ? 720 : { xs: '68dvh', sm: '72dvh', md: '74dvh' }, width: '100%', minWidth: 0 }}>
+              <Box sx={uiLayout.withUiSx({ height: isDesktop ? 720 : { xs: '68dvh', sm: '72dvh', md: '74dvh' }, width: '100%', minWidth: 0 }, uiLayout.tableContainerSx)}>
                 <DataGrid
                   rows={gridLoading ? [] : filteredRows}
                   columns={responsiveColumns}
@@ -2956,7 +2957,7 @@ const getStatusDisplayText = (status) => {
                       minWidth: 0,
                     },
                     '& .MuiDataGrid-virtualScroller': {
-                      overflowX: isDesktop ? 'auto' : 'hidden',
+                      overflowX: "auto",
                     },
 
                           height: '100%',
@@ -2985,17 +2986,17 @@ const getStatusDisplayText = (status) => {
                       </Box>
                     ),
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     border: 'none',
                     '& .MuiDataGrid-cell': {
                       borderBottom: '1px solid #e0e0e0',
                       fontWeight: 500,
-                      fontSize: isDesktop ? undefined : { xs: '0.46rem', sm: '0.55rem', md: '0.63rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       px: isDesktop ? undefined : { xs: 0.18, sm: 0.45 },
                       lineHeight: 1.25,
                     },
                     '& .MuiDataGrid-columnHeaderTitle': {
-                      fontSize: isDesktop ? undefined : { xs: '0.44rem', sm: '0.53rem', md: '0.61rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       fontWeight: 800,
                       whiteSpace: 'normal',
                       lineHeight: 1.2,
@@ -3006,11 +3007,11 @@ const getStatusDisplayText = (status) => {
                     },
                     '& .MuiDataGrid-footerContainer': {
                       minHeight: isDesktop ? undefined : { xs: 42, sm: 44 },
-                      fontSize: isDesktop ? undefined : { xs: '0.45rem', sm: '0.53rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
                       px: isDesktop ? undefined : { xs: 0.3, sm: 0.6 },
                     },
                     '& .MuiTablePagination-root': {
-                      fontSize: isDesktop ? undefined : { xs: '0.45rem', sm: '0.53rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
                       overflow: 'visible',
                     },
                     '& .MuiTablePagination-toolbar': {
@@ -3019,11 +3020,11 @@ const getStatusDisplayText = (status) => {
                       gap: isDesktop ? undefined : { xs: 0.2, sm: 0.4 },
                     },
                     '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-                      fontSize: isDesktop ? undefined : { xs: '0.43rem', sm: '0.5rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
                       m: 0,
                     },
                     '& .MuiTablePagination-select': {
-                      fontSize: isDesktop ? undefined : { xs: '0.45rem', sm: '0.52rem' },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
                     },
                     '& .MuiDataGrid-columnHeaders': {
                       backgroundColor: PRIMARY_COLOR_LIGHT,
@@ -3044,7 +3045,7 @@ const getStatusDisplayText = (status) => {
                     '& .MuiDataGrid-row:hover': {
                       filter: 'brightness(0.98)',
                     },
-                  }}
+                  }, uiLayout.dataGridSx)}
                 />
               </Box>
             </CardContent>
@@ -3057,7 +3058,7 @@ const getStatusDisplayText = (status) => {
             maxWidth="lg"
             fullWidth
             fullScreen={isPhone}
-            sx={{
+            sx={uiLayout.withUiSx({
 
               '& .MuiDialog-container': {
                 alignItems: isPhone ? 'stretch' : 'center',
@@ -3093,7 +3094,7 @@ const getStatusDisplayText = (status) => {
                 direction: "rtl",
                 boxSizing: 'border-box',
               },
-            }}
+            }, uiLayout.dialogLayoutSx)}
           >
             <DialogTitle
               sx={{
@@ -3102,7 +3103,7 @@ const getStatusDisplayText = (status) => {
                 py: isDesktop ? 3 : { xs: 0.55, sm: 0.75, md: 0.95 },
                 px: isDesktop ? 3 : { xs: 0.75, sm: 1.05, md: 1.5 },
                 textAlign: 'center',
-                fontSize: isDesktop ? '1.5rem' : { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' },
+                fontSize: isDesktop ? '1.5rem' : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
                 lineHeight: 1.35,
                 fontWeight: 'bold',
                 flexShrink: 0,
@@ -3171,7 +3172,7 @@ const getStatusDisplayText = (status) => {
                     '& .MuiTab-root': {
                       fontSize: isDesktop
                         ? '1rem'
-                        : { xs: '0.41rem', sm: '0.48rem', md: '0.56rem' },
+                        : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
 
                       fontWeight: 'bold',
 
@@ -3274,45 +3275,45 @@ const getStatusDisplayText = (status) => {
                   '& .MuiTypography-h4': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' },
+                      : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
                   },
 
                   '& .MuiTypography-h5': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.62rem', sm: '0.71rem', md: '0.82rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' },
                   },
 
                   '& .MuiTypography-h6': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.53rem', sm: '0.6rem', md: '0.7rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                     lineHeight: 1.35,
                   },
 
                   '& .MuiTypography-subtitle1, & .MuiTypography-subtitle2': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.49rem', sm: '0.56rem', md: '0.64rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                   },
 
                   '& .MuiTypography-body1, & .MuiTypography-body2': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.46rem', sm: '0.52rem', md: '0.6rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                     lineHeight: 1.45,
                   },
 
                   '& .MuiTypography-caption': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.4rem', sm: '0.46rem', md: '0.53rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                   },
 
                   '& .MuiButton-root': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
 
                     minHeight: isDesktop
                       ? undefined
@@ -3326,7 +3327,7 @@ const getStatusDisplayText = (status) => {
                   '& .MuiChip-root': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.41rem', sm: '0.47rem', md: '0.54rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
 
                     height: isDesktop
                       ? undefined
@@ -3336,7 +3337,7 @@ const getStatusDisplayText = (status) => {
                   '& .MuiInputBase-root, & .MuiInputLabel-root': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.46rem', sm: '0.53rem', md: '0.61rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                   },
 
                   '& .MuiInputBase-input': {
@@ -3360,7 +3361,7 @@ const getStatusDisplayText = (status) => {
                   '& th, & td': {
                     fontSize: isDesktop
                       ? undefined
-                      : { xs: '0.46rem', sm: '0.54rem', md: '0.62rem' },
+                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
 
                     p: isDesktop ? undefined : 0.5,
                     wordBreak: 'break-word',
@@ -3554,7 +3555,7 @@ borderColor:
     ? '#f44336'
     : 'default',
                                 color: 'white',
-                                fontSize: isDesktop ? '1.1rem' : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
+                                fontSize: isDesktop ? '1.1rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                                 py: isDesktop ? 1.25 : 0,
                                 px: isDesktop ? 1.5 : { xs: 0.6, sm: 0.8, md: 1 },
                                 mb: isDesktop ? 2 : { xs: 0.5, sm: 0.7, md: 0.9 }
@@ -3580,7 +3581,7 @@ borderColor:
                               <Typography variant="subtitle2" color="text.secondary" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 تحديث الحالة
                               </Typography>
-                              <FormControl fullWidth size="small">
+                              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
   <InputLabel>اختر الحالة</InputLabel>
   <Select
     value={rowStatuses[currentActionRow?.id] || ''}
@@ -3610,10 +3611,10 @@ borderColor:
                               variant="contained"
                               startIcon={<WhatsAppIcon />}
                               onClick={() => handleWhatsAppClick(currentActionRow?.studentTel)}
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 backgroundColor: '#25D366',
                                 py: isDesktop ? 1.5 : { xs: 0.45, sm: 0.55, md: 0.7 },
-                                fontSize: isDesktop ? '1rem' : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
+                                fontSize: isDesktop ? '1rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                                 fontWeight: 'bold',
                                 borderRadius: 2,
                                 '&:hover': {
@@ -3622,7 +3623,7 @@ borderColor:
                                   boxShadow: 3,
                                 },
                                 transition: 'all 0.3s ease',
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               التواصل عبر واتساب
                             </Button>
@@ -3655,7 +3656,7 @@ borderColor:
                             <HistoryIcon /> إضافة متابعة جديدة
                           </Typography>
 
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             fullWidth
                             multiline
                             minRows={isDesktop ? 4 : isPhone ? 1 : 2}
@@ -3663,16 +3664,16 @@ borderColor:
                             onChange={(e) => setNoteInput(e.target.value)}
                             placeholder="اكتب المتابعة الجديدة هنا..."
                             variant="outlined"
-                            sx={{ mb: 3 }}
+                            sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
                           />
                           <Button
                             fullWidth
                             variant="contained"
                             onClick={handleNoteSave}
                             disabled={!noteInput.trim()}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               py: isDesktop ? 1.5 : { xs: 0.45, sm: 0.55, md: 0.7 },
-                              fontSize: isDesktop ? '1rem' : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
+                              fontSize: isDesktop ? '1rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                               fontWeight: 'bold',
                               borderRadius: 2,
                               backgroundColor: PRIMARY_COLOR,
@@ -3682,7 +3683,7 @@ borderColor:
                                 boxShadow: 3,
                               },
                               transition: 'all 0.3s ease',
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             حفظ المتابعة الجديدة
                           </Button>
@@ -4123,28 +4124,28 @@ borderColor:
             </DialogContent>
 
             <DialogActions
-              sx={{
+              sx={uiLayout.withUiSx({
                 p: isDesktop ? 3 : { xs: 0.35, sm: 0.5, md: 0.7 },
                 bgcolor: '#f8fafc',
                 borderTop: '1px solid #e2e8f0',
                 flexShrink: 0,
-              }}
+              }, uiLayout.dialogActionsSx)}
             >
               <Button
                 onClick={() => setActionDialogOpen(false)}
                 variant="contained"
                 fullWidth={isPhone}
-                sx={{
+                sx={uiLayout.withUiSx({
                   px: isDesktop ? 4 : { xs: 0.8, sm: 1.1, md: 1.4 },
                   py: isDesktop ? 1 : { xs: 0.3, sm: 0.4, md: 0.5 },
-                  fontSize: isDesktop ? '1rem' : { xs: '0.46rem', sm: '0.53rem', md: '0.61rem' },
+                  fontSize: isDesktop ? '1rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                   fontWeight: 'bold',
                   borderRadius: isDesktop ? 2 : 1.5,
                   backgroundColor: PRIMARY_COLOR,
                   '&:hover': {
                     backgroundColor: PRIMARY_COLOR_DARK,
                   },
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إغلاق النافذة
               </Button>

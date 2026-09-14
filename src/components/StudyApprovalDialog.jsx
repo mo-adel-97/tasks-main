@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -1530,14 +1531,14 @@ const StudyApprovalDialog = ({
       fullWidth
       fullScreen={isPhone}
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : "95vw",
@@ -1589,10 +1590,10 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
           flex: 1,
           minHeight: 0,
           "& .MuiInputLabel-root": {
-            fontSize: isPhone ? "0.46rem" : isTablet ? "0.55rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           },
           "& .MuiInputBase-input, & .MuiSelect-select": {
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
           },
           "& .MuiOutlinedInput-root": {
@@ -1600,12 +1601,12 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
             borderRadius: isCompact ? 1.2 : undefined
           },
           "& .MuiFormLabel-root": {
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             fontWeight: 900,
             mb: isPhone ? 0.35 : isTablet ? 0.45 : undefined
           },
           "& .MuiFormControlLabel-label": {
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             fontWeight: 800
           },
           "& .MuiRadio-root": {
@@ -1630,7 +1631,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
             sx={{
               mb: isCompact ? 0.4 : 2,
               py: isCompact ? 0.15 : undefined,
-              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
             }}
           >
             {error}
@@ -1642,10 +1643,10 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
             <CircularProgress />
           </Box>
         ) : (
-          <Stack spacing={isPhone ? 0.9 : isTablet ? 1.1 : 2}>
+          <Stack sx={uiLayout.formGridSx} spacing={isPhone ? 0.9 : isTablet ? 1.1 : 2}>
             <Grid container spacing={isPhone ? 0.75 : isTablet ? 0.95 : 1.5}>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="اسم الطالب"
                   value={studentName}
@@ -1653,8 +1654,8 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={4}>
-                <TextField
+              <Grid item xs={12} sm={3} md={4}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="رقم الهوية"
                   value={nationalId}
@@ -1662,8 +1663,8 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={4}>
-                <TextField
+              <Grid item xs={12} sm={3} md={4}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="رقم الجوال"
                   value={studentTel}
@@ -1673,13 +1674,13 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
             </Grid>
 
             <FormControl
-  sx={{
+  sx={uiLayout.withUiSx({
     pl: isPhone ? 1.2 : isTablet ? 1.5 : 0
-  }}
+  }, uiLayout.formFieldSx)}
 >
   <FormLabel>نوع البرنامج</FormLabel>
 
-  <RadioGroup
+  <RadioGroup sx={uiLayout.radioGroupSx}
     row
     value={programType}
     onChange={(e) => setProgramType(Number(e.target.value))}
@@ -1696,13 +1697,13 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
 </FormControl>
 
           <FormControl
-  sx={{
+  sx={uiLayout.withUiSx({
     pl: isPhone ? 1.2 : isTablet ? 1.5 : 0
-  }}
+  }, uiLayout.formFieldSx)}
 >
   <FormLabel>نوع الدراسة</FormLabel>
 
-  <RadioGroup
+  <RadioGroup sx={uiLayout.radioGroupSx}
     row
     value={studyType}
     onChange={(e) => setStudyType(Number(e.target.value))}
@@ -1723,7 +1724,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
 
             <Grid container spacing={isPhone ? 0.8 : isTablet ? 1 : 2}>
               <Grid item xs={12} sm={6} md={6}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>فرع الدراسة</InputLabel>
                   <Select
                     value={branchGuid}
@@ -1741,7 +1742,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               </Grid>
 
               <Grid item xs={12} sm={6} md={6}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>القطاع التابع له المتدرب</InputLabel>
                   <Select
                     value={sectorGuid}
@@ -1761,7 +1762,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               {programType === 0 ? (
                 <>
                   <Grid item xs={12} sm={6} md={6}>
-                    <FormControl fullWidth>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth>
                       <InputLabel>البرنامج المراد التسجيل به</InputLabel>
                       <Select
                         value={diplomGuid}
@@ -1780,7 +1781,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6}>
-                    <FormControl fullWidth>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth>
                       <InputLabel>الدفعة</InputLabel>
                       <Select
                         value={batchGuid}
@@ -1813,7 +1814,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               ) : programType === 1 ? (
                 <>
                   <Grid item xs={12} sm={6} md={6}>
-                    <FormControl fullWidth>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth>
                       <InputLabel>الدفعة</InputLabel>
                       <Select
                         value={batchGuid}
@@ -1844,7 +1845,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6}>
-                    <FormControl fullWidth>
+                    <FormControl sx={uiLayout.formFieldSx} fullWidth>
                       <InputLabel>البرنامج المراد التسجيل به</InputLabel>
                       <Select
                         value={diplomGuid}
@@ -1864,7 +1865,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 </>
               ) : (
                 <Grid item xs={12} sm={6} md={6}>
-                  <FormControl fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth>
                     <InputLabel>البرنامج المراد التسجيل به</InputLabel>
                     <Select
                       value={diplomGuid}
@@ -1897,7 +1898,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               ) : null}
 
               <Grid item xs={12} sm={6} md={6}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="القائم بالتسجيل"
                   value={currentUserFullName || selectedSeller?.name || ""}
@@ -1905,8 +1906,8 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={3}>
-                <TextField
+              <Grid item xs={12} sm={3} md={3}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="تاريخ بدء الدراسة هـ"
                   value={startDate}
@@ -1917,8 +1918,8 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={3}>
-                <TextField
+              <Grid item xs={12} sm={3} md={3}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="تاريخ نهاية الدراسة هـ"
                   value={endDate}
@@ -1929,8 +1930,8 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                 />
               </Grid>
 
-              <Grid item xs={6} sm={3} md={3}>
-                <TextField
+              <Grid item xs={12} sm={3} md={3}>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   type="number"
                   label="عدد الساعات"
@@ -1964,7 +1965,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
 </Grid>
             </Grid>
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               fullWidth
               multiline
               minRows={isPhone ? 2 : isTablet ? 3 : 5}
@@ -1983,12 +1984,12 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.35 : isTablet ? 0.55 : 3,
           py: isPhone ? 0.28 : isTablet ? 0.42 : 2,
           gap: isCompact ? 0.35 : 1,
           flexShrink: 0
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           variant="contained"
@@ -2001,13 +2002,13 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
               <SaveIcon />
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             backgroundColor: primaryColor,
             minWidth: isPhone ? 90 : isTablet ? 108 : 140,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           {editMode ? "تعديل" : "حفظ"}
         </Button>
@@ -2017,14 +2018,14 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
           onClick={print}
           disabled={!savedOrder?.orderGuid}
           startIcon={<PrintIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: primaryColor,
             borderColor: primaryColor,
             minWidth: isPhone ? 78 : isTablet ? 95 : 130,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           طباعة
         </Button>
@@ -2032,13 +2033,13 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{
+          sx={uiLayout.withUiSx({
             color: accentColor,
             fontWeight: 900,
             minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           إغلاق
         </Button>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -865,7 +867,7 @@ const TrainingAgreementsFollow = () => {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.67rem",
+                  xs: "0.75rem",
                   sm: "0.79rem"
                 },
                 color: "#17372b",
@@ -942,7 +944,7 @@ const TrainingAgreementsFollow = () => {
                 fontWeight: 900,
                 color: "#034d31",
                 fontSize: isPhone
-                  ? "0.72rem"
+                  ? "0.75rem"
                   : isTablet
                     ? "0.88rem"
                     : undefined
@@ -957,9 +959,9 @@ const TrainingAgreementsFollow = () => {
                 fontFamily: "Cairo",
                 color: "#61756d",
                 fontSize: isPhone
-                  ? "0.4rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.5rem"
+                    ? "0.75rem"
                     : undefined,
                 display: isPhone
                   ? "none"
@@ -980,7 +982,7 @@ const TrainingAgreementsFollow = () => {
             }}
           >
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: isPhone
                   ? "repeat(2,minmax(0,1fr))"
@@ -1002,18 +1004,18 @@ const TrainingAgreementsFollow = () => {
                 "& .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.4rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                 },
 
                 "& .MuiInputBase-input": {
                   fontFamily: "Cairo",
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   py: isPhone
                     ? 0.45
@@ -1042,9 +1044,9 @@ const TrainingAgreementsFollow = () => {
                   fontFamily: "Cairo",
                   fontWeight: 800,
                   fontSize: isPhone
-                    ? "0.43rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.51rem"
+                      ? "0.75rem"
                       : undefined,
                   px: isPhone
                     ? 0.55
@@ -1060,9 +1062,9 @@ const TrainingAgreementsFollow = () => {
                       ? 16
                       : undefined
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="من تاريخ"
@@ -1078,7 +1080,7 @@ const TrainingAgreementsFollow = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 size="small"
                 label="إلى تاريخ"
@@ -1094,7 +1096,7 @@ const TrainingAgreementsFollow = () => {
                 fullWidth
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 size="small"
                 label="حالة الاتفاقية"
@@ -1138,7 +1140,7 @@ const TrainingAgreementsFollow = () => {
                 </MenuItem>
               </TextField>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 size="small"
                 label="مندوب البيع"
@@ -1185,7 +1187,7 @@ const TrainingAgreementsFollow = () => {
                 ))}
               </TextField>
 
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 size="small"
                 label="بحث شامل"
                 value={searchText}
@@ -1195,11 +1197,11 @@ const TrainingAgreementsFollow = () => {
                   )
                 }
                 fullWidth
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.formFieldSx)}
               />
 
               <Button
@@ -1207,14 +1209,14 @@ const TrainingAgreementsFollow = () => {
                 startIcon={<SearchIcon />}
                 onClick={loadData}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   background: "#057546"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 عرض
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 onClick={loadData}
@@ -1231,13 +1233,13 @@ const TrainingAgreementsFollow = () => {
                   loading ||
                   filteredRows.length === 0
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   color: "#ae1e21",
                   borderColor: "#ae1e21",
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير Excel
               </Button>
@@ -1246,11 +1248,11 @@ const TrainingAgreementsFollow = () => {
                 variant="outlined"
                 startIcon={<ClearAllIcon />}
                 onClick={clearFilters}
-                sx={{
+                sx={uiLayout.withUiSx({
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
-                }}
+                }, uiLayout.buttonSx)}
               >
                 مسح الفلاتر
               </Button>
@@ -1275,9 +1277,9 @@ const TrainingAgreementsFollow = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone
-                    ? "0.44rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.52rem"
+                      ? "0.75rem"
                       : undefined,
                   textAlign: "center",
                   whiteSpace: "nowrap",
@@ -1291,7 +1293,7 @@ const TrainingAgreementsFollow = () => {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 365px)"
@@ -1307,7 +1309,7 @@ const TrainingAgreementsFollow = () => {
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1438,7 +1440,7 @@ const TrainingAgreementsFollow = () => {
                   footerTotalRows:
                     "إجمالي الصفوف:"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1450,15 +1452,11 @@ const TrainingAgreementsFollow = () => {
                   },
 
                   "& .MuiDataGrid-virtualScroller": {
-                    overflowX: isCompact
-                      ? "hidden !important"
-                      : undefined
+                    overflowX: "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: isCompact
-                      ? "none"
-                      : undefined
+                    display: "block"
                   },
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -1481,9 +1479,9 @@ const TrainingAgreementsFollow = () => {
                     textAlign: "center",
                     width: "100%",
                     fontSize: isPhone
-                      ? "0.39rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.47rem"
+                        ? "0.75rem"
                         : undefined,
                     lineHeight: 1.25
                   },
@@ -1507,9 +1505,9 @@ const TrainingAgreementsFollow = () => {
                         ? 0.55
                         : undefined,
                     fontSize: isPhone
-                      ? "0.39rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.47rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
@@ -1539,7 +1537,7 @@ const TrainingAgreementsFollow = () => {
                     fontWeight: 800,
                     color: "#057546",
                     fontSize: isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined,
                     minWidth: isTablet
                       ? 0
@@ -1551,7 +1549,7 @@ const TrainingAgreementsFollow = () => {
 
                   "& .MuiDataGrid-toolbarContainer .MuiInputBase-input": {
                     fontSize: isTablet
-                      ? "0.46rem"
+                      ? "0.75rem"
                       : undefined
                   },
 
@@ -1559,7 +1557,7 @@ const TrainingAgreementsFollow = () => {
                     direction: "rtl",
                     fontFamily: "Cairo",
                     fontSize: isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : undefined
                   },
 
@@ -1578,9 +1576,9 @@ const TrainingAgreementsFollow = () => {
                         ? 38
                         : undefined,
                     fontSize: isPhone
-                      ? "0.4rem"
+                      ? "0.75rem"
                       : isTablet
-                        ? "0.48rem"
+                        ? "0.75rem"
                         : undefined
                   },
 
@@ -1591,7 +1589,7 @@ const TrainingAgreementsFollow = () => {
                   "& .MuiDataGrid-overlay": {
                     fontFamily: "Cairo"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>

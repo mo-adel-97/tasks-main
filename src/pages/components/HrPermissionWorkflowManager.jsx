@@ -1,3 +1,5 @@
+import * as uiLayout from '../../components/common/uiLayout';
+import '../rtl-forms-fix.css';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -175,15 +177,15 @@ export default function HrPermissionWorkflowManager({ buttonColor = "#fff", butt
       variant="contained"
       startIcon={<SettingsSuggestRoundedIcon />}
       onClick={()=>setOpen(true)}
-      sx={{ bgcolor:buttonColor,color:buttonTextColor,fontWeight:900,"&:hover":{bgcolor:buttonColor,opacity:.92} }}
+      sx={uiLayout.withUiSx({ bgcolor:buttonColor,color:buttonTextColor,fontWeight:900,"&:hover":{bgcolor:buttonColor,opacity:.92} }, uiLayout.buttonSx)}
     >
       إعدادات ومسارات الأذونات
     </Button>
 
-    <Dialog open={open} onClose={()=>setOpen(false)} fullWidth maxWidth="lg" dir="rtl">
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={()=>setOpen(false)} fullWidth maxWidth="lg" dir="rtl">
       <DialogTitle>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Box><Typography sx={{fontWeight:1000,fontSize:20}}>إدارة الأذونات ومسارات الموافقات</Typography><Typography sx={{fontSize:10.5,color:"text.secondary"}}>الموافقون يأتون من نفس الهيكل الإداري الموحد</Typography></Box>
+          <Box><Typography sx={{fontWeight:1000,fontSize:20}}>إدارة الأذونات ومسارات الموافقات</Typography><Typography sx={{fontSize:12,color:"text.secondary"}}>الموافقون يأتون من نفس الهيكل الإداري الموحد</Typography></Box>
           <IconButton onClick={()=>setOpen(false)}><CloseRoundedIcon /></IconButton>
         </Stack>
       </DialogTitle>
@@ -196,54 +198,54 @@ export default function HrPermissionWorkflowManager({ buttonColor = "#fff", butt
 
         {tab===0 && <Stack spacing={1}>
           <Alert severity="info">يمكن عمل مسار عام لكل الأذونات، أو مسار لنوع إذن، أو مسار لوحدة تنظيمية كاملة وكل الوحدات التابعة لها.</Alert>
-          <Button startIcon={<AddRoundedIcon />} variant="contained" onClick={()=>{setForm(emptyPolicy());setTab(1);}} sx={{alignSelf:"flex-start"}}>مسار جديد</Button>
+          <Button startIcon={<AddRoundedIcon />} variant="contained" onClick={()=>{setForm(emptyPolicy());setTab(1);}} sx={uiLayout.withUiSx({alignSelf:"flex-start"}, uiLayout.buttonSx)}>مسار جديد</Button>
           {policies.map((p)=><Paper key={p.policyGuid} variant="outlined" sx={{p:1.1,borderRadius:2.5,cursor:"pointer"}} onClick={()=>editPolicy(p)}>
             <Stack direction={{xs:"column",md:"row"}} justifyContent="space-between" gap={1}>
-              <Box><Typography sx={{fontWeight:950}}>{p.policyName}</Typography><Typography sx={{fontSize:10.5,color:"text.secondary"}}>{typeName(p.permissionType)} • {p.sourceOrgUnitName || "كل الوحدات"}{p.includeDescendants ? " • يشمل الوحدات التابعة" : ""}</Typography></Box>
+              <Box><Typography sx={{fontWeight:950}}>{p.policyName}</Typography><Typography sx={{fontSize:12,color:"text.secondary"}}>{typeName(p.permissionType)} • {p.sourceOrgUnitName || "كل الوحدات"}{p.includeDescendants ? " • يشمل الوحدات التابعة" : ""}</Typography></Box>
               <Stack direction="row" gap={.5} flexWrap="wrap">{(p.steps||[]).map((s)=><Chip key={s.policyStepGuid} size="small" label={`${s.stepNo}. ${s.stepName || sourceName(s.approverSource)}`} />)}</Stack>
             </Stack>
           </Paper>)}
           {!policies.length && <Alert severity="warning">لا توجد مسارات مخصصة بعد. في هذه الحالة يستخدم النظام المسؤول المباشر من الهيكل كمسار آمن افتراضي.</Alert>}
         </Stack>}
 
-        {tab===1 && <Stack spacing={1}>
-          <Box sx={{display:"grid",gridTemplateColumns:{xs:"1fr",md:"1.4fr 1fr 1.4fr 100px"},gap:1}}>
-            <TextField size="small" label="اسم المسار" value={form.policyName} onChange={(e)=>setForm((x)=>({...x,policyName:e.target.value}))}/>
-            <FormControl size="small"><InputLabel>نوع الإذن</InputLabel><Select label="نوع الإذن" value={form.permissionType} onChange={(e)=>setForm((x)=>({...x,permissionType:e.target.value}))}><MenuItem value="">كل الأنواع</MenuItem>{(config.permissionTypes||[]).map((t)=><MenuItem key={t.value} value={t.value}>{t.name}</MenuItem>)}</Select></FormControl>
-            <FormControl size="small"><InputLabel>الوحدة المصدر</InputLabel><Select label="الوحدة المصدر" value={form.sourceOrgUnitGuid} onChange={(e)=>setForm((x)=>({...x,sourceOrgUnitGuid:e.target.value}))}><MenuItem value="">كل الوحدات</MenuItem>{(config.units||[]).map((u)=><MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}</Select></FormControl>
-            <TextField size="small" type="number" label="الأولوية" value={form.priority} onChange={(e)=>setForm((x)=>({...x,priority:Number(e.target.value||100)}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+        {tab===1 && <Stack sx={uiLayout.filterBarSx} spacing={1}>
+          <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"1.4fr 1fr 1.4fr 100px"},gap:1}, uiLayout.formGridSx)}>
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم المسار" value={form.policyName} onChange={(e)=>setForm((x)=>({...x,policyName:e.target.value}))}/>
+            <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>نوع الإذن</InputLabel><Select label="نوع الإذن" value={form.permissionType} onChange={(e)=>setForm((x)=>({...x,permissionType:e.target.value}))}><MenuItem value="">كل الأنواع</MenuItem>{(config.permissionTypes||[]).map((t)=><MenuItem key={t.value} value={t.value}>{t.name}</MenuItem>)}</Select></FormControl>
+            <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>الوحدة المصدر</InputLabel><Select label="الوحدة المصدر" value={form.sourceOrgUnitGuid} onChange={(e)=>setForm((x)=>({...x,sourceOrgUnitGuid:e.target.value}))}><MenuItem value="">كل الوحدات</MenuItem>{(config.units||[]).map((u)=><MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}</Select></FormControl>
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" type="number" label="الأولوية" value={form.priority} onChange={(e)=>setForm((x)=>({...x,priority:Number(e.target.value||100)}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
           </Box>
-          <FormControl size="small" sx={{width:260}}><InputLabel>تطبيق الوحدة</InputLabel><Select label="تطبيق الوحدة" value={form.includeDescendants?"yes":"no"} onChange={(e)=>setForm((x)=>({...x,includeDescendants:e.target.value==="yes"}))}><MenuItem value="yes">الوحدة وكل ما تحتها</MenuItem><MenuItem value="no">الوحدة فقط</MenuItem></Select></FormControl>
+          <FormControl size="small" sx={uiLayout.withUiSx({width:260}, uiLayout.formFieldSx)}><InputLabel>تطبيق الوحدة</InputLabel><Select label="تطبيق الوحدة" value={form.includeDescendants?"yes":"no"} onChange={(e)=>setForm((x)=>({...x,includeDescendants:e.target.value==="yes"}))}><MenuItem value="yes">الوحدة وكل ما تحتها</MenuItem><MenuItem value="no">الوحدة فقط</MenuItem></Select></FormControl>
 
           <Typography sx={{fontWeight:950}}>خطوات الموافقة</Typography>
-          {form.steps.map((step,index)=><Paper key={index} variant="outlined" sx={{p:1,borderRadius:2.5}}>
-            <Box sx={{display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px 1.2fr 1.3fr 1fr auto"},gap:1,alignItems:"center"}}>
-              <TextField size="small" label="الخطوة" value={index+1} disabled/>
-              <TextField size="small" label="اسم الخطوة" value={step.stepName} onChange={(e)=>updateStep(index,{stepName:e.target.value})}/>
-              <FormControl size="small"><InputLabel>الموافق من</InputLabel><Select label="الموافق من" value={step.approverSource} onChange={(e)=>updateStep(index,{approverSource:e.target.value,targetOrgUnitGuid:"",approverUserGuids:[]})}>{(config.approverSources||[]).map((s)=><MenuItem key={s.value} value={s.value}>{s.name}</MenuItem>)}</Select></FormControl>
-              <FormControl size="small"><InputLabel>طريقة الموافقة</InputLabel><Select label="طريقة الموافقة" value={step.approvalMode} onChange={(e)=>updateStep(index,{approvalMode:e.target.value})}><MenuItem value="ANY">موافقة أي واحد تكفي</MenuItem><MenuItem value="ALL">موافقة الجميع</MenuItem></Select></FormControl>
+          {form.steps.map((step,index)=><Paper key={index} variant="outlined" sx={uiLayout.withUiSx({p:1,borderRadius:2.5}, uiLayout.formGridSx)}>
+            <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px 1.2fr 1.3fr 1fr auto"},gap:1,alignItems:"center"}, uiLayout.formGridSx)}>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الخطوة" value={index+1} disabled/>
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم الخطوة" value={step.stepName} onChange={(e)=>updateStep(index,{stepName:e.target.value})}/>
+              <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>الموافق من</InputLabel><Select label="الموافق من" value={step.approverSource} onChange={(e)=>updateStep(index,{approverSource:e.target.value,targetOrgUnitGuid:"",approverUserGuids:[]})}>{(config.approverSources||[]).map((s)=><MenuItem key={s.value} value={s.value}>{s.name}</MenuItem>)}</Select></FormControl>
+              <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>طريقة الموافقة</InputLabel><Select label="طريقة الموافقة" value={step.approvalMode} onChange={(e)=>updateStep(index,{approvalMode:e.target.value})}><MenuItem value="ANY">موافقة أي واحد تكفي</MenuItem><MenuItem value="ALL">موافقة الجميع</MenuItem></Select></FormControl>
               <Stack direction="row"><IconButton disabled={index===0} onClick={()=>moveStep(index,-1)}><KeyboardArrowUpRoundedIcon/></IconButton><IconButton disabled={index===form.steps.length-1} onClick={()=>moveStep(index,1)}><KeyboardArrowDownRoundedIcon/></IconButton><IconButton color="error" disabled={form.steps.length===1} onClick={()=>removeStep(index)}><DeleteOutlineRoundedIcon/></IconButton></Stack>
             </Box>
-            {step.approverSource==="ORG_UNIT_MANAGER" && <FormControl size="small" fullWidth sx={{mt:1}}><InputLabel>الوحدة التي سيُؤخذ مسؤولوها</InputLabel><Select label="الوحدة التي سيُؤخذ مسؤولوها" value={step.targetOrgUnitGuid} onChange={(e)=>updateStep(index,{targetOrgUnitGuid:e.target.value})}>{(config.units||[]).map((u)=><MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}</Select></FormControl>}
-            {step.approverSource==="SPECIFIC_USERS" && <Autocomplete multiple sx={{mt:1}} options={config.employees||[]} getOptionLabel={(o)=>o.employeeName||""} value={(config.employees||[]).filter((u)=>step.approverUserGuids.includes(u.employeeGuid))} onChange={(_,v)=>updateStep(index,{approverUserGuids:v.map((x)=>x.employeeGuid)})} renderInput={(params)=><TextField {...params} size="small" label="الأشخاص المحددون"/>}/>} 
+            {step.approverSource==="ORG_UNIT_MANAGER" && <FormControl size="small" fullWidth sx={uiLayout.withUiSx({mt:1}, uiLayout.formFieldSx)}><InputLabel>الوحدة التي سيُؤخذ مسؤولوها</InputLabel><Select label="الوحدة التي سيُؤخذ مسؤولوها" value={step.targetOrgUnitGuid} onChange={(e)=>updateStep(index,{targetOrgUnitGuid:e.target.value})}>{(config.units||[]).map((u)=><MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}</Select></FormControl>}
+            {step.approverSource==="SPECIFIC_USERS" && <Autocomplete multiple sx={{mt:1}} options={config.employees||[]} getOptionLabel={(o)=>o.employeeName||""} value={(config.employees||[]).filter((u)=>step.approverUserGuids.includes(u.employeeGuid))} onChange={(_,v)=>updateStep(index,{approverUserGuids:v.map((x)=>x.employeeGuid)})} renderInput={(params)=><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} size="small" label="الأشخاص المحددون"/>}/>} 
           </Paper>)}
-          <Button variant="outlined" startIcon={<AddRoundedIcon/>} onClick={addStep} sx={{alignSelf:"flex-start"}}>إضافة خطوة</Button>
-          <TextField multiline minRows={2} label="ملاحظات" value={form.notes} onChange={(e)=>setForm((x)=>({...x,notes:e.target.value}))}/>
-          <Button variant="contained" onClick={savePolicy} disabled={loading}>حفظ المسار</Button>
+          <Button variant="outlined" startIcon={<AddRoundedIcon/>} onClick={addStep} sx={uiLayout.withUiSx({alignSelf:"flex-start"}, uiLayout.buttonSx)}>إضافة خطوة</Button>
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} multiline minRows={2} label="ملاحظات" value={form.notes} onChange={(e)=>setForm((x)=>({...x,notes:e.target.value}))}/>
+          <Button sx={uiLayout.buttonSx} variant="contained" onClick={savePolicy} disabled={loading}>حفظ المسار</Button>
         </Stack>}
 
         {tab===2 && <Stack spacing={1}>
           <Alert severity="success" icon={<FactCheckRoundedIcon/>}>هذه الطلبات وصلت لمرحلتك أنت حسب الهيكل والمسار المجمد وقت تقديم الطلب.</Alert>
           {approvals.map((row)=><Paper key={row.permissionGuid} variant="outlined" sx={{p:1.1,borderRadius:2.5}}>
             <Stack direction={{xs:"column",md:"row"}} justifyContent="space-between" gap={1}>
-              <Box><Typography sx={{fontWeight:950}}>{row.employeeName}</Typography><Typography sx={{fontSize:10.5,color:"text.secondary"}}>{typeName(row.permissionType)} • {row.permissionDate?.slice?.(0,10) || row.permissionDate} • {row.stepName}</Typography><Typography sx={{fontSize:11,mt:.4}}>{row.reason}</Typography></Box>
-              <Stack direction="row" spacing={.7}><Button color="error" variant="outlined" onClick={()=>decide(row,"REJECT")}>رفض</Button><Button color="success" variant="contained" onClick={()=>decide(row,"APPROVE")}>موافقة</Button></Stack>
+              <Box><Typography sx={{fontWeight:950}}>{row.employeeName}</Typography><Typography sx={{fontSize:12,color:"text.secondary"}}>{typeName(row.permissionType)} • {row.permissionDate?.slice?.(0,10) || row.permissionDate} • {row.stepName}</Typography><Typography sx={{fontSize:12,mt:.4}}>{row.reason}</Typography></Box>
+              <Stack sx={uiLayout.actionBarSx} direction="row" spacing={.7}><Button sx={uiLayout.buttonSx} color="error" variant="outlined" onClick={()=>decide(row,"REJECT")}>رفض</Button><Button sx={uiLayout.buttonSx} color="success" variant="contained" onClick={()=>decide(row,"APPROVE")}>موافقة</Button></Stack>
             </Stack>
           </Paper>)}
           {!approvals.length && <Alert severity="info">لا توجد أذونات تنتظر موافقتك حاليًا.</Alert>}
         </Stack>}
       </DialogContent>
-      <DialogActions><Button onClick={()=>setOpen(false)}>إغلاق</Button></DialogActions>
+      <DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={()=>setOpen(false)}>إغلاق</Button></DialogActions>
     </Dialog>
   </>;
 }

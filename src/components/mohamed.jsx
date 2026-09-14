@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 // RegistrationCommissions.jsx
@@ -403,7 +404,7 @@ const RegistrationCommissions = () => {
                 minWidth: isMobile ? "100%" : 520,
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.formGridSx}
                 direction={isMobile ? "column" : "row"}
                 gap={1.5}
                 alignItems="center"

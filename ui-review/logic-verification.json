@@ -1,0 +1,978 @@
+[
+  {
+    "file": "src/App.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/chartjs.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/Achievements.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AddNewStudentButton.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AddStudentDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AddTaskDialog.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AdminAchievementsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AdminDashboard.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AdminIncomeDashboard.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AdminStats.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AdminStudentNotes.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AdmissionOrderDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AllTasksList.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/Announcements.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AssignedTasks.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/AttachmentViewer.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/attendance/AttendanceDialog.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/attendance/StudentInfoCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/attendance/StudentSearchForm.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/BranchesDashboard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/CallHistory.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/AchievementsCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/AttendanceCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/DeductionsCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/LockedServiceCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/SalaryCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/StatsCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/cards/VacationCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ChangePaymentStatusDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ChangeStudentStatusDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/common/ErrorButton.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/common/GradientButton.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/common/ProfessionalCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/common/SuccessButton.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/ComplaintsSuggestionsTasks.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/CountdownTimer.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/CourseAttendanceStats.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/DashboardTabs.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/DashboardTabs.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/DialogStutsChangePuplic.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/DiplomaStatistics.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/DiscountOrderDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/DocumentHistoryDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EditStudentDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeCVAdminPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeCVDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeDataDialog.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeEvaluationPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeInfoCard.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeInfoCard.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/EmployeeOfTheMonthBanner.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeProfileDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/EmployeeSurveys.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/exam/AnswerKeyViewer.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/exam/FormComponents.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/exam/QuestionComponents.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/exam/QuestionList.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/exam/SharedComponents.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/exam/ViewerComponents.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/ExceptionsLists.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ExceptionsListsAdmin.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ExportReportsDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/FloatingParticles.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/FloatingParticles.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/FollowUpCallsDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/Footer.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/GroupChat.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/Header.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/hrControlStyles.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/HRCreateExams.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/HRCreateSurvey.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/HrOrganizationDesigner.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/HrOrgOverviewPanel.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/HrPermissionWorkflowManager.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/InquiriesPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/InvoiceReturnDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/mohamed.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/MyCallHistoryDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/NavigationShell.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/NewTaskButton.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/NewTaskForm.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/NewVersionCelebration.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/P2PMarketing.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/P2PMarketingAdmin.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/PastReports.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/PaymentChart.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/PaymentOrderDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/PostsDialog.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/PrivateRoute.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/ProfileStatsTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ProfileStatsTab.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/PublicTaskDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RealTicetsForUsers.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ReceivedTasks.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ReceptionCelebration.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RefundRequestDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RegisterDocumentDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RegistrationCommissions.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RegistrationRequestsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RegistrationReturnDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ReportList.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/ReportViewer.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/RportForClinets.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SalesInvoiceDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SentTasks.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SentTasksPuplic.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SharedDateFilter.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/Sidebar.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SidebarAdmin.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/SpecialComponent.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SplashCursor.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/StudentNotes.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentOperationsDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentPaymentOrderDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentRegFeesDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentSearch.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentStatementDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentStatementDialog2.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudentStudyFileDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/StudyApprovalDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/SurveyReportExporter.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/tabs/AttendanceTab.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/tabs/EmployeeOfTheMonthTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/tabs/HRVacationsTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/tabs/MeetingRoomTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/tabs/OverviewTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/tabs/ProfileTab.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/tabs/SalaryTab.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/components/tabs/TasksTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/tabs/VacationPermissionsTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/tabs/VacationsTab.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/TasksCalendarView.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/TaskTrail.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/TechnicalSupport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/TrainerStudentGrid.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/TrainerStudentGrid2.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/UpdateDialog.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/UploadGrades.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/components/UploadUpdate.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/config/apiConfig.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/config/rtlComponents.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/config/sidebarLayout.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/config/sidebarNavigation.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/constants/courseCatalog.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/constants/courseData.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/constants/courseTitles.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/contexts/AuthContext.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/fonts/Amiri-Regular-base64.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/hooks/useFetchReports.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/hooks/useWebRTC.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/index.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/MyRequests.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/AdminViewTasks.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/AdmissionRequests.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/AdmissionRequestsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/AfterSalesFollow.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/AfterSalesReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/AttendancePage.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/BalanceReviewPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/BatchCountManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/BatchManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/BatchSeatsCounter.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/BatchStatistics.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/BranchDailyReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/BranchReportsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CashDisbursement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CashPaymentOrder.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CashReceiptAcknowledgment.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ChangeUserPassword.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ChatMian.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/Chats.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CircularsList.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CircularsUpload.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ClosingEntry.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CollectionCommissionsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/Complaiments.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/components/HrOrganizationDesigner.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/components/HrOrgOverviewPanel.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/components/HrPermissionWorkflowManager.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ConsolidatedIncomeStatement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CourseStudentsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/CreateExam.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DailyAttendanceReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DailyFollowUpReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/Dashboard.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DeregistrationRequestsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DesktopDevicesAccessPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DiplomaStudentsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DiscountRequestsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/DiscountTypeManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ExploerNetwork.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/GeneralAccountStatement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/GeneralDaily.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/GraduatesFollowReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HomeTab.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/HrAttendancePage.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrContractsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrDepartmentsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrEmployeeHomePage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrEmployeesPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrJobTitlesPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrLeavesPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/HrPermissionsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/JournalEntry.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/Login.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/MaintenancePage.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/MarketersReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/MeetingPage.js",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/MonthlyAttendanceReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/NewStudentsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/OfflineRegistrationRequests.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/OnlineRegistrationRequests.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/OtherInstituteRegistrationsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/PaymentFollowReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/PaymentRequestsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/PeriodicReports.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/PeriodicReportsForManagers.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/PrintExamPage.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/QualityFormsAudit.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/QualityFormsPage.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ReceptionOffice.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/RefundRequestsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/RegistrationRequestReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/RewardsList.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/SalesManManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/SalesReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/ServiceManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/SharedCoursesManager.jsx",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/pages/SidebarSettings.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TasksTab.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TaxReturnsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TaxSalesReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TrainerManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TrainingAgreementsFollow.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TransferRequestsReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/TrialBalance.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/UserActionReport.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/UserManagement.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/pages/VipCustomers.jsx",
+    "result": "only allowlisted presentation changes"
+  },
+  {
+    "file": "src/reportWebVitals.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/security/apiAuth.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/setupTests.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/theme.js",
+    "result": "unchanged"
+  },
+  {
+    "file": "src/utils/helpers.js",
+    "result": "unchanged"
+  }
+]

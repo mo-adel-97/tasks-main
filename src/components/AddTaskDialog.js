@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from "react";
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Box, Button, IconButton, Divider, TextField,
@@ -74,7 +75,7 @@ const GroupCard = ({ group, selected, onClick }) => (
       <Typography
         variant="subtitle1"
         fontWeight={700}
-        sx={{ fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.84rem' } }}
+        sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.84rem' } }}
       >
         {group.label}
       </Typography>
@@ -118,7 +119,7 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
         <Typography
           variant="subtitle2"
           fontWeight={700}
-          sx={{ fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' } }}
+          sx={{ fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.76rem' } }}
         >
           {task.approveLevel === 0 ? "الإدارة التنفيذية" :
            task.approveLevel === 1 ? "الإشراف العام" :
@@ -146,7 +147,7 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
       </Box>
       
       <Box sx={{ p: { xs: 1, sm: 1.4, md: 2 }, flexGrow: 1 }}>
-        <Typography variant="h6" fontWeight={700} sx={{ mb: { xs: 1, md: 1.5 }, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '0.95rem' } }}>
+        <Typography variant="h6" fontWeight={700} sx={{ mb: { xs: 1, md: 1.5 }, fontSize: { xs: "0.75rem", sm: '0.82rem', md: '0.95rem' } }}>
           {task.name}
         </Typography>
         
@@ -161,7 +162,7 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
           <Avatar sx={{ 
             width: { xs: 25, sm: 28, md: 32 }, 
             height: { xs: 25, sm: 28, md: 32 }, 
-            fontSize: { xs: '0.58rem', sm: '0.68rem', md: '0.8rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.8rem' },
             backgroundColor: '#e3f2fd',
             color: '#1976d2',
             marginInlineEnd: { xs: 0.7, sm: 1, md: 1.5 }
@@ -182,7 +183,7 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
             color: '#2e7d32',
             mb: { xs: 0.8, sm: 1, md: 1.5 },
             height: { xs: 21, sm: 24, md: 27 },
-            fontSize: { xs: '0.52rem', sm: '0.6rem', md: '0.7rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
             fontWeight: 500
           }}
         />
@@ -481,7 +482,7 @@ export default function AddTaskDailog({
   
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
   open={open}
   onClose={onClose}
   maxWidth="lg"
@@ -526,23 +527,23 @@ export default function AddTaskDailog({
     flex: 1,
 
     '& .MuiTypography-body1': {
-      fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' }
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.76rem' }
     },
     '& .MuiTypography-body2': {
-      fontSize: { xs: '0.55rem', sm: '0.63rem', md: '0.72rem' }
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
     },
     '& .MuiTypography-caption': {
-      fontSize: { xs: '0.5rem', sm: '0.57rem', md: '0.65rem' }
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" }
     },
     '& .MuiButton-root': {
-      fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.74rem' },
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
       minHeight: { xs: 29, sm: 32, md: 35 }
     },
     '& .MuiInputBase-root, & .MuiInputLabel-root': {
-      fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' }
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.76rem' }
     },
     '& .MuiChip-root': {
-      fontSize: { xs: '0.5rem', sm: '0.58rem', md: '0.66rem' },
+      fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
       height: { xs: 21, sm: 23, md: 26 }
     }
   }}>
@@ -562,7 +563,7 @@ export default function AddTaskDailog({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <Typography variant="h5" fontWeight={700} sx={{ mb: { xs: 1.2, sm: 2, md: 3 }, fontSize: { xs: '0.72rem', sm: '0.84rem', md: '1rem' } }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: { xs: 1.2, sm: 2, md: 3 }, fontSize: { xs: "0.75rem", sm: '0.84rem', md: '1rem' } }}>
             اختر نوع المهمة
           </Typography>
         </motion.div>
@@ -641,7 +642,7 @@ export default function AddTaskDailog({
             variant="h5"
             fontWeight={700}
             color="primary"
-            sx={{ fontSize: { xs: '0.7rem', sm: '0.82rem', md: '0.95rem' } }}
+            sx={{ fontSize: { xs: "0.75rem", sm: '0.82rem', md: '0.95rem' } }}
           >
             {selectedGroup ? taskGroups.find(g => g.value === selectedGroup)?.label : "الكل"}
           </Typography>
@@ -678,22 +679,22 @@ export default function AddTaskDailog({
               mx: 'auto'
             }}>
               <Box sx={{ fontSize: { xs: '1.7rem', sm: '2.2rem', md: '2.7rem' }, mb: { xs: 0.7, md: 1.2 } }}>📭</Box>
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 0.6, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' } }}>
+              <Typography variant="h6" color="text.secondary" sx={{ mb: 0.6, fontSize: { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' } }}>
                 لا توجد مهام متاحة
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 1, md: 2 }, fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.74rem' } }}>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 1, md: 2 }, fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } }}>
                 لا توجد مهام متاحة لهذا القسم أو المجموعة المحددة
               </Typography>
               <Button 
                 variant="contained"
                 onClick={() => setShowTasks(false)}
-                sx={{
+                sx={uiLayout.withUiSx({
                   px: { xs: 1.1, sm: 1.5, md: 2.2 },
                   py: { xs: 0.5, sm: 0.65, md: 0.85 },
-                  fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.74rem' },
+                  fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                   borderRadius: '8px',
                   boxShadow: 'none'
-                }}
+                }, uiLayout.buttonSx)}
               >
                 العودة لاختيار المجموعة
               </Button>
@@ -715,14 +716,14 @@ export default function AddTaskDailog({
                   variant="outlined"
                   endIcon={<ArrowBackIosNewIcon />}
                   onClick={() => setSelectedTask(null)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderRadius: '8px',
                     borderWidth: '2px',
                     '&:hover': {
                       backgroundColor: 'rgba(25, 118, 210, 0.04)',
                       borderWidth: '2px'
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض جميع المهام
                 </Button>
@@ -885,7 +886,7 @@ export default function AddTaskDailog({
                   </Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: "wrap" }}>
+                <Box sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 1, flexWrap: "wrap" }, uiLayout.actionBarSx)}>
                   {/* زر التحميل إن وُجد */}
                   {downloadUrl && (
                     <Button
@@ -912,14 +913,14 @@ export default function AddTaskDailog({
                           alert("يرجى السماح بالنوافذ المنبثقة (pop-ups) في المتصفح.");
                         }
                       }}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         borderRadius: '8px',
                         color: 'primary.main',
                         borderColor: 'primary.main',
                         fontWeight: 600,
                         textTransform: 'none',
                         px: 2
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       المرفق التوضيحي
                     </Button>
@@ -947,12 +948,12 @@ export default function AddTaskDailog({
                       startIcon={<AttachFileIcon />}
                       variant={attachmentFiles[att.id] ? "contained" : "outlined"}
                       size="small"
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         borderRadius: '8px',
                         minWidth: { xs: '100%', sm: '120px' },
                         textTransform: 'none',
                         px: 2
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {attachmentFiles[att.id] ? "تغيير المرفق" : "إرفاق"}
                       <input
@@ -996,14 +997,14 @@ export default function AddTaskDailog({
               </Grid>
 
               <Grid item xs={12} md={6} sx={{ minWidth: 0, width: "100%" }}>
-                <Box sx={{ 
+                <Box sx={uiLayout.withUiSx({ 
                   p: { xs: 0.75, sm: 1.1, md: 1.8 }, 
                   backgroundColor: 'background.default',
                   borderRadius: '12px',
                   border: '1px solid',
                   borderColor: 'divider',
                   height: '100%'
-                }}>
+                }, uiLayout.pageHeaderSx)}>
                   <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>
                     <SendIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
                     إرسال المهمة
@@ -1023,7 +1024,7 @@ export default function AddTaskDailog({
                         setTaskUsers(newValue.map(u => u.guid));
                       }}
                       renderInput={(params) => (
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           {...params}
                           variant="outlined"
                           placeholder="اختر الموظفين"
@@ -1069,7 +1070,7 @@ export default function AddTaskDailog({
                       <NotesIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
                       ملاحظات إضافية
                     </Typography>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       multiline
                       minRows={3}
@@ -1077,11 +1078,11 @@ export default function AddTaskDailog({
                       onChange={e => setNotes(e.target.value)}
                       placeholder="أدخل أي ملاحظات أو تعليمات إضافية هنا..."
                       variant="outlined"
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         '& .MuiOutlinedInput-root': {
                           borderRadius: '8px'
                         }
-                      }}
+                      }, uiLayout.formFieldSx)}
                     />
                   </Box>
 
@@ -1093,7 +1094,7 @@ export default function AddTaskDailog({
       وقت التنفيذ المطلوب
     </Typography>
     <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: { xs: 0.7, md: 1.5 } }}>
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         type="number"
         value={requiredExecutionTime}
         onChange={e => setRequiredExecutionTime(e.target.value)}
@@ -1101,12 +1102,12 @@ export default function AddTaskDailog({
         inputProps={{ min: 1 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
         variant="outlined"
         size="small"
-        sx={{ 
+        sx={uiLayout.withUiSx({ 
           maxWidth: '120px',
           '& .MuiOutlinedInput-root': {
             borderRadius: '8px'
           }
-        }}
+        }, uiLayout.formFieldSx)}
       />
       <Typography variant="body2" color="text.secondary">
         الوقت الافتراضي: {selectedTask?.timeForDone} ساعة
@@ -1126,14 +1127,14 @@ export default function AddTaskDailog({
                     <Button 
                       onClick={onClose} 
                       variant="outlined"
-                      sx={{ 
+                      sx={uiLayout.withUiSx({ 
                         minWidth: { xs: '100%', sm: '120px' },
                         borderRadius: '8px',
                         borderWidth: '2px',
                         '&:hover': {
                           borderWidth: '2px'
                         }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       إلغاء
                     </Button>
@@ -1145,14 +1146,14 @@ export default function AddTaskDailog({
                         variant="contained"
                         disabled={loading || !selectedTask}
                         onClick={handleSubmit}
-                        sx={{ 
+                        sx={uiLayout.withUiSx({ 
                           minWidth: '140px',
                           borderRadius: '8px',
                           boxShadow: 'none',
                           '&:hover': {
                             boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
                           }
-                        }}
+                        }, uiLayout.buttonSx)}
                         startIcon={loading ? (
                           <CircularProgress size={20} color="inherit" />
                         ) : (

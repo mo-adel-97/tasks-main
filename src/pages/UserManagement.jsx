@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -146,7 +148,7 @@ function LookupDialog({
   columns = []
 }) {
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -174,7 +176,7 @@ function LookupDialog({
         dividers
         sx={{ p: { xs: 1, sm: 2 } }}
       >
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -188,15 +190,15 @@ function LookupDialog({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: { xs: 0.7, sm: 1 },
             "& .MuiInputBase-root": {
               minHeight: { xs: 34, sm: 38 }
             },
             "& input": {
-              fontSize: { xs: 11.5, sm: 13 }
+              fontSize: { xs: 12, sm: 13 }
             }
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         {loading ? (
@@ -243,14 +245,14 @@ function LookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: { xs: 9, sm: 11 } }}
+                      sx={{ fontSize: { xs: 12, sm: 12 } }}
                     >
                       {columns[0]?.label || "الكود"}
                     </Typography>
                     <Typography
                       sx={{
                         fontWeight: 800,
-                        fontSize: { xs: 11, sm: 13 }
+                        fontSize: { xs: 12, sm: 13 }
                       }}
                     >
                       {row[columns[0]?.key] ?? "-"}
@@ -261,7 +263,7 @@ function LookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: { xs: 9, sm: 11 } }}
+                      sx={{ fontSize: { xs: 12, sm: 12 } }}
                     >
                       {columns[1]?.label || "الاسم"}
                     </Typography>
@@ -269,7 +271,7 @@ function LookupDialog({
                       noWrap
                       sx={{
                         fontWeight: 800,
-                        fontSize: { xs: 11, sm: 13 }
+                        fontSize: { xs: 12, sm: 13 }
                       }}
                     >
                       {row[columns[1]?.key] ?? "-"}
@@ -280,7 +282,7 @@ function LookupDialog({
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ fontSize: 11 }}
+                      sx={{ fontSize: 12 }}
                     >
                       {columns[2]?.label || "الحالة"}
                     </Typography>
@@ -292,11 +294,11 @@ function LookupDialog({
                   <Button
                     size="small"
                     onClick={() => onPick(row)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 0,
                       px: { xs: 0.4, sm: 0.7 },
-                      fontSize: { xs: 10, sm: 12 }
-                    }}
+                      fontSize: { xs: 12, sm: 12 }
+                    }, uiLayout.buttonSx)}
                   >
                     اختيار
                   </Button>
@@ -313,8 +315,8 @@ function LookupDialog({
         )}
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose}>إغلاق</Button>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button sx={uiLayout.buttonSx} onClick={onClose}>إغلاق</Button>
       </DialogActions>
     </Dialog>
   );
@@ -1201,15 +1203,15 @@ export default function UserManagement() {
             minHeight: { xs: 34, sm: 38 }
           },
           "& .MuiInputBase-input": {
-            fontSize: { xs: 11.5, sm: 13.5 },
+            fontSize: { xs: 12, sm: 13.5 },
             py: { xs: 0.55, sm: 0.8 }
           },
           "& .MuiInputLabel-root": {
-            fontSize: { xs: 10.5, sm: 12.5 }
+            fontSize: { xs: 12, sm: 12.5 }
           },
           "& .MuiButton-root": {
             minHeight: { xs: 32, sm: 36 },
-            fontSize: { xs: 10.8, sm: 13.5 },
+            fontSize: { xs: 12, sm: 13.5 },
             lineHeight: 1.15
           },
           "& .MuiSvgIcon-root": {
@@ -1278,7 +1280,7 @@ export default function UserManagement() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(3, minmax(0, 1fr))",
@@ -1286,21 +1288,21 @@ export default function UserManagement() {
               },
               gap: { xs: 0.5, sm: 0.75 },
               justifyContent: { sm: "start" }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={newUser}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#1976d2",
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.7, sm: 2 },
-                fontSize: { xs: 10.5, sm: 13.5 },
+                fontSize: { xs: 12, sm: 13.5 },
                 lineHeight: 1.1,
                 whiteSpace: "normal"
-              }}
+              }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -1314,14 +1316,14 @@ export default function UserManagement() {
                   "قائمة المستخدمين"
                 )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.7, sm: 2 },
-                fontSize: { xs: 10.5, sm: 13.5 },
+                fontSize: { xs: 12, sm: 13.5 },
                 lineHeight: 1.1,
                 whiteSpace: "normal"
-              }}
+              }, uiLayout.buttonSx)}
             >
               بحث عن مستخدم
             </Button>
@@ -1336,14 +1338,14 @@ export default function UserManagement() {
               }
               onClick={save}
               disabled={saving || loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
                 px: { xs: 0.7, sm: 2 },
-                fontSize: { xs: 10.5, sm: 13.5 },
+                fontSize: { xs: 12, sm: 13.5 },
                 lineHeight: 1.1,
                 whiteSpace: "normal"
-              }}
+              }, uiLayout.buttonSx)}
             >
               {isEdit
                 ? "حفظ التعديل"
@@ -1399,23 +1401,23 @@ export default function UserManagement() {
         {tab === 0 && (
           <Box sx={{ p: { xs: 0.75, sm: 1.25, md: 1.5 } }}>
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "repeat(2,minmax(0,1fr))",
                   md: "repeat(4,minmax(0,1fr))"
                 },
                 gap: { xs: 0.45, sm: 0.7 }
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="كود"
                 value={model.code}
                 disabled
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="اسم الموظف"
                 value={model.fullName}
@@ -1427,7 +1429,7 @@ export default function UserManagement() {
                 }
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="User Name"
                 value={model.userName}
@@ -1440,7 +1442,7 @@ export default function UserManagement() {
                 inputProps={{ dir: "ltr" }}
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="Password"
                 value={model.password}
@@ -1453,7 +1455,7 @@ export default function UserManagement() {
                 inputProps={{ dir: "ltr" }}
               />
 
-              <FormControl size="small" fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel id="user-job-label">
                   الوظيفة
                 </InputLabel>
@@ -1533,7 +1535,7 @@ export default function UserManagement() {
                 </Select>
               </FormControl>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="الفرع التابع له"
                 value={model.branchForWorkName}
@@ -1556,7 +1558,7 @@ export default function UserManagement() {
                 }}
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="القسم التابع له"
                 value={model.departmentName}
@@ -1579,7 +1581,7 @@ export default function UserManagement() {
                 }}
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="مندوب البيع"
                 value={model.sellerName}
@@ -1619,7 +1621,7 @@ export default function UserManagement() {
                   minWidth: 0
                 },
                 "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: 9.8, sm: 12.5 },
+                  fontSize: { xs: 12, sm: 12.5 },
                   lineHeight: 1.15
                 },
                 "& .MuiCheckbox-root": {
@@ -1749,7 +1751,7 @@ export default function UserManagement() {
             {(model.chkTrainer ||
               model.chkBranch) && (
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   mt: 1.5,
                   display: "grid",
                   gridTemplateColumns: {
@@ -1757,10 +1759,10 @@ export default function UserManagement() {
                     md: "repeat(2,minmax(0,1fr))"
                   },
                   gap: 1
-                }}
+                }, uiLayout.formGridSx)}
               >
                 {model.chkTrainer && (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     size="small"
                     label="المدرب"
                     value={model.trainerName}
@@ -1785,7 +1787,7 @@ export default function UserManagement() {
                 )}
 
                 {model.chkBranch && (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     size="small"
                     label="فرع التقارير"
                     value={model.branchName}
@@ -1865,14 +1867,14 @@ export default function UserManagement() {
                         onClick={() =>
                           addAllowedBranch(branch)
                         }
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           justifyContent: "space-between",
                           color: "text.primary",
                           minHeight: { xs: 28, sm: 34 },
                           py: { xs: 0.15, sm: 0.4 },
                           px: { xs: 0.35, sm: 0.8 },
-                          fontSize: { xs: 10.5, sm: 13 }
-                        }}
+                          fontSize: { xs: 12, sm: 13 }
+                        }, uiLayout.buttonSx)}
                       >
                         <span>{branch.name}</span>
                         <AddIcon fontSize="small" />
@@ -1917,13 +1919,13 @@ export default function UserManagement() {
                             branch.guid
                           )
                         }
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           justifyContent: "space-between",
                           minHeight: { xs: 28, sm: 34 },
                           py: { xs: 0.15, sm: 0.4 },
                           px: { xs: 0.35, sm: 0.8 },
-                          fontSize: { xs: 10.5, sm: 13 }
-                        }}
+                          fontSize: { xs: 12, sm: 13 }
+                        }, uiLayout.buttonSx)}
                       >
                         <span>{branch.name}</span>
                         <CloseIcon fontSize="small" />
@@ -1947,15 +1949,15 @@ export default function UserManagement() {
             <Stack
               direction="row"
               spacing={0.5}
-              sx={{
+              sx={uiLayout.withUiSx({
                 mb: { xs: 0.7, sm: 1 },
                 "& .MuiButton-root": {
                   flex: { xs: 1, sm: "0 0 auto" },
-                  fontSize: { xs: 10.5, sm: 13 }
+                  fontSize: { xs: 12, sm: 13 }
                 }
-              }}
+              }, uiLayout.actionBarSx)}
             >
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 startIcon={<SelectAllIcon />}
                 onClick={fullControl}
@@ -1963,7 +1965,7 @@ export default function UserManagement() {
                 حقوق كاملة
               </Button>
 
-              <Button
+              <Button sx={uiLayout.buttonSx}
                 variant="outlined"
                 color="error"
                 startIcon={<DeleteSweepIcon />}
@@ -2077,7 +2079,7 @@ export default function UserManagement() {
                         addFormToPermissions(value);
                     }}
                     renderInput={(params) => (
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         {...params}
                         placeholder="بحث عن شاشة..."
                       />
@@ -2114,7 +2116,7 @@ export default function UserManagement() {
                       >
                         <Typography
                           sx={{
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: 900,
                             lineHeight: 1.2,
                             mb: 0.35
@@ -2145,7 +2147,7 @@ export default function UserManagement() {
                                 m: 0,
                                 minWidth: 0,
                                 "& .MuiFormControlLabel-label": {
-                                  fontSize: 9.2,
+                                  fontSize: 12,
                                   lineHeight: 1.1
                                 }
                               }}
@@ -2180,7 +2182,7 @@ export default function UserManagement() {
                         severity="info"
                         sx={{
                           py: 0.35,
-                          fontSize: 10.5
+                          fontSize: 12
                         }}
                       >
                         لم تتم إضافة شاشات للصلاحيات.

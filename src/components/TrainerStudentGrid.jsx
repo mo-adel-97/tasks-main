@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -654,7 +655,7 @@ const filteredRows = rows.filter((row) => {
               </Box>
 
               {/* Filters Section */}
-              <Box display="flex" gap={2} flexWrap="wrap" alignItems="center">
+              <Box sx={uiLayout.filterBarSx} display="flex" gap={2} flexWrap="wrap" alignItems="center">
                 <DatePicker
                   label="من تاريخ"
                   value={fromDate}
@@ -667,7 +668,7 @@ const filteredRows = rows.filter((row) => {
                   onChange={setToDate}
                   sx={{ minWidth: 150 }}
                 />
-                <FormControl sx={{ minWidth: 180 }}>
+                <FormControl sx={uiLayout.withUiSx({ minWidth: 180 }, uiLayout.formFieldSx)}>
                   <InputLabel id="filter-status-label">فلترة حسب الحالة</InputLabel>
                   <Select
                     labelId="filter-status-label"
@@ -685,13 +686,13 @@ const filteredRows = rows.filter((row) => {
                 <Button 
                   variant="contained" 
                   onClick={fetchData} 
-                  sx={{ 
+                  sx={uiLayout.withUiSx({ 
                     px: 3,
                     backgroundColor: PRIMARY_COLOR,
                     '&:hover': {
                       backgroundColor: PRIMARY_COLOR_DARK,
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث البيانات
                 </Button>
@@ -715,7 +716,7 @@ const filteredRows = rows.filter((row) => {
                     if (status === 'late') return 'status-late';
                     return '';
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     border: 'none',
                     '& .MuiDataGrid-cell': {
                       borderBottom: '1px solid #e0e0e0',
@@ -738,7 +739,7 @@ const filteredRows = rows.filter((row) => {
                     '& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within': {
                       outline: 'none',
                     },
-                  }}
+                  }, uiLayout.dataGridSx)}
                 />
               </div>
             </CardContent>
@@ -750,11 +751,11 @@ const filteredRows = rows.filter((row) => {
             onClose={() => setActionDialogOpen(false)}
             maxWidth="lg"
             fullWidth
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               '& .MuiDialog-paper': { 
                 borderRadius: 3,
               } 
-            }}
+            }, uiLayout.dialogLayoutSx)}
           >
             <DialogTitle
               sx={{
@@ -993,7 +994,7 @@ const filteredRows = rows.filter((row) => {
                               <Typography variant="subtitle2" color="text.secondary" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 تحديث الحالة
                               </Typography>
-                              <FormControl fullWidth size="small">
+                              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                                 <InputLabel>اختر الحالة</InputLabel>
                                 <Select
                                   value={rowStatuses[currentActionRow?.id] || ''}
@@ -1014,7 +1015,7 @@ const filteredRows = rows.filter((row) => {
                               variant="contained"
                               startIcon={<WhatsAppIcon />}
                               onClick={() => handleWhatsAppClick(currentActionRow?.studentTel)}
-                              sx={{
+                              sx={uiLayout.withUiSx({
                                 backgroundColor: '#25D366',
                                 py: 1.5,
                                 fontSize: '1rem',
@@ -1026,7 +1027,7 @@ const filteredRows = rows.filter((row) => {
                                   boxShadow: 3,
                                 },
                                 transition: 'all 0.3s ease',
-                              }}
+                              }, uiLayout.buttonSx)}
                             >
                               التواصل عبر واتساب
                             </Button>
@@ -1055,7 +1056,7 @@ const filteredRows = rows.filter((row) => {
                             <HistoryIcon /> إضافة متابعة جديدة
                           </Typography>
 
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             fullWidth
                             multiline
                             minRows={4}
@@ -1063,14 +1064,14 @@ const filteredRows = rows.filter((row) => {
                             onChange={(e) => setNoteInput(e.target.value)}
                             placeholder="اكتب المتابعة الجديدة هنا..."
                             variant="outlined"
-                            sx={{ mb: 3 }}
+                            sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
                           />
                           <Button
                             fullWidth
                             variant="contained"
                             onClick={handleNoteSave}
                             disabled={!noteInput.trim()}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               py: 1.5,
                               fontSize: '1rem',
                               fontWeight: 'bold',
@@ -1082,7 +1083,7 @@ const filteredRows = rows.filter((row) => {
                                 boxShadow: 3,
                               },
                               transition: 'all 0.3s ease',
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             حفظ المتابعة الجديدة
                           </Button>
@@ -1350,11 +1351,11 @@ const filteredRows = rows.filter((row) => {
             </Box>
           </DialogContent>
 
-          <DialogActions sx={{ p: 3, bgcolor: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+          <DialogActions sx={uiLayout.withUiSx({ p: 3, bgcolor: '#f8fafc', borderTop: '1px solid #e2e8f0' }, uiLayout.dialogActionsSx)}>
             <Button
               onClick={() => setActionDialogOpen(false)}
               variant="contained"
-              sx={{
+              sx={uiLayout.withUiSx({
                 px: 4,
                 py: 1,
                 fontSize: '1rem',
@@ -1367,7 +1368,7 @@ const filteredRows = rows.filter((row) => {
                   boxShadow: 3,
                 },
                 transition: 'all 0.3s ease',
-              }}
+              }, uiLayout.buttonSx)}
             >
               إغلاق النافذة
             </Button>

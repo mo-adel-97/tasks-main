@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -188,11 +190,11 @@ const TextCell = ({
         fontSize: "0.76rem",
         fontWeight: 700,
         "@media (max-width: 599px)": {
-          fontSize: "0.27rem",
+          fontSize: "0.75rem",
           lineHeight: 1.05
         },
         "@media (min-width: 600px) and (max-width: 1599px)": {
-          fontSize: "0.40rem",
+          fontSize: "0.75rem",
           lineHeight: 1.15
         }
       }}
@@ -211,11 +213,11 @@ const MoneyCell = ({ value }) => (
       fontSize: "0.75rem",
       fontWeight: 800,
       "@media (max-width: 599px)": {
-        fontSize: "0.27rem",
+        fontSize: "0.75rem",
         lineHeight: 1.05
       },
       "@media (min-width: 600px) and (max-width: 1599px)": {
-        fontSize: "0.40rem",
+        fontSize: "0.75rem",
         lineHeight: 1.15
       }
     }}
@@ -257,7 +259,7 @@ const MultiValueFilter = ({
         alignItems="center"
         justifyContent="space-between"
         spacing={1}
-        sx={{ mb: 1 }}
+        sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.pageHeaderSx)}
       >
         <Typography
           sx={{
@@ -269,7 +271,7 @@ const MultiValueFilter = ({
           {label}
         </Typography>
 
-        <Stack
+        <Stack sx={uiLayout.actionBarSx}
           direction="row"
           spacing={0.5}
         >
@@ -285,11 +287,11 @@ const MultiValueFilter = ({
                   : options
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: 0,
               fontFamily: "Cairo",
               fontWeight: 800
-            }}
+            }, uiLayout.buttonSx)}
           >
             {allSelected
               ? "إلغاء الكل"
@@ -303,11 +305,11 @@ const MultiValueFilter = ({
               onClick={() =>
                 onChange([])
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح
             </Button>
@@ -383,7 +385,7 @@ const MultiValueFilter = ({
           )
         }
         renderInput={(params) => (
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             {...params}
             size="small"
             placeholder="ابحث وحدد أكثر من قيمة"
@@ -392,7 +394,7 @@ const MultiValueFilter = ({
                 ? `تم اختيار ${selected.length} من ${options.length}`
                 : `الكل ظاهر (${options.length})`
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiInputBase-root":
                 {
                   fontFamily:
@@ -405,7 +407,7 @@ const MultiValueFilter = ({
                   textAlign:
                     "right"
                 }
-            }}
+            }, uiLayout.formFieldSx)}
           />
         )}
       />
@@ -1224,8 +1226,8 @@ const GraduatesFollowReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     fontSize: isPhone
-                      ? "0.27rem"
-                      : "0.42rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     lineHeight: 1.15,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -2037,7 +2039,7 @@ const GraduatesFollowReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: "0.66rem",
+                    xs: "0.75rem",
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
@@ -2091,7 +2093,7 @@ const GraduatesFollowReport = () => {
               xs: "stretch",
               lg: "center"
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiButton-root": {
                 minHeight: !isDesktop
                   ? isPhone
@@ -2105,8 +2107,8 @@ const GraduatesFollowReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.38rem"
-                    : "0.48rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiChip-root": {
@@ -2117,11 +2119,11 @@ const GraduatesFollowReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.35rem"
-                    : "0.45rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Box sx={{ flex: 1 }}>
               <Stack
@@ -2147,8 +2149,8 @@ const GraduatesFollowReport = () => {
                       fontSize: isDesktop
                         ? "1.15rem"
                         : isPhone
-                          ? "0.54rem"
-                          : "0.72rem",
+                          ? "0.75rem"
+                          : "0.75rem",
                       fontWeight: 900,
                       color: "#173b2b"
                     }}
@@ -2196,12 +2198,12 @@ const GraduatesFollowReport = () => {
                 selectedRows.length === 0 ||
                 bulkActionLoading
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تعيين جماعي
             </Button>
@@ -2226,10 +2228,10 @@ const GraduatesFollowReport = () => {
                 selectedRows.length === 0 ||
                 bulkActionLoading
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               حذف جماعي
             </Button>
@@ -2238,10 +2240,10 @@ const GraduatesFollowReport = () => {
               variant="outlined"
               startIcon={<FileDownloadIcon />}
               onClick={exportCsv}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصدير
             </Button>
@@ -2260,7 +2262,7 @@ const GraduatesFollowReport = () => {
                   true
                 )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 ...(activeFilterCount >
@@ -2270,7 +2272,7 @@ const GraduatesFollowReport = () => {
                         "linear-gradient(135deg,#057546,#034d31)"
                     }
                   : {})
-              }}
+              }, uiLayout.buttonSx)}
             >
               فلاتر متقدمة
               {activeFilterCount > 0
@@ -2282,10 +2284,10 @@ const GraduatesFollowReport = () => {
               variant="outlined"
               startIcon={<RefreshIcon />}
               onClick={loadLookups}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث القوائم
             </Button>
@@ -2309,7 +2311,7 @@ const GraduatesFollowReport = () => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isDesktop
                 ? "repeat(3,minmax(0,1fr)) auto"
@@ -2326,8 +2328,8 @@ const GraduatesFollowReport = () => {
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.4rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiInputBase-root": {
@@ -2339,13 +2341,13 @@ const GraduatesFollowReport = () => {
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.46rem"
-                    : "0.56rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               }
-            }}
+            }, uiLayout.filterBarSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="من تاريخ"
               value={fromDate}
@@ -2356,7 +2358,7 @@ const GraduatesFollowReport = () => {
               size="small"
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="إلى تاريخ"
               value={toDate}
@@ -2388,7 +2390,7 @@ const GraduatesFollowReport = () => {
                 String(value?.guid)
               }
               renderInput={(params) => (
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   {...params}
                   label="الفرع"
                   size="small"
@@ -2410,7 +2412,7 @@ const GraduatesFollowReport = () => {
               }
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: "auto",
                 minHeight: isDesktop
                   ? 40
@@ -2419,14 +2421,14 @@ const GraduatesFollowReport = () => {
                     : 35,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.4rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -2435,7 +2437,7 @@ const GraduatesFollowReport = () => {
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             width: "100%",
             minWidth: 0,
             height: isDesktop
@@ -2452,7 +2454,7 @@ const GraduatesFollowReport = () => {
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.13)"
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <DataGrid
             rows={filteredGridRows}
@@ -2525,7 +2527,7 @@ const GraduatesFollowReport = () => {
                   ? 30
                   : 40
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               border: 0,
               direction: "rtl",
               fontFamily: "Cairo",
@@ -2560,8 +2562,8 @@ const GraduatesFollowReport = () => {
                 fontWeight: 900,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.25rem"
-                    : "0.39rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 whiteSpace: !isDesktop
                   ? "nowrap"
@@ -2584,8 +2586,8 @@ const GraduatesFollowReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.27rem"
-                    : "0.40rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 justifyContent: !isDesktop
                   ? "center"
@@ -2612,10 +2614,10 @@ const GraduatesFollowReport = () => {
                     },
                     "& .MuiDataGrid-virtualScroller": {
                       direction: "rtl",
-                      overflowX: "hidden !important"
+                      overflowX: "auto"
                     },
                     "& .MuiDataGrid-scrollbar--horizontal": {
-                      display: "none"
+                      display: "block"
                     }
                   }
                 : {}),
@@ -2634,12 +2636,12 @@ const GraduatesFollowReport = () => {
                 {
                   direction: "rtl"
                 }
-            }}
+            }, uiLayout.dataGridSx)}
           />
         </Paper>
 
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={detailsOpen}
           onClose={closeDetails}
           fullWidth
@@ -2759,8 +2761,8 @@ const GraduatesFollowReport = () => {
                           fontWeight: 900,
                           color: "#60756d",
                           fontSize: isPhone
-                            ? "0.38rem"
-                            : "0.49rem"
+                            ? "0.75rem"
+                            : "0.75rem"
                         }}
                       >
                         {label}
@@ -2772,8 +2774,8 @@ const GraduatesFollowReport = () => {
                           fontWeight: 800,
                           color: "#1f2d3d",
                           fontSize: isPhone
-                            ? "0.49rem"
-                            : "0.62rem",
+                            ? "0.75rem"
+                            : "0.75rem",
                           wordBreak:
                             "break-word"
                         }}
@@ -2789,7 +2791,7 @@ const GraduatesFollowReport = () => {
                   spacing={0.5}
                   useFlexGap
                   flexWrap="wrap"
-                  sx={{ mt: 0.8 }}
+                  sx={uiLayout.withUiSx({ mt: 0.8 }, uiLayout.actionBarSx)}
                 >
                   <Button
                     size="small"
@@ -2799,13 +2801,13 @@ const GraduatesFollowReport = () => {
                       setMenuRow(detailsRow);
                       setStatementOpen(true);
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     كشف الحساب
                   </Button>
@@ -2820,13 +2822,13 @@ const GraduatesFollowReport = () => {
                         detailsRow
                       );
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     طلب سداد
                   </Button>
@@ -2836,29 +2838,29 @@ const GraduatesFollowReport = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: isPhone ? 1 : 1.5,
               py: isPhone ? 0.7 : 1
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="contained"
               onClick={closeDetails}
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.47rem"
-                  : "0.58rem"
-              }}
+                  ? "0.75rem"
+                  : "0.75rem"
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={filterDialogOpen}
           onClose={() =>
             setFilterDialogOpen(
@@ -2906,7 +2908,7 @@ const GraduatesFollowReport = () => {
                   fontFamily:
                     "Cairo",
                   fontSize:
-                    "0.72rem",
+                    "0.75rem",
                   color:
                     "#708179",
                   fontWeight: 700
@@ -3026,10 +3028,10 @@ const GraduatesFollowReport = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: 2,
               py: 1.4
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               color="error"
@@ -3043,10 +3045,10 @@ const GraduatesFollowReport = () => {
                 activeFilterCount ===
                 0
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح الفلاتر
             </Button>
@@ -3060,12 +3062,12 @@ const GraduatesFollowReport = () => {
                   false
                 )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تطبيق وإغلاق
             </Button>
@@ -3195,7 +3197,7 @@ const GraduatesFollowReport = () => {
           }}
         />
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={
             bulkTrainerDialogOpen
           }
@@ -3286,7 +3288,7 @@ const GraduatesFollowReport = () => {
                 renderInput={(
                   params
                 ) => (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     {...params}
                     label="مسؤول الاتصال"
                     placeholder="اختر مسؤول الاتصال"
@@ -3310,10 +3312,10 @@ const GraduatesFollowReport = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: 2,
               py: 1.4
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               onClick={() => {
@@ -3327,10 +3329,10 @@ const GraduatesFollowReport = () => {
               disabled={
                 bulkActionLoading
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               إلغاء
             </Button>
@@ -3354,19 +3356,19 @@ const GraduatesFollowReport = () => {
                   )
                   : <GroupAddIcon />
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تنفيذ التعيين
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={trainerDialogOpen}
           onClose={() =>
             setTrainerDialogOpen(false)
@@ -3410,7 +3412,7 @@ const GraduatesFollowReport = () => {
                   String(value?.guid)
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     {...params}
                     label="مسؤول الاتصال"
                   />
@@ -3419,8 +3421,8 @@ const GraduatesFollowReport = () => {
             </Stack>
           </DialogContent>
 
-          <DialogActions>
-            <Button
+          <DialogActions sx={uiLayout.dialogActionsSx}>
+            <Button sx={uiLayout.buttonSx}
               onClick={() =>
                 setTrainerDialogOpen(false)
               }
@@ -3431,11 +3433,11 @@ const GraduatesFollowReport = () => {
             <Button
               variant="contained"
               onClick={saveTrainer}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 backgroundColor: "#057546"
-              }}
+              }, uiLayout.buttonSx)}
             >
               حفظ
             </Button>

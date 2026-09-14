@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -585,7 +587,7 @@ function CreditNoteDialog({
   };
 
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={
         saving
@@ -634,7 +636,7 @@ function CreditNoteDialog({
             <Typography
               sx={{
                 opacity: 0.85,
-                fontSize: ".62rem"
+                fontSize: "0.75rem"
               }}
             >
               الفاتورة الأصلية
@@ -709,7 +711,7 @@ function CreditNoteDialog({
                   sx={{
                     color: "#657a70",
                     fontWeight: 800,
-                    fontSize: ".57rem"
+                    fontSize: "0.75rem"
                   }}
                 >
                   {label}
@@ -718,7 +720,7 @@ function CreditNoteDialog({
                 <Typography
                   sx={{
                     fontWeight: 900,
-                    fontSize: ".74rem"
+                    fontSize: "0.75rem"
                   }}
                 >
                   {value || "-"}
@@ -747,9 +749,9 @@ function CreditNoteDialog({
           inputProps={{
             dir: "rtl"
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: 0.8
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         <Paper
@@ -770,7 +772,7 @@ function CreditNoteDialog({
                 bgcolor: "#dceaf5",
                 p: 0.6,
                 fontWeight: 950,
-                fontSize: ".66rem"
+                fontSize: "0.75rem"
               },
               "& td": {
                 bgcolor: "#fff2c8",
@@ -823,7 +825,7 @@ function CreditNoteDialog({
                     ].map(
                       (field) => (
                         <td key={field}>
-                          <TextField
+                          <TextField InputLabelProps={{ shrink: true }}
                             size="small"
                             type="number"
                             value={
@@ -852,13 +854,13 @@ function CreditNoteDialog({
                                   "center"
                               , direction: "ltr", unicodeBidi: "isolate" }
                             , dir: "ltr" }}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               width:
                                 field ===
                                 "quantity"
                                   ? 72
                                   : 88
-                            }}
+                            }, uiLayout.formFieldSx)}
                           />
                         </td>
                       )
@@ -904,7 +906,7 @@ function CreditNoteDialog({
               >
                 <Typography
                   sx={{
-                    fontSize: ".56rem",
+                    fontSize: "0.75rem",
                     color: "#69786f"
                   }}
                 >
@@ -926,14 +928,14 @@ function CreditNoteDialog({
       </DialogContent>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           direction: "rtl",
           gap: 0.6,
           px: 1.2,
           py: 0.85
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
-        <Button
+        <Button sx={uiLayout.buttonSx}
           variant="contained"
           startIcon={
             saving
@@ -951,7 +953,7 @@ function CreditNoteDialog({
           حفظ
         </Button>
 
-        <Button
+        <Button sx={uiLayout.buttonSx}
           variant="outlined"
           color="error"
           onClick={onClose}
@@ -1736,7 +1738,7 @@ export default function SalesReport() {
                   width: "100%",
                   textAlign: "center",
                   fontWeight: 850,
-                  fontSize: ".72rem",
+                  fontSize: "0.75rem",
                   whiteSpace: "normal",
                   lineHeight: 1.25
                 }}
@@ -1828,7 +1830,7 @@ export default function SalesReport() {
                   width: "100%",
                   textAlign: "center",
                   fontWeight: 760,
-                  fontSize: ".7rem",
+                  fontSize: "0.75rem",
                   whiteSpace: "normal",
                   lineHeight: 1.2
                 }}
@@ -1881,14 +1883,14 @@ export default function SalesReport() {
               onClick={() =>
                 openDetails(row)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 82,
                 px: 0.7,
                 py: 0.25,
-                fontSize: ".62rem",
+                fontSize: "0.75rem",
                 fontWeight: 900,
                 whiteSpace: "nowrap"
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -1926,7 +1928,7 @@ export default function SalesReport() {
                   width: "100%",
                   textAlign: "center",
                   fontWeight: 900,
-                  fontSize: ".67rem",
+                  fontSize: "0.75rem",
                   lineHeight: 1.15,
                   whiteSpace: "normal",
                   overflow: "hidden"
@@ -1951,7 +1953,7 @@ export default function SalesReport() {
                   width: "100%",
                   textAlign: "center",
                   fontWeight: 800,
-                  fontSize: ".63rem",
+                  fontSize: "0.75rem",
                   lineHeight: 1.15,
                   whiteSpace: "normal",
                   overflow: "hidden"
@@ -2167,7 +2169,7 @@ export default function SalesReport() {
                 <Typography
                   sx={{
                     opacity: 0.88,
-                    fontSize: ".68rem"
+                    fontSize: "0.75rem"
                   }}
                 >
                   تقرير فواتير المبيعات
@@ -2197,7 +2199,7 @@ export default function SalesReport() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs:
@@ -2210,9 +2212,9 @@ export default function SalesReport() {
                 sm: 0.7
               },
               alignItems: "end"
-            }}
+            }, uiLayout.filterBarSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               size="small"
               type="date"
               label="الفترة من"
@@ -2227,7 +2229,7 @@ export default function SalesReport() {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               size="small"
               type="date"
               label="الفترة إلى"
@@ -2256,9 +2258,9 @@ export default function SalesReport() {
               }
               disabled={loading}
               onClick={loadData}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minHeight: 40
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -2269,14 +2271,14 @@ export default function SalesReport() {
                 <DownloadIcon />
               }
               onClick={exportCsv}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minHeight: 40
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصدير
             </Button>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               size="small"
               value={search}
               onChange={(e) =>
@@ -2295,13 +2297,13 @@ export default function SalesReport() {
                     }}
                   />
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: {
                   xs: "span 2",
                   sm: "span 2",
                   lg: "auto"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
           </Box>
 
@@ -2319,12 +2321,12 @@ export default function SalesReport() {
                 (value) => !value
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               mt: 0.65,
               mb: advancedOpen
                 ? 0.55
                 : 0
-            }}
+            }, uiLayout.buttonSx)}
           >
             فلاتر متقدمة
           </Button>
@@ -2411,7 +2413,7 @@ export default function SalesReport() {
                       renderInput={(
                         params
                       ) => (
-                        <TextField
+                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                           {...params}
                           label={label}
                           placeholder={
@@ -2540,7 +2542,7 @@ export default function SalesReport() {
                               label={`#${row.code}`}
                               sx={{
                                 height: 22,
-                                fontSize: ".58rem",
+                                fontSize: "0.75rem",
                                 fontWeight: 900,
                                 bgcolor:
                                   "#e7f4ee",
@@ -2552,7 +2554,7 @@ export default function SalesReport() {
                             <Typography
                               sx={{
                                 fontSize:
-                                  ".62rem",
+                                  "0.75rem",
                                 fontWeight:
                                   800,
                                 color:
@@ -2584,7 +2586,7 @@ export default function SalesReport() {
                             sx={{
                               mt: 0.25,
                               fontSize:
-                                ".62rem",
+                                "0.75rem",
                               color:
                                 "#596b63",
                               fontWeight:
@@ -2613,7 +2615,7 @@ export default function SalesReport() {
                               sx={{
                                 height: 21,
                                 fontSize:
-                                  ".55rem"
+                                  "0.75rem"
                               }}
                             />
 
@@ -2625,7 +2627,7 @@ export default function SalesReport() {
                               sx={{
                                 height: 21,
                                 fontSize:
-                                  ".57rem",
+                                  "0.75rem",
                                 fontWeight:
                                   950,
                                 color:
@@ -2702,11 +2704,11 @@ export default function SalesReport() {
             </Stack>
           ) : isTablet ? (
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 maxWidth: "100%",
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 autoHeight
@@ -2750,7 +2752,7 @@ export default function SalesReport() {
                     params.row
                   )
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   width: "100%",
                   maxWidth: "100%",
                   direction: "rtl",
@@ -2763,7 +2765,7 @@ export default function SalesReport() {
 
                   "& .MuiDataGrid-virtualScroller": {
                     overflowX:
-                      "hidden !important"
+                      "auto"
                   },
 
                   "& .MuiDataGrid-columnHeaders":
@@ -2779,13 +2781,13 @@ export default function SalesReport() {
                       fontWeight:
                         "900 !important",
                       fontSize:
-                        ".67rem"
+                        "0.75rem"
                     },
 
                   "& .MuiDataGrid-cell":
                     {
                       fontSize:
-                        ".66rem",
+                        "0.75rem",
                       fontWeight:
                         750,
                       borderBottom:
@@ -2822,15 +2824,15 @@ export default function SalesReport() {
                     {
                       outline: "none"
                     }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           ) : (
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 overflowX: "auto"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 autoHeight
@@ -2875,7 +2877,7 @@ export default function SalesReport() {
                     params.row
                   )
                 }
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 1280,
                   direction: "rtl",
                   border:
@@ -2895,7 +2897,7 @@ export default function SalesReport() {
                   "& .MuiDataGrid-cell":
                     {
                       fontSize:
-                        ".72rem",
+                        "0.75rem",
                       fontWeight:
                         700,
                       borderBottom:
@@ -2926,7 +2928,7 @@ export default function SalesReport() {
                     {
                       outline: "none"
                     }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           )}

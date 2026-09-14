@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { hrChipSx } from "./hrControlStyles";
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -1894,7 +1895,7 @@ const swalInfo = (title, text = "") =>
                             sx={{
                               bgcolor: item.status === "مكتمل" ? alpha("#4caf50", 0.2) : alpha("#ff9800", 0.2),
                               color: item.status === "مكتمل" ? "#4caf50" : "#ff9800",
-                              fontSize: '0.7rem',
+                              fontSize: "0.75rem",
                             }}
                           />
                         </Box>
@@ -2080,7 +2081,7 @@ const swalInfo = (title, text = "") =>
               <AssignmentIcon sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
               ملخص المهام
             </Typography>
-            <TableContainer>
+            <TableContainer sx={uiLayout.tableContainerSx}>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: alpha("#ff9800", 0.1) }}>
@@ -2113,7 +2114,7 @@ const swalInfo = (title, text = "") =>
                       {summary.totalTasks > 0 ? Math.round((summary.completedTasks / summary.totalTasks) * 100) : 0}%
                     </TableCell>
                     <TableCell align="right">
-                      <Button size="small" variant="text" onClick={() => {
+                      <Button sx={uiLayout.buttonSx} size="small" variant="text" onClick={() => {
                         const completedTasks = data.filter(t => t.status === 2);
                         alert(`المهام المكتملة: ${completedTasks.map(t => t.name).join(', ')}`);
                       }}>
@@ -2144,7 +2145,7 @@ const swalInfo = (title, text = "") =>
                       {summary.totalTasks > 0 ? Math.round((summary.inProgressTasks / summary.totalTasks) * 100) : 0}%
                     </TableCell>
                     <TableCell align="right">
-                      <Button size="small" variant="text" onClick={() => {
+                      <Button sx={uiLayout.buttonSx} size="small" variant="text" onClick={() => {
                         const inProgressTasks = data.filter(t => t.status === 1);
                         alert(`المهام قيد التنفيذ: ${inProgressTasks.map(t => t.name).join(', ')}`);
                       }}>
@@ -2175,7 +2176,7 @@ const swalInfo = (title, text = "") =>
                       {summary.totalTasks > 0 ? Math.round((summary.pendingTasks / summary.totalTasks) * 100) : 0}%
                     </TableCell>
                     <TableCell align="right">
-                      <Button size="small" variant="text" onClick={() => {
+                      <Button sx={uiLayout.buttonSx} size="small" variant="text" onClick={() => {
                         const pendingTasks = data.filter(t => t.status === 0);
                         alert(`المهام المعلقة: ${pendingTasks.map(t => t.name).join(', ')}`);
                       }}>
@@ -2206,7 +2207,7 @@ const swalInfo = (title, text = "") =>
                       {summary.totalTasks > 0 ? Math.round((summary.rejectedTasks / summary.totalTasks) * 100) : 0}%
                     </TableCell>
                     <TableCell align="right">
-                      <Button size="small" variant="text" onClick={() => {
+                      <Button sx={uiLayout.buttonSx} size="small" variant="text" onClick={() => {
                         const rejectedTasks = data.filter(t => t.status === 3);
                         alert(`المهام المرفوضة: ${rejectedTasks.map(t => t.name).join(', ')}`);
                       }}>
@@ -2260,7 +2261,7 @@ const swalInfo = (title, text = "") =>
                             label="معدلة"
                             size="small"
                             color="secondary"
-                            sx={{ marginInlineStart: 1, fontSize: "0.7rem" }}
+                            sx={{ marginInlineStart: 1, fontSize: "0.75rem" }}
                           />
                         )}
                         {task.isPassedTask && (
@@ -2268,7 +2269,7 @@ const swalInfo = (title, text = "") =>
                             label="ممررة"
                             size="small"
                             color="primary"
-                            sx={{ marginInlineStart: 1, fontSize: "0.7rem" }}
+                            sx={{ marginInlineStart: 1, fontSize: "0.75rem" }}
                           />
                         )}
                       </Typography>
@@ -2321,7 +2322,7 @@ const swalInfo = (title, text = "") =>
                           size="small"
                           color="error"
                           variant="outlined"
-                          sx={{ fontSize: "0.7rem" }}
+                          sx={{ fontSize: "0.75rem" }}
                         />
                       )}
 
@@ -2332,7 +2333,7 @@ const swalInfo = (title, text = "") =>
                           color="success"
                           variant="outlined"
                           icon={<CheckCircleOutlineIcon />}
-                          sx={[hrChipSx("small"), { fontSize: "0.7rem" }]}
+                          sx={[hrChipSx("small"), { fontSize: "0.75rem" }]}
                         />
                       )}
                     </Box>
@@ -2340,13 +2341,13 @@ const swalInfo = (title, text = "") =>
 
                   {task.hasUserResponse && task.lastUpdate && (
                     <Box
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         mt: 2,
                         p: 2,
                         backgroundColor: alpha("#4caf50", 0.08),
                         borderRadius: 2,
                         border: `1px solid ${alpha("#4caf50", 0.2)}`,
-                      }}
+                      }, uiLayout.pageHeaderSx)}
                     >
                       <Typography
                         variant="subtitle2"
@@ -2381,7 +2382,7 @@ const swalInfo = (title, text = "") =>
                               const fileUrl = `${TASKS_API.DOWNLOAD_TASK_ATTACHMENT}?fileName=${fileName}`;
                               window.open(fileUrl, "_blank");
                             }}
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               fontSize: "0.75rem",
                               color: "#1976d2",
                               borderColor: "#1976d2",
@@ -2389,7 +2390,7 @@ const swalInfo = (title, text = "") =>
                                 borderColor: "#1565c0",
                                 backgroundColor: alpha("#1976d2", 0.08),
                               },
-                            }}
+                            }, uiLayout.buttonSx)}
                           >
                             عرض مرفق الرد
                           </Button>
@@ -2509,14 +2510,14 @@ const swalInfo = (title, text = "") =>
                           const fileUrl = `${TASKS_API.DOWNLOAD}?fileName=${fileName}`;
                           window.open(fileUrl, "_blank");
                         }}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           color: BRAND_DARK,
                           borderColor: BRAND_DARK,
                           "&:hover": {
                             borderColor: BRAND,
                             backgroundColor: alpha(BRAND, 0.08),
                           },
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         عرض المرفق الأصلي
                       </Button>
@@ -2673,19 +2674,19 @@ const renderHREvaluationDetails = () => {
       {/* نموذج التقييم الحالي */}
       <Card sx={{ borderRadius: 2, mb: 3, border: `1px solid ${alpha("#4caf50", 0.2)}` }}>
         <CardContent>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+          <Box sx={uiLayout.withUiSx({ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }, uiLayout.pageHeaderSx)}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: "#4caf50" }}>
               <RateReview sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
               {currentEvaluation ? `تقييم شهر ${evalMonth}/${evalYear}` : `إضافة تقييم لشهر ${evalMonth}/${evalYear}`}
             </Typography>
             
             {currentEvaluation && !isEditing && (
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box sx={uiLayout.withUiSx({ display: "flex", gap: 1 }, uiLayout.actionBarSx)}>
                 <Button
                   variant="outlined"
                   startIcon={<Edit />}
                   onClick={handleEditEvaluation}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderRadius: 2,
                     borderColor: "#2196f3",
                     color: "#2196f3",
@@ -2693,7 +2694,7 @@ const renderHREvaluationDetails = () => {
                       borderColor: "#1976d2",
                       bgcolor: alpha("#2196f3", 0.08),
                     },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تعديل
                 </Button>
@@ -2701,7 +2702,7 @@ const renderHREvaluationDetails = () => {
                   variant="outlined"
                   startIcon={<Delete />}
                   onClick={handleDeleteEvaluation}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderRadius: 2,
                     borderColor: "#f44336",
                     color: "#f44336",
@@ -2709,7 +2710,7 @@ const renderHREvaluationDetails = () => {
                       borderColor: "#d32f2f",
                       bgcolor: alpha("#f44336", 0.08),
                     },
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   حذف
                 </Button>
@@ -2741,7 +2742,7 @@ const renderHREvaluationDetails = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="ملاحظات التقييم"
                 multiline
@@ -2749,16 +2750,16 @@ const renderHREvaluationDetails = () => {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 disabled={!isEditing}
-                sx={{
+                sx={uiLayout.withUiSx({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 2,
                   },
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
+              <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="توصيات الموارد البشرية"
                 multiline
@@ -2766,22 +2767,22 @@ const renderHREvaluationDetails = () => {
                 value={hrRecommendations}
                 onChange={(e) => setHrRecommendations(e.target.value)}
                 disabled={!isEditing}
-                sx={{
+                sx={uiLayout.withUiSx({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 2,
                   },
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Grid>
 
             {isEditing && (
               <Grid item xs={12}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                <Box sx={uiLayout.withUiSx({ display: "flex", justifyContent: "flex-end", gap: 2 }, uiLayout.actionBarSx)}>
                   <Button
                     variant="outlined"
                     startIcon={<Cancel />}
                     onClick={handleCancelEdit}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderRadius: 2,
                       borderColor: "#9e9e9e",
                       color: "#616161",
@@ -2789,7 +2790,7 @@ const renderHREvaluationDetails = () => {
                         borderColor: "#757575",
                         bgcolor: alpha("#9e9e9e", 0.08),
                       },
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     إلغاء
                   </Button>
@@ -2798,13 +2799,13 @@ const renderHREvaluationDetails = () => {
                     startIcon={<Save />}
                     onClick={handleSaveEvaluation}
                     disabled={evaluationLoading}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderRadius: 2,
                       fontWeight: 700,
                       bgcolor: BRAND,
                       "&:hover": { bgcolor: BRAND_DARK },
                       boxShadow: `0 4px 12px ${alpha(BRAND, 0.3)}`,
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     {evaluationLoading ? (
                       <CircularProgress size={20} sx={{ color: "white" }} />
@@ -2830,7 +2831,7 @@ const renderHREvaluationDetails = () => {
               سجل التقييمات الكامل ({sortedEvaluations.length})
             </Typography>
             
-            <TableContainer>
+            <TableContainer sx={uiLayout.tableContainerSx}>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: alpha("#f5f5f5", 0.5) }}>
@@ -2870,7 +2871,7 @@ const renderHREvaluationDetails = () => {
                                   bgcolor: '#4caf50', 
                                   color: 'white',
                                   fontWeight: 700,
-                                  fontSize: '0.6rem'
+                                  fontSize: "0.75rem"
                                 }} 
                               />
                             )}
@@ -3083,7 +3084,7 @@ const renderHREvaluationDetails = () => {
             <CardContent sx={{ p: 2.5 }}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth sx={{ direction: "rtl" }}>
+                  <FormControl fullWidth sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.formFieldSx)}>
                     <InputLabel>شهر التقييم</InputLabel>
                     <Select
                       value={evalMonth}
@@ -3101,7 +3102,7 @@ const renderHREvaluationDetails = () => {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth sx={{ direction: "rtl" }}>
+                  <FormControl fullWidth sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.formFieldSx)}>
                     <InputLabel>سنة التقييم</InputLabel>
                     <Select
                       value={evalYear}
@@ -3160,7 +3161,7 @@ const renderHREvaluationDetails = () => {
             <CardContent sx={{ p: 2.5 }}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} md={4}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
@@ -3172,15 +3173,15 @@ const renderHREvaluationDetails = () => {
                         </InputAdornment>
                       ),
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       "& .MuiInputBase-root": { borderRadius: 2 },
                       direction: "rtl",
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={3}>
-                  <FormControl fullWidth sx={{ direction: "rtl" }}>
+                  <FormControl fullWidth sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.formFieldSx)}>
                     <InputLabel>الفرع</InputLabel>
                     <Select
                       value={branchGuid}
@@ -3200,7 +3201,7 @@ const renderHREvaluationDetails = () => {
                 </Grid>
 
                 <Grid item xs={12} md={3}>
-                  <FormControl fullWidth sx={{ direction: "rtl" }}>
+                  <FormControl fullWidth sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.formFieldSx)}>
                     <InputLabel>ترتيب حسب</InputLabel>
                     <Select
                       value={sortBy}
@@ -3214,7 +3215,7 @@ const renderHREvaluationDetails = () => {
                 </Grid>
 
                 <Grid item xs={12} md={2}>
-                  <FormControl fullWidth sx={{ direction: "rtl" }}>
+                  <FormControl fullWidth sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.formFieldSx)}>
                     <InputLabel>الترتيب</InputLabel>
                     <Select
                       value={sortOrder}
@@ -3276,8 +3277,8 @@ const renderHREvaluationDetails = () => {
                   />
                 </Stack>
 
-                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                  <FormControl size="small" sx={{ minWidth: 140 }}>
+                <Stack sx={uiLayout.filterBarSx} direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                  <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 140 }, uiLayout.formFieldSx)}>
                     <InputLabel>عدد بالصفحة</InputLabel>
                     <Select
                       value={pageSize}
@@ -3295,7 +3296,7 @@ const renderHREvaluationDetails = () => {
                   <Button
                     variant="outlined"
                     onClick={resetFilters}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderRadius: 2,
                       borderColor: alpha(BRAND, 0.5),
                       color: BRAND_DARK,
@@ -3303,7 +3304,7 @@ const renderHREvaluationDetails = () => {
                         borderColor: BRAND,
                         bgcolor: alpha(BRAND, 0.08),
                       },
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     إعادة ضبط
                   </Button>
@@ -3488,14 +3489,14 @@ const renderHREvaluationDetails = () => {
                           <Button
                             fullWidth
                             variant="contained"
-                            sx={{
+                            sx={uiLayout.withUiSx({
                               borderRadius: 2,
                               fontWeight: 900,
                               bgcolor: BRAND,
                               "&:hover": { bgcolor: BRAND_DARK },
                               boxShadow: `0 10px 20px ${alpha(BRAND, 0.25)}`,
                               textTransform: "none",
-                            }}
+                            }, uiLayout.buttonSx)}
                             onClick={() => openEmployeeDialog(u)}
                             endIcon={<ArrowForwardIosIcon />}
                           >
@@ -3534,7 +3535,7 @@ const renderHREvaluationDetails = () => {
           )}
 
           {/* Dialog (Details + Evaluation container) */}
-          <Dialog
+          <Dialog sx={uiLayout.dialogLayoutSx}
             open={openDialog}
             onClose={closeEmployeeDialog}
             fullWidth
@@ -3756,11 +3757,11 @@ const renderHREvaluationDetails = () => {
               )}
             </DialogContent>
 
-            <DialogActions sx={{ p: 2 }}>
+            <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
               <Button
                 onClick={closeEmployeeDialog}
                 variant="outlined"
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: 2,
                   borderColor: alpha(BRAND, 0.5),
                   color: BRAND_DARK,
@@ -3768,20 +3769,20 @@ const renderHREvaluationDetails = () => {
                     borderColor: BRAND,
                     bgcolor: alpha(BRAND, 0.08),
                   },
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إغلاق
               </Button>
 
               <Button
                 variant="contained"
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: 2,
                   fontWeight: 900,
                   bgcolor: BRAND,
                   "&:hover": { bgcolor: BRAND_DARK },
                   boxShadow: `0 10px 20px ${alpha(BRAND, 0.25)}`,
-                }}
+                }, uiLayout.buttonSx)}
                 onClick={() => {
                   console.log("Save evaluation for", selectedUser, {
                     evalMonth,

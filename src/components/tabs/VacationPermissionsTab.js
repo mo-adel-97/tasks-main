@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import { hrTabIconSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import { 
@@ -740,7 +741,7 @@ const calculateServiceDuration = (employmentStartDate) => {
             صلاحيات الإجازات والإذونات
           </Typography>
           
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="outlined"
             startIcon={<Refresh />}
             onClick={() => {
@@ -863,7 +864,7 @@ const calculateServiceDuration = (employmentStartDate) => {
           <Card sx={{ mb: 3, borderRadius: 3, p: 2 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={3}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   placeholder="ابحث باسم الموظف..."
                   value={searchTerm}
@@ -882,7 +883,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               </Grid>
               
               <Grid item xs={12} sm={6} md={2}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>الفرع</InputLabel>
                   <Select
                     value={branchFilter}
@@ -904,7 +905,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               </Grid>
               
               <Grid item xs={12} sm={6} md={2}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>المسمى الوظيفي</InputLabel>
                   <Select
                     value={jobFilter}
@@ -924,7 +925,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               </Grid>
 
               <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth>
+                <FormControl sx={uiLayout.formFieldSx} fullWidth>
                   <InputLabel>اختيار مجموعة</InputLabel>
                   <Select
                     value=""
@@ -951,7 +952,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               </Grid>
               
               <Grid item xs={12} sm={6} md={2}>
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   fullWidth
                   variant="outlined"
                   onClick={() => {
@@ -971,19 +972,19 @@ const calculateServiceDuration = (employmentStartDate) => {
             {/* أدوات التحديد الجماعي */}
             {selectedUsers.length > 0 && (
               <Box sx={{ mt: 2, p: 2, backgroundColor: alpha(COLOR_SCHEME.primary, 0.1), borderRadius: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }, uiLayout.pageHeaderSx)}>
                   <Typography variant="body1" fontWeight="bold">
                     تم اختيار {selectedUsers.length} موظف
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
+                  <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1 }, uiLayout.actionBarSx)}>
+                    <Button sx={uiLayout.buttonSx}
                       variant="contained"
                       startIcon={<Edit />}
                       onClick={handleOpenBulkEditDialog}
                     >
                       تعديل جماعي
                     </Button>
-                    <Button
+                    <Button sx={uiLayout.buttonSx}
                       variant="outlined"
                       onClick={() => {
                         setSelectedUsers([]);
@@ -1015,7 +1016,7 @@ const calculateServiceDuration = (employmentStartDate) => {
             </Box>
           ) : (
             <>
-              <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
+              <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3 }, uiLayout.tableContainerSx)}>
                 <Table>
                   <TableHead>
                     <TableRow sx={{ backgroundColor: COLOR_SCHEME.background }}>
@@ -1175,7 +1176,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       </IconButton>
     </Tooltip>
     <Tooltip title="تعديل الإعدادات">
-      <Button
+      <Button sx={uiLayout.buttonSx}
         size="small"
         variant="outlined"
         startIcon={<Edit />}
@@ -1231,7 +1232,7 @@ const calculateServiceDuration = (employmentStartDate) => {
             <Typography variant="h5">
               الإجازات العامة والرسمية
             </Typography>
-            <Button
+            <Button sx={uiLayout.buttonSx}
               variant="contained"
               startIcon={<Add />}
               onClick={() => handleOpenVacationDialog()}
@@ -1241,7 +1242,7 @@ const calculateServiceDuration = (employmentStartDate) => {
           </Box>
 
           {/* جدول الإجازات العامة */}
-          <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
+          <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3 }, uiLayout.tableContainerSx)}>
             <Table>
               <TableHead>
                 <TableRow sx={{ backgroundColor: COLOR_SCHEME.background }}>
@@ -1337,7 +1338,7 @@ const calculateServiceDuration = (employmentStartDate) => {
             
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   fullWidth
                   variant="contained"
                   startIcon={<Save />}
@@ -1373,7 +1374,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               </Grid>
               
               <Grid item xs={12} md={6}>
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   fullWidth
                   variant="outlined"
                   startIcon={<Delete />}
@@ -1420,7 +1421,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       )}
 
       {/* ديالوج تعديل الإعدادات */}
-      <Dialog open={editDialog.open} onClose={handleCloseEditDialog} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={editDialog.open} onClose={handleCloseEditDialog} maxWidth="md" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
             تعديل صلاحيات - {editDialog.user?.fullName}
@@ -1443,7 +1444,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       InputLabelProps={{ shrink: true }}
                       value={editDialog.settings.employment_start_date || ''}
                       onChange={(e) => handleSettingChange('employment_start_date', e.target.value)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -1463,22 +1464,22 @@ const calculateServiceDuration = (employmentStartDate) => {
                 {/* الإجازات السنوية */}
                 <Grid item xs={12} md={6}>
                   <SettingsCard title="الإجازات السنوية" icon={<EventAvailable />}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى للإجازة السنوية (أيام)"
                       type="number"
                       value={editDialog.settings.annual_vacation_max_days || ''}
                       onChange={(e) => handleSettingChange('annual_vacation_max_days', e.target.value ? parseInt(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="أيام الاستحقاق شهرياً"
                       type="number"
                       step="0.25"
                       value={editDialog.settings.annual_vacation_days_per_month || ''}
                       onChange={(e) => handleSettingChange('annual_vacation_days_per_month', e.target.value ? parseFloat(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <FormControlLabel
                       control={
@@ -1488,10 +1489,10 @@ const calculateServiceDuration = (employmentStartDate) => {
                         />
                       }
                       label="السماح بترحيل الأيام"
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.checkboxFieldSx)}
                     />
                     {editDialog.settings.annual_vacation_carry_over && (
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         fullWidth
                         label="الحد الأقصى للترحيل (أيام)"
                         type="number"
@@ -1505,13 +1506,13 @@ const calculateServiceDuration = (employmentStartDate) => {
                 {/* الإجازات المرضية */}
                 <Grid item xs={12} md={6}>
                   <SettingsCard title="الإجازات المرضية" icon={<EventBusy />}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى للإجازة المرضية (أيام)"
                       type="number"
                       value={editDialog.settings.sick_leave_max_days || ''}
                       onChange={(e) => handleSettingChange('sick_leave_max_days', e.target.value ? parseInt(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <FormControlLabel
                       control={
@@ -1521,10 +1522,10 @@ const calculateServiceDuration = (employmentStartDate) => {
                         />
                       }
                       label="يتطلب إثبات طبي"
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.checkboxFieldSx)}
                     />
                     {editDialog.settings.sick_leave_requires_proof && (
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         fullWidth
                         label="بعد عدد الأيام"
                         type="number"
@@ -1538,15 +1539,15 @@ const calculateServiceDuration = (employmentStartDate) => {
                 {/* الإجازات الطارئة */}
                 <Grid item xs={12} md={6}>
                   <SettingsCard title="الإجازات الطارئة" icon={<Warning />}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى شهرياً (أيام)"
                       type="number"
                       value={editDialog.settings.emergency_leave_max_days_month || ''}
                       onChange={(e) => handleSettingChange('emergency_leave_max_days_month', e.target.value ? parseInt(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى سنوياً (أيام)"
                       type="number"
@@ -1559,15 +1560,15 @@ const calculateServiceDuration = (employmentStartDate) => {
                 {/* الإجازات الأخرى */}
                 <Grid item xs={12} md={6}>
                   <SettingsCard title="الإجازات الأخرى" icon={<BeachAccess />}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى سنوياً (أيام)"
                       type="number"
                       value={editDialog.settings.other_leave_max_days || ''}
                       onChange={(e) => handleSettingChange('other_leave_max_days', e.target.value ? parseInt(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <FormControlLabel
+                    <FormControlLabel sx={uiLayout.checkboxFieldSx}
                       control={
                         <Switch
                           checked={editDialog.settings.other_leave_requires_approval || false}
@@ -1582,33 +1583,33 @@ const calculateServiceDuration = (employmentStartDate) => {
                 {/* الإذونات */}
                 <Grid item xs={12} md={6}>
                   <SettingsCard title="الإذونات" icon={<Schedule />}>
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى اليومي (ساعات)"
                       type="number"
                       step="0.5"
                       value={editDialog.settings.permission_max_hours_day || ''}
                       onChange={(e) => handleSettingChange('permission_max_hours_day', e.target.value ? parseFloat(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى الشهري (ساعات)"
                       type="number"
                       step="0.5"
                       value={editDialog.settings.permission_max_hours_month || ''}
                       onChange={(e) => handleSettingChange('permission_max_hours_month', e.target.value ? parseFloat(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <TextField
+                    <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى للعدد الشهري"
                       type="number"
                       value={editDialog.settings.permission_max_times_month || ''}
                       onChange={(e) => handleSettingChange('permission_max_times_month', e.target.value ? parseInt(e.target.value) : null)}
-                      sx={{ mb: 2 }}
+                      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <FormControlLabel
+                    <FormControlLabel sx={uiLayout.checkboxFieldSx}
                       control={
                         <Switch
                           checked={editDialog.settings.permission_requires_approval || false}
@@ -1624,39 +1625,39 @@ const calculateServiceDuration = (employmentStartDate) => {
 {/* القيود العامة */}
 <Grid item xs={12} md={6}>
   <SettingsCard title="القيود العامة" icon={<Security />}>
-    <TextField
+    <TextField InputLabelProps={{ shrink: true }}
       fullWidth
       label="أقل مدة توظيف (أيام)"
       type="number"
       value={editDialog.settings.min_employment_duration || ''}
       onChange={(e) => handleSettingChange('min_employment_duration', e.target.value ? parseInt(e.target.value) : null)}
-      sx={{ mb: 2 }}
+      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-    <TextField
+    <TextField InputLabelProps={{ shrink: true }}
       fullWidth
       label="الحد الأقصى للإجازات المتتالية (جميع الأنواع)"
       type="number"
       value={editDialog.settings.max_consecutive_days || ''}
       onChange={(e) => handleSettingChange('max_consecutive_days', e.target.value ? parseInt(e.target.value) : null)}
-      sx={{ mb: 2 }}
+      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-    <TextField
+    <TextField InputLabelProps={{ shrink: true }}
       fullWidth
       label="الحد الأقصى للإجازات السنوية المتتالية"
       type="number"
       value={editDialog.settings.max_consecutive_annual_days || ''}
       onChange={(e) => handleSettingChange('max_consecutive_annual_days', e.target.value ? parseInt(e.target.value) : null)}
-      sx={{ mb: 2 }}
+      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-    <TextField
+    <TextField InputLabelProps={{ shrink: true }}
       fullWidth
       label="إشعار مسبق للإجازات (أيام)"
       type="number"
       value={editDialog.settings.vacation_advance_notice_days || ''}
       onChange={(e) => handleSettingChange('vacation_advance_notice_days', e.target.value ? parseInt(e.target.value) : null)}
-      sx={{ mb: 2 }}
+      sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
      inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-    <TextField
+    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
       fullWidth
       label="إشعار مسبق للإذونات (ساعات)"
       type="number"
@@ -1670,11 +1671,11 @@ const calculateServiceDuration = (employmentStartDate) => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} disabled={saving}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleCloseEditDialog} disabled={saving}>
             إلغاء
           </Button>
-          <Button 
+          <Button sx={uiLayout.buttonSx} 
             onClick={handleSaveSettings}
             variant="contained"
             disabled={saving}
@@ -1686,7 +1687,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       </Dialog>
 
       {/* ديالوج التعديل الجماعي */}
-      <Dialog open={bulkDialog.open} onClose={handleCloseBulkDialog} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={bulkDialog.open} onClose={handleCloseBulkDialog} maxWidth="md" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
             تعديل جماعي للإعدادات
@@ -1708,7 +1709,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     InputLabelProps={{ shrink: true }}
                     value={bulkSettings.employment_start_date}
                     onChange={(e) => handleBulkSettingChange('employment_start_date', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -1723,22 +1724,22 @@ const calculateServiceDuration = (employmentStartDate) => {
               {/* الإجازات السنوية */}
               <Grid item xs={12} md={6}>
                 <SettingsCard title="الإجازات السنوية" icon={<EventAvailable />}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى للإجازة السنوية (أيام)"
                     type="number"
                     value={bulkSettings.annual_vacation_max_days}
                     onChange={(e) => handleBulkSettingChange('annual_vacation_max_days', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="أيام الاستحقاق شهرياً"
                     type="number"
                     step="0.25"
                     value={bulkSettings.annual_vacation_days_per_month}
                     onChange={(e) => handleBulkSettingChange('annual_vacation_days_per_month', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <FormControlLabel
                     control={
@@ -1748,10 +1749,10 @@ const calculateServiceDuration = (employmentStartDate) => {
                       />
                     }
                     label="السماح بترحيل الأيام"
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.checkboxFieldSx)}
                   />
                   {bulkSettings.annual_vacation_carry_over && (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="الحد الأقصى للترحيل (أيام)"
                       type="number"
@@ -1765,13 +1766,13 @@ const calculateServiceDuration = (employmentStartDate) => {
               {/* الإجازات المرضية */}
               <Grid item xs={12} md={6}>
                 <SettingsCard title="الإجازات المرضية" icon={<EventBusy />}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى للإجازة المرضية (أيام)"
                     type="number"
                     value={bulkSettings.sick_leave_max_days}
                     onChange={(e) => handleBulkSettingChange('sick_leave_max_days', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <FormControlLabel
                     control={
@@ -1781,10 +1782,10 @@ const calculateServiceDuration = (employmentStartDate) => {
                       />
                     }
                     label="يتطلب إثبات طبي"
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.checkboxFieldSx)}
                   />
                   {bulkSettings.sick_leave_requires_proof && (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       label="بعد عدد الأيام"
                       type="number"
@@ -1798,33 +1799,33 @@ const calculateServiceDuration = (employmentStartDate) => {
               {/* الإذونات */}
               <Grid item xs={12} md={6}>
                 <SettingsCard title="الإذونات" icon={<Schedule />}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى اليومي (ساعات)"
                     type="number"
                     step="0.5"
                     value={bulkSettings.permission_max_hours_day}
                     onChange={(e) => handleBulkSettingChange('permission_max_hours_day', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى الشهري (ساعات)"
                     type="number"
                     step="0.5"
                     value={bulkSettings.permission_max_hours_month}
                     onChange={(e) => handleBulkSettingChange('permission_max_hours_month', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى للعدد الشهري"
                     type="number"
                     value={bulkSettings.permission_max_times_month}
                     onChange={(e) => handleBulkSettingChange('permission_max_times_month', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <FormControlLabel
+                  <FormControlLabel sx={uiLayout.checkboxFieldSx}
                     control={
                       <Switch
                         checked={bulkSettings.permission_requires_approval}
@@ -1839,15 +1840,15 @@ const calculateServiceDuration = (employmentStartDate) => {
               {/* الإجازات الأخرى */}
               <Grid item xs={12} md={6}>
                 <SettingsCard title="الإجازات الأخرى" icon={<BeachAccess />}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى سنوياً (أيام)"
                     type="number"
                     value={bulkSettings.other_leave_max_days}
                     onChange={(e) => handleBulkSettingChange('other_leave_max_days', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <FormControlLabel
+                  <FormControlLabel sx={uiLayout.checkboxFieldSx}
                     control={
                       <Switch
                         checked={bulkSettings.other_leave_requires_approval}
@@ -1862,31 +1863,31 @@ const calculateServiceDuration = (employmentStartDate) => {
               {/* القيود */}
               <Grid item xs={12} md={6}>
                 <SettingsCard title="القيود" icon={<Security />}>
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="أقل مدة توظيف (أيام)"
                     type="number"
                     value={bulkSettings.min_employment_duration}
                     onChange={(e) => handleBulkSettingChange('min_employment_duration', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى للإجازات المتتالية"
                     type="number"
                     value={bulkSettings.max_consecutive_days}
                     onChange={(e) => handleBulkSettingChange('max_consecutive_days', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="الحد الأقصى للإجازات السنوية المتتالية"
                     type="number"
                     value={bulkSettings.max_consecutive_annual_days}
                     onChange={(e) => handleBulkSettingChange('max_consecutive_annual_days', e.target.value)}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     label="إشعار مسبق (أيام)"
                     type="number"
@@ -1898,11 +1899,11 @@ const calculateServiceDuration = (employmentStartDate) => {
             </Grid>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseBulkDialog} disabled={saving}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleCloseBulkDialog} disabled={saving}>
             إلغاء
           </Button>
-          <Button 
+          <Button sx={uiLayout.buttonSx} 
             onClick={() => {
               // تحويل القيم الفارغة إلى null
               const processedSettings = {};
@@ -1925,22 +1926,22 @@ const calculateServiceDuration = (employmentStartDate) => {
       </Dialog>
 
       {/* ديالوج الإجازات العامة */}
-      <Dialog open={vacationDialog.open} onClose={handleCloseVacationDialog} maxWidth="sm" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={vacationDialog.open} onClose={handleCloseVacationDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
             {vacationDialog.vacation ? 'تعديل إجازة عامة' : 'إضافة إجازة عامة'}
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <TextField
+          <Box sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formGridSx)}>
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               label="اسم الإجازة"
               value={vacationForm.title}
               onChange={(e) => handleVacationFormChange('title', e.target.value)}
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
             />
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}>
               <InputLabel>نوع الإجازة</InputLabel>
               <Select
                 value={vacationForm.type}
@@ -1959,7 +1960,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               InputLabelProps={{ shrink: true }}
               value={vacationForm.start_date}
               onChange={(e) => handleVacationFormChange('start_date', e.target.value)}
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField
               fullWidth
@@ -1968,7 +1969,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               InputLabelProps={{ shrink: true }}
               value={vacationForm.end_date}
               onChange={(e) => handleVacationFormChange('end_date', e.target.value)}
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <FormControlLabel
               control={
@@ -1978,9 +1979,9 @@ const calculateServiceDuration = (employmentStartDate) => {
                 />
               }
               label="تكرار سنوي"
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.checkboxFieldSx)}
             />
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               fullWidth
               label="وصف الإجازة (اختياري)"
               multiline
@@ -1990,11 +1991,11 @@ const calculateServiceDuration = (employmentStartDate) => {
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseVacationDialog}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleCloseVacationDialog}>
             إلغاء
           </Button>
-          <Button 
+          <Button sx={uiLayout.buttonSx} 
             onClick={handleSaveVacation}
             variant="contained"
             disabled={!vacationForm.title || !vacationForm.start_date || !vacationForm.end_date}

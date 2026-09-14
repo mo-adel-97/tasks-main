@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -638,7 +640,7 @@ const CashPaymentOrder = () => {
               "1px solid rgba(5,117,70,0.14)"
           }}
         >
-          <Stack
+          <Stack sx={uiLayout.actionBarSx}
             direction={{
               xs: "column",
               md: "row"
@@ -685,10 +687,10 @@ const CashPaymentOrder = () => {
                 <AddCircleOutlineIcon />
               }
               onClick={resetForm}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -704,10 +706,10 @@ const CashPaymentOrder = () => {
                 );
                 setOrderDialogOpen(true);
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               بحث
             </Button>
@@ -729,12 +731,12 @@ const CashPaymentOrder = () => {
                 saving ||
                 isExisting
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               حفظ
             </Button>
@@ -746,10 +748,10 @@ const CashPaymentOrder = () => {
               }
               onClick={printOrder}
               disabled={!form.guid}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               طباعة
             </Button>
@@ -769,7 +771,7 @@ const CashPaymentOrder = () => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -777,9 +779,9 @@ const CashPaymentOrder = () => {
                   "repeat(2,minmax(0,1fr))"
               },
               gap: 1.5
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود أمر الصرف"
               value={form.code}
               InputProps={{
@@ -792,7 +794,7 @@ const CashPaymentOrder = () => {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="التاريخ"
               value={form.orderDate}
@@ -861,7 +863,7 @@ const CashPaymentOrder = () => {
               }}
               disabled={isExisting}
               renderInput={(params) => (
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   {...params}
                   label="الفرع"
                   InputProps={{
@@ -880,7 +882,7 @@ const CashPaymentOrder = () => {
               )}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ادفعوا لأمر"
               value={form.orderTo}
               onChange={(event) =>
@@ -892,7 +894,7 @@ const CashPaymentOrder = () => {
               disabled={isExisting}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               type="number"
               label="المبلغ"
               value={form.amount}
@@ -916,7 +918,7 @@ const CashPaymentOrder = () => {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="المبلغ كتابة"
               value={form.amountText}
               InputProps={{
@@ -939,7 +941,7 @@ const CashPaymentOrder = () => {
               }}
             />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="وذلك مقابل"
               value={form.orderFor}
               onChange={(event) =>
@@ -951,12 +953,12 @@ const CashPaymentOrder = () => {
               disabled={isExisting}
               multiline
               minRows={5}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: {
                   xs: "auto",
                   md: "1 / -1"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
             <FormControlLabel
@@ -974,9 +976,9 @@ const CashPaymentOrder = () => {
                 />
               }
               label="حالة الأمر نشط"
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo"
-              }}
+              }, uiLayout.checkboxFieldSx)}
             />
           </Box>
 
@@ -1020,7 +1022,7 @@ const CashPaymentOrder = () => {
         </Paper>
       </Box>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={orderDialogOpen}
         onClose={() =>
           setOrderDialogOpen(false)
@@ -1044,7 +1046,7 @@ const CashPaymentOrder = () => {
         </DialogTitle>
 
         <DialogContent dividers>
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             autoFocus
             fullWidth
             label="رقم أمر الصرف"
@@ -1064,8 +1066,8 @@ const CashPaymentOrder = () => {
           />
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setOrderDialogOpen(false)
             }
@@ -1077,17 +1079,17 @@ const CashPaymentOrder = () => {
             variant="contained"
             onClick={loadOrderByCode}
             startIcon={<SearchIcon />}
-            sx={{
+            sx={uiLayout.withUiSx({
               backgroundColor:
                 "#057546"
-            }}
+            }, uiLayout.buttonSx)}
           >
             عرض
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={branchDialogOpen}
         onClose={() =>
           setBranchDialogOpen(false)
@@ -1104,7 +1106,7 @@ const CashPaymentOrder = () => {
             height: 520
           }}
         >
-          <DataGrid
+          <DataGrid sx={uiLayout.dataGridSx}
             rows={branches}
             columns={branchColumns}
             loading={branchesLoading}
@@ -1123,8 +1125,8 @@ const CashPaymentOrder = () => {
           />
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             startIcon={<CloseIcon />}
             onClick={() =>
               setBranchDialogOpen(false)

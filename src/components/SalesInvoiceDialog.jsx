@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -888,7 +889,7 @@ export default function SalesInvoiceDialog({
 
   return (
     <>
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={open}
         onClose={loading || printing ? undefined : onClose}
         maxWidth="lg"
@@ -1003,7 +1004,7 @@ export default function SalesInvoiceDialog({
                       md={4}
                       key={label}
                     >
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         fullWidth
                         size="small"
                         label={label}
@@ -1014,7 +1015,7 @@ export default function SalesInvoiceDialog({
                   ))}
 
                   <Grid item xs={12}>
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       multiline
                       minRows={2}
@@ -1077,7 +1078,7 @@ export default function SalesInvoiceDialog({
                             >
                               <Typography
                                 sx={{
-                                  fontSize: 9,
+                                  fontSize: 12,
                                   color: "#777",
                                   fontWeight: 800
                                 }}
@@ -1205,7 +1206,7 @@ export default function SalesInvoiceDialog({
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: isPhone ? 1 : 3,
             py: isPhone ? 1 : 2,
             gap: 1,
@@ -1214,7 +1215,7 @@ export default function SalesInvoiceDialog({
               : "row",
             alignItems: "stretch",
             bgcolor: "#fff"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             variant="contained"
@@ -1225,12 +1226,12 @@ export default function SalesInvoiceDialog({
                 ? <CircularProgress size={18} color="inherit" />
                 : <PrintIcon />
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: isPhone ? "100%" : 145,
               minHeight: isPhone ? 44 : undefined,
               fontWeight: 950,
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
-            }}
+            }, uiLayout.buttonSx)}
           >
             طباعة الفاتورة
           </Button>
@@ -1238,12 +1239,12 @@ export default function SalesInvoiceDialog({
           <Button
             onClick={onClose}
             disabled={loading || printing}
-            sx={{
+            sx={uiLayout.withUiSx({
               color: accentColor,
               fontWeight: 900,
               width: isPhone ? "100%" : "auto",
               minHeight: isPhone ? 42 : undefined
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

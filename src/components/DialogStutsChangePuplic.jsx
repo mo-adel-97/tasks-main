@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useState } from 'react';
 import { 
   Dialog, 
@@ -101,7 +102,7 @@ const TaskStatusDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <span>{`تغيير حالة المهمة - الحالة الحالية: ${getStatusText(statusTitle)}`}</span>
@@ -111,7 +112,7 @@ const TaskStatusDialog = ({
         </Box>
       </DialogTitle>
       <DialogContent>
-        <TextField
+        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
           label="ملاحظة"
           fullWidth
           multiline
@@ -122,7 +123,7 @@ const TaskStatusDialog = ({
           variant="outlined"
         />
         <Box mt={2} display="flex" alignItems="center">
-          <Button
+          <Button sx={uiLayout.buttonSx}
             variant="outlined"
             component="label"
             startIcon={<AttachFileIcon />}
@@ -147,15 +148,15 @@ const TaskStatusDialog = ({
           )}
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button 
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button sx={uiLayout.buttonSx} 
           onClick={onClose} 
           color="secondary"
           disabled={isSubmitting}
         >
           إلغاء
         </Button>
-        <Button 
+        <Button sx={uiLayout.buttonSx} 
           onClick={handleSubmit} 
           color="primary" 
           variant="contained"

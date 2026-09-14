@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -230,11 +232,11 @@ const TextCell = ({
         fontSize: "0.76rem",
         fontWeight: 700,
         "@media (max-width: 599px)": {
-          fontSize: "0.28rem",
+          fontSize: "0.75rem",
           lineHeight: 1.05
         },
         "@media (min-width: 600px) and (max-width: 1599px)": {
-          fontSize: "0.42rem",
+          fontSize: "0.75rem",
           lineHeight: 1.15
         }
       }}
@@ -274,7 +276,7 @@ const StatusChip = ({
           height: 18,
           minWidth: 0,
           maxWidth: "100%",
-          fontSize: "0.24rem",
+          fontSize: "0.75rem",
           borderRadius: "9px",
           "& .MuiChip-label": {
             px: 0.35,
@@ -284,7 +286,7 @@ const StatusChip = ({
         },
         "@media (min-width: 600px) and (max-width: 1599px)": {
           height: 23,
-          fontSize: "0.38rem",
+          fontSize: "0.75rem",
           "& .MuiChip-label": {
             px: 0.55
           }
@@ -350,10 +352,10 @@ const MultiValueFilter = ({
                 : options
             )
           }
-          sx={{
+          sx={uiLayout.withUiSx({
             fontFamily: "Cairo",
             fontWeight: 800
-          }}
+          }, uiLayout.buttonSx)}
         >
           {allSelected
             ? "إلغاء الكل"
@@ -402,7 +404,7 @@ const MultiValueFilter = ({
           </li>
         )}
         renderInput={(params) => (
-          <TextField
+          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
             {...params}
             size="small"
             placeholder="ابحث وحدد أكثر من قيمة"
@@ -1135,8 +1137,8 @@ const TransferRequestsReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 800,
                     fontSize: isPhone
-                      ? "0.29rem"
-                      : "0.44rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     lineHeight: 1.1,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -1510,7 +1512,7 @@ const TransferRequestsReport = () => {
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
-                    xs: "0.66rem",
+                    xs: "0.75rem",
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
@@ -1558,7 +1560,7 @@ const TransferRequestsReport = () => {
             useFlexGap
             flexWrap={isDesktop ? "nowrap" : "wrap"}
             alignItems={isDesktop ? "center" : "stretch"}
-            sx={{
+            sx={uiLayout.withUiSx({
               ...(!isDesktop
                 ? {
                     display: "grid",
@@ -1598,8 +1600,8 @@ const TransferRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.32rem"
-                    : "0.43rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 lineHeight: 1.1
               },
@@ -1615,8 +1617,8 @@ const TransferRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.31rem"
-                    : "0.42rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
 
@@ -1627,7 +1629,7 @@ const TransferRequestsReport = () => {
                     : 15
                   : undefined
               }
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <SwapHorizIcon
               sx={{
@@ -1647,8 +1649,8 @@ const TransferRequestsReport = () => {
                   fontSize: isDesktop
                     ? "1.15rem"
                     : isPhone
-                      ? "0.55rem"
-                      : "0.72rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                   fontWeight: 900,
                   color: "#173b2b"
                 }}
@@ -1661,7 +1663,7 @@ const TransferRequestsReport = () => {
                   sx={{
                     fontFamily: "Cairo",
                     fontSize: isTablet
-                      ? "0.48rem"
+                      ? "0.75rem"
                       : "0.75rem",
                     color: "#708179"
                   }}
@@ -1696,10 +1698,10 @@ const TransferRequestsReport = () => {
                   true
                 )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900
-              }}
+              }, uiLayout.buttonSx)}
             >
               فلاتر متقدمة
               {activeFilterCount > 0
@@ -1713,10 +1715,10 @@ const TransferRequestsReport = () => {
                 <FileDownloadIcon />
               }
               onClick={exportCsv}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               تصدير
             </Button>
@@ -1727,10 +1729,10 @@ const TransferRequestsReport = () => {
                 <RefreshIcon />
               }
               onClick={loadData}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               تحديث
             </Button>
@@ -1767,8 +1769,8 @@ const TransferRequestsReport = () => {
                     : 42,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.34rem"
-                    : "0.48rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 px: !isDesktop
                   ? isPhone
@@ -1816,7 +1818,7 @@ const TransferRequestsReport = () => {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isDesktop
                 ? "repeat(2,minmax(0,1fr)) auto"
@@ -1832,8 +1834,8 @@ const TransferRequestsReport = () => {
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.4rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiInputBase-root": {
@@ -1845,8 +1847,8 @@ const TransferRequestsReport = () => {
                 fontFamily: "Cairo",
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.38rem"
-                    : "0.5rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               },
               "& .MuiButton-root": {
@@ -1857,13 +1859,13 @@ const TransferRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.34rem"
-                    : "0.44rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined
               }
-            }}
+            }, uiLayout.filterBarSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="من تاريخ"
               value={fromDate}
@@ -1878,7 +1880,7 @@ const TransferRequestsReport = () => {
               size="small"
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx}
               type="date"
               label="إلى تاريخ"
               value={toDate}
@@ -1907,7 +1909,7 @@ const TransferRequestsReport = () => {
               }
               onClick={loadData}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: isPhone
                   ? "1 / -1"
                   : "auto",
@@ -1915,7 +1917,7 @@ const TransferRequestsReport = () => {
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               عرض
             </Button>
@@ -1924,7 +1926,7 @@ const TransferRequestsReport = () => {
 
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             width: "100%",
             minWidth: 0,
             height: isDesktop
@@ -1941,7 +1943,7 @@ const TransferRequestsReport = () => {
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.13)"
-          }}
+          }, uiLayout.tableContainerSx)}
         >
           <DataGrid
             rows={filteredRows}
@@ -2005,7 +2007,7 @@ const TransferRequestsReport = () => {
                 ? "even-row"
                 : "odd-row"
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               border: 0,
               direction: "rtl",
               fontFamily: "Cairo",
@@ -2018,7 +2020,7 @@ const TransferRequestsReport = () => {
               "& .MuiDataGrid-virtualScroller":
                 {
                   overflowX:
-                    "hidden !important"
+                    "auto"
                 },
 
               "& .MuiDataGrid-columnHeaders":
@@ -2040,8 +2042,8 @@ const TransferRequestsReport = () => {
                 fontWeight: 900,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.26rem"
-                    : "0.4rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 whiteSpace: !isDesktop
                   ? "nowrap"
@@ -2068,8 +2070,8 @@ const TransferRequestsReport = () => {
                   : undefined,
                 fontSize: !isDesktop
                   ? isPhone
-                    ? "0.28rem"
-                    : "0.42rem"
+                    ? "0.75rem"
+                    : "0.75rem"
                   : undefined,
                 textAlign: !isDesktop
                   ? "center"
@@ -2108,14 +2110,14 @@ const TransferRequestsReport = () => {
                     "& .MuiDataGrid-virtualScroller": {
                       direction: "rtl",
                       overflowX:
-                        "hidden !important"
+                        "auto"
                     },
                     "& .MuiDataGrid-scrollbar--horizontal": {
-                      display: "none"
+                      display: "block"
                     }
                   }
                 : {})
-            }}
+            }, uiLayout.dataGridSx)}
           />
         </Paper>
 
@@ -2173,7 +2175,7 @@ const TransferRequestsReport = () => {
           </MenuItem>
         </Menu>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={detailsOpen}
           onClose={closeDetails}
           fullWidth
@@ -2301,8 +2303,8 @@ const TransferRequestsReport = () => {
                           fontWeight: 900,
                           color: "#60756d",
                           fontSize: isPhone
-                            ? "0.38rem"
-                            : "0.49rem"
+                            ? "0.75rem"
+                            : "0.75rem"
                         }}
                       >
                         {label}
@@ -2314,8 +2316,8 @@ const TransferRequestsReport = () => {
                           fontWeight: 800,
                           color: "#1f2d3d",
                           fontSize: isPhone
-                            ? "0.49rem"
-                            : "0.62rem",
+                            ? "0.75rem"
+                            : "0.75rem",
                           wordBreak:
                             "break-word"
                         }}
@@ -2331,7 +2333,7 @@ const TransferRequestsReport = () => {
                   spacing={0.5}
                   useFlexGap
                   flexWrap="wrap"
-                  sx={{ mt: 0.8 }}
+                  sx={uiLayout.withUiSx({ mt: 0.8 }, uiLayout.actionBarSx)}
                 >
                   <Button
                     size="small"
@@ -2355,13 +2357,13 @@ const TransferRequestsReport = () => {
                         );
                       }
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     المرفقات
                   </Button>
@@ -2377,15 +2379,15 @@ const TransferRequestsReport = () => {
                         0
                       );
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       backgroundColor:
                         "#057546",
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     تأكيد
                   </Button>
@@ -2402,13 +2404,13 @@ const TransferRequestsReport = () => {
                         0
                       );
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.4rem"
-                        : "0.5rem"
-                    }}
+                        ? "0.75rem"
+                        : "0.75rem"
+                    }, uiLayout.buttonSx)}
                   >
                     إلغاء
                   </Button>
@@ -2418,29 +2420,29 @@ const TransferRequestsReport = () => {
           </DialogContent>
 
           <DialogActions
-            sx={{
+            sx={uiLayout.withUiSx({
               px: isPhone ? 1 : 1.5,
               py: isPhone ? 0.7 : 1
-            }}
+            }, uiLayout.dialogActionsSx)}
           >
             <Button
               variant="contained"
               onClick={closeDetails}
-              sx={{
+              sx={uiLayout.withUiSx({
                 backgroundColor: "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: isPhone
-                  ? "0.47rem"
-                  : "0.58rem"
-              }}
+                  ? "0.75rem"
+                  : "0.75rem"
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
+        <Dialog sx={uiLayout.dialogLayoutSx}
           open={filterDialogOpen}
           onClose={() =>
             setFilterDialogOpen(
@@ -2601,7 +2603,7 @@ const TransferRequestsReport = () => {
             </Box>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions sx={uiLayout.dialogActionsSx}>
             <Button
               color="error"
               startIcon={
@@ -2611,10 +2613,10 @@ const TransferRequestsReport = () => {
               disabled={
                 activeFilterCount === 0
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
-              }}
+              }, uiLayout.buttonSx)}
             >
               مسح الفلاتر
             </Button>
@@ -2628,12 +2630,12 @@ const TransferRequestsReport = () => {
                   false
                 )
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
                   "linear-gradient(135deg,#057546,#034d31)"
-              }}
+              }, uiLayout.buttonSx)}
             >
               تطبيق وإغلاق
             </Button>

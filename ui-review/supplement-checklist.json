@@ -1,0 +1,17 @@
+{
+  "src/components/AdminAchievementsPage.jsx": 1,
+  "src/components/attendance/StudentSearchForm.js": 1,
+  "src/components/CallHistory.jsx": 1,
+  "src/components/FollowUpCallsDialog.jsx": 1,
+  "src/components/MyCallHistoryDialog.jsx": 1,
+  "src/components/PublicTaskDialog.jsx": 7,
+  "src/components/RealTicetsForUsers.jsx": 1,
+  "src/components/ReportList.jsx": 1,
+  "src/components/TechnicalSupport.jsx": 1,
+  "src/pages/DailyAttendanceReport.jsx": 1,
+  "src/pages/DailyFollowUpReport.jsx": 1,
+  "src/pages/ExploerNetwork.jsx": 1,
+  "src/pages/MonthlyAttendanceReport.jsx": 1,
+  "src/pages/RegistrationRequestReport.jsx": 1,
+  "src/pages/VipCustomers.jsx": 1
+}

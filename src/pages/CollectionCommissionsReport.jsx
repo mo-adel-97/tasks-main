@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, {
@@ -1036,7 +1038,7 @@ const CollectionCommissionsReport = () => {
                 background: "#fbfdfc"
               }}
             >
-              <Stack
+              <Stack sx={uiLayout.filterBarSx}
                 direction={{
                   xs: "column",
                   xl: "row"
@@ -1047,7 +1049,7 @@ const CollectionCommissionsReport = () => {
                   xl: "center"
                 }}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="الفترة من"
@@ -1062,7 +1064,7 @@ const CollectionCommissionsReport = () => {
                   }}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="الفترة إلى"
@@ -1106,7 +1108,7 @@ const CollectionCommissionsReport = () => {
                     }
                   }}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       label="الفرع"
@@ -1138,11 +1140,11 @@ const CollectionCommissionsReport = () => {
                   startIcon={<SearchIcon />}
                   onClick={loadReport}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     background: "#057546"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -1152,10 +1154,10 @@ const CollectionCommissionsReport = () => {
                   startIcon={<RefreshIcon />}
                   onClick={loadReport}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تحديث
                 </Button>
@@ -1170,12 +1172,12 @@ const CollectionCommissionsReport = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     color: "#ae1e21",
                     borderColor: "#ae1e21"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -1193,11 +1195,11 @@ const CollectionCommissionsReport = () => {
                     migrating ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     background: "#184f90"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {migrating
                     ? "جارٍ الترحيل..."
@@ -1256,14 +1258,14 @@ const CollectionCommissionsReport = () => {
             </Stack>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: 710,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1328,7 +1330,7 @@ const CollectionCommissionsReport = () => {
                   filterPanelInputLabel:
                     "القيمة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   textAlign:"center",
@@ -1391,7 +1393,7 @@ const CollectionCommissionsReport = () => {
                     fontWeight: 800,
                     color: "#057546"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
           </Box>
@@ -1504,7 +1506,7 @@ const CollectionCommissionsReport = () => {
               fontFamily: "Cairo",
               fontWeight: 900,
               fontSize: {
-                xs: "0.64rem",
+                xs: "0.75rem",
                 sm: "0.76rem"
               },
               color: "#17372b",
@@ -1584,7 +1586,7 @@ const CollectionCommissionsReport = () => {
                     fontWeight: 950,
                     color: "#034d31",
                     fontSize: isPhone
-                      ? "0.66rem"
+                      ? "0.75rem"
                       : "0.82rem"
                   }}
                 >
@@ -1597,7 +1599,7 @@ const CollectionCommissionsReport = () => {
                       mt: 0.15,
                       fontFamily: "Cairo",
                       color: "#61756d",
-                      fontSize: "0.44rem"
+                      fontSize: "0.75rem"
                     }}
                   >
                     متابعة تحصيل الموظفين ونسب التحصيل وترحيل العمولات لشيت المكافآت
@@ -1630,7 +1632,7 @@ const CollectionCommissionsReport = () => {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
                   gridTemplateColumns: isPhone
                     ? "repeat(2,minmax(0,1fr))"
@@ -1642,8 +1644,8 @@ const CollectionCommissionsReport = () => {
                   "& .MuiInputLabel-root": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.38rem"
-                      : "0.46rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiInputBase-root": {
@@ -1652,8 +1654,8 @@ const CollectionCommissionsReport = () => {
                       : 34,
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.45rem"
-                      : "0.54rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiButton-root": {
@@ -1667,8 +1669,8 @@ const CollectionCommissionsReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.39rem"
-                      : "0.5rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   },
 
                   "& .MuiSvgIcon-root": {
@@ -1676,9 +1678,9 @@ const CollectionCommissionsReport = () => {
                       ? 14
                       : 16
                   }
-                }}
+                }, uiLayout.filterBarSx)}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="من"
@@ -1694,7 +1696,7 @@ const CollectionCommissionsReport = () => {
                   fullWidth
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
                   label="إلى"
@@ -1736,7 +1738,7 @@ const CollectionCommissionsReport = () => {
                       : "span 2"
                   }}
                   renderInput={(params) => (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
                       size="small"
                       label="الفرع"
@@ -1768,14 +1770,14 @@ const CollectionCommissionsReport = () => {
                   startIcon={<SearchIcon />}
                   onClick={loadReport}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background: "#057546"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
 
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   variant="outlined"
                   startIcon={<RefreshIcon />}
                   onClick={loadReport}
@@ -1792,10 +1794,10 @@ const CollectionCommissionsReport = () => {
                     loading ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color: "#ae1e21",
                     borderColor: "#ae1e21"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تصدير
                 </Button>
@@ -1809,9 +1811,9 @@ const CollectionCommissionsReport = () => {
                     migrating ||
                     rows.length === 0
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background: "#184f90"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {migrating
                     ? "جارٍ الترحيل..."
@@ -1875,8 +1877,8 @@ const CollectionCommissionsReport = () => {
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       fontSize: isPhone
-                        ? "0.32rem"
-                        : "0.42rem",
+                        ? "0.75rem"
+                        : "0.75rem",
                       background,
                       color,
 
@@ -1892,7 +1894,7 @@ const CollectionCommissionsReport = () => {
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 width: "100%",
                 height: isPhone
                   ? "calc(100dvh - 325px)"
@@ -1904,7 +1906,7 @@ const CollectionCommissionsReport = () => {
                   "1px solid rgba(5,117,70,.14)",
                 borderRadius: 1.4,
                 overflow: "hidden"
-              }}
+              }, uiLayout.tableContainerSx)}
             >
               <DataGrid
                 rows={dataGridRows}
@@ -1937,7 +1939,7 @@ const CollectionCommissionsReport = () => {
                   noResultsOverlayLabel:
                     "لا توجد نتائج مطابقة"
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   border: 0,
                   direction: "rtl",
                   fontFamily: "Cairo",
@@ -1961,8 +1963,8 @@ const CollectionCommissionsReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.34rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     lineHeight: 1,
                     whiteSpace: "nowrap",
@@ -1987,8 +1989,8 @@ const CollectionCommissionsReport = () => {
                   "& .MuiDataGrid-cell": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.39rem"
-                      : "0.52rem",
+                      ? "0.75rem"
+                      : "0.75rem",
                     textAlign: "center",
                     justifyContent: "center",
                     px: isPhone
@@ -2007,11 +2009,11 @@ const CollectionCommissionsReport = () => {
 
                   "& .MuiDataGrid-virtualScroller": {
                     overflowX:
-                      "hidden !important"
+                      "auto"
                   },
 
                   "& .MuiDataGrid-scrollbar--horizontal": {
-                    display: "none"
+                    display: "block"
                   },
 
                   "& .MuiDataGrid-footerContainer": {
@@ -2032,14 +2034,14 @@ const CollectionCommissionsReport = () => {
                   "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                     fontFamily: "Cairo",
                     fontSize: isPhone
-                      ? "0.38rem"
-                      : "0.5rem"
+                      ? "0.75rem"
+                      : "0.75rem"
                   }
-                }}
+                }, uiLayout.dataGridSx)}
               />
             </Box>
 
-            <Dialog
+            <Dialog sx={uiLayout.dialogLayoutSx}
               open={detailsOpen}
               onClose={closeDetails}
               fullWidth
@@ -2165,8 +2167,8 @@ const CollectionCommissionsReport = () => {
                                 color: "#60756d",
                                 fontSize:
                                   isPhone
-                                    ? "0.39rem"
-                                    : "0.49rem"
+                                    ? "0.75rem"
+                                    : "0.75rem"
                               }}
                             >
                               {field}
@@ -2180,8 +2182,8 @@ const CollectionCommissionsReport = () => {
                                 color: "#1f2d3d",
                                 fontSize:
                                   isPhone
-                                    ? "0.5rem"
-                                    : "0.62rem",
+                                    ? "0.75rem"
+                                    : "0.75rem",
                                 wordBreak:
                                   "break-word"
                               }}
@@ -2205,27 +2207,27 @@ const CollectionCommissionsReport = () => {
               </DialogContent>
 
               <DialogActions
-                sx={{
+                sx={uiLayout.withUiSx({
                   px: isPhone
                     ? 1
                     : 1.5,
                   py: isPhone
                     ? 0.7
                     : 1
-                }}
+                }, uiLayout.dialogActionsSx)}
               >
                 <Button
                   variant="contained"
                   onClick={closeDetails}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor:
                       "#057546",
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     fontSize: isPhone
-                      ? "0.47rem"
-                      : "0.58rem"
-                  }}
+                      ? "0.75rem"
+                      : "0.75rem"
+                  }, uiLayout.buttonSx)}
                 >
                   إغلاق
                 </Button>

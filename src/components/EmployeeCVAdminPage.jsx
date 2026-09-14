@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -924,12 +925,12 @@ export default function EmployeeCVAdminPage() {
       >
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               label="بحث بالاسم / الجوال / البريد / المؤهل / المدينة"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 direction: "rtl",
                 textAlign: "right",
                 "& .MuiInputBase-input": {
@@ -937,7 +938,7 @@ export default function EmployeeCVAdminPage() {
                   textAlign: "right"
                 },
 
-              }}
+              }, uiLayout.formFieldSx)}
             />
           </Grid>
 
@@ -945,21 +946,21 @@ export default function EmployeeCVAdminPage() {
             <Stack
               direction="row"
               spacing={1}
-              sx={{
+              sx={uiLayout.withUiSx({
                 justifyContent: { xs: "flex-start", md: "flex-end" },
                 flexWrap: "wrap",
                 gap: 1
-              }}
+              }, uiLayout.actionBarSx)}
             >
               <Button
                 variant="outlined"
                 onClick={selectAllFiltered}
                 disabled={filteredItems.length === 0}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: "12px",
                   fontWeight: 900,
                   textTransform: "none"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تحديد الكل
               </Button>
@@ -968,13 +969,13 @@ export default function EmployeeCVAdminPage() {
                 variant="outlined"
                 onClick={selectMoreThan10YearsFiltered}
                 disabled={filteredExperiencedItems.length === 0}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: "12px",
                   fontWeight: 900,
                   textTransform: "none",
                   borderColor: "#057445",
                   color: "#057445"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تحديد خبرة أكثر من 10 سنوات
               </Button>
@@ -984,11 +985,11 @@ export default function EmployeeCVAdminPage() {
                 color="error"
                 onClick={clearSelection}
                 disabled={selectedIds.length === 0}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: "12px",
                   fontWeight: 900,
                   textTransform: "none"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 إلغاء التحديد
               </Button>
@@ -997,7 +998,7 @@ export default function EmployeeCVAdminPage() {
                 variant="contained"
                 onClick={exportSelectedToPdf}
                 disabled={selectedIds.length === 0 || exporting}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: "12px",
                   fontWeight: 900,
                   textTransform: "none",
@@ -1006,7 +1007,7 @@ export default function EmployeeCVAdminPage() {
                   "&:hover": {
                     backgroundColor: "#04633b"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 {exporting ? (
                   <>
@@ -1022,7 +1023,7 @@ export default function EmployeeCVAdminPage() {
                 variant="contained"
                 onClick={exportMoreThan10YearsToPdf}
                 disabled={experiencedItems.length === 0 || exporting}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: "12px",
                   fontWeight: 900,
                   textTransform: "none",
@@ -1031,7 +1032,7 @@ export default function EmployeeCVAdminPage() {
                   "&:hover": {
                     backgroundColor: "#741114"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير خبرة أكثر من 10 سنوات
               </Button>
@@ -1040,11 +1041,11 @@ export default function EmployeeCVAdminPage() {
                 variant="text"
                 onClick={loadData}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderRadius: "12px",
                   fontWeight: 900,
                   textTransform: "none"
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تحديث
               </Button>

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -1527,7 +1529,7 @@ const PeriodicReports = () => {
     const rows = analytics?.allTrainers || [];
 
     return (
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={allTrainersDialog}
         onClose={() => setAllTrainersDialog(false)}
         fullWidth
@@ -1543,7 +1545,7 @@ const PeriodicReports = () => {
               لا توجد بيانات مدربين ضمن الفترة المحددة.
             </Alert>
           ) : (
-            <TableContainer component={Paper} elevation={0} sx={{ border: `1px solid ${colorPalette.primaryLighter}` }}>
+            <TableContainer component={Paper} elevation={0} sx={uiLayout.withUiSx({ border: `1px solid ${colorPalette.primaryLighter}` }, uiLayout.tableContainerSx)}>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
@@ -1562,12 +1564,12 @@ const PeriodicReports = () => {
                       <StyledTableCell align="center">{trainer.totalRecords || 0}</StyledTableCell>
                       <StyledTableCell align="center">{trainer.avgAttendancePerStudent || 0}</StyledTableCell>
                       <StyledTableCell align="center">
-                        <Stack direction="row" spacing={1} justifyContent="center">
+                        <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1} justifyContent="center">
                           <Button
                             size="small"
                             variant="outlined"
                             onClick={() => handleFilterByTrainer(trainer.guid)}
-                            sx={{ fontFamily: '"Cairo", sans-serif' }}
+                            sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}
                           >
                             تصفية
                           </Button>
@@ -1578,7 +1580,7 @@ const PeriodicReports = () => {
                               setAllTrainersDialog(false);
                               handleViewTrainerDetails(trainer);
                             }}
-                            sx={{ fontFamily: '"Cairo", sans-serif', backgroundColor: colorPalette.primary }}
+                            sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif', backgroundColor: colorPalette.primary }, uiLayout.buttonSx)}
                           >
                             التفاصيل
                           </Button>
@@ -1591,8 +1593,8 @@ const PeriodicReports = () => {
             </TableContainer>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAllTrainersDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button onClick={() => setAllTrainersDialog(false)} sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}>
             إغلاق
           </Button>
         </DialogActions>
@@ -1604,7 +1606,7 @@ const PeriodicReports = () => {
     const rows = analytics?.allDiplomas || [];
 
     return (
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={allDiplomasDialog}
         onClose={() => setAllDiplomasDialog(false)}
         fullWidth
@@ -1620,7 +1622,7 @@ const PeriodicReports = () => {
               لا توجد بيانات برامج ضمن الفترة المحددة.
             </Alert>
           ) : (
-            <TableContainer component={Paper} elevation={0} sx={{ border: `1px solid ${colorPalette.primaryLighter}` }}>
+            <TableContainer component={Paper} elevation={0} sx={uiLayout.withUiSx({ border: `1px solid ${colorPalette.primaryLighter}` }, uiLayout.tableContainerSx)}>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
@@ -1645,12 +1647,12 @@ const PeriodicReports = () => {
                         />
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Stack direction="row" spacing={1} justifyContent="center">
+                        <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1} justifyContent="center">
                           <Button
                             size="small"
                             variant="outlined"
                             onClick={() => handleFilterByDiploma(diploma.name)}
-                            sx={{ fontFamily: '"Cairo", sans-serif' }}
+                            sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}
                           >
                             تصفية
                           </Button>
@@ -1661,7 +1663,7 @@ const PeriodicReports = () => {
                               setAllDiplomasDialog(false);
                               handleViewDiplomaDetails(diploma);
                             }}
-                            sx={{ fontFamily: '"Cairo", sans-serif', backgroundColor: colorPalette.primary }}
+                            sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif', backgroundColor: colorPalette.primary }, uiLayout.buttonSx)}
                           >
                             التفاصيل
                           </Button>
@@ -1674,8 +1676,8 @@ const PeriodicReports = () => {
             </TableContainer>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAllDiplomasDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button onClick={() => setAllDiplomasDialog(false)} sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}>
             إغلاق
           </Button>
         </DialogActions>
@@ -1688,7 +1690,7 @@ const PeriodicReports = () => {
     const diplomaStudents = diploma?.students || [];
 
     return (
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={diplomaDetailsDialog}
         onClose={() => setDiplomaDetailsDialog(false)}
         fullWidth
@@ -1725,7 +1727,7 @@ const PeriodicReports = () => {
               {!diplomaStudents.length ? (
                 <Alert severity="info">لا توجد بيانات طلاب لهذا البرنامج.</Alert>
               ) : (
-                <TableContainer component={Paper} elevation={0} variant="outlined">
+                <TableContainer sx={uiLayout.tableContainerSx} component={Paper} elevation={0} variant="outlined">
                   <Table size="small">
                     <TableHead>
                       <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
@@ -1751,7 +1753,7 @@ const PeriodicReports = () => {
             </Stack>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           {diploma?.name && (
             <Button
               variant="outlined"
@@ -1759,12 +1761,12 @@ const PeriodicReports = () => {
                 handleFilterByDiploma(diploma.name);
                 setDiplomaDetailsDialog(false);
               }}
-              sx={{ fontFamily: '"Cairo", sans-serif' }}
+              sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}
             >
               عرض طلاب البرنامج
             </Button>
           )}
-          <Button onClick={() => setDiplomaDetailsDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+          <Button onClick={() => setDiplomaDetailsDialog(false)} sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}>
             إغلاق
           </Button>
         </DialogActions>
@@ -1777,7 +1779,7 @@ const PeriodicReports = () => {
     const trainerStudents = trainer?.studentDetails || [];
 
     return (
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={trainerDetailsDialog}
         onClose={() => setTrainerDetailsDialog(false)}
         fullWidth
@@ -1814,7 +1816,7 @@ const PeriodicReports = () => {
               {!trainerStudents.length ? (
                 <Alert severity="info">لا توجد بيانات طلاب لهذا المدرب.</Alert>
               ) : (
-                <TableContainer component={Paper} elevation={0} variant="outlined">
+                <TableContainer sx={uiLayout.tableContainerSx} component={Paper} elevation={0} variant="outlined">
                   <Table size="small">
                     <TableHead>
                       <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
@@ -1840,7 +1842,7 @@ const PeriodicReports = () => {
             </Stack>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           {trainer?.guid && (
             <Button
               variant="outlined"
@@ -1848,12 +1850,12 @@ const PeriodicReports = () => {
                 handleFilterByTrainer(trainer.guid);
                 setTrainerDetailsDialog(false);
               }}
-              sx={{ fontFamily: '"Cairo", sans-serif' }}
+              sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}
             >
               عرض طلاب المدرب
             </Button>
           )}
-          <Button onClick={() => setTrainerDetailsDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+          <Button onClick={() => setTrainerDetailsDialog(false)} sx={uiLayout.withUiSx({ fontFamily: '"Cairo", sans-serif' }, uiLayout.buttonSx)}>
             إغلاق
           </Button>
         </DialogActions>
@@ -2039,7 +2041,7 @@ const PeriodicReports = () => {
                   ),
                   sx: { fontFamily: '"Cairo", sans-serif' }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '10px',
                     '& fieldset': {
@@ -2049,7 +2051,7 @@ const PeriodicReports = () => {
                       borderColor: colorPalette.primary,
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
@@ -2072,7 +2074,7 @@ const PeriodicReports = () => {
                   ),
                   sx: { fontFamily: '"Cairo", sans-serif' }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '10px',
                     '& fieldset': {
@@ -2082,7 +2084,7 @@ const PeriodicReports = () => {
                       borderColor: colorPalette.primary,
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
@@ -2095,7 +2097,7 @@ const PeriodicReports = () => {
                 onChange={handleSearch}
                 InputLabelProps={{ 
                   sx: { fontFamily: '"Cairo", sans-serif', fontWeight: 600 } 
-                }}
+                , shrink: true }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -2104,7 +2106,7 @@ const PeriodicReports = () => {
                   ),
                   sx: { fontFamily: '"Cairo", sans-serif' }
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '10px',
                     '& fieldset': {
@@ -2114,12 +2116,12 @@ const PeriodicReports = () => {
                       borderColor: colorPalette.primary,
                     },
                   }
-                }}
+                }, uiLayout.formFieldSx)}
               />
             </Grid>
             
             <Grid item xs={12} md={2}>
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel sx={{ 
                   fontFamily: '"Cairo", sans-serif',
                   fontWeight: 600,
@@ -2153,7 +2155,7 @@ const PeriodicReports = () => {
             </Grid>
 
             <Grid item xs={12} md={2}>
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel sx={{ 
                   fontFamily: '"Cairo", sans-serif',
                   fontWeight: 600,

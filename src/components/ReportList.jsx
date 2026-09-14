@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React from 'react';
 import { 
   Box, 
@@ -50,7 +51,7 @@ const ReportList = ({ reports = [], onSelectReport, selectedDate, loading }) => 
           : 'جميع التقارير'}
       </Typography>
       
-      <TableContainer component={Paper} sx={styles.tableContainer}>
+      <TableContainer component={Paper} sx={uiLayout.withUiSx(styles.tableContainer, uiLayout.tableContainerSx)}>
         <Table sx={styles.table}>
           <TableHead sx={styles.tableHead}>
             <TableRow>
@@ -111,7 +112,7 @@ const ReportList = ({ reports = [], onSelectReport, selectedDate, loading }) => 
                         variant="outlined"
                         size="small"
                         onClick={() => onSelectReport(report)}
-                        sx={styles.detailsButton}
+                        sx={uiLayout.withUiSx(styles.detailsButton, uiLayout.buttonSx)}
                       >
                         عرض التفاصيل
                       </Button>
@@ -133,7 +134,7 @@ const ReportList = ({ reports = [], onSelectReport, selectedDate, loading }) => 
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="عدد الصفوف:"
         labelDisplayedRows={({ from, to, count }) => `${from}-${to} من ${count}`}
-        sx={styles.pagination}
+        sx={uiLayout.withUiSx(styles.pagination, uiLayout.tablePaginationSx)}
       />
     </Box>
   );

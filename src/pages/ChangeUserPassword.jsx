@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useMemo, useState } from "react";
@@ -259,7 +261,7 @@ export default function ChangeUserPassword() {
             severity="info"
             sx={{
               mb: 1,
-              fontSize: { xs: 9, sm: 12.5 },
+              fontSize: { xs: 12, sm: 12.5 },
               py: { xs: 0.15, sm: 0.5 }
             }}
           >
@@ -267,7 +269,7 @@ export default function ChangeUserPassword() {
           </Alert>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -275,9 +277,9 @@ export default function ChangeUserPassword() {
               },
               gap: { xs: 0.65, sm: 1 },
               "& .MuiTextField-root": fieldSx
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               autoFocus
               fullWidth
               size="small"
@@ -341,7 +343,7 @@ export default function ChangeUserPassword() {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               id="new-password-field"
               fullWidth
               size="small"
@@ -401,7 +403,7 @@ export default function ChangeUserPassword() {
           </Box>
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               mt: { xs: 0.8, sm: 1.3 },
               display: "grid",
               gridTemplateColumns: {
@@ -413,7 +415,7 @@ export default function ChangeUserPassword() {
                 sm: "center"
               },
               gap: 0.65
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
@@ -430,11 +432,11 @@ export default function ChangeUserPassword() {
               }
               disabled={saving}
               onClick={submit}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
-                fontSize: { xs: 9.3, sm: 12.5 },
+                fontSize: { xs: 12, sm: 12.5 },
                 minHeight: { xs: 32, sm: 40 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               تأكيد
             </Button>
@@ -447,11 +449,11 @@ export default function ChangeUserPassword() {
               onClick={() =>
                 navigate("/dashboard")
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
-                fontSize: { xs: 9.3, sm: 12.5 },
+                fontSize: { xs: 12, sm: 12.5 },
                 minHeight: { xs: 32, sm: 40 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               خروج
             </Button>

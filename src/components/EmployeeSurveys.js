@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { hrChipSx, hrTabIconSx } from "./hrControlStyles";
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -239,7 +240,7 @@ const fetchSubmittedSurveys = async (user) => {
     switch (question.type) {
       case 'text':
         return (
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             multiline
             rows={3}
@@ -247,20 +248,20 @@ const fetchSubmittedSurveys = async (user) => {
             value={responses[index] || ''}
             onChange={(e) => handleResponseChange(index, e.target.value)}
             variant="outlined"
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               mt: 2,
               '& .MuiOutlinedInput-root': {
                 '&:hover fieldset': { borderColor: primaryColor },
                 '&.Mui-focused fieldset': { borderColor: primaryColor },
               }
-            }}
+            }, uiLayout.formFieldSx)}
           />
         );
 
       case 'radio':
         return (
-          <FormControl component="fieldset" sx={{ mt: 2, width: '100%' }}>
-            <RadioGroup
+          <FormControl component="fieldset" sx={uiLayout.withUiSx({ mt: 2, width: '100%' }, uiLayout.formFieldSx)}>
+            <RadioGroup sx={uiLayout.radioGroupSx}
               value={responses[index] || ''}
               onChange={(e) => handleResponseChange(index, e.target.value)}
             >
@@ -457,7 +458,7 @@ const fetchSubmittedSurveys = async (user) => {
                   <Button
                     variant="contained"
                     size="medium"
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
                       color: 'white',
                       borderRadius: 2,
@@ -472,7 +473,7 @@ const fetchSubmittedSurveys = async (user) => {
                         transform: 'translateY(-2px)'
                       },
                       transition: 'all 0.3s ease'
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     ابدأ الآن
                   </Button>
@@ -712,7 +713,7 @@ const fetchSubmittedSurveys = async (user) => {
           </Fade>
 
           {/* Survey Response Dialog */}
-          <Dialog 
+          <Dialog sx={uiLayout.dialogLayoutSx} 
             open={responseDialog} 
             onClose={() => !submitting && setResponseDialog(false)}
             maxWidth="md"
@@ -829,12 +830,12 @@ const fetchSubmittedSurveys = async (user) => {
             </DialogContent>
 
             {!submitSuccess && (
-              <DialogActions sx={{ p: 3, gap: 2, justifyContent: 'center' }}>
+              <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 2, justifyContent: 'center' }, uiLayout.dialogActionsSx)}>
                 <Button
                   onClick={() => setResponseDialog(false)}
                   disabled={submitting}
                   variant="outlined"
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     borderColor: primaryColor,
                     color: primaryColor,
                     fontFamily: '"Cairo", sans-serif',
@@ -846,7 +847,7 @@ const fetchSubmittedSurveys = async (user) => {
                       borderColor: primaryDark,
                       backgroundColor: `${primaryColor}10`
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إلغاء
                 </Button>
@@ -855,7 +856,7 @@ const fetchSubmittedSurveys = async (user) => {
                   disabled={submitting}
                   variant="contained"
                   startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : <Send />}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
                     color: 'white',
                     fontFamily: '"Cairo", sans-serif',
@@ -871,7 +872,7 @@ const fetchSubmittedSurveys = async (user) => {
                     '&:disabled': {
                       background: '#ccc'
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   {submitting ? 'جاري الإرسال...' : 'إرسال الإجابات'}
                 </Button>

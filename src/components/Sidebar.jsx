@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, DESKTOP_BREAKPOINT, SIDEBAR_MOBILE_WIDTH, SIDEBAR_MOBILE_MAX_WIDTH, sidebarPositionStyle } from '../config/sidebarLayout';
 import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -690,14 +691,14 @@ const childItemSx = (selected) => ({
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
                   fontWeight: 700,
-                  fontSize: isDesktop ? '0.7rem' : '0.62rem',
+                  fontSize: isDesktop ? "0.75rem" : "0.75rem",
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px',
                   lineHeight: isDesktop ? 1.45 : 1.3
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? '0.66rem' : '0.58rem',
+                  fontSize: isDesktop ? "0.75rem" : "0.75rem",
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px',
                   color: selected
@@ -715,7 +716,7 @@ const childItemSx = (selected) => ({
                     py: 0.18,
                     borderRadius: 999,
                     fontFamily: 'Cairo',
-                    fontSize: isDesktop ? '0.54rem' : '0.48rem',
+                    fontSize: isDesktop ? "0.75rem" : "0.75rem",
                     fontWeight: 900,
                     whiteSpace: 'nowrap',
                     color: selected ? accentColor : whiteColor,
@@ -808,13 +809,13 @@ const childItemSx = (selected) => ({
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
                   fontWeight: 800,
-                  fontSize: isDesktop ? '0.9rem' : '0.69rem',
+                  fontSize: isDesktop ? '0.9rem' : "0.75rem",
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? '0.66rem' : '0.58rem',
+                  fontSize: isDesktop ? "0.75rem" : "0.75rem",
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px',
                   color: selected ? 'rgba(255,255,255,.78)' : mutedTextColor
@@ -833,7 +834,7 @@ const childItemSx = (selected) => ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontFamily: 'Cairo',
-                    fontSize: isDesktop ? '0.58rem' : '0.5rem',
+                    fontSize: isDesktop ? "0.75rem" : "0.75rem",
                     fontWeight: 900,
                     color: selected ? '#1976d2' : whiteColor,
                     background: selected
@@ -925,7 +926,7 @@ const childItemSx = (selected) => ({
                 '.MuiTypography-root': {
                   fontFamily: 'Cairo',
                   fontWeight: 800,
-                  fontSize: isDesktop ? '0.8rem' : '0.68rem',
+                  fontSize: isDesktop ? '0.8rem' : "0.75rem",
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
                 }
@@ -964,7 +965,7 @@ const childItemSx = (selected) => ({
                   borderRadius: isDesktop ? 2.5 : 1.8,
                   textAlign: 'center',
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? '0.76rem' : '0.62rem',
+                  fontSize: isDesktop ? '0.76rem' : "0.75rem",
                   color: mutedTextColor,
                   background: '#ffffff',
                   border: '1px solid rgba(5,117,70,0.09)'
@@ -1126,7 +1127,7 @@ const childItemSx = (selected) => ({
                       minWidth: 14,
                       height: 14,
                       px: .25,
-                      fontSize: 7,
+                      fontSize: 12,
                       fontWeight: 950,
                       border: "1.5px solid #fff"
                     }
@@ -1225,7 +1226,7 @@ const childItemSx = (selected) => ({
                   minWidth: 16,
                   height: 16,
                   px: .35,
-                  fontSize: 8,
+                  fontSize: 12,
                   fontWeight: 950,
                   border: "2px solid #fff"
                 }
@@ -1306,7 +1307,7 @@ const childItemSx = (selected) => ({
                 </Typography>
                 <Typography color="text.secondary" sx={{
                   fontFamily: "Cairo",
-                  fontSize: 9
+                  fontSize: 12
                 }}>
                   موافقات الإجازات وتحديثات طلباتك
                 </Typography>
@@ -1333,7 +1334,7 @@ const childItemSx = (selected) => ({
                   <Typography color="text.secondary" sx={{
                     textAlign: "center",
                     fontFamily: "Cairo",
-                    fontSize: 11
+                    fontSize: 12
                   }}>
                     لا توجد إشعارات حالياً
                   </Typography>
@@ -1355,7 +1356,7 @@ const childItemSx = (selected) => ({
                   <Typography sx={{
                     fontFamily: "Cairo",
                     fontWeight: item.isRead ? 800 : 950,
-                    fontSize: 11.5,
+                    fontSize: 12,
                     color: textColor
                   }}>
                     {item.title}
@@ -1364,7 +1365,7 @@ const childItemSx = (selected) => ({
                   <Typography color="text.secondary" sx={{
                     mt: .2,
                     fontFamily: "Cairo",
-                    fontSize: 9.5,
+                    fontSize: 12,
                     lineHeight: 1.6
                   }}>
                     {item.message}
@@ -1374,7 +1375,7 @@ const childItemSx = (selected) => ({
                     <Typography color="text.secondary" sx={{
                       mt: .35,
                       fontFamily: "Cairo",
-                      fontSize: 8
+                      fontSize: 12
                     }}>
                       {new Date(item.eventAt).toLocaleString("ar-SA")}
                     </Typography>
@@ -1411,7 +1412,7 @@ const childItemSx = (selected) => ({
                 borderRadius: 2,
                 textAlign: 'center',
                 fontFamily: 'Cairo',
-                fontSize: '0.72rem',
+                fontSize: "0.75rem",
                 color: accentColor,
                 background: '#fff7f7',
                 border: '1px solid rgba(174,30,33,.16)'
@@ -1468,11 +1469,11 @@ const childItemSx = (selected) => ({
           variant="contained"
           startIcon={<ExitToAppIcon />}
           onClick={handleLogout}
-          sx={{
+          sx={uiLayout.withUiSx({
             borderRadius: 3,
             fontWeight: 'bold',
             py: isDesktop ? 1.2 : 0.65,
-            fontSize: isDesktop ? '0.84rem' : '0.66rem',
+            fontSize: isDesktop ? '0.84rem' : "0.75rem",
             minHeight: isDesktop ? 'auto' : 34,
             background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
             color: whiteColor,
@@ -1483,7 +1484,7 @@ const childItemSx = (selected) => ({
               transform: 'translateY(-2px)'
             },
             transition: 'all 0.3s ease'
-          }}
+          }, uiLayout.buttonSx)}
         >
           تسجيل الخروج
         </Button>
@@ -1809,7 +1810,7 @@ function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
                       sx={{
                         marginInlineStart: 1,
                         height: 20,
-                        fontSize: "0.65rem",
+                        fontSize: "0.75rem",
                         fontWeight: 900,
                         bgcolor: "rgba(255,255,255,0.12)",
                         color: "white",

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -1148,7 +1150,7 @@ const HrDepartmentsPage = () => {
                 sx={{
                   fontFamily: "Cairo",
                   color: "#748078",
-                  fontSize: { xs: ".52rem", sm: ".6rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.75rem" },
                   textAlign: PAGE_TEXT_ALIGN
                 }}
               >
@@ -1178,14 +1180,14 @@ const HrDepartmentsPage = () => {
           <MiniStat label="المسميات" value={department?.jobTitleCount || 0} />
         </Box>
 
-        <Stack direction="row" spacing={0.5}>
+        <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.5}>
           <Button
             size="small"
             fullWidth
             variant="outlined"
             startIcon={<GroupsIcon />}
             onClick={() => openEmployees(department)}
-            sx={buttonSx}
+            sx={uiLayout.withUiSx(buttonSx, uiLayout.buttonSx)}
           >
             الموظفون
           </Button>
@@ -1195,7 +1197,7 @@ const HrDepartmentsPage = () => {
             variant="outlined"
             startIcon={<EditOutlinedIcon />}
             onClick={() => openEditDialog(department)}
-            sx={buttonSx}
+            sx={uiLayout.withUiSx(buttonSx, uiLayout.buttonSx)}
           >
             تعديل
           </Button>
@@ -1313,12 +1315,12 @@ const HrDepartmentsPage = () => {
                 <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: { xs: "1rem", md: "1.35rem" } }}>
                   إدارة الأقسام
                 </Typography>
-                <Typography sx={{ mt: 0.25, opacity: 0.9, fontFamily: "Cairo", fontSize: { xs: ".65rem", md: ".82rem" } }}>
+                <Typography sx={{ mt: 0.25, opacity: 0.9, fontFamily: "Cairo", fontSize: { xs: "0.75rem", md: ".82rem" } }}>
                   إدارة هيكل الأقسام ومديريها ومتابعة الموظفين بدون المساس ببيانات النظام القديمة
                 </Typography>
               </Box>
 
-              <Stack direction="row" spacing={0.6}>
+              <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.6}>
                 <Tooltip title="تحديث">
                   <IconButton
                     onClick={() => {
@@ -1334,11 +1336,11 @@ const HrDepartmentsPage = () => {
                   variant="outlined"
                   startIcon={<AccountTreeRoundedIcon />}
                   onClick={openOrgStructure}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo", fontWeight: 900,
                     borderColor: "rgba(255,255,255,.75)", color: "#fff",
                     "&:hover": { borderColor: "#fff", bgcolor: "rgba(255,255,255,.10)" }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   الهيكل الإداري
                 </Button>
@@ -1347,13 +1349,13 @@ const HrDepartmentsPage = () => {
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={openCreateDialog}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     bgcolor: "#fff",
                     color: primaryDark,
                     "&:hover": { bgcolor: "#f2f7f4" }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   إضافة قسم
                 </Button>
@@ -1381,14 +1383,14 @@ const HrDepartmentsPage = () => {
 
           <Paper elevation={0} sx={sectionSx}>
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr 1fr", md: "2fr 1fr auto auto" },
                 gap: 0.8,
                 alignItems: "center"
-              }}
+              }, uiLayout.filterBarSx)}
             >
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
                 label="بحث"
                 placeholder="اسم القسم أو الكود أو المدير"
@@ -1404,7 +1406,7 @@ const HrDepartmentsPage = () => {
                 }}
               />
 
-              <FormControl size="small" fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>الحالة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1418,10 +1420,10 @@ const HrDepartmentsPage = () => {
                 </Select>
               </FormControl>
 
-              <Button variant="contained" onClick={applyFilters} startIcon={<SearchIcon />} sx={primaryButtonSx}>
+              <Button variant="contained" onClick={applyFilters} startIcon={<SearchIcon />} sx={uiLayout.withUiSx(primaryButtonSx, uiLayout.buttonSx)}>
                 تطبيق
               </Button>
-              <Button variant="outlined" onClick={clearFilters} sx={dangerButtonSx}>
+              <Button variant="outlined" onClick={clearFilters} sx={uiLayout.withUiSx(dangerButtonSx, uiLayout.buttonSx)}>
                 مسح
               </Button>
             </Box>
@@ -1432,7 +1434,7 @@ const HrDepartmentsPage = () => {
               <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark }}>
                 قائمة الأقسام
               </Typography>
-              <Typography sx={{ fontFamily: "Cairo", fontSize: ".64rem", color: "#7a8580" }}>
+              <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#7a8580" }}>
                 عدد النتائج: {departments.length}
               </Typography>
             </Box>
@@ -1457,7 +1459,7 @@ const HrDepartmentsPage = () => {
                 {departments.map(renderMobileDepartment)}
               </Box>
             ) : (
-              <TableContainer>
+              <TableContainer sx={uiLayout.tableContainerSx}>
                 <Table size="small" sx={{ tableLayout: "fixed" }}>
                   <TableHead>
                     <TableRow>
@@ -1518,7 +1520,7 @@ const HrDepartmentsPage = () => {
       </Box>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={formOpen}
         onClose={() => {
           if (!saving) {
@@ -1553,7 +1555,7 @@ const HrDepartmentsPage = () => {
               <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark, textAlign: DIALOG_TEXT_ALIGN }}>
                 {editingDepartment ? "تعديل القسم" : "إضافة قسم جديد"}
               </Typography>
-              <Typography sx={{ fontFamily: "Cairo", fontSize: ".62rem", color: "#7a8580" }}>
+              <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#7a8580" }}>
                 لا يتم تعديل ID أو Code أو Guid القديمة
               </Typography>
             </Box>
@@ -1605,10 +1607,10 @@ const HrDepartmentsPage = () => {
             }
           }}
         >
-          <Stack spacing={1.1}>
+          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
             {formError && <Alert severity="error">{formError}</Alert>}
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم القسم"
               fullWidth
               value={form.departmentName}
@@ -1733,7 +1735,7 @@ const HrDepartmentsPage = () => {
                       sx={{
                         fontFamily: "Cairo",
                         fontWeight: 900,
-                        fontSize: ".72rem"
+                        fontSize: "0.75rem"
                       }}
                     >
                       {employee?.fullName ||
@@ -1746,7 +1748,7 @@ const HrDepartmentsPage = () => {
                         mt: 0.15,
                         fontFamily: "Cairo",
                         color: "#748078",
-                        fontSize: ".54rem"
+                        fontSize: "0.75rem"
                       }}
                     >
                       {employee?.jobTitle || "غير محدد"}
@@ -1758,7 +1760,7 @@ const HrDepartmentsPage = () => {
                 </Box>
               )}
               renderInput={(params) => (
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   {...params}
                   label="مدير القسم"
                   placeholder={
@@ -1785,17 +1787,17 @@ const HrDepartmentsPage = () => {
                       </>
                     )
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     "& .MuiFormHelperText-root": {
                       fontFamily: "Cairo",
                       textAlign: DIALOG_TEXT_ALIGN
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
               )}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="وصف القسم"
               multiline
               minRows={2}
@@ -1803,7 +1805,7 @@ const HrDepartmentsPage = () => {
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات"
               multiline
               minRows={2}
@@ -1812,7 +1814,7 @@ const HrDepartmentsPage = () => {
             />
 
             {editingDepartment && (
-              <FormControl fullWidth>
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>الحالة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1829,14 +1831,14 @@ const HrDepartmentsPage = () => {
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             p: 1.5,
             direction: DIALOG_DIRECTION,
             justifyContent:
               DIALOG_TEXT_ALIGN === "right"
                 ? "flex-end"
                 : "flex-start"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={() => {
@@ -1844,18 +1846,18 @@ const HrDepartmentsPage = () => {
               setDepartmentManagers([]);
             }}
             disabled={saving}
-            sx={dangerButtonSx}
+            sx={uiLayout.withUiSx(dangerButtonSx, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
-          <Button onClick={saveDepartment} disabled={saving} variant="contained" sx={primaryButtonSx}>
+          <Button onClick={saveDepartment} disabled={saving} variant="contained" sx={uiLayout.withUiSx(primaryButtonSx, uiLayout.buttonSx)}>
             {saving ? <CircularProgress size={20} color="inherit" /> : "حفظ"}
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={employeesOpen}
         onClose={() => setEmployeesOpen(false)}
         fullWidth
@@ -1884,7 +1886,7 @@ const HrDepartmentsPage = () => {
               <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark, textAlign: DIALOG_TEXT_ALIGN }}>
                 موظفو {employeesDepartment?.departmentName || "القسم"}
               </Typography>
-              <Typography sx={{ fontFamily: "Cairo", fontSize: ".62rem", color: "#7a8580" }}>
+              <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#7a8580" }}>
                 {departmentEmployees.length} موظف
               </Typography>
             </Box>
@@ -1918,7 +1920,7 @@ const HrDepartmentsPage = () => {
                 }}
               >
                 <Box
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     display: "grid",
                     gridTemplateColumns: {
                       xs: "1fr",
@@ -1926,9 +1928,9 @@ const HrDepartmentsPage = () => {
                     },
                     gap: 0.7,
                     alignItems: "center"
-                  }}
+                  }, uiLayout.filterBarSx)}
                 >
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     size="small"
                     label="بحث داخل موظفي القسم"
                     placeholder="الاسم، الكود، الجوال أو المسمى"
@@ -1943,7 +1945,7 @@ const HrDepartmentsPage = () => {
                     }}
                   />
 
-                  <FormControl size="small" fullWidth>
+                  <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                     <InputLabel>نقل إلى قسم</InputLabel>
                     <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1981,7 +1983,7 @@ const HrDepartmentsPage = () => {
                       transferringEmployees ||
                       selectedEmployeeGuids.length === 0
                     }
-                    sx={primaryButtonSx}
+                    sx={uiLayout.withUiSx(primaryButtonSx, uiLayout.buttonSx)}
                   >
                     نقل المحددين ({selectedEmployeeGuids.length})
                   </Button>
@@ -2021,7 +2023,7 @@ const HrDepartmentsPage = () => {
                   <Typography
                     sx={{
                       fontFamily: "Cairo",
-                      fontSize: ".62rem",
+                      fontSize: "0.75rem",
                       color: "#66756e",
                       textAlign: DIALOG_TEXT_ALIGN
                     }}
@@ -2106,7 +2108,7 @@ const HrDepartmentsPage = () => {
                             <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: ".75rem" }}>
                               {employee?.fullName || "بدون اسم"}
                             </Typography>
-                            <Typography sx={{ fontFamily: "Cairo", fontSize: ".56rem", color: "#728078" }}>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#728078" }}>
                               {employee?.jobTitle || "غير محدد"}
                             </Typography>
                           </Box>
@@ -2128,7 +2130,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={transferConfirmOpen}
         onClose={() =>
           !transferringEmployees &&
@@ -2163,11 +2165,11 @@ const HrDepartmentsPage = () => {
             سيتم تحديث القسم في User_Info مع الحفاظ على UserDepart القديم متوافقًا مع Department.ID.
           </Alert>
         </DialogContent>
-        <DialogActions sx={{ direction: DIALOG_DIRECTION }}>
+        <DialogActions sx={uiLayout.withUiSx({ direction: DIALOG_DIRECTION }, uiLayout.dialogActionsSx)}>
           <Button
             onClick={() => setTransferConfirmOpen(false)}
             disabled={transferringEmployees}
-            sx={dangerButtonSx}
+            sx={uiLayout.withUiSx(dangerButtonSx, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -2175,7 +2177,7 @@ const HrDepartmentsPage = () => {
             onClick={executeTransferEmployees}
             disabled={transferringEmployees}
             variant="contained"
-            sx={primaryButtonSx}
+            sx={uiLayout.withUiSx(primaryButtonSx, uiLayout.buttonSx)}
           >
             {transferringEmployees ? (
               <CircularProgress size={18} color="inherit" />
@@ -2187,7 +2189,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={orgOpen}
         onClose={() => setOrgOpen(false)}
         maxWidth="xl"
@@ -2206,7 +2208,7 @@ const HrDepartmentsPage = () => {
               <Typography sx={{ fontFamily: "Cairo", fontWeight: 950, fontSize: 19 }}>
                 الهيكل الإداري المرن
               </Typography>
-              <Typography color="text.secondary" sx={{ fontFamily: "Cairo", fontSize: 10 }}>
+              <Typography color="text.secondary" sx={{ fontFamily: "Cairo", fontSize: 12 }}>
                 المصدر الموحد للرؤية الإدارية والمدير المباشر ومسارات الإجازات والأذونات
               </Typography>
             </Box>
@@ -2216,11 +2218,11 @@ const HrDepartmentsPage = () => {
         <DialogContent dividers>
           <HrOrganizationDesigner />
         </DialogContent>
-        <DialogActions><Button onClick={() => setOrgOpen(false)}>إغلاق</Button></DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={() => setOrgOpen(false)}>إغلاق</Button></DialogActions>
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={deactivateBlockedOpen}
         onClose={() => setDeactivateBlockedOpen(false)}
         fullWidth
@@ -2247,10 +2249,10 @@ const HrDepartmentsPage = () => {
             انقل الموظفين النشطين إلى قسم آخر أولًا، وبعدها تقدر تعطّل القسم بأمان.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ direction: DIALOG_DIRECTION }}>
+        <DialogActions sx={uiLayout.withUiSx({ direction: DIALOG_DIRECTION }, uiLayout.dialogActionsSx)}>
           <Button
             onClick={() => setDeactivateBlockedOpen(false)}
-            sx={dangerButtonSx}
+            sx={uiLayout.withUiSx(dangerButtonSx, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -2264,7 +2266,7 @@ const HrDepartmentsPage = () => {
               setDepartmentManagers([]);
               if (department) openEmployees(department);
             }}
-            sx={primaryButtonSx}
+            sx={uiLayout.withUiSx(primaryButtonSx, uiLayout.buttonSx)}
           >
             فتح الموظفين ونقلهم
           </Button>
@@ -2272,7 +2274,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
         fullWidth
@@ -2324,13 +2326,13 @@ const HrDepartmentsPage = () => {
             <Stack spacing={0.7}>
               {history.map((item) => (
                 <Paper key={item?.id} elevation={0} sx={{ p: 1, borderRadius: 2, border: "1px solid rgba(5,117,70,.09)" }}>
-                  <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: ".72rem", color: primaryDark, textAlign: DIALOG_TEXT_ALIGN }}>
+                  <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: "0.75rem", color: primaryDark, textAlign: DIALOG_TEXT_ALIGN }}>
                     {item?.fieldLabel || item?.fieldName}
                   </Typography>
-                  <Typography sx={{ mt: 0.25, fontFamily: "Cairo", fontSize: ".62rem", textAlign: DIALOG_TEXT_ALIGN }}>
+                  <Typography sx={{ mt: 0.25, fontFamily: "Cairo", fontSize: "0.75rem", textAlign: DIALOG_TEXT_ALIGN }}>
                     من: {item?.oldValue || "-"} ← إلى: {item?.newValue || "-"}
                   </Typography>
-                  <Typography sx={{ mt: 0.25, fontFamily: "Cairo", fontSize: ".52rem", color: "#7b8781", textAlign: DIALOG_TEXT_ALIGN }}>
+                  <Typography sx={{ mt: 0.25, fontFamily: "Cairo", fontSize: "0.75rem", color: "#7b8781", textAlign: DIALOG_TEXT_ALIGN }}>
                     {item?.changedByName || "مستخدم غير محدد"}
                     {item?.changedAt ? ` - ${new Date(item.changedAt).toLocaleString("ar-EG")}` : ""}
                   </Typography>
@@ -2346,8 +2348,8 @@ const HrDepartmentsPage = () => {
 
 const MiniStat = ({ label, value }) => (
   <Box sx={{ p: 0.55, borderRadius: 1.8, bgcolor: "#f6faf8", textAlign: CENTER_TEXT_ALIGN }}>
-    <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark, fontSize: ".72rem" }}>{value}</Typography>
-    <Typography sx={{ fontFamily: "Cairo", color: "#728078", fontSize: ".48rem" }}>{label}</Typography>
+    <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark, fontSize: "0.75rem" }}>{value}</Typography>
+    <Typography sx={{ fontFamily: "Cairo", color: "#728078", fontSize: "0.75rem" }}>{label}</Typography>
   </Box>
 );
 
@@ -2359,7 +2361,7 @@ const StatCard = ({ title, value, icon }) => (
       </Box>
       <Box sx={{ textAlign: CENTER_TEXT_ALIGN }}>
         <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark, fontSize: { xs: ".9rem", sm: "1.05rem" } }}>{value}</Typography>
-        <Typography sx={{ fontFamily: "Cairo", fontWeight: 800, fontSize: { xs: ".52rem", sm: ".62rem" } }}>{title}</Typography>
+        <Typography sx={{ fontFamily: "Cairo", fontWeight: 800, fontSize: { xs: "0.75rem", sm: "0.75rem" } }}>{title}</Typography>
       </Box>
     </Stack>
   </Paper>

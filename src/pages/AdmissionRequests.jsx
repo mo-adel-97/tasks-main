@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -382,8 +384,8 @@ const DetailItem = ({ label, value, strong = false }) => (
         fontWeight: 900,
         display: "block",
         mb: 0.4,
-        "@media (max-width:599px)": { fontSize: "0.36rem", mb: 0.15 },
-        "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.44rem", mb: 0.2 }
+        "@media (max-width:599px)": { fontSize: "0.75rem", mb: 0.15 },
+        "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.75rem", mb: 0.2 }
       }}
     >
       {label}
@@ -397,8 +399,8 @@ const DetailItem = ({ label, value, strong = false }) => (
         lineHeight: 1.6,
         wordBreak: "break-word",
         fontSize: strong ? "1rem" : "0.9rem",
-        "@media (max-width:599px)": { fontSize: strong ? "0.52rem" : "0.46rem", lineHeight: 1.35 },
-        "@media (min-width:600px) and (max-width:1599px)": { fontSize: strong ? "0.64rem" : "0.55rem", lineHeight: 1.4 }
+        "@media (max-width:599px)": { fontSize: strong ? "0.75rem" : "0.75rem", lineHeight: 1.35 },
+        "@media (min-width:600px) and (max-width:1599px)": { fontSize: strong ? "0.75rem" : "0.75rem", lineHeight: 1.4 }
       }}
     >
       {value || "-"}
@@ -411,9 +413,9 @@ const EllipsisCell = ({ value }) => (
     <Typography
       sx={{
         width: "100%",
-        fontSize: "0.72rem",
-        "@media (max-width:599px)": { fontSize: "0.38rem" },
-        "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.46rem" },
+        fontSize: "0.75rem",
+        "@media (max-width:599px)": { fontSize: "0.75rem" },
+        "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.75rem" },
         fontWeight: 800,
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -429,12 +431,12 @@ const EllipsisCell = ({ value }) => (
 const SmallDataTable = ({ title, rows, emptyText = "لا توجد بيانات" }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={uiLayout.withUiSx({
       border: "1px solid #d7e8e0",
       borderRadius: 2,
       overflow: "hidden",
       height: "100%"
-    }}
+    }, uiLayout.tableContainerSx)}
   >
     <Box
       sx={{
@@ -453,8 +455,8 @@ const SmallDataTable = ({ title, rows, emptyText = "لا توجد بيانات" 
       size="small"
       sx={{
         "& th, & td": {
-          "@media (max-width:599px)": { fontSize: "0.38rem", px: 0.35, py: 0.45 },
-          "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.46rem", px: 0.55, py: 0.55 }
+          "@media (max-width:599px)": { fontSize: "0.75rem", px: 0.35, py: 0.45 },
+          "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.75rem", px: 0.55, py: 0.55 }
         }
       }}
     >
@@ -1192,9 +1194,9 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             borderRadius: isCompact ? "7px" : "10px",
             height: isPhone ? 21 : isTablet ? 24 : undefined,
             fontSize: isPhone
-              ? "0.34rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.42rem"
+                ? "0.75rem"
                 : undefined,
             "& .MuiChip-label": {
               px: isPhone ? 0.55 : isTablet ? 0.7 : undefined
@@ -1216,9 +1218,9 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             borderRadius: isCompact ? "7px" : "10px",
             height: isPhone ? 21 : isTablet ? 24 : undefined,
             fontSize: isPhone
-              ? "0.34rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.42rem"
+                ? "0.75rem"
                 : undefined,
             "& .MuiChip-label": {
               px: isPhone ? 0.55 : isTablet ? 0.7 : undefined
@@ -1240,9 +1242,9 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             borderRadius: isCompact ? "7px" : "10px",
             height: isPhone ? 21 : isTablet ? 24 : undefined,
             fontSize: isPhone
-              ? "0.34rem"
+              ? "0.75rem"
               : isTablet
-                ? "0.42rem"
+                ? "0.75rem"
                 : undefined,
             "& .MuiChip-label": {
               px: isPhone ? 0.55 : isTablet ? 0.7 : undefined
@@ -1263,9 +1265,9 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
           borderRadius: isCompact ? "7px" : "10px",
           height: isPhone ? 21 : isTablet ? 24 : undefined,
           fontSize: isPhone
-            ? "0.34rem"
+            ? "0.75rem"
             : isTablet
-              ? "0.42rem"
+              ? "0.75rem"
               : undefined,
           "& .MuiChip-label": {
             px: isPhone ? 0.55 : isTablet ? 0.7 : undefined
@@ -1380,7 +1382,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     color: item.color,
                     backgroundColor: item.bg,
                     "& .MuiSvgIcon-root": {
-                      fontSize: isPhone ? 9.5 : isTablet ? 12 : 16
+                      fontSize: isPhone ? 12 : isTablet ? 12 : 16
                     }
                   }}
                 >
@@ -1432,10 +1434,10 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 fontWeight: 900,
                 color: "#9aa8a2",
                 fontSize: isPhone
-                  ? "0.34rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.42rem"
-                    : "0.68rem"
+                    ? "0.75rem"
+                    : "0.75rem"
               }}
             >
               -
@@ -1446,10 +1448,10 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         return (
           <FormControl
             size="small"
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: isPhone ? 54 : 78,
               width: "100%"
-            }}
+            }, uiLayout.formFieldSx)}
             onClick={(event) =>
               event.stopPropagation()
             }
@@ -1480,10 +1482,10 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
               sx={{
                 height: isPhone ? 21 : 27,
                 fontSize: isPhone
-                  ? "0.36rem"
+                  ? "0.75rem"
                   : isTablet
-                    ? "0.44rem"
-                    : "0.68rem",
+                    ? "0.75rem"
+                    : "0.75rem",
                 fontWeight: 900,
                 borderRadius: isPhone ? 1 : 1.3,
                 backgroundColor:
@@ -1705,7 +1707,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
               size="small"
               sx={{
                 height: 24,
-                fontSize: "0.68rem",
+                fontSize: "0.75rem",
                 fontWeight: 900,
                 backgroundColor: canConvertSharedOrder(params.row)
                   ? "#e8f5e9"
@@ -1730,7 +1732,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
           return (
             <FormControl
               size="small"
-              sx={{ minWidth: 104 }}
+              sx={uiLayout.withUiSx({ minWidth: 104 }, uiLayout.formFieldSx)}
               onClick={(e) => e.stopPropagation()}
             >
               <Select
@@ -1740,7 +1742,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 }
                 sx={{
                   height: 30,
-                  fontSize: "0.68rem",
+                  fontSize: "0.75rem",
                   fontWeight: 900,
                   backgroundColor: canConvertSharedOrder(params.row)
                     ? "#e8f5e9"
@@ -1894,7 +1896,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 flex: 1,
                 textAlign: "start",
                 fontWeight: 900,
-                fontSize: { xs: "0.68rem", sm: "0.8rem" }
+                fontSize: { xs: "0.75rem", sm: "0.8rem" }
               }}
             >
               طلبات الالتحاق
@@ -1969,7 +1971,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 sx={{
                   color: "#607d73",
                   fontWeight: 800,
-                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.5rem" : "0.78rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.78rem",
                   display: isPhone ? "none" : "block"
                 }}
               >
@@ -1978,7 +1980,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             </Box>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: isCompact
                   ? "repeat(2,minmax(0,1fr))"
@@ -1986,18 +1988,18 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 gap: isPhone ? 0.45 : isTablet ? 0.65 : 0.8,
                 alignItems: "center",
                 "& .MuiInputLabel-root": {
-                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 },
                 "& .MuiInputBase-input": {
-                  fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 },
                 "& .MuiButton-root": {
                   minWidth: 0,
                   minHeight: isPhone ? 30 : isTablet ? 33 : 36,
-                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : "0.7rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                   px: isPhone ? 0.55 : isTablet ? 0.8 : 1.1
                 }
-              }}
+              }, uiLayout.filterBarSx)}
             >
               <TextField
                 label="الفترة من"
@@ -2006,14 +2008,14 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
                 InputLabelProps={{ shrink: true }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 0,
                   width: "100%",
                   "& input": {
                     textAlign: "center",
                     fontWeight: 800
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
@@ -2023,14 +2025,14 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
                 InputLabelProps={{ shrink: true }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 0,
                   width: "100%",
                   "& input": {
                     textAlign: "center",
                     fontWeight: 800
                   }
-                }}
+                }, uiLayout.formFieldSx)}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <Button
@@ -2044,7 +2046,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 }
                 onClick={fetchAdmissionRequests}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 0,
                   height: isCompact ? "auto" : 36,
                   fontWeight: "bold",
@@ -2054,7 +2056,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                   "&:hover": {
                     background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 عرض
               </Button>
@@ -2064,7 +2066,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 startIcon={<RefreshIcon />}
                 onClick={fetchAdmissionRequests}
                 disabled={loading}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 0,
                   height: isCompact ? "auto" : 36,
                   fontWeight: "bold",
@@ -2075,7 +2077,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     borderColor: primaryDark,
                     backgroundColor: "#f4faf7"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تحديث
               </Button>
@@ -2085,7 +2087,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 startIcon={<FileDownloadIcon />}
                 onClick={handleExportCsv}
                 disabled={filteredRows.length === 0}
-                sx={{
+                sx={uiLayout.withUiSx({
                   minWidth: 0,
                   height: isCompact ? "auto" : 36,
                   fontWeight: "bold",
@@ -2097,7 +2099,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     borderColor: "#2e7d32",
                     backgroundColor: "#f2fbf4"
                   }
-                }}
+                }, uiLayout.buttonSx)}
               >
                 تصدير
               </Button>
@@ -2125,7 +2127,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
               <Typography sx={{ fontWeight: 900, color: textColor, mb: 0.3 }}>
                 فلتر حالة الطلب
               </Typography>
-              <Typography sx={{ fontWeight: 700, color: "#6f8a81", fontSize: isPhone ? "0.38rem" : isTablet ? "0.46rem" : "0.7rem", display: isPhone ? "none" : "block" }}>
+              <Typography sx={{ fontWeight: 700, color: "#6f8a81", fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem", display: isPhone ? "none" : "block" }}>
                 اختر حالة الطلب لعرض النتائج المطلوبة فقط
               </Typography>
             </Box>
@@ -2145,12 +2147,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     key={item.value}
                     variant={active ? "contained" : "outlined"}
                     onClick={() => setStatusFilter(item.value)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderRadius: 999,
                       px: isPhone ? 0.65 : isTablet ? 0.9 : 1.3,
                       minWidth: isPhone ? 70 : isTablet ? 82 : 92,
                       height: isPhone ? 28 : isTablet ? 31 : 34,
-                      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : "0.68rem",
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                       fontWeight: 900,
                       color: active ? "#fff" : primaryDark,
                       borderColor: primaryLight,
@@ -2163,7 +2165,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                           ? `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                           : "#f4faf7"
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     {item.label}
                     <Box
@@ -2173,7 +2175,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                         px: 0.8,
                         py: 0.1,
                         borderRadius: 999,
-                        fontSize: isPhone ? "0.34rem" : isTablet ? "0.42rem" : "0.62rem",
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                         backgroundColor: active
                           ? "rgba(255,255,255,0.22)"
                           : "#eef7f3",
@@ -2212,7 +2214,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             boxSizing: "border-box"
           }}
         >
-          <Box sx={{ width: "100%", overflow: "hidden" }}>
+          <Box sx={uiLayout.withUiSx({ width: "100%", overflow: "hidden" }, uiLayout.tableContainerSx)}>
             <DataGrid
               rows={filteredRows}
               columns={columns}
@@ -2247,7 +2249,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 footerRowSelected: (count) => `${count} صف محدد`,
                 footerTotalRows: "إجمالي الصفوف"
               }}
-              sx={{
+              sx={uiLayout.withUiSx({
                 border: "none",
                 fontFamily: "Cairo, Arial, sans-serif",
                 direction: "rtl",
@@ -2257,11 +2259,11 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 },
 
                 "& .MuiDataGrid-virtualScroller": {
-                  overflowX: "hidden !important"
+                  overflowX: "auto"
                 },
 
                 "& .MuiDataGrid-scrollbar--horizontal": {
-                  display: isCompact ? "none" : undefined
+                  display: "block"
                 },
 
                 "& .MuiDataGrid-columnHeaders": {
@@ -2273,7 +2275,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
 
                 "& .MuiDataGrid-columnHeaderTitle": {
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.3rem" : isTablet ? "0.39rem" : "0.7rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                   textAlign: "center",
                   width: "100%"
                 },
@@ -2282,7 +2284,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                   borderBottom: "1px solid #edf2ef",
                   fontWeight: 800,
                   px: isPhone ? 0.15 : isTablet ? 0.3 : undefined,
-                  fontSize: isPhone ? "0.3rem" : isTablet ? "0.39rem" : "0.68rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
                   outline: "none !important",
                   px: 0.4
                 },
@@ -2312,13 +2314,13 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
 
                 "& .MuiTablePagination-root": {
                   fontWeight: 800,
-                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 },
 
                 "& .MuiDataGrid-columnSeparator": {
                   display: "none"
                 }
-              }}
+              }, uiLayout.dataGridSx)}
             />
           </Box>
         </Paper>
@@ -2329,7 +2331,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             sx={{
               px: isPhone ? 0.8 : isTablet ? 1 : 1.5,
               py: isPhone ? 0.45 : isTablet ? 0.55 : 0.7,
-              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : "0.7rem",
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
               borderRadius: 2,
               border: `1px solid ${primaryLight}`,
               fontWeight: "bold",
@@ -2348,12 +2350,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         maxWidth="xl"
         fullWidth
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone ? "50px" : isTablet ? "58px" : 0,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             borderRadius: 3,
@@ -2369,18 +2371,18 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             px: isPhone ? 0.7 : isTablet ? 1 : 2
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.68rem" : isTablet ? "0.82rem" : "1.05rem", color: textColor }}>
+          <Stack sx={uiLayout.pageHeaderSx} direction="row" justifyContent="space-between" alignItems="center">
+            <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.82rem" : "1.05rem", color: textColor }}>
               عرض طلب الالتحاق
             </Typography>
 
-            <Stack direction="row" spacing={1}>
+            <Stack sx={uiLayout.actionBarSx} direction="row" spacing={1}>
               <Button
                 variant="outlined"
                 size="small"
                 startIcon={<FolderOpenIcon />}
                 onClick={() => selectedRow && handleShowAttachments(selectedRow)}
-                sx={{ fontWeight: 800, borderRadius: 1.5, minWidth: isPhone ? 30 : undefined, px: isPhone ? 0.5 : 1 }}
+                sx={uiLayout.withUiSx({ fontWeight: 800, borderRadius: 1.5, minWidth: isPhone ? 30 : undefined, px: isPhone ? 0.5 : 1 }, uiLayout.buttonSx)}
               >
                 {isPhone ? "" : "المرفقات"}
               </Button>
@@ -2391,7 +2393,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 size="small"
                 startIcon={<DeleteOutlineIcon />}
                 onClick={() => selectedRow && handleOpenCancel(selectedRow)}
-                sx={{ fontWeight: 800, borderRadius: 1.5, minWidth: isPhone ? 30 : undefined, px: isPhone ? 0.5 : 1 }}
+                sx={uiLayout.withUiSx({ fontWeight: 800, borderRadius: 1.5, minWidth: isPhone ? 30 : undefined, px: isPhone ? 0.5 : 1 }, uiLayout.buttonSx)}
               >
                 {isPhone ? "" : "إلغاء الطلب"}
               </Button>
@@ -2439,7 +2441,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     fontWeight: 900,
                     color: primaryDark,
                     mb: isPhone ? 0.55 : isTablet ? 0.75 : 1,
-                    fontSize: isPhone ? "0.58rem" : isTablet ? "0.7rem" : "0.9rem"
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.9rem"
                   }}
                 >
                   البيانات الأساسية
@@ -2598,12 +2600,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
               {Array.isArray(packageCourses) && packageCourses.length > 0 && (
                 <Paper
                   elevation={0}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     mt: 2,
                     borderRadius: 2,
                     border: "1px solid #d7e8e0",
                     overflow: "hidden"
-                  }}
+                  }, uiLayout.tableContainerSx)}
                 >
                   <Box
                     sx={{
@@ -2720,25 +2722,25 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: isPhone ? 0.65 : isTablet ? 0.9 : 1.5,
             py: isPhone ? 0.5 : isTablet ? 0.65 : 0.9,
             borderTop: "1px solid #e4eeea",
             backgroundColor: "#fafdfb"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={handleCloseDetails}
             variant="contained"
             startIcon={<CloseIcon />}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 800,
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
               "&:hover": {
                 background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -2751,12 +2753,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         maxWidth="sm"
         fullWidth
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone ? "50px" : isTablet ? "58px" : 0,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             borderRadius: 3,
@@ -2780,7 +2782,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             سيتم إلغاء الطلب رقم {rowToCancel?.code}. برجاء كتابة سبب الإلغاء.
           </Alert>
 
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             label="سبب الإلغاء"
             multiline
             minRows={4}
@@ -2788,29 +2790,29 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
             disabled={cancelLoading}
-            sx={{
+            sx={uiLayout.withUiSx({
               "& textarea": {
                 fontWeight: 700
               }
-            }}
+            }, uiLayout.formFieldSx)}
           />
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: 2.5,
             py: 1.5,
             borderTop: "1px solid #eee"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={handleCloseCancel}
             disabled={cancelLoading}
             variant="outlined"
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 800
-            }}
+            }, uiLayout.buttonSx)}
           >
             تراجع
           </Button>
@@ -2827,10 +2829,10 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 <DeleteOutlineIcon />
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 900
-            }}
+            }, uiLayout.buttonSx)}
           >
             تأكيد الإلغاء
           </Button>
@@ -2843,12 +2845,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         maxWidth="xl"
         fullWidth
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone ? "50px" : isTablet ? "58px" : 0,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             borderRadius: 3,
@@ -3082,7 +3084,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
   }}
 >
   <Stack spacing={1.2}>
-    <FormControlLabel
+    <FormControlLabel sx={uiLayout.checkboxFieldSx}
       control={
         <Checkbox
           checked={convertPayFees}
@@ -3104,7 +3106,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
 
     <Divider />
 
-    <FormControlLabel
+    <FormControlLabel sx={uiLayout.checkboxFieldSx}
       control={
         <Checkbox
           checked={convertRegisteredInOtherInstitute}
@@ -3132,7 +3134,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
     />
 
     {convertRegisteredInOtherInstitute && (
-      <TextField
+      <TextField InputLabelProps={{ shrink: true }}
         label="اسم المعهد الآخر / ملاحظة"
         fullWidth
         multiline
@@ -3140,29 +3142,29 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         value={convertOtherInstituteName}
         onChange={(e) => setConvertOtherInstituteName(e.target.value)}
         placeholder="اكتب اسم المعهد الآخر أو أي ملاحظة مرتبطة بالتسجيل"
-        sx={{
+        sx={uiLayout.withUiSx({
           "& textarea": {
             fontWeight: 700
           }
-        }}
+        }, uiLayout.formFieldSx)}
       />
     )}
   </Stack>
 </Box>
 
-<TextField
+<TextField InputLabelProps={{ shrink: true }}
   label="ملاحظات المبيعات"
   fullWidth
   multiline
   minRows={3}
   value={convertSalesNotes}
   onChange={(e) => setConvertSalesNotes(e.target.value)}
-  sx={{
+  sx={uiLayout.withUiSx({
     mt: 2,
     "& textarea": {
       fontWeight: 700
     }
-  }}
+  }, uiLayout.formFieldSx)}
 />
               </Paper>
             </Box>
@@ -3170,21 +3172,21 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: 2.5,
             py: 1.5,
             borderTop: "1px solid #e4eeea",
             backgroundColor: "#fafdfb"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={handleCloseConvert}
             disabled={convertLoading}
             variant="outlined"
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 800
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -3200,14 +3202,14 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 <AssignmentTurnedInIcon />
               )
             }
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 900,
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
               "&:hover": {
                 background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             تأكيد التحويل
           </Button>
@@ -3220,12 +3222,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         maxWidth="xl"
         fullWidth
         fullScreen={isPhone}
-        sx={{
+        sx={uiLayout.withUiSx({
           "& .MuiDialog-container": {
             pt: isPhone ? "50px" : isTablet ? "58px" : 0,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }}
+        }, uiLayout.dialogLayoutSx)}
         PaperProps={{
           sx: {
             borderRadius: 3,
@@ -3312,13 +3314,13 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                   backgroundColor: "#fbfdfc"
                 }}
               >
-                <Stack
+                <Stack sx={uiLayout.filterBarSx}
                   direction={{ xs: "column", sm: "row" }}
                   spacing={1}
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     label="بحث في البيان"
                     size="small"
                     value={statementSearch}
@@ -3328,26 +3330,26 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                         handleSearchStudentStatement();
                       }
                     }}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: { xs: "100%", sm: 320 },
                       "& input": {
                         fontWeight: 700
                       }
-                    }}
+                    }, uiLayout.formFieldSx)}
                   />
 
                   <Button
                     variant="contained"
                     startIcon={<SearchIcon />}
                     onClick={handleSearchStudentStatement}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       borderRadius: 2,
                       fontWeight: 800,
                       background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
                       "&:hover": {
                         background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                       }
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     بحث
                   </Button>
@@ -3375,7 +3377,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                   </Typography>
                 </Box>
 
-                <Box sx={{ maxHeight: 520, overflow: "auto" }}>
+                <Box sx={uiLayout.withUiSx({ maxHeight: 520, overflow: "auto" }, uiLayout.tableContainerSx)}>
                   <Table size="small" stickyHeader>
                     <TableHead>
                       <TableRow>
@@ -3483,26 +3485,26 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         </DialogContent>
 
         <DialogActions
-          sx={{
+          sx={uiLayout.withUiSx({
             px: 2.5,
             py: 1.5,
             borderTop: "1px solid #e4eeea",
             backgroundColor: "#fafdfb"
-          }}
+          }, uiLayout.dialogActionsSx)}
         >
           <Button
             onClick={handleCloseStudentStatement}
             variant="contained"
             startIcon={<CloseIcon />}
             disabled={statementLoading}
-            sx={{
+            sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 800,
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
               "&:hover": {
                 background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>

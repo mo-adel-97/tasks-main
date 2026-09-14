@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import React from 'react';
 import { 
   TextField, 
@@ -116,7 +117,7 @@ const StudentSearchForm = ({
                 setStudentId(value);
               }
             }}
-            sx={{
+            sx={uiLayout.withUiSx({
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
                 "& fieldset": {
@@ -141,7 +142,7 @@ const StudentSearchForm = ({
                   color: "#80b49e",
                 }
               }
-            }}
+            }, uiLayout.formFieldSx)}
             InputProps={{
               style: {
                 fontSize: "1.2rem",
@@ -162,12 +163,7 @@ const StudentSearchForm = ({
               )
             }}
             InputLabelProps={{
-              style: {
-                fontSize: "1rem",
-                fontFamily: '"Cairo", sans-serif',
-                right: 40,
-                transformOrigin: 'right'
-              },
+              style: {fontFamily: '"Cairo", sans-serif'},
               shrink: true
             }}
           />

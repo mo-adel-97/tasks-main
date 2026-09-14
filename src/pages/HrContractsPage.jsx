@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { hrChipSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -1298,7 +1300,7 @@ export default function HrContractsPage() {
                 <Typography
                   sx={{
                     opacity: 0.75,
-                    fontSize: 11
+                    fontSize: 12
                   }}
                 >
                   إدارة العقود والتجديدات والتنبيهات وسجل العقود السابق
@@ -1327,7 +1329,7 @@ export default function HrContractsPage() {
                     setAlertSearch("");
                     setAlertsOpen(true);
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color: "#fff",
                     borderColor:
                       "rgba(255,255,255,.45)",
@@ -1337,7 +1339,7 @@ export default function HrContractsPage() {
                       bgcolor:
                         "rgba(255,255,255,.08)"
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   تنبيهات العقود
                 </Button>
@@ -1426,7 +1428,7 @@ export default function HrContractsPage() {
               <Typography
                 color="text.secondary"
                 sx={{
-                  fontSize: 10.5,
+                  fontSize: 12,
                   fontWeight: 800
                 }}
               >
@@ -1456,7 +1458,7 @@ export default function HrContractsPage() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -1464,9 +1466,9 @@ export default function HrContractsPage() {
                   "minmax(260px,1.4fr) 180px 180px 180px 110px"
               },
               gap: 1
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               value={search}
               onChange={(e) => {
@@ -1483,7 +1485,7 @@ export default function HrContractsPage() {
               }}
             />
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>حالة العقد</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1518,7 +1520,7 @@ export default function HrContractsPage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الفرع</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1549,7 +1551,7 @@ export default function HrContractsPage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>القسم</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1585,7 +1587,7 @@ export default function HrContractsPage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>الصفوف</InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1734,7 +1736,7 @@ export default function HrContractsPage() {
                             color="text.secondary"
                             sx={{
                               mt: 0.2,
-                              fontSize: 10.5,
+                              fontSize: 12,
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow:
@@ -1763,7 +1765,7 @@ export default function HrContractsPage() {
                       <Typography
                         color="text.secondary"
                         sx={{
-                          fontSize: 9.8,
+                          fontSize: 12,
                           mb: 0.25
                         }}
                       >
@@ -1785,7 +1787,7 @@ export default function HrContractsPage() {
                           color="text.secondary"
                           sx={{
                             mt: 0.15,
-                            fontSize: 10
+                            fontSize: 12
                           }}
                         >
                           {getContractTypeName(
@@ -1817,7 +1819,7 @@ export default function HrContractsPage() {
 
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 9.8 }}
+                          sx={{ fontSize: 12 }}
                         >
                           مدة العقد
                         </Typography>
@@ -1826,7 +1828,7 @@ export default function HrContractsPage() {
                       <Typography
                         sx={{
                           fontWeight: 850,
-                          fontSize: 11.5
+                          fontSize: 12
                         }}
                       >
                         {row.contractGuid
@@ -1841,7 +1843,7 @@ export default function HrContractsPage() {
                       <Typography
                         sx={{
                           mt: 0.2,
-                          fontSize: 10.3,
+                          fontSize: 12,
                           fontWeight: 800,
                           color:
                             row.contractStatus ===
@@ -1879,7 +1881,7 @@ export default function HrContractsPage() {
 
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 9.8 }}
+                          sx={{ fontSize: 12 }}
                         >
                           الراتب الأساسي
                         </Typography>
@@ -1911,7 +1913,7 @@ export default function HrContractsPage() {
                       <Typography
                         color="text.secondary"
                         sx={{
-                          fontSize: 9.8,
+                          fontSize: 12,
                           mb: 0.35
                         }}
                       >
@@ -1961,7 +1963,7 @@ export default function HrContractsPage() {
                             variant="outlined"
                             sx={{
                               height: 24,
-                              fontSize: 9.5
+                              fontSize: 12
                             }}
                           />
                         )}
@@ -1996,7 +1998,7 @@ export default function HrContractsPage() {
                         onClick={() =>
                           openContract(row)
                         }
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           width: 100,
                           minWidth: 100,
                           fontWeight: 900,
@@ -2010,7 +2012,7 @@ export default function HrContractsPage() {
                                     primaryDark
                                 }
                               })
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         {row.contractGuid
                           ? "تجديد"
@@ -2138,7 +2140,7 @@ export default function HrContractsPage() {
                   color="text.secondary"
                   sx={{
                     mt: 0.3,
-                    fontSize: 11
+                    fontSize: 12
                   }}
                 >
                   جرّب تغيير البحث أو حالة العقد.
@@ -2175,7 +2177,7 @@ export default function HrContractsPage() {
       <Box sx={navigationContentSx}>{content}</Box>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={alertsOpen}
         onClose={() =>
           setAlertsOpen(false)
@@ -2217,7 +2219,7 @@ export default function HrContractsPage() {
                 color="text.secondary"
                 sx={{
                   mt: 0.2,
-                  fontSize: 10.5
+                  fontSize: 12
                 }}
               >
                 العقود المنتهية أو التي تنتهي خلال 30 يومًا
@@ -2236,7 +2238,7 @@ export default function HrContractsPage() {
 
         <DialogContent dividers>
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
@@ -2244,9 +2246,9 @@ export default function HrContractsPage() {
               },
               gap: 1,
               mb: 1.2
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
               value={alertSearch}
               onChange={(e) =>
@@ -2264,7 +2266,7 @@ export default function HrContractsPage() {
               }}
             />
 
-            <FormControl size="small">
+            <FormControl sx={uiLayout.formFieldSx} size="small">
               <InputLabel>
                 مستوى التنبيه
               </InputLabel>
@@ -2308,7 +2310,7 @@ export default function HrContractsPage() {
                 <NotificationsActiveRoundedIcon />
               }
               onClick={enableBrowserNotifications}
-              sx={{ fontWeight: 850 }}
+              sx={uiLayout.withUiSx({ fontWeight: 850 }, uiLayout.buttonSx)}
             >
               تفعيل إشعارات المتصفح
             </Button>
@@ -2377,7 +2379,7 @@ export default function HrContractsPage() {
                           color="text.secondary"
                           sx={{
                             mt: 0.2,
-                            fontSize: 10.5
+                            fontSize: 12
                           }}
                         >
                           #{item.employeeCode ||
@@ -2394,14 +2396,14 @@ export default function HrContractsPage() {
                       <Box>
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 9.8 }}
+                          sx={{ fontSize: 12 }}
                         >
                           العقد / الفرع
                         </Typography>
 
                         <Typography
                           fontWeight={850}
-                          sx={{ fontSize: 11.5 }}
+                          sx={{ fontSize: 12 }}
                         >
                           {item.contractNumber ||
                             "بدون رقم"}
@@ -2409,7 +2411,7 @@ export default function HrContractsPage() {
 
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 9.8 }}
+                          sx={{ fontSize: 12 }}
                         >
                           {item.branchName ||
                             "غير محدد"}
@@ -2419,14 +2421,14 @@ export default function HrContractsPage() {
                       <Box>
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 9.8 }}
+                          sx={{ fontSize: 12 }}
                         >
                           تاريخ الانتهاء
                         </Typography>
 
                         <Typography
                           fontWeight={850}
-                          sx={{ fontSize: 11.5 }}
+                          sx={{ fontSize: 12 }}
                         >
                           {formatDate(
                             item.endDate
@@ -2484,7 +2486,7 @@ export default function HrContractsPage() {
                               item
                             );
                           }}
-                          sx={{
+                          sx={uiLayout.withUiSx({
                             bgcolor: primary,
                             fontWeight: 900,
                             whiteSpace:
@@ -2493,7 +2495,7 @@ export default function HrContractsPage() {
                               bgcolor:
                                 primaryDark
                             }
-                          }}
+                          }, uiLayout.buttonSx)}
                         >
                           تجديد
                         </Button>
@@ -2539,7 +2541,7 @@ export default function HrContractsPage() {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={previewOpen}
         onClose={closePreview}
         fullWidth
@@ -2583,7 +2585,7 @@ export default function HrContractsPage() {
                 color="text.secondary"
                 sx={{
                   mt: 0.15,
-                  fontSize: 10.5,
+                  fontSize: 12,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis"
@@ -2601,7 +2603,7 @@ export default function HrContractsPage() {
               spacing={0.5}
             >
               {previewRow?.contractGuid && (
-                <Button
+                <Button sx={uiLayout.buttonSx}
                   size="small"
                   variant="outlined"
                   startIcon={
@@ -2648,7 +2650,7 @@ export default function HrContractsPage() {
                   sx={{
                     mt: 1,
                     fontWeight: 800,
-                    fontSize: 11
+                    fontSize: 12
                   }}
                 >
                   جاري تجهيز المعاينة...
@@ -2690,7 +2692,7 @@ export default function HrContractsPage() {
                   color="text.secondary"
                   sx={{
                     mt: 0.5,
-                    fontSize: 11.5,
+                    fontSize: 12,
                     lineHeight: 1.8
                   }}
                 >
@@ -2742,7 +2744,7 @@ export default function HrContractsPage() {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={contractOpen}
         onClose={() => {
           if (!saving) {
@@ -2762,7 +2764,7 @@ export default function HrContractsPage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack spacing={1.2}>
+          <Stack sx={uiLayout.filterBarSx} spacing={1.2}>
             <Paper
               variant="outlined"
               sx={{
@@ -2778,7 +2780,7 @@ export default function HrContractsPage() {
 
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: 10.5 }}
+                sx={{ fontSize: 12 }}
               >
                 {selectedEmployee?.jobTitle ||
                   "غير محدد"}
@@ -2789,16 +2791,16 @@ export default function HrContractsPage() {
             </Paper>
 
             <Box
-              sx={{
+              sx={uiLayout.withUiSx({
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "1fr",
                   sm: "repeat(2,minmax(0,1fr))"
                 },
                 gap: 1
-              }}
+              }, uiLayout.formGridSx)}
             >
-              <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 label="رقم العقد"
                 value={form.contractNumber}
                 onChange={(e) =>
@@ -2810,7 +2812,7 @@ export default function HrContractsPage() {
                 }
               />
 
-              <FormControl>
+              <FormControl sx={uiLayout.formFieldSx}>
                 <InputLabel>نوع العقد</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -2833,7 +2835,7 @@ export default function HrContractsPage() {
                 </Select>
               </FormControl>
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="تاريخ بداية العقد"
                 value={form.startDate}
@@ -2848,7 +2850,7 @@ export default function HrContractsPage() {
                 }}
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 type="date"
                 label="تاريخ نهاية العقد"
                 value={form.endDate}
@@ -2866,7 +2868,7 @@ export default function HrContractsPage() {
                 }
                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="الراتب الأساسي"
                 value={form.basicSalary}
@@ -2880,7 +2882,7 @@ export default function HrContractsPage() {
                 inputProps={{ min: 0 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
 
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"
                 label="فترة التجربة - يوم"
                 value={form.probationDays}
@@ -2898,7 +2900,7 @@ export default function HrContractsPage() {
               />
             </Box>
 
-            <FormControlLabel
+            <FormControlLabel sx={uiLayout.checkboxFieldSx}
               control={
                 <Checkbox
                   checked={form.autoRenew}
@@ -2914,7 +2916,7 @@ export default function HrContractsPage() {
               label="تجديد تلقائي"
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات"
               value={form.notes}
               onChange={(e) =>
@@ -2928,7 +2930,7 @@ export default function HrContractsPage() {
             />
 
             {contractMode === "edit" && (
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 label="سبب التعديل"
                 value={form.editReason}
                 onChange={(e) =>
@@ -2950,9 +2952,9 @@ export default function HrContractsPage() {
               startIcon={
                 <ArticleOutlinedIcon />
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                             fontWeight: 850
-              }}
+              }, uiLayout.buttonSx)}
             >
               {form.file
                 ? form.file.name
@@ -2977,8 +2979,8 @@ export default function HrContractsPage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setContractOpen(false)
             }
@@ -2991,12 +2993,12 @@ export default function HrContractsPage() {
             variant="contained"
             onClick={saveContract}
             disabled={saving}
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primary,
               "&:hover": {
                 bgcolor: primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             {saving
               ? "جاري الحفظ..."
@@ -3010,7 +3012,7 @@ export default function HrContractsPage() {
       </Dialog>
 
       <Dialog
-        sx={RTL_DIALOG_SX}
+        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
         fullWidth
@@ -3030,7 +3032,7 @@ export default function HrContractsPage() {
 
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: 10.5 }}
+                sx={{ fontSize: 12 }}
               >
                 {historyEmployee?.employeeName ||
                   ""}
@@ -3090,7 +3092,7 @@ export default function HrContractsPage() {
 
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 10 }}
+                        sx={{ fontSize: 12 }}
                       >
                         {item.isCurrent
                           ? "العقد الحالي"
@@ -3138,7 +3140,7 @@ export default function HrContractsPage() {
                       color="error"
                       sx={{
                         mt: 0.6,
-                        fontSize: 10.5
+                        fontSize: 12
                       }}
                     >
                       سبب الإنهاء:{" "}

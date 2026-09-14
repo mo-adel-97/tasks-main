@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -336,7 +337,7 @@ export default function ExceptionsListsAdmin() {
                 fetchListAll({ page });
               }}
               disabled={loading || loadingBranches}
-              sx={{ borderRadius: 2, fontWeight: 800, whiteSpace: "nowrap" }}
+              sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 800, whiteSpace: "nowrap" }, uiLayout.buttonSx)}
             >
               تحديث الكل
             </Button>
@@ -354,8 +355,8 @@ export default function ExceptionsListsAdmin() {
                   فلاتر
                 </Typography>
 
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                  <TextField
+                <Box sx={uiLayout.withUiSx({ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }, uiLayout.formGridSx)}>
+                  <TextField InputLabelProps={{ shrink: true }}
                     size="small"
                     placeholder="بحث برقم الهوية / الملاحظات / branchGuid"
                     value={search}
@@ -367,28 +368,28 @@ export default function ExceptionsListsAdmin() {
                         </InputAdornment>
                       ),
                     }}
-                    sx={{ minWidth: { xs: "100%", sm: 320 } }}
+                    sx={uiLayout.withUiSx({ minWidth: { xs: "100%", sm: 320 } }, uiLayout.formFieldSx)}
                   />
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     size="small"
                     select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    sx={{ minWidth: 180 }}
+                    sx={uiLayout.withUiSx({ minWidth: 180 }, uiLayout.formFieldSx)}
                   >
                     <MenuItem value="الكل">الكل</MenuItem>
                     <MenuItem value={STATUS.GRADUATED}>{STATUS.GRADUATED}</MenuItem>
                     <MenuItem value={STATUS.ZERO_BALANCE}>{STATUS.ZERO_BALANCE}</MenuItem>
                   </TextField>
 
-                  <TextField
+                  <TextField InputLabelProps={{ shrink: true }}
                     size="small"
                     select
                     value={filterBranch}
                     onChange={(e) => setFilterBranch(e.target.value)}
                     disabled={loadingBranches || branches.length === 0}
-                    sx={{ minWidth: 260 }}
+                    sx={uiLayout.withUiSx({ minWidth: 260 }, uiLayout.formFieldSx)}
                   >
                     <MenuItem value="الكل">كل الفروع</MenuItem>
                     {loadingBranches ? (
@@ -420,7 +421,7 @@ export default function ExceptionsListsAdmin() {
                   القائمة (كل الفروع)
                 </Typography>
 
-                <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: "hidden" }}>
+                <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, overflow: "hidden" }, uiLayout.tableContainerSx)}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>

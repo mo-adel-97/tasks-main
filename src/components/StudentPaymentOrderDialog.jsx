@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -924,8 +925,8 @@ const infoCell = ({ value }) => (
         width: "100%",
         fontWeight: 900,
         fontSize: "0.82rem",
-        "@media (max-width:1599px)": { fontSize: "0.54rem" },
-        "@media (max-width:599px)": { fontSize: "0.46rem" },
+        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        "@media (max-width:599px)": { fontSize: "0.75rem" },
         textAlign: "center",
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -948,11 +949,11 @@ const SectionTitle = ({ children, color = dangerColor }) => (
       textAlign: "start",
       lineHeight: 1.15,
       "@media (max-width:1599px)": {
-        fontSize: "0.6rem",
+        fontSize: "0.75rem",
         mb: 0.3
       },
       "@media (max-width:599px)": {
-        fontSize: "0.52rem",
+        fontSize: "0.75rem",
         mb: 0.22
       }
     }}
@@ -990,11 +991,11 @@ const DetailBox = ({ label, value, color = textColor }) => (
         textAlign: "start",
         lineHeight: 1.15,
         "@media (max-width:1599px)": {
-          fontSize: "0.5rem",
+          fontSize: "0.75rem",
           mb: 0.12
         },
         "@media (max-width:599px)": {
-          fontSize: "0.43rem"
+          fontSize: "0.75rem"
         }
       }}
     >
@@ -1007,11 +1008,11 @@ const DetailBox = ({ label, value, color = textColor }) => (
         lineHeight: 1.6,
         wordBreak: "break-word",
         "@media (max-width:1599px)": {
-          fontSize: "0.6rem",
+          fontSize: "0.75rem",
           lineHeight: 1.25
         },
         "@media (max-width:599px)": {
-          fontSize: "0.52rem"
+          fontSize: "0.75rem"
         },
         textAlign: "start"
       }}
@@ -1027,7 +1028,7 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
     variant={active ? "contained" : "outlined"}
     onClick={onClick}
     startIcon={icon}
-    sx={{
+    sx={uiLayout.withUiSx({
       minHeight: 62,
       borderRadius: 3,
       justifyContent: "flex-start",
@@ -1064,15 +1065,15 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
         borderColor: color,
         backgroundColor: active ? color : "#f8fbfa"
       }
-    }}
+    }, uiLayout.buttonSx)}
   >
     <Box sx={{ width: "100%", direction: "rtl" }}>
       <Typography
         sx={{
           fontWeight: 950,
           lineHeight: 1.15,
-          "@media (max-width:1599px)": { fontSize: "0.56rem" },
-          "@media (max-width:599px)": { fontSize: "0.49rem" }
+          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
         {title}
@@ -1083,9 +1084,9 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
           fontSize: "0.75rem",
           opacity: 0.85,
           lineHeight: 1.15,
-          "@media (max-width:1599px)": { fontSize: "0.44rem" },
+          "@media (max-width:1599px)": { fontSize: "0.75rem" },
           "@media (max-width:599px)": {
-            fontSize: "0.38rem",
+            fontSize: "0.75rem",
             display: "none"
           }
         }}
@@ -2227,14 +2228,14 @@ const StudentPaymentOrderDialog = ({
       fullWidth
       maxWidth="xl"
       fullScreen={isPhone}
-      sx={{
+      sx={uiLayout.withUiSx({
         "& .MuiDialog-container": {
           pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }}
+      }, uiLayout.dialogLayoutSx)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -2303,7 +2304,7 @@ const StudentPaymentOrderDialog = ({
                 sx={{
                   fontWeight: 950,
                   color: textColor,
-                  fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : "1.15rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.8rem" : "1.15rem",
                   lineHeight: 1.1
                 }}
               >
@@ -2313,7 +2314,7 @@ const StudentPaymentOrderDialog = ({
                 sx={{
                   fontWeight: 800,
                   color: "#6f8a81",
-                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : "0.82rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.82rem",
                   lineHeight: 1.1,
                   display: isPhone ? "none" : "block"
                 }}
@@ -2334,7 +2335,7 @@ const StudentPaymentOrderDialog = ({
               height: isPhone ? 22 : isTablet ? 25 : undefined,
               "& .MuiChip-label": {
                 px: isPhone ? 0.5 : isTablet ? 0.65 : undefined,
-                fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               },
               "& .MuiChip-icon": {
                 fontSize: isPhone ? 13 : isTablet ? 15 : undefined
@@ -2354,10 +2355,10 @@ const StudentPaymentOrderDialog = ({
           minHeight: 0,
 
           "& .MuiInputLabel-root": {
-            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           },
           "& .MuiInputBase-input, & .MuiSelect-select": {
-            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
           },
           "& .MuiOutlinedInput-root": {
@@ -2365,13 +2366,13 @@ const StudentPaymentOrderDialog = ({
             borderRadius: isCompact ? 1.25 : undefined
           },
           "& .MuiFormHelperText-root": {
-            fontSize: isPhone ? "0.39rem" : isTablet ? "0.47rem" : undefined,
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             mt: isCompact ? 0.12 : undefined,
             lineHeight: 1.15
           },
           "& .MuiChip-root": {
             height: isPhone ? 20 : isTablet ? 23 : undefined,
-            fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
           }
         }}
       >
@@ -2442,7 +2443,7 @@ const StudentPaymentOrderDialog = ({
                   }}
                 >
                   <SectionTitle>آخر طلب سداد</SectionTitle>
-                  <Box sx={{ height: 170 }}>
+                  <Box sx={uiLayout.withUiSx({ height: 170 }, uiLayout.tableContainerSx)}>
                     <DataGrid
                       rows={rowsWithIds(lastOrders)}
                       columns={compactOrderColumns.map(fitCompactColumn)}
@@ -2451,7 +2452,7 @@ const StudentPaymentOrderDialog = ({
                       rowHeight={isTablet ? 34 : 42}
                       columnHeaderHeight={isTablet ? 32 : 38}
                       localeText={{ noRowsLabel: "لا توجد طلبات سداد سابقة" }}
-                      sx={gridStyle}
+                      sx={uiLayout.withUiSx(gridStyle, uiLayout.dataGridSx)}
                     />
                   </Box>
                 </Paper>
@@ -2468,7 +2469,7 @@ const StudentPaymentOrderDialog = ({
                   }}
                 >
                   <SectionTitle>آخر فاتورة سداد</SectionTitle>
-                  <Box sx={{ height: 170 }}>
+                  <Box sx={uiLayout.withUiSx({ height: 170 }, uiLayout.tableContainerSx)}>
                     <DataGrid
                       rows={rowsWithIds(lastBills)}
                       columns={compactBillColumns.map(fitCompactColumn)}
@@ -2477,7 +2478,7 @@ const StudentPaymentOrderDialog = ({
                       rowHeight={isTablet ? 34 : 42}
                       columnHeaderHeight={isTablet ? 32 : 38}
                       localeText={{ noRowsLabel: "لا توجد فواتير سداد سابقة" }}
-                      sx={gridStyle}
+                      sx={uiLayout.withUiSx(gridStyle, uiLayout.dataGridSx)}
                     />
                   </Box>
                 </Paper>
@@ -2564,9 +2565,9 @@ const StudentPaymentOrderDialog = ({
               <SectionTitle color={primaryDark}>بيانات التنفيذ</SectionTitle>
 
               <Grid container spacing={1.2}>
-                <Grid item xs={6} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   {paymentMethod === "bank" ? (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       select
                       fullWidth
                       size="small"
@@ -2592,7 +2593,7 @@ const StudentPaymentOrderDialog = ({
                       })}
                     </TextField>
                   ) : (
-                    <TextField
+                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
                       label={paymentMethod === "cash" ? "الخزينة" : "بنك الشبكة"}
@@ -2608,8 +2609,8 @@ const StudentPaymentOrderDialog = ({
                   )}
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="رقم المرجع"
@@ -2620,8 +2621,8 @@ const StudentPaymentOrderDialog = ({
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={4}>
-                  <TextField
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField sx={uiLayout.formFieldSx}
                     fullWidth
                     size="small"
                     type="date"
@@ -2635,7 +2636,7 @@ const StudentPaymentOrderDialog = ({
                 </Grid>
 
                 <Grid item xs={12} md={8}>
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     fullWidth
                     size="small"
                     label="ملاحظات"
@@ -2653,15 +2654,15 @@ const StudentPaymentOrderDialog = ({
                     variant="outlined"
                     disabled={disabled || paymentMethod !== "bank"}
                     startIcon={<AttachFileIcon />}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       height: isPhone ? 31 : isTablet ? 35 : 40,
                       borderRadius: isCompact ? 1.25 : 2,
                       fontWeight: 950,
-                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       direction: "rtl",
                       borderColor: "#d7eee4",
                       color: paymentMethod === "bank" ? "#6a1b9a" : "#888"
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     {attachmentName || "مستند الدفع"}
                     <input
@@ -2712,16 +2713,16 @@ const StudentPaymentOrderDialog = ({
                       startIcon={<ReceiptLongIcon />}
                       onClick={loadFeeCatalog}
                       disabled={disabled || feeCatalogLoading}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         borderRadius: isCompact ? 1.2 : 2,
                         fontWeight: 950,
                         minWidth: isPhone ? 52 : isTablet ? 62 : undefined,
                         px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
-                        fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined,
+                        fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                         backgroundColor: warningColor,
                         direction: "rtl",
                         "&:hover": { backgroundColor: "#b45309" }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       إضافة رسوم
                     </Button>
@@ -2731,7 +2732,7 @@ const StudentPaymentOrderDialog = ({
                       label={`الإجمالي: ${money(totals.total)}`}
                       sx={{
                         ...chipStyle,
-                        fontSize: isTablet ? "0.48rem" : undefined,
+                        fontSize: isTablet ? "0.75rem" : undefined,
                         height: isTablet ? 22 : undefined
                       }}
                     />
@@ -2741,7 +2742,7 @@ const StudentPaymentOrderDialog = ({
                       label={`الضريبة: ${money(totals.tax)}`}
                       sx={{
                         ...chipStyle,
-                        fontSize: isTablet ? "0.48rem" : undefined,
+                        fontSize: isTablet ? "0.75rem" : undefined,
                         height: isTablet ? 22 : undefined
                       }}
                     />
@@ -2752,14 +2753,14 @@ const StudentPaymentOrderDialog = ({
                       ...chipStyle,
                       backgroundColor: "#ffebee",
                       color: dangerColor,
-                      fontSize: isPhone ? "0.44rem" : isTablet ? "0.48rem" : undefined,
+                      fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       height: isPhone ? 20 : isTablet ? 22 : undefined
                     }}
                   />
                 </Stack>
               </Stack>
 
-              <Box sx={{ height: isPhone ? 205 : isTablet ? 235 : 230, minWidth: 0 }}>
+              <Box sx={uiLayout.withUiSx({ height: isPhone ? 205 : isTablet ? 235 : 230, minWidth: 0 }, uiLayout.tableContainerSx)}>
                 <DataGrid
                   rows={items}
                   columns={compactItemColumns.map(fitCompactColumn)}
@@ -2780,7 +2781,7 @@ const StudentPaymentOrderDialog = ({
                         ? "لا توجد بنود رسوم في الاستمارة، اضغط إضافة رسوم مثل الديسكتوب"
                         : "لا توجد بنود سداد"
                   }}
-                  sx={gridStyle}
+                  sx={uiLayout.withUiSx(gridStyle, uiLayout.dataGridSx)}
                 />
               </Box>
             </Paper>
@@ -2794,13 +2795,13 @@ const StudentPaymentOrderDialog = ({
               fullWidth
               maxWidth="md"
               fullScreen={isPhone}
-              sx={{
+              sx={uiLayout.withUiSx({
                 "& .MuiDialog-container": {
                   pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
                   px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
                   pb: isPhone ? 0 : isTablet ? 0.5 : 1.5
                 }
-              }}
+              }, uiLayout.dialogLayoutSx)}
               PaperProps={{
                 sx: {
                   width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,
@@ -2821,7 +2822,7 @@ const StudentPaymentOrderDialog = ({
                   color: textColor,
                   py: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
                   px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
-                  fontSize: isPhone ? "0.64rem" : isTablet ? "0.74rem" : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                   flexShrink: 0
                 }}
               >
@@ -2837,7 +2838,7 @@ const StudentPaymentOrderDialog = ({
                   overflow: "hidden"
                 }}
               >
-                <Box sx={{ height: "100%", minHeight: 0 }}>
+                <Box sx={uiLayout.withUiSx({ height: "100%", minHeight: 0 }, uiLayout.tableContainerSx)}>
                   <DataGrid
                     rows={feeCatalog.map((row, index) => ({ ...row, id: row.id || index + 1 }))}
                     columns={
@@ -2856,7 +2857,7 @@ const StudentPaymentOrderDialog = ({
                                     sx={{
                                       width: "100%",
                                       fontWeight: 900,
-                                      fontSize: "0.43rem",
+                                      fontSize: "0.75rem",
                                       textAlign: "center",
                                       whiteSpace: "nowrap",
                                       overflow: "hidden",
@@ -2895,17 +2896,17 @@ const StudentPaymentOrderDialog = ({
                                   size="small"
                                   variant="contained"
                                   onClick={() => handleAddFeeItem(p.row)}
-                                  sx={{
+                                  sx={uiLayout.withUiSx({
                                     minWidth: 40,
                                     width: 40,
                                     px: 0.25,
                                     py: 0.2,
                                     borderRadius: 1,
                                     fontWeight: 950,
-                                    fontSize: "0.4rem",
+                                    fontSize: "0.75rem",
                                     lineHeight: 1,
                                     backgroundColor: warningColor
-                                  }}
+                                  }, uiLayout.buttonSx)}
                                 >
                                   إضافة
                                 </Button>
@@ -2927,7 +2928,7 @@ const StudentPaymentOrderDialog = ({
                                       sx={{
                                         width: "100%",
                                         fontWeight: 900,
-                                        fontSize: "0.52rem",
+                                        fontSize: "0.75rem",
                                         textAlign: "center",
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
@@ -2976,16 +2977,16 @@ const StudentPaymentOrderDialog = ({
                                     size="small"
                                     variant="contained"
                                     onClick={() => handleAddFeeItem(p.row)}
-                                    sx={{
+                                    sx={uiLayout.withUiSx({
                                       minWidth: 46,
                                       width: 46,
                                       px: 0.3,
                                       py: 0.25,
                                       borderRadius: 1.1,
                                       fontWeight: 950,
-                                      fontSize: "0.46rem",
+                                      fontSize: "0.75rem",
                                       backgroundColor: warningColor
-                                    }}
+                                    }, uiLayout.buttonSx)}
                                   >
                                     إضافة
                                   </Button>
@@ -3024,7 +3025,7 @@ const StudentPaymentOrderDialog = ({
                             size="small"
                             variant="contained"
                             onClick={() => handleAddFeeItem(p.row)}
-                            sx={{ borderRadius: 2, fontWeight: 950, backgroundColor: warningColor }}
+                            sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 950, backgroundColor: warningColor }, uiLayout.buttonSx)}
                           >
                             إضافة
                           </Button>
@@ -3040,18 +3041,18 @@ const StudentPaymentOrderDialog = ({
                     disableColumnMenu={isCompact}
                     disableColumnFilter={isCompact}
                     localeText={{ noRowsLabel: "لا توجد رسوم في قائمة السعر" }}
-                    sx={gridStyle}
+                    sx={uiLayout.withUiSx(gridStyle, uiLayout.dataGridSx)}
                   />
                 </Box>
               </DialogContent>
-              <DialogActions sx={{ p: isPhone ? 0.3 : isTablet ? 0.45 : 1, flexShrink: 0 }}>
+              <DialogActions sx={uiLayout.withUiSx({ p: isPhone ? 0.3 : isTablet ? 0.45 : 1, flexShrink: 0 }, uiLayout.dialogActionsSx)}>
                 <Button
                   onClick={() => setFeeCatalogOpen(false)}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontWeight: 950,
                     color: dangerColor,
-                    fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-                  }}
+                    fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+                  }, uiLayout.buttonSx)}
                 >
                   إغلاق
                 </Button>
@@ -3059,7 +3060,7 @@ const StudentPaymentOrderDialog = ({
             </Dialog>
 
       <DialogActions
-        sx={{
+        sx={uiLayout.withUiSx({
           px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
           py: isPhone ? 0.28 : isTablet ? 0.42 : 1.4,
           gap: isCompact ? 0.35 : 1,
@@ -3067,7 +3068,7 @@ const StudentPaymentOrderDialog = ({
           borderTop: `1px solid ${primaryLight}`,
           backgroundColor: whiteColor,
           justifyContent: "space-between"
-        }}
+        }, uiLayout.dialogActionsSx)}
       >
         <Button
           onClick={() => {
@@ -3078,19 +3079,19 @@ const StudentPaymentOrderDialog = ({
           }}
           disabled={disabled}
           startIcon={<CloseIcon />}
-          sx={{
+          sx={uiLayout.withUiSx({
             fontWeight: 950,
             color: dangerColor,
             direction: "rtl",
             minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
-            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
-          }}
+            fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+          }, uiLayout.buttonSx)}
         >
           خروج
         </Button>
 
-        <Stack direction="row" spacing={isCompact ? 0.3 : 1} alignItems="center">
+        <Stack sx={uiLayout.actionBarSx} direction="row" spacing={isCompact ? 0.3 : 1} alignItems="center">
           {savedPrintResult && (
             <Button
               variant="outlined"
@@ -3103,11 +3104,11 @@ const StudentPaymentOrderDialog = ({
                 )
               }
               onClick={() => openPrintPreview(savedPrintResult)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: isPhone ? 90 : isTablet ? 110 : 150,
                 minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
                 px: isPhone ? 0.65 : isTablet ? 0.9 : undefined,
-                fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 borderRadius: isCompact ? 1.2 : 2,
                 fontWeight: 950,
                 direction: "rtl",
@@ -3118,7 +3119,7 @@ const StudentPaymentOrderDialog = ({
                   borderColor: "#0d47a1",
                   backgroundColor: "#e3f2fd"
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {isCompact ? "تصدير PDF" : "طباعة الطلب"}
             </Button>
@@ -3129,11 +3130,11 @@ const StudentPaymentOrderDialog = ({
             disabled={disabled || !context}
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
             onClick={savePaymentOrder}
-            sx={{
+            sx={uiLayout.withUiSx({
               minWidth: isPhone ? 105 : isTablet ? 130 : 170,
               minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
               px: isPhone ? 0.75 : isTablet ? 1 : undefined,
-              fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
               borderRadius: isCompact ? 1.2 : 2,
               fontWeight: 950,
               direction: "rtl",
@@ -3143,7 +3144,7 @@ const StudentPaymentOrderDialog = ({
                 background: `linear-gradient(135deg, ${primaryDark}, #034d31)`,
                 boxShadow: "none"
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             حفظ طلب السداد
           </Button>

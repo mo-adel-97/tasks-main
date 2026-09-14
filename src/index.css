@@ -14,6 +14,12 @@ body {
 input[type="email"]:not([dir]),
 input[type="url"]:not([dir]),
 input[type="tel"]:not([dir]),
+input[type="date"]:not([dir]),
+input[type="time"]:not([dir]),
+input[type="datetime-local"]:not([dir]),
+input[type="month"]:not([dir]),
+input[type="week"]:not([dir]),
+input[type="number"]:not([dir]),
 code:not([dir]),
 pre:not([dir]),
 .technical-ltr {

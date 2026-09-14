@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -272,7 +273,7 @@ export default function StudentNotes() {
                 flex: 1,
                 fontWeight: 900,
                 fontSize: {
-                  xs: "0.68rem",
+                  xs: "0.75rem",
                   sm: "0.8rem"
                 },
                 color: text,
@@ -334,7 +335,7 @@ export default function StudentNotes() {
                   fontWeight: 800,
                   color: text,
                   fontSize: isPhone
-                    ? "0.7rem"
+                    ? "0.75rem"
                     : isTablet
                       ? "0.84rem"
                       : undefined
@@ -348,9 +349,9 @@ export default function StudentNotes() {
                   opacity: 0.75,
                   mt: 0.3,
                   fontSize: isPhone
-                    ? "0.42rem"
+                    ? "0.75rem"
                     : isTablet
-                      ? "0.5rem"
+                      ? "0.75rem"
                       : undefined,
                   display: isPhone ? "none" : "block"
                 }}
@@ -368,7 +369,7 @@ export default function StudentNotes() {
                 color: primaryDark,
                 border: "1px solid rgba(128,180,158,0.25)",
                 height: isTablet ? 26 : undefined,
-                fontSize: isTablet ? "0.5rem" : undefined
+                fontSize: isTablet ? "0.75rem" : undefined
               }}
             />
           </Stack>
@@ -377,12 +378,12 @@ export default function StudentNotes() {
         {/* Upload Card */}
         <Paper
           elevation={0}
-          sx={{
+          sx={uiLayout.withUiSx({
             mt: isPhone ? 0.65 : isTablet ? 0.9 : 2,
             p: isPhone ? 0.7 : isTablet ? 0.95 : 2,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(128,180,158,0.25)"
-          }}
+          }, uiLayout.pageHeaderSx)}
         >
           <Typography sx={{ fontWeight: 800, color: text, mb: 1 }}>
             رفع ملف جديد
@@ -390,20 +391,20 @@ export default function StudentNotes() {
           <Divider sx={{ mb: 2 }} />
 
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: isCompact
                 ? "repeat(2,minmax(0,1fr))"
                 : "auto minmax(160px,1fr) minmax(280px,360px) auto",
               gap: isPhone ? 0.6 : isTablet ? 0.8 : 2,
               alignItems: "center"
-            }}
+            }, uiLayout.filterBarSx)}
           >
             <Button
               variant="contained"
               component="label"
               startIcon={<UploadFileIcon />}
-              sx={{
+              sx={uiLayout.withUiSx({
                 background: `linear-gradient(135deg, ${primary} 0%, ${primaryDark} 100%)`,
                 fontWeight: 800,
                 borderRadius: 2,
@@ -413,7 +414,7 @@ export default function StudentNotes() {
                 "&:hover": {
                   background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                 }
-              }}
+              }, uiLayout.buttonSx)}
             >
               اختيار ملف Excel
               <input
@@ -438,34 +439,34 @@ export default function StudentNotes() {
               </Typography>
             </Box>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="ملاحظة على الملف (اختياري)"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              sx={{
+              sx={uiLayout.withUiSx({
                 minWidth: 0,
                 gridColumn: isCompact ? "1 / -1" : undefined,
                 "& .MuiInputBase-input": {
-                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                 },
                 "& .MuiOutlinedInput-root": {
                   minHeight: isPhone ? 31 : isTablet ? 34 : undefined
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
             <Button
               variant="contained"
               onClick={handleUpload}
               disabled={loading}
-              sx={{
+              sx={uiLayout.withUiSx({
                 background: primary,
                 fontWeight: 900,
                 borderRadius: 2,
                 px: 3,
                 py: 1.2,
                 "&:hover": { background: primaryDark }
-              }}
+              }, uiLayout.buttonSx)}
             >
               {loading ? "جاري الرفع..." : "رفع"}
             </Button>
@@ -533,7 +534,7 @@ export default function StudentNotes() {
                         sx={{
                           fontWeight: 900,
                           color: text,
-                          fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis"
@@ -594,7 +595,7 @@ export default function StudentNotes() {
                       sx={{
                         "& .MuiButton-root": {
                           minHeight: isPhone ? 28 : isTablet ? 31 : undefined,
-                          fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                          fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
                         }
                       }}
                     >
@@ -603,7 +604,7 @@ export default function StudentNotes() {
                         variant="outlined"
                         startIcon={<DeleteOutlineIcon />}
                         onClick={() => deleteRow(r.id)}
-                        sx={{ borderRadius: 2, fontWeight: 900 }}
+                        sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 900 }, uiLayout.buttonSx)}
                       >
                         حذف
                       </Button>
@@ -612,7 +613,7 @@ export default function StudentNotes() {
 
                   <Divider sx={{ my: 1.7 }} />
 
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     label="الملاحظة"
                     value={noteVal}
                     onChange={(e) => setEditingNotes(prev => ({ ...prev, [r.id]: e.target.value }))}
@@ -631,7 +632,7 @@ export default function StudentNotes() {
                       onClick={() => updateNote(r.id)}
                       disabled={savingId === r.id}
                       startIcon={<SaveIcon />}
-                      sx={{
+                      sx={uiLayout.withUiSx({
                         fontWeight: 900,
                         borderRadius: 2,
                         color: "white",
@@ -641,7 +642,7 @@ export default function StudentNotes() {
                         "&:hover": {
                           background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                         }
-                      }}
+                      }, uiLayout.buttonSx)}
                     >
                       {savingId === r.id ? "جاري الحفظ..." : "حفظ الملاحظة"}
                     </Button>

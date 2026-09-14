@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState, useMemo } from 'react';
 import Swal from 'sweetalert2';
 import { CircularProgress } from '@mui/material';
@@ -672,7 +673,7 @@ const handleSubmit = async () => {
   }, [taskUsers, filteredUsers]);
 
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <StyledDialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} maxWidth="md" fullWidth>
       <StyledDialogTitle>
         <Box display="flex" alignItems="center">
           <WorkIcon sx={{ marginInlineEnd: 1 }} />
@@ -693,23 +694,23 @@ const handleSubmit = async () => {
           overflowY: 'auto',
 
           '& .MuiInputBase-root, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
-            fontSize: { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.8rem' },
           },
 
           '& .MuiButton-root': {
-            fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.76rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.76rem' },
             minHeight: { xs: 30, sm: 32, md: 36 },
           },
 
           '& .MuiChip-root': {
-            fontSize: { xs: '0.52rem', sm: '0.59rem', md: '0.68rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
             height: { xs: 21, sm: 23, md: 26 },
           },
 
           '& .MuiAvatar-root': {
             width: { xs: 26, sm: 30, md: 34 },
             height: { xs: 26, sm: 30, md: 34 },
-            fontSize: { xs: '0.58rem', sm: '0.66rem', md: '0.75rem' },
+            fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.75rem' },
           },
 
           '& .MuiSvgIcon-root': {
@@ -725,7 +726,7 @@ const handleSubmit = async () => {
           
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <StyledTextField
+              <StyledTextField InputLabelProps={{shrink:true}} sx={uiLayout.formFieldSx}
                 label="اسم المهمة العامة"
                 value={mainTaskName}
                 onChange={(e) => setMainTaskName(e.target.value)}
@@ -742,7 +743,7 @@ const handleSubmit = async () => {
             </Grid>
             
             <Grid item xs={12} md={6}>
-              <StyledTextField
+              <StyledTextField InputLabelProps={{shrink:true}} sx={uiLayout.formFieldSx}
                 label="الوقت المخصص (بالساعات)"
                 type="number"
                 value={mainTaskTime}
@@ -761,7 +762,7 @@ const handleSubmit = async () => {
             </Grid>
             
             <Grid item xs={12}>
-              <StyledTextField
+              <StyledTextField InputLabelProps={{shrink:true}} sx={uiLayout.formFieldSx}
                 label="وصف المهمة"
                 value={mainTaskDesc}
                 onChange={(e) => setMainTaskDesc(e.target.value)}
@@ -789,7 +790,7 @@ const handleSubmit = async () => {
           
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth size="small">
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                 <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>اختر الأقسام</InputLabel>
                 <StyledSelect
                   multiple
@@ -835,7 +836,7 @@ const handleSubmit = async () => {
 
             {selectedDept.length > 0 && (
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth size="small">
+                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                   <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>الوظائف المطلوبة</InputLabel>
                   <StyledSelect
                     multiple
@@ -894,7 +895,7 @@ const handleSubmit = async () => {
 
             {selectedJobs.length > 0 && !loadingUsers && (
               <Grid item xs={12}>
-                <FormControl fullWidth size="small">
+                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                   <InputLabel sx={{ fontFamily: '"Cairo", sans-serif' }}>اختر الموظفين</InputLabel>
                   <StyledSelect
                     multiple
@@ -943,7 +944,7 @@ const handleSubmit = async () => {
                     }}
                   >
                     <SearchContainer>
-                      <TextField
+                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         fullWidth
                         variant="outlined"
                         size="small"
@@ -1129,11 +1130,11 @@ const handleSubmit = async () => {
         </FormSection>
       </DialogContent>
       
-      <DialogActions sx={{ 
+      <DialogActions sx={uiLayout.withUiSx({ 
         padding: 2, 
         borderTop: `1px solid ${colorPalette.primaryLighter}`,
         backgroundColor: colorPalette.background 
-      }}>
+      }, uiLayout.dialogActionsSx)}>
         <StyledButton
           variant="outlined"
           onClick={onClose}

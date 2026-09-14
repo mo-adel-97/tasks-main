@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, Table, TableHead, TableRow, TableCell,
@@ -226,7 +227,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
   const paginatedCalls = filteredCalls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xl">
+    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} fullWidth maxWidth="xl">
       <DialogTitle sx={{ 
         backgroundColor: '#1976d2', 
         color: 'white',
@@ -302,7 +303,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
             
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={3}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   label="🔍 بحث باسم الطالب"
                   value={nameFilter}
@@ -311,7 +312,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   select
                   label="نوع المكالمة"
@@ -326,7 +327,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   select
                   label="حالة المكالمة"
@@ -340,7 +341,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   fullWidth
                   select
                   label="حالة التوجيه"
@@ -355,8 +356,8 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Box display="flex" gap={1}>
-                  <TextField
+                <Box sx={uiLayout.formGridSx} display="flex" gap={1}>
+                  <TextField sx={uiLayout.formFieldSx}
                     fullWidth
                     label="من تاريخ"
                     type="date"
@@ -365,7 +366,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                     InputLabelProps={{ shrink: true }}
                     size="small"
                    inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  <TextField
+                  <TextField sx={uiLayout.formFieldSx}
                     fullWidth
                     label="إلى تاريخ"
                     type="date"
@@ -378,15 +379,15 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
               </Grid>
             </Grid>
 
-            <Box display="flex" gap={1} sx={{ mt: 2 }}>
-              <Button 
+            <Box display="flex" gap={1} sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.actionBarSx)}>
+              <Button sx={uiLayout.buttonSx} 
                 variant="contained" 
                 onClick={applyFilters}
                 startIcon={<FilterList />}
               >
                 تطبيق الفلترة
               </Button>
-              <Button 
+              <Button sx={uiLayout.buttonSx} 
                 variant="outlined" 
                 color="error" 
                 onClick={clearFilters}
@@ -398,7 +399,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                 color="success" 
                 onClick={downloadPDF}
                 startIcon={<Download />}
-                sx={{ mr: 'auto' }}
+                sx={uiLayout.withUiSx({ mr: 'auto' }, uiLayout.buttonSx)}
               >
                 تصدير PDF
               </Button>
@@ -416,7 +417,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
             لا توجد نتائج تطابق معايير البحث
           </Alert>
         ) : (
-          <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
+          <TableContainer component={Paper} sx={uiLayout.withUiSx({ border: '1px solid #e0e0e0' }, uiLayout.tableContainerSx)}>
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
@@ -556,7 +557,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
             </Table>
 
             {/* ✅ Pagination */}
-            <TablePagination
+            <TablePagination sx={uiLayout.tablePaginationSx}
               rowsPerPageOptions={[5, 10, 25, 50]}
               component="div"
               count={filteredCalls.length}

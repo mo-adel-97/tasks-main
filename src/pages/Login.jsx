@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -281,7 +283,7 @@ export default function Login() {
               width: '100%',
               maxWidth: { xs: 520, sm: 680, md: 1080 },
               minHeight: { md: isShortScreen ? 520 : 610 },
-              maxHeight: { md: isShortScreen ? 'calc(100dvh - 78px)' : 'none' },
+              maxHeight: 'none',
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', md: '0.96fr 1.04fr' },
               overflow: 'hidden',
@@ -350,7 +352,7 @@ export default function Login() {
                     mb: { xs: 1.4, sm: 2.8, md: 3.5 },
                     textAlign: 'center',
                     color: COLORS.muted,
-                    fontSize: { xs: '0.66rem', sm: '0.8rem', md: '0.98rem' },
+                    fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.98rem' },
                     lineHeight: { xs: 1.65, sm: 1.8 }
                   }}
                 >
@@ -368,7 +370,7 @@ export default function Login() {
                       alignItems: 'center',
                       '& .MuiAlert-message': {
                         fontFamily: 'Cairo, Arial, sans-serif',
-                        fontSize: { xs: '0.72rem', sm: '0.86rem' }
+                        fontSize: { xs: "0.75rem", sm: '0.86rem' }
                       }
                     }}
                   >
@@ -382,7 +384,7 @@ export default function Login() {
                       <Typography component="label" htmlFor="login-username" sx={fieldLabelStyles}>
                         اسم المستخدم
                       </Typography>
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         id="login-username"
                         placeholder="أدخل اسم المستخدم"
                         autoComplete="username"
@@ -402,7 +404,7 @@ export default function Login() {
                             </InputAdornment>
                           )
                         }}
-                        sx={fieldStyles}
+                        sx={uiLayout.withUiSx(fieldStyles, uiLayout.formFieldSx)}
                       />
                     </Box>
 
@@ -410,7 +412,7 @@ export default function Login() {
                       <Typography component="label" htmlFor="login-password" sx={fieldLabelStyles}>
                         كلمة المرور
                       </Typography>
-                      <TextField
+                      <TextField InputLabelProps={{ shrink: true }}
                         id="login-password"
                         placeholder="أدخل كلمة المرور"
                         type={showPassword ? 'text' : 'password'}
@@ -446,21 +448,21 @@ export default function Login() {
                             </InputAdornment>
                           )
                         }}
-                        sx={fieldStyles}
+                        sx={uiLayout.withUiSx(fieldStyles, uiLayout.formFieldSx)}
                       />
                     </Box>
 
                     <Stack
                       direction={{ xs: 'column', sm: 'row' }}
                       spacing={{ xs: 0.9, sm: 1.5 }}
-                      sx={{ pt: { xs: 0.25, sm: 0.8 } }}
+                      sx={uiLayout.withUiSx({ pt: { xs: 0.25, sm: 0.8 } }, uiLayout.actionBarSx)}
                     >
                       <Button
                         type="submit"
                         variant="contained"
                         fullWidth
                         disabled={isLoading}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           minHeight: { xs: 40, sm: 46, md: 52 },
                           borderRadius: { xs: 1.8, sm: 2.5 },
                           fontFamily: 'Cairo, Arial, sans-serif',
@@ -473,7 +475,7 @@ export default function Login() {
                             boxShadow: '0 13px 30px rgba(5,117,70,0.31)',
                             transform: 'translateY(-1px)'
                           }
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         {isLoading ? (
                           <Stack direction="row" spacing={1.2} alignItems="center">
@@ -492,12 +494,12 @@ export default function Login() {
                         disabled={isLoading}
                         onClick={handleAdminSubmit}
                         startIcon={<SecurityOutlined />}
-                        sx={{
+                        sx={uiLayout.withUiSx({
                           minHeight: { xs: 40, sm: 46, md: 52 },
                           borderRadius: { xs: 1.8, sm: 2.5 },
                           fontFamily: 'Cairo, Arial, sans-serif',
                           fontWeight: 800,
-                          fontSize: { xs: '0.74rem', sm: '0.84rem', md: '0.95rem' },
+                          fontSize: { xs: "0.75rem", sm: '0.84rem', md: '0.95rem' },
                           borderWidth: 1.5,
                           borderColor: COLORS.primary,
                           color: COLORS.primary,
@@ -508,7 +510,7 @@ export default function Login() {
                             backgroundColor: '#dff1e9',
                             transform: 'translateY(-1px)'
                           }
-                        }}
+                        }, uiLayout.buttonSx)}
                       >
                         دخول المسؤول
                       </Button>
@@ -521,7 +523,7 @@ export default function Login() {
                     mt: { xs: 1.35, sm: 2.3, md: 3 },
                     textAlign: 'center',
                     color: '#83938d',
-                    fontSize: { xs: '0.62rem', sm: '0.72rem', md: '0.78rem' },
+                    fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.78rem' },
                     lineHeight: { xs: 1.6, sm: 1.8 }
                   }}
                 >
@@ -590,7 +592,7 @@ export default function Login() {
                     >
                       ERP System
                     </Typography>
-                    <Typography sx={{ mt: 0.2, opacity: 0.83, fontSize: { xs: '0.6rem', sm: '0.76rem', md: '1rem' } }}>
+                    <Typography sx={{ mt: 0.2, opacity: 0.83, fontSize: { xs: "0.75rem", sm: '0.76rem', md: '1rem' } }}>
                       نظام إدارة الموظفين والشؤون الإدارية
                     </Typography>
                   </Box>
@@ -658,7 +660,7 @@ export default function Login() {
                       <Typography
                         sx={{
                           fontWeight: 800,
-                          fontSize: { xs: '0.54rem', sm: '0.7rem', md: '0.95rem' },
+                          fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.95rem' },
                           lineHeight: 1.35
                         }}
                       >
@@ -669,7 +671,7 @@ export default function Login() {
                           sx={{
                             mt: 0.15,
                             opacity: 0.74,
-                            fontSize: { sm: '0.68rem', md: '0.8rem' }
+                            fontSize: { sm: "0.75rem", md: '0.8rem' }
                           }}
                         >
                           {feature.description}
@@ -693,7 +695,7 @@ export default function Login() {
           py: { xs: 0.55, sm: 0.9, md: 1.4 },
           textAlign: 'center',
           color: 'rgba(255,255,255,0.88)',
-          fontSize: { xs: '0.56rem', sm: '0.7rem', md: '0.82rem' },
+          fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' },
           borderTop: '1px solid rgba(255,255,255,0.12)',
           backgroundColor: 'rgba(2,48,30,0.28)',
           backdropFilter: 'blur(10px)'

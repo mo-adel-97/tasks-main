@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -747,7 +748,7 @@ const GroupChat = ({
     const isVideo = ['mp4', 'mov', 'avi', 'mkv'].includes(fileExtension);
   
     return (
-      <Box display="flex" flexDirection="column" alignItems="flex-start">
+      <Box sx={uiLayout.pageHeaderSx} display="flex" flexDirection="column" alignItems="flex-start">
         {isImage ? (
           <img
             src={message.file_url}
@@ -771,7 +772,7 @@ const GroupChat = ({
             <Button
               variant="outlined"
               size="small"
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)}
               onClick={() => window.open(message.file_url, '_blank')}
             >
               View PDF
@@ -783,7 +784,7 @@ const GroupChat = ({
             <Button
               variant="outlined"
               size="small"
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)}
               onClick={() => window.open(message.file_url, '_blank')}
             >
               Download {fileExtension?.toUpperCase() || 'File'}
@@ -795,7 +796,7 @@ const GroupChat = ({
             <Button
               variant="outlined"
               size="small"
-              sx={{ mt: 1 }}
+              sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)}
               onClick={() => window.open(message.file_url, '_blank')}
             >
               Download File
@@ -883,25 +884,25 @@ const GroupChat = ({
             size="small" 
             startIcon={<AddIcon />}
             onClick={() => setShowCreateGroupDialog(true)}
-            sx={{
+            sx={uiLayout.withUiSx({
               backgroundColor: colorPalette.primary,
               '&:hover': {
                 backgroundColor: colorPalette.primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             مجموعة جديدة
           </Button>
         </Box>
         
         {/* Search Bar */}
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           fullWidth
           variant="outlined"
           placeholder="ابحث عن مجموعة..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ mb: 2 }}
+          sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -1089,7 +1090,7 @@ if (msg.message_type === 'notification' ||
           <Typography 
             variant="caption" 
             sx={{ 
-              fontSize: '0.65rem',
+              fontSize: "0.75rem",
               display: 'block',
               textAlign: 'center',
               mt: 0.5,
@@ -1159,7 +1160,7 @@ if (msg.message_type === 'notification' ||
               {showScrollButton && (
                 <Button 
                   variant="contained" 
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     backgroundColor: colorPalette.primary,
                     position: 'sticky',
                     bottom: 16,
@@ -1169,7 +1170,7 @@ if (msg.message_type === 'notification' ||
                     '&:hover': {
                       backgroundColor: colorPalette.primaryDark
                     }
-                  }}
+                  }, uiLayout.buttonSx)}
                   onClick={() => scrollToBottom()}
                 >
                   اذهب للأسفل ▼
@@ -1297,7 +1298,7 @@ if (msg.message_type === 'notification' ||
                     </Box>
                   </ClickAwayListener>
                 </Popover>
-                <TextField
+                <TextField InputLabelProps={{ shrink: true }}
                   fullWidth
                   variant="outlined"
                   placeholder="اكتب رسالة..."
@@ -1306,7 +1307,7 @@ if (msg.message_type === 'notification' ||
                   onKeyPress={handleKeyPress}
                   multiline
                   maxRows={4}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     mx: 1,
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '24px',
@@ -1320,7 +1321,7 @@ if (msg.message_type === 'notification' ||
                         borderColor: colorPalette.primary,
                       }
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                 />
                 {isRecording ? (
                   <Box display="flex" alignItems="center">
@@ -1379,7 +1380,7 @@ if (msg.message_type === 'notification' ||
       </Box>
 
       {/* Create Group Dialog */}
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={showCreateGroupDialog}
         onClose={() => setShowCreateGroupDialog(false)}
         maxWidth="md"
@@ -1405,7 +1406,7 @@ if (msg.message_type === 'notification' ||
         </DialogTitle>
         
         <DialogContent sx={{ p: 3 }}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus
             margin="dense"
             label="اسم المجموعة"
@@ -1414,7 +1415,7 @@ if (msg.message_type === 'notification' ||
             variant="outlined"
             value={newGroupName}
             onChange={(e) => setNewGroupName(e.target.value)}
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               mb: 3,
               '& .MuiOutlinedInput-root': {
                 borderRadius: '8px',
@@ -1423,7 +1424,7 @@ if (msg.message_type === 'notification' ||
                   borderColor: colorPalette.primaryLight
                 }
               }
-            }}
+            }, uiLayout.formFieldSx)}
           />
           
           <Typography variant="subtitle1" gutterBottom sx={{ 
@@ -1434,11 +1435,11 @@ if (msg.message_type === 'notification' ||
             اختر الأعضاء:
           </Typography>
 
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             fullWidth
             variant="outlined"
             placeholder="ابحث بالأسم..."
-            sx={{ 
+            sx={uiLayout.withUiSx({ 
               mb: 2,
               '& .MuiOutlinedInput-root': {
                 borderRadius: '8px',
@@ -1447,7 +1448,7 @@ if (msg.message_type === 'notification' ||
                   borderColor: colorPalette.primaryLight
                 }
               }
-            }}
+            }, uiLayout.formFieldSx)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -1496,16 +1497,16 @@ if (msg.message_type === 'notification' ||
           </Box>
         </DialogContent>
         
-        <DialogActions sx={{ 
+        <DialogActions sx={uiLayout.withUiSx({ 
           px: 3,
           py: 2,
           borderTop: '1px solid',
           borderColor: colorPalette.primaryLight
-        }}>
+        }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={() => setShowCreateGroupDialog(false)}
             variant="outlined"
-            sx={{
+            sx={uiLayout.withUiSx({
               px: 3,
               py: 1,
               borderRadius: '8px',
@@ -1516,7 +1517,7 @@ if (msg.message_type === 'notification' ||
                 borderWidth: '2px',
                 backgroundColor: colorPalette.primaryLighter
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -1524,7 +1525,7 @@ if (msg.message_type === 'notification' ||
             onClick={handleCreateGroup} 
             variant="contained"
             disabled={!newGroupName.trim() || selectedMembers.length === 0}
-            sx={{
+            sx={uiLayout.withUiSx({
               px: 4,
               py: 1,
               borderRadius: '8px',
@@ -1535,7 +1536,7 @@ if (msg.message_type === 'notification' ||
                 boxShadow: 'none',
                 backgroundColor: colorPalette.primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إنشاء
           </Button>
@@ -1543,7 +1544,7 @@ if (msg.message_type === 'notification' ||
       </Dialog>
 
       {/* Members Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={showMembersDialog} 
         onClose={() => setShowMembersDialog(false)}
         fullWidth
@@ -1580,7 +1581,7 @@ if (msg.message_type === 'notification' ||
                           size="small" 
                           sx={{ 
                             ml: 1, 
-                            fontSize: '0.7rem',
+                            fontSize: "0.75rem",
                             backgroundColor: colorPalette.primary,
                             color: 'white'
                           }}
@@ -1622,10 +1623,10 @@ if (msg.message_type === 'notification' ||
           })}
           </List>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           <Button 
             onClick={() => setShowMembersDialog(false)}
-            sx={{ color: colorPalette.primary }}
+            sx={uiLayout.withUiSx({ color: colorPalette.primary }, uiLayout.buttonSx)}
           >
             إغلاق
           </Button>
@@ -1633,7 +1634,7 @@ if (msg.message_type === 'notification' ||
       </Dialog>
 
       {/* Add Member Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={showAddMemberDialog} 
         onClose={() => {
           setShowAddMemberDialog(false);
@@ -1651,13 +1652,13 @@ if (msg.message_type === 'notification' ||
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               fullWidth
               variant="outlined"
               placeholder="ابحث عن عضو..."
               value={addMemberSearchTerm}
               onChange={(e) => setAddMemberSearchTerm(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -1717,14 +1718,14 @@ if (msg.message_type === 'notification' ||
             )}
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
           <Button 
             onClick={() => {
               setShowAddMemberDialog(false);
               setAddMemberSearchTerm('');
               setSelectedUserToAdd(null);
             }}
-            sx={{ color: colorPalette.primary }}
+            sx={uiLayout.withUiSx({ color: colorPalette.primary }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -1732,12 +1733,12 @@ if (msg.message_type === 'notification' ||
             onClick={handleAddMember} 
             variant="contained"
             disabled={!selectedUserToAdd}
-            sx={{
+            sx={uiLayout.withUiSx({
               backgroundColor: colorPalette.primary,
               '&:hover': {
                 backgroundColor: colorPalette.primaryDark
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إضافة
           </Button>

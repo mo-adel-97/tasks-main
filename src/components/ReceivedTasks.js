@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
@@ -422,10 +423,10 @@ export default function AllTaskRoutesList() {
         width: "100%",
         ...navigationContentSx
       }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }, uiLayout.pageHeaderSx)}>
           <Typography variant="h4" gutterBottom fontWeight={700}>المهام التي لديك</Typography>
           
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 2 }, uiLayout.actionBarSx)}>
             {filterByDate ? (
               <>
                 <Chip 
@@ -433,7 +434,7 @@ export default function AllTaskRoutesList() {
                   onDelete={clearDateFilter}
                   color="primary"
                 />
-                <Button 
+                <Button sx={uiLayout.buttonSx} 
                   variant="outlined"
                   onClick={showAllTasks}
                 >
@@ -441,7 +442,7 @@ export default function AllTaskRoutesList() {
                 </Button>
               </>
             ) : (
-              <Button 
+              <Button sx={uiLayout.buttonSx} 
                 variant="outlined"
                 onClick={showTodayTasks}
               >
@@ -453,7 +454,7 @@ export default function AllTaskRoutesList() {
               variant="outlined"
               startIcon={<CalendarMonthIcon />}
               onClick={handleCalendarOpen}
-              sx={{ fontWeight: 700 }}
+              sx={uiLayout.withUiSx({ fontWeight: 700 }, uiLayout.buttonSx)}
             >
               اختر تاريخ
             </Button>
@@ -611,10 +612,10 @@ export default function AllTaskRoutesList() {
                                   variant={att?.isRequired ? 'contained' : 'outlined'}
                                   size="small"
                                   startIcon={<VisibilityIcon />}
-                                  sx={{
+                                  sx={uiLayout.withUiSx({
                                     minWidth: 120, fontWeight: 700,
                                     mb: 0.5, background: att?.isRequired ? "#0288d1" : "#fff"
-                                  }}
+                                  }, uiLayout.buttonSx)}
                                   onClick={() => setOpenAttachment({ 
                                     url: ATTACHMENT_API(task?.taskGuid, att?.id), 
                                     name: att?.name, 
@@ -633,7 +634,7 @@ export default function AllTaskRoutesList() {
                   </CardContent>
 
                   <CardActions sx={{ justifyContent: 'space-between', px: 3, pb: 2, pt: 1 }}>
-                  <FormControl size="small" sx={{ minWidth: 140 }}>
+                  <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 140 }, uiLayout.formFieldSx)}>
   <InputLabel>الحالة</InputLabel>
   <Select
     label="الحالة"
@@ -651,7 +652,7 @@ export default function AllTaskRoutesList() {
                       <Button
                         variant="contained"
                         size="small"
-                        sx={{ px: 4, fontWeight: 700, borderRadius: 2 }}
+                        sx={uiLayout.withUiSx({ px: 4, fontWeight: 700, borderRadius: 2 }, uiLayout.buttonSx)}
                         onClick={() => handleApprove(task?.id)}
                       >
                         أوافق
@@ -665,7 +666,7 @@ export default function AllTaskRoutesList() {
                       startIcon={<HistoryIcon />}
                       endIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                       onClick={() => toggleTaskExpansion(task?.id)}
-                      sx={{ justifyContent: 'space-between' }}
+                      sx={uiLayout.withUiSx({ justifyContent: 'space-between' }, uiLayout.buttonSx)}
                     >
                       سجل التغييرات
                     </Button>
@@ -741,7 +742,7 @@ export default function AllTaskRoutesList() {
           })}
         </Grid>
 
-        <Dialog open={!!openAttachment} onClose={() => setOpenAttachment(null)} maxWidth="md" fullWidth>
+        <Dialog sx={uiLayout.dialogLayoutSx} open={!!openAttachment} onClose={() => setOpenAttachment(null)} maxWidth="md" fullWidth>
           <DialogTitle sx={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
             {openAttachment?.name}
             <IconButton onClick={() => setOpenAttachment(null)}><CloseIcon/></IconButton>
@@ -770,7 +771,7 @@ export default function AllTaskRoutesList() {
                 return (
                   <Box display="flex" flexDirection="column" alignItems="center">
                     <Typography>هذا الملف غير قابل للعرض المباشر. يمكنك تحميله:</Typography>
-                    <Button href={att.url} target="_blank" download variant="contained" sx={{ mt: 2 }}>تحميل الملف</Button>
+                    <Button href={att.url} target="_blank" download variant="contained" sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.buttonSx)}>تحميل الملف</Button>
                   </Box>
                 );
               }
@@ -778,7 +779,7 @@ export default function AllTaskRoutesList() {
           </DialogContent>
         </Dialog>
 
-        <Dialog 
+        <Dialog sx={uiLayout.dialogLayoutSx} 
           open={statusChangeDialog.open} 
           onClose={() => setStatusChangeDialog({ 
             open: false, 
@@ -807,7 +808,7 @@ export default function AllTaskRoutesList() {
             </IconButton>
           </DialogTitle>
           <DialogContent sx={{ p: 3 }}>
-            <Stack spacing={3}>
+            <Stack sx={uiLayout.pageHeaderSx} spacing={3}>
               <Typography>
                 سيتم تغيير حالة المهمة إلى: <strong>{statusChangeDialog.status}</strong>
               </Typography>
@@ -818,8 +819,8 @@ export default function AllTaskRoutesList() {
                 </Typography>
               )}
               
-              <FormControl fullWidth>
-                <TextField
+              <FormControl sx={uiLayout.formFieldSx} fullWidth>
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   label="ملاحظات (اختياري)"
                   multiline
                   rows={4}
@@ -841,7 +842,7 @@ export default function AllTaskRoutesList() {
                     component="label"
                     variant="outlined"
                     startIcon={<AttachFileIcon />}
-                    sx={{ mb: 2 }}
+                    sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.buttonSx)}
                   >
                     رفع ملفات
                     <VisuallyHiddenInput 
@@ -866,8 +867,8 @@ export default function AllTaskRoutesList() {
               )}
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 3, pt: 0 }}>
-            <Button 
+          <DialogActions sx={uiLayout.withUiSx({ p: 3, pt: 0 }, uiLayout.dialogActionsSx)}>
+            <Button sx={uiLayout.buttonSx} 
               onClick={() => setStatusChangeDialog({ 
                 open: false, 
                 taskGuid: null, 
@@ -881,7 +882,7 @@ export default function AllTaskRoutesList() {
             >
               إلغاء
             </Button>
-            <Button 
+            <Button sx={uiLayout.buttonSx} 
               onClick={handleSubmitStatusChange}
               variant="contained"
               color="primary"

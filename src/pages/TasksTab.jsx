@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import React, { useEffect, useState } from 'react';
 import { 
   Box, 
@@ -153,10 +155,10 @@ export default function TasksTab() {
         overflowX: 'hidden',
         '& .MuiTypography-root': { overflowWrap: 'anywhere' },
         '& .MuiButton-root': {
-          fontSize: { xs: '0.62rem', sm: '0.7rem', md: '0.8rem' }
+          fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.8rem' }
         },
         '& .MuiChip-root': {
-          fontSize: { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
+          fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
           height: { xs: 23, sm: 25, md: 28 }
         }
       }}
@@ -178,7 +180,7 @@ export default function TasksTab() {
             color="primary" 
             onClick={handleAddTask}
             startIcon={<AddIcon />}
-            sx={{
+            sx={uiLayout.withUiSx({
               px: { xs: 2, sm: 3, md: 4 },
               py: { xs: 0.65, sm: 0.8, md: 1 },
               width: { xs: '100%', sm: 'auto' },
@@ -187,7 +189,7 @@ export default function TasksTab() {
               fontWeight: 600,
               textTransform: 'none',
               fontSize: { xs: '0.78rem', sm: '0.9rem', md: '1rem' }
-            }}
+            }, uiLayout.buttonSx)}
           >
             إضافة مهمة جديدة
           </Button>
@@ -202,14 +204,14 @@ export default function TasksTab() {
             icon={<ChecklistIcon />} 
             label="المهام المرسلة" 
             color="primary" 
-            sx={{ px: 2, py: 1.5, fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.95rem' } }}
+            sx={{ px: 2, py: 1.5, fontSize: { xs: "0.75rem", sm: '0.78rem', md: '0.95rem' } }}
           />
         </Divider>
         <SentTasks currentUser={currentUser} />
       </Box>
 
       {/* Task Type Selection Dialog */}
-      <Dialog 
+      <Dialog sx={uiLayout.dialogLayoutSx} 
         open={selectTaskTypeOpen} 
         onClose={() => setSelectTaskTypeOpen(false)}
         fullWidth
@@ -309,7 +311,7 @@ export default function TasksTab() {
                     <Typography variant="h5" fontWeight={600} color="primary.main" gutterBottom sx={{ fontSize: { xs: '0.82rem', sm: '0.95rem', md: '1.1rem' } }}>
                       مهمة عامة
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 1, md: 1.5 }, fontSize: { xs: '0.64rem', sm: '0.72rem', md: '0.82rem' } }}>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 1, md: 1.5 }, fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' } }}>
                       إنشاء مهمة يدوية مخصصة لمستخدم أو مجموعة مستخدمين
                     </Typography>
                     <Chip 

@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -89,7 +91,7 @@ function DiscountTypeLookupDialog({
   onPick
 }) {
   return (
-    <Dialog
+    <Dialog sx={uiLayout.dialogLayoutSx}
       open={open}
       onClose={onClose}
       fullWidth
@@ -117,7 +119,7 @@ function DiscountTypeLookupDialog({
         dividers
         sx={{ p: { xs: 0.7, sm: 1.2 } }}
       >
-        <TextField
+        <TextField InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -131,12 +133,12 @@ function DiscountTypeLookupDialog({
               </InputAdornment>
             )
           }}
-          sx={{
+          sx={uiLayout.withUiSx({
             mb: 0.7,
             "& input": {
-              fontSize: { xs: 10.5, sm: 13 }
+              fontSize: { xs: 12, sm: 13 }
             }
-          }}
+          }, uiLayout.formFieldSx)}
         />
 
         {loading ? (
@@ -185,7 +187,7 @@ function DiscountTypeLookupDialog({
                   <Typography
                     sx={{
                       fontWeight: 900,
-                      fontSize: { xs: 10, sm: 12.5 }
+                      fontSize: { xs: 12, sm: 12.5 }
                     }}
                   >
                     {row.code || "-"}
@@ -195,7 +197,7 @@ function DiscountTypeLookupDialog({
                     noWrap
                     sx={{
                       fontWeight: 800,
-                      fontSize: { xs: 10.4, sm: 13 }
+                      fontSize: { xs: 12, sm: 13 }
                     }}
                   >
                     {row.name || "-"}
@@ -224,10 +226,10 @@ function DiscountTypeLookupDialog({
                   <Button
                     size="small"
                     onClick={() => onPick(row)}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       minWidth: 0,
-                      fontSize: { xs: 9, sm: 11 }
-                    }}
+                      fontSize: { xs: 12, sm: 12 }
+                    }, uiLayout.buttonSx)}
                   >
                     اختيار
                   </Button>
@@ -244,8 +246,8 @@ function DiscountTypeLookupDialog({
         )}
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose}>
+      <DialogActions sx={uiLayout.dialogActionsSx}>
+        <Button sx={uiLayout.buttonSx} onClick={onClose}>
           إغلاق
         </Button>
       </DialogActions>
@@ -810,7 +812,7 @@ export default function DiscountTypeManagement() {
               bgcolor: "#fff",
               color: primaryDark,
               fontWeight: 900,
-              fontSize: { xs: 8.3, sm: 11 }
+              fontSize: { xs: 12, sm: 12 }
             }}
           />
         </Box>
@@ -822,26 +824,26 @@ export default function DiscountTypeManagement() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(3,minmax(0,1fr))",
                 sm: "repeat(3,max-content)"
               },
               gap: 0.45
-            }}
+            }, uiLayout.actionBarSx)}
           >
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={newDiscountType}
               disabled={!ops.canAdd && !isEdit}
-              sx={{
+              sx={uiLayout.withUiSx({
                 bgcolor: "#1976d2",
                 fontWeight: 900,
                 minWidth: 0,
-                fontSize: { xs: 9.3, sm: 12.5 }
-              }}
+                fontSize: { xs: 12, sm: 12.5 }
+              }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -851,11 +853,11 @@ export default function DiscountTypeManagement() {
               startIcon={<SearchIcon />}
               onClick={openLookup}
               disabled={!ops.canFind}
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
-                fontSize: { xs: 9.3, sm: 12.5 }
-              }}
+                fontSize: { xs: 12, sm: 12.5 }
+              }, uiLayout.buttonSx)}
             >
               بحث
             </Button>
@@ -876,11 +878,11 @@ export default function DiscountTypeManagement() {
                   ? !ops.canEdit
                   : !ops.canAdd)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: 900,
                 minWidth: 0,
-                fontSize: { xs: 9.3, sm: 12.5 }
-              }}
+                fontSize: { xs: 12, sm: 12.5 }
+              }, uiLayout.buttonSx)}
             >
               {isEdit ? "حفظ التعديل" : "حفظ"}
             </Button>
@@ -898,7 +900,7 @@ export default function DiscountTypeManagement() {
             }}
           >
             <CircularProgress size={15} />
-            <Typography sx={{ fontSize: 10.5 }}>
+            <Typography sx={{ fontSize: 12 }}>
               جاري التحميل...
             </Typography>
           </Box>
@@ -906,7 +908,7 @@ export default function DiscountTypeManagement() {
 
         <Box sx={{ p: { xs: 0.55, sm: 1 } }}>
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               display: "grid",
               gridTemplateColumns: {
                 xs: "repeat(2,minmax(0,1fr))",
@@ -914,16 +916,16 @@ export default function DiscountTypeManagement() {
               },
               gap: { xs: 0.55, sm: 0.8 },
               "& .MuiTextField-root": fieldSx
-            }}
+            }, uiLayout.formGridSx)}
           >
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود"
               size="small"
               value={model.code}
               InputProps={{ readOnly: true }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="اسم الخصم"
               size="small"
               value={model.name}
@@ -931,15 +933,15 @@ export default function DiscountTypeManagement() {
                 setField("name", e.target.value)
               }
               required
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: {
                   xs: "span 1",
                   sm: "span 2"
                 }
-              }}
+              }, uiLayout.formFieldSx)}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="نسبة الخصم"
               type="number"
               size="small"
@@ -960,7 +962,7 @@ export default function DiscountTypeManagement() {
               }}
             />
 
-            <TextField
+            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
               label="المستهدف"
               size="small"
@@ -1010,7 +1012,7 @@ export default function DiscountTypeManagement() {
                 label={
                   <Typography
                     sx={{
-                      fontSize: { xs: 9.6, sm: 12.5 },
+                      fontSize: { xs: 12, sm: 12.5 },
                       fontWeight: 800
                     }}
                   >
@@ -1048,7 +1050,7 @@ export default function DiscountTypeManagement() {
                 label={
                   <Typography
                     sx={{
-                      fontSize: { xs: 9.3, sm: 12.5 },
+                      fontSize: { xs: 12, sm: 12.5 },
                       fontWeight: 800
                     }}
                   >
@@ -1058,7 +1060,7 @@ export default function DiscountTypeManagement() {
               />
             </Box>
 
-            <TextField
+            <TextField InputLabelProps={{ shrink: true }}
               label="ملاحظات"
               multiline
               minRows={4}
@@ -1066,9 +1068,9 @@ export default function DiscountTypeManagement() {
               onChange={(e) =>
                 setField("notes", e.target.value)
               }
-              sx={{
+              sx={uiLayout.withUiSx({
                 gridColumn: "1 / -1"
-              }}
+              }, uiLayout.formFieldSx)}
             />
           </Box>
         </Box>

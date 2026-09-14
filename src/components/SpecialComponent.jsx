@@ -1,3 +1,4 @@
+import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useState, useMemo } from "react";
@@ -506,7 +507,7 @@ const SpecialComponent = () => {
             title={params.value || ''}
             sx={{
               color: '#2d3748',
-              fontSize: isDesktop ? '15px' : { xs: '0.49rem', sm: '0.58rem', md: '0.66rem' },
+              fontSize: isDesktop ? '15px' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               lineHeight: 1.2,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -652,7 +653,7 @@ const SpecialComponent = () => {
             fontWeight="600"
             title={params.value || ''}
             sx={{
-              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.56rem', md: '0.64rem' },
+              fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -837,7 +838,7 @@ const SpecialComponent = () => {
             >
               <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
             </IconButton>
-            <Typography sx={{ flex: 1, fontWeight: 900, fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' } }}>
+            <Typography sx={{ flex: 1, fontWeight: 900, fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.88rem' } }}>
               نظام الإدارة
             </Typography>
           </Toolbar>
@@ -876,7 +877,7 @@ const SpecialComponent = () => {
             },
             '& .MuiTypography-h5': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.7rem',
+                xs: "0.75rem",
                 sm: '0.82rem',
                 md: '0.94rem'
               },
@@ -884,25 +885,25 @@ const SpecialComponent = () => {
             },
             '& .MuiTypography-h6': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.58rem',
-                sm: '0.67rem',
+                xs: "0.75rem",
+                sm: "0.75rem",
                 md: '0.76rem'
               },
               lineHeight: 1.3
             },
             '& .MuiTypography-body1, & .MuiTypography-body2': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.47rem',
-                sm: '0.55rem',
-                md: '0.63rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               },
               lineHeight: 1.35
             },
             '& .MuiButton-root': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.47rem',
-                sm: '0.55rem',
-                md: '0.63rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               },
               minHeight: isDesktop ? undefined : {
                 xs: 28,
@@ -912,16 +913,16 @@ const SpecialComponent = () => {
             },
             '& .MuiInputBase-root, & .MuiInputLabel-root': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.49rem',
-                sm: '0.57rem',
-                md: '0.65rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               }
             },
             '& .MuiChip-root': {
               fontSize: isDesktop ? undefined : {
-                xs: '0.42rem',
-                sm: '0.49rem',
-                md: '0.56rem'
+                xs: "0.75rem",
+                sm: "0.75rem",
+                md: "0.75rem"
               },
               height: isDesktop ? undefined : {
                 xs: 18,
@@ -1022,7 +1023,7 @@ const SpecialComponent = () => {
                 ⚙️ إعدادات الفلترة
               </Typography>
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: 'grid',
                   gridTemplateColumns: isDesktop
                     ? 'repeat(3, max-content)'
@@ -1032,7 +1033,7 @@ const SpecialComponent = () => {
                   gap: isDesktop ? 3 : { xs: 0.35, sm: 0.5, md: 0.7 },
                   alignItems: 'center',
                   width: '100%',
-                }}
+                }, uiLayout.filterBarSx)}
               >
                 <DatePicker
                   label="من تاريخ"
@@ -1074,7 +1075,7 @@ const SpecialComponent = () => {
                     setFromDate(dayjs().startOf('month'));
                     setToDate(dayjs());
                   }}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     px: isDesktop ? 4 : { xs: 0.7, sm: 1, md: 1.2 },
                     py: isDesktop ? 1.2 : { xs: 0.45, sm: 0.55, md: 0.7 },
                     width: isDesktop ? 'auto' : '100%',
@@ -1089,7 +1090,7 @@ const SpecialComponent = () => {
                       boxShadow: `0 4px 12px ${alpha(PRIMARY_COLOR, 0.3)}`,
                     },
                     transition: 'all 0.2s ease'
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   🔄 هذا الشهر
                 </Button>
@@ -1131,7 +1132,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color={PRIMARY_COLOR_DARK} mt={1} textAlign="center">
                   {Number(totalCollected || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: PRIMARY_COLOR }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: PRIMARY_COLOR }}>ر.س</span>
                 </Typography>
               </Paper>
             </Grid>
@@ -1164,7 +1165,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#0c4a6e" mt={1} textAlign="center">
                   {Number(totalCommissionOnly || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#0ea5e9' }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#0ea5e9' }}>ر.س</span>
                 </Typography>
                 {isDesktop && (
                   <Typography variant="body2" color="#0ea5e9" sx={{ mt: 1, textAlign: 'center' }}>
@@ -1202,7 +1203,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#9d174d" mt={1} textAlign="center">
                   {Number(overallBonus || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#db2777' }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#db2777' }}>ر.س</span>
                 </Typography>
                 {isDesktop && (
                   <Typography variant="body2" color="#db2777" sx={{ mt: 1, textAlign: 'center' }}>
@@ -1240,7 +1241,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#065f46" mt={1} textAlign="center">
                   {Number(totalFinalCommission || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#10b981' }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#10b981' }}>ر.س</span>
                 </Typography>
                 {isDesktop && (
                   <Typography variant="body2" color="#059669" sx={{ mt: 1, textAlign: 'center', fontWeight: 'bold' }}>
@@ -1278,7 +1279,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#713f12" mt={1} textAlign="center">
                   {totalStudents}
-                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#eab308' }}>طالب</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#eab308' }}>طالب</span>
                 </Typography>
               </Paper>
             </Grid>
@@ -1311,7 +1312,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#dc2626" mt={1} textAlign="center">
                   {totalUnpaid}
-                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#ef4444' }}>طالب</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#ef4444' }}>طالب</span>
                 </Typography>
               </Paper>
             </Grid>
@@ -1374,11 +1375,11 @@ const SpecialComponent = () => {
               </Box>
 
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   width: '100%',
                   height: isDesktop ? 600 : { xs: '72dvh', sm: '74dvh', md: '76dvh' },
                   minWidth: 0,
-                }}
+                }, uiLayout.tableContainerSx)}
               >
                 <DataGrid
                   rows={trainers}
@@ -1392,7 +1393,7 @@ const SpecialComponent = () => {
                   columnHeaderHeight={isDesktop ? 60 : isPhone ? 34 : 40}
                   paginationModel={trainerPaginationModel}
                   onPaginationModelChange={setTrainerPaginationModel}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     fontFamily: "'Tajawal', 'Cairo', sans-serif",
                     border: 'none',
                     '& .MuiDataGrid-columnHeaders': {
@@ -1403,7 +1404,7 @@ const SpecialComponent = () => {
                     },
                     '& .MuiDataGrid-columnHeaderTitle': {
                       fontWeight: 800,
-                      fontSize: isDesktop ? '14px' : isPhone ? '0.43rem' : '0.54rem',
+                      fontSize: isDesktop ? '14px' : isPhone ? "0.75rem" : "0.75rem",
                       lineHeight: 1.15,
                       whiteSpace: 'normal',
                       textAlign: 'center',
@@ -1411,7 +1412,7 @@ const SpecialComponent = () => {
                     },
                     '& .MuiDataGrid-cell': {
                       borderBottom: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
-                      fontSize: isDesktop ? '14px' : isPhone ? '0.45rem' : '0.55rem',
+                      fontSize: isDesktop ? '14px' : isPhone ? "0.75rem" : "0.75rem",
                       fontWeight: 500,
                       px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
                     },
@@ -1423,7 +1424,7 @@ const SpecialComponent = () => {
                       borderTop: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
                       backgroundColor: PRIMARY_COLOR_SUPER_LIGHT,
                     },
-                  }}
+                  }, uiLayout.dataGridSx)}
                   localeText={{
                     noRowsLabel: "لا توجد بيانات متاحة",
                     noResultsOverlayLabel: "لم يتم العثور على نتائج",
@@ -1444,14 +1445,14 @@ const SpecialComponent = () => {
             maxWidth="xl"
             fullWidth
             fullScreen={isPhone}
-            sx={{
+            sx={uiLayout.withUiSx({
               '& .MuiDialog-paper': {
                 borderRadius: isDesktop ? 3 : isPhone ? 0 : 2,
                 minHeight: isDesktop ? '80vh' : isPhone ? '100dvh' : '86dvh',
                 maxHeight: isPhone ? '100dvh' : '92dvh',
                 m: isPhone ? 0 : 1,
               }
-            }}
+            }, uiLayout.dialogLayoutSx)}
           >
             <DialogTitle sx={{
               bgcolor: PRIMARY_COLOR,
@@ -1459,7 +1460,7 @@ const SpecialComponent = () => {
               py: isDesktop ? 3 : { xs: 0.6, sm: 0.8, md: 1 },
               px: isDesktop ? 3 : { xs: 0.75, sm: 1, md: 1.2 },
               textAlign: 'center',
-              fontSize: isDesktop ? '1.5rem' : { xs: '0.66rem', sm: '0.78rem', md: '0.9rem' },
+              fontSize: isDesktop ? '1.5rem' : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
               fontWeight: 'bold',
             }}>
               <Box display="flex" alignItems="center" justifyContent="center" gap={isDesktop ? 2 : 0.45}>
@@ -1497,7 +1498,7 @@ const SpecialComponent = () => {
               </Grid>
 
               <Box sx={{ mb: isDesktop ? 3 : 0.5 }}>
-                <FormControl sx={{ minWidth: isDesktop ? 200 : 0, width: isDesktop ? 'auto' : '100%' }}>
+                <FormControl sx={uiLayout.withUiSx({ minWidth: isDesktop ? 200 : 0, width: isDesktop ? 'auto' : '100%' }, uiLayout.formFieldSx)}>
                   <InputLabel>فلتر حسب الحالة</InputLabel>
                   <Select
                     value={filterStatus}
@@ -1522,7 +1523,7 @@ const SpecialComponent = () => {
                   لا توجد بيانات للطلاب
                 </Typography>
               ) : (
-                <Box sx={{ height: isDesktop ? 500 : { xs: '72dvh', sm: '70dvh', md: '72dvh' }, width: '100%', minWidth: 0 }}>
+                <Box sx={uiLayout.withUiSx({ height: isDesktop ? 500 : { xs: '72dvh', sm: '70dvh', md: '72dvh' }, width: '100%', minWidth: 0 }, uiLayout.tableContainerSx)}>
                   <DataGrid
                     rows={filteredStudents}
                     columns={responsiveStudentColumns}
@@ -1533,7 +1534,7 @@ const SpecialComponent = () => {
                     columnHeaderHeight={isDesktop ? 56 : isPhone ? 34 : 40}
                     paginationModel={studentPaginationModel}
                     onPaginationModelChange={setStudentPaginationModel}
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       fontFamily: "'Tajawal', 'Cairo', sans-serif",
                       border: 'none',
                       '& .MuiDataGrid-columnHeaders': {
@@ -1543,19 +1544,19 @@ const SpecialComponent = () => {
                       '& .MuiDataGrid-columnHeaderTitle': {
                         fontWeight: 700,
                         color: PRIMARY_COLOR_DARK,
-                        fontSize: isDesktop ? undefined : { xs: '0.43rem', sm: '0.52rem', md: '0.6rem' },
+                        fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                         whiteSpace: 'normal',
                         lineHeight: 1.15,
                       },
                       '& .MuiDataGrid-cell': {
                         borderBottom: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
-                        fontSize: isDesktop ? undefined : { xs: '0.44rem', sm: '0.53rem', md: '0.61rem' },
+                        fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                         px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
                       },
                       '& .status-paid': { backgroundColor: '#dcfce7 !important' },
                       '& .status-note': { backgroundColor: '#fef9c3 !important' },
                       '& .status-late': { backgroundColor: '#fee2e2 !important' },
-                    }}
+                    }, uiLayout.dataGridSx)}
                     getRowClassName={(params) => {
                       const studentId = params.row.nationalId || params.row.id;
                       const status = rowStatuses[studentId];
@@ -1572,11 +1573,11 @@ const SpecialComponent = () => {
               )}
             </DialogContent>
 
-            <DialogActions sx={{ p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.8 } }}>
+            <DialogActions sx={uiLayout.withUiSx({ p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.8 } }, uiLayout.dialogActionsSx)}>
               <Button
                 onClick={() => setTrainerDialogOpen(false)}
                 variant="contained"
-                sx={{ backgroundColor: PRIMARY_COLOR, '&:hover': { backgroundColor: PRIMARY_COLOR_DARK } }}
+                sx={uiLayout.withUiSx({ backgroundColor: PRIMARY_COLOR, '&:hover': { backgroundColor: PRIMARY_COLOR_DARK } }, uiLayout.buttonSx)}
               >
                 إغلاق
               </Button>
@@ -1585,11 +1586,11 @@ const SpecialComponent = () => {
 
           <Box display="flex" justifyContent="center" mt={isDesktop ? 4 : { xs: 0.6, sm: 0.8, md: 1 }}>
             <Button
-              sx={{
+              sx={uiLayout.withUiSx({
                 fontWeight: "bold",
                 px: isDesktop ? 6 : { xs: 1.2, sm: 1.6, md: 2 },
                 py: isDesktop ? 1.8 : { xs: 0.45, sm: 0.6, md: 0.75 },
-                fontSize: isDesktop ? 16 : { xs: '0.5rem', sm: '0.58rem', md: '0.66rem' },
+                fontSize: isDesktop ? 16 : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                 borderRadius: 3,
                 bgcolor: PRIMARY_COLOR,
                 color: "#fff",
@@ -1600,7 +1601,7 @@ const SpecialComponent = () => {
                   transform: "translateY(-2px)",
                   boxShadow: `0 6px 20px ${alpha(PRIMARY_COLOR, 0.4)}`,
                 },
-              }}
+              }, uiLayout.buttonSx)}
               size="large"
               variant="contained"
               onClick={() => navigate("/dashboard")}

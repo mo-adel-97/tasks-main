@@ -1,3 +1,5 @@
+import * as uiLayout from '../components/common/uiLayout';
+import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -1165,7 +1167,7 @@ export default function TrialBalance() {
                   variant="caption"
                   sx={{
                     opacity: 0.8,
-                    fontSize: 10
+                    fontSize: 12
                   }}
                 >
                   الحسابات العامة
@@ -1207,7 +1209,7 @@ export default function TrialBalance() {
               }}
             >
               <Box
-                sx={{
+                sx={uiLayout.withUiSx({
                   display: "grid",
 
                   gridTemplateColumns: {
@@ -1220,9 +1222,9 @@ export default function TrialBalance() {
 
                   gap: 0.65,
                   alignItems: "center"
-                }}
+                }, uiLayout.filterBarSx)}
               >
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   size="small"
                   type="date"
                   label="الفترة من"
@@ -1237,7 +1239,7 @@ export default function TrialBalance() {
                   }}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx}
                   size="small"
                   type="date"
                   label="الفترة إلى"
@@ -1252,7 +1254,7 @@ export default function TrialBalance() {
                   }}
                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
                   label=
                     "الفرع / مركز التكلفة"
@@ -1292,10 +1294,10 @@ export default function TrialBalance() {
                   }
                   onClick={loadData}
                   disabled={loading}
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: 36,
                     fontWeight: 900
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   عرض
                 </Button>
@@ -1311,12 +1313,12 @@ export default function TrialBalance() {
                   disabled={
                     !snapshotId
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: 36,
                     fontWeight: 900,
                     color: primary,
                     borderColor: primary
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   Excel
                 </Button>
@@ -1330,13 +1332,13 @@ export default function TrialBalance() {
                   disabled={
                     !snapshotId
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     minHeight: 36,
                     fontWeight: 900,
                     color: "#c62828",
                     borderColor:
                       "#c62828"
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   PDF
                 </Button>
@@ -1360,14 +1362,14 @@ export default function TrialBalance() {
                   startIcon={
                     <ExpandLessIcon />
                   }
-                  sx={{
+                  sx={uiLayout.withUiSx({
                     color:
                       primaryDark,
 
                     fontWeight: 900,
 
                     minHeight: 30
-                  }}
+                  }, uiLayout.buttonSx)}
                 >
                   طي الكل
                 </Button>
@@ -1587,7 +1589,7 @@ export default function TrialBalance() {
                                     "caption"
                                   sx={{
                                     fontSize:
-                                      10
+                                      12
                                   }}
                                 >
                                   {
@@ -1620,7 +1622,7 @@ export default function TrialBalance() {
               <TableContainer
                 component={Paper}
                 variant="outlined"
-                sx={{
+                sx={uiLayout.withUiSx({
                   borderColor:
                     border,
 
@@ -1631,7 +1633,7 @@ export default function TrialBalance() {
                     isTablet
                       ? "calc(100vh - 205px)"
                       : "calc(100vh - 190px)"
-                }}
+                }, uiLayout.tableContainerSx)}
               >
                 <Table
                   stickyHeader
@@ -2021,7 +2023,7 @@ export default function TrialBalance() {
         </Paper>
       </Box>
 
-      <Dialog
+      <Dialog sx={uiLayout.dialogLayoutSx}
         open={branchOpen}
         onClose={() =>
           setBranchOpen(false)
@@ -2040,7 +2042,7 @@ export default function TrialBalance() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             autoFocus
             fullWidth
             size="small"
@@ -2059,7 +2061,7 @@ export default function TrialBalance() {
                 />
               )
             }}
-            sx={{ mb: 1 }}
+            sx={uiLayout.withUiSx({ mb: 1 }, uiLayout.formFieldSx)}
           />
 
           {branchesLoading ? (
@@ -2081,14 +2083,14 @@ export default function TrialBalance() {
                   clearBranch();
                   setBranchOpen(false);
                 }}
-                sx={{
+                sx={uiLayout.withUiSx({
                   justifyContent:
                     "space-between",
                   color:
                     primaryDark,
                   borderColor:
                     border
-                }}
+                }, uiLayout.buttonSx)}
               >
                 <span>
                   كل الفروع
@@ -2113,7 +2115,7 @@ export default function TrialBalance() {
                         b
                       )
                     }
-                    sx={{
+                    sx={uiLayout.withUiSx({
                       justifyContent:
                         "space-between",
 
@@ -2122,7 +2124,7 @@ export default function TrialBalance() {
 
                       borderColor:
                         border
-                    }}
+                    }, uiLayout.buttonSx)}
                   >
                     <span>
                       {b.name}
@@ -2138,8 +2140,8 @@ export default function TrialBalance() {
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setBranchOpen(false)
             }

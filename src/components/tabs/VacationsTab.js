@@ -1,3 +1,4 @@
+import * as uiLayout from '../common/uiLayout';
 import { hrChipSx, hrTabIconSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import { 
@@ -1056,14 +1057,14 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             variant="contained"
             startIcon={<Add />}
             onClick={() => setOpenDialog(true)}
-            sx={{
+            sx={uiLayout.withUiSx({
               backgroundColor: COLOR_SCHEME.primary,
               borderRadius: 3,
               px: 3,
               '&:hover': {
                 backgroundColor: alpha(COLOR_SCHEME.primary, 0.8),
               }
-            }}
+            }, uiLayout.buttonSx)}
           >
             طلب جديد
           </Button>
@@ -1224,7 +1225,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => setOpenDialog(true)}
-                sx={{ mt: 2 }}
+                sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.buttonSx)}
               >
                 تقديم طلب جديد
               </Button>
@@ -1234,7 +1235,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
       )}
 
       {/* ديالوج إضافة طلب جديد */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
             تقديم طلب جديد
@@ -1243,7 +1244,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
         <DialogContent>
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid item xs={12}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 fullWidth
                 label="نوع الطلب"
@@ -1257,7 +1258,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             
             {formData.request_type === 'إجازة' && (
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   select
                   fullWidth
                   label="نوع الإجازة"
@@ -1274,7 +1275,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             
             {formData.request_type === 'إذن' && (
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   select
                   fullWidth
                   label="نوع الإذن"
@@ -1290,7 +1291,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             )}
             
             <Grid item xs={12} sm={6}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 label="تاريخ ووقت البداية"
                 type="datetime-local"
@@ -1301,7 +1302,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             </Grid>
             
             <Grid item xs={12} sm={6}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx}
                 fullWidth
                 label="تاريخ ووقت النهاية"
                 type="datetime-local"
@@ -1312,7 +1313,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             </Grid>
             
             <Grid item xs={12}>
-              <TextField
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 label="السبب"
                 multiline
@@ -1333,7 +1334,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                   id="file-upload"
                 />
                 <label htmlFor="file-upload">
-                  <Button
+                  <Button sx={uiLayout.buttonSx}
                     component="span"
                     startIcon={<AttachFile />}
                     variant="outlined"
@@ -1357,14 +1358,14 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} disabled={submitting}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={() => setOpenDialog(false)} disabled={submitting}>
             إلغاء
           </Button>
           <Button 
             onClick={handleSubmit}
             variant="contained"
-            sx={{ backgroundColor: COLOR_SCHEME.primary }}
+            sx={uiLayout.withUiSx({ backgroundColor: COLOR_SCHEME.primary }, uiLayout.buttonSx)}
             disabled={submitting || !formData.start_date || !formData.end_date || !formData.reason || 
                      (formData.request_type === 'إجازة' && !formData.vacation_type) ||
                      (formData.request_type === 'إذن' && !formData.permission_type)}
@@ -1376,7 +1377,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
       </Dialog>
 
       {/* ديالوج تفاصيل الطلب */}
-      <Dialog open={detailsDialog.open} onClose={handleCloseDetailsDialog} maxWidth="sm" fullWidth>
+      <Dialog sx={uiLayout.dialogLayoutSx} open={detailsDialog.open} onClose={handleCloseDetailsDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
             تفاصيل الطلب
@@ -1462,7 +1463,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                     <Typography variant="body2" color="textSecondary" gutterBottom>
                       الملف المرفق:
                     </Typography>
-                    <Button
+                    <Button sx={uiLayout.buttonSx}
                       startIcon={<Download />}
                       onClick={() => handleDownloadFile(detailsDialog.request.file_url)}
                       variant="outlined"
@@ -1476,8 +1477,8 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailsDialog}>
+        <DialogActions sx={uiLayout.dialogActionsSx}>
+          <Button sx={uiLayout.buttonSx} onClick={handleCloseDetailsDialog}>
             إغلاق
           </Button>
         </DialogActions>
