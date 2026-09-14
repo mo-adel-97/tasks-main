@@ -675,7 +675,7 @@ const handleSubmit = async () => {
     <StyledDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <StyledDialogTitle>
         <Box display="flex" alignItems="center">
-          <WorkIcon sx={{ mr: 1 }} />
+          <WorkIcon sx={{ marginInlineEnd: 1 }} />
           <Typography variant="h6">
             {isEditMode ? 'تعديل مهمة عامة' : 'إنشاء مهمة عامة'}
           </Typography>
@@ -1051,7 +1051,7 @@ const handleSubmit = async () => {
                     }}
                   >
                     <Box display="flex" alignItems="center" flexGrow={1}>
-                      <AttachFileIcon sx={{ color: colorPalette.primary, mr: 2 }} />
+                      <AttachFileIcon sx={{ color: colorPalette.primary, marginInlineEnd: 2 }} />
                       <Box>
                         <Typography variant="body1" fontWeight={500} sx={{ fontFamily: '"Cairo", sans-serif' }}>
                           {attachFile.name}
@@ -1084,7 +1084,7 @@ const handleSubmit = async () => {
                     }}
                   >
                     <Box display="flex" alignItems="center" flexGrow={1}>
-                      <AttachFileIcon sx={{ color: colorPalette.primary, mr: 2 }} />
+                      <AttachFileIcon sx={{ color: colorPalette.primary, marginInlineEnd: 2 }} />
                       <Box>
                         <Typography variant="body1" fontWeight={500} sx={{ fontFamily: '"Cairo", sans-serif' }}>
                           {existingAttachment.name}

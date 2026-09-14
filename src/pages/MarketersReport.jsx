@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -35,11 +37,11 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
-import Sidebar from "../components/Sidebar";
+
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -892,34 +894,25 @@ const MarketersReport = () => {
 
   return (
     isDesktop ? (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
         background: "#f5f8f7",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
-      <Sidebar />
+      
 
       <Box
         component="main"
         sx={{
-          marginLeft: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
-          },
-          width: {
-            xs: "100%",
-            md:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`
-          },
           minHeight: "100vh",
           p: {
             xs: 1.5,
             md: 3
           },
-          direction: "ltr"
+          direction: "rtl",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1025,7 +1018,7 @@ const MarketersReport = () => {
                   InputLabelProps={{
                     shrink: true
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   type="date"
@@ -1040,7 +1033,7 @@ const MarketersReport = () => {
                   InputLabelProps={{
                     shrink: true
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
                   variant="contained"
@@ -1233,7 +1226,7 @@ const MarketersReport = () => {
                 }}
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   fontFamily: "Cairo",
                   "& .MuiDataGrid-columnHeaders": {
                     backgroundColor:
@@ -1273,7 +1266,7 @@ const MarketersReport = () => {
                   },
                   "& .MuiDataGrid-toolbarContainer": {
                     p: 1,
-                    direction: "ltr",
+                    direction: "rtl",
                     borderBottom:
                       "1px solid #e6ece9",
                     backgroundColor:
@@ -1334,16 +1327,18 @@ const MarketersReport = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
     ) : (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
         background: "#f5f8f7",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       <GlobalStyles
@@ -1396,7 +1391,7 @@ const MarketersReport = () => {
           color: "#17372b",
           borderBottom:
             "1px solid rgba(5,117,70,.12)",
-          direction: "ltr"
+          direction: "rtl"
         }}
       >
         <Toolbar
@@ -1447,7 +1442,7 @@ const MarketersReport = () => {
                 sm: "0.79rem"
               },
               color: "#17372b",
-              textAlign: "left"
+              textAlign: "start"
             }}
           >
             تقرير المسوقين
@@ -1455,12 +1450,7 @@ const MarketersReport = () => {
         </Toolbar>
       </AppBar>
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -1481,7 +1471,8 @@ const MarketersReport = () => {
             sm: 0.7
           },
           boxSizing: "border-box",
-          overflowX: "hidden"
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1628,7 +1619,7 @@ const MarketersReport = () => {
                     shrink: true
                   }}
                   fullWidth
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   type="date"
@@ -1644,7 +1635,7 @@ const MarketersReport = () => {
                     shrink: true
                   }}
                   fullWidth
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
                   variant="contained"
@@ -1816,7 +1807,7 @@ const MarketersReport = () => {
                 }}
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   fontFamily: "Cairo",
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -2110,7 +2101,7 @@ const MarketersReport = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
     )
   );
 };

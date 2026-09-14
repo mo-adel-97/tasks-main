@@ -1214,7 +1214,7 @@ const exportAttemptsToExcel = () => {
           shape="rounded"
           size="large"
           sx={{
-            direction: 'ltr',
+            direction: "rtl",
             '& .MuiPaginationItem-root': {
               fontWeight: 'bold',
               borderRadius: 2
@@ -1261,7 +1261,7 @@ const exportAttemptsToExcel = () => {
                 label="مدة الاختبار بالدقائق"
                 value={examForm.duration_minutes}
                 onChange={(e) => updateExamField('duration_minutes', e.target.value)}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
             <Grid item xs={12} md={3}>
@@ -1271,7 +1271,7 @@ const exportAttemptsToExcel = () => {
                 label="درجة النجاح"
                 value={examForm.pass_score}
                 onChange={(e) => updateExamField('pass_score', e.target.value)}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
             <Grid item xs={12}>
@@ -1293,7 +1293,7 @@ const exportAttemptsToExcel = () => {
                 InputLabelProps={{ shrink: true }}
                 value={examForm.start_date || ''}
                 onChange={(e) => updateExamField('start_date', e.target.value)}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
             <Grid item xs={12} md={4}>
@@ -1304,7 +1304,7 @@ const exportAttemptsToExcel = () => {
                 InputLabelProps={{ shrink: true }}
                 value={examForm.end_date || ''}
                 onChange={(e) => updateExamField('end_date', e.target.value)}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
             <Grid item xs={12} md={4}>
@@ -1372,7 +1372,7 @@ const exportAttemptsToExcel = () => {
                       label="الدرجة"
                       value={q.points}
                       onChange={(e) => updateQuestion(qIndex, 'points', e.target.value)}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   </Grid>
 
                   <Grid item xs={4} md={1}>

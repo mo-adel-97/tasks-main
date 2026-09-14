@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -41,10 +43,10 @@ import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import MapIcon from "@mui/icons-material/Map";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import Sidebar from "../components/Sidebar";
+
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
+
 const API_URL = "https://filesregsiteration.sstli.com/erp/Desktop/device_admin.php";
 const USERS_API_URL = "https://api1.sstli.com/api/userinfo";
 
@@ -1190,20 +1192,23 @@ export default function DesktopDevicesAccessPage() {
   );
 
   return (
-    <>
-      <Sidebar />
+    <NavigationShell variant="standard" ><>
+      
 
       <Box
         sx={{
-          marginLeft: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
           minHeight: "100vh",
-          p: { xs: 1.5, md: 2.5 },
+          p: {
+            xs: 1.5,
+            md: 2.5
+          },
           bgcolor: colors.page,
-          direction: "ltr",
-          textAlign: "left",
+          direction: "rtl",
+          textAlign: "start",
           fontFamily: "Cairo, Arial, sans-serif",
           overflowX: "hidden",
           overflowY: "auto",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1375,8 +1380,8 @@ export default function DesktopDevicesAccessPage() {
                 }
               }}
               size="small"
-              InputLabelProps={{ sx: { fontFamily: "Cairo", left: 0, right: "auto" } }}
-              inputProps={{ style: { textAlign: "left", direction: "ltr", fontFamily: "Cairo" } }}
+              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
+              inputProps={{ dir: "auto", style: { textAlign: "start", fontFamily: "Cairo" } }}
               sx={{ flex: "1 1 340px" }}
             />
 
@@ -1386,10 +1391,10 @@ export default function DesktopDevicesAccessPage() {
               value={filters.status}
               onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
               size="small"
-              InputLabelProps={{ sx: { fontFamily: "Cairo", left: 0, right: "auto" } }}
+              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
               sx={{
                 minWidth: { xs: "100%", md: 170 },
-                ".MuiSelect-select": { fontFamily: "Cairo", textAlign: "left" },
+                ".MuiSelect-select": { fontFamily: "Cairo", textAlign: "start" },
               }}
             >
               <MenuItem value="all">الكل</MenuItem>
@@ -1405,10 +1410,10 @@ export default function DesktopDevicesAccessPage() {
               value={filters.suspicion}
               onChange={(e) => setFilters((prev) => ({ ...prev, suspicion: e.target.value }))}
               size="small"
-              InputLabelProps={{ sx: { fontFamily: "Cairo", left: 0, right: "auto" } }}
+              InputLabelProps={{ sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
               sx={{
                 minWidth: { xs: "100%", md: 230 },
-                ".MuiSelect-select": { fontFamily: "Cairo", textAlign: "left" },
+                ".MuiSelect-select": { fontFamily: "Cairo", textAlign: "start" },
               }}
             >
               <MenuItem value="all">كل السجلات</MenuItem>
@@ -1424,8 +1429,8 @@ export default function DesktopDevicesAccessPage() {
               value={filters.date_from}
               onChange={(e) => setFilters((prev) => ({ ...prev, date_from: e.target.value }))}
               size="small"
-              InputLabelProps={{ shrink: true, sx: { fontFamily: "Cairo", left: 0, right: "auto" } }}
-              inputProps={{ style: { textAlign: "left", direction: "ltr" } }}
+              InputLabelProps={{ shrink: true, sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
+              inputProps={{ style: { textAlign: "left", direction: "ltr" , unicodeBidi: "isolate" } , dir: "ltr" }}
               sx={{ minWidth: { xs: "100%", md: 155 } }}
             />
 
@@ -1435,8 +1440,8 @@ export default function DesktopDevicesAccessPage() {
               value={filters.date_to}
               onChange={(e) => setFilters((prev) => ({ ...prev, date_to: e.target.value }))}
               size="small"
-              InputLabelProps={{ shrink: true, sx: { fontFamily: "Cairo", left: 0, right: "auto" } }}
-              inputProps={{ style: { textAlign: "left", direction: "ltr" } }}
+              InputLabelProps={{ shrink: true, sx: { fontFamily: "Cairo", left: "auto", right: 0 } }}
+              inputProps={{ style: { textAlign: "left", direction: "ltr" , unicodeBidi: "isolate" } , dir: "ltr" }}
               sx={{ minWidth: { xs: "100%", md: 155 } }}
             />
 
@@ -1567,7 +1572,7 @@ export default function DesktopDevicesAccessPage() {
               },
             }}
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               border: "none",
               fontFamily: "Cairo",
               overflowX: "hidden",
@@ -1596,7 +1601,7 @@ export default function DesktopDevicesAccessPage() {
               },
               ".MuiDataGrid-cell": {
                 fontFamily: "Cairo",
-                textAlign: "left",
+                textAlign: "start",
                 px: 1,
                 borderBottom: "1px solid rgba(5,116,69,0.06)",
               },
@@ -1604,7 +1609,7 @@ export default function DesktopDevicesAccessPage() {
                 bgcolor: "#f7fcfa",
               },
               ".MuiDataGrid-footerContainer": {
-                direction: "ltr",
+                direction: "rtl",
                 borderTop: `1px solid ${colors.border}`,
               },
               ".MuiTablePagination-root, .MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
@@ -1780,7 +1785,7 @@ export default function DesktopDevicesAccessPage() {
                           fontSize: "0.78rem",
                         }}
                       >
-                        {mapDialog.row.device_guid || "غير متاح"}
+                        <bdi dir="ltr">{mapDialog.row.device_guid || "غير متاح"}</bdi>
                       </Typography>
                     </Paper>
                   </Grid>
@@ -1918,6 +1923,6 @@ export default function DesktopDevicesAccessPage() {
           )}
         </DialogActions>
       </Dialog>
-    </>
+    </></NavigationShell>
   );
 }

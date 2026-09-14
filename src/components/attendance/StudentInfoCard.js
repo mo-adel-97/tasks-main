@@ -42,7 +42,7 @@ const StudentInfoCard = ({
 
   return (
     <Fade in={true} timeout={800}>
-      <Box sx={{ direction: 'ltr' }}>
+      <Box sx={{ direction: 'rtl' }}>
         {/* Header Section */}
         <Box sx={{ textAlign: "center", mb: 5 }}>
           <Avatar
@@ -146,6 +146,7 @@ const StudentInfoCard = ({
                 icon={<Badge sx={{ color: '#80b49e' }} />}
                 label="رقم الهوية الوطنية"
                 value={studentData.nationalId}
+                technical
               />
 
               {/* Phone */}
@@ -153,6 +154,7 @@ const StudentInfoCard = ({
                 icon={<Phone sx={{ color: '#80b49e' }} />}
                 label="رقم الجوال"
                 value={studentData.studentTel}
+                technical
               />
             </Box>
 
@@ -282,7 +284,7 @@ const StudentInfoCard = ({
 };
 
 // Reusable Info Item Component
-const InfoItem = ({ icon, label, value, gradient = false, statusColor }) => (
+const InfoItem = ({ icon, label, value, gradient = false, statusColor, technical = false }) => (
   <Box sx={{
     display: 'flex',
     alignItems: 'center',
@@ -297,7 +299,7 @@ const InfoItem = ({ icon, label, value, gradient = false, statusColor }) => (
     }
   }}>
     <Box sx={{ 
-      mr: 2,
+      marginInlineEnd: 2,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -315,7 +317,7 @@ const InfoItem = ({ icon, label, value, gradient = false, statusColor }) => (
         color: statusColor || "#5d6d7e",
         fontSize: '0.8rem',
         mb: 1,
-        textAlign: "left"
+        textAlign: "start"
       }}>
         {label}
       </Typography>
@@ -323,9 +325,9 @@ const InfoItem = ({ icon, label, value, gradient = false, statusColor }) => (
         fontWeight: 600,
         fontSize: '1rem',
         color: '#2c3e50',
-        textAlign: "left"
+        textAlign: "start"
       }}>
-        {value}
+        <bdi dir={technical ? "ltr" : "auto"}>{value}</bdi>
       </Typography>
     </Box>
   </Box>

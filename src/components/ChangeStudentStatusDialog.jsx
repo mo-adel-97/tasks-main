@@ -486,7 +486,7 @@ const ChangeStudentStatusDialog = ({
                 value={nationalId}
                 InputProps={{ readOnly: true }}
                 fullWidth
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
             <Grid item xs={6} sm={3}>

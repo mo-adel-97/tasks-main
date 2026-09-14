@@ -331,7 +331,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
         }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <PendingActions sx={{ mr: 1, fontSize: 28 }} />
+              <PendingActions sx={{ marginInlineEnd: 1, fontSize: 28 }} />
               <Typography variant="h6" component="div">
                 مكالمات تحتاج إلى متابعة
               </Typography>
@@ -433,7 +433,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
           <Card sx={{ mb: 3, border: '1px solid #e0e0e0' }}>
             <CardContent>
               <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
-                <FilterList sx={{ mr: 1 }} />
+                <FilterList sx={{ marginInlineEnd: 1 }} />
                 <Typography variant="h6" fontFamily="Cairo">فلترة متقدمة</Typography>
               </Box>
               
@@ -592,7 +592,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                                     sx={{ 
                                       width: 30, 
                                       height: 30, 
-                                      mr: 1,
+                                      marginInlineEnd: 1,
                                       bgcolor: 'primary.main',
                                       fontSize: '0.8rem'
                                     }}
@@ -600,7 +600,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                                     {getUserFullName(call.userGuid).charAt(0)}
                                   </Avatar>
                                   <Typography sx={{ fontFamily: 'Cairo', fontSize: '0.8rem' }}>
-                                    {getUserFullName(call.userGuid).split(' ')[0]}
+                                    <bdi dir="ltr">{getUserFullName(call.userGuid).split(' ')[0]}</bdi>
                                   </Typography>
                                 </Box>
                               </Tooltip>
@@ -646,12 +646,12 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                                 </Typography>
                                 {student.nationalId && (
                                   <Typography fontSize={12} color="text.secondary">
-                                    الرقم القومي: {student.nationalId}
+                                    الرقم القومي: <bdi dir="ltr">{student.nationalId}</bdi>
                                   </Typography>
                                 )}
                                 {student.studentTel && (
                                   <Typography fontSize={12} color="text.secondary">
-                                    جــوال: {student.studentTel}
+                                    جــوال: <bdi dir="ltr">{student.studentTel}</bdi>
                                   </Typography>
                                 )}
                               </Box>
@@ -757,7 +757,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
                                                   sx={{ 
                                                     width: 24, 
                                                     height: 24, 
-                                                    mr: 1,
+                                                    marginInlineEnd: 1,
                                                     bgcolor: 'secondary.main',
                                                     fontSize: '0.7rem'
                                                   }}
@@ -871,7 +871,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
           py: 2
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <PendingActions sx={{ mr: 1 }} />
+            <PendingActions sx={{ marginInlineEnd: 1 }} />
             إضافة متابعة للمكالمة
           </Box>
         </DialogTitle>
@@ -921,14 +921,14 @@ export default function FollowUpCallsDialog({ open, onClose }) {
               {userJob === 17 && (
                 <MenuItem value="0" sx={{ fontFamily: 'Cairo' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <CheckCircleOutline sx={{ mr: 1, color: 'success.main' }} />
+                    <CheckCircleOutline sx={{ marginInlineEnd: 1, color: 'success.main' }} />
                     مكتملة
                   </Box>
                 </MenuItem>
               )}
               <MenuItem value="1" sx={{ fontFamily: 'Cairo' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <PendingActions sx={{ mr: 1, color: 'warning.main' }} />
+                  <PendingActions sx={{ marginInlineEnd: 1, color: 'warning.main' }} />
                   متابعة لاحقًا
                 </Box>
               </MenuItem>

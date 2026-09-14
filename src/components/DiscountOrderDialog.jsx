@@ -342,7 +342,7 @@ const PromoStudentsDialog = ({
             inputProps={{
               maxLength: 10,
               inputMode: "numeric"
-            }}
+            , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
           />
 
           <Button
@@ -423,7 +423,7 @@ const PromoStudentsDialog = ({
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell align="center">
-                      {student.nationalId}
+                      <bdi dir="ltr">{student.nationalId}</bdi>
                     </TableCell>
 
                     <TableCell align="center">
@@ -645,7 +645,7 @@ const PromoDetailsDialog = ({
                       hover
                     >
                       <TableCell align="center">
-                        {student.nationalId || "-"}
+                        <bdi dir="ltr">{student.nationalId || "-"}</bdi>
                       </TableCell>
 
                       <TableCell align="center">

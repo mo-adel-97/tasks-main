@@ -1,3 +1,7 @@
+import deepmerge from '@mui/utils/deepmerge';
+import { rtlComponents } from '../config/rtlComponents';
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -47,14 +51,14 @@ import BusinessIcon from '@mui/icons-material/Business';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import Sidebar from '../components/Sidebar';
+
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ExportReportsDialog from "../components/ExportReportsDialog";
 
 
 // Create custom theme with #80b49e as primary color
-const customTheme = createTheme({
+const customTheme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
   palette: {
     primary: {
       main: '#80b49e',
@@ -102,7 +106,7 @@ const customTheme = createTheme({
   shape: {
     borderRadius: 12,
   },
-});
+}));
 
 const BranchReportsPage = () => {
   const theme = useTheme();
@@ -376,22 +380,22 @@ const BranchReportsPage = () => {
   const selectedBranchName = branches.find(b => b.guid === selectedBranch)?.name || '';
 
   return (
-    <ThemeProvider theme={customTheme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={customTheme}>
       <Box sx={{ minHeight: '100vh', backgroundColor: customTheme.palette.background.default }}>
-        <Sidebar />
+        
         
         <Box 
           component="main" 
-          sx={{ 
-            flexGrow: 1, 
+          sx={{
+            flexGrow: 1,
             pr: isMobile ? 2 : 3,
             pl: isMobile ? 2 : 3,
-            marginLeft: isMobile ? 0 : '240px',
             transition: customTheme.transitions.create('margin', {
               easing: customTheme.transitions.easing.sharp,
-              duration: customTheme.transitions.duration.leavingScreen,
+              duration: customTheme.transitions.duration.leavingScreen
             }),
             backgroundColor: customTheme.palette.background.default,
+            ...navigationContentSx
           }}
         >
           <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ar}>
@@ -1258,7 +1262,7 @@ const BranchReportsPage = () => {
   theme={customTheme}
 />
 
-    </ThemeProvider>
+    </ThemeProvider></NavigationShell>
   );
 };
 

@@ -1,10 +1,6 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   Alert,
@@ -35,17 +31,17 @@ import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primary = "#057546";
 const primaryDark = "#034d31";
@@ -1005,7 +1001,7 @@ export default function SalesManManagement() {
               label="كود"
               value={model.code}
               disabled
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <FormControlLabel
               sx={{
@@ -1231,41 +1227,28 @@ export default function SalesManManagement() {
   );
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><Box
       sx={{
         display: "flex",
         minHeight: "100vh",
         bgcolor: soft
       }}
     >
-      {isDesktop && (
-        <Box
-          sx={{
-            width: SIDEBAR_WIDTH,
-            flexShrink: 0
-          }}
-        >
-          <StableSidebar />
-        </Box>
-      )}
+      
 
-      {!isDesktop && (
-        <StableSidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
-      )}
+      
 
       <Box
         sx={{
           flex: 1,
-          minWidth: 0
+          minWidth: 0,
+          ...navigationContentSx
         }}
       >
         {content}
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

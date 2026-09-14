@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -35,7 +37,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import SpecialComponent from './SpecialComponent';
 import axios from 'axios';
-import Sidebar from './Sidebar';
+
 
 const API_BASE = 'https://api3.sstli.com';
 const PHP_BASE = 'https://filesregsiteration.sstli.com';
@@ -49,8 +51,8 @@ const PRIMARY_COLOR_LIGHT = '#9ac8b5';
 const MINIMUM_MONTHPAY_THRESHOLD = 250;
 
 const TrainerStudentGrid2 = () => {
-  const DESKTOP_BREAKPOINT = 1600;
-  const SIDEBAR_WIDTH = 280;
+  
+  
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
   const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
@@ -2334,7 +2336,7 @@ const getStatusDisplayText = (status) => {
   return showSpecial ? (
     <SpecialComponent onBack={() => setShowSpecial(false)} />
   ) : (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
         {/* Sidebar */}
         {!isDesktop && (
@@ -2397,59 +2399,92 @@ const getStatusDisplayText = (status) => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
         
         {/* Main Content */}
         <Box
           component="main"
           sx={{
             flexGrow: 1,
-
-            // الديسكتوب كما هو، والتغيير الحقيقي للموبايل/التابلت فقط.
-            p: isDesktop ? 3 : { xs: 0.35, sm: 0.65, md: 0.9 },
-            pt: isDesktop ? 3 : { xs: '54px', sm: '62px', md: '66px' },
-
-            marginLeft: isDesktop ? '280px' : 0,
-            marginRight: 0,
-
-            width: isDesktop ? 'calc(100% - 280px)' : '100%',
+            p: isDesktop ? 3 : {
+              xs: 0.35,
+              sm: 0.65,
+              md: 0.9
+            },
+            pt: isDesktop ? 3 : {
+              xs: '54px',
+              sm: '62px',
+              md: '66px'
+            },
             maxWidth: '100%',
             minWidth: 0,
             boxSizing: 'border-box',
             overflowX: 'hidden',
             transition: 'all 0.3s ease',
-
-            // Typography compact للموبايل والتابلت فقط
             '& .MuiTypography-h4': {
-              fontSize: isDesktop ? undefined : { xs: '0.9rem', sm: '1.05rem', md: '1.2rem' },
-              lineHeight: 1.25,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.9rem',
+                sm: '1.05rem',
+                md: '1.2rem'
+              },
+              lineHeight: 1.25
             },
             '& .MuiTypography-h5': {
-              fontSize: isDesktop ? undefined : { xs: '0.78rem', sm: '0.92rem', md: '1.05rem' },
-              lineHeight: 1.3,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.78rem',
+                sm: '0.92rem',
+                md: '1.05rem'
+              },
+              lineHeight: 1.3
             },
             '& .MuiTypography-h6': {
-              fontSize: isDesktop ? undefined : { xs: '0.64rem', sm: '0.74rem', md: '0.84rem' },
-              lineHeight: 1.35,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.64rem',
+                sm: '0.74rem',
+                md: '0.84rem'
+              },
+              lineHeight: 1.35
             },
             '& .MuiTypography-body1, & .MuiTypography-body2': {
-              fontSize: isDesktop ? undefined : { xs: '0.54rem', sm: '0.62rem', md: '0.7rem' },
-              lineHeight: 1.45,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.54rem',
+                sm: '0.62rem',
+                md: '0.7rem'
+              },
+              lineHeight: 1.45
             },
             '& .MuiButton-root': {
-              fontSize: isDesktop ? undefined : { xs: '0.46rem', sm: '0.53rem', md: '0.61rem' },
-              minHeight: isDesktop ? undefined : { xs: 25, sm: 28, md: 31 },
+              fontSize: isDesktop ? undefined : {
+                xs: '0.46rem',
+                sm: '0.53rem',
+                md: '0.61rem'
+              },
+              minHeight: isDesktop ? undefined : {
+                xs: 25,
+                sm: 28,
+                md: 31
+              }
             },
             '& .MuiChip-root': {
-              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.54rem', md: '0.62rem' },
-              height: isDesktop ? undefined : { xs: 19, sm: 22, md: 24 },
+              fontSize: isDesktop ? undefined : {
+                xs: '0.47rem',
+                sm: '0.54rem',
+                md: '0.62rem'
+              },
+              height: isDesktop ? undefined : {
+                xs: 19,
+                sm: 22,
+                md: 24
+              }
             },
             '& .MuiInputBase-root, & .MuiInputLabel-root': {
-              fontSize: isDesktop ? undefined : { xs: '0.49rem', sm: '0.56rem', md: '0.64rem' },
+              fontSize: isDesktop ? undefined : {
+                xs: '0.49rem',
+                sm: '0.56rem',
+                md: '0.64rem'
+              }
             },
+            ...navigationContentSx
           }}
         >
           {/* Header Section */}
@@ -3055,7 +3090,7 @@ const getStatusDisplayText = (status) => {
                     : { sm: 2, md: 2.5 },
 
                 overflow: 'hidden',
-                direction: 'ltr',
+                direction: "rtl",
                 boxSizing: 'border-box',
               },
             }}
@@ -4054,8 +4089,8 @@ borderColor:
                                           p: 2,
                                           bgcolor: '#f8fafc',
                                           borderRadius: 2,
-                                          borderLeft: '4px solid',
-                                         borderLeftColor:
+                                          borderInlineStart: '4px solid',
+                                         borderInlineStartColor:
   record.status === 'paid'
     ? '#4caf50'
     : record.status === 'has_order'
@@ -4132,7 +4167,7 @@ borderColor:
 `}</style>
         </Box>
       </Box>
-    </LocalizationProvider>
+    </LocalizationProvider></NavigationShell>
   );
 };
 

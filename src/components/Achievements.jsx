@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   Box, Container, Typography, Card, CardContent, TextField,
@@ -52,9 +54,9 @@ import {
 
 import { format, startOfWeek, endOfWeek, getISOWeek, getISOWeekYear } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
-import Sidebar from './Sidebar';
 
-const SIDEBAR_WIDTH = 280;
+
+
 
 // ✅ api.php
 const API_URL = 'https://filesregsiteration.sstli.com/erp/api.php';
@@ -636,16 +638,15 @@ const AchievementsPage = () => {
   }, [isCurrentWeekAlreadySubmitted]);
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
+      
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${SIDEBAR_WIDTH}px)` },
-          ml: { sm: `${SIDEBAR_WIDTH}px` }
+          ...navigationContentSx
         }}
       >
         <Container maxWidth="xl" sx={{ py: 2 }}>
@@ -671,7 +672,7 @@ const AchievementsPage = () => {
                       sx={{
                         width: 60,
                         height: 60,
-                        mr: 3,
+                        marginInlineEnd: 3,
                         bgcolor: 'rgba(255,255,255,0.2)',
                         backdropFilter: 'blur(10px)'
                       }}
@@ -743,7 +744,7 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderLeft: '5px solid #667eea',
+                borderInlineStart: '5px solid #667eea',
                 '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
               }}>
                 <CardContent sx={{ p: 3 }}>
@@ -767,7 +768,7 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderLeft: '5px solid #4caf50',
+                borderInlineStart: '5px solid #4caf50',
                 '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
               }}>
                 <CardContent sx={{ p: 3 }}>
@@ -791,7 +792,7 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderLeft: '5px solid #2196f3',
+                borderInlineStart: '5px solid #2196f3',
                 '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
               }}>
                 <CardContent sx={{ p: 3 }}>
@@ -815,7 +816,7 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderLeft: '5px solid #ff9800',
+                borderInlineStart: '5px solid #ff9800',
                 '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
               }}>
                 <CardContent sx={{ p: 3 }}>
@@ -1904,7 +1905,7 @@ const AchievementsPage = () => {
           </Typography>
         </Alert>
       </Snackbar>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

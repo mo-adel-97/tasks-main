@@ -1250,7 +1250,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                       )
                     }
                     InputLabelProps={{ shrink: true }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 ) : (
                   <InfoField
                     compact={isCompact}
@@ -1459,8 +1459,8 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                     style: {
                                       textAlign: "center",
                                       padding: "4px"
-                                    }
-                                  }}
+                                    , direction: "ltr", unicodeBidi: "isolate" }
+                                  , dir: "ltr" }}
                                   sx={{
                                     mt: 0.2,
                                     "& .MuiInputBase-root": {
@@ -1552,8 +1552,8 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                   step: "0.01",
                                   style: {
                                     textAlign: "center"
-                                  }
-                                }}
+                                  , direction: "ltr", unicodeBidi: "isolate" }
+                                , dir: "ltr" }}
                                 sx={{ width: 95 }}
                               />
                             ) : (
@@ -1584,8 +1584,8 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                   step: "0.01",
                                   style: {
                                     textAlign: "center"
-                                  }
-                                }}
+                                  , direction: "ltr", unicodeBidi: "isolate" }
+                                , dir: "ltr" }}
                                 sx={{ width: 95 }}
                               />
                             ) : (
@@ -1615,8 +1615,8 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                                   step: "0.01",
                                   style: {
                                     textAlign: "center"
-                                  }
-                                }}
+                                  , direction: "ltr", unicodeBidi: "isolate" }
+                                , dir: "ltr" }}
                                 sx={{ width: 95 }}
                               />
                             ) : (

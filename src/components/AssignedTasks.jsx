@@ -1,3 +1,6 @@
+import { SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
 import { 
   ExpandMore as ExpandMoreIcon, 
@@ -20,7 +23,7 @@ import {
   Pagination, useMediaQuery, useTheme, AppBar, Toolbar
 } from '@mui/material';
 import axios from 'axios';
-import Sidebar from './Sidebar';
+
 import TaskStatusDialog from './DialogStutsChangePuplic';
 import SentTasks from './SentTasksPuplic';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -62,7 +65,7 @@ function getUserFromStorage() {
 
 export default function AssignedTasks() {
   const theme = useTheme();
-  const isDesktop = useMediaQuery('(min-width:1600px)', { noSsr: true });
+  const isDesktop = useMediaQuery(SIDEBAR_DESKTOP_QUERY, { noSsr: true });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -573,11 +576,8 @@ const parseExternalAssignedTo = (assignedToData) => {
 
 if (loading || externalLoading) {
   return (
-    <>
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
+      
 
       {!isDesktop && (
         <AppBar
@@ -647,14 +647,16 @@ if (loading || externalLoading) {
 
       <Box
         sx={{
-          ml: isDesktop ? '280px' : 0,
-          mr: 0,
-          p: { xs: 1, sm: 1.25, md: 2 },
-          width: isDesktop ? 'calc(100% - 280px)' : '100%',
+          p: {
+            xs: 1,
+            sm: 1.25,
+            md: 2
+          },
           boxSizing: 'border-box',
           minWidth: 0,
           maxWidth: '100%',
-          overflowX: 'hidden'
+          overflowX: 'hidden',
+          ...navigationContentSx
         }}
       >
         <Box sx={{ 
@@ -666,16 +668,13 @@ if (loading || externalLoading) {
           <CircularProgress sx={{ color: colorPalette.primary }} />
         </Box>
       </Box>
-    </>
+    </></NavigationShell>
   );
 }
 
   return (
-    <>
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
+      
 
       {!isDesktop && (
         <AppBar
@@ -745,40 +744,79 @@ if (loading || externalLoading) {
 
       <Box
         sx={{
-          // حجز مساحة السايدبار في اتجاه المشروع الحالي.
-          ml: isDesktop ? '280px' : 0,
-          mr: 0,
-          width: isDesktop ? 'calc(100% - 280px)' : '100%',
-          p: isDesktop ? '20px' : { xs: 0.7, sm: 1, md: 1.35 },
-          pt: isDesktop ? '20px' : { xs: '64px', sm: '70px', md: '74px' },
-          pb: isDesktop ? '20px' : { xs: 1.5, sm: 2, md: 2.5 },
+          p: isDesktop ? '20px' : {
+            xs: 0.7,
+            sm: 1,
+            md: 1.35
+          },
+          pt: isDesktop ? '20px' : {
+            xs: '64px',
+            sm: '70px',
+            md: '74px'
+          },
+          pb: isDesktop ? '20px' : {
+            xs: 1.5,
+            sm: 2,
+            md: 2.5
+          },
           backgroundColor: colorPalette.background,
           boxSizing: 'border-box',
           minWidth: 0,
           maxWidth: '100%',
           overflowX: 'hidden',
-
-          // تصغير الموبايل/التابلت فقط
           '& .MuiTypography-h4': {
-            fontSize: isDesktop ? undefined : { xs: '0.88rem', sm: '1rem', md: '1.12rem' }
+            fontSize: isDesktop ? undefined : {
+              xs: '0.88rem',
+              sm: '1rem',
+              md: '1.12rem'
+            }
           },
           '& .MuiTypography-h6': {
-            fontSize: isDesktop ? undefined : { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' }
+            fontSize: isDesktop ? undefined : {
+              xs: '0.68rem',
+              sm: '0.76rem',
+              md: '0.86rem'
+            }
           },
           '& .MuiTypography-body2': {
-            fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' }
+            fontSize: isDesktop ? undefined : {
+              xs: '0.56rem',
+              sm: '0.64rem',
+              md: '0.72rem'
+            }
           },
           '& .MuiButton-root': {
-            fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.64rem', md: '0.72rem' },
-            minHeight: isDesktop ? undefined : { xs: 31, sm: 34, md: 36 }
+            fontSize: isDesktop ? undefined : {
+              xs: '0.56rem',
+              sm: '0.64rem',
+              md: '0.72rem'
+            },
+            minHeight: isDesktop ? undefined : {
+              xs: 31,
+              sm: 34,
+              md: 36
+            }
           },
           '& .MuiChip-root': {
-            fontSize: isDesktop ? undefined : { xs: '0.52rem', sm: '0.58rem', md: '0.66rem' },
-            height: isDesktop ? undefined : { xs: 23, sm: 25, md: 28 }
+            fontSize: isDesktop ? undefined : {
+              xs: '0.52rem',
+              sm: '0.58rem',
+              md: '0.66rem'
+            },
+            height: isDesktop ? undefined : {
+              xs: 23,
+              sm: 25,
+              md: 28
+            }
           },
           '& .MuiInputBase-root, & .MuiInputLabel-root': {
-            fontSize: isDesktop ? undefined : { xs: '0.64rem', sm: '0.72rem', md: '0.8rem' }
-          }
+            fontSize: isDesktop ? undefined : {
+              xs: '0.64rem',
+              sm: '0.72rem',
+              md: '0.8rem'
+            }
+          },
+          ...navigationContentSx
         }}
       >
         {/* Header section */}
@@ -985,7 +1023,7 @@ if (loading || externalLoading) {
                           p: 2,
                           backgroundColor: colorPalette.primaryLighter,
                           borderRadius: 2,
-                          borderLeft: `4px solid ${colorPalette.primary}`
+                          borderInlineStart: `4px solid ${colorPalette.primary}`
                         }}>
                           <Typography variant="body2" sx={{ color: colorPalette.textDark }}>
                             {externalTaskData?.TaskDescription || task.taskDescription || "لا يوجد وصف للمهمة"}
@@ -1066,7 +1104,7 @@ if (loading || externalLoading) {
                             p: 1.5,
                             backgroundColor: '#f3e5f5',
                             borderRadius: 2,
-                            borderLeft: '4px solid #9c27b0'
+                            borderInlineStart: '4px solid #9c27b0'
                           }}>
                             <Typography variant="body2" fontWeight="bold" color="secondary.main">
                               آخر تعديل خارجي: {format(new Date(externalTaskData.ModifiedDate), 'yyyy/MM/dd HH:mm', { locale: arLocale })}
@@ -1237,7 +1275,7 @@ if (loading || externalLoading) {
           color: colorPalette.textDark
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <AttachFileIcon sx={{ mr: 1, color: colorPalette.primary }} />
+            <AttachFileIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} />
             <span>عرض المرفق</span>
           </Box>
           <IconButton onClick={handleCloseAttachment}>
@@ -1297,7 +1335,7 @@ if (loading || externalLoading) {
           color: colorPalette.textDark
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <SendIcon sx={{ mr: 1, color: colorPalette.primary }} />
+            <SendIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} />
             <span>تمرير المهمة إلى موظفين آخرين</span>
           </Box>
           <IconButton onClick={handleClosePassDialog}>
@@ -1327,7 +1365,7 @@ if (loading || externalLoading) {
                     sx={{ 
                       width: 32, 
                       height: 32, 
-                      mr: 1,
+                      marginInlineEnd: 1,
                       backgroundColor: stringToColor(option.fullName)
                     }}
                   >
@@ -1425,7 +1463,7 @@ if (loading || externalLoading) {
           color: colorPalette.textDark
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CheckCircleOutlineIcon sx={{ mr: 1, color: colorPalette.primary }} />
+            <CheckCircleOutlineIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} />
             <span>سجل التحديثات</span>
           </Box>
           <IconButton onClick={() => setUpdatesDialogOpen(false)}>
@@ -1549,7 +1587,7 @@ if (loading || externalLoading) {
           </Box>
         </DialogContent>
       </Dialog>
-    </>
+    </></NavigationShell>
   );
 }
 

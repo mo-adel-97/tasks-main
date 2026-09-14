@@ -609,10 +609,10 @@ export default function Login() {
                     key={feature.title}
                     direction={{ xs: 'column', md: 'row' }}
                     spacing={{ xs: 0.7, md: 1.5 }}
-                    alignItems="left"
+                    alignItems="flex-start"
                     sx={{
                       p: { xs: 0.55, sm: 1.05, md: 1.6 },
-                      textAlign: { xs: 'center', md: 'left' },
+                      textAlign: { xs: 'center', md: 'start' },
                       borderRadius: { xs: 1.6, sm: 2.2, md: 2.5 },
                       backgroundColor: 'rgba(255,255,255,0.10)',
                       border: '1px solid rgba(255,255,255,0.14)'

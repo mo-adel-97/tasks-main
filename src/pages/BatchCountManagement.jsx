@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -23,17 +25,17 @@ import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primary = "#057546";
 const primaryDark = "#034d31";
@@ -1010,8 +1012,8 @@ export default function BatchCountManagement() {
                     }
                     inputProps={{
                       min: 0,
-                      style: { textAlign: "center" }
-                    }}
+                      style: { textAlign: "center" , direction: "ltr", unicodeBidi: "isolate" }
+                    , dir: "ltr" }}
                     sx={{
                       "& .MuiInputBase-root": {
                         minHeight: { xs: 29, sm: 33 }
@@ -1073,21 +1075,16 @@ export default function BatchCountManagement() {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: soft }}>
-      {isDesktop && (
-        <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
-          <StableSidebar />
-        </Box>
-      )}
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ display: "flex", minHeight: "100vh", bgcolor: soft }}>
+      
 
-      {!isDesktop && (
-        <StableSidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() => setMobileSidebarOpen(false)}
-        />
-      )}
+      
 
-      <Box sx={{ flex: 1, minWidth: 0 }}>{page}</Box>
-    </Box>
+      <Box sx={{
+        flex: 1,
+        minWidth: 0,
+        ...navigationContentSx
+      }}>{page}</Box>
+    </Box></NavigationShell>
   );
 }

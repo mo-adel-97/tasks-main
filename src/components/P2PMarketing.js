@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -48,7 +50,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { format } from "date-fns";
 import { arSA } from "date-fns/locale";
-import Sidebar from "./Sidebar";
+
 import Swal from "sweetalert2";
 
 /** Brand */
@@ -586,16 +588,18 @@ const P2PMarketing = () => {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", direction: layoutDir, backgroundColor: brand.bg }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: "flex", minHeight: "100vh", direction: layoutDir, backgroundColor: brand.bg }}>
+      
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          ml: { xs: 0, md: `${280}px` },
-          width: { xs: "100%", md: `calc(100% - ${280}px)` },
-          p: { xs: 2, md: 3 },
+          p: {
+            xs: 2,
+            md: 3
+          },
+          ...navigationContentSx
         }}
       >
         <Container maxWidth="xl" sx={{ mt: 2 }}>
@@ -615,10 +619,10 @@ const P2PMarketing = () => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <HandshakeIcon sx={{ fontSize: 40 }} />
                 <Box dir={arabicDir}>
-                  <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.5, textAlign: "left" }}>
+                  <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.5, textAlign: "start" }}>
                     P2P - التسويق الخارجي
                   </Typography>
-                  <Typography variant="body1" sx={{ opacity: 0.95, textAlign: "left" }}>
+                  <Typography variant="body1" sx={{ opacity: 0.95, textAlign: "start" }}>
                     نظام إدارة بيانات التسويق الخارجي
                   </Typography>
                 </Box>
@@ -674,10 +678,10 @@ const P2PMarketing = () => {
               <Grid key={x.title} item xs={12} sm={6} md={3}>
                 <Card elevation={0} sx={{ borderRadius: 3, border: `1px solid ${brand.border}`, backgroundColor: brand.paper }}>
                   <CardContent dir={arabicDir}>
-                    <Typography variant="h6" sx={{ color: brand.textMuted, textAlign: "left" }}>
+                    <Typography variant="h6" sx={{ color: brand.textMuted, textAlign: "start" }}>
                       {x.title}
                     </Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 900, color: brand.text, textAlign: "left", mt: 1 }}>
+                    <Typography variant="h3" sx={{ fontWeight: 900, color: brand.text, textAlign: "start", mt: 1 }}>
                       {x.value}
                     </Typography>
                   </CardContent>
@@ -733,7 +737,7 @@ const P2PMarketing = () => {
                 <CircularProgress />
               </Box>
             ) : filteredRecords.length === 0 ? (
-              <Box dir={arabicDir} sx={{ p: 4, textAlign: "left" }}>
+              <Box dir={arabicDir} sx={{ p: 4, textAlign: "start" }}>
                 <Typography variant="h6" sx={{ color: brand.textMuted }}>
                   {searchTerm ? "لا توجد نتائج مطابقة للبحث" : "لا توجد سجلات، قم بإضافة سجل جديد"}
                 </Typography>
@@ -754,7 +758,7 @@ const P2PMarketing = () => {
                     "& .MuiDataGrid-cell": { borderColor: brand.border, color: brand.text },
                     "& .MuiDataGrid-row:hover": { backgroundColor: "rgba(128,180,158,0.10)" },
                     "& .MuiDataGrid-footerContainer": { borderTop: `1px solid ${brand.border}` },
-                    "& .MuiDataGrid-cellContent": { direction: "rtl", textAlign: "left", width: "100%" },
+                    "& .MuiDataGrid-cellContent": { direction: "rtl", textAlign: "start", width: "100%" },
                   }}
                 />
               </Box>
@@ -1042,7 +1046,7 @@ const P2PMarketing = () => {
               <Typography>لا يوجد بيانات</Typography>
             ) : (
               <Box>
-                <Typography sx={{ fontWeight: 900, mb: 1, textAlign: "left" }}>
+                <Typography sx={{ fontWeight: 900, mb: 1, textAlign: "start" }}>
                   {viewRecord.companyName || "-"}
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
@@ -1164,7 +1168,7 @@ const P2PMarketing = () => {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

@@ -1,9 +1,13 @@
+import { HEADER_NAVIGATION } from '../config/sidebarNavigation';
+import { SIDEBAR_DESKTOP_QUERY, getSidebarOffset } from '../config/sidebarLayout';
 import React from "react";
+import { useMediaQuery } from "@mui/material";
 import { NavLink } from "react-router-dom";
 
 const Header = ({ user, branch, onLogout }) => {
+  const isDesktop = useMediaQuery(SIDEBAR_DESKTOP_QUERY, { noSsr: true });
   return (
-    <header className="main-header" style={headerStyles}>
+    <header className="main-header" style={{ ...headerStyles, marginRight: getSidebarOffset('standard', isDesktop) }}>
       {/* الجانب الأيسر - الشعار والمعلومات */}
       <div style={leftSectionStyles}>
         <div style={logoStyles}>
@@ -23,22 +27,12 @@ const Header = ({ user, branch, onLogout }) => {
       <div style={rightSectionStyles}>
         {/* قائمة التنقل */}
         <nav style={navStyles}>
-          <NavLink 
-            to="/dashboard/create-exam" 
-            style={({ isActive }) => 
-              isActive ? { ...navLinkStyles, ...navLinkActiveStyles } : navLinkStyles
-            }
-          >
-            إضافة اختبار
-          </NavLink>
-          <NavLink 
-            to="/dashboard/tests" 
-            style={({ isActive }) => 
-              isActive ? { ...navLinkStyles, ...navLinkActiveStyles } : navLinkStyles
-            }
-          >
-            طباعة أوراق الاختبار
-          </NavLink>
+          {HEADER_NAVIGATION.map((item) => (
+            <NavLink key={item.to} to={item.to}
+              style={({ isActive }) => isActive ? { ...navLinkStyles, ...navLinkActiveStyles } : navLinkStyles}>
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
 
         {/* معلومات المستخدم */}
@@ -57,7 +51,7 @@ const Header = ({ user, branch, onLogout }) => {
 const headerStyles = {
   direction: 'rtl',
   display: 'flex',
-  marginRight:"280px",
+  textAlign: 'start',
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '12px 24px',

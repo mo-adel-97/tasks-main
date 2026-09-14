@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -27,7 +29,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import Sidebar from "./Sidebar";
+
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -35,7 +37,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-const SIDEBAR_WIDTH = 150;
+
 
 // Backend base
 const BASE_URL = "https://filesregsiteration.sstli.com";
@@ -283,9 +285,9 @@ export default function ExceptionsListsAdmin() {
   }, [rows, branches]);
 
   return (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
-        direction: "ltr",
+        direction: "rtl",
         fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
         minHeight: "100vh",
         background: "#f8fbfa",
@@ -293,12 +295,18 @@ export default function ExceptionsListsAdmin() {
       }}
     >
       {/* Sidebar */}
-      <Box sx={{ width: { xs: "100%", md: `${SIDEBAR_WIDTH}px` }, flexShrink: 0 }}>
-        <Sidebar />
-      </Box>
+      
 
       {/* Content */}
-      <Box sx={{ flex: 1, width: "100%", ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` }, p: { xs: 2, md: 3 } }}>
+      <Box sx={{
+        flex: 1,
+        width: "100%",
+        p: {
+          xs: 2,
+          md: 3
+        },
+        ...navigationContentSx
+      }}>
         {/* Header */}
         <Box
           sx={{
@@ -311,10 +319,10 @@ export default function ExceptionsListsAdmin() {
           }}
         >
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "left" }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "start" }}>
               قوائم الاستثناءات — Admin
             </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5, textAlign: "left" }}>
+            <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5, textAlign: "start" }}>
               عرض جميع الفروع — المستخدم الحالي: {user?.userName || "—"}
             </Typography>
           </Box>
@@ -342,7 +350,7 @@ export default function ExceptionsListsAdmin() {
           <Grid item xs={12}>
             <Card sx={{ borderRadius: 3, boxShadow: "0 8px 25px rgba(0,0,0,0.06)" }}>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "left" }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "start" }}>
                   فلاتر
                 </Typography>
 
@@ -408,7 +416,7 @@ export default function ExceptionsListsAdmin() {
           <Grid item xs={12}>
             <Card sx={{ borderRadius: 3, boxShadow: "0 8px 25px rgba(0,0,0,0.06)" }}>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "left" }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "start" }}>
                   القائمة (كل الفروع)
                 </Typography>
 
@@ -548,6 +556,6 @@ export default function ExceptionsListsAdmin() {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

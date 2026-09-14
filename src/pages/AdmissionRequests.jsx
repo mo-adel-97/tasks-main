@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import {
@@ -51,10 +53,10 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 
 const primaryColor = "#80b49e";
 const primaryDark = "#6a9a87";
@@ -1828,14 +1830,14 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
   const packageCourses = orderDetails?.packageCourses || [];
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         background: softBg,
         fontFamily: "Cairo, Arial, sans-serif",
-        direction: "ltr",
+        direction: "rtl",
         overflowX: "hidden"
       }}
     >
@@ -1865,12 +1867,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             background: "rgba(255,255,255,.97)",
             color: textColor,
             borderBottom: "1px solid #d7e8e0",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: { xs: "50px !important", sm: "56px !important" },
               px: { xs: 0.75, sm: 1 },
               gap: 0.8
@@ -1890,7 +1892,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             <Typography
               sx={{
                 flex: 1,
-                textAlign: "left",
+                textAlign: "start",
                 fontWeight: 900,
                 fontSize: { xs: "0.68rem", sm: "0.8rem" }
               }}
@@ -1901,10 +1903,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
 
       <Box
         component="main"
@@ -1920,18 +1919,20 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             md: 0.8
           },
           ml: 0,
-          mt: { xs: "50px", sm: "56px" },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
           width: "100%",
           minWidth: 0,
           minHeight: "100dvh",
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -2013,7 +2014,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     fontWeight: 800
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 label="الفترة إلى"
@@ -2030,7 +2031,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     fontWeight: 800
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <Button
                 variant="contained"
@@ -2249,7 +2250,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
               sx={{
                 border: "none",
                 fontFamily: "Cairo, Arial, sans-serif",
-                direction: "ltr",
+                direction: "rtl",
 
                 "& .MuiDataGrid-main": {
                   overflow: "hidden"
@@ -3507,7 +3508,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

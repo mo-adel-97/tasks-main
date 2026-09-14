@@ -164,7 +164,7 @@ const TaskCard = ({ task, selected, onClick,getDeptName  }) => (
             fontSize: { xs: '0.58rem', sm: '0.68rem', md: '0.8rem' },
             backgroundColor: '#e3f2fd',
             color: '#1976d2',
-            mr: { xs: 0.7, sm: 1, md: 1.5 }
+            marginInlineEnd: { xs: 0.7, sm: 1, md: 1.5 }
           }}>
             {task.timeForDone}
           </Avatar>
@@ -807,7 +807,7 @@ export default function AddTaskDailog({
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, sm: 1.2, md: 1.8 } }}>
                     <Avatar sx={{ 
-                      mr: 2,
+                      marginInlineEnd: 2,
                       backgroundColor: 'primary.light',
                       color: 'primary.contrastText'
                     }}>
@@ -838,7 +838,7 @@ export default function AddTaskDailog({
                   {selectedTask?.attachments?.length > 0 && (
   <Box sx={{ mt: 4 }}>
     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
-      <AttachFileIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+      <AttachFileIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
       المرفقات المطلوبة
     </Typography>
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -875,7 +875,7 @@ export default function AddTaskDailog({
                   <DescriptionIcon
                     fontSize="small"
                     color={att.isRequired ? "error" : "action"}
-                    sx={{ mr: 1 }}
+                    sx={{ marginInlineEnd: 1 }}
                   />
                   <Typography sx={{
                     fontWeight: att.isRequired ? 700 : 600,
@@ -1005,13 +1005,13 @@ export default function AddTaskDailog({
                   height: '100%'
                 }}>
                   <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>
-                    <SendIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    <SendIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
                     إرسال المهمة
                   </Typography>
 
                   <Box sx={{ mb: { xs: 1.4, md: 2.5 } }}>
                     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
-                      <PeopleIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                      <PeopleIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
                       الموظفون المستلمون
                     </Typography>
                     <Autocomplete
@@ -1066,7 +1066,7 @@ export default function AddTaskDailog({
 
                   <Box sx={{ mb: { xs: 1.4, md: 2.5 } }}>
                     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
-                      <NotesIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                      <NotesIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
                       ملاحظات إضافية
                     </Typography>
                     <TextField
@@ -1089,7 +1089,7 @@ export default function AddTaskDailog({
 {[0, 1, 2, 3, 9].includes(currentUser.userJop) && (
   <Box sx={{ mb: { xs: 1.4, md: 2.5 } }}>
     <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
-      <ScheduleIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+      <ScheduleIcon fontSize="small" sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
       وقت التنفيذ المطلوب
     </Typography>
     <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: { xs: 0.7, md: 1.5 } }}>
@@ -1098,7 +1098,7 @@ export default function AddTaskDailog({
         value={requiredExecutionTime}
         onChange={e => setRequiredExecutionTime(e.target.value)}
         placeholder={selectedTask?.timeForDone?.toString() ?? ""}
-        inputProps={{ min: 1 }}
+        inputProps={{ min: 1 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
         variant="outlined"
         size="small"
         sx={{ 

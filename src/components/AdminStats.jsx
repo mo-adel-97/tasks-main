@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, CircularProgress, Grid, TextField, Autocomplete, Paper
@@ -14,7 +16,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import Sidebar from './SidebarAdmin';
+
 
 ChartJS.register(
   CategoryScale,
@@ -93,9 +95,15 @@ export default function AdminStats() {
   }
 
   return (
-    <>
-      <Sidebar />
-      <Box sx={{ flex: 1, p: 4, ml: '280px', bgcolor: '#f9fafb', minHeight: '100vh' }}>
+    <NavigationShell variant="admin" ><>
+      
+      <Box sx={{
+        flex: 1,
+        p: 4,
+        bgcolor: '#f9fafb',
+        minHeight: '100vh',
+        ...navigationContentSx
+      }}>
         <Typography variant="h5" sx={{ mb: 4, fontWeight: 'bold' }}>
           📊 احصائيات المهام 
         </Typography>
@@ -133,6 +141,6 @@ export default function AdminStats() {
           </Grid>
         </Grid>
       </Box>
-    </>
+    </></NavigationShell>
   );
 }

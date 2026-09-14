@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from './config/sidebarLayout';
+import NavigationShell from './components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -55,11 +57,11 @@ import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import StudyApprovalDialog from "./components/StudyApprovalDialog";
 import Swal from "sweetalert2";
-import Sidebar from "./components/Sidebar";
+
 import instituteLogo from "./images/logo.jpg";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const API_BASE_URL = "http://localhost:5258";
 
 const primaryColor = "#057546";
@@ -709,7 +711,7 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
                     value={data.nationalId || ""}
                     InputProps={{ readOnly: true }}
                     sx={compactFieldSx}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
                 <Grid item xs={6} sm={3} md={4}>
@@ -1027,7 +1029,7 @@ function PaymentDetailsDialog({
                     value={data.nationalId || ""}
                     InputProps={{ readOnly: true }}
                     sx={compactFieldSx}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
                 <Grid item xs={6} sm={3} md={4}>
@@ -1258,7 +1260,7 @@ function ConvertVipDialog({
       onClose={saving ? undefined : onClose}
       maxWidth="sm"
       fullWidth
-      dir="ltr"
+      dir="rtl"
     >
       <Box
         sx={{
@@ -1293,8 +1295,8 @@ function ConvertVipDialog({
           <Stack spacing={0.8}>
             <Typography><strong>رقم الطلب:</strong> {row?.code || "-"}</Typography>
             <Typography><strong>اسم العميل:</strong> {row?.studentName || "-"}</Typography>
-            <Typography><strong>رقم الهوية:</strong> {row?.nationalId || "-"}</Typography>
-            <Typography><strong>رقم الجوال:</strong> {row?.studentTel || "-"}</Typography>
+            <Typography><strong>رقم الهوية:</strong> <bdi dir="ltr">{row?.nationalId || "-"}</bdi></Typography>
+            <Typography><strong>رقم الجوال:</strong> <bdi dir="ltr">{row?.studentTel || "-"}</bdi></Typography>
             <Typography><strong>مسؤول التحويل:</strong> {userName || "-"}</Typography>
             <Typography>
               <strong>الحالة:</strong>{" "}
@@ -2915,7 +2917,7 @@ export default function MyRequests() {
   const selectedTab = tabs.find((item) => item.key === activeTab);
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       dir="rtl"
       sx={{
         minHeight: "100dvh",
@@ -2976,10 +2978,7 @@ export default function MyRequests() {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
 
       <Box
         sx={{
@@ -2988,14 +2987,18 @@ export default function MyRequests() {
           minWidth: 0,
           ml: 0,
           mr: 0,
-          p: { xs: 0.45, sm: 0.65, md: 0.9, lg: 1.2 },
+          p: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.9,
+            lg: 1.2
+          },
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             p: 2.2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -3144,7 +3147,7 @@ export default function MyRequests() {
                           onChange={(event) => setFromDate(event.target.value)}
                           InputLabelProps={{ shrink: true }}
                           disabled={showAll}
-                          inputProps={{ max: toDate || undefined }}
+                          inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                           sx={{
                             width: "100%",
                             minWidth: 0,
@@ -3169,7 +3172,7 @@ export default function MyRequests() {
                           onChange={(event) => setToDate(event.target.value)}
                           InputLabelProps={{ shrink: true }}
                           disabled={showAll}
-                          inputProps={{ min: fromDate || undefined }}
+                          inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                           sx={{
                             width: "100%",
                             minWidth: 0,
@@ -3239,7 +3242,7 @@ export default function MyRequests() {
                     height: isPhone ? "calc(100dvh - 300px)" : isTablet ? "calc(100dvh - 330px)" : 590,
                     minHeight: isPhone ? 360 : isTablet ? 430 : 590,
                     width: "100%",
-                    direction: "ltr"
+                    direction: "rtl"
                   }}
                 >
                   <DataGrid
@@ -3317,7 +3320,7 @@ export default function MyRequests() {
             ) : (
               <Paper
                 variant="outlined"
-                dir="ltr"
+                dir="rtl"
                 sx={{
                   minHeight: 450,
                   borderRadius: 3,
@@ -3503,6 +3506,6 @@ export default function MyRequests() {
         }}
         onConfirm={convertToVip}
       />
-    </Box>
+    </Box></NavigationShell>
   );
 }

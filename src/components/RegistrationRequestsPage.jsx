@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -19,10 +21,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -115,7 +117,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
   }, []);
 
   return (
-    <Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100vw", overflowX: "hidden", background: "#f5f8f7", direction: "ltr" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100vw", overflowX: "hidden", background: "#f5f8f7", direction: "rtl" }}>
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -140,12 +142,12 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
             backdropFilter: "blur(14px)",
             color: "#17372b",
             borderBottom: "1px solid rgba(5,117,70,.12)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: { xs: "50px !important", sm: "56px !important" },
               px: { xs: 0.75, sm: 1 },
               gap: { xs: 0.7, sm: 0.9 }
@@ -179,7 +181,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 fontWeight: 900,
                 fontSize: { xs: "0.68rem", sm: "0.8rem" },
                 color: "#17372b",
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -191,7 +193,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
         </AppBar>
       )}
 
-      <Sidebar mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)} />
+      
 
       <Box
         component="main"
@@ -200,17 +202,23 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
           maxWidth: "100%",
           minWidth: 0,
           ml: 0,
-          mt: { xs: "50px", sm: "56px" },
-          p: { xs: 0.55, sm: 0.8, md: 1 },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          p: {
+            xs: 0.55,
+            sm: 0.8,
+            md: 1
+          },
           boxSizing: "border-box",
-          direction: "ltr",
+          direction: "rtl",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            marginLeft: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 3
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -280,8 +288,8 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 }
               }}
             >
-              <TextField type="date" label="من تاريخ" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth />
-              <TextField type="date" label="إلى تاريخ" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth />
+              <TextField type="date" label="من تاريخ" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+              <TextField type="date" label="إلى تاريخ" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <Button variant="contained" startIcon={<SearchIcon />} onClick={loadData} disabled={loading} sx={{ fontFamily: "Cairo", fontWeight: 800, background: "#057546" }}>
                 عرض
@@ -400,9 +408,9 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                     width: "100%",
                     minWidth: 850,
                     borderCollapse: "collapse",
-                    direction: "ltr",
-                    "& th": { p: 1.5, background: "#057546", color: "#fff", fontFamily: "Cairo", fontWeight: 900, textAlign: "left" },
-                    "& td": { p: 1.35, borderBottom: "1px solid rgba(5,117,70,.09)", fontFamily: "Cairo", textAlign: "left" },
+                    direction: "rtl",
+                    "& th": { p: 1.5, background: "#057546", color: "#fff", fontFamily: "Cairo", fontWeight: 900, textAlign: "start" },
+                    "& td": { p: 1.35, borderBottom: "1px solid rgba(5,117,70,.09)", fontFamily: "Cairo", textAlign: "start" },
                     "& tbody tr:hover": { background: "#f1faf6" }
                   }}
                 >
@@ -421,8 +429,8 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                     ) : rows.map((row, index) => (
                       <tr key={`${row.nationalIdNumber}-${index}`}>
                         <td>{row.name || "-"}</td>
-                        <td>{row.phoneNumber || "-"}</td>
-                        <td>{row.nationalIdNumber || "-"}</td>
+                        <td><bdi dir="ltr">{row.phoneNumber || "-"}</bdi></td>
+                        <td><bdi dir="ltr">{row.nationalIdNumber || "-"}</bdi></td>
                         <td>{row.diploma || "-"}</td>
                         <td>{row.city || "-"}</td>
                       </tr>
@@ -434,7 +442,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

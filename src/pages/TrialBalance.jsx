@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -36,17 +38,17 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primary = "#057546";
 const primaryDark = "#034d31";
@@ -1062,7 +1064,11 @@ export default function TrialBalance() {
   }
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={
+            mobileSidebarOpen
+          } onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><Box
       dir="rtl"
       sx={{
         minHeight: "100vh",
@@ -1071,32 +1077,18 @@ export default function TrialBalance() {
           "Tahoma, Arial, sans-serif"
       }}
     >
-      {isDesktop ? (
-        <StableSidebar />
-      ) : (
-        <StableSidebar
-          mobileOpen={
-            mobileSidebarOpen
-          }
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
-      )}
+      
 
       <Box
         component="main"
         sx={{
           minHeight: "100vh",
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0,
-
           p: {
             xs: 0.6,
             sm: 1,
             lg: 1.2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1243,7 +1235,7 @@ export default function TrialBalance() {
                   InputLabelProps={{
                     shrink: true
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   size="small"
@@ -1258,7 +1250,7 @@ export default function TrialBalance() {
                   InputLabelProps={{
                     shrink: true
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   size="small"
@@ -2156,6 +2148,6 @@ export default function TrialBalance() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

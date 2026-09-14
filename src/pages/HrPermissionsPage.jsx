@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -44,7 +46,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import Sidebar from "../components/Sidebar";
+
 import HrPermissionWorkflowManager from "./components/HrPermissionWorkflowManager";
 
 const API_BASE_URL =
@@ -52,8 +54,8 @@ const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";
@@ -543,17 +545,17 @@ export default function HrPermissionsPage() {
   );
 
   return (
-    <Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: bg }}>
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: bg }}>
+      
 
       <Box
         component="main"
         sx={{
-          p: { xs: 1, md: 1.5 },
-          ml: isDesktop ? `${SIDEBAR_WIDTH}px` : 0
+          p: {
+            xs: 1,
+            md: 1.5
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -640,7 +642,7 @@ export default function HrPermissionsPage() {
               value={filters.fromDate}
               onChange={(e) => setFilters((x) => ({ ...x, fromDate: e.target.value }))}
               InputLabelProps={{ shrink: true }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField
               type="date"
               size="small"
@@ -648,7 +650,7 @@ export default function HrPermissionsPage() {
               value={filters.toDate}
               onChange={(e) => setFilters((x) => ({ ...x, toDate: e.target.value }))}
               InputLabelProps={{ shrink: true }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <FormControl size="small">
               <InputLabel>الفرع</InputLabel>
               <Select
@@ -860,7 +862,7 @@ export default function HrPermissionsPage() {
                 onChange={(e) => setForm((x) => ({ ...x, permissionDate: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
                 required
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <FormControl fullWidth required>
                 <InputLabel>نوع الإذن</InputLabel>
@@ -879,14 +881,14 @@ export default function HrPermissionsPage() {
                     fullWidth type="time" label="السماح بالحضور حتى" value={form.toTime}
                     onChange={(e) => setForm((x) => ({ ...x, toTime: e.target.value }))}
                     InputLabelProps={{ shrink: true }} required
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 )}
                 {Number(form.permissionType) === 2 && (
                   <TextField
                     fullWidth type="time" label="السماح بالانصراف من" value={form.fromTime}
                     onChange={(e) => setForm((x) => ({ ...x, fromTime: e.target.value }))}
                     InputLabelProps={{ shrink: true }} required
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 )}
                 {Number(form.permissionType) === 3 && (
                   <Stack direction="row" spacing={1}>
@@ -894,12 +896,12 @@ export default function HrPermissionsPage() {
                       fullWidth type="time" label="وقت الخروج" value={form.fromTime}
                       onChange={(e) => setForm((x) => ({ ...x, fromTime: e.target.value }))}
                       InputLabelProps={{ shrink: true }} required
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <TextField
                       fullWidth type="time" label="وقت العودة" value={form.toTime}
                       onChange={(e) => setForm((x) => ({ ...x, toTime: e.target.value }))}
                       InputLabelProps={{ shrink: true }} required
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   </Stack>
                 )}
                 {Number(form.permissionType) === 4 && (
@@ -937,6 +939,6 @@ export default function HrPermissionsPage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

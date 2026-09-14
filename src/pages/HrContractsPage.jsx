@@ -1,10 +1,6 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   Alert,
@@ -54,17 +50,17 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const PAGE_DIRECTION = "rtl";
 const PAGE_TEXT_ALIGN = "left";
@@ -1968,42 +1964,8 @@ export default function HrContractsPage() {
   );
 
   return (
-    <>
-      {isDesktop ? (
-        <Box
-          sx={{
-            display: "flex",
-            minHeight: "100vh"
-          }}
-        >
-          <Box
-            sx={{
-              width: SIDEBAR_WIDTH,
-              flexShrink: 0
-            }}
-          >
-            <StableSidebar />
-          </Box>
-
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            {content}
-          </Box>
-        </Box>
-      ) : (
-        <>
-          {content}
-
-          <Dialog
-            open={mobileSidebarOpen}
-            onClose={() =>
-              setMobileSidebarOpen(false)
-            }
-            fullScreen
-          >
-            <StableSidebar />
-          </Dialog>
-        </>
-      )}
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
+      <Box sx={navigationContentSx}>{content}</Box>
 
       <Dialog
         open={alertsOpen}
@@ -2672,7 +2634,7 @@ export default function HrContractsPage() {
                 InputLabelProps={{
                   shrink: true
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="date"
@@ -2690,7 +2652,7 @@ export default function HrContractsPage() {
                 disabled={
                   Number(form.contractType) === 2
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="number"
@@ -2703,7 +2665,7 @@ export default function HrContractsPage() {
                       e.target.value
                   }))
                 }
-                inputProps={{ min: 0 }}
+                inputProps={{ min: 0 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
 
               <TextField
@@ -2720,7 +2682,7 @@ export default function HrContractsPage() {
                 inputProps={{
                   min: 0,
                   max: 365
-                }}
+                , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
             </Box>
 
@@ -2983,6 +2945,6 @@ export default function HrContractsPage() {
           )}
         </DialogContent>
       </Dialog>
-    </>
+    </></NavigationShell>
   );
 }

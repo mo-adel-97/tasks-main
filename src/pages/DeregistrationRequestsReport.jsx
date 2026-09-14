@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -51,12 +53,12 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
+
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1335,12 +1337,14 @@ const DeregistrationRequestsReport =
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><Box
       sx={{
         minHeight: "100vh",
         maxWidth: "100vw",
         overflowX: "hidden",
-        direction: "ltr",
+        direction: "rtl",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)"
       }}
@@ -1375,7 +1379,7 @@ const DeregistrationRequestsReport =
               color: "#173b2b",
               borderBottom:
                 "1px solid rgba(5,117,70,.12)",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Toolbar
@@ -1433,7 +1437,7 @@ const DeregistrationRequestsReport =
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
-                  textAlign: "left"
+                  textAlign: "start"
                 }}
               >
                 طلبات طي القيد
@@ -1443,38 +1447,16 @@ const DeregistrationRequestsReport =
         </>
       )}
 
-      {isDesktop ? (
-        <Sidebar />
-      ) : (
-        <Sidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
-      )}
+      
 
       <Box
         component="main"
         sx={{
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0,
-          width: isDesktop
-            ? `calc(100% - ${SIDEBAR_WIDTH}px)`
-            : "100%",
-          mt: isDesktop
-            ? 0
-            : isPhone
-              ? "50px"
-              : "56px",
-          p: isDesktop
-            ? 2
-            : isPhone
-              ? 0.45
-              : 0.75,
+          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
+          p: isDesktop ? 2 : isPhone ? 0.45 : 0.75,
           boxSizing: "border-box",
-          overflowX: "hidden"
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1729,7 +1711,7 @@ const DeregistrationRequestsReport =
                 shrink: true
               }}
               size="small"
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               type="date"
@@ -1744,7 +1726,7 @@ const DeregistrationRequestsReport =
                 shrink: true
               }}
               size="small"
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Button
               variant="contained"
@@ -1818,7 +1800,7 @@ const DeregistrationRequestsReport =
                         debounceMs: 350
                       },
                       sx: {
-                        direction: "ltr"
+                        direction: "rtl"
                       }
                     }
                   }
@@ -1858,7 +1840,7 @@ const DeregistrationRequestsReport =
             }
             sx={{
               border: 0,
-              direction: "ltr",
+              direction: "rtl",
               fontFamily: "Cairo",
 
               /*
@@ -1967,7 +1949,7 @@ const DeregistrationRequestsReport =
                       overflowX: "hidden"
                     },
                     "& .MuiDataGrid-virtualScroller": {
-                      direction: "ltr",
+                      direction: "rtl",
                       overflowX:
                         "hidden !important"
                     },
@@ -2253,7 +2235,7 @@ const DeregistrationRequestsReport =
               maxHeight: !isDesktop
                 ? "86dvh"
                 : undefined,
-              direction: "ltr"
+              direction: "rtl"
             }
           }}
         >
@@ -2498,7 +2480,7 @@ const DeregistrationRequestsReport =
           maxWidth="sm"
           PaperProps={{
             sx: {
-              direction: "ltr",
+              direction: "rtl",
               borderRadius: isPhone
                 ? 2.5
                 : 4,
@@ -2575,7 +2557,7 @@ const DeregistrationRequestsReport =
         </Dialog>
 
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

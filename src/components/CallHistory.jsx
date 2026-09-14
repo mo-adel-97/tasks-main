@@ -677,8 +677,8 @@ const handleUpdateCall = async () => {
                     <TableRow>
                       <TableCell sx={{ fontWeight: 'bold' }}>المشرف الحالي</TableCell>
                       <TableCell>
-                        {allUsers.find(u => u.guid === editingCall.supervisorGuid)?.fullName || 'غير معروف'} - 
-                        {allUsers.find(u => u.guid === editingCall.supervisorGuid)?.branchName || 'فرع غير معروف'}
+                        <bdi dir="ltr">{allUsers.find(u => u.guid === editingCall.supervisorGuid)?.fullName || 'غير معروف'}</bdi> - 
+                        <bdi dir="ltr">{allUsers.find(u => u.guid === editingCall.supervisorGuid)?.branchName || 'فرع غير معروف'}</bdi>
                       </TableCell>
                     </TableRow>
                   )}

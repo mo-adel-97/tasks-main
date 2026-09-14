@@ -379,7 +379,7 @@ const StudentOperationsDialog = ({
             >
               {student?.studentName || "-"}
               {" - "}
-              {student?.nationalId || "-"}
+              <bdi dir="ltr">{student?.nationalId || "-"}</bdi>
             </Typography>
           </Box>
         </Box>
@@ -541,7 +541,7 @@ const StudentOperationsDialog = ({
                   ? 1.3
                   : 2,
 
-                direction: "ltr",
+                direction: "rtl",
                 borderColor: primaryLight,
 
                 "& .MuiDataGrid-main": {

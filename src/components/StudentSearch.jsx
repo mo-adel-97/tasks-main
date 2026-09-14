@@ -1,3 +1,5 @@
+import { navigationContentStyle } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Container, Alert, CircularProgress, Grow,
@@ -17,7 +19,7 @@ import AddNewStudentButton from './AddNewStudentButton';
 import Swal from 'sweetalert2';
 import CallHistory from './CallHistory';
 import StudentStatementDialog from './StudentStatementDialog';
-import Sidebar from "./Sidebar"
+
 import MyCallHistoryDialog from './MyCallHistoryDialog';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { Badge } from '@mui/material';
@@ -415,9 +417,14 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor }}>
-            <Sidebar user={user} onLogout={onLogout} />
-            <div style={{ flex: 1, marginRight: '240px', padding: '20px', direction: 'rtl' }}>
+        <NavigationShell variant="standard" ><div style={{ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor }}>
+            
+            <div style={{
+              flex: 1,
+              padding: '20px',
+              direction: 'rtl',
+              ...navigationContentStyle
+            }}>
                 <Card sx={{ 
                     mb: 3, 
                     borderRadius: 3, 
@@ -543,8 +550,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     setNationalId(value);
                                 }
                             }}
-                            inputProps={{ style: { textAlign: 'right' }, dir: 'rtl' }}
-                            InputLabelProps={{ style: { right: 20, left: 'auto', textAlign: 'right', direction: 'rtl' } }}
+                            inputProps={{ style: { textAlign: 'right' , direction: "ltr", unicodeBidi: "isolate" }, dir: "ltr" }}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
@@ -623,44 +629,44 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
     <Table>
         <TableBody>
             <TableRow>
-                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', width: '30%', textAlign: 'left' }} align="right">
-                    <AccountCircle sx={{ mr: 1, color: primaryColor }} /> 
+                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', width: '30%', textAlign: "start" }} align="right">
+                    <AccountCircle sx={{ marginInlineEnd: 1, color: primaryColor }} /> 
                     الاسم الكامل
                 </TableCell>
                 <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}>{student.studentName}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: 'left' }} align="right">
-                    <Fingerprint sx={{ mr: 1, color: primaryColor }} /> 
+                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: "start" }} align="right">
+                    <Fingerprint sx={{ marginInlineEnd: 1, color: primaryColor }} /> 
                     رقم الهوية
                 </TableCell>
-                <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}>{student.nationalId}</TableCell>
+                <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}><bdi dir="ltr">{student.nationalId}</bdi></TableCell>
             </TableRow>
             <TableRow>
-                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: 'left' }} align="right">
-                    <Phone sx={{ mr: 1, color: primaryColor }} /> 
+                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: "start" }} align="right">
+                    <Phone sx={{ marginInlineEnd: 1, color: primaryColor }} /> 
                     رقم الجوال
                 </TableCell>
-                <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}>{student.studentTel}</TableCell>
+                <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}><bdi dir="ltr">{student.studentTel}</bdi></TableCell>
             </TableRow>
             <TableRow>
-                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: 'left' }} align="right">
-                    <Wc sx={{ mr: 1, color: primaryColor }} /> 
+                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: "start" }} align="right">
+                    <Wc sx={{ marginInlineEnd: 1, color: primaryColor }} /> 
                     النوع
                 </TableCell>
                 <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}>{getStudentType(student.studentType)}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: 'left' }} align="right">
-                    <Public sx={{ mr: 1, color: primaryColor }} /> 
+                <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: "start" }} align="right">
+                    <Public sx={{ marginInlineEnd: 1, color: primaryColor }} /> 
                     الجنسية
                 </TableCell>
                 <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}>{getStudentNational(student.studentNational)}</TableCell>
             </TableRow>
             {studyInfo.length > 0 && (
                 <TableRow>
-                    <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: 'left' }} align="right">
-                        <School sx={{ mr: 1, color: primaryColor }} /> 
+                    <TableCell sx={{ fontFamily: "Cairo", fontWeight: 'bold', textAlign: "start" }} align="right">
+                        <School sx={{ marginInlineEnd: 1, color: primaryColor }} /> 
                         الفرع
                     </TableCell>
                     <TableCell align="right" sx={{ fontFamily: "Cairo", textAlign: 'right' }}>{studyInfo[0].branch}</TableCell>
@@ -814,13 +820,13 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                                             </TableCell>
                                                                             <TableCell align="center" sx={{ fontFamily: "Cairo" }}>
                                                                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                                    <CalendarToday sx={{ fontSize: 16, mr: 0.5, color: primaryColor }} />
+                                                                                    <CalendarToday sx={{ fontSize: 16, marginInlineEnd: 0.5, color: primaryColor }} />
                                                                                     {call.callDate?.split('T')[0]}
                                                                                 </Box>
                                                                             </TableCell>
                                                                             <TableCell align="center" sx={{ fontFamily: "Cairo" }}>
                                                                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                                    <Schedule sx={{ fontSize: 16, mr: 0.5, color: primaryColor }} />
+                                                                                    <Schedule sx={{ fontSize: 16, marginInlineEnd: 0.5, color: primaryColor }} />
                                                                                     {new Date(call.callTime).toLocaleTimeString('ar-EG')}
                                                                                 </Box>
                                                                             </TableCell>
@@ -1337,14 +1343,14 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     <TableBody>
                                         {studyInfo.map((item, index) => (
                                             <React.Fragment key={index}>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الفرع</TableCell><TableCell align="left">{item.branch}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">البرنامج</TableCell><TableCell align="left">{item.diplom}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الدفعة</TableCell><TableCell align="left">{item.batch}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">المستوى</TableCell><TableCell align="left">{item.level}</TableCell></TableRow>
+                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الفرع</TableCell><TableCell align="right">{item.branch}</TableCell></TableRow>
+                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">البرنامج</TableCell><TableCell align="right">{item.diplom}</TableCell></TableRow>
+                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الدفعة</TableCell><TableCell align="right">{item.batch}</TableCell></TableRow>
+                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">المستوى</TableCell><TableCell align="right">{item.level}</TableCell></TableRow>
                                                 <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">تاريخ البداية</TableCell><TableCell align="left">{item.dateStart || '---'}</TableCell></TableRow>
                                                 <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">تاريخ النهاية</TableCell><TableCell align="left">{item.dateEnd || '---'}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الحالة</TableCell><TableCell align="left">{item.status}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">ملاحظات</TableCell><TableCell align="left">{item.notes}</TableCell></TableRow>
+                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الحالة</TableCell><TableCell align="right">{item.status}</TableCell></TableRow>
+                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">ملاحظات</TableCell><TableCell align="right">{item.notes}</TableCell></TableRow>
                                             </React.Fragment>
                                         ))}
                                     </TableBody>
@@ -1431,7 +1437,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     }
                                 }
                             }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                         <TextField
                             label="ملاحظات"
                             fullWidth
@@ -1590,6 +1596,6 @@ hr@administration.sstli.com
                     </DialogActions>
                 </Dialog>
             </div>
-        </div>
+        </div></NavigationShell>
     );
 }

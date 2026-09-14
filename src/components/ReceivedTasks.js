@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -43,7 +45,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import HistoryIcon from '@mui/icons-material/History';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import Sidebar from './SidebarAdmin';
+
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -399,16 +401,27 @@ export default function AllTaskRoutesList() {
   const visibleTasks = safeArray(filteredTasks).filter(canShow);
 
   if (loading) {
-    return <>
-      <Sidebar />
-      <Box sx={{ flex: 1, p: 3, mr: '240px' }}><CircularProgress /></Box>
-    </>;
+    return <NavigationShell variant="admin" ><>
+      
+      <Box sx={{
+        flex: 1,
+        p: 3,
+        ...navigationContentSx
+      }}><CircularProgress /></Box>
+    </></NavigationShell>;
   }
 
   return (
-    <>
-      <Sidebar />
-      <Box sx={{ flex: 1, p: 3, mr: '240px', direction: 'ltr', background: "#f5f7fb", width: "100%" }}>
+    <NavigationShell variant="admin" ><>
+      
+      <Box sx={{
+        flex: 1,
+        p: 3,
+        direction: "rtl",
+        background: "#f5f7fb",
+        width: "100%",
+        ...navigationContentSx
+      }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" gutterBottom fontWeight={700}>المهام التي لديك</Typography>
           
@@ -880,6 +893,6 @@ export default function AllTaskRoutesList() {
           </DialogActions>
         </Dialog>
       </Box>
-    </>
+    </></NavigationShell>
   );
 }

@@ -98,7 +98,7 @@ function SharedCoursesManager() {
                 setSelectedCourse(null);
                 setCourseExams([]);
               }}
-              style={{marginRight: '10px'}}
+              style={{marginInlineStart: '10px'}}
             >
               رجوع
             </button>
@@ -113,7 +113,7 @@ function SharedCoursesManager() {
               <div className="exam-header">
                 <h4>{examData.exam.diploma_name} - {examData.exam.level_name}</h4>
                 <div>
-                  <span className="badge green" style={{marginLeft: '10px'}}>
+                  <span className="badge green" style={{marginInlineEnd: '10px'}}>
                     {examData.questions.length} سؤال
                   </span>
                   <span className="badge blue">

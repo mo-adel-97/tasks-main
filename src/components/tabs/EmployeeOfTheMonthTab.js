@@ -538,7 +538,7 @@ const handleSaveRating = async () => {
                             width: 60,
                             height: 60,
                             backgroundColor: imageUrl ? 'transparent' : COLOR_SCHEME.primary,
-                            mr: 2,
+                            marginInlineEnd: 2,
                             border: `2px solid ${performanceGrade.color}`
                           }}
                           src={imageUrl}

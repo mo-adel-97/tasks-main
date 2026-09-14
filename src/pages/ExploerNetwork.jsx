@@ -1,6 +1,8 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import Sidebar from "../components/Sidebar";
+
 import {
   Box,
   Button,
@@ -240,7 +242,7 @@ const ExplorerNetwork = () => {
   };
 
   return (
-    <>
+    <NavigationShell variant="standard" ><>
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
@@ -251,8 +253,10 @@ const ExplorerNetwork = () => {
         `}
       </style>
       
-      <Sidebar />
-      <CenteredContainer sx={{ ml: { sm: "240px" } }}>
+      
+      <CenteredContainer sx={{
+        ...navigationContentSx
+      }}>
         <NetworkCard onClick={handleDialogOpen}>
           <CardActionArea sx={{ height: '100%' }}>
             <CardContent sx={{ 
@@ -304,7 +308,7 @@ const ExplorerNetwork = () => {
           fontFamily: "'Cairo', sans-serif",
         }}>
           <Box display="flex" alignItems="center">
-            <FolderIcon sx={{ mr: 1.5 }} />
+            <FolderIcon sx={{ marginInlineEnd: 1.5 }} />
             <Typography variant="h6" sx={{ 
               fontFamily: "'Cairo', sans-serif", 
               fontWeight: 700,
@@ -532,7 +536,7 @@ const ExplorerNetwork = () => {
           )}
         </DialogContent>
       </StyledDialog>
-    </>
+    </></NavigationShell>
   );
 };
 

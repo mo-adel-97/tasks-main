@@ -36,7 +36,7 @@ const SharedDateFilter = ({
         <Button 
           variant="contained" 
           onClick={onFilter}
-          sx={{ ml: 2 }}
+          sx={{ marginInlineStart: 2 }}
         >
           تطبيق
         </Button>

@@ -1,3 +1,5 @@
+import { navigationContentStyle } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, TextField, IconButton, Stack, Paper,
@@ -13,7 +15,7 @@ import {
   Description, Call, School, ReportProblem,
   Note, Forward, Visibility, PictureAsPdf
 } from '@mui/icons-material';
-import Sidebar from './Sidebar';
+
 import axios from 'axios';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -909,7 +911,7 @@ const resetFilters = () => {
             >
               <Visibility color="primary" />
               <Typography variant="caption" sx={{ mr: 1 }}>
-                ({followUps.filter(f => f.callGuid === params.row.guid).length})
+                (<bdi dir="ltr">{followUps.filter(f => f.callGuid === params.row.guid).length}</bdi>)
               </Typography>
             </IconButton>
           </Tooltip>
@@ -922,7 +924,7 @@ const resetFilters = () => {
       width: 110,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <CalendarToday fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+          <CalendarToday fontSize="small" sx={{ marginInlineEnd: 1, color: 'text.secondary' }} />
           {params.value}
         </Box>
       )
@@ -1099,12 +1101,16 @@ const resetFilters = () => {
   ];
 
   return (
-    <>
-      <Sidebar />
-      <Box style={{ marginRight: "280px", padding: "20px", direction: 'rtl' }}>
+    <NavigationShell variant="standard" ><>
+      
+      <Box style={{
+        padding: "20px",
+        direction: 'rtl',
+        ...navigationContentStyle
+      }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            <Description sx={{ verticalAlign: 'middle', mr: 1 }} />
+            <Description sx={{ verticalAlign: 'middle', marginInlineEnd: 1 }} />
             تقرير المكالمات
           </Typography>
           <Box>
@@ -1164,7 +1170,7 @@ const resetFilters = () => {
         <Paper sx={{ mb: 3, p: 2, backgroundColor: '#fafafa', borderRadius: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              <FilterAlt sx={{ verticalAlign: 'middle', mr: 1 }} />
+              <FilterAlt sx={{ verticalAlign: 'middle', marginInlineEnd: 1 }} />
               تصفية النتائج
             </Typography>
             <Tooltip title="إعادة تعيين الفلاتر">
@@ -1192,7 +1198,7 @@ const resetFilters = () => {
               InputLabelProps={{ shrink: true }}
               sx={{ minWidth: 200 }}
               size="small"
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             {/* Date Range Filter */}
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -1412,7 +1418,7 @@ const resetFilters = () => {
           </DialogActions>
         </Dialog>
       </Box>
-    </>
+    </></NavigationShell>
   );
 };
 

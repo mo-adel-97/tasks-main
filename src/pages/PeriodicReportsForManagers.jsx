@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -64,7 +66,7 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO, startOfDay, endOfDay, eachDayOfInterval, isWithinInterval } from 'date-fns';
 import { arSA } from 'date-fns/locale';
-import Sidebar from '../components/Sidebar';
+
 
 // Chart.js imports
 import {
@@ -670,16 +672,16 @@ const AdminBranchesReports = () => {
 
   /* ============== Render ============== */
   return (
-    <Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
+      
 
       <Box component="main" sx={{
-        flexGrow: 1, 
-        p: 4, 
-        marginLeft: '280px',
+        flexGrow: 1,
+        p: 4,
         minHeight: '100vh',
-        backgroundColor: colorPalette.background, 
-        direction: 'ltr'
+        backgroundColor: colorPalette.background,
+        direction: "rtl",
+        ...navigationContentSx
       }}>
         
         {/* Header */}
@@ -796,7 +798,7 @@ const AdminBranchesReports = () => {
                     },
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12} md={3}>
@@ -829,7 +831,7 @@ const AdminBranchesReports = () => {
                     },
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12} md={6}>
@@ -1006,7 +1008,7 @@ const AdminBranchesReports = () => {
                 <ChartCard elevation={3}>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <TrophyIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <TrophyIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         أفضل الفروع في نسبة الحضور
                       </Typography>
@@ -1036,7 +1038,7 @@ const AdminBranchesReports = () => {
                 <ChartCard elevation={3}>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <AnalyticsIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <AnalyticsIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         توزيع أداء الفروع
                       </Typography>
@@ -1268,7 +1270,7 @@ const AdminBranchesReports = () => {
         trainerName={selectedTrainerName}
         colorPalette={colorPalette}
       />
-    </Box>
+    </Box></NavigationShell>
   );
 };
 
@@ -1402,7 +1404,7 @@ const BranchDetailsDialog = ({
         fontWeight: 700,
         py: 3
       }}>
-        <BusinessIcon sx={{ mr: 2 }} />
+        <BusinessIcon sx={{ marginInlineEnd: 2 }} />
         تفاصيل الفرع: {branchData.branchInfo?.name}
         <Typography variant="body1" sx={{ mt: 1, opacity: 0.9 }}>
           {format(new Date(startDate), 'yyyy/MM/dd')} - {format(new Date(endDate), 'yyyy/MM/dd')}
@@ -1911,7 +1913,7 @@ const TrainerStudentsDialog = ({ open, onClose, students, trainerName, colorPale
         fontWeight: 700,
         py: 3
       }}>
-        <PersonIcon sx={{ mr: 2 }} />
+        <PersonIcon sx={{ marginInlineEnd: 2 }} />
         أفضل الطلاب حضوار - المدرب: {trainerName}
       </DialogTitle>
       

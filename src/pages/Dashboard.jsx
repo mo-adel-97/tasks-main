@@ -1,5 +1,7 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+
 import {
   AppBar,
   Box,
@@ -17,8 +19,8 @@ import TasksTab from "./TasksTab";
 import EmployeeOfTheMonthBanner from "../components/EmployeeOfTheMonthBanner";
 import UpdateDialog from "../components/UpdateDialog";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const UPDATE_URL =
   "https://filesregsiteration.sstli.com/erp/check_update.php";
@@ -131,7 +133,11 @@ export default function Dashboard() {
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={
+          mobileSidebarOpen
+        } onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       dir="rtl"
       sx={{
         minHeight: "100dvh",
@@ -258,14 +264,7 @@ export default function Dashboard() {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={
-          mobileSidebarOpen
-        }
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -279,13 +278,7 @@ export default function Dashboard() {
           position: "relative",
           zIndex: 1,
           overflowX: "hidden",
-
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]:
-            {
-              ml: `${SIDEBAR_WIDTH}px`,
-              width:
-                `calc(100% - ${SIDEBAR_WIDTH}px)`,
-            },
+          ...navigationContentSx
         }}
       >
         <Box
@@ -360,6 +353,6 @@ export default function Dashboard() {
           </Box>
         </Box>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

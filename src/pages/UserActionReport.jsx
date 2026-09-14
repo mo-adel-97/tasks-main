@@ -1,4 +1,6 @@
-import React, { memo, useMemo, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -22,17 +24,17 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primary = "#057546";
 const primaryDark = "#034d31";
@@ -880,7 +882,7 @@ export default function UserActionReport() {
                   }
                 }
             }}
-          />
+           inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
           <TextField
             type="date"
@@ -913,7 +915,7 @@ export default function UserActionReport() {
                   }
                 }
             }}
-          />
+           inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
           <Button
             variant="contained"
@@ -1605,7 +1607,13 @@ export default function UserActionReport() {
   );
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={
+              mobileSidebarOpen
+            } onMobileClose={() =>
+              setMobileSidebarOpen(
+                false
+              )
+            }><Box
       sx={{
         minHeight: "100vh",
         bgcolor: soft
@@ -1613,11 +1621,10 @@ export default function UserActionReport() {
     >
       {isDesktop ? (
         <>
-          <StableSidebar />
+          
           <Box
             sx={{
-              ml:
-                `${SIDEBAR_WIDTH}px`
+              ...navigationContentSx
             }}
           >
             {content}
@@ -1625,19 +1632,10 @@ export default function UserActionReport() {
         </>
       ) : (
         <>
-          <StableSidebar
-            mobileOpen={
-              mobileSidebarOpen
-            }
-            onMobileClose={() =>
-              setMobileSidebarOpen(
-                false
-              )
-            }
-          />
+          
           {content}
         </>
       )}
-    </Box>
+    </Box></NavigationShell>
   );
 }

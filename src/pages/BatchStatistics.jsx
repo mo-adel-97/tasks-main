@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -47,11 +49,11 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
-import Sidebar from "../components/Sidebar";
+
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -597,8 +599,8 @@ const BatchStatistics = () => {
                       wordBreak: "break-word",
                       overflowWrap: "anywhere",
                       lineHeight: 1.65,
-                      textAlign: "left",
-                      direction: "ltr",
+                      textAlign: "start",
+                      direction: "rtl",
                       fontFamily: "Cairo",
                       fontWeight: 800,
                       color: COLORS.text
@@ -1020,23 +1022,26 @@ const BatchStatistics = () => {
 
   return (
     isDesktop ? (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
         background: COLORS.background,
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
-      <Sidebar />
+      
 
       <Box
         component="main"
         sx={{
-          marginLeft: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
-          width: { xs: "100%", md: `calc(100% - ${SIDEBAR_WIDTH}px)` },
           minHeight: "100vh",
-          p: { xs: 1.25, sm: 2, md: 3 },
-          direction: "ltr"
+          p: {
+            xs: 1.25,
+            sm: 2,
+            md: 3
+          },
+          direction: "rtl",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1194,7 +1199,7 @@ const BatchStatistics = () => {
                           )
                         }}
                         sx={{
-                          direction: "ltr",
+                          direction: "rtl",
                           "& .MuiOutlinedInput-root": {
                             height: 48,
                             borderRadius: 2.5,
@@ -1381,7 +1386,7 @@ const BatchStatistics = () => {
                   }}
                   size="small"
                   sx={{
-                    direction: "ltr",
+                    direction: "rtl",
                     alignSelf: { xs: "stretch", md: "center" },
                     "& .MuiToggleButtonGroup-grouped": {
                       minWidth: { xs: 0, sm: 120 },
@@ -1523,7 +1528,7 @@ const BatchStatistics = () => {
                   }}
                   sx={{
                     border: 0,
-                    direction: "ltr",
+                    direction: "rtl",
                     fontFamily: "Cairo",
                     color: COLORS.text,
 
@@ -1577,7 +1582,7 @@ const BatchStatistics = () => {
                     "& .MuiDataGrid-toolbarContainer": {
                       p: 1.25,
                       gap: 0.5,
-                      direction: "ltr",
+                      direction: "rtl",
                       borderBottom: `1px solid ${COLORS.border}`,
                       backgroundColor: "#fff"
                     },
@@ -1593,7 +1598,7 @@ const BatchStatistics = () => {
                     },
 
                     "& .MuiDataGrid-footerContainer": {
-                      direction: "ltr",
+                      direction: "rtl",
                       borderTop: `1px solid ${COLORS.border}`,
                       background: "#fbfdfc"
                     },
@@ -1781,16 +1786,18 @@ const BatchStatistics = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
     ) : (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
         background: COLORS.background,
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       <GlobalStyles
@@ -1822,7 +1829,7 @@ const BatchStatistics = () => {
           color: COLORS.text,
           borderBottom:
             `1px solid ${COLORS.border}`,
-          direction: "ltr"
+          direction: "rtl"
         }}
       >
         <Toolbar
@@ -1880,7 +1887,7 @@ const BatchStatistics = () => {
                 sm: "0.78rem"
               },
               color: COLORS.text,
-              textAlign: "left"
+              textAlign: "start"
             }}
           >
             إحصائيات الدفعات
@@ -1888,12 +1895,7 @@ const BatchStatistics = () => {
         </Toolbar>
       </AppBar>
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -1914,7 +1916,8 @@ const BatchStatistics = () => {
             sm: 0.7
           },
           boxSizing: "border-box",
-          overflowX: "hidden"
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -2280,7 +2283,7 @@ const BatchStatistics = () => {
                 fullWidth
                 sx={{
                   width: "100%",
-                  direction: "ltr",
+                  direction: "rtl",
 
                   "& .MuiToggleButtonGroup-grouped": {
                     flex: 1,
@@ -2370,7 +2373,7 @@ const BatchStatistics = () => {
                 }}
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   fontFamily: "Cairo",
                   color: COLORS.text,
 
@@ -2949,7 +2952,7 @@ const BatchStatistics = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
     )
   );
 };

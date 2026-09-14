@@ -369,7 +369,7 @@ const styles = {
     borderRadius: '8px',
     p: 2,
     mb: 3,
-    borderLeft: '4px solid',
+    borderInlineStart: '4px solid',
     borderColor: 'primary.main'
   },
   gridContainer: {

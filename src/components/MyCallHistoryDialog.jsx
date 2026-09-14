@@ -296,7 +296,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
         <Card sx={{ mb: 3, border: '1px solid #e0e0e0' }}>
           <CardContent>
             <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
-              <FilterList sx={{ mr: 1 }} />
+              <FilterList sx={{ marginInlineEnd: 1 }} />
               <Typography variant="h6">فلترة متقدمة</Typography>
             </Box>
             
@@ -364,7 +364,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                     onChange={(e) => setStartDate(e.target.value)}
                     InputLabelProps={{ shrink: true }}
                     size="small"
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="إلى تاريخ"
@@ -373,7 +373,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                     onChange={(e) => setEndDate(e.target.value)}
                     InputLabelProps={{ shrink: true }}
                     size="small"
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Box>
               </Grid>
             </Grid>
@@ -452,8 +452,8 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
                           {call.studentName || '-'}
                         </Typography>
                       </TableCell>
-                      <TableCell align="center">{call.studentTel || '-'}</TableCell>
-                      <TableCell align="center">{call.nationalId || '-'}</TableCell>
+                      <TableCell align="center"><bdi dir="ltr">{call.studentTel || '-'}</bdi></TableCell>
+                      <TableCell align="center"><bdi dir="ltr">{call.nationalId || '-'}</bdi></TableCell>
                       <TableCell align="center">
                         <Chip 
                           label={call.type} 

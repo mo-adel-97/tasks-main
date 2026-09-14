@@ -292,7 +292,7 @@ export default function ChangePaymentStatusDialog({
               value={nationalId || ""}
               InputProps={{ readOnly: true }}
               fullWidth
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
           </Stack>
         </Paper>
 

@@ -1047,7 +1047,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
             color: COLOR_SCHEME.text,
             fontWeight: 'bold'
           }}>
-            <BeachAccess sx={{ mr: 2, color: COLOR_SCHEME.primary, fontSize: 32 }} /> 
+            <BeachAccess sx={{ marginInlineEnd: 2, color: COLOR_SCHEME.primary, fontSize: 32 }} /> 
             الإجازات والإذونات
           </Typography>
           
@@ -1296,7 +1296,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                 InputLabelProps={{ shrink: true }}
                 value={formData.start_date}
                 onChange={(e) => setFormData({...formData, start_date: e.target.value})}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12} sm={6}>
@@ -1307,7 +1307,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                 InputLabelProps={{ shrink: true }}
                 value={formData.end_date}
                 onChange={(e) => setFormData({...formData, end_date: e.target.value})}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12}>
@@ -1390,7 +1390,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                   color: getStatusColor(detailsDialog.request.status),
                   width: 48,
                   height: 48,
-                  mr: 2
+                  marginInlineEnd: 2
                 }}>
                   {detailsDialog.request.request_type === 'إجازة' ? <BeachAccess /> : <Schedule />}
                 </Avatar>

@@ -292,7 +292,7 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
                         title={
                           <div>
                             <Typography variant="subtitle2">الأسماء المضمنة:</Typography>
-                            <ul style={{ paddingLeft: '20px', margin: '5px 0' }}>
+                            <ul style={{ paddingInlineStart: '20px', margin: '5px 0' }}>
                               {Array.from(course.originalNames).map((name, i) => (
                                 <li key={i}>{name}</li>
                               ))}
@@ -351,7 +351,7 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
                     }}>
                       <PeopleIcon sx={{ 
                         color: theme.palette.secondary.main,
-                        mr: 1
+                        marginInlineEnd: 1
                       }} />
                       <Typography variant="h5" sx={{ 
                         fontWeight: 700,
@@ -473,7 +473,7 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
           ) : studentDetails ? (
             <>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <PersonIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+                <PersonIcon sx={{ marginInlineEnd: 1, color: theme.palette.primary.main }} />
                 <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif' }}>
                   {studentDetails.studentName}
                 </Typography>
@@ -486,11 +486,11 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
                   display: 'flex',
                   alignItems: 'center'
                 }}>
-                  <FingerprintIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+                  <FingerprintIcon sx={{ marginInlineEnd: 1, color: theme.palette.primary.main }} />
                   الهوية الوطنية:
                 </Typography>
                 <Typography sx={{ fontFamily: '"Cairo", sans-serif', ml: 4 }}>
-                  {studentDetails.nationalId || 'غير متوفر'}
+                  <bdi dir="ltr">{studentDetails.nationalId || 'غير متوفر'}</bdi>
                 </Typography>
               </Box>
               
@@ -501,11 +501,11 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
                   display: 'flex',
                   alignItems: 'center'
                 }}>
-                  <PhoneIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+                  <PhoneIcon sx={{ marginInlineEnd: 1, color: theme.palette.primary.main }} />
                   رقم الجوال:
                 </Typography>
                 <Typography sx={{ fontFamily: '"Cairo", sans-serif', ml: 4 }}>
-                  {studentDetails.studentTel || 'غير متوفر'}
+                  <bdi dir="ltr">{studentDetails.studentTel || 'غير متوفر'}</bdi>
                 </Typography>
               </Box>
               

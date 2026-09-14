@@ -211,7 +211,7 @@ export default function HrPermissionWorkflowManager({ buttonColor = "#fff", butt
             <TextField size="small" label="اسم المسار" value={form.policyName} onChange={(e)=>setForm((x)=>({...x,policyName:e.target.value}))}/>
             <FormControl size="small"><InputLabel>نوع الإذن</InputLabel><Select label="نوع الإذن" value={form.permissionType} onChange={(e)=>setForm((x)=>({...x,permissionType:e.target.value}))}><MenuItem value="">كل الأنواع</MenuItem>{(config.permissionTypes||[]).map((t)=><MenuItem key={t.value} value={t.value}>{t.name}</MenuItem>)}</Select></FormControl>
             <FormControl size="small"><InputLabel>الوحدة المصدر</InputLabel><Select label="الوحدة المصدر" value={form.sourceOrgUnitGuid} onChange={(e)=>setForm((x)=>({...x,sourceOrgUnitGuid:e.target.value}))}><MenuItem value="">كل الوحدات</MenuItem>{(config.units||[]).map((u)=><MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}</Select></FormControl>
-            <TextField size="small" type="number" label="الأولوية" value={form.priority} onChange={(e)=>setForm((x)=>({...x,priority:Number(e.target.value||100)}))}/>
+            <TextField size="small" type="number" label="الأولوية" value={form.priority} onChange={(e)=>setForm((x)=>({...x,priority:Number(e.target.value||100)}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
           </Box>
           <FormControl size="small" sx={{width:260}}><InputLabel>تطبيق الوحدة</InputLabel><Select label="تطبيق الوحدة" value={form.includeDescendants?"yes":"no"} onChange={(e)=>setForm((x)=>({...x,includeDescendants:e.target.value==="yes"}))}><MenuItem value="yes">الوحدة وكل ما تحتها</MenuItem><MenuItem value="no">الوحدة فقط</MenuItem></Select></FormControl>
 

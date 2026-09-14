@@ -1659,7 +1659,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                   label="رقم الهوية"
                   value={nationalId}
                   InputProps={{ readOnly: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               <Grid item xs={6} sm={3} md={4}>
@@ -1668,7 +1668,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                   label="رقم الجوال"
                   value={studentTel}
                   InputProps={{ readOnly: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
             </Grid>
 
@@ -1936,7 +1936,7 @@ py: isPhone ? 0.8 : isTablet ? 1 : 3,
                   label="عدد الساعات"
                   value={hours}
                   onChange={(e) => setHours(e.target.value)}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               <Grid

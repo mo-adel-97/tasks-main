@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -52,7 +54,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Document, Paragraph, Packer, AlignmentType, HeadingLevel, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, WidthType, BorderStyle } from 'docx';
-import Sidebar from '../components/Sidebar';
+
 
 // Color palette based on #80b49e
 const colorPalette = {
@@ -657,16 +659,16 @@ const MonthlyAttendanceReport = () => {
     .sort((a, b) => b.attendancePercentage - a.attendancePercentage);
 
   return (
-    <Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
+      
 
-      <Box component="main" sx={{ 
+      <Box component="main" sx={{
         flexGrow: 1,
         p: 4,
-        marginLeft: '280px',
         minHeight: '100vh',
-        direction:'ltr',
-        backgroundColor: colorPalette.background
+        direction: "rtl",
+        backgroundColor: colorPalette.background,
+        ...navigationContentSx
       }}>
         <AppBar 
           position="static" 
@@ -973,7 +975,7 @@ const MonthlyAttendanceReport = () => {
                         fontWeight: 800, 
                         textAlign: "right",
                         position: 'sticky',
-                        left: 0,
+                        insetInlineStart: 0,
                         zIndex: 2,
                         backgroundColor: colorPalette.primaryLighter,
                         color: colorPalette.textDark,
@@ -983,9 +985,9 @@ const MonthlyAttendanceReport = () => {
                       </StyledTableCell>
                       <StyledTableCell sx={{ 
                         fontWeight: 800, 
-                        textAlign: "left",
+                        textAlign: "start",
                         position: 'sticky',
-                        left: 60,
+                        insetInlineStart: 60,
                         zIndex: 2,
                         backgroundColor: colorPalette.primaryLighter,
                         color: colorPalette.textDark,
@@ -995,7 +997,7 @@ const MonthlyAttendanceReport = () => {
                       </StyledTableCell>
                       <StyledTableCell sx={{ 
                         fontWeight: 800, 
-                        textAlign: "left",
+                        textAlign: "start",
                         color: colorPalette.textDark,
                         fontSize: '1rem'
                       }}>
@@ -1003,7 +1005,7 @@ const MonthlyAttendanceReport = () => {
                       </StyledTableCell>
                       <StyledTableCell sx={{ 
                         fontWeight: 800, 
-                        textAlign: "left",
+                        textAlign: "start",
                         color: colorPalette.textDark,
                         fontSize: '1rem'
                       }}>
@@ -1011,7 +1013,7 @@ const MonthlyAttendanceReport = () => {
                       </StyledTableCell>
                       <StyledTableCell sx={{ 
                         fontWeight: 800, 
-                        textAlign: "left",
+                        textAlign: "start",
                         color: colorPalette.textDark,
                         fontSize: '1rem'
                       }}>
@@ -1040,7 +1042,7 @@ const MonthlyAttendanceReport = () => {
                       <StyledTableRow key={student.nationalId}>
                         <StyledTableCell sx={{ 
                           position: 'sticky',
-                          left: 0,
+                          insetInlineStart: 0,
                           zIndex: 1,
                           backgroundColor: 'white',
                           textAlign: 'center',
@@ -1050,7 +1052,7 @@ const MonthlyAttendanceReport = () => {
                         </StyledTableCell>
                         <StyledTableCell sx={{ 
                           position: 'sticky',
-                          left: 60,
+                          insetInlineStart: 60,
                           zIndex: 1,
                           backgroundColor: 'white'
                         }}>
@@ -1060,7 +1062,7 @@ const MonthlyAttendanceReport = () => {
                                 bgcolor: colorPalette.primary,
                                 width: 40,
                                 height: 40,
-                                mr: 2,
+                                marginInlineEnd: 2,
                                 color: 'white',
                                 boxShadow: `0 4px 12px ${alpha(colorPalette.primary, 0.3)}`
                               }}
@@ -1087,7 +1089,7 @@ const MonthlyAttendanceReport = () => {
                               fontWeight: 600,
                               color: colorPalette.textDark
                             }}>
-                              {student.nationalId}
+                              <bdi dir="ltr">{student.nationalId}</bdi>
                             </Typography>
                           </Box>
                         </StyledTableCell>
@@ -1267,7 +1269,7 @@ const MonthlyAttendanceReport = () => {
                       color: colorPalette.textDark,
                       mt: 0.5
                     }}>
-                      {selectedStudent.nationalId}
+                      <bdi dir="ltr">{selectedStudent.nationalId}</bdi>
                     </Typography>
                   </Paper>
                 </Grid>
@@ -1559,7 +1561,7 @@ const MonthlyAttendanceReport = () => {
           </StyledButton>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

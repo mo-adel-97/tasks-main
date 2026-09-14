@@ -352,7 +352,7 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
             </IconButton>
           </Box>
 
-          <Box sx={{ flex: 1, width: "100%", textAlign: { xs: "center", sm: "left" } }}>
+          <Box sx={{ flex: 1, width: "100%", textAlign: { xs: "center", sm: "start" } }}>
             <Typography
               variant="h4"
               sx={{
@@ -473,12 +473,12 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
             onClick={() => fileInputRef.current?.click()}
             sx={{ fontWeight: 900, color: COLOR_SCHEME.primaryDark }}
           >
-            <CameraAlt sx={{ mr: 1, color: COLOR_SCHEME.primary }} />
+            <CameraAlt sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} />
             {imageUrl ? "تغيير الصورة" : "إضافة صورة"}
           </MenuItem>
           {imageUrl && (
             <MenuItem onClick={handleDeleteImage} sx={{ color: COLOR_SCHEME.accent, fontWeight: 900 }}>
-              <Delete sx={{ mr: 1 }} />
+              <Delete sx={{ marginInlineEnd: 1 }} />
               حذف الصورة
             </MenuItem>
           )}

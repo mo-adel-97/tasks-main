@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
@@ -41,7 +43,7 @@ import { COURSE_TITLES } from "../constants/courseTitles";
 import { COURSE_CATALOG } from "../constants/courseCatalog";
 import { API_BASE, apiPost, courseApi } from "../config/apiConfig";
 import { toArabicDigits, deriveCourseCode } from "../utils/helpers";
-import Sidebar from "../components/Sidebar";
+
 import SharedCoursesManager from "./SharedCoursesManager";
 import html2pdf from "html2pdf.js";
 import logo1 from "../images/logo1.jpg";
@@ -93,8 +95,8 @@ const OneLineTF = ({ i, text, isEnglish = false }) => (
       gap: 0.3,
       mb: 1,
       width: '100%',
-      direction: isEnglish ? 'rtl' : 'ltr',
-      textAlign: isEnglish ? 'right' : 'left',
+      direction: isEnglish ? 'ltr' : 'rtl',
+      textAlign: 'start',
       pageBreakInside: 'avoid',   // 👈 مهم
       breakInside: 'avoid'        // 👈 مهم
     }}
@@ -112,8 +114,8 @@ const OneLineTF = ({ i, text, isEnglish = false }) => (
         textAlign: 'center',
         fontSize: '0.9rem',
         letterSpacing: '1.2em',
-        marginRight: '0.5em',
-        paddingLeft: '0.2em'
+        marginInlineStart: '0.5em',
+        paddingInlineEnd: '0.2em'
       }}
     >
       (        )
@@ -127,7 +129,7 @@ const OneLineMCQ = ({ i, q, opts, isEnglish = false }) => (
   <Box
     sx={{ 
       mb: 1.2,                    // قللتها شوية
-      direction: isEnglish ? 'rtl' : 'ltr',
+      direction: isEnglish ? 'ltr' : 'rtl',
       width: '100%',
       pageBreakInside: 'avoid',   // 👈 يمنع تقسيم السؤال
       breakInside: 'avoid'        // 👈
@@ -137,7 +139,7 @@ const OneLineMCQ = ({ i, q, opts, isEnglish = false }) => (
       <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '0.9rem', minWidth: '25px' }}>
         {isEnglish ? `${i} -` : `${toArabicDigits(i)} -`}
       </Typography>
-      <Typography variant="body1" sx={{ flex: 1, textAlign: isEnglish ? 'right' : 'left', fontSize: '0.9rem', lineHeight: 1.3 }}>
+      <Typography variant="body1" sx={{ flex: 1, textAlign: 'start', fontSize: '0.9rem', lineHeight: 1.3 }}>
         {q}
       </Typography>
     </Box>
@@ -146,8 +148,8 @@ const OneLineMCQ = ({ i, q, opts, isEnglish = false }) => (
         display: 'flex', 
         gap: 0.8,
         flexWrap: 'wrap',
-        direction: isEnglish ? 'ltr' : 'ltr',
-        justifyContent: isEnglish ? 'flex-end' : 'flex-start',
+        direction: isEnglish ? 'ltr' : 'rtl',
+        justifyContent: 'flex-start',
         width: '100%'
       }}
     >
@@ -193,7 +195,7 @@ function ExamPaperPerStudent({
           justifyContent: 'space-between', 
           alignItems: 'center', 
           mb: 1.5,
-          direction: isEnglishCourse ? 'rtl' : 'ltr'
+          direction: isEnglishCourse ? 'ltr' : 'rtl'
         }}>
           {isEnglishCourse ? (
             <ScoreBox max={30} />
@@ -232,7 +234,7 @@ function ExamPaperPerStudent({
           )}
         </Box>
         
-        <Box sx={{ mb: 2, direction: isEnglishCourse ? 'rtl' : 'ltr' }}>
+        <Box sx={{ mb: 2, direction: isEnglishCourse ? 'ltr' : 'rtl' }}>
           {tfList.map((t, i) => (
             <OneLineTF key={`tf-${i}`} i={i + 1} text={t} isEnglish={isEnglishCourse} />
           ))}
@@ -248,7 +250,7 @@ function ExamPaperPerStudent({
           justifyContent: 'space-between', 
           alignItems: 'center', 
           mb: 1.5,
-          direction: isEnglishCourse ? 'rtl' : 'ltr'
+          direction: isEnglishCourse ? 'ltr' : 'rtl'
         }}>
           {isEnglishCourse ? (
             <ScoreBox max={30} />
@@ -287,7 +289,7 @@ function ExamPaperPerStudent({
           )}
         </Box>
         
-        <Box sx={{ direction: isEnglishCourse ? 'rtl' : 'ltr', mb: 1.5 }}>
+        <Box sx={{ direction: isEnglishCourse ? 'ltr' : 'rtl', mb: 1.5 }}>
           {mcqList.map((m, i) => (
             <OneLineMCQ key={`mcq-${i}`} i={i + 1} q={m.q} opts={m.a} isEnglish={isEnglishCourse} />
           ))}
@@ -360,7 +362,7 @@ function ExamPaperPerStudent({
         mx: "auto",
         p: 0,
         m: 0,
-        direction: "ltr",
+        direction: (isEnglishCourse || isEng3 || isEnglishReports) ? "ltr" : "rtl",
         pageBreakAfter: "always",
         breakAfter: "page",
       }}
@@ -479,7 +481,7 @@ function ExamPaperPerStudent({
         <Box sx={{ 
     mt: 0.05,        // كانت 2
           textAlign: 'center',
-          direction: isEnglishCourse ? 'rtl' : 'ltr',
+          direction: isEnglishCourse ? 'ltr' : 'rtl',
           p: 0
         }}>
           <Typography variant="body1" fontWeight="bold" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
@@ -674,7 +676,7 @@ function ControlPanel({
                   onChange={(e) => setCustomCode(e.target.value)}
                   placeholder="اكتب كود الطالب هنا"
                   size="small"
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                   سيتم تحويل الأرقام للعرض بالعربية تلقائيًا في الورقة
                 </Typography>
@@ -1009,10 +1011,15 @@ export default function PrintExamPage({ userBranch }) {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', direction: 'ltr' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', direction: "rtl" }}>
       
-      <Box sx={{ flex: 1, marginLeft: '280px', minHeight: '100vh', backgroundColor: 'grey.50' }}>
+      
+      <Box sx={{
+        flex: 1,
+        minHeight: '100vh',
+        backgroundColor: 'grey.50',
+        ...navigationContentSx
+      }}>
         <Container maxWidth="xl" sx={{ py: 3 }}>
           {/* الهيدر الرئيسي */}
           <Paper sx={{ p: 3, mb: 3, background: `linear-gradient(135deg, #80b49e 0%, #6a9c8a 100%)`, color: 'white' }}>
@@ -1192,6 +1199,6 @@ export default function PrintExamPage({ userBranch }) {
           </Card>
         </Container>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

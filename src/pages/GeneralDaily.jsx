@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useDeferredValue,
@@ -52,10 +54,10 @@ import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import TodayIcon from "@mui/icons-material/Today";
 
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1432,50 +1434,33 @@ export default function GeneralDaily() {
   }
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={
+          mobileSidebarOpen
+        } onMobileClose={() =>
+          setMobileSidebarOpen(
+            false
+          )
+        }><Box
       sx={{
         minHeight: "100vh",
         bgcolor: "#f4f7f6",
 
         // مهم: الاتجاه كما هو LTR
-        direction: "ltr",
+        direction: "rtl",
 
         overflowX: "hidden"
       }}
     >
-      <Sidebar
-        mobileOpen={
-          mobileSidebarOpen
-        }
-        onMobileClose={() =>
-          setMobileSidebarOpen(
-            false
-          )
-        }
-      />
+      
 
       <Box
         component="main"
         sx={{
-          width: isDesktop
-            ? `calc(100vw - ${SIDEBAR_WIDTH}px)`
-            : "100vw",
-
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0,
-
-          boxSizing:
-            "border-box",
-
-          p: isDesktop
-            ? "12px 14px"
-            : isPhone
-              ? "5px"
-              : "8px",
-
-          direction: "ltr",
-          overflowX: "hidden"
+          boxSizing: "border-box",
+          p: isDesktop ? "12px 14px" : isPhone ? "5px" : "8px",
+          direction: "rtl",
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         {!isDesktop && (
@@ -1644,7 +1629,7 @@ export default function GeneralDaily() {
                     "center",
 
                   direction:
-                    "ltr"
+                    "rtl"
                 }}
               >
                 <TextField
@@ -1665,7 +1650,7 @@ export default function GeneralDaily() {
                     max:
                       toDate ||
                       undefined
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -1711,7 +1696,7 @@ export default function GeneralDaily() {
                     min:
                       fromDate ||
                       undefined
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -1884,7 +1869,7 @@ export default function GeneralDaily() {
                 sx={{
                   mt: 0.55,
                   direction:
-                    "ltr",
+                    "rtl",
                   flexWrap: "wrap",
                   gap: 0.4
                 }}
@@ -2028,7 +2013,7 @@ export default function GeneralDaily() {
                       : 0.55,
 
                     direction:
-                      "ltr"
+                      "rtl"
                   }}
                 >
                   {FILTER_FIELDS.map(
@@ -2292,7 +2277,7 @@ export default function GeneralDaily() {
 
                   // اتجاه الجريد كما طلبت LTR
                   direction:
-                    "ltr",
+                    "rtl",
 
                   // منع Horizontal Scroll قدر الإمكان:
                   // كل أعمدة الديسكتوب Flex + minWidth صغير
@@ -2421,7 +2406,7 @@ export default function GeneralDaily() {
         PaperProps={{
           sx: {
             borderRadius: 2.5,
-            direction: "ltr"
+            direction: "rtl"
           }
         }}
       >
@@ -2602,6 +2587,6 @@ export default function GeneralDaily() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

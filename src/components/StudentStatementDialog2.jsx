@@ -223,7 +223,7 @@ const EmptyBox = ({ text }) => (
   </Box>
 );
 
-const EllipsisText = ({ value, align = "left", direction = "ltr" }) => (
+const EllipsisText = ({ value, align = "start", direction = "rtl" }) => (
   <Tooltip title={value || ""} arrow>
     <Typography
       sx={{
@@ -1364,7 +1364,7 @@ const StudentStatementDialog2 = ({
       headerName: "مركز التكلفة",
       width: 245,
       renderCell: (params) => (
-        <EllipsisText value={params.value} align="center" direction="ltr" />
+        <EllipsisText value={params.value} align="center" direction="rtl" />
       )
     }
   ];
@@ -1463,7 +1463,7 @@ const StudentStatementDialog2 = ({
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <EllipsisText value={params.value} align="center" direction="ltr" />
+        <EllipsisText value={params.value} align="center" direction="rtl" />
       )
     }
   ];
@@ -1540,7 +1540,7 @@ const StudentStatementDialog2 = ({
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <EllipsisText value={params.value} align="center" direction="ltr" />
+        <EllipsisText value={params.value} align="center" direction="rtl" />
       )
     }
   ];
@@ -1592,7 +1592,7 @@ const StudentStatementDialog2 = ({
     border: `1px solid ${primaryLight}`,
     borderRadius: 3,
     backgroundColor: whiteColor,
-    direction: "ltr",
+    direction: "rtl",
     overflow: "hidden",
     "& .MuiDataGrid-columnHeaders": {
       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
@@ -1621,7 +1621,7 @@ const StudentStatementDialog2 = ({
       backgroundColor: "#f0faf5"
     },
     "& .MuiDataGrid-footerContainer": {
-      direction: "ltr",
+      direction: "rtl",
       borderTop: `1px solid ${primaryLight}`
     }
   };
@@ -1646,7 +1646,7 @@ const StudentStatementDialog2 = ({
           maxWidth: isPhone ? "100vw" : isTablet ? "1200px" : undefined,
           borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
           overflow: "hidden",
-          direction: "ltr",
+          direction: "rtl",
           height: isPhone ? "100dvh" : isTablet ? "94dvh" : "92vh",
           border: `1px solid ${primaryLight}`,
           boxShadow: "0 18px 50px rgba(5,117,70,0.18)"
@@ -1738,7 +1738,7 @@ const StudentStatementDialog2 = ({
                   color: whiteColor,
                   borderColor: "rgba(255,255,255,0.75)",
                   fontWeight: 950,
-                  direction: "ltr",
+                  direction: "rtl",
                   whiteSpace: "nowrap",
                   "& .MuiButton-startIcon": {
                     ml: isCompact ? 0.2 : 0.4,
@@ -2075,7 +2075,7 @@ const StudentStatementDialog2 = ({
 
             m: 0,
             borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
-            direction: "ltr",
+            direction: "rtl",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column"
@@ -2102,7 +2102,7 @@ const StudentStatementDialog2 = ({
         <DialogContent
           dividers
           sx={{
-            direction: "ltr",
+            direction: "rtl",
             p: isPhone ? 0.25 : isTablet ? 0.45 : 2,
             display: "flex",
             flexDirection: "column",
@@ -2377,7 +2377,7 @@ const StudentStatementDialog2 = ({
                   },
 
                   "& .MuiDataGrid-footerContainer": {
-                    direction: "ltr",
+                    direction: "rtl",
                     minHeight: isPhone ? 38 : isTablet ? 42 : undefined
                   },
 
@@ -2432,7 +2432,7 @@ const StudentStatementDialog2 = ({
         <DialogTitle
           sx={{
             color: whiteColor,
-            direction: "ltr",
+            direction: "rtl",
             background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
             py: isPhone ? 0.45 : isTablet ? 0.65 : 1.2,
             px: isPhone ? 0.55 : isTablet ? 0.8 : 2
@@ -2482,7 +2482,7 @@ const StudentStatementDialog2 = ({
         <DialogContent
           dividers
           sx={{
-            direction: "ltr",
+            direction: "rtl",
             p: isPhone ? 0.4 : isTablet ? 0.7 : 2
           }}
         >

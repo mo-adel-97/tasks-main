@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Grid, Card, CardContent, Typography, Chip, Box, Button, Table, TableBody,
@@ -7,7 +9,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
-import Sidebar from './SidebarAdmin';
+
 
 // API URLs for fetching tasks
 const TASK_ROUTES_API = "https://api3.sstli.com/api/NewTasks/routes/all";
@@ -87,9 +89,13 @@ export default function AllTaskRoutesList() {
   };
 
   return (
-    <>
-      <Sidebar />
-      <Box sx={{ flex: 1, p: 3, ml: '280px' }}>
+    <NavigationShell variant="admin" ><>
+      
+      <Box sx={{
+        flex: 1,
+        p: 3,
+        ...navigationContentSx
+      }}>
         <Typography variant="h5" sx={{ mb: 3 }}>📋 كل المهام الموزعة</Typography>
 
         {loading ? (
@@ -189,6 +195,6 @@ export default function AllTaskRoutesList() {
           </Box>
         )}
       </Box>
-    </>
+    </></NavigationShell>
   );
 }

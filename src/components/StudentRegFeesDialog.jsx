@@ -952,7 +952,7 @@ const StudentRegFeesDialog = ({
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
           maxWidth: isPhone ? "100vw" : isTablet ? "1180px" : undefined,
           borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
-          direction: "ltr",
+          direction: "rtl",
           height: isPhone
             ? "calc(100dvh - 58px)"
             : isTablet
@@ -1096,7 +1096,7 @@ const StudentRegFeesDialog = ({
                         direction: "ltr"
                       }
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
               </Grid>
             </Paper>
@@ -1164,7 +1164,7 @@ const StudentRegFeesDialog = ({
                       fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
                       color: primaryDark,
                       borderColor: primaryLight,
-                      direction: "ltr"
+                      direction: "rtl"
                     }}
                   >
                     بحث
@@ -1238,7 +1238,7 @@ const StudentRegFeesDialog = ({
                           "& .MuiInputBase-input": {
                             fontWeight: 900,
                             color: textColor,
-                            textAlign: "left"
+                            textAlign: "start"
                           }
                         }}
                       />
@@ -1356,7 +1356,7 @@ const StudentRegFeesDialog = ({
                       sx={{
                         border: "1px solid #e4eeea",
                         borderRadius: isCompact ? 1.2 : 2,
-                        direction: "ltr",
+                        direction: "rtl",
                         width: "100%",
                         minWidth: 0,
                         overflow: "hidden",
@@ -1475,7 +1475,7 @@ const StudentRegFeesDialog = ({
                         fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                         color: "#d32f2f",
                         borderColor: "#ffcdd2",
-                        direction: "ltr"
+                        direction: "rtl"
                       }}
                     >
                       تفريغ
@@ -1507,7 +1507,7 @@ const StudentRegFeesDialog = ({
                       sx={{
                         border: "1px solid #e4eeea",
                         borderRadius: isCompact ? 1.2 : 2,
-                        direction: "ltr",
+                        direction: "rtl",
                         width: "100%",
                         minWidth: 0,
                         overflow: "hidden",
@@ -1635,7 +1635,7 @@ const StudentRegFeesDialog = ({
           backgroundColor: "#fff",
           flexShrink: 0,
           justifyContent: "space-between",
-          direction: "ltr"
+          direction: "rtl"
         }}
       >
         <Button
@@ -1667,7 +1667,7 @@ const StudentRegFeesDialog = ({
             px: isPhone ? 1.2 : isTablet ? 1.6 : 4,
             fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined,
             backgroundColor: primaryColor,
-            direction: "ltr",
+            direction: "rtl",
             "&:hover": {
               backgroundColor: primaryDark
             }

@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -38,9 +40,9 @@ import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -606,28 +608,24 @@ const CashPaymentOrder = () => {
   ];
 
   return (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
-        direction: "ltr",
+        direction: "rtl",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)"
       }}
     >
-      <Sidebar />
+      
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
-          },
           p: {
             xs: 1.2,
             md: 2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -792,7 +790,7 @@ const CashPaymentOrder = () => {
                   </InputAdornment>
                 )
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               type="date"
@@ -808,7 +806,7 @@ const CashPaymentOrder = () => {
                 shrink: true
               }}
               disabled={isExisting}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Autocomplete
               options={branches}
@@ -908,7 +906,7 @@ const CashPaymentOrder = () => {
               inputProps={{
                 min: 0,
                 step: "0.01"
-              }}
+              , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -1031,7 +1029,7 @@ const CashPaymentOrder = () => {
         maxWidth="xs"
         PaperProps={{
           sx: {
-            direction: "ltr",
+            direction: "rtl",
             borderRadius: 4
           }
         }}
@@ -1136,7 +1134,7 @@ const CashPaymentOrder = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

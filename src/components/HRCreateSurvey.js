@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
 import SurveyReportExporter from './SurveyReportExporter';
 import { DataGrid } from '@mui/x-data-grid';
@@ -83,7 +85,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import Sidebar from './Sidebar';
+
 
 // الألوان الأساسية
 const primaryColor = '#80b49e';
@@ -2774,7 +2776,7 @@ async function chartToPngBase64({
             }
             sx={fieldStyle}
             variant="outlined"
-          />
+           inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
         </Grid>
       </Grid>
     </Fade>
@@ -4294,20 +4296,19 @@ const renderExternalSurveysTable = () => (
   );
 
   return (
-    <Box sx={containerStyle}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={containerStyle}>
+      
       
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Container 
           maxWidth={false}
-          sx={{ 
+          sx={{
             py: 4,
-            marginLeft: { xs: 0, md: '280px' },
-            width: { xs: '100%', md: 'calc(100% - 280px)' },
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            ...navigationContentSx
           }}
         >
           <Paper sx={mainPaperStyle}>
@@ -4663,7 +4664,7 @@ const renderExternalSurveysTable = () => (
           </Paper>
         </Container>
       </LocalizationProvider>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

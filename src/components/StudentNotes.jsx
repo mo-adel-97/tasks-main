@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
@@ -23,10 +25,10 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SaveIcon from "@mui/icons-material/Save";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import Sidebar from "./Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 
 // API
 const API_BASE = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
@@ -181,7 +183,9 @@ export default function StudentNotes() {
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         display: "flex",
         background: bg,
@@ -189,7 +193,7 @@ export default function StudentNotes() {
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       {!isDesktop && (
@@ -223,12 +227,12 @@ export default function StudentNotes() {
             color: text,
             borderBottom:
               "1px solid rgba(128,180,158,0.25)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important"
@@ -272,7 +276,7 @@ export default function StudentNotes() {
                   sm: "0.8rem"
                 },
                 color: text,
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -284,12 +288,7 @@ export default function StudentNotes() {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       {/* Content */}
       <Box
@@ -310,13 +309,11 @@ export default function StudentNotes() {
           },
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             p: 2.5,
             mt: 0
-          }
+          },
+          ...navigationContentSx
         }}
       >
         {/* Header */}
@@ -655,6 +652,6 @@ export default function StudentNotes() {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

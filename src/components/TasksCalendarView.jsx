@@ -52,7 +52,7 @@ export default function TasksCalendarView({ tasks, userMap, subTaskNameMap, curr
             renderInput={(params) => <TextField {...params} size="small" />}
             inputFormat="yyyy-MM-dd"
           />
-          <Typography sx={{ ml: "auto", fontWeight: 600, color: "#6366f1" }}>
+          <Typography sx={{ marginInlineStart: "auto", fontWeight: 600, color: "#6366f1" }}>
             عدد المهام: {filteredTasks.length}
           </Typography>
         </Box>
@@ -130,7 +130,7 @@ export default function TasksCalendarView({ tasks, userMap, subTaskNameMap, curr
                             fontSize: 17,
                             mb: .7
                           }}>
-                            {subTaskNameMap[sub.taskSmallGuid] || "بدون اسم"}
+                            <bdi dir="ltr">{subTaskNameMap[sub.taskSmallGuid] || "بدون اسم"}</bdi>
                           </Typography>
                           <Typography sx={{ fontSize: 15, color: '#334155', my: .5 }}>
                             أرسلت إلى:

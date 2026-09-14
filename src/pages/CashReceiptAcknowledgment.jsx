@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -44,9 +46,9 @@ import AccountBalanceWalletIcon
   from "@mui/icons-material/AccountBalanceWallet";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -630,28 +632,24 @@ const CashReceiptAcknowledgment = () => {
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
-        direction: "ltr",
+        direction: "rtl",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)"
       }}
     >
-      <Sidebar />
+      
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
-          },
           p: {
             xs: 1.2,
             md: 2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -793,7 +791,7 @@ const CashReceiptAcknowledgment = () => {
                   </InputAdornment>
                 )
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               type="date"
@@ -809,7 +807,7 @@ const CashReceiptAcknowledgment = () => {
                 shrink: true
               }}
               disabled={isExisting}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Autocomplete
               options={branches}
@@ -921,7 +919,7 @@ const CashReceiptAcknowledgment = () => {
                   </InputAdornment>
                 )
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               label="رقم الجوال"
@@ -956,7 +954,7 @@ const CashReceiptAcknowledgment = () => {
               inputProps={{
                 min: 0,
                 step: "0.01"
-              }}
+              , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -1054,7 +1052,7 @@ const CashReceiptAcknowledgment = () => {
           )}
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

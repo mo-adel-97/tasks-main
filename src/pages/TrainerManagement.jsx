@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -28,17 +30,17 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";
@@ -524,7 +526,7 @@ export default function TrainerManagement() {
             gap: { xs: 0.55, sm: 0.8 },
             "& .MuiTextField-root": fieldSx
           }}>
-            <TextField label="كود" size="small" value={model.code} InputProps={{ readOnly: true }} />
+            <TextField label="كود" size="small" value={model.code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField label="اسم المدرب" size="small" value={model.name} onChange={(e) => setField("name", e.target.value)} required />
 
             <TextField
@@ -536,7 +538,7 @@ export default function TrainerManagement() {
               sx={{ cursor: "pointer" }}
             />
 
-            <TextField label="رقم الهوية" size="small" value={model.nationalId} onChange={(e) => setField("nationalId", e.target.value)} required />
+            <TextField label="رقم الهوية" size="small" value={model.nationalId} onChange={(e) => setField("nationalId", e.target.value)} required  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField
               select
               label="الجنسية"
@@ -566,8 +568,8 @@ export default function TrainerManagement() {
               ))}
             </TextField>
             <TextField label="الجوال" size="small" value={model.mob} onChange={(e) => setField("mob", e.target.value)} required />
-            <TextField label="الهاتف" size="small" value={model.tel} onChange={(e) => setField("tel", e.target.value)} />
-            <TextField label="الإيميل" size="small" value={model.email} onChange={(e) => setField("email", e.target.value)} />
+            <TextField label="الهاتف" size="small" value={model.tel} onChange={(e) => setField("tel", e.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField label="الإيميل" size="small" value={model.email} onChange={(e) => setField("email", e.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               select
@@ -591,8 +593,8 @@ export default function TrainerManagement() {
               {BOOK_TYPES.map((item) => <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>)}
             </TextField>
 
-            <TextField label="ساعات العمل اليومية" type="number" size="small" value={model.dailyTime} onChange={(e) => setField("dailyTime", e.target.value)} inputProps={{ min: 0, step: 0.5 }} />
-            <TextField label="ساعات العمل الأسبوعية" type="number" size="small" value={model.weekTime} onChange={(e) => setField("weekTime", e.target.value)} inputProps={{ min: 0, step: 0.5 }} />
+            <TextField label="ساعات العمل اليومية" type="number" size="small" value={model.dailyTime} onChange={(e) => setField("dailyTime", e.target.value)} inputProps={{ min: 0, step: 0.5 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField label="ساعات العمل الأسبوعية" type="number" size="small" value={model.weekTime} onChange={(e) => setField("weekTime", e.target.value)} inputProps={{ min: 0, step: 0.5 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField label="العنوان" size="small" value={model.address} onChange={(e) => setField("address", e.target.value)} sx={{ gridColumn: { xs: "1 / -1", sm: "span 2" } }} />
 
@@ -633,15 +635,17 @@ export default function TrainerManagement() {
   );
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: soft }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100vh", bgcolor: soft }}>
       {isDesktop ? (
         <>
-          <StableSidebar />
-          <Box sx={{ ml: `${SIDEBAR_WIDTH}px` }}>{page}</Box>
+          
+          <Box sx={{
+            ...navigationContentSx
+          }}>{page}</Box>
         </>
       ) : (
         <>
-          <StableSidebar mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)} />
+          
           {page}
         </>
       )}
@@ -665,6 +669,6 @@ export default function TrainerManagement() {
         onClose={() => setLookupOpen(false)}
         onPick={loadTrainer}
       />
-    </Box>
+    </Box></NavigationShell>
   );
 }

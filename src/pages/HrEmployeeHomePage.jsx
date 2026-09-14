@@ -92,7 +92,7 @@ const API_BASE_URL =
    عدّل الاتجاه والمحاذاة من هنا فقط
    ========================================================= */
 const PAGE_DIRECTION = "rtl";
-const PAGE_TEXT_ALIGN = "left";
+const PAGE_TEXT_ALIGN = "start";
 
 const SECTION_DIRECTION = PAGE_DIRECTION;
 const SECTION_TEXT_ALIGN = PAGE_TEXT_ALIGN;
@@ -110,11 +110,11 @@ const DATE_DIRECTION = "ltr";
 const DATE_TEXT_ALIGN = "center";
 
 /* Dialog directions are controlled here only. */
-const DETAIL_DIALOG_DIRECTION = "ltr";
-const DETAIL_DIALOG_TEXT_ALIGN = "left";
+const DETAIL_DIALOG_DIRECTION = "rtl";
+const DETAIL_DIALOG_TEXT_ALIGN = "start";
 
-const LEAVE_DIALOG_DIRECTION = "ltr";
-const LEAVE_DIALOG_TEXT_ALIGN = "left";
+const LEAVE_DIALOG_DIRECTION = "rtl";
+const LEAVE_DIALOG_TEXT_ALIGN = "start";
 
 const LEAVE_TRACKING_DIALOG_DIRECTION = "rtl";
 const LEAVE_TRACKING_DIALOG_TEXT_ALIGN = "right";
@@ -3514,8 +3514,8 @@ const decideLeaveApproval = async (
                     }))
                   }
                   inputProps={{
-                    dir: DATE_DIRECTION,
-                    style: { textAlign: DATE_TEXT_ALIGN }
+                    dir: "ltr",
+                    style: { textAlign: DATE_TEXT_ALIGN , direction: "ltr", unicodeBidi: "isolate" }
                   }}
                 />
               </Box>
@@ -3565,8 +3565,8 @@ const decideLeaveApproval = async (
                     }))
                   }
                   inputProps={{
-                    dir: DATE_DIRECTION,
-                    style: { textAlign: DATE_TEXT_ALIGN }
+                    dir: "ltr",
+                    style: { textAlign: DATE_TEXT_ALIGN , direction: "ltr", unicodeBidi: "isolate" }
                   }}
                 />
               </Box>
@@ -3592,8 +3592,8 @@ const decideLeaveApproval = async (
                     }))
                   }
                   inputProps={{
-                    dir: DATE_DIRECTION,
-                    style: { textAlign: DATE_TEXT_ALIGN }
+                    dir: "ltr",
+                    style: { textAlign: DATE_TEXT_ALIGN , direction: "ltr", unicodeBidi: "isolate" }
                   }}
                 />
               </Box>
@@ -3872,10 +3872,10 @@ const decideLeaveApproval = async (
                     }))
                   }
                   inputProps={{
-                    dir: DATE_DIRECTION,
+                    dir: "ltr",
                     style: {
                       textAlign: DATE_TEXT_ALIGN
-                    }
+                    , direction: "ltr", unicodeBidi: "isolate" }
                   }}
                 />
               </Box>
@@ -3905,10 +3905,10 @@ const decideLeaveApproval = async (
                     }))
                   }
                   inputProps={{
-                    dir: DATE_DIRECTION,
+                    dir: "ltr",
                     style: {
                       textAlign: DATE_TEXT_ALIGN
-                    }
+                    , direction: "ltr", unicodeBidi: "isolate" }
                   }}
                 />
               </Box>

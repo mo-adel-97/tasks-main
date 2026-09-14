@@ -143,14 +143,14 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
           "@media (max-width:599px)": {
             fontSize: strong ? "0.55rem" : "0.5rem"
           },
-          textAlign: "left",
-          direction: "ltr",
+          textAlign: "start",
+          direction: "rtl",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
         }}
       >
-        {safeText(value)}
+        <bdi dir="auto">{safeText(value)}</bdi>
       </Typography>
     </Tooltip>
   </Paper>
@@ -460,8 +460,8 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               : "88vh",
           m: 0,
           borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
-          direction: "ltr",
-          textAlign: "left",
+          direction: "rtl",
+          textAlign: "start",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -559,7 +559,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 height: isPhone ? 25 : isTablet ? 29 : undefined,
                 px: isPhone ? 0.4 : isTablet ? 0.6 : undefined,
                 fontSize: isPhone ? "0.43rem" : isTablet ? "0.51rem" : undefined,
-                direction: "ltr",
+                direction: "rtl",
                 color: whiteColor,
                 borderColor: "#e6f3ee",
                 "&:hover": { borderColor: whiteColor, backgroundColor: "rgba(255,255,255,0.10)" }
@@ -624,7 +624,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                   py: isPhone ? 0.3 : isTablet ? 0.4 : 0.8,
                   borderRadius: isCompact ? 1.1 : 2,
                   fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
-                  textAlign: "left",
+                  textAlign: "start",
                   background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                   color: whiteColor
                 }}
@@ -663,7 +663,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                   py: isPhone ? 0.3 : isTablet ? 0.4 : 0.8,
                   borderRadius: isCompact ? 1.1 : 2,
                   fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
-                  textAlign: "left",
+                  textAlign: "start",
                   background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                   color: whiteColor
                 }}
@@ -746,7 +746,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                       minWidth: 170,
                       borderRadius: 2,
                       fontWeight: 950,
-                      direction: "ltr",
+                      direction: "rtl",
                       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                       boxShadow: "none"
                     }}
@@ -778,7 +778,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           sx={{
             fontWeight: 950,
             color: primaryColor,
-            direction: "ltr",
+            direction: "rtl",
             minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
             fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
@@ -794,7 +794,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           sx={{
             fontWeight: 950,
             color: dangerColor,
-            direction: "ltr",
+            direction: "rtl",
             minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
             px: isPhone ? 0.7 : isTablet ? 1 : undefined,
             fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined

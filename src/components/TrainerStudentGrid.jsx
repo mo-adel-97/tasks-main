@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Button, MenuItem, Select, FormControl,
@@ -22,7 +24,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import FolderIcon from '@mui/icons-material/Folder';
 import SchoolIcon from '@mui/icons-material/School';
 import axios from 'axios';
-import Sidebar from './Sidebar';
+
 import SpecialComponent from './SpecialComponent'; // تأكد من تعديل المسار حسب حاجتك
 
 const API_BASE = 'https://api1.sstli.com';
@@ -564,41 +566,39 @@ const filteredRows = rows.filter((row) => {
   // ✅ إضافة هذا قبل الـ return الرئيسي
   if (showSpecial) {
     return (
-      <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-        <Sidebar />
+      <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+        
         <Box 
           component="main" 
-          sx={{ 
-            flexGrow: 1, 
-            p: 3, 
-            marginLeft: '280px',
-            width: 'calc(100% - 280px)',
+          sx={{
+            flexGrow: 1,
+            p: 3,
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            ...navigationContentSx
           }}
         >
           <SpecialComponent onBack={() => setShowSpecial(false)} />
         </Box>
-      </Box>
+      </Box></NavigationShell>
     );
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <NavigationShell variant="standard" ><LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
         {/* Sidebar */}
-        <Sidebar />
+        
         
         {/* Main Content */}
         <Box 
           component="main" 
-          sx={{ 
-            flexGrow: 1, 
-            p: 3, 
-            marginLeft: '280px', // مساحة للسايدبار
-            width: 'calc(100% - 280px)',
-            transition: 'all 0.3s ease'
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            transition: 'all 0.3s ease',
+            ...navigationContentSx
           }}
         >
           {/* Header Section */}
@@ -1319,8 +1319,8 @@ const filteredRows = rows.filter((row) => {
                                         p: 2,
                                         bgcolor: '#f8fafc',
                                         borderRadius: 2,
-                                        borderLeft: '4px solid',
-                                        borderLeftColor:
+                                        borderInlineStart: '4px solid',
+                                        borderInlineStartColor:
                                           record.status === 'paid'
                                             ? '#4caf50'
                                             : record.status === 'note'
@@ -1387,7 +1387,7 @@ const filteredRows = rows.filter((row) => {
         `}</style>
           </Box>
       </Box>
-    </LocalizationProvider>
+    </LocalizationProvider></NavigationShell>
   );
 };
 

@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Grid, Card, CardContent, Chip, Button, CircularProgress,
@@ -8,7 +10,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import axios from 'axios';
 import AttachmentViewer from './AttachmentViewer';
-import SidebarAdmin from './SidebarAdmin';
+
 import { arSA } from 'date-fns/locale';
 
 const TASKS_API = "https://api3.sstli.com/api/TasksWithSubs/All";
@@ -113,10 +115,14 @@ export default function AdminDashboard() {
   }
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <SidebarAdmin />
+    <NavigationShell variant="admin" ><Box sx={{ display: 'flex' }}>
+      
 
-      <Box sx={{ flex: 1, p: 3, ml: '250px' }}>
+      <Box sx={{
+        flex: 1,
+        p: 3,
+        ...navigationContentSx
+      }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
           👋 مرحباً <span style={{ color: "#1e40af" }}>{currentUser?.fullName || currentUser?.userName || "المستخدم"}</span>، إليك المهام الخاصة بتاريخ:
           <span style={{ color: "#2563eb", marginRight: 8 }}>
@@ -181,13 +187,13 @@ export default function AdminDashboard() {
                 }}>
                   <CardContent>
                     <Typography variant="h6">{task.taskName}</Typography>
-                    <Typography sx={{ color: '#555' }}>من: <b>{usersMap[task.senderGuid]}</b></Typography>
+                    <Typography sx={{ color: '#555' }}>من: <b><bdi dir="ltr">{usersMap[task.senderGuid]}</bdi></b></Typography>
                     <Typography sx={{ color: '#777' }}>تاريخ الإرسال: {task.createdAt?.split('T')[0]}</Typography>
                     <Typography sx={{ mt: 1 }}>عدد المهام الفرعية: {task.subTasks.length}</Typography>
                     <Box sx={{ mt: 2 }}>
                       {task.subTasks.map(sub => (
                         <Box key={sub.guid} sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, mb: 1 }}>
-                          <Typography>المهمة الفرعية: <b>{subTaskNames[sub.taskSmallGuid] || "بدون اسم"}</b></Typography>
+                          <Typography>المهمة الفرعية: <b><bdi dir="ltr">{subTaskNames[sub.taskSmallGuid] || "بدون اسم"}</bdi></b></Typography>
                           <Typography>المستلمون: <b>{sub.userReceiverGuids?.split(',').map(id => usersMap[id] || id).join(', ')}</b></Typography>
                           <Typography>الحالة: <Chip label={sub.status} /></Typography>
                           <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -224,7 +230,7 @@ export default function AdminDashboard() {
             ) : (
               flowDialog.flows.map((f, i) => (
                 <Box key={i} sx={{ mb: 2, borderBottom: '1px solid #ddd', pb: 1 }}>
-                  <Typography>من: <b>{usersMap[f.fromUserGuid]}</b> → إلى: <b>{usersMap[f.toUserGuid]}</b></Typography>
+                  <Typography>من: <b><bdi dir="ltr">{usersMap[f.fromUserGuid]}</bdi></b> → إلى: <b><bdi dir="ltr">{usersMap[f.toUserGuid]}</bdi></b></Typography>
                   <Typography>تاريخ: {f.createdAt?.split('T')[0]}</Typography>
                   <Typography>ملاحظة: {f.note || 'بدون ملاحظات'}</Typography>
                 </Box>
@@ -233,6 +239,6 @@ export default function AdminDashboard() {
           </DialogContent>
         </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

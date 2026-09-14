@@ -227,7 +227,7 @@ const MaintenancePage = () => {
             {/* المميزات الجديدة */}
             <Box sx={{ mb: 4 }}>
               <Typography variant="h5" gutterBottom sx={{ color: primaryColor, mb: 3 }}>
-                <EmojiObjects sx={{ mr: 1, verticalAlign: 'middle' }} />
+                <EmojiObjects sx={{ marginInlineEnd: 1, verticalAlign: 'middle' }} />
                 المميزات القادمة
               </Typography>
               

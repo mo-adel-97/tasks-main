@@ -164,7 +164,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
                 value={reg.count}
                 onChange={(e) => handleRegistrationChange(index, 'count', e.target.value)}
                 size="small"
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
             <Box width={120}>
               <TextField
@@ -218,7 +218,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
                 value={att.count}
                 onChange={(e) => handleAttendanceChange(index, 'count', e.target.value)}
                 size="small"
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
             <Box>
               {index === localData.attendance.length - 1 ? (
@@ -263,7 +263,7 @@ const DiplomaStatistics = ({ diplomaData, setDiplomaData }) => {
                 value={app.count}
                 onChange={(e) => handleApprovalChange(index, 'count', e.target.value)}
                 size="small"
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
             <Box width={120}>
               <TextField

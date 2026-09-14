@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -78,10 +80,10 @@ import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -2995,7 +2997,9 @@ const HrEmployeesPage = () => {
   );
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       dir={PAGE_DIRECTION}
       sx={{
         minHeight: "100dvh",
@@ -3112,18 +3116,16 @@ const HrEmployeesPage = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
         sx={{
           ml: 0,
-          mt: { xs: "50px", sm: "56px" },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
           width: "100%",
           maxWidth: "100%",
           minWidth: 0,
@@ -3140,15 +3142,12 @@ const HrEmployeesPage = () => {
           },
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             px: 1.5,
             py: 1.5
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Stack
@@ -3866,11 +3865,11 @@ const HrEmployeesPage = () => {
                       </TableCell>
 
                       <TableCell align="center">
-                        {employee?.nationalId || "-"}
+                        <bdi dir="ltr">{employee?.nationalId || "-"}</bdi>
                       </TableCell>
 
                       <TableCell align="center">
-                        {employee?.mobile || "-"}
+                        <bdi dir="ltr">{employee?.mobile || "-"}</bdi>
                       </TableCell>
 
                       <TableCell align="center">
@@ -4640,7 +4639,7 @@ const HrEmployeesPage = () => {
                       }}
                     >
                       <Stack
-                         direction="row-reverse"
+                         direction="row"
   justifyContent="space-between"
   alignItems="center"
                         spacing={1}
@@ -4773,7 +4772,7 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -4785,7 +4784,7 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -4797,7 +4796,7 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -4809,7 +4808,7 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -4824,7 +4823,7 @@ const HrEmployeesPage = () => {
                               sx={{
                                 gridColumn: "1 / -1"
                               }}
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <FormControl
                               size="small"
@@ -4870,7 +4869,7 @@ const HrEmployeesPage = () => {
                                 min: 0.5,
                                 max: 24,
                                 step: 0.5
-                              }}
+                              , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                             />
 
                             <FormControl
@@ -5216,7 +5215,7 @@ const HrEmployeesPage = () => {
                     }}
                   >
                     <Stack
-                      direction="row-reverse"
+                      direction="row"
   justifyContent="space-between"
   alignItems="center"
                       spacing={1}
@@ -5347,7 +5346,7 @@ const HrEmployeesPage = () => {
                             InputLabelProps={{
                               shrink: true
                             }}
-                          />
+                           inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                           <TextField
                             size="small"
@@ -5915,7 +5914,7 @@ const HrEmployeesPage = () => {
                             InputLabelProps={{
                               shrink: true
                             }}
-                          />
+                           inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                           <TextField
                             size="small"
@@ -5936,7 +5935,7 @@ const HrEmployeesPage = () => {
                             InputLabelProps={{
                               shrink: true
                             }}
-                          />
+                           inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                           <TextField
                             size="small"
@@ -6546,7 +6545,7 @@ const HrEmployeesPage = () => {
                                 )
                               }
                               InputLabelProps={{ shrink: true }}
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -6563,7 +6562,7 @@ const HrEmployeesPage = () => {
                                 )
                               }
                               InputLabelProps={{ shrink: true }}
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -6579,7 +6578,7 @@ const HrEmployeesPage = () => {
                                   })
                                 )
                               }
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <TextField
                               size="small"
@@ -7220,7 +7219,7 @@ const HrEmployeesPage = () => {
                               sx={{
                                 fontFamily: "Cairo",
                                 fontSize: ".61rem",
-                                textAlign:"left",
+                                textAlign: "start",
                                 color: "#718078"
                               }}
                             >
@@ -7232,7 +7231,7 @@ const HrEmployeesPage = () => {
                                 mt: .15,
                                 fontFamily: "Cairo",
                                 fontWeight: 1000,
-                                textAlign:"left",
+                                textAlign: "start",
                                 color: primaryDark,
                                 fontSize: ".92rem"
                               }}
@@ -7248,7 +7247,7 @@ const HrEmployeesPage = () => {
                             sx={{
                               fontFamily: "Cairo",
                               fontWeight: 1000,
-                              textAlign:"left",
+                              textAlign: "start",
                               color: primaryDark,
                               fontSize: ".78rem",
                               mb: .7
@@ -7432,7 +7431,7 @@ const HrEmployeesPage = () => {
                             sx={{
                               fontFamily: "Cairo",
                               fontWeight: 1000,
-                              textAlign:"left",
+                              textAlign: "start",
                               color: primaryDark,
                               fontSize: ".78rem",
                               mb: .7
@@ -7589,7 +7588,7 @@ const HrEmployeesPage = () => {
                     dir={ATTENDANCE_TAB_DIRECTION}
                     sx={{
                       animation: "fadeSlide .25s ease both",
-                      textAlign: "left"
+                      textAlign: "start"
                     }}
                   >
                     <Stack spacing={1.1}>
@@ -7790,7 +7789,7 @@ const HrEmployeesPage = () => {
                                       "tabular-nums"
                                   }
                                 }}
-                              />
+                               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                               <TextField
                                 size="small"
@@ -7829,7 +7828,7 @@ const HrEmployeesPage = () => {
                                       "tabular-nums"
                                   }
                                 }}
-                              />
+                               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                               <Button
                                 variant="contained"
@@ -8613,8 +8612,7 @@ const HrEmployeesPage = () => {
                     sx={{
                       animation:
                         "fadeSlide .25s ease both",
-                      textAlign:
-                        "left"
+                      textAlign: "start"
                     }}
                   >
                     <Stack spacing={1}>
@@ -8688,7 +8686,7 @@ const HrEmployeesPage = () => {
                                 shrink: true
                               }}
                               sx={{ width: 110 }}
-                            />
+                             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                             <Button
                               size="small"
@@ -9547,7 +9545,7 @@ const HrEmployeesPage = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 size="small"
@@ -9861,7 +9859,7 @@ const HrEmployeesPage = () => {
 
         </Stack>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

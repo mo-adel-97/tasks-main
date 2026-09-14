@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
 import Chats from '../pages/Chats';
 import GroupChat from '../components/GroupChat';
@@ -9,7 +11,7 @@ import {
     Typography,
     styled 
 } from '@mui/material';
-import Sidebar from '../components/Sidebar';
+
 
 // تعريف الألوان الجديدة
 const colorPalette = {
@@ -27,10 +29,10 @@ const colorPalette = {
 
 const StyledTabs = styled(Tabs)({
   minHeight: '48px',
-  marginLeft: '280px',
   '& .MuiTabs-indicator': {
-    backgroundColor: colorPalette.primary,
+    backgroundColor: colorPalette.primary
   },
+  ...navigationContentSx
 });
 
 const StyledTab = styled(Tab)({
@@ -90,24 +92,24 @@ const ChatSystem = () => {
 
 if (loading) {
   return (
-    <>
-      <Sidebar/>
-      <Box sx={{ 
-        marginLeft: '280px', // نفس الـ margin بتاع المحتوى الرئيسي
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+    <NavigationShell variant="standard" ><>
+      
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
-        backgroundColor: colorPalette.background 
+        backgroundColor: colorPalette.background,
+        ...navigationContentSx
       }}>
         <Typography sx={{ color: colorPalette.textDark }}>جاري التحميل...</Typography>
       </Box>
-    </>
+    </></NavigationShell>
   );
 }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: colorPalette.background }}>
+    <NavigationShell><Box sx={{ ...navigationContentSx, display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: colorPalette.background }}>
       {/* Horizontal Tabs at the top */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'white', boxShadow: 2 }}>
         <StyledTabs 
@@ -132,7 +134,7 @@ if (loading) {
         <Box 
           sx={{
             width: 240,
-            borderRight: '1px solid #e0e0e0',
+            borderInlineEnd: '1px solid #e0e0e0',
             bgcolor: 'white',
             display: 'flex',
             flexDirection: 'column',
@@ -174,7 +176,7 @@ if (loading) {
           )}
         </ChatContainer>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

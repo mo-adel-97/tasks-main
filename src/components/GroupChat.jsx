@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box, Typography, Avatar, Card, CardContent, 
@@ -8,7 +10,7 @@ import {
   Tooltip
 } from '@mui/material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import Sidebar from './Sidebar';
+
 import DescriptionIcon from '@mui/icons-material/Description';
 import {
     PictureAsPdf as PdfIcon,
@@ -868,13 +870,13 @@ const GroupChat = ({
   };
 
   return (
-    <Box display="flex" height="95%" dir="rtl">
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={navigationContentSx} display="flex" height="95%" dir="rtl">
+      
       {/* Groups List */}
       <Box style={{marginRight:"30px"}} width="30%" bgcolor={colorPalette.background} p={2} overflow="auto" borderLeft="1px solid #e0e0e0">
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', color: colorPalette.textDark }}>
-            <GroupIcon sx={{ mr: 1, color: colorPalette.primary }} /> المجموعات ({groups.length})
+            <GroupIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} /> المجموعات ({groups.length})
           </Typography>
           <Button 
             variant="contained" 
@@ -940,7 +942,7 @@ const GroupChat = ({
                   <Card sx={{ 
                     width: '100%', 
                     boxShadow: 2,
-                    borderLeft: (groupUnreadCounts[group.group_id] > 0) ? `3px solid ${colorPalette.error}` : 'none',
+                    borderInlineStart: (groupUnreadCounts[group.group_id] > 0) ? `3px solid ${colorPalette.error}` : 'none',
                     backgroundColor: selectedGroup?.group_id === group.group_id ? colorPalette.primaryLighter : 'white'
                   }}>
                     <CardContent sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
@@ -1549,7 +1551,7 @@ if (msg.message_type === 'notification' ||
       >
         <DialogTitle sx={{ backgroundColor: colorPalette.primaryLighter }}>
           <Box display="flex" alignItems="center">
-            <GroupIcon sx={{ mr: 1, color: colorPalette.primary }} />
+            <GroupIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} />
             <Typography sx={{ color: colorPalette.textDark }}>أعضاء المجموعة: {selectedGroup?.group_name}</Typography>
           </Box>
         </DialogTitle>
@@ -1565,7 +1567,7 @@ if (msg.message_type === 'notification' ||
                 <Box display="flex" alignItems="center" width="100%">
                   <Avatar sx={{ 
                     bgcolor: isMemberAdmin ? colorPalette.primary : '#757575', 
-                    mr: 2 
+                    marginInlineEnd: 2 
                   }}>
                     {memberDetails.avatar}
                   </Avatar>
@@ -1643,7 +1645,7 @@ if (msg.message_type === 'notification' ||
       >
         <DialogTitle sx={{ backgroundColor: colorPalette.primaryLighter }}>
           <Box display="flex" alignItems="center">
-            <AddMemberIcon sx={{ mr: 1, color: colorPalette.primary }} />
+            <AddMemberIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} />
             <Typography sx={{ color: colorPalette.textDark }}>إضافة عضو جديد إلى: {selectedGroup?.group_name}</Typography>
           </Box>
         </DialogTitle>
@@ -1685,7 +1687,7 @@ if (msg.message_type === 'notification' ||
                     onClick={() => setSelectedUserToAdd(user)}
                   >
                     <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar sx={{ mr: 2, bgcolor: colorPalette.primary }}>
+                      <Avatar sx={{ marginInlineEnd: 2, bgcolor: colorPalette.primary }}>
                         {user.fullName.charAt(0)}
                       </Avatar>
                       <Typography variant="body1" sx={{ color: colorPalette.textDark }}>
@@ -1741,7 +1743,7 @@ if (msg.message_type === 'notification' ||
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

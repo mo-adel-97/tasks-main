@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import StudyApprovalDialog from "../components/StudyApprovalDialog";
@@ -49,7 +51,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
-import Sidebar from "../components/Sidebar";
+
 
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -88,7 +90,7 @@ import AddStudentDialog from "../components/AddStudentDialog";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-const SIDEBAR_WIDTH = 280;
+
 const API_BASE_URL = "http://localhost:5258";
 
 const primaryColor = "#057546";
@@ -283,10 +285,10 @@ const EllipsisCell = ({ value, color = textColor }) => (
         overflow: "hidden",
         textOverflow: "ellipsis",
         textAlign: "center",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
-      {value || "-"}
+      <bdi dir="auto">{value || "-"}</bdi>
     </Typography>
   </Tooltip>
 );
@@ -305,7 +307,7 @@ const HeaderButton = ({ icon, label, onClick, color = primaryColor }) => (
       color,
       borderColor: color,
       backgroundColor: whiteColor,
-      direction: "ltr",
+      direction: "rtl",
       boxShadow: "0 8px 20px rgba(5,117,70,0.08)",
       "& .MuiButton-startIcon": {
         ml: 0.5,
@@ -355,8 +357,8 @@ const DetailItem = ({ label, value, strong = false }) => (
       border: `1px solid ${primaryLight}`,
       backgroundColor: whiteColor,
       height: "100%",
-      direction: "ltr",
-      textAlign: "left"
+      direction: "rtl",
+      textAlign: "start"
     }}
   >
     <Typography sx={{ color: primaryColor, fontWeight: 900, fontSize: "0.78rem", mb: 0.4 }}>
@@ -533,7 +535,7 @@ const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
       primaryTypographyProps={{
         fontWeight: 900,
         color: textColor,
-        textAlign: "left",
+        textAlign: "start",
 
         sx: {
           fontSize: "0.88rem",
@@ -780,7 +782,7 @@ const OldStudentStatementDialog = ({
 
 const ReceptionOffice = () => {
   const theme = useTheme();
-  const DESKTOP_BREAKPOINT = 1600;
+  
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
   const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
@@ -2537,7 +2539,7 @@ const handleAcceptOrder = (row) => {
   ];
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       sx={{
         background: `
           radial-gradient(circle at 18% 8%, rgba(174,30,33,0.075) 0%, transparent 24%),
@@ -2546,8 +2548,8 @@ const handleAcceptOrder = (row) => {
         `,
         minHeight: "100dvh",
         fontFamily: "Cairo, Arial, sans-serif",
-        direction: "ltr",
-        textAlign: "left",
+        direction: "rtl",
+        textAlign: "start",
         overflowX: "hidden",
         '& .MuiTypography-h3': { fontSize: isDesktop ? undefined : { xs: '0.86rem', sm: '1rem', md: '1.15rem' } },
         '& .MuiTypography-h4': { fontSize: isDesktop ? undefined : { xs: '0.78rem', sm: '0.9rem', md: '1.05rem' } },
@@ -2583,7 +2585,7 @@ const handleAcceptOrder = (row) => {
               },
               px: { xs: 0.8, sm: 1.2, md: 1.6 },
               gap: 0.8,
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <IconButton
@@ -2627,10 +2629,7 @@ const handleAcceptOrder = (row) => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
       {/* <ReceptionCelebration
         title="مكتب الاستقبال"
         // subtitle="تجربة استقبال أسرع، بحث فوري، وإجراءات مرتبة باحتراف"
@@ -2639,15 +2638,21 @@ const handleAcceptOrder = (row) => {
 
       <Box
         sx={{
-          ml: isDesktop ? `${SIDEBAR_WIDTH}px` : 0,
-          mr: 0,
-          width: isDesktop ? `calc(100% - ${SIDEBAR_WIDTH}px)` : "100%",
           maxWidth: "100%",
-          p: isDesktop ? 2.5 : { xs: 0.35, sm: 0.6, md: 0.9 },
-          pt: isDesktop ? 2.5 : { xs: "54px", sm: "62px", md: "66px" },
+          p: isDesktop ? 2.5 : {
+            xs: 0.35,
+            sm: 0.6,
+            md: 0.9
+          },
+          pt: isDesktop ? 2.5 : {
+            xs: "54px",
+            sm: "62px",
+            md: "66px"
+          },
           boxSizing: "border-box",
           overflowX: "hidden",
-          minWidth: 0
+          minWidth: 0,
+          ...navigationContentSx
         }}
       >
         <Box sx={{ width: "100%", maxWidth: isDesktop ? 1720 : "100%", mx: "auto", minWidth: 0 }}>
@@ -2730,7 +2735,7 @@ const handleAcceptOrder = (row) => {
               spacing={isDesktop ? 1.2 : 0}
               alignItems="center"
               sx={{
-                direction: "ltr",
+                direction: "rtl",
 
                 // الديسكتوب يرجع Flex عادي زي الشكل القديم.
                 // الموبايل والتابلت فقط يستخدموا Grid من 3 أزرار.
@@ -2815,7 +2820,7 @@ const handleAcceptOrder = (row) => {
               spacing={1.2}
               alignItems="center"
               sx={{
-                direction: "ltr"
+                direction: "rtl"
               }}
             >
               <Grid item xs={12} md={3.8} sx={{ width: "100%" }}>
@@ -2825,7 +2830,7 @@ const handleAcceptOrder = (row) => {
                   onChange={(e) => setSearchType(e.target.value)}
                   sx={{
                     justifyContent: "flex-start",
-                    direction: "ltr",
+                    direction: "rtl",
                     gap: isDesktop ? 1 : { xs: 0.25, sm: 0.45, md: 0.65 },
                     flexWrap: "nowrap",
                     width: "100%",
@@ -2908,7 +2913,7 @@ const handleAcceptOrder = (row) => {
   style: {
     textAlign: "right",
     fontWeight: 900,
-    direction: "ltr",
+    direction: "rtl",
     fontSize: isPhone
       ? "0.72rem"
       : isTablet
@@ -2919,7 +2924,7 @@ const handleAcceptOrder = (row) => {
                   sx={{
                     backgroundColor: whiteColor,
                     borderRadius: 3,
-                    direction: "ltr",
+                    direction: "rtl",
                     boxShadow: "0 8px 22px rgba(5,117,70,0.07)",
                     "& .MuiOutlinedInput-root": {
                       fontWeight: 900,
@@ -2930,7 +2935,7 @@ const handleAcceptOrder = (row) => {
                       "&.Mui-focused fieldset": { borderColor: primaryColor, borderWidth: 2 }
                     },
                     "& legend": {
-                      textAlign: "left"
+                      textAlign: "start"
                     }
                   }}
                 />
@@ -2939,7 +2944,7 @@ const handleAcceptOrder = (row) => {
               <Grid item xs={12} md={4} sx={{ width: "100%" }}>
                 <Box
                   sx={{
-                    direction: "ltr",
+                    direction: "rtl",
                     width: "100%",
 
                     // Desktop: كل العناصر في صف واحد.
@@ -3014,7 +3019,7 @@ const handleAcceptOrder = (row) => {
                       fontWeight: 900,
                       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                       boxShadow: "0 8px 20px rgba(5,117,70,0.22)",
-                      direction: "ltr",
+                      direction: "rtl",
                       "& .MuiButton-startIcon": {
                         ml: 0.5,
                         mr: 0
@@ -3059,8 +3064,8 @@ const handleAcceptOrder = (row) => {
   mb: 1.5,
   borderRadius: 2,
   fontWeight: 800,
-  direction: "ltr",
-  textAlign: "left",
+  direction: "rtl",
+  textAlign: "start",
 
   fontSize: isPhone
     ? "0.52rem"
@@ -3086,8 +3091,8 @@ const handleAcceptOrder = (row) => {
               mb: 1.5,
               borderRadius: 2,
               fontWeight: 800,
-              direction: "ltr",
-              textAlign: "left"
+              direction: "rtl",
+              textAlign: "start"
             }}
           >
             لم يتم العثور على الطالب في النظام الجديد، وتم عرض بيانات الأرشيف القديم.
@@ -3150,7 +3155,7 @@ const handleAcceptOrder = (row) => {
               width: "100%",
               maxWidth: "100%",
               minWidth: 0,
-              direction: "ltr",
+              direction: "rtl",
               height: isDesktop ? 520 : { xs: "68dvh", sm: "72dvh", md: "74dvh" },
 
               "& .MuiDataGrid-main": {
@@ -3195,7 +3200,7 @@ const handleAcceptOrder = (row) => {
               },
 
               "& .MuiDataGrid-footerContainer": {
-                direction: "ltr"
+                direction: "rtl"
               }
             }}
           />
@@ -3257,7 +3262,7 @@ const handleAcceptOrder = (row) => {
               fontWeight: 950,
               fontSize: isDesktop ? "0.92rem" : { xs: "0.62rem", sm: "0.68rem", md: "0.74rem" },
               lineHeight: 1.2,
-              textAlign: "left"
+              textAlign: "start"
             }}
           >
             إجراءات الطالب
@@ -3270,7 +3275,7 @@ const handleAcceptOrder = (row) => {
               fontSize: isDesktop ? "0.72rem" : { xs: "0.48rem", sm: "0.54rem", md: "0.6rem" },
               fontWeight: 800,
               lineHeight: 1.25,
-              textAlign: "left",
+              textAlign: "start",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis"
@@ -3364,7 +3369,7 @@ const handleAcceptOrder = (row) => {
         onClose={() => !detailsLoading && setDetailsOpen(false)}
         fullWidth
         maxWidth="lg"
-        PaperProps={{ sx: { borderRadius: 3, direction: "ltr", textAlign: "left" } }}
+        PaperProps={{ sx: { borderRadius: 3, direction: "rtl", textAlign: "start" } }}
       >
         <DialogTitle sx={{ fontWeight: 900, color: textColor }}>
           بيانات تسجيل طالب
@@ -3716,7 +3721,7 @@ const handleAcceptOrder = (row) => {
   }}
 />
 
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

@@ -935,7 +935,7 @@ const copyToClipboard = (text) => {
                   onChange={(e) => setFormData({...formData, date: e.target.value})}
                   InputLabelProps={{ shrink: true }}
                   required
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
               
               <Grid item xs={12} sm={6}>
@@ -947,7 +947,7 @@ const copyToClipboard = (text) => {
                   onChange={(e) => setFormData({...formData, time: e.target.value})}
                   InputLabelProps={{ shrink: true }}
                   required
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               {/* تحديد المستلمين */}

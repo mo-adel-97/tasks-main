@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 // RegistrationCommissions.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
@@ -57,7 +59,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // Custom
-import Sidebar from "./Sidebar";
+
 
 /* ===================== Config ===================== */
 const API_BASE =
@@ -86,7 +88,7 @@ const DashboardContainer = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
   backgroundColor: colorPalette.background,
   fontFamily: "'Tajawal', sans-serif",
-  direction: "ltr",
+  direction: "rtl",
 }));
 
 const ContentContainer = styled(Box)(({ theme }) => ({
@@ -94,18 +96,18 @@ const ContentContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   padding: theme.spacing(4),
-  marginLeft: "280px",
   transition: theme.transitions.create(["margin"], {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
+    duration: theme.transitions.duration.leavingScreen
   }),
   [theme.breakpoints.down("lg")]: {
     marginRight: 0,
-    padding: theme.spacing(3),
+    padding: theme.spacing(3)
   },
   [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2)
   },
+  ...navigationContentSx
 }));
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -366,9 +368,9 @@ const RegistrationCommissions = () => {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
+    <NavigationShell variant="standard" ><LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
       <DashboardContainer>
-        <Sidebar />
+        
         <ContentContainer sx={{mb:3}}>
           {/* Header */}
           <Box
@@ -737,7 +739,7 @@ const RegistrationCommissions = () => {
           )}
         </ContentContainer>
       </DashboardContainer>
-    </LocalizationProvider>
+    </LocalizationProvider></NavigationShell>
   );
 };
 

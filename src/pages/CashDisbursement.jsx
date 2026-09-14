@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert, AppBar, Box, Button, Chip, CircularProgress, Dialog, DialogActions,
@@ -16,12 +18,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "http://localhost:5258";
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const primary = "#057546";
 const primaryDark = "#034d31";
 const soft = "#f7faf8";
@@ -199,7 +201,7 @@ const LineCard = memo(function LineCard({ row, index, onChange, onDelete, onCost
         <TextField size="small" label="البيان" value={row.notes} onChange={(e) => onChange(index, "notes", e.target.value)} />
         <Stack direction="row" spacing={1}>
           <TextField fullWidth size="small" type="number" label="المبلغ" value={row.amount}
-            inputProps={{ min: 0, step: "0.01" }} onChange={(e) => onChange(index, "amount", e.target.value)} />
+            inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} onChange={(e) => onChange(index, "amount", e.target.value)} />
           <Button fullWidth variant="outlined" onClick={() => onCost(index)} sx={{ color: primary, borderColor: border }}>
             {row.costName || "مركز التكلفة"}
           </Button>
@@ -612,11 +614,19 @@ export default function CashDisbursement() {
   if (!authorized) return <Box sx={{ p: 2 }}><Alert severity="error">لا توجد لديك صلاحية سند صرف ضمن الحسابات العامة.</Alert></Box>;
 
   return (
-    <Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: soft, fontFamily: '"Cairo","Tahoma",sans-serif' }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: soft, fontFamily: '"Cairo","Tahoma",sans-serif' }}>
       {!isDesktop && <AppBar position="sticky" sx={{ bgcolor: primary }}><Toolbar variant="dense"><IconButton color="inherit" onClick={() => setMobileSidebarOpen(true)}><MenuRoundedIcon /></IconButton><Typography sx={{ flex: 1, fontWeight: 900 }}>سند صرف</Typography><Chip size="small" label={code ? `سند ${code}` : "جديد"} sx={{ bgcolor: "white", color: primaryDark, fontWeight: 900 }} /></Toolbar></AppBar>}
-      <StableSidebar mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)} />
+      
 
-      <Box sx={{ p: { xs: .75, sm: 1, lg: 1.5 }, minWidth: 0, [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: { ml: `${SIDEBAR_WIDTH}px`, width: `calc(100% - ${SIDEBAR_WIDTH}px)` } }}>
+      <Box sx={{
+        p: {
+          xs: .75,
+          sm: 1,
+          lg: 1.5
+        },
+        minWidth: 0,
+        ...navigationContentSx
+      }}>
         <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 3, overflow: "hidden" }}>
           <Box sx={{ background: `linear-gradient(135deg,${primary},${primaryDark})`, color: "white", p: 1.5, display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
             <Box><Typography sx={{ fontWeight: 950, fontSize: 22 }}>سند صرف</Typography><Typography sx={{ opacity: .85, fontSize: 12 }}>الحسابات العامة — إنشاء وتعديل وطباعة سندات الصرف</Typography></Box>
@@ -631,7 +641,7 @@ export default function CashDisbursement() {
             </Box>
 
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "150px 180px minmax(220px,1fr)", lg: "150px 190px minmax(220px,1fr) minmax(260px,1fr)" }, gap: 1, mb: 1 }}>
-              <TextField size="small" label="رقم السند" value={code} InputProps={{ readOnly: true }} />
+              <TextField size="small" label="رقم السند" value={code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 size="small"
                 type="date"
@@ -654,7 +664,7 @@ export default function CashDisbursement() {
             </Box>
 
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 190px" }, gap: 1, mb: 1.5 }}>
-              <TextField size="small" label="مركز تكلفة الخزينة / البنك" value={cashBoxCostName || cashBoxCostGuid} InputProps={{ readOnly: true }} />
+              <TextField size="small" label="مركز تكلفة الخزينة / البنك" value={cashBoxCostName || cashBoxCostGuid} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color: primary, borderColor: primary, fontWeight: 800 }}>
                 {attachment ? attachment.name : "المرفق"}
                 <input ref={fileRef} hidden type="file" accept=".pdf,.jpg,.jpeg" onChange={e => setAttachment(e.target.files?.[0] || null)} />
@@ -675,7 +685,7 @@ export default function CashDisbursement() {
               </Box>
             ) : (
               <TableContainer sx={{ border: `1px solid ${border}`, borderRadius: 2 }}><Table size="small"><TableHead><TableRow sx={{ "& th": { bgcolor: "#eaf3ef", fontWeight: 950 } }}><TableCell>الحساب</TableCell><TableCell>البيان</TableCell><TableCell sx={{ width: 140 }}>المبلغ</TableCell><TableCell sx={{ width: 220 }}>مركز التكلفة</TableCell><TableCell sx={{ width: 55 }} /></TableRow></TableHead><TableBody>
-                {rows.map((row, index) => <TableRow key={row.id}><TableCell><b>{row.accountName}</b></TableCell><TableCell><TextField fullWidth size="small" value={row.notes} onChange={e => updateRow(index, "notes", e.target.value)} /></TableCell><TableCell><TextField fullWidth size="small" type="number" inputProps={{ min: 0, step: ".01" }} value={row.amount} onChange={e => updateRow(index, "amount", e.target.value)} /></TableCell><TableCell><Button fullWidth variant="outlined" onClick={() => openCost(index)} sx={{ color: primary, borderColor: border }}>{row.costName || "اختيار"}</Button></TableCell><TableCell><Tooltip title="حذف"><IconButton color="error" onClick={() => deleteRow(index)}><DeleteOutlineIcon fontSize="small" /></IconButton></Tooltip></TableCell></TableRow>)}
+                {rows.map((row, index) => <TableRow key={row.id}><TableCell><b>{row.accountName}</b></TableCell><TableCell><TextField fullWidth size="small" value={row.notes} onChange={e => updateRow(index, "notes", e.target.value)} /></TableCell><TableCell><TextField fullWidth size="small" type="number" inputProps={{ min: 0, step: ".01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} value={row.amount} onChange={e => updateRow(index, "amount", e.target.value)} /></TableCell><TableCell><Button fullWidth variant="outlined" onClick={() => openCost(index)} sx={{ color: primary, borderColor: border }}>{row.costName || "اختيار"}</Button></TableCell><TableCell><Tooltip title="حذف"><IconButton color="error" onClick={() => deleteRow(index)}><DeleteOutlineIcon fontSize="small" /></IconButton></Tooltip></TableCell></TableRow>)}
               </TableBody></Table></TableContainer>
             )}
           </Box>
@@ -814,6 +824,6 @@ export default function CashDisbursement() {
           )}
         </DialogContent><DialogActions><Button onClick={() => setListOpen(false)}>إغلاق</Button></DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

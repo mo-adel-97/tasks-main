@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from "react";
 import {
   Box, Typography, TextField, Button, MenuItem,
@@ -6,7 +8,7 @@ import {
 import axios from "axios";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Swal from "sweetalert2";
-import Sidebar from "./SidebarAdmin";
+
 
 const API_DEPT_URL = "https://api3.sstli.com/api/Department/Load";
 
@@ -162,9 +164,13 @@ for (const att of form.requiredAttachments) {
   };
 
   return (
-    <div>
-      <Sidebar/>
-      <Box sx={{ maxWidth: 600, mx: "auto", mt: 6 ,ml:"30%"}}>
+    <NavigationShell variant="admin"><Box sx={navigationContentSx}>
+      
+      <Box sx={{
+        maxWidth: 600,
+        mx: "auto",
+        mt: 6
+      }}>
         <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
           <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
             إضافة مهمة جديدة
@@ -375,6 +381,6 @@ for (const att of form.requiredAttachments) {
           </form>
         </Paper>
       </Box>
-    </div>
+    </Box></NavigationShell>
   );
 }

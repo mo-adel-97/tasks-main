@@ -930,10 +930,10 @@ const infoCell = ({ value }) => (
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
-      {safeText(value)}
+      <bdi dir="auto">{safeText(value)}</bdi>
     </Typography>
   </Tooltip>
 );
@@ -945,7 +945,7 @@ const SectionTitle = ({ children, color = dangerColor }) => (
       color,
       fontSize: "1rem",
       mb: 1,
-      textAlign: "left",
+      textAlign: "start",
       lineHeight: 1.15,
       "@media (max-width:1599px)": {
         fontSize: "0.6rem",
@@ -987,7 +987,7 @@ const DetailBox = ({ label, value, color = textColor }) => (
         fontWeight: 900,
         fontSize: "0.76rem",
         mb: 0.4,
-        textAlign: "left",
+        textAlign: "start",
         lineHeight: 1.15,
         "@media (max-width:1599px)": {
           fontSize: "0.5rem",
@@ -1013,10 +1013,10 @@ const DetailBox = ({ label, value, color = textColor }) => (
         "@media (max-width:599px)": {
           fontSize: "0.52rem"
         },
-        textAlign: "left"
+        textAlign: "start"
       }}
     >
-      {safeText(value)}
+      <bdi dir="auto">{safeText(value)}</bdi>
     </Typography>
   </Paper>
 );
@@ -1042,8 +1042,8 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
         px: 0.5,
         py: 0.28
       },
-      textAlign: "left",
-      direction: "ltr",
+      textAlign: "start",
+      direction: "rtl",
       fontWeight: 950,
       borderColor: active ? color : "#d7eee4",
       backgroundColor: active ? color : "#fff",
@@ -1066,7 +1066,7 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
       }
     }}
   >
-    <Box sx={{ width: "100%", direction: "ltr" }}>
+    <Box sx={{ width: "100%", direction: "rtl" }}>
       <Typography
         sx={{
           fontWeight: 950,
@@ -2251,8 +2251,8 @@ const StudentPaymentOrderDialog = ({
               : "92vh",
           m: 0,
           borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
-          direction: "ltr",
-          textAlign: "left",
+          direction: "rtl",
+          textAlign: "start",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column"
@@ -2579,13 +2579,13 @@ const StudentPaymentOrderDialog = ({
                           ? `تم اختيار: ${cashBoxName || ""}`
                           : ""
                       }
-                      inputProps={{ style: { textAlign: "left", fontWeight: 900 } }}
+                      inputProps={{ style: { textAlign: "start", fontWeight: 900 } }}
                     >
                       {bankOptions.map((bank) => {
                         const guid = bank.cashBoxGuid || bank.CashBoxGuid || "";
                         const name = bank.cashBoxName || bank.CashBoxName || "";
                         return (
-                          <MenuItem key={guid} value={guid} sx={{ direction: "ltr", fontWeight: 900 }}>
+                          <MenuItem key={guid} value={guid} sx={{ direction: "rtl", fontWeight: 900 }}>
                             {name}
                           </MenuItem>
                         );
@@ -2603,7 +2603,7 @@ const StudentPaymentOrderDialog = ({
                           ? `تم تحميل بيانات الحساب ومركز التكلفة داخلياً${cashBoxName ? "" : " - الاسم الافتراضي ظاهر مؤقتاً"}`
                           : "سيتم تحميل الاسم تلقائياً"
                       }
-                      inputProps={{ style: { textAlign: "left", fontWeight: 900 } }}
+                      inputProps={{ style: { textAlign: "start", fontWeight: 900 } }}
                     />
                   )}
                 </Grid>
@@ -2630,7 +2630,7 @@ const StudentPaymentOrderDialog = ({
                     onChange={(e) => setPayDate(e.target.value)}
                     disabled={disabled}
                     InputLabelProps={{ shrink: true }}
-                    inputProps={{ style: { textAlign: "left", direction: "ltr", fontWeight: 900 } }}
+                    inputProps={{ style: { textAlign: "left", direction: "ltr", fontWeight: 900 , unicodeBidi: "isolate" } , dir: "ltr" }}
                   />
                 </Grid>
 
@@ -2642,7 +2642,7 @@ const StudentPaymentOrderDialog = ({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     disabled={disabled}
-                    inputProps={{ style: { textAlign: "left", fontWeight: 900 } }}
+                    inputProps={{ style: { textAlign: "start", fontWeight: 900 } }}
                   />
                 </Grid>
 
@@ -2658,7 +2658,7 @@ const StudentPaymentOrderDialog = ({
                       borderRadius: isCompact ? 1.25 : 2,
                       fontWeight: 950,
                       fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
-                      direction: "ltr",
+                      direction: "rtl",
                       borderColor: "#d7eee4",
                       color: paymentMethod === "bank" ? "#6a1b9a" : "#888"
                     }}
@@ -2719,7 +2719,7 @@ const StudentPaymentOrderDialog = ({
                         px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
                         fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined,
                         backgroundColor: warningColor,
-                        direction: "ltr",
+                        direction: "rtl",
                         "&:hover": { backgroundColor: "#b45309" }
                       }}
                     >
@@ -2808,7 +2808,7 @@ const StudentPaymentOrderDialog = ({
                   maxHeight: isPhone ? "calc(100dvh - 58px)" : isTablet ? "72dvh" : undefined,
                   m: 0,
                   borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
-                  direction: "ltr",
+                  direction: "rtl",
                   overflow: "hidden",
                   display: "flex",
                   flexDirection: "column"
@@ -3081,7 +3081,7 @@ const StudentPaymentOrderDialog = ({
           sx={{
             fontWeight: 950,
             color: dangerColor,
-            direction: "ltr",
+            direction: "rtl",
             minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
             px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
             fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
@@ -3110,7 +3110,7 @@ const StudentPaymentOrderDialog = ({
                 fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                 borderRadius: isCompact ? 1.2 : 2,
                 fontWeight: 950,
-                direction: "ltr",
+                direction: "rtl",
                 borderColor: "#1565c0",
                 color: "#1565c0",
                 backgroundColor: "#eef6ff",
@@ -3136,7 +3136,7 @@ const StudentPaymentOrderDialog = ({
               fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
               borderRadius: isCompact ? 1.2 : 2,
               fontWeight: 950,
-              direction: "ltr",
+              direction: "rtl",
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
               boxShadow: "none",
               "&:hover": {
@@ -3156,7 +3156,7 @@ const StudentPaymentOrderDialog = ({
 
 const gridStyle = {
   border: "none",
-  direction: "ltr",
+  direction: "rtl",
   "& .MuiDataGrid-columnHeaders": {
     background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
     color: whiteColor,
@@ -3182,7 +3182,7 @@ const gridStyle = {
     backgroundColor: "#f0faf5"
   },
   "& .MuiDataGrid-footerContainer": {
-    direction: "ltr"
+    direction: "rtl"
   }
 };
 

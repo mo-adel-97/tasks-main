@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
@@ -26,7 +28,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import Sidebar from './Sidebar';
+
 import axios from 'axios';
 import { format } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
@@ -339,13 +341,13 @@ const submitFollowUp = async () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor }}>
-      <Sidebar user={user} />
-      <Box sx={{ 
-        flexGrow: 1, 
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor }}>
+      
+      <Box sx={{
+        flexGrow: 1,
         p: 3,
-        marginLeft: { xs: 0, md: '250px' },
-        transition: 'margin 0.3s ease'
+        transition: 'margin 0.3s ease',
+        ...navigationContentSx
       }}>
         <Paper elevation={2} sx={{ 
           p: 3, 
@@ -789,10 +791,10 @@ const submitFollowUp = async () => {
           {studentInfo.studentName}
         </Typography>
         <Typography fontSize={13} sx={{ color: textSecondary }}>
-          الرقم القومي: {studentInfo.nationalId}
+          الرقم القومي: <bdi dir="ltr">{studentInfo.nationalId}</bdi>
         </Typography>
         <Typography fontSize={13} sx={{ color: textSecondary }}>
-          الجوال: {studentInfo.studentTel}
+          الجوال: <bdi dir="ltr">{studentInfo.studentTel}</bdi>
         </Typography>
       </Box>
     );
@@ -1330,7 +1332,7 @@ const submitFollowUp = async () => {
           </>
         )}
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

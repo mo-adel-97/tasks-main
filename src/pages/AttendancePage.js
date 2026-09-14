@@ -1,3 +1,7 @@
+import deepmerge from '@mui/utils/deepmerge';
+import { rtlComponents } from '../config/rtlComponents';
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,9 +27,9 @@ import ProfessionalCard from "../components/common/ProfessionalCard";
 import StudentSearchForm from "../components/attendance/StudentSearchForm";
 import StudentInfoCard from "../components/attendance/StudentInfoCard";
 import AttendanceDialog from "../components/attendance/AttendanceDialog";
-import Sidebar from "../components/Sidebar";
 
-const theme = createTheme({
+
+const theme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
   direction: 'rtl',
   palette: {
     primary: {
@@ -83,7 +87,7 @@ const theme = createTheme({
       },
     },
   },
-});
+}));
 
 const AttendancePage = () => {
   const [studentId, setStudentId] = useState("");
@@ -247,23 +251,22 @@ const AttendancePage = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex' }}>
         {/* السايدبار */}
-        <Sidebar />
+        
         
         {/* المحتوى الرئيسي */}
         <Box 
           component="main" 
-          sx={{ 
-            flexGrow: 1, 
+          sx={{
+            flexGrow: 1,
             p: 3,
-            marginLeft: '280px',
-            width: `calc(100% - 240px)`,
             minHeight: "100vh",
             backgroundColor: "#f5f7fa",
-            direction: 'rtl'
+            direction: 'rtl',
+            ...navigationContentSx
           }}
         >
           {/* النافبار - تم تعديل المحاذاة لتبدأ من اليسار */}
@@ -384,7 +387,7 @@ const AttendancePage = () => {
           </Box>
         </Box>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider></NavigationShell>
   );
 };
 

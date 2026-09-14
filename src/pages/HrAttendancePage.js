@@ -1,11 +1,6 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Alert,
@@ -56,17 +51,17 @@ import GroupWorkRoundedIcon from "@mui/icons-material/GroupWorkRounded";
 import UploadFileRoundedIcon from "@mui/icons-material/UploadFileRounded";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const PAGE_DIRECTION = "rtl";
 const PAGE_TEXT_ALIGN = "left";
@@ -2900,7 +2895,7 @@ export default function HrAttendancePage() {
                   }}
                   InputLabelProps={{ shrink: true }}
                   sx={{ width: { xs: "100%", md: 170 } }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   size="small"
@@ -2916,7 +2911,7 @@ export default function HrAttendancePage() {
                   }}
                   InputLabelProps={{ shrink: true }}
                   sx={{ width: { xs: "100%", md: 170 } }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
                   variant="contained"
@@ -3295,7 +3290,7 @@ export default function HrAttendancePage() {
               InputLabelProps={{
                 shrink: true
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               size="small"
@@ -4035,42 +4030,8 @@ export default function HrAttendancePage() {
   );
 
   return (
-    <>
-      {isDesktop ? (
-        <Box
-          sx={{
-            display: "flex",
-            minHeight: "100vh"
-          }}
-        >
-          <Box
-            sx={{
-              width: SIDEBAR_WIDTH,
-              flexShrink: 0
-            }}
-          >
-            <StableSidebar />
-          </Box>
-
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            {content}
-          </Box>
-        </Box>
-      ) : (
-        <>
-          {content}
-
-          <Dialog
-            open={mobileSidebarOpen}
-            onClose={() =>
-              setMobileSidebarOpen(false)
-            }
-            fullScreen
-          >
-            <StableSidebar />
-          </Dialog>
-        </>
-      )}
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
+      <Box sx={navigationContentSx}>{content}</Box>
 
       {/* Shift dialog */}
       <Dialog
@@ -4120,7 +4081,7 @@ export default function HrAttendancePage() {
                   }))
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="time"
@@ -4133,7 +4094,7 @@ export default function HrAttendancePage() {
                   }))
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="number"
@@ -4146,7 +4107,7 @@ export default function HrAttendancePage() {
                       e.target.value
                   }))
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="number"
@@ -4162,7 +4123,7 @@ export default function HrAttendancePage() {
                       e.target.value
                   }))
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="number"
@@ -4177,7 +4138,7 @@ export default function HrAttendancePage() {
                       e.target.value
                   }))
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
             <FormControlLabel
@@ -4390,7 +4351,7 @@ export default function HrAttendancePage() {
                   )
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="date"
@@ -4408,7 +4369,7 @@ export default function HrAttendancePage() {
                   )
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
             <Box>
@@ -4586,7 +4547,7 @@ export default function HrAttendancePage() {
                   )
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="date"
@@ -4603,7 +4564,7 @@ export default function HrAttendancePage() {
                   )
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
             <Box>
@@ -4760,7 +4721,7 @@ export default function HrAttendancePage() {
                   )
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="datetime-local"
@@ -4776,7 +4737,7 @@ export default function HrAttendancePage() {
                   )
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
             <FormControl>
@@ -4956,7 +4917,7 @@ export default function HrAttendancePage() {
                   }))
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 size="small"
@@ -4971,7 +4932,7 @@ export default function HrAttendancePage() {
                   }))
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <Button
                 variant="contained"
@@ -6604,6 +6565,6 @@ export default function HrAttendancePage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </></NavigationShell>
   );
 }

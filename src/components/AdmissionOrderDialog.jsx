@@ -502,11 +502,11 @@ const TextInfo = ({ label, value, strong = false }) => (
         },
         fontWeight: 1000,
         wordBreak: "break-word",
-        direction: "ltr",
-        textAlign: "left"
+        direction: "rtl",
+        textAlign: "start"
       }}
     >
-      {value || "-"}
+      <bdi dir="auto">{value || "-"}</bdi>
     </Typography>
   </Paper>
 );
@@ -580,13 +580,13 @@ const MoneyCell = ({ value, color = textColor }) => (
   </Typography>
 );
 
-const EllipsisCell = ({ value, align = "left" }) => (
+const EllipsisCell = ({ value, align = "start" }) => (
   <Tooltip title={value || ""} arrow>
     <Typography
       sx={{
         width: "100%",
         textAlign: align,
-        direction: "ltr",
+        direction: "rtl",
         fontWeight: 900,
         fontSize: "0.8rem",
         "@media (max-width:1599px)": { fontSize: "0.54rem" },
@@ -597,7 +597,7 @@ const EllipsisCell = ({ value, align = "left" }) => (
         color: textColor
       }}
     >
-      {value || "-"}
+      <bdi dir="auto">{value || "-"}</bdi>
     </Typography>
   </Tooltip>
 );
@@ -2762,7 +2762,7 @@ const openAdmissionPrint = async (printData) => {
       headerName: "الدبلوم / الدورة",
       flex: 1,
       minWidth: 280,
-      renderCell: (params) => <EllipsisCell value={params.value} align="left" />
+      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
     },
     {
       field: "cost",
@@ -2813,7 +2813,7 @@ const openAdmissionPrint = async (printData) => {
       headerName: "الدبلوم / الدورة المختارة",
       flex: 1,
       minWidth: 280,
-      renderCell: (params) => <EllipsisCell value={params.value} align="left" />
+      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
     },
     {
       field: "cost",
@@ -2894,7 +2894,7 @@ const openAdmissionPrint = async (printData) => {
       headerName: "اسم الرسم",
       flex: 1,
       minWidth: 260,
-      renderCell: (params) => <EllipsisCell value={params.value} align="left" />
+      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
     },
     {
       field: "cost",
@@ -2945,7 +2945,7 @@ const openAdmissionPrint = async (printData) => {
       headerName: "الرسوم المختارة",
       flex: 1,
       minWidth: 260,
-      renderCell: (params) => <EllipsisCell value={params.value} align="left" />
+      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
     },
     {
       field: "cost",
@@ -3005,7 +3005,7 @@ const openAdmissionPrint = async (printData) => {
       headerName: "البيان",
       flex: 1,
       minWidth: 240,
-      renderCell: (params) => <EllipsisCell value={params.value} align="left" />
+      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
     },
     {
       field: "status",
@@ -3020,7 +3020,7 @@ const openAdmissionPrint = async (printData) => {
     border: `1px solid ${primaryLight}`,
     borderRadius: 3,
     backgroundColor: whiteColor,
-    direction: "ltr",
+    direction: "rtl",
     overflow: "hidden",
     width: "100%",
     minWidth: 0,
@@ -3051,7 +3051,7 @@ const openAdmissionPrint = async (printData) => {
       backgroundColor: "#f0faf5"
     },
     "& .MuiDataGrid-footerContainer": {
-      direction: "ltr",
+      direction: "rtl",
       minHeight: isPhone ? 36 : isTablet ? 40 : undefined
     },
     "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
@@ -3132,7 +3132,7 @@ const openAdmissionPrint = async (printData) => {
             maxWidth: isPhone ? "100vw" : isTablet ? "1180px" : undefined,
             borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
             overflow: "hidden",
-            direction: "ltr",
+            direction: "rtl",
             height: isPhone
               ? "calc(100dvh - 58px)"
               : isTablet
@@ -3642,7 +3642,7 @@ const openAdmissionPrint = async (printData) => {
                 }}
                 multiline
                 minRows={isPhone ? 1 : isTablet ? 1 : 2}
-                inputProps={{ style: { direction: "ltr", textAlign: "left", fontWeight: 800 } }}
+                inputProps={{ style: { direction: "rtl", textAlign: "start", fontWeight: 800 } }}
               />
             </Grid>
           </Grid>
@@ -3947,7 +3947,7 @@ const openAdmissionPrint = async (printData) => {
   inputProps={{
     min: 0.01,
     step: 0.01
-  }}
+  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
   error={amount !== "" && toNumber(amount) <= 0}
   helperText={
     Number(regType) === 0 && minStartPay > 0
@@ -4021,7 +4021,7 @@ const openAdmissionPrint = async (printData) => {
                     type="date"
                     disabled={payType !== 2}
                     InputLabelProps={{ shrink: true }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
                 <Grid item xs={6} sm={6} md={3}>
@@ -4190,7 +4190,7 @@ const openAdmissionPrint = async (printData) => {
             width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,
             height: isPhone ? "100dvh" : isTablet ? "78dvh" : 620,
             borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
-            direction: "ltr",
+            direction: "rtl",
             overflow: "hidden"
           }
         }}

@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -40,14 +42,14 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import TuneIcon from "@mui/icons-material/Tune";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 
-import Sidebar from "../components/Sidebar";
+
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import StudentOperationsDialog from "../components/StudentOperationsDialog";
 import PaymentOrderDialog from "../components/PaymentOrderDialog";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 
 const primaryColor = "#057546";
@@ -1912,7 +1914,7 @@ export default function PaymentRequestsReport() {
   );
 
   return (
-    <Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: "#f7faf8" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: "#f7faf8" }}>
       {!isDesktop && (
         <AppBar
           position="fixed"
@@ -1970,23 +1972,17 @@ export default function PaymentRequestsReport() {
         />
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
 
       <Box
         sx={{
           px: isDesktop ? 2 : isPhone ? 0.85 : 1.25,
           py: isDesktop ? 2 : isPhone ? 0.7 : 1,
-          mt: !isDesktop ? (isPhone ? "50px" : "56px") : 0,
+          mt: !isDesktop ? isPhone ? "50px" : "56px" : 0,
           mx: "auto",
           boxSizing: "border-box",
           overflowX: "hidden",
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`
-          }
+          ...navigationContentSx
         }}
       >
         <Paper elevation={0} sx={{ border: "1px solid rgba(5,117,70,.15)", borderRadius: 3, overflow: "hidden" }}>
@@ -2049,7 +2045,7 @@ export default function PaymentRequestsReport() {
                 value={fromDate}
                 max={toDate || undefined}
                 onChange={(e) => setFromDate(e.target.value)}
-                inputProps={{ max: toDate || undefined }}
+                inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   "& .MuiInputBase-root": { height: { xs: 34, sm: 38 } },
@@ -2065,7 +2061,7 @@ export default function PaymentRequestsReport() {
                 value={toDate}
                 min={fromDate || undefined}
                 onChange={(e) => setToDate(e.target.value)}
-                inputProps={{ min: fromDate || undefined }}
+                inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   "& .MuiInputBase-root": { height: { xs: 34, sm: 38 } },
@@ -2346,7 +2342,7 @@ export default function PaymentRequestsReport() {
     border: "none", 
 
     // اتجاه الجريد يظل LTR
-    direction: "ltr", 
+    direction: "rtl", 
 
     /* ==============================
        الهيدر
@@ -2546,6 +2542,6 @@ export default function PaymentRequestsReport() {
       <StudentStatementDialog2 open={statementOpen} onClose={() => setStatementOpen(false)} student={selectedStudent} apiBaseUrl={API_BASE_URL} />
 
       <StudentOperationsDialog open={operationsOpen} onClose={() => setOperationsOpen(false)} student={selectedOperationsStudent} apiBaseUrl={API_BASE_URL} />
-    </Box>
+    </Box></NavigationShell>
   );
 }

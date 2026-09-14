@@ -31,40 +31,30 @@ const emptyItem = {
 const languageLevels = ["ضعيف", "جيد", "جيد جدًا", "ممتاز"];
 
 const inputSx = {
-  direction: "ltr",
-  textAlign: "left",
+  direction: "rtl",
+  textAlign: "start",
   "& .MuiInputBase-root": {
-    direction: "ltr",
-    textAlign: "left",
+    direction: "rtl",
+    textAlign: "start",
     borderRadius: "14px",
     backgroundColor: "#fff"
   },
   "& .MuiInputBase-input": {
-    direction: "ltr",
-    textAlign: "left"
+    direction: "rtl",
+    textAlign: "start"
   },
   "& .MuiInputBase-inputMultiline": {
-    direction: "ltr",
-    textAlign: "left"
+    direction: "rtl",
+    textAlign: "start"
   },
   "& textarea": {
-    direction: "ltr",
-    textAlign: "left"
-  },
-  "& .MuiInputLabel-root": {
-    left: 0,
-    right: "auto",
-    transformOrigin: "left",
-    direction: "ltr",
-    textAlign: "left"
-  },
-  "& .MuiInputLabel-shrink": {
-    transformOrigin: "left"
+    direction: "rtl",
+    textAlign: "start"
   },
   "& .MuiFormHelperText-root": {
-    direction: "ltr",
-    textAlign: "left",
-    marginLeft: 0
+    direction: "rtl",
+    textAlign: "start",
+    marginInlineStart: 0
   }
 };
 
@@ -157,13 +147,13 @@ const serializeItemsToText = (items) => {
 
 const SectionTitle = ({ title, subtitle }) => {
   return (
-    <Box sx={{ mb: 2, direction: "ltr", textAlign: "left" }}>
+    <Box sx={{ mb: 2, direction: "rtl", textAlign: "start" }}>
       <Typography
         sx={{
           fontSize: 18,
           fontWeight: 900,
           color: "#111827",
-          textAlign: "left"
+          textAlign: "start"
         }}
       >
         {title}
@@ -175,7 +165,7 @@ const SectionTitle = ({ title, subtitle }) => {
             mt: 0.5,
             fontSize: 13,
             color: "#6b7280",
-            textAlign: "left",
+            textAlign: "start",
             lineHeight: 1.8
           }}
         >
@@ -279,8 +269,8 @@ const DynamicItemsSection = ({
         borderRadius: "18px",
         border: sectionInvalid ? "2px solid #d32f2f" : "1px solid #e5e7eb",
         background: "#fff",
-        direction: "ltr",
-        textAlign: "left"
+        direction: "rtl",
+        textAlign: "start"
       }}
     >
       <SectionTitle title={title} subtitle={subtitle} />
@@ -406,8 +396,8 @@ const DynamicItemsSection = ({
                         ? "2px solid #d32f2f"
                         : "1px solid #e5e7eb",
                     backgroundColor: "#f9fafb",
-                    direction: "ltr",
-                    textAlign: "left"
+                    direction: "rtl",
+                    textAlign: "start"
                   }}
                 >
                   <Box
@@ -692,8 +682,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
           maxWidth: "1220px",
           height: "92vh",
           borderRadius: "24px",
-          direction: "ltr",
-          textAlign: "left",
+          direction: "rtl",
+          textAlign: "start",
           fontFamily: '"Cairo", sans-serif',
           overflow: "hidden"
         }
@@ -702,8 +692,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
       <DialogContent
         sx={{
           p: 0,
-          direction: "ltr",
-          textAlign: "left",
+          direction: "rtl",
+          textAlign: "start",
           backgroundColor: "#f3f4f6",
           overflow: "hidden"
         }}
@@ -714,8 +704,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               "linear-gradient(135deg, #057445 0%, #04633b 55%, #8f171a 100%)",
             color: "#fff",
             p: 3,
-            direction: "ltr",
-            textAlign: "left"
+            direction: "rtl",
+            textAlign: "start"
           }}
         >
           <Chip
@@ -726,8 +716,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               borderColor: "rgba(255,255,255,0.5)",
               backgroundColor: "rgba(255,255,255,0.12)",
               fontWeight: 900,
-              direction: "ltr",
-              textAlign: "left"
+              direction: "rtl",
+              textAlign: "start"
             }}
           />
 
@@ -735,7 +725,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
             sx={{
               fontSize: { xs: 24, md: 31 },
               fontWeight: 900,
-              textAlign: "left",
+              textAlign: "start",
               lineHeight: 1.25
             }}
           >
@@ -746,7 +736,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
             sx={{
               mt: 1,
               opacity: 0.95,
-              textAlign: "left",
+              textAlign: "start",
               fontSize: 15,
               maxWidth: 900,
               lineHeight: 1.8
@@ -762,8 +752,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
             height: "calc(92vh - 142px)",
             overflowY: "auto",
             overflowX: "hidden",
-            direction: "ltr",
-            textAlign: "left"
+            direction: "rtl",
+            textAlign: "start"
           }}
         >
           {error && (
@@ -771,8 +761,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               severity="error"
               sx={{
                 mb: 2,
-                direction: "ltr",
-                textAlign: "left",
+                direction: "rtl",
+                textAlign: "start",
                 borderRadius: "14px"
               }}
             >
@@ -788,8 +778,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               border: "1px solid #e5e7eb",
               background: "#fff",
               mb: 2.5,
-              direction: "ltr",
-              textAlign: "left"
+              direction: "rtl",
+              textAlign: "start"
             }}
           >
             <SectionTitle
@@ -816,6 +806,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   fullWidth
                   required
                   label="رقم الجوال"
+                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   value={form.mobile}
                   onChange={(e) => setValue("mobile", e.target.value)}
                   error={fieldError("mobile")}
@@ -829,6 +820,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   fullWidth
                   required
                   label="البريد الإلكتروني"
+                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   value={form.email}
                   onChange={(e) => setValue("email", e.target.value)}
                   error={fieldError("email")}
@@ -844,6 +836,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   type="date"
                   label="تاريخ الميلاد"
                   InputLabelProps={{ shrink: true }}
+                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   value={form.birthDate}
                   onChange={(e) => setValue("birthDate", e.target.value)}
                   error={fieldError("birthDate")}
@@ -873,6 +866,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
                   type="date"
                   label="تاريخ التخرج"
                   InputLabelProps={{ shrink: true }}
+                  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   value={form.graduationDate}
                   onChange={(e) => setValue("graduationDate", e.target.value)}
                   error={fieldError("graduationDate")}
@@ -891,8 +885,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               border: "1px solid #e5e7eb",
               background: "#fff",
               mb: 2.5,
-              direction: "ltr",
-              textAlign: "left"
+              direction: "rtl",
+              textAlign: "start"
             }}
           >
             <SectionTitle
@@ -960,8 +954,8 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               border: "1px solid #e5e7eb",
               background: "#fff",
               mb: 2.5,
-              direction: "ltr",
-              textAlign: "left"
+              direction: "rtl",
+              textAlign: "start"
             }}
           >
             <SectionTitle
@@ -1071,7 +1065,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
               display: "flex",
               justifyContent: "flex-end",
               gap: 1,
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Button

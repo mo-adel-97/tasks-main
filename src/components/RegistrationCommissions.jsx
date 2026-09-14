@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 // RegistrationCommissions.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
@@ -73,14 +75,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // Custom
-import Sidebar from "./Sidebar";
+
 
 /* ===================== Config ===================== */
 const API_BASE =
   import.meta?.env?.VITE_API_BASE?.replace(/\/+$/, "") || "https://api1.sstli.com";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 /* ===================== Color Palette ===================== */
 const colorPalette = {
@@ -107,7 +109,7 @@ const DashboardContainer = styled(Box)(({ theme }) => ({
   overflowX: "hidden",
   backgroundColor: colorPalette.background,
   fontFamily: "'Tajawal', sans-serif",
-  direction: "ltr",
+  direction: "rtl",
 }));
 
 const ContentContainer = styled(Box)(({ theme }) => ({
@@ -121,20 +123,16 @@ const ContentContainer = styled(Box)(({ theme }) => ({
   overflowX: "hidden",
   padding: theme.spacing(1),
   marginLeft: 0,
-
-  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-    marginLeft: `${SIDEBAR_WIDTH}px`,
-    width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
-    padding: theme.spacing(4),
-  },
-
   [theme.breakpoints.between("sm", "lg")]: {
-    padding: theme.spacing(1.25),
+    padding: theme.spacing(1.25)
   },
-
   [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(0.55),
+    padding: theme.spacing(0.55)
   },
+  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+    padding: theme.spacing(4)
+  },
+  ...navigationContentSx
 }));
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -753,7 +751,9 @@ setData(zeroizeForHamza(json[0]));
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
       <DashboardContainer>
         {!isDesktop && (
           <GlobalStyles
@@ -786,12 +786,12 @@ setData(zeroizeForHamza(json[0]));
               backdropFilter: "blur(14px)",
               color: colorPalette.textDark,
               borderBottom: `1px solid ${colorPalette.primaryLighter}`,
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Toolbar
               sx={{
-                direction: "ltr",
+                direction: "rtl",
                 minHeight: {
                   xs: "50px !important",
                   sm: "56px !important",
@@ -867,7 +867,7 @@ setData(zeroizeForHamza(json[0]));
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
-                  textAlign: "left"
+                  textAlign: "start"
                 }}
               >
                 العمولات والإحصائيات
@@ -876,12 +876,7 @@ setData(zeroizeForHamza(json[0]));
           </AppBar>
         )}
 
-        <Sidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
+        
 
         <ContentContainer
           sx={{
@@ -1789,7 +1784,7 @@ setData(zeroizeForHamza(json[0]));
           </Dialog>
         </ContentContainer>
       </DashboardContainer>
-    </LocalizationProvider>
+    </LocalizationProvider></NavigationShell>
   );
 };
 

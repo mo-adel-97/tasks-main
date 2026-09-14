@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -58,7 +60,7 @@ import {
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Document, Paragraph, Packer, AlignmentType, HeadingLevel, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, WidthType, BorderStyle } from 'docx';
-import Sidebar from '../components/Sidebar';
+
 
 // Color palette based on #80b49e
 const colorPalette = {
@@ -665,12 +667,16 @@ const DailyAttendanceReport = () => {
 
   /* ============== Render ============== */
   return (
-    <Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
+      
 
       <Box component="main" sx={{
-        flexGrow: 1, p: 4, marginLeft: '280px', minHeight: '100vh',
-        backgroundColor: colorPalette.background, direction: 'ltr'
+        flexGrow: 1,
+        p: 4,
+        minHeight: '100vh',
+        backgroundColor: colorPalette.background,
+        direction: "rtl",
+        ...navigationContentSx
       }}>
         <AppBar position="static" sx={{ 
           backgroundColor: 'white', 
@@ -860,7 +866,7 @@ const DailyAttendanceReport = () => {
                 ),
                 sx: { fontFamily: '"Cairo", sans-serif' }
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               fullWidth
@@ -1087,7 +1093,7 @@ const DailyAttendanceReport = () => {
                   <TableRow>
                     <StyledTableCell sx={{ 
                       fontWeight: 800, 
-                      textAlign: "left",
+                      textAlign: "start",
                       color: colorPalette.textDark,
                       fontSize: '1rem'
                     }}>
@@ -1095,7 +1101,7 @@ const DailyAttendanceReport = () => {
                     </StyledTableCell>
                     <StyledTableCell sx={{ 
                       fontWeight: 800, 
-                      textAlign: "left",
+                      textAlign: "start",
                       color: colorPalette.textDark,
                       fontSize: '1rem'
                     }}>
@@ -1103,7 +1109,7 @@ const DailyAttendanceReport = () => {
                     </StyledTableCell>
                     <StyledTableCell sx={{ 
                       fontWeight: 800, 
-                      textAlign: "left",
+                      textAlign: "start",
                       color: colorPalette.textDark,
                       fontSize: '1rem'
                     }}>
@@ -1111,7 +1117,7 @@ const DailyAttendanceReport = () => {
                     </StyledTableCell>
                     <StyledTableCell sx={{ 
                       fontWeight: 800, 
-                      textAlign: "left",
+                      textAlign: "start",
                       color: colorPalette.textDark,
                       fontSize: '1rem'
                     }}>
@@ -1119,7 +1125,7 @@ const DailyAttendanceReport = () => {
                     </StyledTableCell>
                     <StyledTableCell sx={{ 
                       fontWeight: 800, 
-                      textAlign: "left",
+                      textAlign: "start",
                       color: colorPalette.textDark,
                       fontSize: '1rem'
                     }}>
@@ -1166,7 +1172,7 @@ const DailyAttendanceReport = () => {
                         <StyledTableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <IdIcon sx={{ 
-                              mr: 1, 
+                              marginInlineEnd: 1, 
                               color: colorPalette.primary 
                             }} />
                             <Typography sx={{ 
@@ -1174,14 +1180,14 @@ const DailyAttendanceReport = () => {
                               fontWeight: 600,
                               color: colorPalette.textDark
                             }}>
-                              {student.national_id}
+                              <bdi dir="ltr">{student.national_id}</bdi>
                             </Typography>
                           </Box>
                         </StyledTableCell>
                         <StyledTableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <LevelIcon sx={{ 
-                              mr: 1, 
+                              marginInlineEnd: 1, 
                               color: colorPalette.primary 
                             }} />
                             <Typography sx={{ 
@@ -1196,7 +1202,7 @@ const DailyAttendanceReport = () => {
                         <StyledTableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <DiplomaIcon sx={{ 
-                              mr: 1, 
+                              marginInlineEnd: 1, 
                               color: colorPalette.primary 
                             }} />
                             <Typography sx={{ 
@@ -1360,7 +1366,7 @@ const DailyAttendanceReport = () => {
                       color: colorPalette.textDark,
                       mt: 0.5
                     }}>
-                      {selectedStudent.national_id}
+                      <bdi dir="ltr">{selectedStudent.national_id}</bdi>
                     </Typography>
                   </Paper>
                 </Grid>
@@ -1439,7 +1445,7 @@ const DailyAttendanceReport = () => {
                 fontWeight: 800
               }}>
                 <TodayIcon sx={{ ml: 1 }} />
-                المواد الحاضرة ({getStudentCourses(selectedStudent.national_id).length})
+                المواد الحاضرة (<bdi dir="ltr">{getStudentCourses(selectedStudent.national_id).length}</bdi>)
               </Typography>
 
               <Box sx={{
@@ -1584,7 +1590,7 @@ const DailyAttendanceReport = () => {
           </StyledButton>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

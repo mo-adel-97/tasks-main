@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
-import Sidebar from './Sidebar'; // تأكد من المسار الصحيح
+ // تأكد من المسار الصحيح
 import {
   Box,
   Container,
@@ -62,7 +64,7 @@ const StyledCard = styled(Card)(({ theme, priority }) => ({
   display: 'flex',
   flexDirection: 'column',
   transition: 'all 0.3s ease-in-out',
-  borderLeft: `5px solid ${
+  borderInlineStart: `5px solid ${
     priority === 'high' ? '#ff4444' :
     priority === 'medium' ? '#ffaa00' :
     '#4CAF50'
@@ -326,20 +328,19 @@ const Announcements = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh' }}>
       {/* السايدبار */}
-      <Sidebar />
+      
       
       {/* المحتوى الرئيسي */}
       <Box 
         component="main"
-        sx={{ 
+        sx={{
           flexGrow: 1,
           backgroundColor: '#f8f9fa',
           paddingTop: 3,
-          paddingBottom:3,
-          marginLeft: { md: '280px' }, // هامش للسايدبار
-          width: { md: 'calc(100% - 280px)' } // عرض متجاوب مع السايدبار
+          paddingBottom: 3,
+          ...navigationContentSx
         }}
       >
         <Container maxWidth="xl">
@@ -403,7 +404,7 @@ const Announcements = () => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 300 }}>
-              <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
+              <SearchIcon sx={{ color: 'text.secondary', marginInlineEnd: 1 }} />
               <TextField
                 fullWidth
                 variant="outlined"
@@ -1034,7 +1035,7 @@ const Announcements = () => {
           )}
         </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

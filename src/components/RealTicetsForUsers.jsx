@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
-import Sidebar from './Sidebar';
+
 import {
   Box,
   Container,
@@ -728,17 +730,16 @@ const TechnicalSupport = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
+      
       
       <Box 
         component="main" 
-        sx={{ 
-          flexGrow: 1, 
+        sx={{
+          flexGrow: 1,
           p: 3,
-          ml: { md: '280px' },
-          width: { md: 'calc(100% - 280px)' },
           minHeight: '100vh',
+          ...navigationContentSx
         }}
       >
         <Container maxWidth="xl">
@@ -1094,7 +1095,7 @@ const TechnicalSupport = () => {
                                 variant="outlined" 
                                 sx={{ 
                                   borderRadius: 2,
-                                  borderLeft: `4px solid ${file.type === 'image' ? '#4caf50' : '#2196f3'}`,
+                                  borderInlineStart: `4px solid ${file.type === 'image' ? '#4caf50' : '#2196f3'}`,
                                   '&:hover': {
                                     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                                   }
@@ -1567,7 +1568,7 @@ const TechnicalSupport = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   labelRowsPerPage="صفوف لكل صفحة:"
                   labelDisplayedRows={({ from, to, count }) => `${from}-${to} من ${count}`}
-                  sx={{ direction: 'ltr' }}
+                  sx={{ direction: "rtl" }}
                 />
               </>
             )}
@@ -1983,7 +1984,7 @@ const TechnicalSupport = () => {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

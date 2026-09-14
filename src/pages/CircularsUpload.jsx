@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -43,9 +45,9 @@ import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
+
+
 
 const API_BASE_URL = (
   process.env.REACT_APP_API_BASE_URL ||
@@ -635,7 +637,7 @@ const CircularsUpload = () => {
   }[dialog.mode];
 
   return (
-    <Box
+    <NavigationShell variant="standard" ><Box
       dir="rtl"
       sx={{
         minHeight: "100vh",
@@ -643,7 +645,7 @@ const CircularsUpload = () => {
         fontFamily: "Cairo, Arial, sans-serif",
       }}
     >
-      <Sidebar />
+      
 
       <Box
         component="main"
@@ -651,11 +653,12 @@ const CircularsUpload = () => {
           minHeight: "100vh",
           width: "100%",
           boxSizing: "border-box",
-          p: { xs: 1, sm: 1.25, md: 1.5 },
-          "@media (min-width:1600px)": {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+          p: {
+            xs: 1,
+            sm: 1.25,
+            md: 1.5
           },
+          ...navigationContentSx
         }}
       >
         <Stack spacing={1.25} sx={{ width: "100%" }}>
@@ -1635,7 +1638,7 @@ const CircularsUpload = () => {
           }
         `}
       </style>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

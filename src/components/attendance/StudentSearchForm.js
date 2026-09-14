@@ -106,6 +106,7 @@ const StudentSearchForm = ({
             label="رقم الهوية الوطنية"
             variant="outlined"
             fullWidth
+            inputProps={{ dir: "ltr" }}
             value={studentId}
             placeholder="أدخل 10 أرقام فقط"
             onChange={(e) => {
@@ -151,7 +152,7 @@ const StudentSearchForm = ({
                 <Box 
                   sx={{ 
                     color: '#80b49e',
-                    mr: 2,
+                    marginInlineEnd: 2,
                     display: 'flex',
                     alignItems: 'center'
                   }}
@@ -176,7 +177,7 @@ const StudentSearchForm = ({
               variant="caption" 
               sx={{
                 position: 'absolute',
-                left: 0,
+                insetInlineStart: 0,
                 bottom: -25,
                 color: studentId.length === 10 ? '#80b49e' : '#e74c3c',
                 fontWeight: 600,

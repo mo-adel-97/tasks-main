@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AppBar, Backdrop, Box, Button, Checkbox, CircularProgress, Dialog, DialogActions,
@@ -16,7 +18,7 @@ import DeselectIcon from "@mui/icons-material/Deselect";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
-import Sidebar from "../components/Sidebar";
+
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import EditStudentDialog from "../components/EditStudentDialog";
 import RegisterDocumentDialog from "../components/RegisterDocumentDialog";
@@ -24,8 +26,8 @@ import RegisterDocumentDialog from "../components/RegisterDocumentDialog";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 const ATTACHMENTS_BASE_URL = "https://sstli.com/arc-api/images_view.php";
 const ZERO_GUID = "00000000-0000-0000-0000-000000000000";
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const compactFilterSx = {
   minWidth: 0,
@@ -726,13 +728,15 @@ export default function CourseStudentsPage() {
   }, [isPhone, isTablet, isCompact]);
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
-        direction: "ltr",
+        direction: "rtl",
         bgcolor: "#f6faf8"
       }}
     >
@@ -789,7 +793,7 @@ export default function CourseStudentsPage() {
             color: "#17372b",
             borderBottom:
               "1px solid rgba(5,117,70,.12)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
@@ -829,7 +833,7 @@ export default function CourseStudentsPage() {
                   sm: "0.79rem"
                 },
                 color: "#17372b",
-                textAlign: "left"
+                textAlign: "start"
               }}
             >
               قائمة طلاب الدورات
@@ -838,19 +842,13 @@ export default function CourseStudentsPage() {
         </AppBar>
       )}
 
-      {isDesktop ? (
-        <Sidebar />
-      ) : (
-        <Sidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
-      )}
+      
 
       {isDesktop ? (
-      <Box component="main" sx={{ ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` }, p: 1 }}>
+      <Box component="main" sx={{
+        p: 1,
+        ...navigationContentSx
+      }}>
         <Paper elevation={0} sx={{ p: 1.2, borderRadius: 3, border: "1px solid #dbece4" }}>
           <Stack direction={{ xs: "column", lg: "row" }} spacing={1} alignItems="center" mb={1}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
@@ -907,7 +905,7 @@ export default function CourseStudentsPage() {
             <Tab value={2} label="الدورات التطويرية" />
           </Tabs>
 
-          <Stack direction="row" spacing={1} mb={.5} dir="ltr">
+          <Stack direction="row" spacing={1} mb={.5} dir="rtl">
             <Button startIcon={<SelectAllIcon />} onClick={() => setSelectionModel(rows.map((x) => x.id))}>
               تحديد الكل
             </Button>
@@ -941,7 +939,7 @@ export default function CourseStudentsPage() {
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
               sx={{
-                direction: "ltr",
+                direction: "rtl",
                 border: 0,
                 "& .MuiDataGrid-columnHeaders": { bgcolor: "#edf8f3", fontWeight: 900 },
                 "& .MuiDataGrid-row:nth-of-type(odd)": { bgcolor: "#fff4ea" },
@@ -976,14 +974,11 @@ export default function CourseStudentsPage() {
           },
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 1
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1320,7 +1315,7 @@ export default function CourseStudentsPage() {
             direction="row"
             spacing={isPhone ? 0.35 : isTablet ? 0.5 : 1}
             mb={.5}
-            dir="ltr"
+            dir="rtl"
             sx={{
               flexWrap: isCompact ? "wrap" : "nowrap",
               rowGap: isPhone ? 0.4 : 0
@@ -1367,7 +1362,7 @@ export default function CourseStudentsPage() {
                 fontWeight: 900,
                 color: "#ae1e21",
                 fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : undefined,
-                textAlign: isPhone ? "center" : "left"
+                textAlign: isPhone ? "center" : "start"
               }}
             >
               عدد الطلاب: {rows.length}
@@ -1406,7 +1401,7 @@ export default function CourseStudentsPage() {
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
               sx={{
-                direction: "ltr",
+                direction: "rtl",
                 border: 0,
                 "& .MuiDataGrid-columnHeaders": {
                   bgcolor: "#edf8f3",
@@ -1652,7 +1647,7 @@ export default function CourseStudentsPage() {
               {statuses.map((item) => <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>)}
             </TextField>
             <TextField type="number" label="النسبة" value={finishMark}
-              onChange={(event) => setFinishMark(event.target.value)} />
+              onChange={(event) => setFinishMark(event.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField multiline minRows={5} label="ملاحظات" value={finishNotes}
               onChange={(event) => setFinishNotes(event.target.value)} />
           </Stack>
@@ -1781,7 +1776,7 @@ export default function CourseStudentsPage() {
         fullWidth
         fullScreen={isPhone}
         maxWidth="md"
-        dir="ltr"
+        dir="rtl"
       >
         <DialogTitle>
           {pendingTransferRows.length > 1
@@ -1887,6 +1882,6 @@ export default function CourseStudentsPage() {
           <Typography fontWeight={900}>{workingText}</Typography>
         </Stack>
       </Backdrop>
-    </Box>
+    </Box></NavigationShell>
   );
 }

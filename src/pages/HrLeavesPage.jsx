@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -37,8 +39,7 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography,
-  useMediaQuery
+  Typography
 } from "@mui/material";
 
 import {
@@ -57,14 +58,14 @@ import {
 
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import Sidebar from "../components/Sidebar";
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primary = "#057546";
 const primaryDark = "#034d31";
@@ -217,10 +218,6 @@ const emptyHoliday = () => ({
 });
 
 export default function HrLeavesPage() {
-  const isDesktop = useMediaQuery(
-    `(min-width:${DESKTOP_BREAKPOINT}px)`,
-    { noSsr: true }
-  );
 
   const [mobileSidebarOpen, setMobileSidebarOpen] =
     useState(false);
@@ -1734,7 +1731,9 @@ export default function HrLeavesPage() {
   ];
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       dir={LEAVES_PAGE_DIRECTION}
       sx={{
         minHeight: "100vh",
@@ -1742,20 +1741,16 @@ export default function HrLeavesPage() {
         textAlign: LEAVES_TEXT_ALIGN
       }}
     >
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
         sx={{
-          p: { xs: 1, md: 1.5 },
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0
+          p: {
+            xs: 1,
+            md: 1.5
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -2461,7 +2456,7 @@ export default function HrLeavesPage() {
                     shrink: true
                   }}
                   sx={{ width: 130 }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <FormControl
                   size="small"
@@ -2820,7 +2815,7 @@ export default function HrLeavesPage() {
                     shrink: true
                   }}
                   sx={{ width: 140 }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
                   variant="contained"
@@ -3304,7 +3299,7 @@ export default function HrLeavesPage() {
       <Dialog open={initOpen} onClose={()=>!initSaving&&setInitOpen(false)} fullWidth maxWidth="sm" dir={LEAVES_PAGE_DIRECTION}>
         <DialogTitle sx={{fontWeight:950}}>تهيئة أرصدة الموظفين</DialogTitle><DialogContent dividers><Stack spacing={1}>
           <Alert severity="info">اختار السنة ونوع الإجازة والرصيد. بدون فرع أو موظف = كل الموظفين النشطين. الافتراضي لا يلمس أي رصيد موجود مسبقًا.</Alert>
-          <Stack direction={{xs:"column",sm:"row"}} spacing={1}><TextField fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))}/><TextField fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))}/></Stack>
+          <Stack direction={{xs:"column",sm:"row"}} spacing={1}><TextField fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /><TextField fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /></Stack>
           <FormControl fullWidth><InputLabel>نوع الإجازة</InputLabel><Select label="نوع الإجازة" value={initForm.leaveTypeGuid} onChange={e=>setInitForm(x=>({...x,leaveTypeGuid:e.target.value}))}>{lookups.leaveTypes.filter(x=>x.requiresBalance).map(x=><MenuItem key={x.leaveTypeGuid} value={x.leaveTypeGuid}>{x.leaveTypeName}</MenuItem>)}</Select></FormControl>
           <FormControl fullWidth><InputLabel>الفرع - اختياري</InputLabel><Select label="الفرع - اختياري" value={initForm.branchGuid} onChange={e=>setInitForm(x=>({...x,branchGuid:e.target.value}))}><MenuItem value="">كل الفروع</MenuItem>{lookups.branches.map(x=><MenuItem key={x.branchGuid} value={x.branchGuid}>{x.branchName}</MenuItem>)}</Select></FormControl>
           <Autocomplete options={lookups.employees} value={initForm.employee} onChange={(_,v)=>setInitForm(x=>({...x,employee:v}))} getOptionLabel={o=>`${o.employeeName||""} • #${o.employeeCode||"-"}`} renderInput={params=><TextField {...params} label="موظف محدد - اختياري"/>}/>
@@ -3423,8 +3418,8 @@ export default function HrLeavesPage() {
                 }}
                 inputProps={{
                   dir:
-                    LEAVES_DATE_DIRECTION
-                }}
+                    "ltr"
+                , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
 
               <TextField
@@ -3446,8 +3441,8 @@ export default function HrLeavesPage() {
                 }}
                 inputProps={{
                   dir:
-                    LEAVES_DATE_DIRECTION
-                }}
+                    "ltr"
+                , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
             </Stack>
 
@@ -3664,7 +3659,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 fullWidth
                 type="number"
@@ -3679,7 +3674,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Stack>
 
             <Stack
@@ -3705,7 +3700,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 fullWidth
                 type="number"
@@ -3722,7 +3717,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Stack>
 
             <TextField
@@ -3818,7 +3813,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 fullWidth
                 label="اسم الإجازة"
@@ -3992,7 +3987,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 type="number"
                 label="حد أقصى للطلب"
@@ -4008,7 +4003,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 type="number"
                 label="استحقاق افتراضي"
@@ -4024,7 +4019,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField
                 type="number"
                 label="أقصى ترحيل"
@@ -4040,7 +4035,7 @@ export default function HrLeavesPage() {
                     })
                   )
                 }
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Box>
 
             <TextField
@@ -4113,7 +4108,7 @@ export default function HrLeavesPage() {
               InputLabelProps={{
                 shrink: true
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField
               label="اسم العطلة"
               value={
@@ -4223,6 +4218,6 @@ export default function HrLeavesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

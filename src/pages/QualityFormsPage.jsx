@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -37,13 +39,13 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Swal from "sweetalert2";
 import { QRCodeSVG } from "qrcode.react";
-import Sidebar from "../components/Sidebar";
+
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { mt } from "date-fns/locale";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1213,7 +1215,7 @@ const exportPdfDirect = async () => {
 
     popup.document.write(`
       <!doctype html>
-      <html lang="ar" dir="ltr">
+      <html lang="ar" dir="rtl">
         <head>
           <meta charset="utf-8" />
 
@@ -1612,7 +1614,9 @@ const handleExportPdf = () => {
 };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       dir="rtl"
       sx={{
         minHeight: "100dvh",
@@ -1640,7 +1644,7 @@ const handleExportPdf = () => {
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important",
@@ -1723,12 +1727,7 @@ const handleExportPdf = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -1740,21 +1739,17 @@ const handleExportPdf = () => {
           mr: 0,
           boxSizing: "border-box",
           overflowX: "hidden",
-          direction: "ltr",
-
+          direction: "rtl",
           p: {
             xs: 0.45,
             sm: 0.7,
             md: 1,
             lg: 1.3
           },
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`,
             p: 2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1765,7 +1760,7 @@ const handleExportPdf = () => {
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Stack
@@ -1814,7 +1809,7 @@ const handleExportPdf = () => {
             borderRadius: isPhone ? 1.4 : isTablet ? 2 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <FormControl
@@ -1983,7 +1978,7 @@ const handleExportPdf = () => {
               borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
               border:
                 "1px solid rgba(5,117,70,.14)",
-              direction: "ltr",
+              direction: "rtl",
 
               "& .MuiPaper-outlined": {
                 "@media (max-width:1599px)": {
@@ -2141,7 +2136,7 @@ const handleExportPdf = () => {
                 inputProps={{
                   maxLength: 10,
                   inputMode: "numeric"
-                }}
+                , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 sx={fieldSx}
                 InputProps={{
                   endAdornment:
@@ -2310,7 +2305,7 @@ const handleExportPdf = () => {
                   value={form.email}
                   onChange={update("email")}
                   sx={fieldSx}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               )}
 
               {selectedTemplate ===
@@ -2334,7 +2329,7 @@ const handleExportPdf = () => {
                   value={form.email}
                   onChange={update("email")}
                   sx={fieldSx}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               )}
 
               <TextField
@@ -2635,7 +2630,7 @@ const handleExportPdf = () => {
           />
         )}
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 
@@ -2783,7 +2778,7 @@ const HoursStatementPrint =
             background: "#fff",
             position: "relative",
             overflow: "hidden",
-            direction: "ltr",
+            direction: "rtl",
             color: "#111",
             fontFamily:
               "Cairo, Tahoma, Arial, sans-serif"
@@ -2830,8 +2825,8 @@ const HoursStatementPrint =
               right: "1mm",
               width: "52mm",
               zIndex: 3,
-              direction: "ltr",
-              textAlign: "left",
+              direction: "rtl",
+              textAlign: "start",
               fontSize: "9.5pt",
               fontWeight: 900,
               lineHeight: 1.55,
@@ -2920,7 +2915,7 @@ const HoursStatementPrint =
               }}
             >
               <span>{model.studentName || "-"}</span>
-              <span>{model.nationalId || "-"}</span>
+              <span><bdi dir="ltr">{model.nationalId || "-"}</bdi></span>
               <span>{model.nationality || "-"}</span>
               <span>{model.trainingNo || "-"}</span>
             </Box>
@@ -3010,7 +3005,7 @@ const HoursStatementPrint =
     alignItems: "flex-end",
 
     // عكس ترتيب البوكسين عندك
-    flexDirection: "row-reverse",
+    flexDirection: "row",
 
     // تقليل المسافات الجانبية عشان يوصلوا للأطراف
     px: "2mm"
@@ -3194,7 +3189,7 @@ const CoopTrainingPrint =
         background: "#fff",
         position: "relative",
         overflow: "hidden",
-        direction: "ltr",
+        direction: "rtl",
         color: "#111",
         fontFamily:
           "Cairo, Tahoma, Arial, sans-serif"
@@ -3257,8 +3252,8 @@ const CoopTrainingPrint =
                 right: "2mm",
                 width: "54mm",
                 zIndex: 3,
-                direction: "ltr",
-                textAlign: "left",
+                direction: "rtl",
+                textAlign: "start",
                 fontSize: "9.4pt",
                 fontWeight: 900,
                 lineHeight: 1.55,
@@ -3304,7 +3299,7 @@ const CoopTrainingPrint =
                   fontFamily: "inherit",
                   fontWeight: 900,
                   fontSize: "10.8pt",
-                  textAlign: "left",
+                  textAlign: "start",
                   mb: 2.2
                 }}
               >
@@ -3316,13 +3311,13 @@ const CoopTrainingPrint =
                   fontFamily: "inherit",
                   fontWeight: 800,
                   fontSize: "10.6pt",
-                  textAlign: "left",
+                  textAlign: "start",
                   lineHeight: 1.9,
                   mb: 2.3
                 }}
               >
                 نفيد سعادتكم أن المتدرب / {model.studentName || "-"}
-                {" "} هوية رقم / {model.nationalId || "-"}
+                {" "} هوية رقم / <bdi dir="ltr">{model.nationalId || "-"}</bdi>
               </Typography>
 
               <Typography
@@ -3331,7 +3326,7 @@ const CoopTrainingPrint =
                   fontWeight: 800,
                   fontSize: "10.45pt",
                   textAlign: "justify",
-                  textAlignLast: "left",
+                  textAlignLast: "start",
                   lineHeight: 1.95,
                   mb: 2.4
                 }}
@@ -3345,7 +3340,7 @@ const CoopTrainingPrint =
 
               <Box
                 sx={{
-                  direction: "ltr"
+                  direction: "rtl"
                 }}
               >
                 <Typography sx={coopBulletSx}>
@@ -3368,9 +3363,9 @@ const CoopTrainingPrint =
     fontWeight: 800,
     fontSize: "10.25pt",
     lineHeight: 1.9,
-    direction: "ltr",
+    direction: "rtl",
     textAlign: "justify",
-    textAlignLast: "left"
+    textAlignLast: "start"
   }}
 >
   في حال الموافقة، نرجو من سعادتكم تزويدنا بالرد، ولأي استفسارات يمكنكم
@@ -3397,7 +3392,7 @@ const CoopTrainingPrint =
                   fontFamily: "inherit",
                   fontWeight: 900,
                   fontSize: "10.7pt",
-                  direction:"ltr"
+                  direction: "rtl"
                 }}
               >
                 للاستفسار والتواصل مع مشرف التدريب التعاوني بالمعهد /      جوال رقم {coopPhone || "-"}
@@ -3425,9 +3420,9 @@ const CoopTrainingPrint =
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     px: "2mm",
-    direction: "ltr"
+    direction: "rtl"
   }}
 >
   {/* التوقيع والختم */}
@@ -3576,7 +3571,7 @@ const CoopTrainingPrint =
                 fontSize: "10.7pt",
                 fontWeight: 700,
                 lineHeight: 1.9,
-                direction: "ltr"
+                direction: "rtl"
               }}
             >
               <Box
@@ -3585,14 +3580,14 @@ const CoopTrainingPrint =
                   gridTemplateColumns: "1fr 1fr",
                   alignItems: "center",
                   mb: 5,
-                  direction: "ltr"
+                  direction: "rtl"
                 }}
               >
                 <Typography
                   sx={{
                     ...coopPageTwoTitleSx,
-                    textAlign: "left",
-                    direction: "ltr"
+                    textAlign: "start",
+                    direction: "rtl"
                   }}
                 >
                   المحترم
@@ -3602,7 +3597,7 @@ const CoopTrainingPrint =
                   sx={{
                     ...coopPageTwoTitleSx,
                     textAlign: "right",
-                    direction: "ltr"
+                    direction: "rtl"
                   }}
                 >
                   سعادة مشرف التدريب بالمعهد
@@ -3627,7 +3622,7 @@ const CoopTrainingPrint =
                   fontWeight: 800,
                   fontSize: "10.6pt",
                   textAlign: "justify",
-                  textAlignLast: "left",
+                  textAlignLast: "start",
                   lineHeight: 2,
                   mb: 4
                 }}
@@ -3671,7 +3666,7 @@ const CoopTrainingPrint =
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gridTemplateRows: "24mm 24mm",
-                  direction: "ltr",
+                  direction: "rtl",
                   alignItems: "start"
                 }}
               >
@@ -3682,8 +3677,8 @@ const CoopTrainingPrint =
                     fontFamily: "inherit",
                     fontWeight: 900,
                     fontSize: "10.8pt",
-                    textAlign: "left",
-                    direction: "ltr"
+                    textAlign: "start",
+                    direction: "rtl"
                   }}
                 >
                   الختم:
@@ -3696,8 +3691,8 @@ const CoopTrainingPrint =
                     fontFamily: "inherit",
                     fontWeight: 900,
                     fontSize: "10.8pt",
-                    textAlign: "left",
-                    direction: "ltr"
+                    textAlign: "start",
+                    direction: "rtl"
                   }}
                 >
                   اسم المسؤول:
@@ -3710,8 +3705,8 @@ const CoopTrainingPrint =
                     fontFamily: "inherit",
                     fontWeight: 900,
                     fontSize: "10.8pt",
-                    textAlign: "left",
-                    direction: "ltr"
+                    textAlign: "start",
+                    direction: "rtl"
                   }}
                 >
                   التوقيع:
@@ -3730,7 +3725,7 @@ const coopBulletSx = {
   fontSize: "10.45pt",
   lineHeight: 1.9,
   mb: 1.1,
-  textAlign: "left"
+  textAlign: "start"
 };
 
 const coopSignLabelSx = {
@@ -3744,7 +3739,7 @@ const coopPageTwoTitleSx = {
   fontFamily: "inherit",
   fontWeight: 900,
   fontSize: "11.4pt",
-  direction: "ltr"
+  direction: "rtl"
 };
 
 const coopPageTwoLineSx = {
@@ -3752,8 +3747,8 @@ const coopPageTwoLineSx = {
   fontWeight: 800,
   fontSize: "9.55pt",
   lineHeight: 2,
-  textAlign: "left",
-  direction: "ltr",
+  textAlign: "start",
+  direction: "rtl",
   mb: 3,
   mt:5,
 };
@@ -3784,7 +3779,7 @@ const RegisteredLetterPrint =
             background: "#fff",
             position: "relative",
             overflow: "hidden",
-            direction: "ltr",
+            direction: "rtl",
             color: "#111",
             fontFamily:
               "Cairo, Tahoma, Arial, sans-serif"
@@ -3831,8 +3826,8 @@ const RegisteredLetterPrint =
               right: "2mm",
               width: "54mm",
               zIndex: 3,
-              direction: "ltr",
-              textAlign: "left",
+              direction: "rtl",
+              textAlign: "start",
               fontSize: "9.5pt",
               fontWeight: 900,
               lineHeight: 1.55,
@@ -3858,7 +3853,7 @@ const RegisteredLetterPrint =
               fontSize: "10.35pt",
               fontWeight: 700,
               lineHeight: 1.85,
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Typography
@@ -3885,10 +3880,10 @@ const RegisteredLetterPrint =
                 fontSize: "10.5pt"
               }}
             >
-              <Box sx={{ p: 0.8, borderRight: "1.2px solid #222" }}>
+              <Box sx={{ p: 0.8, borderInlineEnd: "1.2px solid #222" }}>
                 الاسم
               </Box>
-              <Box sx={{ p: 0.8, borderRight: "1.2px solid #222" }}>
+              <Box sx={{ p: 0.8, borderInlineEnd: "1.2px solid #222" }}>
                 رقم السجل المدني
               </Box>
               <Box sx={{ p: 0.8 }}>
@@ -3907,10 +3902,10 @@ const RegisteredLetterPrint =
                 fontSize: "10.4pt"
               }}
             >
-              <Box sx={{ p: 1, borderRight: "1.2px solid #222" }}>
+              <Box sx={{ p: 1, borderInlineEnd: "1.2px solid #222" }}>
                 {model.studentName || "-"}
               </Box>
-              <Box sx={{ p: 1, borderRight: "1.2px solid #222" }}>
+              <Box sx={{ p: 1, borderInlineEnd: "1.2px solid #222" }}>
                 {model.nationalId || "-"}
               </Box>
               <Box sx={{ p: 1 }}>
@@ -4035,9 +4030,9 @@ const RegisteredLetterPrint =
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-end",
-                flexDirection: "row-reverse",
+                flexDirection: "row",
                 px: "2mm",
-                direction: "ltr"
+                direction: "rtl"
               }}
             >
               <Box
@@ -4197,7 +4192,7 @@ const PrintPair = ({
         "1fr 1fr",
       minHeight: "8.8mm",
       alignItems: "center",
-      direction: "ltr",
+      direction: "rtl",
       fontSize: "10.25pt"
     }}
   >
@@ -4237,7 +4232,7 @@ const StudentLookupFields = ({
       inputProps={{
         maxLength: 10,
         inputMode: "numeric"
-      }}
+      , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
       sx={fieldSx}
       InputProps={{
         endAdornment: loadingStudent ? (
@@ -4773,7 +4768,7 @@ const ExamScheduleEditor = ({
                         lineHeight: 1.25
                       }
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                   <TextField
                     label="المقرر الأول"
@@ -4828,7 +4823,7 @@ const ExamScheduleEditor = ({
                         lineHeight: 1.2
                       }
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                   <TextField
                     label="المقرر الثاني"
@@ -4884,7 +4879,7 @@ const ExamScheduleEditor = ({
                         lineHeight: 1.2
                       }
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Box>
               </Paper>
             ))}
@@ -4902,7 +4897,7 @@ const ExamScheduleEditor = ({
             gridTemplateColumns:
               "46px 1.35fr 1fr .8fr 1fr .8fr",
             gap: 1,
-            direction: "ltr",
+            direction: "rtl",
             alignItems: "center"
           }}
         >
@@ -4966,7 +4961,7 @@ const ExamScheduleEditor = ({
                 }}
                 helperText={row.dayDate || ""}
                 sx={fieldSx}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 value={row.courseName || ""}
@@ -5004,7 +4999,7 @@ const ExamScheduleEditor = ({
                 }}
                 helperText={row.timeOne || ""}
                 sx={fieldSx}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 value={row.courseTwo || ""}
@@ -5042,7 +5037,7 @@ const ExamScheduleEditor = ({
                 }}
                 helperText={row.timeTwo || ""}
                 sx={fieldSx}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </React.Fragment>
           ))}
         </Box>
@@ -5726,11 +5721,11 @@ const GeneralLetterEditor = ({
   );
 };
 
-const SheetFrame = React.forwardRef(({children}, ref) => <Box ref={ref} className="print-sheet" sx={{width:"210mm",height:"297mm",position:"relative",background:"#fff",direction:"ltr",fontFamily:"Cairo, Tahoma, Arial",overflow:"hidden",p:"12mm 16mm 15mm"}}>{children}</Box>);
+const SheetFrame = React.forwardRef(({children}, ref) => <Box ref={ref} className="print-sheet" sx={{width:"210mm",height:"297mm",position:"relative",background:"#fff",direction: "rtl",fontFamily:"Cairo, Tahoma, Arial",overflow:"hidden",p:"12mm 16mm 15mm"}}>{children}</Box>);
 
 const PrintHeader = ({model,title}) => <>
   <Box component="img" src="/headerveno.png" sx={{width:"100%",height:"34mm",objectFit:"fill"}}/>
-  <Typography align="right" sx={{fontSize:"9pt",fontWeight:800,mt:"-14mm",direction:"ltr",mr:"40px"}}>التاريخ: {model.hijriDate}</Typography>
+  <Typography align="right" sx={{fontSize:"9pt",fontWeight:800,mt:"-14mm",direction: "rtl",mr:"40px"}}>التاريخ: {model.hijriDate}</Typography>
   <Typography align="right" sx={{fontSize:"9pt",fontWeight:800,mr:"60px"}}>صادر رقم / {model.documentNo}</Typography>
   <Typography align="center" sx={{fontSize:"16pt",fontWeight:900,mt:"13mm"}}>{title}</Typography>
 </>;
@@ -5755,7 +5750,7 @@ const ExamSchedulePrint = React.forwardRef(
           position: "relative",
           overflow: "hidden",
           background: "#fff",
-          direction: "ltr",
+          direction: "rtl",
           fontFamily:
             "Cairo, Tahoma, Arial, sans-serif",
 
@@ -5805,7 +5800,7 @@ const ExamSchedulePrint = React.forwardRef(
                 {model.studentName}
               </td>
               <td>
-                هوية رقم: {model.nationalId}
+                هوية رقم: <bdi dir="ltr">{model.nationalId}</bdi>
               </td>
             </tr>
           </tbody>
@@ -5896,7 +5891,7 @@ const ExamSchedulePrint = React.forwardRef(
               "64mm 1fr",
             columnGap: "18mm",
             alignItems: "end",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           {/* موثوقية الجدول */}
@@ -5942,7 +5937,7 @@ const ExamSchedulePrint = React.forwardRef(
             sx={{
               width: "105mm",
               justifySelf: "end",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Typography
@@ -6104,7 +6099,7 @@ const GeneralLetterPrint = React.forwardRef(
           position: "relative",
           overflow: "hidden",
           background: "#fff",
-          direction: "ltr",
+          direction: "rtl",
           fontFamily:
             "Cairo, Tahoma, Arial, sans-serif",
           pt: "14mm",
@@ -6151,7 +6146,7 @@ const GeneralLetterPrint = React.forwardRef(
                     : model.letterProgramName}
                 </td>
               )}
-              <td>{model.nationalId}</td>
+              <td><bdi dir="ltr">{model.nationalId}</bdi></td>
               <td>{model.studentName}</td>
             </tr>
           </tbody>
@@ -6184,7 +6179,7 @@ const GeneralLetterPrint = React.forwardRef(
             fontWeight: 800,
             lineHeight: 2.35,
             textAlign: "justify",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           {mainText}
@@ -6194,7 +6189,7 @@ const GeneralLetterPrint = React.forwardRef(
           <Box
             sx={{
               mt: "4mm",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             {model.letterReasonFees && (
@@ -6266,7 +6261,7 @@ const GeneralLetterPrint = React.forwardRef(
               "64mm 1fr",
             columnGap: "18mm",
             alignItems: "end",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Box
@@ -6312,7 +6307,7 @@ const GeneralLetterPrint = React.forwardRef(
             sx={{
               width: "105mm",
               justifySelf: "end",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Typography
@@ -6448,7 +6443,7 @@ const FinancialWarningPrint = React.forwardRef(
           position: "relative",
           overflow: "hidden",
           background: "#fff",
-          direction: "ltr",
+          direction: "rtl",
           fontFamily:
             "Cairo, Tahoma, Arial, sans-serif",
           pt: "14mm",
@@ -6468,7 +6463,7 @@ const FinancialWarningPrint = React.forwardRef(
             fontSize: "10pt",
             fontWeight: 800,
             textAlign: "center",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           السلام عليكم ورحمة الله وبركاته.
@@ -6477,7 +6472,7 @@ const FinancialWarningPrint = React.forwardRef(
         <Box
           sx={{
             mt: "8mm",
-            direction: "ltr",
+            direction: "rtl",
             display: "grid",
             rowGap: "5mm"
           }}
@@ -6503,7 +6498,7 @@ const FinancialWarningPrint = React.forwardRef(
               pb: "1.5mm"
             }}
           >
-            هوية رقم / {model.nationalId || "........................"}
+            هوية رقم / <bdi dir="ltr">{model.nationalId || "........................"}</bdi>
           </Typography>
 
           <Typography
@@ -6542,7 +6537,7 @@ const FinancialWarningPrint = React.forwardRef(
             fontWeight: 800,
             lineHeight: 3.3,
             textAlign: "justify",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           {isSecond ? (
@@ -6584,7 +6579,7 @@ const FinancialWarningPrint = React.forwardRef(
               "64mm 1fr",
             columnGap: "18mm",
             alignItems: "end",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Box
@@ -6630,7 +6625,7 @@ const FinancialWarningPrint = React.forwardRef(
             sx={{
               width: "105mm",
               justifySelf: "end",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Typography
@@ -6794,7 +6789,7 @@ const AbsenceWarningPrint = React.forwardRef(
           position: "relative",
           overflow: "hidden",
           background: "#fff",
-          direction: "ltr",
+          direction: "rtl",
           fontFamily:
             "Cairo, Tahoma, Arial, sans-serif",
           pt: "14mm",
@@ -6832,7 +6827,7 @@ const AbsenceWarningPrint = React.forwardRef(
 
             <tr>
               <td>{model.studentName}</td>
-              <td>{model.nationalId}</td>
+              <td><bdi dir="ltr">{model.nationalId}</bdi></td>
               <td>{model.specialization}</td>
             </tr>
           </tbody>
@@ -6944,7 +6939,7 @@ const AbsenceWarningPrint = React.forwardRef(
               "64mm 1fr",
             columnGap: "18mm",
             alignItems: "end",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           {/* موثوقية الإنذار */}
@@ -6992,7 +6987,7 @@ const AbsenceWarningPrint = React.forwardRef(
             sx={{
               width: "105mm",
               justifySelf: "end",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Typography

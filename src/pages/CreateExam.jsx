@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import Swal from 'sweetalert2';
 import {
@@ -56,7 +58,7 @@ import {
 } from "@mui/icons-material";
 import { API_BASE, apiPost, courseApi } from "../config/apiConfig";
 import { LEVEL_ORDER, levelRank, COURSES_DATA } from "../constants/courseData";
-import Sidebar from "../components/Sidebar";
+
 
 // ===== المكونات المساعدة =====
 
@@ -538,7 +540,7 @@ const BasicFilters = ({ form, setForm, diplomas, levels, filteredCourses, setExa
               onChange={(e) => setForm({ ...form, total_grade: e.target.value })}
               size="small"
               sx={{ flex: 1 }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField
               label="المدة (دقيقة)"
               type="number"
@@ -546,7 +548,7 @@ const BasicFilters = ({ form, setForm, diplomas, levels, filteredCourses, setExa
               onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })}
               size="small"
               sx={{ flex: 1 }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
           </Box>
         </Stack>
       </Grid>
@@ -646,7 +648,7 @@ const SharedCourseFilters = ({
           onChange={(e) => setForm({ ...form, total_grade: e.target.value })}
           size="small"
           sx={{ width: 120 }}
-        />
+         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
         <TextField
           label="المدة (دقيقة)"
           type="number"
@@ -654,7 +656,7 @@ const SharedCourseFilters = ({
           onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })}
           size="small"
           sx={{ width: 120 }}
-        />
+         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
       </Box>
     </Stack>
   );
@@ -710,7 +712,7 @@ const QuestionForm = ({
               onChange={(e) => setScore(e.target.value)}
               fullWidth
               size="small"
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
           </Grid>
 
           <Grid item xs={12}>
@@ -2357,10 +2359,14 @@ const createExam = async () => {
   const canCreateShared = !!selectedSharedCourse && filteredCombinations.length > 0;
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'grey.50' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'grey.50' }}>
+      
 
-      <Box sx={{ flex: 1, marginLeft: '280px', minHeight: '100vh' }}>
+      <Box sx={{
+        flex: 1,
+        minHeight: '100vh',
+        ...navigationContentSx
+      }}>
         <Container maxWidth="xl" sx={{ py: 3 }}>
           {/* الهيدر الرئيسي */}
           <Paper sx={{ p: 3, mb: 3, background: `linear-gradient(135deg, #80b49e 0%, #6a9c8a 100%)`, color: 'white' }}>
@@ -2634,6 +2640,6 @@ const createExam = async () => {
           )}
         </Container>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

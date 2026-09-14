@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -17,7 +19,7 @@ import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import ReportViewer from '../components/ReportViewer';
 import ReportList from '../components/ReportList';
-import Sidebar from './Sidebar';
+
 import useFetchReports from '../hooks/useFetchReports';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -60,8 +62,8 @@ const ReportViewerPage = () => {
   };
 
   return (
-    <Box display="flex" sx={{ backgroundColor: backgroundColor, minHeight: '100vh' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box display="flex" sx={{ backgroundColor: backgroundColor, minHeight: '100vh' }}>
+      
       
       <Box 
         component="main" 
@@ -136,21 +138,21 @@ const ReportViewerPage = () => {
           </Container>
         </LocalizationProvider>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 
 const styles = {
   mainContent: {
-    flexGrow: 1, 
+    flexGrow: 1,
     p: 3,
-    marginLeft: '240px',
     transition: 'margin 0.3s ease',
     backgroundColor: backgroundColor,
     minHeight: '100vh',
     '@media (max-width: 900px)': {
       marginLeft: '0'
-    }
+    },
+    ...navigationContentSx
   },
   paperContainer: {
     p: 4, 

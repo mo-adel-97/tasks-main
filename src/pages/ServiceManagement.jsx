@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -25,17 +27,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";
@@ -1013,7 +1015,7 @@ export default function ServiceManagement() {
               size="small"
               value={model.code}
               InputProps={{ readOnly: true }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               select
@@ -1120,7 +1122,7 @@ export default function ServiceManagement() {
               }
               inputProps={{
                 min: 0
-              }}
+              , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
             />
 
             <TextField
@@ -1166,7 +1168,7 @@ export default function ServiceManagement() {
               inputProps={{
                 min: 0,
                 step: 0.01
-              }}
+              , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -1228,22 +1230,21 @@ export default function ServiceManagement() {
   );
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: soft }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+              setMobileSidebarOpen(false)
+            }><Box sx={{ minHeight: "100vh", bgcolor: soft }}>
       {isDesktop ? (
         <>
-          <StableSidebar />
-          <Box sx={{ ml: `${SIDEBAR_WIDTH}px` }}>
+          
+          <Box sx={{
+            ...navigationContentSx
+          }}>
             {page}
           </Box>
         </>
       ) : (
         <>
-          <StableSidebar
-            mobileOpen={mobileSidebarOpen}
-            onMobileClose={() =>
-              setMobileSidebarOpen(false)
-            }
-          />
+          
           {page}
         </>
       )}
@@ -1257,6 +1258,6 @@ export default function ServiceManagement() {
         onClose={() => setLookupOpen(false)}
         onPick={loadService}
       />
-    </Box>
+    </Box></NavigationShell>
   );
 }

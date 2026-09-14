@@ -480,15 +480,15 @@ const RegisterDocumentDialog = ({
                 borderBottom: "3px solid #111",
                 pb: 1.8,
                 mb: 2.2,
-                direction: "ltr"
+                direction: "rtl"
               }}
             >
               {/* بيانات الشركة ناحية اليمين */}
               <Box
                 className="company-info"
                 sx={{
-                  textAlign: "left",
-                  direction: "ltr",
+                  textAlign: "start",
+                  direction: "rtl",
                   alignSelf: "stretch",
                   display: "flex",
                   flexDirection: "column",
@@ -902,7 +902,7 @@ const RegisterDocumentDialog = ({
           sx={{
             backgroundColor: primaryColor,
             fontWeight: 950,
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           طباعة
@@ -916,7 +916,7 @@ const RegisterDocumentDialog = ({
           sx={{
             backgroundColor: accentColor,
             fontWeight: 950,
-            direction: "ltr",
+            direction: "rtl",
             "&:hover": {
               backgroundColor: "#8f171a"
             }

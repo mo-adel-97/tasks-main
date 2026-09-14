@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
-import Sidebar from "./Sidebar";
+
 import {
   Box,
   Container,
@@ -108,7 +110,7 @@ const USERINFO_URL = "https://api1.sstli.com/api/userinfo";
 
 // ✅ Admin theme
 const ADMIN_ACCENT = "#80b49e";
-const SIDEBAR_WIDTH = 280;
+
 
 // ✅ View modes
 const VIEW_MODES = {
@@ -528,10 +530,13 @@ export default function AdminAchievementsPage() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc" }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc" }}>
+      
 
-      <Box sx={{ ml: `${SIDEBAR_WIDTH}px`, minHeight: "100vh" }}>
+      <Box sx={{
+        minHeight: "100vh",
+        ...navigationContentSx
+      }}>
         <Container maxWidth="xl" sx={{ py: 3 }}>
           {/* Top Bar */}
           <Paper
@@ -749,7 +754,7 @@ export default function AdminAchievementsPage() {
                   onChange={(e) => setDateFrom(e.target.value)}
                   InputLabelProps={{ shrink: true }}
                   sx={{ borderRadius: 2 }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               <Grid item xs={12} md={2}>
@@ -761,7 +766,7 @@ export default function AdminAchievementsPage() {
                   onChange={(e) => setDateTo(e.target.value)}
                   InputLabelProps={{ shrink: true }}
                   sx={{ borderRadius: 2 }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               <Grid item xs={12} md={1}>
@@ -1291,7 +1296,7 @@ export default function AdminAchievementsPage() {
                         <Grid item xs={12} md={6}>
                           <Stack spacing={1}>
                             <Typography sx={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>
-                              <ApartmentIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                              <ApartmentIcon sx={{ fontSize: 14, marginInlineEnd: 0.5 }} />
                               الفرع
                             </Typography>
                             <Typography sx={{ fontSize: 14, color: '#0f172a', fontWeight: 600 }}>
@@ -1303,7 +1308,7 @@ export default function AdminAchievementsPage() {
                         <Grid item xs={12} md={6}>
                           <Stack spacing={1}>
                             <Typography sx={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>
-                              <DateRangeIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                              <DateRangeIcon sx={{ fontSize: 14, marginInlineEnd: 0.5 }} />
                               الفترة الزمنية
                             </Typography>
                             <Typography sx={{ fontSize: 14, color: '#0f172a', fontWeight: 600 }}>
@@ -1315,7 +1320,7 @@ export default function AdminAchievementsPage() {
                         <Grid item xs={12} md={6}>
                           <Stack spacing={1}>
                             <Typography sx={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>
-                              <TimelineIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                              <TimelineIcon sx={{ fontSize: 14, marginInlineEnd: 0.5 }} />
                               الفئة
                             </Typography>
                             <Typography sx={{ fontSize: 14, color: '#0f172a', fontWeight: 600 }}>
@@ -1327,7 +1332,7 @@ export default function AdminAchievementsPage() {
                         <Grid item xs={12} md={6}>
                           <Stack spacing={1}>
                             <Typography sx={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>
-                              <TaskIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                              <TaskIcon sx={{ fontSize: 14, marginInlineEnd: 0.5 }} />
                               عدد البنود
                             </Typography>
                             <Typography sx={{ fontSize: 14, color: '#0f172a', fontWeight: 600 }}>
@@ -1677,6 +1682,6 @@ export default function AdminAchievementsPage() {
           </Snackbar>
         </Container>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

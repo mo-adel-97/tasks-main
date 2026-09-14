@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import {
@@ -40,7 +42,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { format } from "date-fns";
 import { arSA } from "date-fns/locale";
-import Sidebar from "./Sidebar";
+
 
 /** Brand */
 const brand = {
@@ -442,14 +444,18 @@ const P2PMarketingAdmin = () => {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", direction: layoutDir, backgroundColor: brand.bg }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: "flex", minHeight: "100vh", direction: layoutDir, backgroundColor: brand.bg }}>
+      
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, md: 3 },
+          p: {
+            xs: 2,
+            md: 3
+          },
+          ...navigationContentSx
         }}
       >
         <Container maxWidth="xl" sx={{ mt: 2 }}>
@@ -469,10 +475,10 @@ const P2PMarketingAdmin = () => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <HandshakeIcon sx={{ fontSize: 40 }} />
                 <Box dir={arabicDir}>
-                  <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.5, textAlign: "left" }}>
+                  <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.5, textAlign: "start" }}>
                     P2P - إدارة الطلبات
                   </Typography>
-                  <Typography variant="body1" sx={{ opacity: 0.95, textAlign: "left" }}>
+                  <Typography variant="body1" sx={{ opacity: 0.95, textAlign: "start" }}>
                     عرض جميع طلبات التسويق الخارجي + اسم مقدم الطلب
                   </Typography>
                 </Box>
@@ -526,10 +532,10 @@ const P2PMarketingAdmin = () => {
                   }}
                 >
                   <CardContent dir={arabicDir}>
-                    <Typography variant="h6" sx={{ color: brand.textMuted, textAlign: "left" }}>
+                    <Typography variant="h6" sx={{ color: brand.textMuted, textAlign: "start" }}>
                       {x.title}
                     </Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 900, color: brand.text, textAlign: "left", mt: 1 }}>
+                    <Typography variant="h3" sx={{ fontWeight: 900, color: brand.text, textAlign: "start", mt: 1 }}>
                       {x.value}
                     </Typography>
                   </CardContent>
@@ -601,7 +607,7 @@ const P2PMarketingAdmin = () => {
                 <CircularProgress />
               </Box>
             ) : filteredRecords.length === 0 ? (
-              <Box dir={arabicDir} sx={{ p: 4, textAlign: "left" }}>
+              <Box dir={arabicDir} sx={{ p: 4, textAlign: "start" }}>
                 <Typography variant="h6" sx={{ color: brand.textMuted }}>
                   {searchTerm ? "لا توجد نتائج مطابقة للبحث" : "لا توجد طلبات"}
                 </Typography>
@@ -637,7 +643,7 @@ const P2PMarketingAdmin = () => {
                     },
                     "& .MuiDataGrid-cellContent": {
                       direction: "rtl",
-                      textAlign: "left",
+                      textAlign: "start",
                       width: "100%",
                     },
                   }}
@@ -669,11 +675,11 @@ const P2PMarketingAdmin = () => {
               <Typography>لا يوجد بيانات</Typography>
             ) : (
               <Box>
-                <Typography sx={{ fontWeight: 900, mb: 1, textAlign: "left" }}>
+                <Typography sx={{ fontWeight: 900, mb: 1, textAlign: "start" }}>
                   {viewRecord.companyName || "-"}
                 </Typography>
 
-                <Typography sx={{ color: brand.textMuted, mb: 2, textAlign: "left" }}>
+                <Typography sx={{ color: brand.textMuted, mb: 2, textAlign: "start" }}>
                   مقدم الطلب:{" "}
                   <b>{usersMap.get(String(viewRecord.userGuid || "").toLowerCase()) || "غير معروف"}</b>
                 </Typography>
@@ -787,7 +793,7 @@ const P2PMarketingAdmin = () => {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

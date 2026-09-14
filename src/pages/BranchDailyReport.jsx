@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -26,9 +28,9 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
+
+
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
@@ -776,27 +778,24 @@ const BranchDailyReport = () => {
   );
 
   return (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
-        direction: "ltr",
+        direction: "rtl",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
     >
-      <Sidebar />
+      
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md: `${SIDEBAR_WIDTH}px`
-          },
           p: {
             xs: 1.2,
             md: 2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -893,7 +892,7 @@ const BranchDailyReport = () => {
               InputLabelProps={{
                 shrink: true
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               type="date"
@@ -907,7 +906,7 @@ const BranchDailyReport = () => {
               InputLabelProps={{
                 shrink: true
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               label="الفرع"
@@ -1078,7 +1077,7 @@ const BranchDailyReport = () => {
               ]}
               sx={{
                 border: 0,
-                direction: "ltr",
+                direction: "rtl",
                 "& .MuiDataGrid-columnHeaders": {
                   backgroundColor:
                     "#edf7f2",
@@ -1087,7 +1086,7 @@ const BranchDailyReport = () => {
                 "& .MuiDataGrid-cell": {
                   fontFamily: "Cairo",
                   fontWeight: 600,
-                  direction: "ltr"
+                  direction: "rtl"
                 },
                 "& .MuiDataGrid-cellContent": {
                   overflow: "hidden",
@@ -1099,7 +1098,7 @@ const BranchDailyReport = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

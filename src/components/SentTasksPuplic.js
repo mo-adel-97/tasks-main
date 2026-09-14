@@ -1,3 +1,5 @@
+import { SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
+import { navigationContentSx } from '../config/sidebarLayout';
 import React, { useEffect, useState } from 'react';
 import { 
   Grid, 
@@ -91,7 +93,7 @@ const taskStatusMap = {
 
 function SentTasks() {
   const theme = useTheme();
-  const isDesktop = useMediaQuery('(min-width:1600px)', { noSsr: true });
+  const isDesktop = useMediaQuery(SIDEBAR_DESKTOP_QUERY, { noSsr: true });
 
   const [sentTasks, setSentTasks] = useState([]);
   const [externalModifiedTasks, setExternalModifiedTasks] = useState([]);
@@ -555,10 +557,19 @@ const handleEditFormChange = (field, value) => {
 
   return (
     <Box sx={{
-      marginLeft: isDesktop ? '280px' : 0,
-      padding: isDesktop ? '20px' : { xs: 0.6, sm: 1, md: 1.4 },
-      marginBottom: isDesktop ? '50px' : { xs: 20, md: 35 },
-      marginTop: isDesktop ? '20px' : { xs: 8, md: 14 },
+      padding: isDesktop ? '20px' : {
+        xs: 0.6,
+        sm: 1,
+        md: 1.4
+      },
+      marginBottom: isDesktop ? '50px' : {
+        xs: 20,
+        md: 35
+      },
+      marginTop: isDesktop ? '20px' : {
+        xs: 8,
+        md: 14
+      },
       backgroundColor: colorPalette.background,
       minHeight: '100vh',
       width: isDesktop ? 'auto' : '100%',
@@ -566,27 +577,59 @@ const handleEditFormChange = (field, value) => {
       minWidth: 0,
       boxSizing: 'border-box',
       overflowX: 'hidden',
-
       '& .MuiTypography-h4': {
-        fontSize: isDesktop ? undefined : { xs: '0.82rem', sm: '0.94rem', md: '1.08rem' }
+        fontSize: isDesktop ? undefined : {
+          xs: '0.82rem',
+          sm: '0.94rem',
+          md: '1.08rem'
+        }
       },
       '& .MuiTypography-h6': {
-        fontSize: isDesktop ? undefined : { xs: '0.64rem', sm: '0.72rem', md: '0.82rem' }
+        fontSize: isDesktop ? undefined : {
+          xs: '0.64rem',
+          sm: '0.72rem',
+          md: '0.82rem'
+        }
       },
       '& .MuiTypography-body2': {
-        fontSize: isDesktop ? undefined : { xs: '0.54rem', sm: '0.61rem', md: '0.7rem' }
+        fontSize: isDesktop ? undefined : {
+          xs: '0.54rem',
+          sm: '0.61rem',
+          md: '0.7rem'
+        }
       },
       '& .MuiButton-root': {
-        fontSize: isDesktop ? undefined : { xs: '0.54rem', sm: '0.61rem', md: '0.7rem' },
-        minHeight: isDesktop ? undefined : { xs: 28, sm: 30, md: 34 }
+        fontSize: isDesktop ? undefined : {
+          xs: '0.54rem',
+          sm: '0.61rem',
+          md: '0.7rem'
+        },
+        minHeight: isDesktop ? undefined : {
+          xs: 28,
+          sm: 30,
+          md: 34
+        }
       },
       '& .MuiChip-root': {
-        fontSize: isDesktop ? undefined : { xs: '0.5rem', sm: '0.56rem', md: '0.64rem' },
-        height: isDesktop ? undefined : { xs: 21, sm: 23, md: 26 }
+        fontSize: isDesktop ? undefined : {
+          xs: '0.5rem',
+          sm: '0.56rem',
+          md: '0.64rem'
+        },
+        height: isDesktop ? undefined : {
+          xs: 21,
+          sm: 23,
+          md: 26
+        }
       },
       '& .MuiInputBase-root, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
-        fontSize: isDesktop ? undefined : { xs: '0.56rem', sm: '0.63rem', md: '0.72rem' }
-      }
+        fontSize: isDesktop ? undefined : {
+          xs: '0.56rem',
+          sm: '0.63rem',
+          md: '0.72rem'
+        }
+      },
+      ...navigationContentSx
     }}>
       <Typography
         variant="h4"
@@ -595,7 +638,7 @@ const handleEditFormChange = (field, value) => {
         sx={{
           mb: isDesktop ? 3 : { xs: 1, sm: 1.2, md: 1.5 },
           color: colorPalette.textDark,
-          textAlign: { xs: 'left', md: 'left' }
+          textAlign: 'start'
         }}
       >
         المهام التي أرسلتها
@@ -637,11 +680,11 @@ const handleEditFormChange = (field, value) => {
           }}
         >
           <ToggleButton value="filtered" aria-label="filtered view" sx={{ color: colorPalette.primary }}>
-            <FilterList sx={{ mr: 0.5, fontSize: isDesktop ? undefined : { xs: 16, sm: 17, md: 18 } }} />
+            <FilterList sx={{ marginInlineEnd: 0.5, fontSize: isDesktop ? undefined : { xs: 16, sm: 17, md: 18 } }} />
             عرض المهام حسب التاريخ
           </ToggleButton>
           <ToggleButton value="all" aria-label="all tasks view" sx={{ color: colorPalette.primary }}>
-            <ViewList sx={{ mr: 0.5, fontSize: isDesktop ? undefined : { xs: 16, sm: 17, md: 18 } }} />
+            <ViewList sx={{ marginInlineEnd: 0.5, fontSize: isDesktop ? undefined : { xs: 16, sm: 17, md: 18 } }} />
             عرض جميع المهام
           </ToggleButton>
         </ToggleButtonGroup>
@@ -781,7 +824,7 @@ const handleEditFormChange = (field, value) => {
                       transform: 'translateY(-5px)',
                       boxShadow: ended ? "0 6px 24px 0 rgba(244, 67, 54, 0.3)" : "0 6px 24px 0 rgba(128, 180, 158, 0.3)"
                     },
-                    borderLeft: `4px solid ${
+                    borderInlineStart: `4px solid ${
                       displayStatus === 2 ? colorPalette.success : 
                       displayStatus === 3 ? colorPalette.error : 
                       displayStatus === 1 ? colorPalette.primary : colorPalette.warning
@@ -956,7 +999,7 @@ const handleEditFormChange = (field, value) => {
                         backgroundColor: colorPalette.primaryLighter,
                         p: 1.5,
                         borderRadius: 1,
-                        borderLeft: `3px solid ${colorPalette.primary}`
+                        borderInlineStart: `3px solid ${colorPalette.primary}`
                       }}>
                         <strong>الوصف:</strong> {externalTaskData?.TaskDescription || task.taskDescription || "لا يوجد وصف للمهمة"}
                       </Typography>
@@ -1076,7 +1119,7 @@ const handleEditFormChange = (field, value) => {
           px: isDesktop ? 3 : { xs: 1, sm: 1.3, md: 1.8 }
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
-            <Description sx={{ mr: { xs: 0.5, md: 1 }, fontSize: isDesktop ? undefined : { xs: 18, sm: 20, md: 22 } }} />
+            <Description sx={{ marginInlineEnd: { xs: 0.5, md: 1 }, fontSize: isDesktop ? undefined : { xs: 18, sm: 20, md: 22 } }} />
             <Typography
               variant="h6"
               fontWeight={700}
@@ -1155,7 +1198,7 @@ const handleEditFormChange = (field, value) => {
                           borderRadius: isDesktop ? 1 : 1.5,
                           mb: isDesktop ? 1 : { xs: 0.45, sm: 0.6, md: 0.8 },
                           p: isDesktop ? 2 : { xs: 0.7, sm: 0.9, md: 1.2 },
-                          borderLeft: `${isDesktop ? 4 : 3}px solid ${
+                          borderInlineStart: `${isDesktop ? 4 : 3}px solid ${
                             update.status === 2 ? colorPalette.success : 
                             update.status === 3 ? colorPalette.error : 
                             update.status === 1 ? colorPalette.primary : colorPalette.warning
@@ -1392,7 +1435,7 @@ const handleEditFormChange = (field, value) => {
           py: 2
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Analytics sx={{ mr: 1 }} />
+            <Analytics sx={{ marginInlineEnd: 1 }} />
             <Typography variant="h6" fontWeight={600}>
               إحصائيات حالة المهمة
             </Typography>
@@ -1437,7 +1480,7 @@ const handleEditFormChange = (field, value) => {
                     
                     return (
                       <ListItem key={user.guid} sx={{
-                        borderLeft: `4px solid ${
+                        borderInlineStart: `4px solid ${
                           userUpdate?.status === 2 ? colorPalette.success : 
                           userUpdate?.status === 3 ? colorPalette.error : 
                           userUpdate?.status === 1 ? colorPalette.primary : colorPalette.warning

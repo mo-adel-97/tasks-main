@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -63,12 +65,12 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
-import Sidebar from "../components/Sidebar";
+
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -480,7 +482,7 @@ const PaymentTotalsSection = ({
         "linear-gradient(135deg,#f7fbf9 0%,#ffffff 55%,#eef8f3 100%)",
       boxShadow:
         "0 10px 26px rgba(31,45,61,0.07)",
-      direction: "ltr"
+      direction: "rtl"
     }}
   >
     <Stack
@@ -2507,7 +2509,7 @@ const PaymentFollowReport = () => {
         title: "تم التوزيع بنجاح",
         html: `
           <div style="
-            direction:ltr;
+            direction:rtl;
             font-family:Cairo,Arial;
             line-height:2;
           ">
@@ -3200,11 +3202,13 @@ const exportExcel = () => {
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><Box
       sx={{
         minHeight: "100vh",
         background: "#f4f8f6",
-        direction: "ltr",
+        direction: "rtl",
         overflowX: "hidden"
       }}
     >
@@ -3238,7 +3242,7 @@ const exportExcel = () => {
               color: "#173b2b",
               borderBottom:
                 "1px solid rgba(5,117,70,.12)",
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Toolbar
@@ -3287,7 +3291,7 @@ const exportExcel = () => {
                     sm: "0.78rem"
                   },
                   color: "#173b2b",
-                  textAlign: "left"
+                  textAlign: "start"
                 }}
               >
                 متابعة السداد
@@ -3297,39 +3301,17 @@ const exportExcel = () => {
         </>
       )}
 
-      {isDesktop ? (
-        <Sidebar />
-      ) : (
-        <Sidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
-      )}
+      
 
       <Box
         component="main"
         sx={{
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0,
-          width: isDesktop
-            ? `calc(100% - ${SIDEBAR_WIDTH}px)`
-            : "100%",
-          mt: isDesktop
-            ? 0
-            : isPhone
-              ? "50px"
-              : "56px",
-          p: isDesktop
-            ? 2.5
-            : isPhone
-              ? 0.45
-              : 0.75,
-          direction: "ltr",
+          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
+          p: isDesktop ? 2.5 : isPhone ? 0.45 : 0.75,
+          direction: "rtl",
           boxSizing: "border-box",
-          overflowX: "hidden"
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -3481,7 +3463,7 @@ const exportExcel = () => {
                       ? "calc(50% - 4px)"
                       : "auto"
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   type="date"
@@ -3501,7 +3483,7 @@ const exportExcel = () => {
                       ? "calc(50% - 4px)"
                       : "auto"
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Autocomplete
                   options={branches}
@@ -3878,7 +3860,7 @@ const exportExcel = () => {
                   return `${paymentClass} ${selectedClass}`.trim();
                 }}
                 sx={{
-                  direction: "ltr",
+                  direction: "rtl",
                   fontFamily: "Cairo",
                   border: 0,
 
@@ -4238,7 +4220,7 @@ const exportExcel = () => {
               maxHeight: !isDesktop
                 ? "86dvh"
                 : undefined,
-              direction: "ltr",
+              direction: "rtl",
               overflow: "hidden"
             }
           }}
@@ -4366,7 +4348,7 @@ const exportExcel = () => {
             sx={{
               px: 2,
               py: 1.5,
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             <Button
@@ -4410,7 +4392,7 @@ const exportExcel = () => {
           PaperProps={{
             sx: {
               minWidth: 260,
-              direction: "ltr",
+              direction: "rtl",
               fontFamily: "Cairo"
             }
           }}
@@ -4557,7 +4539,7 @@ const exportExcel = () => {
           PaperProps={{
             sx: {
               borderRadius: 5,
-              direction: "ltr",
+              direction: "rtl",
               overflow: "hidden",
               boxShadow: "0 24px 70px rgba(62,38,104,0.22)"
             }
@@ -4745,7 +4727,7 @@ const exportExcel = () => {
                               {student.studentName}
                             </Typography>
                             <Typography sx={{ fontFamily: "Cairo", fontSize: "0.67rem", color: "text.secondary" }}>
-                              {student.nationalId} — {student.diplomName}
+                              <bdi dir="ltr">{student.nationalId}</bdi> — {student.diplomName}
                             </Typography>
                           </Box>
                         ))}
@@ -4806,7 +4788,7 @@ const exportExcel = () => {
           PaperProps={{
             sx: {
               borderRadius: 5,
-              direction: "ltr",
+              direction: "rtl",
               overflow: "hidden",
               boxShadow: "0 24px 70px rgba(15,45,31,0.24)"
             }
@@ -5336,7 +5318,7 @@ const exportExcel = () => {
             sx: {
               borderRadius: 5,
               overflow: "hidden",
-              direction: "ltr"
+              direction: "rtl"
             }
           }}
         >
@@ -5431,7 +5413,7 @@ const exportExcel = () => {
             sx: {
               borderRadius: 5,
               overflow: "hidden",
-              direction: "ltr",
+              direction: "rtl",
               boxShadow:
                 "0 28px 80px rgba(15,45,31,.28)"
             }
@@ -5833,7 +5815,7 @@ const exportExcel = () => {
             sx: {
               borderRadius: 5,
               overflow: "hidden",
-              direction: "ltr"
+              direction: "rtl"
             }
           }}
         >
@@ -5958,7 +5940,7 @@ const exportExcel = () => {
           PaperProps={{
             sx: {
               borderRadius: 4,
-              direction: "ltr"
+              direction: "rtl"
             }
           }}
         >
@@ -6192,7 +6174,7 @@ const exportExcel = () => {
           </DialogActions>
         </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

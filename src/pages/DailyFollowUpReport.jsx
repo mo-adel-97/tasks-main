@@ -1,3 +1,7 @@
+import deepmerge from '@mui/utils/deepmerge';
+import { rtlComponents } from '../config/rtlComponents';
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
 import { 
   createTheme, 
@@ -62,11 +66,11 @@ import {
   Engineering as EngineeringIcon,
   Task as TaskIcon
 } from '@mui/icons-material';
-import Sidebar from '../components/Sidebar';
+
 import DiplomaStatistics from '../components/DiplomaStatistics';
 import ComplaintsSuggestionsTasks from '../components/ComplaintsSuggestionsTasks';
 // Professional theme with Cairo font and updated color scheme
-const theme = createTheme({
+const theme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
   typography: {
     fontFamily: '"Cairo", sans-serif',
     h4: {
@@ -83,7 +87,7 @@ const theme = createTheme({
       color: '#2c3e50'
     }
   },
-  direction: 'ltr',
+  direction: "rtl",
   palette: {
     primary: {
       main: '#80b49e',
@@ -108,7 +112,7 @@ const theme = createTheme({
   shape: {
     borderRadius: 12
   }
-});
+}));
 
 // Enhanced styled components with modern design
 const MainContainer = styled(Box)(({ theme }) => ({
@@ -121,7 +125,6 @@ const MainContainer = styled(Box)(({ theme }) => ({
 const ContentContainer = styled(Box)(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(4),
-  marginLeft: '240px',
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.standard
@@ -129,7 +132,8 @@ const ContentContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     marginLeft: '0',
     padding: theme.spacing(3)
-  }
+  },
+  ...navigationContentSx
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -654,7 +658,7 @@ const ReportPreview = ({
         p: 3,
         backgroundColor: '#f8fafc',
         borderRadius: 2,
-        borderLeft: '4px solid #1976d2'
+        borderInlineStart: '4px solid #1976d2'
       }}>
         <Typography variant="h4" sx={{ 
           fontWeight: 700,
@@ -766,7 +770,7 @@ const ReportPreview = ({
         display: 'flex',
         alignItems: 'center'
       }}>
-        <AssignmentIcon sx={{ mr: 1 }} />
+        <AssignmentIcon sx={{ marginInlineEnd: 1 }} />
         تفاصيل الأعمال اليومية
       </Typography>
 
@@ -791,7 +795,7 @@ const ReportPreview = ({
               }}>
                 <SchoolIcon sx={{ 
                   color: '#4CAF50',
-                  mr: 1.5,
+                  marginInlineEnd: 1.5,
                   fontSize: '1.5rem'
                 }} />
                 <Typography variant="h6" sx={{ 
@@ -859,7 +863,7 @@ const ReportPreview = ({
               }}>
                 <AssignmentTurnedInIcon sx={{ 
                   color: '#FF9800',
-                  mr: 1.5,
+                  marginInlineEnd: 1.5,
                   fontSize: '1.5rem'
                 }} />
                 <Typography variant="h6" sx={{ 
@@ -927,7 +931,7 @@ const ReportPreview = ({
               }}>
                 <EngineeringIcon sx={{ 
                   color: '#9C27B0',
-                  mr: 1.5,
+                  marginInlineEnd: 1.5,
                   fontSize: '1.5rem'
                 }} />
                 <Typography variant="h6" sx={{ 
@@ -995,7 +999,7 @@ const ReportPreview = ({
               }}>
                 <TaskIcon sx={{ 
                   color: '#2196F3',
-                  mr: 1.5,
+                  marginInlineEnd: 1.5,
                   fontSize: '1.5rem'
                 }} />
                 <Typography variant="h6" sx={{ 
@@ -1053,7 +1057,7 @@ const ReportPreview = ({
         display: 'flex',
         alignItems: 'center'
       }}>
-        <SchoolIcon sx={{ mr: 1 }} />
+        <SchoolIcon sx={{ marginInlineEnd: 1 }} />
         إحصائيات الدبلومات
       </Typography>
 
@@ -1073,7 +1077,7 @@ const ReportPreview = ({
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <AssignmentTurnedInIcon sx={{ mr: 1, color: '#1976d2' }} />
+                <AssignmentTurnedInIcon sx={{ marginInlineEnd: 1, color: '#1976d2' }} />
                 تسجيلات جديدة
               </Typography>
               
@@ -1109,7 +1113,7 @@ const ReportPreview = ({
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <PeopleAltIcon sx={{ mr: 1, color: '#1976d2' }} />
+                <PeopleAltIcon sx={{ marginInlineEnd: 1, color: '#1976d2' }} />
                 حضور الدبلومات
               </Typography>
               
@@ -1144,7 +1148,7 @@ const ReportPreview = ({
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <Check sx={{ mr: 1, color: '#1976d2' }} />
+                <Check sx={{ marginInlineEnd: 1, color: '#1976d2' }} />
                 اعتمادات الدبلومات
               </Typography>
               
@@ -1175,7 +1179,7 @@ const ReportPreview = ({
         display: 'flex',
         alignItems: 'center'
       }}>
-        <AssignmentIcon sx={{ mr: 1 }} />
+        <AssignmentIcon sx={{ marginInlineEnd: 1 }} />
         الشكاوي والمقترحات
       </Typography>
 
@@ -1195,7 +1199,7 @@ const ReportPreview = ({
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <Clear sx={{ mr: 1, color: '#f44336' }} />
+                <Clear sx={{ marginInlineEnd: 1, color: '#f44336' }} />
                 الشكاوي
               </Typography>
               
@@ -1244,7 +1248,7 @@ const ReportPreview = ({
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <Check sx={{ mr: 1, color: '#4caf50' }} />
+                <Check sx={{ marginInlineEnd: 1, color: '#4caf50' }} />
                 المقترحات
               </Typography>
               
@@ -1540,9 +1544,9 @@ const renderStepContent = (step) => {
 };
 
   return (
-    <ThemeProvider theme={theme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
       <MainContainer>
-        <Sidebar />
+        
         <ContentContainer>
           <StyledPaper>
             <Typography variant="h4" gutterBottom fontWeight="bold" color="primary" sx={{ mb: 3 }}>
@@ -1670,7 +1674,7 @@ const renderStepContent = (step) => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </ThemeProvider>
+    </ThemeProvider></NavigationShell>
   );
 };
 

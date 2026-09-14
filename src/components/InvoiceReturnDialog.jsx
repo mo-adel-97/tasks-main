@@ -735,7 +735,7 @@ export default function InvoiceReturnDialog({
                   label="رقم الهوية"
                   value={nationalId || ""}
                   InputProps={{ readOnly: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               <Grid item xs={6} sm={3} md={4}>
@@ -744,7 +744,7 @@ export default function InvoiceReturnDialog({
                   label="رقم الجوال"
                   value={studentTel || ""}
                   InputProps={{ readOnly: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
             </Grid>
           </Paper>
@@ -929,7 +929,7 @@ export default function InvoiceReturnDialog({
                   setReturnDate(event.target.value)
                 }
                 InputLabelProps={{ shrink: true }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
 
             <Grid item xs={6} sm={4} md={4}>
@@ -1181,8 +1181,8 @@ export default function InvoiceReturnDialog({
                               step: 1,
                               style: {
                                 textAlign: "center"
-                              }
-                            }}
+                              , direction: "ltr", unicodeBidi: "isolate" }
+                            , dir: "ltr" }}
                             sx={{ width: 95 }}
                           />
                         </TableCell>
@@ -1204,8 +1204,8 @@ export default function InvoiceReturnDialog({
                               step: "0.01",
                               style: {
                                 textAlign: "center"
-                              }
-                            }}
+                              , direction: "ltr", unicodeBidi: "isolate" }
+                            , dir: "ltr" }}
                             sx={{ width: 120 }}
                           />
                         </TableCell>
@@ -1227,8 +1227,8 @@ export default function InvoiceReturnDialog({
                               step: "0.01",
                               style: {
                                 textAlign: "center"
-                              }
-                            }}
+                              , direction: "ltr", unicodeBidi: "isolate" }
+                            , dir: "ltr" }}
                             sx={{ width: 100 }}
                           />
                         </TableCell>

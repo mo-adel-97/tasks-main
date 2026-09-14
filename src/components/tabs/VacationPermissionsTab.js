@@ -735,7 +735,7 @@ const calculateServiceDuration = (employmentStartDate) => {
             color: COLOR_SCHEME.text,
             fontWeight: 'bold'
           }}>
-            <Settings sx={{ mr: 2, color: COLOR_SCHEME.primary, fontSize: 32 }} /> 
+            <Settings sx={{ marginInlineEnd: 2, color: COLOR_SCHEME.primary, fontSize: 32 }} /> 
             صلاحيات الإجازات والإذونات
           </Typography>
           
@@ -1450,7 +1450,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                           </InputAdornment>
                         )
                       }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     {editDialog.settings.employment_start_date && (
                       <Typography variant="body2" color="primary" sx={{ mb: 2 }}>
                         مدة العمل: {calculateServiceDuration(editDialog.settings.employment_start_date)}
@@ -1469,7 +1469,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.annual_vacation_max_days || ''}
                       onChange={(e) => handleSettingChange('annual_vacation_max_days', e.target.value ? parseInt(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <TextField
                       fullWidth
                       label="أيام الاستحقاق شهرياً"
@@ -1478,7 +1478,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.annual_vacation_days_per_month || ''}
                       onChange={(e) => handleSettingChange('annual_vacation_days_per_month', e.target.value ? parseFloat(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <FormControlLabel
                       control={
                         <Switch
@@ -1496,7 +1496,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                         type="number"
                         value={editDialog.settings.annual_vacation_max_carry_over || ''}
                         onChange={(e) => handleSettingChange('annual_vacation_max_carry_over', e.target.value ? parseInt(e.target.value) : null)}
-                      />
+                       inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     )}
                   </SettingsCard>
                 </Grid>
@@ -1511,7 +1511,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.sick_leave_max_days || ''}
                       onChange={(e) => handleSettingChange('sick_leave_max_days', e.target.value ? parseInt(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <FormControlLabel
                       control={
                         <Switch
@@ -1529,7 +1529,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                         type="number"
                         value={editDialog.settings.sick_leave_proof_after_days || ''}
                         onChange={(e) => handleSettingChange('sick_leave_proof_after_days', e.target.value ? parseInt(e.target.value) : null)}
-                      />
+                       inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     )}
                   </SettingsCard>
                 </Grid>
@@ -1544,14 +1544,14 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.emergency_leave_max_days_month || ''}
                       onChange={(e) => handleSettingChange('emergency_leave_max_days_month', e.target.value ? parseInt(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <TextField
                       fullWidth
                       label="الحد الأقصى سنوياً (أيام)"
                       type="number"
                       value={editDialog.settings.emergency_leave_max_days_year || ''}
                       onChange={(e) => handleSettingChange('emergency_leave_max_days_year', e.target.value ? parseInt(e.target.value) : null)}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   </SettingsCard>
                 </Grid>
 
@@ -1565,7 +1565,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.other_leave_max_days || ''}
                       onChange={(e) => handleSettingChange('other_leave_max_days', e.target.value ? parseInt(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <FormControlLabel
                       control={
                         <Switch
@@ -1589,7 +1589,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.permission_max_hours_day || ''}
                       onChange={(e) => handleSettingChange('permission_max_hours_day', e.target.value ? parseFloat(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <TextField
                       fullWidth
                       label="الحد الأقصى الشهري (ساعات)"
@@ -1598,7 +1598,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.permission_max_hours_month || ''}
                       onChange={(e) => handleSettingChange('permission_max_hours_month', e.target.value ? parseFloat(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <TextField
                       fullWidth
                       label="الحد الأقصى للعدد الشهري"
@@ -1606,7 +1606,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       value={editDialog.settings.permission_max_times_month || ''}
                       onChange={(e) => handleSettingChange('permission_max_times_month', e.target.value ? parseInt(e.target.value) : null)}
                       sx={{ mb: 2 }}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                     <FormControlLabel
                       control={
                         <Switch
@@ -1630,7 +1630,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       value={editDialog.settings.min_employment_duration || ''}
       onChange={(e) => handleSettingChange('min_employment_duration', e.target.value ? parseInt(e.target.value) : null)}
       sx={{ mb: 2 }}
-    />
+     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
     <TextField
       fullWidth
       label="الحد الأقصى للإجازات المتتالية (جميع الأنواع)"
@@ -1638,7 +1638,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       value={editDialog.settings.max_consecutive_days || ''}
       onChange={(e) => handleSettingChange('max_consecutive_days', e.target.value ? parseInt(e.target.value) : null)}
       sx={{ mb: 2 }}
-    />
+     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
     <TextField
       fullWidth
       label="الحد الأقصى للإجازات السنوية المتتالية"
@@ -1646,7 +1646,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       value={editDialog.settings.max_consecutive_annual_days || ''}
       onChange={(e) => handleSettingChange('max_consecutive_annual_days', e.target.value ? parseInt(e.target.value) : null)}
       sx={{ mb: 2 }}
-    />
+     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
     <TextField
       fullWidth
       label="إشعار مسبق للإجازات (أيام)"
@@ -1654,7 +1654,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       value={editDialog.settings.vacation_advance_notice_days || ''}
       onChange={(e) => handleSettingChange('vacation_advance_notice_days', e.target.value ? parseInt(e.target.value) : null)}
       sx={{ mb: 2 }}
-    />
+     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
     <TextField
       fullWidth
       label="إشعار مسبق للإذونات (ساعات)"
@@ -1662,7 +1662,7 @@ const calculateServiceDuration = (employmentStartDate) => {
       step="0.5"
       value={editDialog.settings.permission_advance_notice_hours || ''}
       onChange={(e) => handleSettingChange('permission_advance_notice_hours', e.target.value ? parseFloat(e.target.value) : null)}
-    />
+     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
   </SettingsCard>
 </Grid>
               </Grid>
@@ -1715,7 +1715,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                         </InputAdornment>
                       )
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </SettingsCard>
               </Grid>
 
@@ -1729,7 +1729,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.annual_vacation_max_days}
                     onChange={(e) => handleBulkSettingChange('annual_vacation_max_days', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="أيام الاستحقاق شهرياً"
@@ -1738,7 +1738,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.annual_vacation_days_per_month}
                     onChange={(e) => handleBulkSettingChange('annual_vacation_days_per_month', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <FormControlLabel
                     control={
                       <Switch
@@ -1756,7 +1756,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       type="number"
                       value={bulkSettings.annual_vacation_max_carry_over}
                       onChange={(e) => handleBulkSettingChange('annual_vacation_max_carry_over', e.target.value)}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   )}
                 </SettingsCard>
               </Grid>
@@ -1771,7 +1771,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.sick_leave_max_days}
                     onChange={(e) => handleBulkSettingChange('sick_leave_max_days', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <FormControlLabel
                     control={
                       <Switch
@@ -1789,7 +1789,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                       type="number"
                       value={bulkSettings.sick_leave_proof_after_days}
                       onChange={(e) => handleBulkSettingChange('sick_leave_proof_after_days', e.target.value)}
-                    />
+                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   )}
                 </SettingsCard>
               </Grid>
@@ -1805,7 +1805,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.permission_max_hours_day}
                     onChange={(e) => handleBulkSettingChange('permission_max_hours_day', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="الحد الأقصى الشهري (ساعات)"
@@ -1814,7 +1814,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.permission_max_hours_month}
                     onChange={(e) => handleBulkSettingChange('permission_max_hours_month', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="الحد الأقصى للعدد الشهري"
@@ -1822,7 +1822,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.permission_max_times_month}
                     onChange={(e) => handleBulkSettingChange('permission_max_times_month', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <FormControlLabel
                     control={
                       <Switch
@@ -1845,7 +1845,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.other_leave_max_days}
                     onChange={(e) => handleBulkSettingChange('other_leave_max_days', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <FormControlLabel
                     control={
                       <Switch
@@ -1868,7 +1868,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.min_employment_duration}
                     onChange={(e) => handleBulkSettingChange('min_employment_duration', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="الحد الأقصى للإجازات المتتالية"
@@ -1876,7 +1876,7 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.max_consecutive_days}
                     onChange={(e) => handleBulkSettingChange('max_consecutive_days', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="الحد الأقصى للإجازات السنوية المتتالية"
@@ -1884,14 +1884,14 @@ const calculateServiceDuration = (employmentStartDate) => {
                     value={bulkSettings.max_consecutive_annual_days}
                     onChange={(e) => handleBulkSettingChange('max_consecutive_annual_days', e.target.value)}
                     sx={{ mb: 2 }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                   <TextField
                     fullWidth
                     label="إشعار مسبق (أيام)"
                     type="number"
                     value={bulkSettings.advance_notice_days}
                     onChange={(e) => handleBulkSettingChange('advance_notice_days', e.target.value)}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </SettingsCard>
               </Grid>
             </Grid>
@@ -1959,7 +1959,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               value={vacationForm.start_date}
               onChange={(e) => handleVacationFormChange('start_date', e.target.value)}
               sx={{ mb: 2 }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField
               fullWidth
               label="تاريخ النهاية"
@@ -1968,7 +1968,7 @@ const calculateServiceDuration = (employmentStartDate) => {
               value={vacationForm.end_date}
               onChange={(e) => handleVacationFormChange('end_date', e.target.value)}
               sx={{ mb: 2 }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <FormControlLabel
               control={
                 <Switch

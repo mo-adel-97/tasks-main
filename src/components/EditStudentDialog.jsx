@@ -643,7 +643,7 @@ const EditStudentDialog = ({
       }
     },
     "& input": {
-      textAlign: "left",
+      textAlign: "start",
       fontWeight: 850,
       py: isPhone ? 0.55 : isTablet ? 0.7 : undefined,
       px: isPhone ? 0.65 : isTablet ? 0.8 : undefined,
@@ -763,7 +763,7 @@ const EditStudentDialog = ({
                   value={form.studentCode}
                   disabled
                   sx={fieldSx}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </StudentField>
             </Grid>
 
@@ -787,7 +787,7 @@ const EditStudentDialog = ({
                   value={form.accountCode}
                   disabled
                   sx={fieldSx}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </StudentField>
             </Grid>
 
@@ -873,7 +873,7 @@ const EditStudentDialog = ({
                       event.target.value.replace(/\D/g, "")
                     )
                   }
-                  inputProps={{ maxLength: 20 }}
+                  inputProps={{ maxLength: 20 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   sx={fieldSx}
                 />
               </StudentField>
@@ -891,7 +891,7 @@ const EditStudentDialog = ({
                       event.target.value.replace(/\D/g, "")
                     )
                   }
-                  inputProps={{ maxLength: 20 }}
+                  inputProps={{ maxLength: 20 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   sx={fieldSx}
                 />
               </StudentField>
@@ -909,7 +909,7 @@ const EditStudentDialog = ({
                       event.target.value.replace(/\D/g, "")
                     )
                   }
-                  inputProps={{ maxLength: 20 }}
+                  inputProps={{ maxLength: 20 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   sx={fieldSx}
                 />
               </StudentField>
@@ -936,7 +936,7 @@ const EditStudentDialog = ({
                     max: new Date()
                       .toISOString()
                       .slice(0, 10)
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   helperText={isPhone ? "" : "التاريخ يُعرض ويُحفظ بالميلادي"}
                   FormHelperTextProps={{
                     sx: {
@@ -1197,7 +1197,7 @@ const EditStudentDialog = ({
             minWidth: isPhone ? 90 : isTablet ? 105 : 125,
             fontWeight: 950,
             backgroundColor: primaryColor,
-            direction: "ltr",
+            direction: "rtl",
             "&:hover": {
               backgroundColor: "#034d31"
             }

@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -31,10 +33,10 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 
 const primaryColor = "#057546";
@@ -925,19 +927,18 @@ export default function BalanceReviewPage() {
   };
 
   return (
-    <Box sx={{ direction: "ltr", minHeight: "100vh", bgcolor: "#f4f7f6", overflowX: "hidden" }}>
-      <Sidebar mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)} />
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ direction: "rtl", minHeight: "100vh", bgcolor: "#f4f7f6", overflowX: "hidden" }}>
+      
 
       <Box
         component="main"
         sx={{
-          width: isDesktop ? `calc(100vw - ${SIDEBAR_WIDTH}px)` : "100%",
           maxWidth: "100vw",
-          ml: isDesktop ? `260px` : 0,
           padding: isDesktop ? "18px 20px" : isPhone ? "6px 5px" : "10px",
           boxSizing: "border-box",
           transition: "margin 0.2s ease, width 0.2s ease",
-          overflowX: "hidden"
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         <AppBar
@@ -957,7 +958,7 @@ export default function BalanceReviewPage() {
               minHeight: isDesktop ? 64 : isPhone ? 50 : 56,
               flexWrap: "wrap",
               alignItems: "center",
-              direction: "ltr",
+              direction: "rtl",
               px: isDesktop ? 1.5 : isPhone ? 0.55 : 0.65,
               py: isDesktop ? 0.4 : isPhone ? 0.55 : 0.25
             }}
@@ -974,8 +975,8 @@ export default function BalanceReviewPage() {
                 flexGrow: 1,
                 minWidth: isDesktop ? 260 : isPhone ? 150 : 200,
                 width: isPhone ? "calc(100% - 86px)" : "auto",
-                textAlign: "left",
-                direction: "ltr"
+                textAlign: "start",
+                direction: "rtl"
               }}
             >
               <Typography
@@ -1005,7 +1006,7 @@ export default function BalanceReviewPage() {
               size="small"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              inputProps={{ max: toDate || undefined }}
+              inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputLabelProps={{ shrink: true }}
               sx={{
                 width: isPhone ? "calc(50% - 3px)" : 145,
@@ -1020,7 +1021,7 @@ export default function BalanceReviewPage() {
               size="small"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              inputProps={{ min: fromDate || undefined }}
+              inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputLabelProps={{ shrink: true }}
               sx={{
                 width: isPhone ? "calc(50% - 3px)" : 145,
@@ -1080,7 +1081,7 @@ export default function BalanceReviewPage() {
               direction="row"
               alignItems="center"
               spacing={1}
-              sx={{ direction: "ltr" }}
+              sx={{ direction: "rtl" }}
             >
               <CircularProgress
                 size={isPhone ? 18 : 22}
@@ -1114,7 +1115,7 @@ export default function BalanceReviewPage() {
 
         <Box sx={{ pt: 2, maxWidth: "100%", overflowX: "hidden" }}>
           {error && (
-            <Alert severity="error" sx={{ mb: 2, fontWeight: 800, direction: "ltr" }}>
+            <Alert severity="error" sx={{ mb: 2, fontWeight: 800, direction: "rtl" }}>
               {error}
             </Alert>
           )}
@@ -1123,7 +1124,7 @@ export default function BalanceReviewPage() {
             <Alert
               severity={isOk ? "success" : status === "warning" ? "warning" : "error"}
               icon={isOk ? <CheckCircleIcon /> : status === "warning" ? <WarningAmberIcon /> : <ErrorIcon />}
-              sx={{ mb: 2, fontWeight: 900, borderRadius: 2, direction: "ltr" }}
+              sx={{ mb: 2, fontWeight: 900, borderRadius: 2, direction: "rtl" }}
             >
               {result.message} — مشاكل مهمة: {result.criticalCount || 0} / تنبيهات: {result.warningCount || 0}
             </Alert>
@@ -1139,7 +1140,7 @@ export default function BalanceReviewPage() {
               },
               gap: isPhone ? 0.5 : isTablet ? 0.8 : 1.15,
               mb: isPhone ? 0.7 : 1.4,
-              direction: "ltr"
+              direction: "rtl"
             }}
           >
             {summaryCards.map((card) => (
@@ -1204,7 +1205,7 @@ export default function BalanceReviewPage() {
               direction={isPhone ? "column" : "row"}
               spacing={0.7}
               alignItems={isPhone ? "stretch" : "center"}
-              sx={{ mb: isPhone ? 0.55 : 1, direction: "ltr" }}
+              sx={{ mb: isPhone ? 0.55 : 1, direction: "rtl" }}
             >
               <Box sx={{ flexGrow: 1 }}>
                 <Typography
@@ -1290,7 +1291,7 @@ export default function BalanceReviewPage() {
                 }
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   "& .MuiDataGrid-columnHeaders": {
                     bgcolor: "#eef7f2",
                     fontWeight: 900
@@ -1333,7 +1334,7 @@ export default function BalanceReviewPage() {
               direction={isPhone ? "column" : "row"}
               spacing={0.7}
               alignItems={isPhone ? "stretch" : "center"}
-              sx={{ mb: isPhone ? 0.55 : 1, direction: "ltr" }}
+              sx={{ mb: isPhone ? 0.55 : 1, direction: "rtl" }}
             >
               <Typography sx={{ fontWeight: 950, fontSize: isPhone ? 12 : isTablet ? 15 : 18, flexGrow: 1 }}>
                 الفحوصات الرئيسية
@@ -1367,7 +1368,7 @@ export default function BalanceReviewPage() {
                 initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   "& .MuiDataGrid-columnHeaders": { bgcolor: "#eef7f2", fontWeight: 900 },
                   "& .MuiDataGrid-cell": {
                     fontWeight: 700,
@@ -1398,7 +1399,7 @@ export default function BalanceReviewPage() {
               direction={isPhone ? "column" : "row"}
               spacing={isPhone ? 0.5 : 0.8}
               alignItems={isPhone ? "stretch" : "center"}
-              sx={{ mb: isPhone ? 0.55 : 1, direction: "ltr" }}
+              sx={{ mb: isPhone ? 0.55 : 1, direction: "rtl" }}
             >
               <Typography sx={{ fontWeight: 950, fontSize: isPhone ? 12 : isTablet ? 15 : 18, flexGrow: 1 }}>
                 تفاصيل المراجعة
@@ -1411,7 +1412,7 @@ export default function BalanceReviewPage() {
                 InputProps={{ startAdornment: <SearchIcon sx={{ color: "#8aa79a", ml: 1 }} /> }}
                 sx={{
                   minWidth: { xs: "100%", sm: 280, xl: 360 },
-                  direction: "ltr",
+                  direction: "rtl",
                   "& .MuiInputBase-root": { height: isPhone ? 36 : 38 },
                   "& .MuiInputBase-input": { fontSize: isPhone ? "0.72rem" : undefined }
                 }}
@@ -1439,7 +1440,7 @@ export default function BalanceReviewPage() {
                 }
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   minHeight: 300,
                   "& .MuiDataGrid-columnHeaders": { bgcolor: "#eef7f2", fontWeight: 900 },
                   "& .MuiDataGrid-cell": {
@@ -1604,6 +1605,6 @@ export default function BalanceReviewPage() {
           </DialogActions>
         </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

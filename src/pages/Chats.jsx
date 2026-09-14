@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Sidebar from '../components/Sidebar';
+
 import { 
   Box, Typography, Avatar, Card, CardContent, 
   List, ListItem, Divider, Badge, TextField, InputAdornment,
@@ -582,35 +584,33 @@ const Chats = () => {
 
 if (loading) {
   return (
-    <>
-      <Sidebar/>
-      <Box sx={{ 
-        marginLeft: '280px', // نفس الـ margin بتاع المحتوى الرئيسي
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+    <NavigationShell variant="standard" ><>
+      
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
-        backgroundColor: colorPalette.background 
+        backgroundColor: colorPalette.background,
+        ...navigationContentSx
       }}>
         <Typography sx={{ color: colorPalette.textDark }}>جاري التحميل...</Typography>
       </Box>
-    </>
+    </></NavigationShell>
   );
 }
 
   return (
-    <Box display="flex" height="90vh" dir="rtl">
+    <NavigationShell variant="standard" ><Box display="flex" height="90vh" dir="rtl">
       {/* Sidebar with fixed width */}
-      <Box flexShrink={0}>
-        <Sidebar />
-      </Box>
+      
       
       {/* Main content */}
-      <Box style={{marginRight:"30px"}} display="flex" flex={1} height="99%" dir="rtl">
+      <Box sx={navigationContentSx} display="flex" flex={1} height="99%" dir="rtl">
         {/* Users List */}
         <Box width="30%" bgcolor={colorPalette.background} p={2} overflow="auto" borderLeft="1px solid #e0e0e0">
           <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', color: colorPalette.textDark }}>
-            <GroupIcon sx={{ mr: 1, color: colorPalette.primary }} /> أعضاء الفريق ({getFilteredUsers().length})
+            <GroupIcon sx={{ marginInlineEnd: 1, color: colorPalette.primary }} /> أعضاء الفريق ({getFilteredUsers().length})
           </Typography>
           
           {/* Search Bar */}
@@ -662,7 +662,7 @@ if (loading) {
         <Card sx={{ 
           width: '100%', 
           boxShadow: 2,
-          borderLeft: (user.unreadCount > 0 || newMessageNotifications[user.guid] > 0) ? `3px solid ${colorPalette.error}` : 'none',
+          borderInlineStart: (user.unreadCount > 0 || newMessageNotifications[user.guid] > 0) ? `3px solid ${colorPalette.error}` : 'none',
           backgroundColor: selectedUser?.guid === user.guid ? colorPalette.primaryLighter : 'white'
         }}>
           <CardContent sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
@@ -1039,7 +1039,7 @@ if (loading) {
           )}
         </Box>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

@@ -681,7 +681,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, md: 1.5 }, p: { xs: 0.8, sm: 1, md: 1.4 }, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
                   <Avatar
                     src={like.user_image}
-                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, mr: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
+                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, marginInlineEnd: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
                   >
                     {getInitials(like.user_full_name)}
                   </Avatar>
@@ -743,7 +743,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0.8, md: 1.5 }, p: { xs: 0.8, sm: 1, md: 1.4 }, borderRadius: 2, bgcolor: `${COLOR_SCHEME.primaryLight}10` }}>
                   <Avatar
                     src={view.user_image}
-                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, mr: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
+                    sx={{ width: { xs: 32, sm: 38, md: 45 }, height: { xs: 32, sm: 38, md: 45 }, marginInlineEnd: { xs: 1, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontSize: { xs: '0.72rem', sm: '0.82rem', md: '1rem' } }}
                   >
                     {getInitials(view.user_full_name)}
                   </Avatar>
@@ -988,7 +988,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                         sx={{
                           width: { xs: 36, sm: 44, md: 52 },
                           height: { xs: 36, sm: 44, md: 52 },
-                          mr: { xs: 1, sm: 1.5, md: 2 },
+                          marginInlineEnd: { xs: 1, sm: 1.5, md: 2 },
                           bgcolor: COLOR_SCHEME.primary,
                           fontWeight: 'bold',
                           fontSize: { xs: '0.8rem', sm: '1rem', md: '1.2rem' },
@@ -1522,7 +1522,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                     >
                                       <Avatar
                                         src={comment.user_image}
-                                        sx={{ width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }, mr: { xs: 1, md: 1.5 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' }, border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
+                                        sx={{ width: { xs: 30, sm: 34, md: 40 }, height: { xs: 30, sm: 34, md: 40 }, marginInlineEnd: { xs: 1, md: 1.5 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' }, border: `2px solid ${COLOR_SCHEME.primaryLight}` }}
                                       >
                                         {getInitials(comment.user_full_name)}
                                       </Avatar>

@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useEffect,
   useMemo,
@@ -29,11 +31,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import Sidebar from "../components/Sidebar";
+
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1100,14 +1102,16 @@ const AfterSalesReport = () => {
   ];
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
         background: "#f5f8f7",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       {!isDesktop && (
@@ -1184,12 +1188,12 @@ const AfterSalesReport = () => {
             color: "#17372b",
             borderBottom:
               "1px solid rgba(5,117,70,.12)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important"
@@ -1237,7 +1241,7 @@ const AfterSalesReport = () => {
                   sm: "0.79rem"
                 },
                 color: "#17372b",
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -1249,12 +1253,7 @@ const AfterSalesReport = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -1273,16 +1272,14 @@ const AfterSalesReport = () => {
             sm: 0.75,
             md: 1
           },
-          direction: "ltr",
+          direction: "rtl",
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 2.5
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1449,7 +1446,7 @@ const AfterSalesReport = () => {
                   shrink: true
                 }}
                 fullWidth
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="date"
@@ -1463,7 +1460,7 @@ const AfterSalesReport = () => {
                   shrink: true
                 }}
                 fullWidth
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 size="small"
@@ -1845,7 +1842,7 @@ const AfterSalesReport = () => {
                 }}
                 sx={{
                   border: 0,
-                  direction: "ltr",
+                  direction: "rtl",
                   fontFamily: "Cairo",
 
                   "& .MuiDataGrid-main": {
@@ -1963,7 +1960,7 @@ const AfterSalesReport = () => {
                   },
 
                   "& .MuiDataGrid-footerContainer": {
-                    direction: "ltr",
+                    direction: "rtl",
                     fontFamily: "Cairo",
                     minHeight: isPhone
                       ? 34
@@ -1982,7 +1979,7 @@ const AfterSalesReport = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

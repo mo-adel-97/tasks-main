@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   AppBar,
@@ -44,16 +46,16 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Swal from "sweetalert2";
 
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const ACCOUNT_SEARCH_DEBOUNCE_MS = 550;
 const JOURNAL_SEARCH_DEBOUNCE_MS = 650;
 const MIN_ACCOUNT_SEARCH_LENGTH = 2;
@@ -966,7 +968,7 @@ th{background:#eef6f2}
   }
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={handleMobileSidebarClose}><Box
       dir="rtl"
       sx={{
         minHeight: "100vh",
@@ -1023,19 +1025,17 @@ th{background:#eef6f2}
         </AppBar>
       )}
 
-      <StableSidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={handleMobileSidebarClose}
-      />
+      
 
       <Box
         sx={{
-          p: { xs: 0.75, sm: 1, lg: 1.5 },
+          p: {
+            xs: 0.75,
+            sm: 1,
+            lg: 1.5
+          },
           minWidth: 0,
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`
-          }
+          ...navigationContentSx
         }}
       >
       <Paper
@@ -1151,7 +1151,7 @@ th{background:#eef6f2}
               value={code}
               size="small"
               InputProps={{ readOnly: true }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               label="التاريخ الميلادي"
@@ -1246,7 +1246,7 @@ th{background:#eef6f2}
                             </InputAdornment>
                           )
                         }}
-                      />
+                       inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       <IconButton
                         color="error"
                         onClick={() => removeRow(index)}
@@ -1293,7 +1293,7 @@ th{background:#eef6f2}
                         size="small"
                         fullWidth
                         disabled={linkedToDocument}
-                        inputProps={{ min: 0, step: "0.01" }}
+                        inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                       />
                       <TextField
                         label="دائن"
@@ -1303,7 +1303,7 @@ th{background:#eef6f2}
                         size="small"
                         fullWidth
                         disabled={linkedToDocument}
-                        inputProps={{ min: 0, step: "0.01" }}
+                        inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                       />
                     </Stack>
 
@@ -1384,7 +1384,7 @@ th{background:#eef6f2}
                               </InputAdornment>
                             )
                           }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </TableCell>
 
                       <TableCell>
@@ -1427,7 +1427,7 @@ th{background:#eef6f2}
                           size="small"
                           fullWidth
                           disabled={linkedToDocument}
-                          inputProps={{ min: 0, step: "0.01" }}
+                          inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                         />
                       </TableCell>
 
@@ -1439,7 +1439,7 @@ th{background:#eef6f2}
                           size="small"
                           fullWidth
                           disabled={linkedToDocument}
-                          inputProps={{ min: 0, step: "0.01" }}
+                          inputProps={{ min: 0, step: "0.01" , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                         />
                       </TableCell>
 
@@ -1777,6 +1777,6 @@ th{background:#eef6f2}
         </DialogContent>
       </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

@@ -513,7 +513,7 @@ const fetchHRRequests = async () => {
             color: COLOR_SCHEME.text,
             fontWeight: 'bold'
           }}>
-            <BeachAccess sx={{ mr: 2, color: COLOR_SCHEME.primary, fontSize: 32 }} /> 
+            <BeachAccess sx={{ marginInlineEnd: 2, color: COLOR_SCHEME.primary, fontSize: 32 }} /> 
             إدارة طلبات الإجازات والإذونات
             {isHRManager() && (
               <Chip 

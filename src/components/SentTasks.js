@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Grid, Card, CardContent, CardActions, Button, Chip, 
@@ -13,7 +15,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HistoryIcon from '@mui/icons-material/History';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import Sidebar from './SidebarAdmin';
+
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -178,17 +180,27 @@ if (taskData) {
 
   if (loading) {
     return (
-      <>
-        <Sidebar />
-        <Box sx={{ flex: 1, p: 3, mr: '280px' }}><Typography>جاري التحميل...</Typography></Box>
-      </>
+      <NavigationShell variant="admin" ><>
+        
+        <Box sx={{
+          flex: 1,
+          p: 3,
+          ...navigationContentSx
+        }}><Typography>جاري التحميل...</Typography></Box>
+      </></NavigationShell>
     );
   }
 
   return (
-    <div>
-      <Sidebar />
-      <Box sx={{ flex: 1, p: 3, mr: '280px', background: "#f5f7fb", width: "100%"}}>
+    <NavigationShell variant="admin" ><div>
+      
+      <Box sx={{
+        flex: 1,
+        p: 3,
+        background: "#f5f7fb",
+        width: "100%",
+        ...navigationContentSx
+      }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" fontWeight={700}>
             المهام التي أرسلتها ({filteredTasks.length})
@@ -523,6 +535,6 @@ const isExpanded = expandedTasks[task?.id] || false;
           </DialogContent>
         </Dialog>
       </Box>
-    </div>
+    </div></NavigationShell>
   );
 }

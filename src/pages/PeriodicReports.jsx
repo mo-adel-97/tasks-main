@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -69,7 +71,7 @@ import {
 import { format, parseISO, startOfDay, endOfDay, eachDayOfInterval, isWithinInterval } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Document, Paragraph, Packer, AlignmentType, HeadingLevel, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, WidthType, BorderStyle } from 'docx';
-import Sidebar from '../components/Sidebar';
+
 
 // Chart.js imports
 import {
@@ -1860,12 +1862,16 @@ const PeriodicReports = () => {
   };
 
   return (
-    <Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
+      
 
       <Box component="main" sx={{
-        flexGrow: 1, p: 4, marginLeft: '280px', minHeight: '100vh',
-        backgroundColor: colorPalette.background, direction: 'ltr'
+        flexGrow: 1,
+        p: 4,
+        minHeight: '100vh',
+        backgroundColor: colorPalette.background,
+        direction: "rtl",
+        ...navigationContentSx
       }}>
         
         {/* Navigation Bar */}
@@ -2044,7 +2050,7 @@ const PeriodicReports = () => {
                     },
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12} md={3}>
@@ -2077,7 +2083,7 @@ const PeriodicReports = () => {
                     },
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={12} md={2}>
@@ -2325,7 +2331,7 @@ const PeriodicReports = () => {
                 <ChartCard elevation={3}>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <LineChartIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <LineChartIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         اتجاه الحضور اليومي
                       </Typography>
@@ -2354,7 +2360,7 @@ const PeriodicReports = () => {
                 <ChartCard elevation={3}>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <PieChartIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <PieChartIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         توزيع مستوى الحضور
                       </Typography>
@@ -2383,7 +2389,7 @@ const PeriodicReports = () => {
                 <ChartCard elevation={3}>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <SchoolIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <SchoolIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         أداء البرامج التدريبية
                       </Typography>
@@ -2413,7 +2419,7 @@ const PeriodicReports = () => {
                 <ChartCard elevation={3}>
                   <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <AnalyticsIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <AnalyticsIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         أداء المدربين
                       </Typography>
@@ -2450,7 +2456,7 @@ const PeriodicReports = () => {
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <TrophyIcon sx={{ color: colorPalette.warning, mr: 1 }} />
+                      <TrophyIcon sx={{ color: colorPalette.warning, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         أفضل 5 طلاب في الحضور
                       </Typography>
@@ -2508,7 +2514,7 @@ const PeriodicReports = () => {
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <SchoolIcon sx={{ color: colorPalette.primary, mr: 1 }} />
+                      <SchoolIcon sx={{ color: colorPalette.primary, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         أفضل 5 برامج تدريبية
                       </Typography>
@@ -2582,7 +2588,7 @@ const PeriodicReports = () => {
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <PersonIcon sx={{ color: colorPalette.success, mr: 1 }} />
+                      <PersonIcon sx={{ color: colorPalette.success, marginInlineEnd: 1 }} />
                       <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600, color: colorPalette.textDark }}>
                         أفضل المدربين
                       </Typography>
@@ -2655,7 +2661,7 @@ const PeriodicReports = () => {
       <AllDiplomasDialog />
       <DiplomaDetailsDialog />
       <TrainerDetailsDialog />
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

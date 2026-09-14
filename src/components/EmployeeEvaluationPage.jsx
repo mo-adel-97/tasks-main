@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Sidebar from "./Sidebar";
+
 import Swal from "sweetalert2";
 import {
   Box,
@@ -114,7 +116,7 @@ import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
-const SIDEBAR_WIDTH = 280;
+
 
 // Users/Branches API
 const API_BASE = "https://api1.sstli.com";
@@ -2074,7 +2076,7 @@ const swalInfo = (title, text = "") =>
         <Card sx={{ mb: 3, borderRadius: 2, border: `1px solid ${alpha("#e0e0e0", 0.5)}` }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#ff9800" }}>
-              <AssignmentIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+              <AssignmentIcon sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
               ملخص المهام
             </Typography>
             <TableContainer>
@@ -2607,7 +2609,7 @@ const renderHREvaluationDetails = () => {
       <Card sx={{ borderRadius: 2, mb: 3, border: `1px solid ${alpha("#9c27b0", 0.2)}` }}>
         <CardContent>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#9c27b0" }}>
-            <Assessment sx={{ mr: 1, verticalAlign: "middle" }} />
+            <Assessment sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
             إحصائيات التقييم العام
           </Typography>
           <Grid container spacing={2}>
@@ -2672,7 +2674,7 @@ const renderHREvaluationDetails = () => {
         <CardContent>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: "#4caf50" }}>
-              <RateReview sx={{ mr: 1, verticalAlign: "middle" }} />
+              <RateReview sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
               {currentEvaluation ? `تقييم شهر ${evalMonth}/${evalYear}` : `إضافة تقييم لشهر ${evalMonth}/${evalYear}`}
             </Typography>
             
@@ -2823,7 +2825,7 @@ const renderHREvaluationDetails = () => {
         <Card sx={{ borderRadius: 2, border: `1px solid ${alpha("#e0e0e0", 0.5)}` }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#666" }}>
-              <History sx={{ mr: 1, verticalAlign: "middle" }} />
+              <History sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
               سجل التقييمات الكامل ({sortedEvaluations.length})
             </Typography>
             
@@ -2971,21 +2973,28 @@ const renderHREvaluationDetails = () => {
   }, [now]);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f6f7fb" }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f6f7fb" }}>
+      
 
       <Box
         sx={{
           flex: 1,
-          ml: `${SIDEBAR_WIDTH}px`,
-          direction: "ltr",
-          p: { xs: 2, md: 3 },
-
-          "& .ltrText": { direction: "ltr", textAlign: "left" },
-
-          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-            { borderColor: BRAND },
-          "& .MuiInputLabel-root.Mui-focused": { color: BRAND_DARK },
+          direction: "rtl",
+          p: {
+            xs: 2,
+            md: 3
+          },
+          "& .ltrText": {
+            direction: "ltr",
+            textAlign: "left"
+          },
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: BRAND
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: BRAND_DARK
+          },
+          ...navigationContentSx
         }}
       >
         <Container maxWidth="xl">
@@ -3032,7 +3041,7 @@ const renderHREvaluationDetails = () => {
                 }}
               >
                 <ToggleButton value="cards">
-                  <ViewModuleIcon sx={{ mr: 0.75, fontSize: 18 }} />
+                  <ViewModuleIcon sx={{ marginInlineEnd: 0.75, fontSize: 18 }} />
                   Cards
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -3077,7 +3086,7 @@ const renderHREvaluationDetails = () => {
             <CardContent sx={{ p: 2.5 }}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth sx={{ direction: "ltr" }}>
+                  <FormControl fullWidth sx={{ direction: "rtl" }}>
                     <InputLabel>شهر التقييم</InputLabel>
                     <Select
                       value={evalMonth}
@@ -3095,7 +3104,7 @@ const renderHREvaluationDetails = () => {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth sx={{ direction: "ltr" }}>
+                  <FormControl fullWidth sx={{ direction: "rtl" }}>
                     <InputLabel>سنة التقييم</InputLabel>
                     <Select
                       value={evalYear}
@@ -3168,13 +3177,13 @@ const renderHREvaluationDetails = () => {
                     }}
                     sx={{
                       "& .MuiInputBase-root": { borderRadius: 2 },
-                      direction: "ltr",
+                      direction: "rtl",
                     }}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={3}>
-                  <FormControl fullWidth sx={{ direction: "ltr" }}>
+                  <FormControl fullWidth sx={{ direction: "rtl" }}>
                     <InputLabel>الفرع</InputLabel>
                     <Select
                       value={branchGuid}
@@ -3194,7 +3203,7 @@ const renderHREvaluationDetails = () => {
                 </Grid>
 
                 <Grid item xs={12} md={3}>
-                  <FormControl fullWidth sx={{ direction: "ltr" }}>
+                  <FormControl fullWidth sx={{ direction: "rtl" }}>
                     <InputLabel>ترتيب حسب</InputLabel>
                     <Select
                       value={sortBy}
@@ -3208,7 +3217,7 @@ const renderHREvaluationDetails = () => {
                 </Grid>
 
                 <Grid item xs={12} md={2}>
-                  <FormControl fullWidth sx={{ direction: "ltr" }}>
+                  <FormControl fullWidth sx={{ direction: "rtl" }}>
                     <InputLabel>الترتيب</InputLabel>
                     <Select
                       value={sortOrder}
@@ -3707,7 +3716,7 @@ const renderHREvaluationDetails = () => {
                         <Typography>من أول {evalMonth}/{evalYear} إلى آخر الشهر</Typography>
                       </Alert>
                       <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#9c27b0" }}>
-                        <EmojiEventsIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+                        <EmojiEventsIcon sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
                         الإنتاجية الأسبوعية
                       </Typography>
                       {renderProdDetails(selectedUser)}
@@ -3722,7 +3731,7 @@ const renderHREvaluationDetails = () => {
                         <Typography>من أول {evalMonth}/{evalYear} إلى آخر الشهر</Typography>
                       </Alert>
                       <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#ff9800" }}>
-                        <AssignmentIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+                        <AssignmentIcon sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
                         المهام المخصصة
                       </Typography>
                       {renderTasksDetails(selectedUser)}
@@ -3740,7 +3749,7 @@ const renderHREvaluationDetails = () => {
                         </Typography>
                       </Alert>
                       <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#4caf50" }}>
-                        <RateReview sx={{ mr: 1, verticalAlign: "middle" }} />
+                        <RateReview sx={{ marginInlineEnd: 1, verticalAlign: "middle" }} />
                         تقييم الموارد البشرية
                       </Typography>
                       {renderHREvaluationDetails()}
@@ -3795,7 +3804,7 @@ const renderHREvaluationDetails = () => {
           </Dialog>
         </Container>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

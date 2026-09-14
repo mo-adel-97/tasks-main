@@ -1,3 +1,7 @@
+import deepmerge from '@mui/utils/deepmerge';
+import { rtlComponents } from '../config/rtlComponents';
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useState, useRef } from 'react';
 import { 
   Box, 
@@ -34,7 +38,7 @@ import {
   createTheme,
   ThemeProvider
 } from "@mui/material";
-import Sidebar from "../components/Sidebar";
+
 import Swal from 'sweetalert2';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
@@ -45,7 +49,7 @@ import Menu from '@mui/material/Menu';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 // إنشاء الثيم الجديد باللون #80b49e
-const theme = createTheme({
+const theme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
   palette: {
     primary: {
       main: '#80b49e',
@@ -145,7 +149,7 @@ const theme = createTheme({
       },
     },
   },
-});
+}));
 
 // Styled components
 const CenteredContainer = styled(Container)({
@@ -821,7 +825,7 @@ const Complaints = () => {
         py: 3
       }}>
         <Box display="flex" alignItems="center" justifyContent="center">
-          <AddIcon sx={{ mr: 1 }} />
+          <AddIcon sx={{ marginInlineEnd: 1 }} />
           <Typography variant="h6" fontWeight={600}>إضافة شكوى جديدة</Typography>
         </Box>
       </DialogTitle>
@@ -1000,7 +1004,7 @@ const Complaints = () => {
     >
       <DialogTitle sx={{ textAlign: 'center', py: 3 }}>
         <Box display="flex" alignItems="center" justifyContent="center">
-          <VisibilityIcon color="info" sx={{ mr: 1, fontSize: 32 }} />
+          <VisibilityIcon color="info" sx={{ marginInlineEnd: 1, fontSize: 32 }} />
           <Typography variant="h6" fontWeight={600}>تعليق على الشكوى</Typography>
         </Box>
       </DialogTitle>
@@ -1039,7 +1043,7 @@ const Complaints = () => {
     >
       <DialogTitle sx={{ textAlign: 'center', py: 3 }}>
         <Box display="flex" alignItems="center" justifyContent="center">
-          <VisibilityIcon color="info" sx={{ mr: 1, fontSize: 32 }} />
+          <VisibilityIcon color="info" sx={{ marginInlineEnd: 1, fontSize: 32 }} />
           <Typography variant="h6" fontWeight={600}>تفاصيل الشكوى</Typography>
         </Box>
       </DialogTitle>
@@ -1065,10 +1069,14 @@ const Complaints = () => {
   );
 
   return (
-    <ThemeProvider theme={theme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #f8fbf9 0%, #e8f4ef 100%)' }}>
-        <Sidebar />
-        <Box component="main" sx={{ flexGrow: 1, p: 3, ml: { sm: '240px' } }}>
+        
+        <Box component="main" sx={{
+          flexGrow: 1,
+          p: 3,
+          ...navigationContentSx
+        }}>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
               <CircularProgress size={60} sx={{ color: 'primary.main' }} />
@@ -1148,7 +1156,7 @@ const Complaints = () => {
                   sx={{ borderRadius: 1, my: 0.5 }}
                 >
                   <Box display="flex" alignItems="center">
-                    <CheckIcon color="success" sx={{ mr: 1 }} />
+                    <CheckIcon color="success" sx={{ marginInlineEnd: 1 }} />
                     <Typography>تم الحل</Typography>
                   </Box>
                 </MenuItem>
@@ -1158,7 +1166,7 @@ const Complaints = () => {
                   sx={{ borderRadius: 1, my: 0.5 }}
                 >
                   <Box display="flex" alignItems="center">
-                    <CloseIcon color="error" sx={{ mr: 1 }} />
+                    <CloseIcon color="error" sx={{ marginInlineEnd: 1 }} />
                     <Typography>رفض</Typography>
                   </Box>
                 </MenuItem>
@@ -1168,7 +1176,7 @@ const Complaints = () => {
                   sx={{ borderRadius: 1, my: 0.5 }}
                 >
                   <Box display="flex" alignItems="center">
-                    <MoreVertIcon color="warning" sx={{ mr: 1 }} />
+                    <MoreVertIcon color="warning" sx={{ marginInlineEnd: 1 }} />
                     <Typography>إعادة إلى قيد الانتظار</Typography>
                   </Box>
                 </MenuItem>
@@ -1181,7 +1189,7 @@ const Complaints = () => {
           )}
         </Box>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider></NavigationShell>
   );
 };
 

@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useState, useMemo } from "react";
 import PercentIcon from '@mui/icons-material/Percent';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -45,7 +47,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import BranchesDashboard from "./BranchesDashboard";
-import Sidebar from "./Sidebar";
+
 
 // الألوان الأساسية
 const PRIMARY_COLOR = '#80b49e';
@@ -59,8 +61,8 @@ const PHP_BASE = 'https://filesregsiteration.sstli.com';
 const SpecialComponent = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const DESKTOP_BREAKPOINT = 1600;
-  const SIDEBAR_WIDTH = 280;
+  
+  
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
   const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
@@ -792,7 +794,7 @@ const SpecialComponent = () => {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
         {!isDesktop && (
         <AppBar
@@ -842,57 +844,92 @@ const SpecialComponent = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
 
         <Box
           component="main"
           sx={{
             flexGrow: 1,
-            p: isDesktop ? 4 : { xs: 0.35, sm: 0.6, md: 0.9 },
-            pt: isDesktop ? 4 : { xs: '54px', sm: '62px', md: '66px' },
-
-            marginLeft: isDesktop ? '280px' : 0,
-            marginRight: 0,
-
-            width: isDesktop ? 'calc(100% - 280px)' : '100%',
+            p: isDesktop ? 4 : {
+              xs: 0.35,
+              sm: 0.6,
+              md: 0.9
+            },
+            pt: isDesktop ? 4 : {
+              xs: '54px',
+              sm: '62px',
+              md: '66px'
+            },
             maxWidth: '100%',
             minWidth: 0,
             boxSizing: 'border-box',
             overflowX: 'hidden',
-
             minHeight: '100vh',
             background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-
             '& .MuiTypography-h4': {
-              fontSize: isDesktop ? undefined : { xs: '0.86rem', sm: '0.98rem', md: '1.1rem' },
-              lineHeight: 1.2,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.86rem',
+                sm: '0.98rem',
+                md: '1.1rem'
+              },
+              lineHeight: 1.2
             },
             '& .MuiTypography-h5': {
-              fontSize: isDesktop ? undefined : { xs: '0.7rem', sm: '0.82rem', md: '0.94rem' },
-              lineHeight: 1.25,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.7rem',
+                sm: '0.82rem',
+                md: '0.94rem'
+              },
+              lineHeight: 1.25
             },
             '& .MuiTypography-h6': {
-              fontSize: isDesktop ? undefined : { xs: '0.58rem', sm: '0.67rem', md: '0.76rem' },
-              lineHeight: 1.3,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.58rem',
+                sm: '0.67rem',
+                md: '0.76rem'
+              },
+              lineHeight: 1.3
             },
             '& .MuiTypography-body1, & .MuiTypography-body2': {
-              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.63rem' },
-              lineHeight: 1.35,
+              fontSize: isDesktop ? undefined : {
+                xs: '0.47rem',
+                sm: '0.55rem',
+                md: '0.63rem'
+              },
+              lineHeight: 1.35
             },
             '& .MuiButton-root': {
-              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.63rem' },
-              minHeight: isDesktop ? undefined : { xs: 28, sm: 31, md: 34 },
+              fontSize: isDesktop ? undefined : {
+                xs: '0.47rem',
+                sm: '0.55rem',
+                md: '0.63rem'
+              },
+              minHeight: isDesktop ? undefined : {
+                xs: 28,
+                sm: 31,
+                md: 34
+              }
             },
             '& .MuiInputBase-root, & .MuiInputLabel-root': {
-              fontSize: isDesktop ? undefined : { xs: '0.49rem', sm: '0.57rem', md: '0.65rem' },
+              fontSize: isDesktop ? undefined : {
+                xs: '0.49rem',
+                sm: '0.57rem',
+                md: '0.65rem'
+              }
             },
             '& .MuiChip-root': {
-              fontSize: isDesktop ? undefined : { xs: '0.42rem', sm: '0.49rem', md: '0.56rem' },
-              height: isDesktop ? undefined : { xs: 18, sm: 21, md: 24 },
+              fontSize: isDesktop ? undefined : {
+                xs: '0.42rem',
+                sm: '0.49rem',
+                md: '0.56rem'
+              },
+              height: isDesktop ? undefined : {
+                xs: 18,
+                sm: 21,
+                md: 24
+              }
             },
+            ...navigationContentSx
           }}
         >
           {/* الهيدر */}
@@ -1573,7 +1610,7 @@ const SpecialComponent = () => {
           </Box>
         </Box>
       </Box>
-    </LocalizationProvider>
+    </LocalizationProvider></NavigationShell>
   );
 };
 

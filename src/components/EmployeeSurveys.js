@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
 import {
   Container,
@@ -43,7 +45,7 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import axios from 'axios';
-import Sidebar from './Sidebar';
+
 
 // الألوان الأساسية
 const primaryColor = '#80b49e';
@@ -559,16 +561,15 @@ const fetchSubmittedSurveys = async (user) => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', minHeight: '100vh', background: backgroundColor }}>
-        <Sidebar />
+      <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', background: backgroundColor }}>
+        
         <Container 
-          sx={{ 
-            marginLeft: '280px',
-            width: 'calc(100% - 280px)',
+          sx={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            minHeight: '100vh'
+            minHeight: '100vh',
+            ...navigationContentSx
           }}
         >
           <Box sx={{ textAlign: 'center' }}>
@@ -578,24 +579,22 @@ const fetchSubmittedSurveys = async (user) => {
             </Typography>
           </Box>
         </Container>
-      </Box>
+      </Box></NavigationShell>
     );
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: backgroundColor }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', background: backgroundColor }}>
+      
       
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Container 
           maxWidth="lg" 
-          sx={{ 
-            marginLeft: '350px',
-            width: 'calc(100% - 280px)',
+          sx={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'flex-start',
-            
+            ...navigationContentSx
           }}
         >
           <Fade in={true} timeout={800}>
@@ -880,7 +879,7 @@ const fetchSubmittedSurveys = async (user) => {
           </Dialog>
         </Container>
       </LocalizationProvider>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

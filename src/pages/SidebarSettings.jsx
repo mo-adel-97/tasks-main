@@ -1,31 +1,8 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  Button,
-  Checkbox,
-  Chip,
-  CircularProgress,
-  Divider,
-  Drawer,
-  FormControl,
-  FormControlLabel,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from "@mui/material";
+import { SIDEBAR_ICON_OPTIONS as ICON_OPTIONS } from '../config/sidebarNavigation';
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Alert, Autocomplete, Box, Button, Checkbox, Chip, CircularProgress, Divider, FormControl, FormControlLabel, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, Tab, Tabs, TextField, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -36,33 +13,22 @@ import SecurityIcon from "@mui/icons-material/Security";
 import TuneIcon from "@mui/icons-material/Tune";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const primary = "#057546";
 const border = "#dce8e2";
 const soft = "#f5faf7";
 
-const ICON_OPTIONS = [
-  "home", "payment", "message", "accountbalance", "report", "support",
-  "analytics", "groups", "school", "livehelp", "list", "history", "today",
-  "contactsupport", "emojievents", "handshake", "star", "campaign",
-  "librarybooks", "dashboard", "assessment", "campaignoutline", "paid",
-  "emojioutline", "querystats", "payments", "workspacepremium", "percent",
-  "playlistremove", "currencyexchange", "swaphoriz", "businesscenter",
-  "localatm", "receipt", "description", "menubook", "personadd", "services",
-  "lockreset", "historymanage", "admin", "folder", "storefront", "howtoreg",
-  "upload", "ratereview", "systemupdate", "block", "poll", "add", "logout",
-  "tune", "security"
-];
+
 
 const norm = (value) => String(value ?? "").trim().toLowerCase();
 
@@ -404,7 +370,7 @@ export default function SidebarSettings() {
             key={row.formGuid}
             onClick={() => selectScreen(row)}
             variant={norm(screen.formGuid) === norm(row.formGuid) ? "contained" : "outlined"}
-            sx={{ justifyContent: "flex-start", textAlign: "left", py: 1, px: 1.2, borderRadius: 2 }}
+            sx={{ justifyContent: "flex-start", textAlign: "start", py: 1, px: 1.2, borderRadius: 2 }}
           >
             <Box sx={{ width: "100%" }}>
               <Typography sx={{ fontWeight: 900, fontSize: 14 }}>{row.name || row.title}</Typography>
@@ -511,7 +477,7 @@ export default function SidebarSettings() {
         <Stack spacing={0.8} sx={{ mt: 1 }}>
           {data.groups.map((row) => (
             <Button key={row.groupGuid} variant={norm(group.groupGuid) === norm(row.groupGuid) ? "contained" : "outlined"} onClick={() => selectGroup(row)} sx={{ justifyContent: "flex-start" }}>
-              <Box sx={{ width: "100%", textAlign: "left" }}>
+              <Box sx={{ width: "100%", textAlign: "start" }}>
                 <Typography sx={{ fontWeight: 900 }}>{row.name || row.title}</Typography>
                 <Typography sx={{ fontSize: 11, opacity: 0.7 }}>{row.code} · {row.groupKey}</Typography>
               </Box>
@@ -597,51 +563,29 @@ export default function SidebarSettings() {
   );
 
   return (
-    <Box
-      dir="ltr"
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
+      dir="rtl"
       sx={{
         minHeight: "100vh",
         width: "100%",
-        direction: "ltr",
+        direction: "rtl",
         bgcolor: soft
       }}
     >
-      {isDesktop && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: `${SIDEBAR_WIDTH}px`,
-            zIndex: (muiTheme) => muiTheme.zIndex.drawer,
-            overflow: "hidden"
-          }}
-        >
-          <StableSidebar />
-        </Box>
-      )}
+      
 
-      <Drawer
-        anchor="left"
-        open={!isDesktop && mobileSidebarOpen}
-        onClose={() => setMobileSidebarOpen(false)}
-        PaperProps={{ sx: { width: SIDEBAR_WIDTH } }}
-      >
-        <StableSidebar onNavigate={() => setMobileSidebarOpen(false)} />
-      </Drawer>
+      
 
       <Box
         sx={{
           minWidth: 0,
-          width: isDesktop ? `calc(100% - ${SIDEBAR_WIDTH}px)` : "100%",
-          ml: isDesktop ? `${SIDEBAR_WIDTH}px` : 0,
-          direction: "ltr",
-          boxSizing: "border-box"
+          direction: "rtl",
+          boxSizing: "border-box",
+          ...navigationContentSx
         }}
       >
         {main}
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

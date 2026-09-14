@@ -1,5 +1,7 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
-import Sidebar from "../components/Sidebar";
+
 
 import {
   Alert,
@@ -44,8 +46,8 @@ import InfoIcon from "@mui/icons-material/Info";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primaryColor = "#80b49e";
 const primaryDark = "#6a9a87";
@@ -110,10 +112,10 @@ const getStatusChip = (isStillRegistered) => {
           backgroundColor: "#e8f5e9",
           color: "#1b5e20",
           fontWeight: 900,
-          direction: "ltr",
+          direction: "rtl",
           maxWidth: "100%",
           "& .MuiChip-label": {
-            textAlign: "left",
+            textAlign: "start",
             whiteSpace: "normal",
             "@media (max-width:599px)": {
               px: 0.5,
@@ -150,10 +152,10 @@ const getStatusChip = (isStillRegistered) => {
         backgroundColor: "#ffebee",
         color: "#b71c1c",
         fontWeight: 900,
-        direction: "ltr",
+        direction: "rtl",
         maxWidth: "100%",
         "& .MuiChip-label": {
-          textAlign: "left",
+          textAlign: "start",
           whiteSpace: "normal"
         }
       }}
@@ -358,7 +360,7 @@ export default function OtherInstituteRegistrationsPage() {
   const commonCellSx = {
     fontFamily: "Cairo",
     fontWeight: 700,
-    textAlign: "left",
+    textAlign: "start",
     verticalAlign: "middle",
     whiteSpace: "normal",
     wordBreak: "break-word",
@@ -378,7 +380,7 @@ export default function OtherInstituteRegistrationsPage() {
     fontWeight: 950,
     backgroundColor: "#057546",
     color: "#fff",
-    textAlign: "left",
+    textAlign: "start",
     whiteSpace: "normal",
     wordBreak: "break-word",
     lineHeight: 1.35,
@@ -393,14 +395,16 @@ export default function OtherInstituteRegistrationsPage() {
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
         backgroundColor: "#f7faf9",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       {!isDesktop && (
@@ -433,12 +437,12 @@ export default function OtherInstituteRegistrationsPage() {
             backdropFilter: "blur(14px)",
             color: textColor,
             borderBottom: "1px solid #e4eeea",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important"
@@ -480,7 +484,7 @@ export default function OtherInstituteRegistrationsPage() {
                   sm: "0.8rem"
                 },
                 color: textColor,
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -492,12 +496,7 @@ export default function OtherInstituteRegistrationsPage() {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -517,18 +516,16 @@ export default function OtherInstituteRegistrationsPage() {
             md: 1
           },
           backgroundColor: "#f7faf9",
-          direction: "ltr",
-          textAlign: "left",
+          direction: "rtl",
+          textAlign: "start",
           fontFamily: "Cairo, Arial",
           overflowX: "hidden",
           boxSizing: "border-box",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 2.5
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -539,8 +536,8 @@ export default function OtherInstituteRegistrationsPage() {
             borderRadius: isPhone ? 1.25 : isTablet ? 1.6 : 3.2,
             border: "1px solid #e4eeea",
             background: "linear-gradient(135deg, #ffffff 0%, #f4fbf8 100%)",
-            direction: "ltr",
-            textAlign: "left"
+            direction: "rtl",
+            textAlign: "start"
           }}
         >
           <Stack
@@ -549,7 +546,7 @@ export default function OtherInstituteRegistrationsPage() {
             alignItems="center"
             spacing={isPhone ? 0.55 : isTablet ? 0.8 : 1.5}
           >
-            <Box sx={{ textAlign: "left" }}>
+            <Box sx={{ textAlign: "start" }}>
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <SchoolIcon
                   sx={{
@@ -566,7 +563,7 @@ export default function OtherInstituteRegistrationsPage() {
                   sx={{
                     fontWeight: 900,
                     color: textColor,
-                    textAlign: "left",
+                    textAlign: "start",
                     fontFamily: "Cairo",
                     fontSize: isPhone
                       ? "0.62rem"
@@ -590,7 +587,7 @@ export default function OtherInstituteRegistrationsPage() {
                       ? "0.5rem"
                       : "0.82rem",
                   display: isPhone ? "none" : "block",
-                  textAlign: "left",
+                  textAlign: "start",
                   fontFamily: "Cairo"
                 }}
               >
@@ -635,7 +632,7 @@ export default function OtherInstituteRegistrationsPage() {
                 p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
                 borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
                 border: "1px solid #e4eeea",
-                textAlign: "left",
+                textAlign: "start",
                 minHeight: isPhone ? 50 : isTablet ? 58 : 82
               }}
             >
@@ -645,7 +642,7 @@ export default function OtherInstituteRegistrationsPage() {
                   <Typography
                     sx={{
                       fontWeight: 900,
-                      textAlign: "left",
+                      textAlign: "start",
                       fontSize: isPhone
                         ? "0.32rem"
                         : isTablet
@@ -681,7 +678,7 @@ export default function OtherInstituteRegistrationsPage() {
                 p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
                 borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
                 border: "1px solid #e4eeea",
-                textAlign: "left",
+                textAlign: "start",
                 minHeight: isPhone ? 50 : isTablet ? 58 : 82
               }}
             >
@@ -691,7 +688,7 @@ export default function OtherInstituteRegistrationsPage() {
                   <Typography
                     sx={{
                       fontWeight: 900,
-                      textAlign: "left",
+                      textAlign: "start",
                       fontSize: isPhone
                         ? "0.32rem"
                         : isTablet
@@ -727,7 +724,7 @@ export default function OtherInstituteRegistrationsPage() {
                 p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
                 borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
                 border: "1px solid #e4eeea",
-                textAlign: "left",
+                textAlign: "start",
                 minHeight: isPhone ? 50 : isTablet ? 58 : 82
               }}
             >
@@ -737,7 +734,7 @@ export default function OtherInstituteRegistrationsPage() {
                   <Typography
                     sx={{
                       fontWeight: 900,
-                      textAlign: "left",
+                      textAlign: "start",
                       fontSize: isPhone
                         ? "0.32rem"
                         : isTablet
@@ -774,8 +771,8 @@ export default function OtherInstituteRegistrationsPage() {
             mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
             borderRadius: isPhone ? 1.15 : isTablet ? 1.5 : 2.8,
             border: "1px solid #e4eeea",
-            direction: "ltr",
-            textAlign: "left"
+            direction: "rtl",
+            textAlign: "start"
           }}
         >
           <Grid
@@ -794,13 +791,13 @@ export default function OtherInstituteRegistrationsPage() {
                 }}
                 size={isCompact ? "small" : "medium"}
                 sx={{
-                  direction: "ltr",
+                  direction: "rtl",
                   "& .MuiOutlinedInput-root": {
                     minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
                     borderRadius: isCompact ? 1.1 : undefined
                   },
                   "& input": {
-                    textAlign: "left",
+                    textAlign: "start",
                     fontFamily: "Cairo",
                     fontWeight: 700,
                     fontSize: isPhone
@@ -843,13 +840,13 @@ export default function OtherInstituteRegistrationsPage() {
                   }
                 }}
                 sx={{
-                  direction: "ltr",
+                  direction: "rtl",
                   "& .MuiOutlinedInput-root": {
                     minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
                     borderRadius: isCompact ? 1.1 : undefined
                   },
                   "& .MuiInputBase-input": {
-                    textAlign: "left",
+                    textAlign: "start",
                     fontFamily: "Cairo",
                     fontWeight: 700,
                     fontSize: isPhone
@@ -880,13 +877,13 @@ export default function OtherInstituteRegistrationsPage() {
         </Paper>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2, textAlign: "left", fontFamily: "Cairo" }}>
+          <Alert severity="error" sx={{ mb: 2, textAlign: "start", fontFamily: "Cairo" }}>
             {error}
           </Alert>
         )}
 
         {successMessage && (
-          <Alert severity="success" sx={{ mb: 2, textAlign: "left", fontFamily: "Cairo" }}>
+          <Alert severity="success" sx={{ mb: 2, textAlign: "start", fontFamily: "Cairo" }}>
             {successMessage}
           </Alert>
         )}
@@ -897,8 +894,8 @@ export default function OtherInstituteRegistrationsPage() {
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid #e4eeea",
             overflow: "hidden",
-            direction: "ltr",
-            textAlign: "left",
+            direction: "rtl",
+            textAlign: "start",
             width: "100%"
           }}
         >
@@ -1225,7 +1222,7 @@ export default function OtherInstituteRegistrationsPage() {
                                     fontSize: "0.72rem",
                                     color: "#789",
                                     fontWeight: 700,
-                                    textAlign: "left"
+                                    textAlign: "start"
                                   }}
                                 >
                                   تحديث: {formatDate(row.statusUpdatedAt)}
@@ -1304,7 +1301,7 @@ export default function OtherInstituteRegistrationsPage() {
                                     fontFamily: "Cairo",
                                     fontWeight: 800,
                                     fontSize: "0.82rem",
-                                    textAlign: "left",
+                                    textAlign: "start",
                                     whiteSpace: "normal",
                                     wordBreak: "break-word",
                                     overflowWrap: "anywhere",
@@ -1321,7 +1318,7 @@ export default function OtherInstituteRegistrationsPage() {
                                   fontWeight: 700,
                                   fontSize: "0.8rem",
                                   color: "#9aa7a1",
-                                  textAlign: "left"
+                                  textAlign: "start"
                                 }}
                               >
                                 لا توجد ملاحظة
@@ -1344,7 +1341,7 @@ export default function OtherInstituteRegistrationsPage() {
                                     fontFamily: "Cairo",
                                     fontWeight: 700,
                                     fontSize: "0.85rem",
-                                    textAlign: "left",
+                                    textAlign: "start",
                                     wordBreak: "break-word"
                                   }}
                                 >
@@ -1359,7 +1356,7 @@ export default function OtherInstituteRegistrationsPage() {
                                     fontWeight: 800,
                                     fontSize: "0.78rem",
                                     color: dangerColor,
-                                    textAlign: "left",
+                                    textAlign: "start",
                                     wordBreak: "break-word"
                                   }}
                                 >
@@ -1373,7 +1370,7 @@ export default function OtherInstituteRegistrationsPage() {
                                   fontWeight: 700,
                                   fontSize: "0.72rem",
                                   color: "#789",
-                                  textAlign: "left"
+                                  textAlign: "start"
                                 }}
                               >
                                 تاريخ التسجيل: {formatDate(row.createdAt)}
@@ -1404,8 +1401,8 @@ export default function OtherInstituteRegistrationsPage() {
           }}
           PaperProps={{
             sx: {
-              direction: "ltr",
-              textAlign: "left",
+              direction: "rtl",
+              textAlign: "start",
               borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
               m: isPhone ? 0 : undefined,
               width: isPhone ? "100vw" : undefined,
@@ -1421,7 +1418,7 @@ export default function OtherInstituteRegistrationsPage() {
             sx={{
               fontFamily: "Cairo",
               fontWeight: 900,
-              textAlign: "left",
+              textAlign: "start",
               color: textColor,
               fontSize: isPhone
                 ? "0.68rem"
@@ -1436,7 +1433,7 @@ export default function OtherInstituteRegistrationsPage() {
 
           <DialogContent
             sx={{
-              textAlign: "left",
+              textAlign: "start",
               p: isPhone ? 0.7 : isTablet ? 1 : 2
             }}
           >
@@ -1453,16 +1450,16 @@ export default function OtherInstituteRegistrationsPage() {
                   borderRadius: 3,
                   backgroundColor: "#f7faf9",
                   border: "1px solid #e4eeea",
-                  textAlign: "left"
+                  textAlign: "start"
                 }}
               >
-                <Typography sx={{ fontWeight: 900, textAlign: "left" }}>
+                <Typography sx={{ fontWeight: 900, textAlign: "start" }}>
                   الطالب: {safeText(selectedRow.studentName)}
                 </Typography>
-                <Typography sx={{ fontWeight: 800, textAlign: "left" }}>
+                <Typography sx={{ fontWeight: 800, textAlign: "start" }}>
                   رقم الهوية: {safeText(selectedRow.nationalId)}
                 </Typography>
-                <Typography sx={{ fontWeight: 800, textAlign: "left" }}>
+                <Typography sx={{ fontWeight: 800, textAlign: "start" }}>
                   المعهد الآخر: {safeText(selectedRow.otherInstituteName)}
                 </Typography>
               </Paper>
@@ -1477,9 +1474,9 @@ export default function OtherInstituteRegistrationsPage() {
               value={updateNote}
               onChange={(e) => setUpdateNote(e.target.value)}
               sx={{
-                direction: "ltr",
+                direction: "rtl",
                 "& textarea": {
-                  textAlign: "left",
+                  textAlign: "start",
                   fontFamily: "Cairo",
                   fontWeight: 700
                 },
@@ -1531,6 +1528,6 @@ export default function OtherInstituteRegistrationsPage() {
           </DialogActions>
         </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

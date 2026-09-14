@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useMemo, useState } from "react";
-import Sidebar from "../components/Sidebar";
+
 
 import {
   Box,
@@ -19,7 +21,7 @@ import SchoolIcon from "@mui/icons-material/School";
 // ✅ Excel reader
 import * as XLSX from "xlsx";
 
-const SIDEBAR_WIDTH = 280;
+
 
 // ✅ API Endpoint الحقيقي
 const UPLOAD_URL = "https://filesregsiteration.sstli.com/erp/grades.php";
@@ -393,15 +395,18 @@ const UploadGrades = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fbfa" }}>
-      <Sidebar />
+    <NavigationShell variant="standard" ><Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fbfa" }}>
+      
 
       <Box
         sx={{
           flex: 1,
-          ml: `${SIDEBAR_WIDTH}px`,
-          p: { xs: 2, md: 4 },
-          direction: "ltr",
+          p: {
+            xs: 2,
+            md: 4
+          },
+          direction: "rtl",
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -608,7 +613,7 @@ const UploadGrades = () => {
           </Paper>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

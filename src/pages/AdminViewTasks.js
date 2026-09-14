@@ -1,5 +1,7 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/SidebarAdmin';
+
 import { useMemo } from 'react';
 import {
   Box,
@@ -518,12 +520,14 @@ const AdminViewTasksByBranches = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.background }}>
-      <Box sx={{ width: 280, flexShrink: 0 }}>
-        <Sidebar />
-      </Box>
+    <NavigationShell variant="admin" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.background }}>
       
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      
+      <Box component="main" sx={{
+        flexGrow: 1,
+        p: 3,
+        ...navigationContentSx
+      }}>
         <Stack spacing={3}>
           {/* Header Section */}
           <Box sx={{ 
@@ -571,7 +575,7 @@ const AdminViewTasksByBranches = () => {
                 inputProps={{ 
                   max: format(new Date(), 'yyyy-MM-dd'),
                   sx: { color: 'white' }
-                }}
+                , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
               <TextField
                 label="إلى تاريخ"
@@ -598,7 +602,7 @@ const AdminViewTasksByBranches = () => {
                   max: format(new Date(), 'yyyy-MM-dd'),
                   min: dateRange.start,
                   sx: { color: 'white' }
-                }}
+                , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               />
               
               <Button
@@ -638,7 +642,7 @@ const AdminViewTasksByBranches = () => {
           <Collapse in={showFilters}>
             <Paper elevation={4} sx={{ p: 3, mb: 2, backgroundColor: colors.paper, borderRadius: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', color: colors.primary }}>
-                <FilterList sx={{ mr: 1 }} /> فلاتر البحث
+                <FilterList sx={{ marginInlineEnd: 1 }} /> فلاتر البحث
               </Typography>
               
               <Grid container spacing={3}>
@@ -765,7 +769,7 @@ const AdminViewTasksByBranches = () => {
           ) : (
             <Box>
               <Typography variant="h5" sx={{ mb: 3, color: colors.primary, display: 'flex', alignItems: 'center' }}>
-                <Business sx={{ mr: 1 }} /> الفروع
+                <Business sx={{ marginInlineEnd: 1 }} /> الفروع
               </Typography>
               
               <Grid container spacing={3}>
@@ -796,7 +800,7 @@ const AdminViewTasksByBranches = () => {
                         <CardHeader 
                           title={
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Business sx={{ mr: 1, color: colors.primary }} />
+                              <Business sx={{ marginInlineEnd: 1, color: colors.primary }} />
                               <Typography variant="h6">{branchData.branch.name}</Typography>
                             </Box>
                           }
@@ -874,7 +878,7 @@ const AdminViewTasksByBranches = () => {
             alignItems: 'center'
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Business sx={{ mr: 1 }} />
+              <Business sx={{ marginInlineEnd: 1 }} />
               <span>تفاصيل فرع {selectedBranchData?.branch.name}</span>
             </Box>
             <IconButton onClick={handleCloseBranchDialog} sx={{ color: 'white' }}>
@@ -890,7 +894,7 @@ const AdminViewTasksByBranches = () => {
                       <CardHeader 
                         title={
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <TrendingUp sx={{ mr: 1 }} />
+                            <TrendingUp sx={{ marginInlineEnd: 1 }} />
                             <span>إحصائيات المهام المرسلة</span>
                           </Box>
                         }
@@ -946,7 +950,7 @@ const AdminViewTasksByBranches = () => {
                     </Card>
                     
                     <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                      <Assignment sx={{ mr: 1 }} /> المهام المرسلة
+                      <Assignment sx={{ marginInlineEnd: 1 }} /> المهام المرسلة
                     </Typography>
                     
                     {selectedBranchData.sentTasks.map(task => {
@@ -963,7 +967,7 @@ const AdminViewTasksByBranches = () => {
                             mb: 2, 
                             backgroundColor: colors.paper,
                             borderRadius: 2,
-                            borderLeft: `4px solid ${colors.primary}`,
+                            borderInlineStart: `4px solid ${colors.primary}`,
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
                             '&:hover': {
@@ -1026,7 +1030,7 @@ const AdminViewTasksByBranches = () => {
                       <CardHeader 
                         title={
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <TrendingUp sx={{ mr: 1 }} />
+                            <TrendingUp sx={{ marginInlineEnd: 1 }} />
                             <span>إحصائيات المهام المستلمة</span>
                           </Box>
                         }
@@ -1082,7 +1086,7 @@ const AdminViewTasksByBranches = () => {
                     </Card>
                     
                     <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                      <Assignment sx={{ mr: 1 }} /> المهام المستلمة
+                      <Assignment sx={{ marginInlineEnd: 1 }} /> المهام المستلمة
                     </Typography>
                     
                     {selectedBranchData.receivedTasks.map(task => {
@@ -1099,7 +1103,7 @@ const AdminViewTasksByBranches = () => {
                             mb: 2, 
                             backgroundColor: colors.paper,
                             borderRadius: 2,
-                            borderLeft: `4px solid ${colors.secondary}`,
+                            borderInlineStart: `4px solid ${colors.secondary}`,
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
                             '&:hover': {
@@ -1223,7 +1227,7 @@ const AdminViewTasksByBranches = () => {
                   p: 2, 
                   backgroundColor: 'rgba(0, 0, 0, 0.04)', 
                   borderRadius: 1,
-                  borderLeft: '4px solid',
+                  borderInlineStart: '4px solid',
                   borderColor: colors.primary
                 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>الوصف:</Typography>
@@ -1269,7 +1273,7 @@ const AdminViewTasksByBranches = () => {
                     p: 2, 
                     backgroundColor: colors.warningLight + '20', 
                     borderRadius: 1,
-                    borderLeft: '4px solid',
+                    borderInlineStart: '4px solid',
                     borderColor: colors.warning
                   }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>ملاحظة:</Typography>
@@ -1323,7 +1327,7 @@ const AdminViewTasksByBranches = () => {
                             <TableCell>{update.statusNote}</TableCell>
                             <TableCell>
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Avatar sx={{ width: 24, height: 24, mr: 1, fontSize: '0.8rem' }}>
+                                <Avatar sx={{ width: 24, height: 24, marginInlineEnd: 1, fontSize: '0.8rem' }}>
                                   {update.updatedByName.charAt(0)}
                                 </Avatar>
                                 {update.updatedByName}
@@ -1362,7 +1366,7 @@ const AdminViewTasksByBranches = () => {
           </DialogActions>
         </Dialog>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

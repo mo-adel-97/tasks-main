@@ -103,9 +103,9 @@ function TreeNode({ node, childrenMap, managersByUnit, onEdit, depth = 0 }) {
   const children = childrenMap.get(node.orgUnitGuid) || [];
   const managers = managersByUnit.get(node.orgUnitGuid) || [];
   return (
-    <Box sx={{ ml: depth ? 2.2 : 0, position: "relative" }}>
+    <Box sx={{ marginInlineStart: depth ? 2.2 : 0, position: "relative" }}>
       {depth > 0 && (
-        <Box sx={{ position: "absolute", left: -13, top: 0, bottom: 0, borderLeft: "1px dashed #b7cec2" }} />
+        <Box sx={{ position: "absolute", insetInlineStart: -13, top: 0, bottom: 0, borderInlineStart: "1px dashed #b7cec2" }} />
       )}
       <Paper
         variant="outlined"
@@ -479,7 +479,7 @@ export default function HrOrganizationDesigner() {
                 {lookups.units.filter((u) => u.orgUnitGuid !== unitForm.orgUnitGuid).map((u) => <MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}
               </Select>
             </FormControl>
-            <TextField type="number" label="الترتيب" value={unitForm.sortOrder} onChange={(e) => setUnitForm((x) => ({ ...x, sortOrder: Number(e.target.value || 100) }))} />
+            <TextField type="number" label="الترتيب" value={unitForm.sortOrder} onChange={(e) => setUnitForm((x) => ({ ...x, sortOrder: Number(e.target.value || 100) }))}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField multiline minRows={2} label="ملاحظات" value={unitForm.notes || ""} onChange={(e) => setUnitForm((x) => ({ ...x, notes: e.target.value }))} />
           </Stack>
         </DialogContent>

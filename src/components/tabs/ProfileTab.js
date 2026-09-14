@@ -26,13 +26,13 @@ const ProfileTab = ({ user }) => {
         border: `1px solid ${alpha(COLOR_SCHEME.primary, 0.1)}`
       }}>
         <Typography variant="h5" sx={{ mb: 3, display: "flex", alignItems: "center", justifyContent: 'center' }}>
-          <Person sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> البيانات الشخصية
+          <Person sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} /> البيانات الشخصية
         </Typography>
         
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="h6" color="textSecondary" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              <Work sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> المعلومات الأساسية
+              <Work sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} /> المعلومات الأساسية
             </Typography>
             <List>
               <ListItem>
@@ -67,7 +67,7 @@ const ProfileTab = ({ user }) => {
           
           <Grid item xs={12} md={6}>
             <Typography variant="h6" color="textSecondary" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              <Notifications sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> معلومات الاتصال
+              <Notifications sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} /> معلومات الاتصال
             </Typography>
             <List>
               <ListItem>

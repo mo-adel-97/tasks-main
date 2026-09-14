@@ -1,11 +1,6 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Alert,
@@ -45,17 +40,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import SaveIcon from "@mui/icons-material/Save";
 
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const primary = "#057546";
 const primaryDark = "#034d31";
@@ -827,7 +822,9 @@ export default function ClosingEntry() {
   const expenses = data?.expenses || [];
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }><Box
       dir="rtl"
       sx={{
         minHeight: "100vh",
@@ -835,27 +832,18 @@ export default function ClosingEntry() {
         fontFamily: "Tahoma, Arial, sans-serif"
       }}
     >
-      {isDesktop ? (
-        <StableSidebar />
-      ) : (
-        <StableSidebar
-          mobileOpen={mobileSidebarOpen}
-          onMobileClose={() =>
-            setMobileSidebarOpen(false)
-          }
-        />
-      )}
+      
 
       <Box
         component="main"
         sx={{
           minHeight: "100vh",
-          ml: isDesktop ? `${SIDEBAR_WIDTH}px` : 0,
           p: {
             xs: 0.8,
             sm: 1,
             lg: 1.3
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -954,7 +942,7 @@ export default function ClosingEntry() {
                     setFromDate(e.target.value)
                   }
                   InputLabelProps={{ shrink: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   size="small"
@@ -965,7 +953,7 @@ export default function ClosingEntry() {
                     setToDate(e.target.value)
                   }
                   InputLabelProps={{ shrink: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <TextField
                   size="small"
@@ -1018,7 +1006,7 @@ export default function ClosingEntry() {
                       </Tooltip>
                     ) : null
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                 <Button
                   variant="contained"
@@ -1489,6 +1477,6 @@ export default function ClosingEntry() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

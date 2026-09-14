@@ -1,5 +1,14 @@
+import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, DESKTOP_BREAKPOINT, SIDEBAR_MOBILE_WIDTH, SIDEBAR_MOBILE_MAX_WIDTH, sidebarPositionStyle } from '../config/sidebarLayout';
+import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import {
   Box,
+  Avatar,
+  Chip,
+  ListItemButton,
   List,
   ListItem,
   ListItemIcon,
@@ -19,68 +28,67 @@ import {
 } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+
+
+
+
+
 import logo from "../images/logo.jpg";
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import PollIcon from '@mui/icons-material/Poll';
-import AddIcon from '@mui/icons-material/Add';
+
+
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useEffect, useMemo, useState } from 'react';
-import RateReviewIcon from '@mui/icons-material/RateReview';
-import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-import BlockIcon from '@mui/icons-material/Block';
 
-import HomeIcon from '@mui/icons-material/Home';
-import PaymentIcon from '@mui/icons-material/Payment';
-import MessageIcon from '@mui/icons-material/Message';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import ReportIcon from '@mui/icons-material/Report';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import AnalyticsIcon from '@mui/icons-material/Analytics';
-import GroupsIcon from '@mui/icons-material/Groups';
-import SchoolIcon from '@mui/icons-material/School';
-import LiveHelpIcon from '@mui/icons-material/LiveHelp';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import HistoryIcon from '@mui/icons-material/History';
-import TodayIcon from '@mui/icons-material/Today';
-import ContactSupportIcon from '@mui/icons-material/ContactSupport';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import HandshakeIcon from '@mui/icons-material/Handshake';
-import StarIcon from '@mui/icons-material/Star';
-import CampaignIcon from '@mui/icons-material/Campaign';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
-import PaidIcon from '@mui/icons-material/Paid';
-import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import PercentIcon from '@mui/icons-material/Percent';
-import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
-import LocalAtmIcon from '@mui/icons-material/LocalAtm';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import DescriptionIcon from '@mui/icons-material/Description';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
-import LockResetIcon from '@mui/icons-material/LockReset';
-import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
 import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded';
-import TuneIcon from '@mui/icons-material/Tune';
-import SecurityIcon from '@mui/icons-material/Security';
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 const HR_API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
@@ -230,77 +238,7 @@ const softShadow = '0 14px 35px rgba(5,117,70,0.12)';
  * User_Menu. Form_Name/Main_Menu are the only screen/menu metadata sources.
  * React only resolves icon components and renders the returned metadata.
  */
-const SIDEBAR_ICON_COMPONENTS = {
-  home: HomeIcon,
-  payment: PaymentIcon,
-  message: MessageIcon,
-  accountbalance: AccountBalanceIcon,
-  report: ReportIcon,
-  support: SupportAgentIcon,
-  analytics: AnalyticsIcon,
-  groups: GroupsIcon,
-  school: SchoolIcon,
-  livehelp: LiveHelpIcon,
-  list: FormatListBulletedIcon,
-  history: HistoryIcon,
-  today: TodayIcon,
-  contactsupport: ContactSupportIcon,
-  emojievents: EmojiEventsIcon,
-  handshake: HandshakeIcon,
-  star: StarIcon,
-  campaign: CampaignIcon,
-  librarybooks: LibraryBooksIcon,
-  dashboard: DashboardCustomizeIcon,
-  assessment: AssessmentIcon,
-  campaignoutline: CampaignOutlinedIcon,
-  paid: PaidIcon,
-  emojioutline: EmojiEventsOutlinedIcon,
-  querystats: QueryStatsIcon,
-  payments: PaymentsOutlinedIcon,
-  workspacepremium: WorkspacePremiumIcon,
-  percent: PercentIcon,
-  playlistremove: PlaylistRemoveIcon,
-  currencyexchange: CurrencyExchangeIcon,
-  swaphoriz: SwapHorizIcon,
-  businesscenter: BusinessCenterIcon,
-  localatm: LocalAtmIcon,
-  receipt: ReceiptLongIcon,
-  description: DescriptionIcon,
-  menubook: MenuBookIcon,
-  personadd: PersonAddAlt1Icon,
-  services: MiscellaneousServicesIcon,
-  lockreset: LockResetIcon,
-  historymanage: ManageHistoryIcon,
-  admin: AdminPanelSettingsIcon,
-  folder: FolderSharedIcon,
-  storefront: StorefrontIcon,
-  howtoreg: HowToRegIcon,
-  upload: UploadFileIcon,
-  ratereview: RateReviewIcon,
-  systemupdate: SystemUpdateAltIcon,
-  block: BlockIcon,
-  poll: PollIcon,
-  add: AddIcon,
-  logout: ExitToAppIcon,
-  tune: TuneIcon,
-  security: SecurityIcon,
-};
-
-const normalizeSidebarKey = (value) =>
-  String(value || '').trim().toLowerCase();
-
-const resolveSidebarIcon = (iconKey, fallback = null) => {
-  const IconComponent =
-    SIDEBAR_ICON_COMPONENTS[normalizeSidebarKey(iconKey)];
-
-  if (IconComponent) {
-    return <IconComponent />;
-  }
-
-  return fallback || <DashboardCustomizeIcon />;
-};
-
-const Sidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
+const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -684,11 +622,11 @@ const childItemSx = (selected) => ({
   '&:before': {
     content: '""',
     position: 'absolute',
-    left: 0,
+    insetInlineStart: 0,
     top: 7,
     bottom: 7,
     width: 3,
-    borderRadius: '0 999px 999px 0',
+    borderRadius: '999px 0 0 999px',
     background: selected ? whiteColor : primaryColor
   },
 
@@ -734,6 +672,15 @@ const childItemSx = (selected) => ({
               justifyContent: 'space-between'
             }}
           >
+            <ListItemIcon
+                sx={{
+                  minWidth: isDesktop ? 26 : 22,
+                  color: selected ? whiteColor : primaryColor,
+                  '& svg': { fontSize: isDesktop ? '1.08rem' : '0.95rem' }
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
             <ListItemText
               primary={item.text}
               secondary={item.description}
@@ -744,15 +691,15 @@ const childItemSx = (selected) => ({
                   fontFamily: 'Cairo',
                   fontWeight: 700,
                   fontSize: isDesktop ? '0.7rem' : '0.62rem',
-                  textAlign: 'left',
-                  marginRight: isDesktop ? '8px' : '5px',
+                  textAlign: 'start',
+                  marginInlineStart: isDesktop ? '8px' : '5px',
                   lineHeight: isDesktop ? 1.45 : 1.3
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
                   fontSize: isDesktop ? '0.66rem' : '0.58rem',
-                  textAlign: 'left',
-                  marginRight: isDesktop ? '8px' : '5px',
+                  textAlign: 'start',
+                  marginInlineStart: isDesktop ? '8px' : '5px',
                   color: selected
                     ? 'rgba(255,255,255,.78)'
                     : mutedTextColor
@@ -783,15 +730,7 @@ const childItemSx = (selected) => ({
                 </Box>
               )}
 
-              <ListItemIcon
-                sx={{
-                  minWidth: isDesktop ? 26 : 22,
-                  color: selected ? whiteColor : primaryColor,
-                  '& svg': { fontSize: isDesktop ? '1.08rem' : '0.95rem' }
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
+              
             </Box>
           </Box>
         </ListItem>
@@ -851,6 +790,15 @@ const childItemSx = (selected) => ({
               justifyContent: 'space-between'
             }}
           >
+            <ListItemIcon
+                sx={{
+                  minWidth: isDesktop ? 26 : 22,
+                  color: selected ? whiteColor : '#1976d2',
+                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
             <ListItemText
               primary={item.text}
               secondary={item.description}
@@ -861,14 +809,14 @@ const childItemSx = (selected) => ({
                   fontFamily: 'Cairo',
                   fontWeight: 800,
                   fontSize: isDesktop ? '0.9rem' : '0.69rem',
-                  textAlign: 'left',
-                  marginRight: isDesktop ? '8px' : '5px'
+                  textAlign: 'start',
+                  marginInlineStart: isDesktop ? '8px' : '5px'
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
                   fontSize: isDesktop ? '0.66rem' : '0.58rem',
-                  textAlign: 'left',
-                  marginRight: isDesktop ? '8px' : '5px',
+                  textAlign: 'start',
+                  marginInlineStart: isDesktop ? '8px' : '5px',
                   color: selected ? 'rgba(255,255,255,.78)' : mutedTextColor
                 }
               }}
@@ -898,15 +846,7 @@ const childItemSx = (selected) => ({
                 </Box>
               )}
 
-              <ListItemIcon
-                sx={{
-                  minWidth: isDesktop ? 26 : 22,
-                  color: selected ? whiteColor : '#1976d2',
-                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
+              
             </Box>
           </Box>
         </ListItem>
@@ -969,6 +909,15 @@ const childItemSx = (selected) => ({
               justifyContent: 'space-between'
             }}
           >
+            <ListItemIcon
+                sx={{
+                  minWidth: isDesktop ? 26 : 22,
+                  color: 'inherit',
+                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
+                }}
+              >
+                {icon}
+              </ListItemIcon>
             <ListItemText
               primary={title}
               sx={{
@@ -977,8 +926,8 @@ const childItemSx = (selected) => ({
                   fontFamily: 'Cairo',
                   fontWeight: 800,
                   fontSize: isDesktop ? '0.8rem' : '0.68rem',
-                  textAlign: 'left',
-                  marginRight: isDesktop ? '8px' : '5px'
+                  textAlign: 'start',
+                  marginInlineStart: isDesktop ? '8px' : '5px'
                 }
               }}
             />
@@ -990,15 +939,7 @@ const childItemSx = (selected) => ({
                 gap: 0.6
               }}
             >
-              <ListItemIcon
-                sx={{
-                  minWidth: isDesktop ? 26 : 22,
-                  color: 'inherit',
-                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
-                }}
-              >
-                {icon}
-              </ListItemIcon>
+              
 
               {open ? (
                 <ExpandLess sx={{ fontSize: isDesktop ? '1.05rem' : '0.9rem' }} />
@@ -1040,12 +981,14 @@ const childItemSx = (selected) => ({
 
   const sidebarContent = (
     <Box
+      dir="rtl"
+      style={sidebarPositionStyle}
       onClick={(event) => event.stopPropagation()}
       sx={{
         // الديسكتوب يرجع لنفس العرض والشكل القديم 100%.
         // الموبايل/التابلت Drawer صغير فقط بعرض التابات.
-        width: isDesktop ? SIDEBAR_WIDTH : { xs: 220, sm: 236, md: 248 },
-        maxWidth: isDesktop ? SIDEBAR_WIDTH : '74vw',
+        width: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_WIDTH,
+        maxWidth: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_MAX_WIDTH,
         height: '100dvh',
         overflowY: 'auto',
         overflowX: 'hidden',
@@ -1066,10 +1009,9 @@ const childItemSx = (selected) => ({
         },
         background: `linear-gradient(180deg, ${whiteColor} 0%, #f4fbf7 100%)`,
         color: textColor,
-        borderRight: isDesktop ? `1px solid ${primaryLight}` : 'none',
+        borderInlineEnd: isDesktop ? `1px solid ${primaryLight}` : 'none',
         fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
         position: isDesktop ? 'fixed' : 'relative',
-        left: 0,
         top: 0,
         zIndex: 1200,
         display: 'flex',
@@ -1555,10 +1497,11 @@ const childItemSx = (selected) => ({
   }
 
   // الموبايل والتابلت: Drawer صغير، بدون لوجو/هيدر، ولا يحجز مساحة من الصفحة.
-  // anchor="right" مقصود هنا لأن المشروع RTL واتجاهاته معكوسة بصرياً.
+  // Explicit paper positioning bypasses physical-property mirroring.
   return (
     <Drawer
-      anchor="left"
+      anchor="right"
+      SlideProps={{ direction: "left" }}
       open={mobileOpen}
       onClose={onMobileClose}
       transitionDuration={{ enter: 180, exit: 140 }}
@@ -1573,9 +1516,10 @@ const childItemSx = (selected) => ({
         },
       }}
       PaperProps={{
+        style: sidebarPositionStyle,
         sx: {
-          width: { xs: 220, sm: 236, md: 248 },
-          maxWidth: '74vw',
+          width: SIDEBAR_MOBILE_WIDTH,
+          maxWidth: SIDEBAR_MOBILE_MAX_WIDTH,
           height: '100dvh',
           background: 'transparent',
           boxShadow: '-14px 0 38px rgba(3,77,49,0.20)',
@@ -1589,4 +1533,354 @@ const childItemSx = (selected) => ({
   );
 };
 
-export default Sidebar;
+
+const PRIMARY = "#80b49e";
+const PRIMARY_DARK = "#6a9a87";
+const BG = "#0f172a";        // slate-900
+const BG2 = "#111c33";       // deeper
+const TEXT_MUTED = "#94a3b8";
+
+function AdminSidebar({ collapsed: controlledCollapsed, onCollapsedChange }) {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [localCollapsed, setLocalCollapsed] = useState(false);
+  const collapsed = controlledCollapsed ?? localCollapsed;
+  const setCollapsed = (next) => {
+    const value = typeof next === "function" ? next(collapsed) : next;
+    setLocalCollapsed(value);
+    onCollapsedChange?.(value);
+  };
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setCurrentUser(user);
+      } catch {
+        setCurrentUser(null);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const displayName = useMemo(() => {
+    return (
+      currentUser?.fullName ||
+      currentUser?.userName ||
+      currentUser?.name ||
+      "مستخدم"
+    );
+  }, [currentUser]);
+
+  const roleLabel = useMemo(() => {
+    // عدّلها حسب نظامك
+    if (currentUser?.userName === "sa") return "Super Admin";
+    if (currentUser?.userJop != null) return `Role: ${currentUser.userJop}`;
+    return "User";
+  }, [currentUser]);
+
+  const menu = useMemo(() => getAdminNavigation(currentUser), [currentUser]);
+
+  const isActive = (path) => {
+    // لو عندك nested routes خليها startsWith
+    return location.pathname === path || location.pathname.startsWith(path + "/");
+  };
+
+  const itemSx = (active) => ({
+    borderRadius: 2,
+    mb: 0.75,
+    mx: 1,
+    px: collapsed ? 1 : 1.5,
+    py: 1.1,
+    transition: "all .25s ease",
+    color: "white",
+    position: "relative",
+    overflow: "hidden",
+    ...(active
+      ? {
+          background: `linear-gradient(135deg, ${PRIMARY} 0%, ${PRIMARY_DARK} 100%)`,
+          boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+        }
+      : {
+          backgroundColor: "rgba(255,255,255,0.04)",
+          "&:hover": {
+            backgroundColor: "rgba(255,255,255,0.09)",
+            transform: "translateY(-1px)",
+          },
+        }),
+    "&::after": active
+      ? {
+          content: '""',
+          position: "absolute",
+          top: -40,
+          right: -40,
+          width: 120,
+          height: 120,
+          background:
+            "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 60%)",
+          transform: "rotate(20deg)",
+        }
+      : {},
+  });
+
+  return (
+    <Box
+      dir="rtl"
+      style={sidebarPositionStyle}
+      sx={{
+        width: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
+        height: "100vh",
+        position: "fixed",
+        top: 0,
+        zIndex: 1200,
+        color: "white",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        background: `linear-gradient(180deg, ${BG} 0%, ${BG2} 100%)`,
+        borderInlineEnd: "1px solid rgba(255,255,255,0.08)",
+        boxShadow: "0 18px 45px rgba(0,0,0,0.35)",
+        transition: "width .25s ease",
+        overflow: "hidden",
+      }}
+    >
+      {/* ====== Top / Brand ====== */}
+      <Box sx={{ p: 2.2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: collapsed ? "column" : "row",
+            gap: 1.2,
+            mb: 2,
+            px: 1,
+          }}
+        >
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: 2.5,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: `linear-gradient(135deg, ${PRIMARY} 0%, ${PRIMARY_DARK} 100%)`,
+              boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+              flexShrink: 0,
+            }}
+          >
+            <SchoolRoundedIcon />
+          </Box>
+
+          <Collapse orientation="horizontal" in={!collapsed} unmountOnExit>
+            <Box>
+              <Typography sx={{ fontWeight: 800, lineHeight: 1.2 }}>
+                لوحة التحكم
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: TEXT_MUTED, fontWeight: 500 }}
+              >
+                Saudi Training Institute
+              </Typography>
+            </Box>
+          </Collapse>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Tooltip title={collapsed ? "توسيع" : "تصغير"} placement="left" arrow>
+            <IconButton
+              aria-label={collapsed ? "توسيع القائمة" : "تصغير القائمة"}
+              onClick={() => setCollapsed((p) => !p)}
+              sx={{
+                color: "white",
+                backgroundColor: "rgba(255,255,255,0.06)",
+                borderRadius: 2,
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+              }}
+            >
+              {collapsed ? <ChevronLeftRoundedIcon /> : <ChevronRightRoundedIcon />}
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        {/* ====== User Card ====== */}
+        <Box
+          sx={{
+            mt: 1,
+            p: 1.5,
+            borderRadius: 3,
+            backgroundColor: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            display: "flex",
+            alignItems: "center",
+            gap: 1.3,
+          }}
+        >
+          <Avatar
+            sx={{
+              bgcolor: PRIMARY,
+              color: "#0b1220",
+              fontWeight: 900,
+              width: 42,
+              height: 42,
+              flexShrink: 0,
+            }}
+          >
+            {String(displayName || "U").trim().charAt(0).toUpperCase()}
+          </Avatar>
+
+          <Collapse orientation="horizontal" in={!collapsed} unmountOnExit>
+            <Box>
+              <Typography sx={{ fontWeight: 800, maxWidth: 170 }} noWrap>
+                {displayName}
+              </Typography>
+              <Chip
+                size="small"
+                label={roleLabel}
+                sx={{
+                  mt: 0.7,
+                  height: 22,
+                  fontWeight: 700,
+                  bgcolor: "rgba(128,180,158,0.18)",
+                  color: "#d8fff0",
+                  border: "1px solid rgba(128,180,158,0.35)",
+                }}
+              />
+            </Box>
+          </Collapse>
+        </Box>
+
+        <Divider
+          sx={{
+            my: 2.2,
+            borderColor: "rgba(148,163,184,0.25)",
+          }}
+        />
+
+        {/* ====== Menu ====== */}
+        <List sx={{ px: 0 }}>
+          {menu.map((item) => {
+            const active = isActive(item.to);
+
+            return (
+              <Tooltip
+                key={item.to}
+                title={collapsed ? item.label : ""}
+                placement="left"
+                arrow
+              >
+                <ListItemButton
+                  component={Link}
+                  to={item.to}
+                  sx={itemSx(active)}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      marginInlineEnd: collapsed ? 0 : 1.3,
+                      color: "white",
+                      opacity: active ? 1 : 0.9,
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+
+                  {!collapsed && (
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontWeight: active ? 900 : 700,
+                        fontSize: "0.95rem",
+                      }}
+                    />
+                  )}
+
+                  {!collapsed && item.admin && (
+                    <Chip
+                      size="small"
+                      label="ADMIN"
+                      sx={{
+                        marginInlineStart: 1,
+                        height: 20,
+                        fontSize: "0.65rem",
+                        fontWeight: 900,
+                        bgcolor: "rgba(255,255,255,0.12)",
+                        color: "white",
+                        border: "1px solid rgba(255,255,255,0.16)",
+                      }}
+                    />
+                  )}
+                </ListItemButton>
+              </Tooltip>
+            );
+          })}
+        </List>
+      </Box>
+
+      {/* ====== Bottom / Logout ====== */}
+      <Box sx={{ p: 2 }}>
+        <Divider sx={{ mb: 2, borderColor: "rgba(148,163,184,0.25)" }} />
+
+        <Tooltip title={collapsed ? "تسجيل الخروج" : ""} placement="left" arrow>
+          <ListItemButton
+            onClick={handleLogout}
+            sx={{
+              borderRadius: 2.5,
+              px: collapsed ? 1 : 1.5,
+              py: 1.2,
+              backgroundColor: "rgba(244,67,54,0.10)",
+              border: "1px solid rgba(244,67,54,0.25)",
+              color: "white",
+              transition: "all .25s ease",
+              "&:hover": {
+                backgroundColor: "rgba(244,67,54,0.18)",
+                transform: "translateY(-1px)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+              },
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                marginInlineEnd: collapsed ? 0 : 1.3,
+                color: "#ffb4ae",
+              }}
+            >
+              <LogoutRoundedIcon />
+            </ListItemIcon>
+            {!collapsed && (
+              <ListItemText
+                primary="تسجيل الخروج"
+                primaryTypographyProps={{ fontWeight: 900 }}
+              />
+            )}
+          </ListItemButton>
+        </Tooltip>
+
+        <Typography
+          variant="body2"
+          sx={{
+            mt: 2,
+            textAlign: "center",
+            color: TEXT_MUTED,
+            fontWeight: 600,
+          }}
+        >
+          © {new Date().getFullYear()}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+
+export default function Sidebar({ variant = "standard", ...props }) {
+  return variant === "admin" ? <AdminSidebar {...props} /> : <StandardSidebar {...props} />;
+}

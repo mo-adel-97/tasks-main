@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -25,17 +27,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import PercentIcon from "@mui/icons-material/Percent";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
 
-const StableSidebar = memo(Sidebar);
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";
@@ -919,7 +921,7 @@ export default function DiscountTypeManagement() {
               size="small"
               value={model.code}
               InputProps={{ readOnly: true }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               label="اسم الخصم"
@@ -948,7 +950,7 @@ export default function DiscountTypeManagement() {
               inputProps={{
                 min: 0,
                 step: 0.01
-              }}
+              , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -1075,7 +1077,9 @@ export default function DiscountTypeManagement() {
   );
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+              setMobileSidebarOpen(false)
+            }><Box
       sx={{
         minHeight: "100vh",
         bgcolor: soft
@@ -1083,10 +1087,10 @@ export default function DiscountTypeManagement() {
     >
       {isDesktop ? (
         <>
-          <StableSidebar />
+          
           <Box
             sx={{
-              ml: `${SIDEBAR_WIDTH}px`
+              ...navigationContentSx
             }}
           >
             {page}
@@ -1094,12 +1098,7 @@ export default function DiscountTypeManagement() {
         </>
       ) : (
         <>
-          <StableSidebar
-            mobileOpen={mobileSidebarOpen}
-            onMobileClose={() =>
-              setMobileSidebarOpen(false)
-            }
-          />
+          
           {page}
         </>
       )}
@@ -1113,6 +1112,6 @@ export default function DiscountTypeManagement() {
         onClose={() => setLookupOpen(false)}
         onPick={loadDiscountType}
       />
-    </Box>
+    </Box></NavigationShell>
   );
 }

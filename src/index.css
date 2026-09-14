@@ -6,5 +6,18 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   direction: rtl;
+  text-align: start;
   background: #f1f5f9;
+}
+
+/* Explicit dir attributes take precedence for technical form fields. */
+input[type="email"]:not([dir]),
+input[type="url"]:not([dir]),
+input[type="tel"]:not([dir]),
+code:not([dir]),
+pre:not([dir]),
+.technical-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
 }

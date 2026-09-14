@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -32,11 +34,11 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LayersIcon from "@mui/icons-material/Layers";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import Sidebar from "../components/Sidebar";
+
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -761,7 +763,9 @@ const BatchSeatsCounter = () => {
   }, [summaryRows]);
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       dir="rtl"
       sx={{
         minHeight: "100dvh",
@@ -855,12 +859,7 @@ const BatchSeatsCounter = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -879,12 +878,10 @@ const BatchSeatsCounter = () => {
           },
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             p: 3
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -2178,13 +2175,13 @@ const BatchSeatsCounter = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 
 const gridSx = {
   border: 0,
-  direction: "ltr",
+  direction: "rtl",
   fontFamily: "Cairo",
 
   "& .MuiDataGrid-columnHeaders": {
@@ -2251,7 +2248,7 @@ const gridSx = {
     borderBottom: "1px solid #e6ece9",
     background:
       "linear-gradient(135deg,#fbfdfc 0%,#f3faf6 100%)",
-    direction: "ltr"
+    direction: "rtl"
   },
 
   "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
@@ -2261,7 +2258,7 @@ const gridSx = {
   },
 
   "& .MuiDataGrid-footerContainer": {
-    direction: "ltr",
+    direction: "rtl",
     fontFamily: "Cairo"
   }
 };

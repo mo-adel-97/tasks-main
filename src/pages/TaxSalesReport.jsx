@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -48,11 +50,11 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import PercentIcon from "@mui/icons-material/Percent";
 import CloseIcon from "@mui/icons-material/Close";
 
-import Sidebar from "../components/Sidebar";
+
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1347,46 +1349,29 @@ export default function TaxSalesReport() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#f4f7f6",
-        direction: "ltr",
-        overflowX: "hidden"
-      }}
-    >
-      <Sidebar
-        mobileOpen={
+    <NavigationShell variant="standard" mobileOpen={
           mobileSidebarOpen
-        }
-        onMobileClose={() =>
+        } onMobileClose={() =>
           setMobileSidebarOpen(
             false
           )
-        }
-      />
+        }><Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#f4f7f6",
+        direction: "rtl",
+        overflowX: "hidden"
+      }}
+    >
+      
 
       <Box
         component="main"
         sx={{
-          width: isDesktop
-            ? `calc(100vw - ${SIDEBAR_WIDTH}px)`
-            : "100vw",
-
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0,
-
-          boxSizing:
-            "border-box",
-
-          p: isDesktop
-            ? "12px 14px"
-            : isPhone
-              ? "5px"
-              : "8px",
-
-          overflowX: "hidden"
+          boxSizing: "border-box",
+          p: isDesktop ? "12px 14px" : isPhone ? "5px" : "8px",
+          overflowX: "hidden",
+          ...navigationContentSx
         }}
       >
         {!isDesktop && (
@@ -1532,7 +1517,7 @@ export default function TaxSalesReport() {
                     max:
                       toDate ||
                       undefined
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -1552,7 +1537,7 @@ export default function TaxSalesReport() {
                     min:
                       fromDate ||
                       undefined
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -1988,7 +1973,7 @@ export default function TaxSalesReport() {
                   border:
                     `1px solid ${borderColor}`,
                   direction:
-                    "ltr",
+                    "rtl",
                   "& .MuiDataGrid-virtualScroller":
                     {
                       overflowX:
@@ -2095,7 +2080,7 @@ export default function TaxSalesReport() {
               isPhone
                 ? 0
                 : 3,
-            direction: "ltr",
+            direction: "rtl",
             overflow:
               "hidden"
           }
@@ -2399,7 +2384,7 @@ export default function TaxSalesReport() {
         maxWidth="md"
         PaperProps={{
           sx: {
-            direction: "ltr",
+            direction: "rtl",
             borderRadius: 2.5
           }
         }}
@@ -2551,6 +2536,6 @@ export default function TaxSalesReport() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

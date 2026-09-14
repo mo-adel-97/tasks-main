@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -54,10 +56,10 @@ import ClearAllOutlinedIcon from "@mui/icons-material/ClearAllOutlined";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 
-import Sidebar from "../components/Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1320,37 +1322,25 @@ export default function GeneralAccountStatement() {
   }
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100vh",
         bgcolor: "#f4f7f6",
-        direction: "ltr",
+        direction: "rtl",
         overflowX: "hidden"
       }}
     >
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
         sx={{
-          width: isDesktop
-            ? `calc(100vw - ${SIDEBAR_WIDTH}px)`
-            : "100vw",
-          ml: isDesktop
-            ? `${SIDEBAR_WIDTH}px`
-            : 0,
           boxSizing: "border-box",
-          p: isDesktop
-            ? "16px 18px"
-            : isPhone
-              ? "6px"
-              : "10px",
-          direction: "ltr"
+          p: isDesktop ? "16px 18px" : isPhone ? "6px" : "10px",
+          direction: "rtl",
+          ...navigationContentSx
         }}
       >
         {!isDesktop && (
@@ -1485,7 +1475,7 @@ export default function GeneralAccountStatement() {
                       : "repeat(2,minmax(0,1fr))",
                   gap: isPhone ? 0.45 : 0.65,
                   alignItems: "center",
-                  direction: "ltr"
+                  direction: "rtl"
                 }}
               >
                 <TextField
@@ -1501,7 +1491,7 @@ export default function GeneralAccountStatement() {
                     max:
                       toDate ||
                       undefined
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -1531,7 +1521,7 @@ export default function GeneralAccountStatement() {
                     min:
                       fromDate ||
                       undefined
-                  }}
+                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -1693,7 +1683,7 @@ export default function GeneralAccountStatement() {
                 spacing={0.6}
                 sx={{
                   mt: 0.65,
-                  direction: "ltr",
+                  direction: "rtl",
                   flexWrap: "wrap",
                   gap: 0.45
                 }}
@@ -1797,7 +1787,7 @@ export default function GeneralAccountStatement() {
                           ? "repeat(3,minmax(0,1fr))"
                           : "repeat(2,minmax(0,1fr))",
                       gap: isPhone ? 0.45 : 0.65,
-                      direction: "ltr"
+                      direction: "rtl"
                     }}
                   >
                     {FILTER_FIELDS.map(
@@ -2034,7 +2024,7 @@ export default function GeneralAccountStatement() {
                 sx={{
                   border:
                     `1px solid ${borderColor}`,
-                  direction: "ltr",
+                  direction: "rtl",
 
                   "& .MuiDataGrid-columnHeaders":
                     {
@@ -2144,7 +2134,7 @@ export default function GeneralAccountStatement() {
           sx: {
             borderRadius:
               isPhone ? 0 : 3,
-            direction: "ltr",
+            direction: "rtl",
             overflow: "hidden"
           }
         }}
@@ -2336,7 +2326,7 @@ export default function GeneralAccountStatement() {
               isPhone
                 ? 0
                 : 3,
-            direction: "ltr",
+            direction: "rtl",
             overflow: "hidden"
           }
         }}
@@ -2580,7 +2570,7 @@ export default function GeneralAccountStatement() {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            direction: "ltr"
+            direction: "rtl"
           }
         }}
       >
@@ -2703,6 +2693,6 @@ export default function GeneralAccountStatement() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 }

@@ -589,7 +589,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                           value={attendancePeriod.from}
                           onChange={(e) => setAttendancePeriod(prev => ({...prev, from: e.target.value}))}
                           InputLabelProps={{ shrink: true }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={5}>
                         <TextField
@@ -599,7 +599,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                           value={attendancePeriod.to}
                           onChange={(e) => setAttendancePeriod(prev => ({...prev, to: e.target.value}))}
                           InputLabelProps={{ shrink: true }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={2}>
                         <Button variant="contained" fullWidth>
@@ -755,7 +755,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                           value={salaryPeriod.from}
                           onChange={(e) => setSalaryPeriod(prev => ({...prev, from: e.target.value}))}
                           InputLabelProps={{ shrink: true }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={5}>
                         <TextField
@@ -765,7 +765,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                           value={salaryPeriod.to}
                           onChange={(e) => setSalaryPeriod(prev => ({...prev, to: e.target.value}))}
                           InputLabelProps={{ shrink: true }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
                       <Grid item xs={12} sm={2}>
                         <Button variant="contained" fullWidth>

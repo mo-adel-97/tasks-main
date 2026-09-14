@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useEffect,
   useMemo,
@@ -29,11 +31,11 @@ import ClearIcon from "@mui/icons-material/Clear";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import Sidebar from "../components/Sidebar";
+
 import Swal from "sweetalert2";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -726,14 +728,16 @@ const VipCustomers = () => {
   };
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
         background: "#f5f8f7",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       {!isDesktop && (
@@ -809,12 +813,12 @@ const VipCustomers = () => {
             color: "#17372b",
             borderBottom:
               "1px solid rgba(5,117,70,.12)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important"
@@ -862,7 +866,7 @@ const VipCustomers = () => {
                   sm: "0.79rem"
                 },
                 color: "#17372b",
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -874,12 +878,7 @@ const VipCustomers = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -903,17 +902,14 @@ const VipCustomers = () => {
             sm: 0.65,
             md: 0.8
           },
-          direction: "ltr",
+          direction: "rtl",
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 2.5
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1064,7 +1060,7 @@ const VipCustomers = () => {
                   shrink: true
                 }}
                 fullWidth
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 type="date"
@@ -1080,7 +1076,7 @@ const VipCustomers = () => {
                   shrink: true
                 }}
                 fullWidth
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
               <TextField
                 size="small"
@@ -1342,7 +1338,7 @@ const VipCustomers = () => {
                                   color: "#789"
                                 }}
                               >
-                                {row.nationalId || "-"} • {row.studentTel || "-"}
+                                <bdi dir="ltr">{row.nationalId || "-"}</bdi> • <bdi dir="ltr">{row.studentTel || "-"}</bdi>
                               </Typography>
                             </Box>
 
@@ -1580,7 +1576,7 @@ const VipCustomers = () => {
                     minWidth: 1650,
                     borderCollapse:
                       "collapse",
-                    direction: "ltr",
+                    direction: "rtl",
 
                     "& th": {
                       px: 1.2,
@@ -1773,7 +1769,7 @@ const VipCustomers = () => {
                 `${from}-${to} من ${count}`
               }
               sx={{
-                direction: "ltr",
+                direction: "rtl",
                 minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
                 "& .MuiTablePagination-toolbar": {
                   minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
@@ -1804,7 +1800,7 @@ const VipCustomers = () => {
           </Box>
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

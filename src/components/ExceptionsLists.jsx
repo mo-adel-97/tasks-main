@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -27,7 +29,7 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-import Sidebar from "./Sidebar";
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SearchIcon from "@mui/icons-material/Search";
@@ -35,7 +37,7 @@ import NumbersIcon from "@mui/icons-material/Numbers";
 import NotesIcon from "@mui/icons-material/Notes";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
-const SIDEBAR_WIDTH = 150;
+
 
 // ✅ Backend base URL
 const BASE_URL = "https://filesregsiteration.sstli.com";
@@ -289,9 +291,9 @@ export default function ExceptionsLists() {
   }, [rows]);
 
   return (
-    <Box
+    <NavigationShell variant="standard" ><Box
       sx={{
-        direction: "ltr",
+        direction: "rtl",
         fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
         minHeight: "100vh",
         background: "#f8fbfa",
@@ -299,17 +301,18 @@ export default function ExceptionsLists() {
       }}
     >
       {/* Sidebar Left */}
-      <Box sx={{ width: { xs: "100%", md: `${SIDEBAR_WIDTH}px` }, flexShrink: 0 }}>
-        <Sidebar />
-      </Box>
+      
 
       {/* Content */}
       <Box
         sx={{
           flex: 1,
           width: "100%",
-          ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
-          p: { xs: 2, md: 3 },
+          p: {
+            xs: 2,
+            md: 3
+          },
+          ...navigationContentSx
         }}
       >
         {/* Header */}
@@ -324,10 +327,10 @@ export default function ExceptionsLists() {
           }}
         >
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "left" }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "start" }}>
               قوائم الاستثناءات
             </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5, textAlign: "left" }}>
+            <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5, textAlign: "start" }}>
               البيانات حسب فرع المستخدم الحالي (BranchGuid). {branchGuid ? `(${branchGuid})` : ""}
             </Typography>
           </Box>
@@ -366,7 +369,7 @@ export default function ExceptionsLists() {
           <Grid item xs={12} md={5}>
             <Card sx={{ borderRadius: 3, boxShadow: "0 8px 25px rgba(0,0,0,0.06)" }}>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "left" }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "start" }}>
                   إضافة استثناء
                 </Typography>
 
@@ -375,7 +378,7 @@ export default function ExceptionsLists() {
                   label="رقم الهوية"
                   value={nationalId}
                   onChange={(e) => setNationalId(normalizeNationalId(e.target.value))}
-                  inputProps={{ maxLength: 10 }}
+                  inputProps={{ maxLength: 10 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                   placeholder="10 أرقام"
                   margin="normal"
                   InputProps={{
@@ -458,7 +461,7 @@ export default function ExceptionsLists() {
                     mb: 2,
                   }}
                 >
-                  <Typography variant="h6" sx={{ fontWeight: 800, textAlign: "left" }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, textAlign: "start" }}>
                     القائمة
                   </Typography>
 
@@ -524,7 +527,7 @@ export default function ExceptionsLists() {
                           <TableRow key={x.id} hover>
                             {showAllBranches && (
                               <TableCell sx={{ fontWeight: 600, opacity: 0.85 }}>
-                                {x.branch_guid || "—"}
+                                <bdi dir="ltr">{x.branch_guid || "—"}</bdi>
                               </TableCell>
                             )}
 
@@ -588,6 +591,6 @@ export default function ExceptionsLists() {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

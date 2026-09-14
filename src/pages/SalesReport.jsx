@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -49,11 +51,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-import Sidebar from "../components/Sidebar";
+
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
@@ -658,7 +660,7 @@ function CreditNoteDialog({
             xs: 0.75,
             sm: 1.15
           },
-          direction: "ltr"
+          direction: "rtl"
         }}
       >
         <Box
@@ -758,7 +760,7 @@ function CreditNoteDialog({
         >
           <Box
             component="table"
-            dir="ltr"
+            dir="rtl"
             sx={{
               width: "100%",
               borderCollapse:
@@ -848,8 +850,8 @@ function CreditNoteDialog({
                                   "5px",
                                 textAlign:
                                   "center"
-                              }
-                            }}
+                              , direction: "ltr", unicodeBidi: "isolate" }
+                            , dir: "ltr" }}
                             sx={{
                               width:
                                 field ===
@@ -925,7 +927,7 @@ function CreditNoteDialog({
 
       <DialogActions
         sx={{
-          direction: "ltr",
+          direction: "rtl",
           gap: 0.6,
           px: 1.2,
           py: 0.85
@@ -2052,7 +2054,13 @@ export default function SalesReport() {
   }
 
   return (
-    <>
+    <NavigationShell variant="standard" mobileOpen={
+          mobileSidebarOpen
+        } onMobileClose={() =>
+          setMobileSidebarOpen(
+            false
+          )
+        }><>
       {!isDesktop && (
         <AppBar
           position="sticky"
@@ -2065,7 +2073,7 @@ export default function SalesReport() {
           <Toolbar
             variant="dense"
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: 44,
                 sm: 48
@@ -2099,16 +2107,7 @@ export default function SalesReport() {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={
-          mobileSidebarOpen
-        }
-        onMobileClose={() =>
-          setMobileSidebarOpen(
-            false
-          )
-        }
-      />
+      
 
       <Box
         sx={{
@@ -2117,18 +2116,10 @@ export default function SalesReport() {
             sm: 0.85,
             md: 1.2
           },
-
-          // اتجاه التقرير والجريد Left To Right.
-          direction: "ltr",
+          direction: "rtl",
           minWidth: 0,
           boxSizing: "border-box",
-
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]:
-            {
-              ml: `${SIDEBAR_WIDTH}px`,
-              width:
-                `calc(100% - ${SIDEBAR_WIDTH}px)`
-            }
+          ...navigationContentSx
         }}
       >
       <Paper
@@ -2234,7 +2225,7 @@ export default function SalesReport() {
               InputLabelProps={{
                 shrink: true
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <TextField
               size="small"
@@ -2249,7 +2240,7 @@ export default function SalesReport() {
               InputLabelProps={{
                 shrink: true
               }}
-            />
+             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Button
               variant="contained"
@@ -2762,7 +2753,7 @@ export default function SalesReport() {
                 sx={{
                   width: "100%",
                   maxWidth: "100%",
-                  direction: "ltr",
+                  direction: "rtl",
                   border:
                     "1px solid #dfddd8",
 
@@ -2886,7 +2877,7 @@ export default function SalesReport() {
                 }
                 sx={{
                   minWidth: 1280,
-                  direction: "ltr",
+                  direction: "rtl",
                   border:
                     "1px solid #dfddd8",
                   "& .MuiDataGrid-columnHeaders":
@@ -3037,6 +3028,6 @@ export default function SalesReport() {
         userGuid={userGuid}
       />
     </Box>
-    </>
+    </></NavigationShell>
   );
 }

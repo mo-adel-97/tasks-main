@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
@@ -41,10 +43,10 @@ import {
   CalendarToday as CalendarIcon,
   MenuRounded as MenuRoundedIcon
 } from "@mui/icons-material";
-import Sidebar from "./Sidebar";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
+
 
 // APIs
 const NOTES_API = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
@@ -486,7 +488,9 @@ export default function AdminStudentNotes() {
   }
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         display: "flex",
         background: theme.bg,
@@ -494,7 +498,7 @@ export default function AdminStudentNotes() {
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
-        direction: "ltr"
+        direction: "rtl"
       }}
     >
       {!isDesktop && (
@@ -527,12 +531,12 @@ export default function AdminStudentNotes() {
             backdropFilter: "blur(14px)",
             color: theme.text,
             borderBottom: `1px solid ${theme.border}`,
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important"
@@ -575,7 +579,7 @@ export default function AdminStudentNotes() {
                   sm: "0.8rem"
                 },
                 color: theme.text,
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -587,12 +591,7 @@ export default function AdminStudentNotes() {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         sx={{
@@ -612,13 +611,11 @@ export default function AdminStudentNotes() {
           },
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             p: 3,
             mt: 0
-          }
+          },
+          ...navigationContentSx
         }}
       >
         {/* Header */}
@@ -881,7 +878,7 @@ export default function AdminStudentNotes() {
                     borderRadius: 2
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
             
             <Grid item xs={6} md={2}>
@@ -898,7 +895,7 @@ export default function AdminStudentNotes() {
                     borderRadius: 2
                   }
                 }}
-              />
+               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             </Grid>
           </Grid>
         </Paper>
@@ -972,6 +969,6 @@ export default function AdminStudentNotes() {
           )}
         </Paper>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 }

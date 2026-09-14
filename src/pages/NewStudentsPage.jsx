@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -47,14 +49,14 @@ import CheckCircleIcon
 import AccountBalanceWalletIcon
   from "@mui/icons-material/AccountBalanceWallet";
 import Swal from "sweetalert2";
-import Sidebar from "../components/Sidebar";
+
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 import RegisterDocumentDialog
   from "../components/RegisterDocumentDialog";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1192,13 +1194,15 @@ const NewStudentsPage = () => {
   ]);
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
-        direction: "ltr",
+        direction: "rtl",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
@@ -1288,12 +1292,12 @@ const NewStudentsPage = () => {
             color: "#17372b",
             borderBottom:
               "1px solid rgba(5,117,70,.12)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: {
                 xs: "50px !important",
                 sm: "56px !important"
@@ -1350,7 +1354,7 @@ const NewStudentsPage = () => {
                   sm: "0.79rem"
                 },
                 color: "#17372b",
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -1362,12 +1366,7 @@ const NewStudentsPage = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }
-      />
+      
 
       <Box
         component="main"
@@ -1393,13 +1392,11 @@ const NewStudentsPage = () => {
           },
           boxSizing: "border-box",
           overflowX: "hidden",
-
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 2
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Paper
@@ -1410,7 +1407,7 @@ const NewStudentsPage = () => {
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Stack
@@ -1619,7 +1616,7 @@ const NewStudentsPage = () => {
             border:
               "1px solid rgba(5,117,70,.14)",
             overflow: "hidden",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Tabs
@@ -1717,7 +1714,7 @@ const NewStudentsPage = () => {
               }}
               sx={{
                 border: 0,
-                direction: "ltr",
+                direction: "rtl",
                 width: "100%",
 
                 "& .MuiDataGrid-main": {
@@ -1828,7 +1825,7 @@ const NewStudentsPage = () => {
           onClose={closeMenu}
           PaperProps={{
             sx: {
-              direction: "ltr",
+              direction: "rtl",
               minWidth: isPhone ? 138 : isTablet ? 165 : 210,
 
               "& .MuiMenuItem-root": {
@@ -2002,7 +1999,7 @@ const NewStudentsPage = () => {
           </Paper>
         </Backdrop>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

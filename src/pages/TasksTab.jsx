@@ -169,7 +169,7 @@ export default function TasksTab() {
         gap: { xs: 0.8, sm: 1.2, md: 1.8 },
         mb: { xs: 1.2, sm: 1.8, md: 2.6 }
       }}>
-        <Typography variant="h4" fontWeight={800} color="primary.main" sx={{ fontSize: { xs: '0.98rem', sm: '1.2rem', md: '1.5rem' }, textAlign: { xs: 'center', sm: 'left' } }}>
+        <Typography variant="h4" fontWeight={800} color="primary.main" sx={{ fontSize: { xs: '0.98rem', sm: '1.2rem', md: '1.5rem' }, textAlign: { xs: 'center', sm: 'start' } }}>
           إدارة المهام
         </Typography>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

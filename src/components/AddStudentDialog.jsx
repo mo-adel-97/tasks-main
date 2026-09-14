@@ -118,7 +118,7 @@ const FieldLabel = ({ children }) => (
       color: primaryColor,
       fontSize: "0.85rem",
       mb: 0.5,
-      textAlign: "left",
+      textAlign: "start",
 
       "@media (max-width:1599px)": {
         fontSize: "0.62rem",
@@ -190,7 +190,7 @@ const inputSx = {
 const selectSx = {
   ...inputSx,
   fontWeight: 900,
-  textAlign: "left",
+  textAlign: "start",
   "& .MuiSelect-select": {
     fontWeight: 900
   }
@@ -658,7 +658,7 @@ const AddStudentDialog = ({
             maxHeight: isPhone ? "100dvh" : isTablet ? "94dvh" : "90vh",
             m: isPhone ? 0 : isTablet ? 0.7 : 2,
             borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
-            direction: "ltr",
+            direction: "rtl",
             overflow: "hidden",
             border: `1px solid ${primaryLight}`,
             boxShadow: "0 18px 50px rgba(5,117,70,0.18)",
@@ -800,7 +800,7 @@ const AddStudentDialog = ({
                       fullWidth
                       size="small"
                       value={form.studentTel}
-                      inputProps={{ maxLength: 10 }}
+                      inputProps={{ maxLength: 10 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setValue("studentTel", value);
@@ -830,7 +830,7 @@ const AddStudentDialog = ({
                       fullWidth
                       size="small"
                       value={form.studentTel2}
-                      inputProps={{ maxLength: 10 }}
+                      inputProps={{ maxLength: 10 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setValue("studentTel2", value);
@@ -845,7 +845,7 @@ const AddStudentDialog = ({
                       fullWidth
                       size="small"
                       value={form.nationalId}
-                      inputProps={{ maxLength: 10 }}
+                      inputProps={{ maxLength: 10 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setValue("nationalId", value);
@@ -1018,7 +1018,7 @@ const AddStudentDialog = ({
                             color: accentColor,
                             fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.75rem",
                             mt: isPhone ? 0.15 : isTablet ? 0.25 : 0.5,
-                            textAlign: "left"
+                            textAlign: "start"
                           }}
                         >
                           لم يتم اختيار القطاع بعد
@@ -1063,7 +1063,7 @@ const AddStudentDialog = ({
                             color: accentColor,
                             fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.75rem",
                             mt: isPhone ? 0.15 : isTablet ? 0.25 : 0.5,
-                            textAlign: "left"
+                            textAlign: "start"
                           }}
                         >
                           لم يتم تحديد مندوب البيع

@@ -195,7 +195,7 @@ const DocumentHistoryDialog = ({
               }}
               sx={{
                 borderRadius: 2,
-                direction: "ltr",
+                direction: "rtl",
                 "& .MuiDataGrid-columnHeaders": {
                   backgroundColor: "#f7ead0",
                   color: "#1f2d3d",

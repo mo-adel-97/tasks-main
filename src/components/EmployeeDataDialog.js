@@ -621,7 +621,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                               borderRadius: 1
                             }
                           }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
 
                       <Grid item xs={12} md={4}>
@@ -689,7 +689,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                               borderRadius: 1
                             }
                           }}
-                        />
+                         inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                       </Grid>
 
                       {/* أرقام الشرائح */}

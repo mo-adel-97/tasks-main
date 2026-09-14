@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -56,11 +58,11 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import SupervisorAccountRoundedIcon from "@mui/icons-material/SupervisorAccountRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
-import Sidebar from "../components/Sidebar";
+
 import HrOrganizationDesigner from "./components/HrOrganizationDesigner";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 
 /* ============================================================
    الاتجاهات - عدل القيم الثلاث فقط لو احتجت
@@ -1008,7 +1010,7 @@ const HrDepartmentsPage = () => {
   );
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       dir={PAGE_DIRECTION}
       sx={{
         minHeight: "100dvh",
@@ -1064,27 +1066,34 @@ const HrDepartmentsPage = () => {
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
 
       <Box
         component="main"
         sx={{
-          mt: { xs: "50px", sm: "56px" },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
           width: "100%",
           minWidth: 0,
-          px: { xs: 0.7, sm: 1, md: 1.3 },
-          py: { xs: 0.8, sm: 1.1, md: 1.4 },
+          px: {
+            xs: 0.7,
+            sm: 1,
+            md: 1.3
+          },
+          py: {
+            xs: 0.8,
+            sm: 1.1,
+            md: 1.4
+          },
           boxSizing: "border-box",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             px: 1.5,
             py: 1.5
-          }
+          },
+          ...navigationContentSx
         }}
       >
         <Stack spacing={{ xs: 1, sm: 1.3, md: 1.6 }}>
@@ -2119,7 +2128,7 @@ const HrDepartmentsPage = () => {
           )}
         </DialogContent>
       </Dialog>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

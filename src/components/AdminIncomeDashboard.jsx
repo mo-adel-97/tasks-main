@@ -1,3 +1,5 @@
+import { navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import {
   Box,
@@ -39,7 +41,7 @@ import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 
-import Sidebar from "./SidebarAdmin";
+
 
 const PRIMARY = "#80b49e";
 const PRIMARY_DARK = "#6a9a87";
@@ -379,8 +381,7 @@ function StockChart({ points = [] }) {
    Main Component
 ========================= */
 export default function AdminIncomeDashboard() {
-  const LEFT_MARGIN = 280;
-
+  
   // ✅ show "جاري التحديث" مرة واحدة بعد تطبيق الفترة
   const [showLoadingOnce, setShowLoadingOnce] = useState(false);
 
@@ -787,17 +788,17 @@ const refundBillsCount = useMemo(() => {
         };
 
   return (
-    <>
-      <Sidebar />
+    <NavigationShell variant="admin" ><>
+      
 
       <Box
         sx={{
           minHeight: "100vh",
-          ml: `${LEFT_MARGIN}px`,
           p: 3,
           background: `radial-gradient(circle at 20% 10%, rgba(128,180,158,0.12) 0%, transparent 40%),
-                     radial-gradient(circle at 80% 0%, rgba(59,130,246,0.10) 0%, transparent 35%),
-                     linear-gradient(180deg, ${BG} 0%, #070b14 100%)`,
+                             radial-gradient(circle at 80% 0%, rgba(59,130,246,0.10) 0%, transparent 35%),
+                             linear-gradient(180deg, ${BG} 0%, #070b14 100%)`,
+          ...navigationContentSx
         }}
       >
         {/* 🔥 NEW BILL / REFUND BANNER */}
@@ -912,7 +913,7 @@ const refundBillsCount = useMemo(() => {
                       "& .MuiInputLabel-root": { color: "rgba(226,232,240,0.9)" },
                       "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.12)" },
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                   <TextField
                     type="date"
@@ -929,7 +930,7 @@ const refundBillsCount = useMemo(() => {
                       "& .MuiInputLabel-root": { color: "rgba(226,232,240,0.9)" },
                       "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.12)" },
                     }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
                   <Button
                     onClick={applyRange}
@@ -1366,6 +1367,6 @@ const refundBillsCount = useMemo(() => {
           </Box>
         </Box>
       </Box>
-    </>
+    </></NavigationShell>
   );
 }

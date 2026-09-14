@@ -895,7 +895,7 @@ export default function ExportReportsDialog({
       PaperProps={{
         sx: {
           borderRadius: 3,
-          direction: "ltr", // الكمبوننت من اليسار لليمين
+          direction: "rtl", // الكمبوننت من اليسار لليمين
         },
       }}
     >

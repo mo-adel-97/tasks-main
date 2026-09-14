@@ -234,7 +234,7 @@ const availableYears = Array.from(
                 fontWeight: 800
               }}
             >
-              <Analytics sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> تصفية بيانات المهام:
+              <Analytics sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} /> تصفية بيانات المهام:
             </Typography>
             
             <FormControl size="small" sx={{ minWidth: { xs: 105, sm: 115, md: 120 }, flex: { xs: 1, sm: "0 0 auto" } }}>
@@ -285,7 +285,7 @@ const availableYears = Array.from(
                 height: '100%'
               }}>
                 <Typography variant="h6" sx={{ mb: { xs: 1, md: 2 }, display: "flex", alignItems: "center", color: COLOR_SCHEME.primary, fontSize: { xs: "0.76rem", sm: "0.88rem", md: "1rem" }, fontWeight: 800 }}>
-                  <Send sx={{ mr: 1 }} /> تحليل المهام المرسلة
+                  <Send sx={{ marginInlineEnd: 1 }} /> تحليل المهام المرسلة
                 </Typography>
                 
                 <Box sx={{ mt: { xs: 1, md: 2 }, height: { xs: 165, sm: 180, md: 200 } }}>
@@ -335,7 +335,7 @@ const availableYears = Array.from(
                 height: '100%'
               }}>
                 <Typography variant="h6" sx={{ mb: { xs: 1, md: 2 }, display: "flex", alignItems: "center", color: COLOR_SCHEME.accent, fontSize: { xs: "0.76rem", sm: "0.88rem", md: "1rem" }, fontWeight: 800 }}>
-                  <Inbox sx={{ mr: 1 }} /> تحليل المهام المستلمة
+                  <Inbox sx={{ marginInlineEnd: 1 }} /> تحليل المهام المستلمة
                 </Typography>
                 
                 <Box sx={{ mt: { xs: 1, md: 2 }, height: { xs: 165, sm: 180, md: 200 } }}>
@@ -383,7 +383,7 @@ const availableYears = Array.from(
           border: `1px solid ${alpha(COLOR_SCHEME.primary, 0.1)}`
         }}>
           <Typography variant="h6" sx={{ mb: { xs: 1, md: 2 }, display: "flex", alignItems: "center", fontSize: { xs: "0.76rem", sm: "0.88rem", md: "1rem" }, fontWeight: 800 }}>
-            <TrendingUp sx={{ mr: 1, color: COLOR_SCHEME.primary }} /> تطور الأداء خلال السنة
+            <TrendingUp sx={{ marginInlineEnd: 1, color: COLOR_SCHEME.primary }} /> تطور الأداء خلال السنة
           </Typography>
           <ResponsiveContainer width="100%" height={isMobile ? 210 : isTablet ? 250 : 300}>
             <LineChart data={chartData} margin={isMobile ? { top: 8, right: 6, left: -24, bottom: 0 } : { top: 10, right: 30, left: 0, bottom: 0 }}>

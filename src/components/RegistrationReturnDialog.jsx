@@ -560,7 +560,7 @@ export default function RegistrationReturnDialog({
                     label="رقم الهوية"
                     value={nationalId || ""}
                     InputProps={{ readOnly: true }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
 
                 <Grid item xs={6} sm={3} md={4}>
@@ -569,7 +569,7 @@ export default function RegistrationReturnDialog({
                     label="رقم الجوال"
                     value={studentTel || ""}
                     InputProps={{ readOnly: true }}
-                  />
+                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
                 </Grid>
               </Grid>
             </Paper>
@@ -583,7 +583,7 @@ export default function RegistrationReturnDialog({
                   value={returnDate}
                   onChange={(e) => setReturnDate(e.target.value)}
                   InputLabelProps={{ shrink: true }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
 
               <Grid item xs={6} sm={6} md={4}>

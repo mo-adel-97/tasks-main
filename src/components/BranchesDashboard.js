@@ -399,7 +399,7 @@ const BranchesDashboardReport = () => {
                 background: "#fff",
                 "& .MuiDataGrid-columnHeaderTitle": { fontWeight: "bold" },
                 "& .MuiDataGrid-cell": { fontSize: 17 },
-                direction: "ltr",
+                direction: "rtl",
                 minWidth: 1300
               }}
               localeText={{

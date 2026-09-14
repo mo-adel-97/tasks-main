@@ -1,3 +1,5 @@
+import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
+import NavigationShell from '../components/NavigationShell';
 import React, {
   useCallback,
   useEffect,
@@ -56,7 +58,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
-import Sidebar from "../components/Sidebar";
+
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 import EditStudentDialog
@@ -64,8 +66,8 @@ import EditStudentDialog
 import RegisterDocumentDialog
   from "../components/RegisterDocumentDialog";
 
-const SIDEBAR_WIDTH = 280;
-const DESKTOP_BREAKPOINT = 1600;
+
+
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
@@ -2717,13 +2719,13 @@ ${record.map((value) =>
   }, [isPhone, isTablet, isCompact]);
 
   return (
-    <Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       sx={{
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100vw",
         overflowX: "hidden",
-        direction: "ltr",
+        direction: "rtl",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
@@ -2761,12 +2763,12 @@ ${record.map((value) =>
             backdropFilter: "blur(14px)",
             color: "#17372b",
             borderBottom: "1px solid rgba(5,117,70,.12)",
-            direction: "ltr"
+            direction: "rtl"
           }}
         >
           <Toolbar
             sx={{
-              direction: "ltr",
+              direction: "rtl",
               minHeight: { xs: "50px !important", sm: "56px !important" },
               px: { xs: .75, sm: 1 },
               gap: .8
@@ -2801,7 +2803,7 @@ ${record.map((value) =>
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: { xs: ".67rem", sm: ".79rem" },
-                textAlign: "left",
+                textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -2813,30 +2815,37 @@ ${record.map((value) =>
         </AppBar>
       )}
 
-      <Sidebar
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
+      
 
       <Box
         component="main"
         sx={{
           ml: 0,
-          mt: { xs: "50px", sm: "56px" },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
           width: "100%",
           maxWidth: "100%",
           minWidth: 0,
           minHeight: "100dvh",
-          px: { xs: .45, sm: .65, md: .8 },
-          py: { xs: .45, sm: .65, md: .8 },
+          px: {
+            xs: .45,
+            sm: .65,
+            md: .8
+          },
+          py: {
+            xs: .45,
+            sm: .65,
+            md: .8
+          },
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            ml: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
             mt: 0,
             p: 1.5
-          }
+          },
+          ...navigationContentSx
         }}
       >
         {isDesktop ? (
@@ -3792,7 +3801,7 @@ ${record.map((value) =>
             }}
             sx={{
               border: 0,
-              direction: "ltr",
+              direction: "rtl",
               width: "100%",
 
               "& .MuiDataGrid-main": {
@@ -4782,7 +4791,7 @@ ${record.map((value) =>
           PaperProps={{
             sx: {
               minWidth: isPhone ? 140 : isTablet ? 170 : 210,
-              direction: "ltr",
+              direction: "rtl",
               "& .MuiMenuItem-root": {
                 minHeight: isPhone ? 28 : isTablet ? 32 : 42,
                 fontFamily: "Cairo",
@@ -5360,7 +5369,7 @@ ${record.map((value) =>
           </Paper>
         </Backdrop>
       </Box>
-    </Box>
+    </Box></NavigationShell>
   );
 };
 

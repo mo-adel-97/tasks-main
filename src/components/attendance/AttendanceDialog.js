@@ -367,7 +367,7 @@ const AttendanceDialog = ({
                           fontSize: '1.3rem',
                           color: colorPalette.primary 
                         }} />
-                        رقم الهوية: {studentData?.nationalId}
+                        رقم الهوية: <bdi dir="ltr">{studentData?.nationalId}</bdi>
                       </Typography>
                     </Grid>
                   </Grid>
@@ -631,8 +631,8 @@ const AttendanceDialog = ({
                   }}
                   inputProps={{
                     step: 300,
-                    style: { fontFamily: '"Cairo", sans-serif' }
-                  }}
+                    style: { fontFamily: '"Cairo", sans-serif' , direction: "ltr", unicodeBidi: "isolate" }
+                  , dir: "ltr" }}
                   sx={{
                     fontFamily: '"Cairo", sans-serif',
                     borderRadius: "10px",
@@ -678,7 +678,7 @@ const AttendanceDialog = ({
                       borderWidth: "2px"
                     }
                   }}
-                />
+                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               </Grid>
               
               {/* Confirmation Section */}
@@ -729,7 +729,7 @@ const AttendanceDialog = ({
                         }
                       />
                     </Grid>
-                    <Grid item xs={12} md={4} sx={{ textAlign: 'left' }}>
+                    <Grid item xs={12} md={4} sx={{ textAlign: 'start' }}>
                       <Typography variant="body2" sx={{ 
                         fontFamily: '"Cairo", sans-serif',
                         color: colorPalette.textLight,
@@ -773,8 +773,8 @@ const AttendanceDialog = ({
             color: noBranchData ? colorPalette.primary : colorPalette.textLight,
             minWidth: "120px",
             "& .MuiButton-startIcon": {
-              marginRight: "8px",
-              marginLeft: "0px"
+              marginInlineEnd: "8px",
+              marginInlineStart: "0px"
             },
             "&:hover": {
               border: `2px solid ${noBranchData ? colorPalette.primaryDark : colorPalette.textDark}`,
@@ -824,8 +824,8 @@ const AttendanceDialog = ({
                 boxShadow: `0 4px 15px ${colorPalette.primary}40`,
                 minWidth: "150px",
                 "& .MuiButton-startIcon": {
-                  marginRight: "8px",
-                  marginLeft: "0px"
+                  marginInlineEnd: "8px",
+                  marginInlineStart: "0px"
                 },
                 "&:hover": {
                   background: `linear-gradient(135deg, ${colorPalette.primaryDark}, ${colorPalette.textDark})`,
