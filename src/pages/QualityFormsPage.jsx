@@ -252,14 +252,14 @@ const fieldSx = {
 
     "& .MuiInputBase-input, & .MuiSelect-select": {
       fontFamily: "Cairo",
-      fontSize: "0.6rem",
-      fontWeight: 750,
-      paddingTop: "8px",
-      paddingBottom: "8px"
+      fontSize: "0.6875rem",
+      fontWeight: 500,
+      paddingTop: "4px",
+      paddingBottom: "4px"
     },
 
     "& .MuiOutlinedInput-root": {
-      minHeight: 35,
+      minHeight: 32,
       borderRadius: "9px"
     }
   },
@@ -2145,7 +2145,7 @@ const handleExportPdf = () => {
                         />
                       )
                       : (
-                        <Button sx={uiLayout.buttonSx}
+                        <Button sx={uiLayout.withUiSx({ flexShrink: 0, minWidth: 62, px: 0.5 }, uiLayout.buttonSx)}
                           onClick={() =>
                             loadStudent()
                           }
@@ -4236,7 +4236,7 @@ const StudentLookupFields = ({
         endAdornment: loadingStudent ? (
           <CircularProgress size={20} />
         ) : (
-          <Button sx={uiLayout.buttonSx}
+          <Button sx={uiLayout.withUiSx({ flexShrink: 0, minWidth: 62, px: 0.5 }, uiLayout.buttonSx)}
             onClick={() => loadStudent()}
             startIcon={<SearchIcon />}
           >

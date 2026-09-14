@@ -876,9 +876,6 @@ const BatchSeatsCounter = () => {
           
           boxSizing: "border-box",
           overflowX: "hidden",
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            p: 3
-          },
           ...navigationContentSx
         }}
       >
@@ -886,13 +883,13 @@ const BatchSeatsCounter = () => {
           elevation={0}
           sx={{
             width: "100%",
-            maxWidth: 1500,
+            maxWidth: "100%",
             mx: "auto",
             borderRadius: isPhone
               ? 1.6
               : isTablet
                 ? 2.2
-                : 4,
+                : 2,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -906,12 +903,12 @@ const BatchSeatsCounter = () => {
                 ? 0.7
                 : isTablet
                   ? 1.1
-                  : 3,
+                  : 1.25,
               py: isPhone
                 ? 0.65
                 : isTablet
                   ? 0.9
-                  : 3,
+                  : 1.25,
 
               background:
                 "linear-gradient(135deg,#ffffff 0%,#edf8f3 45%,#dff3ea 100%)",
@@ -981,7 +978,7 @@ const BatchSeatsCounter = () => {
                       ? "0.75rem"
                       : isTablet
                         ? "0.88rem"
-                        : "1.5rem",
+                        : "1.05rem",
                     lineHeight: 1.15
                   }}
                 >
@@ -997,7 +994,7 @@ const BatchSeatsCounter = () => {
                       ? "0.75rem"
                       : isTablet
                         ? "0.75rem"
-                        : undefined,
+                        : "0.6875rem",
                     lineHeight: 1.35,
                     display: isPhone
                       ? "none"
@@ -1017,7 +1014,7 @@ const BatchSeatsCounter = () => {
                 ? 0.55
                 : isTablet
                   ? 0.85
-                  : 3
+                  : 1.25
             }}
           >
             {/* Filters */}
@@ -1028,19 +1025,19 @@ const BatchSeatsCounter = () => {
                   ? 0.65
                   : isTablet
                     ? 0.9
-                    : 2.25,
+                    : 0.9,
 
                 p: isPhone
                   ? 0.55
                   : isTablet
                     ? 0.8
-                    : 2,
+                    : 0.8,
 
                 borderRadius: isPhone
                   ? 1.4
                   : isTablet
                     ? 2
-                    : 3.5,
+                    : 1.5,
 
                 border:
                   "1px solid rgba(5,117,70,0.14)",
@@ -1077,13 +1074,13 @@ const BatchSeatsCounter = () => {
                   gridTemplateColumns: {
                     xs: "repeat(2,minmax(0,1fr))",
                     sm: "repeat(4,minmax(0,1fr))",
-                    lg: "210px minmax(300px,430px) auto auto"
+                    lg: "minmax(150px,0.8fr) minmax(220px,1.6fr) minmax(92px,auto) minmax(92px,auto)"
                   },
                   gap: isPhone
                     ? 0.45
                     : isTablet
                       ? 0.65
-                      : 1.5,
+                      : 0.7,
                   alignItems: "center"
                 }, uiLayout.filterBarSx)}
               >

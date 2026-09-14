@@ -2171,8 +2171,8 @@ const handleAcceptOrder = (row) => {
       {
         field: "studentName",
         headerName: "اسم الطالب",
-        flex: 1.25,
-        minWidth: 135,
+        flex: 1.45,
+        minWidth: 150,
         align: "center",
         headerAlign: "center",
         renderCell: (params) => <EllipsisCell value={params.value} />
@@ -2185,7 +2185,7 @@ const handleAcceptOrder = (row) => {
         align: "center",
         headerAlign: "center",
         renderCell: (params) => (
-          <Typography sx={{ fontWeight: 900, fontSize: "0.78rem" }}>
+          <Typography sx={{ fontWeight: 600, fontSize: designTokens.typography.table }}>
             {params.value || params.row?.tel || "-"}
           </Typography>
         )
@@ -2198,7 +2198,7 @@ const handleAcceptOrder = (row) => {
         align: "center",
         headerAlign: "center",
         renderCell: (params) => (
-          <Typography sx={{ fontWeight: 900, fontSize: "0.78rem" }}>
+          <Typography sx={{ fontWeight: 600, fontSize: designTokens.typography.table }}>
             {params.value || "-"}
           </Typography>
         )
@@ -2211,7 +2211,7 @@ const handleAcceptOrder = (row) => {
         align: "center",
         headerAlign: "center",
         renderCell: (params) => (
-          <Typography sx={{ fontWeight: 900, fontSize: "0.78rem" }}>
+          <Typography sx={{ fontWeight: 600, fontSize: designTokens.typography.table }}>
             {params.row?.registrationTypeText || params.row?.regTypeText || params.row?.typeRegText || "-"}
           </Typography>
         )
@@ -2256,7 +2256,7 @@ const handleAcceptOrder = (row) => {
         field: "actions",
         headerName: "الإجراءات",
         flex: 0.75,
-        minWidth: 138,
+        minWidth: 108,
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
@@ -2268,11 +2268,11 @@ const handleAcceptOrder = (row) => {
             endIcon={<MoreVertIcon />}
             onClick={(event) => handleOpenActionMenu(event, params.row)}
             sx={uiLayout.withUiSx({
-              minWidth: 126,
+              minWidth: 92,
               width: "100%",
               height: 32,
               borderRadius: 999,
-              fontWeight: 900,
+              fontWeight: 600,
               fontSize: designTokens.typography.table,
               whiteSpace: "nowrap",
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
@@ -2393,7 +2393,7 @@ const handleAcceptOrder = (row) => {
           <Typography
             sx={{
               width: "100%",
-              fontWeight: 900,
+              fontWeight: 600,
               fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
               lineHeight: 1.2,
               whiteSpace: "nowrap",
@@ -2901,14 +2901,14 @@ const handleAcceptOrder = (row) => {
                     width: "100%",
 
                     // Desktop: كل العناصر في صف واحد.
-                    display: isDesktop ? "flex" : "grid",
+                    display: isDesktop ? "grid" : "grid",
                     alignItems: "center",
                     justifyContent: isDesktop ? "center" : "stretch",
                     flexWrap: isDesktop ? "nowrap" : undefined,
 
                     // Mobile / Tablet: العداد + العنوان + الزرين في صف مرتب.
                     gridTemplateColumns: isDesktop
-                      ? "auto auto minmax(0, 1fr) minmax(0, 1fr)"
+                      ? "auto minmax(20px,auto) auto auto"
                       : "auto auto minmax(0, 1fr) minmax(0, 1fr)",
 
                     gap: isDesktop
@@ -2917,7 +2917,8 @@ const handleAcceptOrder = (row) => {
 
                     "& .MuiButton-root": {
                       width: isDesktop ? "auto" : "100%",
-                      minWidth: isDesktop ? 95 : 0,
+                      minWidth: isDesktop ? 0 : 0,
+                      px: isDesktop ? 0.7 : undefined,
                       height: isDesktop ? designTokens.controlHeight : { xs: 30, sm: 33, md: 36 },
                       fontSize: isDesktop
                         ? designTokens.typography.control
@@ -2932,7 +2933,7 @@ const handleAcceptOrder = (row) => {
                       color: textColor,
                       lineHeight: 1.2,
                       whiteSpace: "nowrap",
-                      minWidth: isDesktop ? 120 : "auto",
+                      minWidth: isDesktop ? "auto" : "auto",
                       fontSize: isDesktop
                         ? designTokens.typography.control
                         : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
@@ -2947,9 +2948,9 @@ const handleAcceptOrder = (row) => {
                       color: accentColor,
                       fontWeight: 900,
                       fontSize: isDesktop
-                        ? "1rem"
+                        ? "0.75rem"
                         : { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
-                      minWidth: isDesktop ? 34 : 22,
+                      minWidth: isDesktop ? 20 : 22,
                       textAlign: "center"
                     }}
                   >
@@ -2968,7 +2969,7 @@ const handleAcceptOrder = (row) => {
                     disabled={loading}
                     onClick={handleSearch}
                     sx={uiLayout.withUiSx({
-                      minWidth: isDesktop ? 110 : 0,
+                      minWidth: isDesktop ? 0 : 0,
                       borderRadius: 2,
                       fontWeight: 900,
                       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
@@ -2991,7 +2992,7 @@ const handleAcceptOrder = (row) => {
                     variant="outlined"
                     onClick={handleRefresh}
                     sx={uiLayout.withUiSx({
-                      minWidth: isDesktop ? 95 : 0,
+                      minWidth: isDesktop ? 0 : 0,
                       borderRadius: 2,
                       fontWeight: 900,
                       color: accentColor,
@@ -3070,7 +3071,7 @@ const handleAcceptOrder = (row) => {
           <Box
             sx={uiLayout.withUiSx({
               width: "100%",
-              overflowX: isDesktop ? "auto" : "hidden",
+              overflowX: "hidden",
               WebkitOverflowScrolling: "touch",
               minWidth: 0
             }, uiLayout.tableContainerSx)}
@@ -3117,7 +3118,7 @@ const handleAcceptOrder = (row) => {
               },
 
               "& .MuiDataGrid-virtualScroller": {
-                overflowX: "auto"
+                overflowX: "hidden"
               },
 
               "& .MuiDataGrid-columnHeaders": {
@@ -3129,7 +3130,7 @@ const handleAcceptOrder = (row) => {
 
               "& .MuiDataGrid-columnHeaderTitle": {
                 fontWeight: 950,
-                fontSize: isDesktop ? "0.82rem" : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                fontSize: "0.6875rem",
                 whiteSpace: "normal",
                 lineHeight: 1.2,
                 textAlign: "center",
@@ -3141,7 +3142,7 @@ const handleAcceptOrder = (row) => {
                 fontWeight: 800,
                 outline: "none !important",
                 px: isDesktop ? 0.5 : { xs: 0.15, sm: 0.35, md: 0.45 },
-                fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                fontSize: "0.6875rem",
                 overflow: "hidden"
               },
 
