@@ -1,0 +1,11 @@
+PASS src/components/SidebarHome.test.jsx (11.862 s)
+PASS src/components/common/uiLayout.test.jsx
+PASS src/components/SharedRtl.test.jsx
+PASS src/components/NavigationShell.test.jsx
+PASS src/theme.test.jsx
+PASS src/config/sidebarNavigation.test.jsx (11.216 s)
+
+Test Suites: 6 passed, 6 total
+Tests:       25 passed, 25 total
+Snapshots:   0 total
+Time:        35.999 s, estimated 63 s

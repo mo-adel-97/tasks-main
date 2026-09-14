@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import deepmerge from '@mui/utils/deepmerge';
 import { rtlComponents } from '../config/rtlComponents';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -258,11 +259,11 @@ const AttendancePage = () => {
         
         
         {/* المحتوى الرئيسي */}
-        <Box 
+        <PageContainer 
           component="main" 
           sx={{
             flexGrow: 1,
-            p: 3,
+            
             minHeight: "100vh",
             backgroundColor: "#f5f7fa",
             direction: 'rtl',
@@ -385,7 +386,7 @@ const AttendancePage = () => {
               </Alert>
             </Snackbar>
           </Box>
-        </Box>
+        </PageContainer>
       </Box>
     </ThemeProvider></NavigationShell>
   );

@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -1197,13 +1198,10 @@ export default function DesktopDevicesAccessPage() {
     <NavigationShell variant="standard" ><>
       
 
-      <Box
+      <PageContainer
         sx={{
           minHeight: "100vh",
-          p: {
-            xs: 1.5,
-            md: 2.5
-          },
+          
           bgcolor: colors.page,
           direction: "rtl",
           textAlign: "start",
@@ -1620,7 +1618,7 @@ export default function DesktopDevicesAccessPage() {
             }, uiLayout.dataGridSx)}
           />
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Dialog sx={uiLayout.dialogLayoutSx}
         open={mapDialog.open}

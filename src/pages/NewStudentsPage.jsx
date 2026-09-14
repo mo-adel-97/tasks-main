@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1370,7 +1371,7 @@ const NewStudentsPage = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           ml: 0,
@@ -1382,16 +1383,8 @@ const NewStudentsPage = () => {
           maxWidth: "100%",
           minWidth: 0,
           minHeight: "100dvh",
-          px: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.8
-          },
-          py: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.8
-          },
+          
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
@@ -2000,7 +1993,7 @@ const NewStudentsPage = () => {
             </Typography>
           </Paper>
         </Backdrop>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 };

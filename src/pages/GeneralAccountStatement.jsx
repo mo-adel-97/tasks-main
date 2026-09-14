@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1336,11 +1337,11 @@ export default function GeneralAccountStatement() {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           boxSizing: "border-box",
-          p: isDesktop ? "16px 18px" : isPhone ? "6px" : "10px",
+          
           direction: "rtl",
           ...navigationContentSx
         }}
@@ -2120,7 +2121,7 @@ export default function GeneralAccountStatement() {
             </Box>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       {/* =====================================================
           Lightweight advanced-filter picker.

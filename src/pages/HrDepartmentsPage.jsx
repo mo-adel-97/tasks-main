@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1272,7 +1273,7 @@ const HrDepartmentsPage = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           mt: {
@@ -1281,16 +1282,8 @@ const HrDepartmentsPage = () => {
           },
           width: "100%",
           minWidth: 0,
-          px: {
-            xs: 0.7,
-            sm: 1,
-            md: 1.3
-          },
-          py: {
-            xs: 0.8,
-            sm: 1.1,
-            md: 1.4
-          },
+          
+          
           boxSizing: "border-box",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
             mt: 0,
@@ -1517,7 +1510,7 @@ const HrDepartmentsPage = () => {
             )}
           </Paper>
         </Stack>
-      </Box>
+      </PageContainer>
 
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}

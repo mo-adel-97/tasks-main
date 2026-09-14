@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -836,15 +837,11 @@ export default function ClosingEntry() {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           minHeight: "100vh",
-          p: {
-            xs: 0.8,
-            sm: 1,
-            lg: 1.3
-          },
+          
           ...navigationContentSx
         }}
       >
@@ -1323,7 +1320,7 @@ export default function ClosingEntry() {
             )}
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <LookupDialog
         open={costOpen}

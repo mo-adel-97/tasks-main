@@ -1,0 +1,214 @@
+[
+  {
+    "file": "src/pages/AdminViewTasks.js",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/AdmissionRequests.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/AdmissionRequestsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/AfterSalesFollow.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/AfterSalesReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/AttendancePage.js",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/BalanceReviewPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/BatchSeatsCounter.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/BatchStatistics.jsx",
+    "containers": 2
+  },
+  {
+    "file": "src/pages/BranchDailyReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/BranchReportsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CashDisbursement.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CashPaymentOrder.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CashReceiptAcknowledgment.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CircularsList.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CircularsUpload.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/ClosingEntry.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CollectionCommissionsReport.jsx",
+    "containers": 2
+  },
+  {
+    "file": "src/pages/Complaiments.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/CourseStudentsPage.jsx",
+    "containers": 2
+  },
+  {
+    "file": "src/pages/DailyAttendanceReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/DeregistrationRequestsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/DesktopDevicesAccessPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/DiplomaStudentsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/DiscountRequestsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/GeneralAccountStatement.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/GeneralDaily.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/GraduatesFollowReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/HrDepartmentsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/HrEmployeesPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/HrLeavesPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/HrPermissionsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/JournalEntry.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/MarketersReport.jsx",
+    "containers": 2
+  },
+  {
+    "file": "src/pages/MonthlyAttendanceReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/NewStudentsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/OtherInstituteRegistrationsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/PaymentFollowReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/PaymentRequestsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/PeriodicReports.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/PeriodicReportsForManagers.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/QualityFormsPage.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/ReceptionOffice.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/RefundRequestsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/RegistrationRequestReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/RewardsList.jsx",
+    "containers": 2
+  },
+  {
+    "file": "src/pages/SalesReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/TaxReturnsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/TaxSalesReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/TrainingAgreementsFollow.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/TransferRequestsReport.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/TrialBalance.jsx",
+    "containers": 1
+  },
+  {
+    "file": "src/pages/VipCustomers.jsx",
+    "containers": 1
+  }
+]

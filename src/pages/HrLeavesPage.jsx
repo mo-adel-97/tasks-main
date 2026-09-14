@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -1947,13 +1948,10 @@ export default function HrLeavesPage() {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
-          p: {
-            xs: 1,
-            md: 1.5
-          },
+          
           ...navigationContentSx
         }}
       >
@@ -3337,7 +3335,7 @@ export default function HrLeavesPage() {
           </Stack>
         )}
 
-      </Box>
+      </PageContainer>
 
         <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}

@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1907,19 +1908,11 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
-          px: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.8
-          },
-          py: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.8
-          },
+          
+          
           ml: 0,
           mt: {
             xs: "var(--app-header-height, 56px)",
@@ -2342,7 +2335,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             العدد: {filteredRows.length}
           </Paper>
         </Box>
-      </Box>
+      </PageContainer>
 
       <Dialog
         open={detailsOpen}

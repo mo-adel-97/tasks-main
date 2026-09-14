@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -664,9 +665,9 @@ const MonthlyAttendanceReport = () => {
     <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
       
 
-      <Box component="main" sx={{
+      <PageContainer component="main" sx={{
         flexGrow: 1,
-        p: 4,
+        
         minHeight: '100vh',
         direction: "rtl",
         backgroundColor: colorPalette.background,
@@ -1179,7 +1180,7 @@ const MonthlyAttendanceReport = () => {
             />
           </>
         )}
-      </Box>
+      </PageContainer>
 
       {/* Attendance Details Dialog */}
       <Dialog

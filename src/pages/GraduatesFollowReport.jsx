@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -2055,11 +2056,11 @@ const GraduatesFollowReport = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
-          p: isDesktop ? 2 : isPhone ? 0.45 : 0.75,
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           ...navigationContentSx
@@ -3443,7 +3444,7 @@ const GraduatesFollowReport = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 };

@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -293,17 +294,13 @@ const CircularsList = () => {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           minHeight: "100vh",
           width: "100%",
           boxSizing: "border-box",
-          p: {
-            xs: 1,
-            sm: 1.25,
-            md: 1.5
-          },
+          
           ...navigationContentSx
         }}
       >
@@ -950,7 +947,7 @@ const CircularsList = () => {
             </>
           )}
         </Stack>
-      </Box>
+      </PageContainer>
 
       <style>
         {`

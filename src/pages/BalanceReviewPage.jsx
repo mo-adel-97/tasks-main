@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -932,11 +933,11 @@ export default function BalanceReviewPage() {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ direction: "rtl", minHeight: "100vh", bgcolor: "#f4f7f6", overflowX: "hidden" }}>
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           maxWidth: "100vw",
-          padding: isDesktop ? "18px 20px" : isPhone ? "6px 5px" : "10px",
+          
           boxSizing: "border-box",
           transition: "margin 0.2s ease, width 0.2s ease",
           overflowX: "hidden",
@@ -1606,7 +1607,7 @@ export default function BalanceReviewPage() {
             <Button variant="contained" onClick={() => setProblemDetailsOpen(false)} sx={uiLayout.withUiSx({ bgcolor: primaryColor, fontWeight: 900 }, uiLayout.buttonSx)}>إغلاق</Button>
           </DialogActions>
         </Dialog>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 }

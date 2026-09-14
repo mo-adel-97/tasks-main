@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1455,11 +1456,11 @@ export default function GeneralDaily() {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           boxSizing: "border-box",
-          p: isDesktop ? "12px 14px" : isPhone ? "5px" : "8px",
+          
           direction: "rtl",
           overflowX: "hidden",
           ...navigationContentSx
@@ -2394,7 +2395,7 @@ export default function GeneralDaily() {
             </Box>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Dialog sx={uiLayout.dialogLayoutSx}
         open={detailOpen}

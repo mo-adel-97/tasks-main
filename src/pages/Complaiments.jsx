@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import deepmerge from '@mui/utils/deepmerge';
@@ -1074,9 +1075,9 @@ const Complaints = () => {
     <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #f8fbf9 0%, #e8f4ef 100%)' }}>
         
-        <Box component="main" sx={{
+        <PageContainer component="main" sx={{
           flexGrow: 1,
-          p: 3,
+          
           ...navigationContentSx
         }}>
           {loading ? (
@@ -1189,7 +1190,7 @@ const Complaints = () => {
               {renderDetailsDialog()}
             </CenteredContainer>
           )}
-        </Box>
+        </PageContainer>
       </Box>
     </ThemeProvider></NavigationShell>
   );

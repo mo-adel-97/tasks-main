@@ -1,0 +1,447 @@
+[
+  {
+    "f": "AdminViewTasks.js",
+    "rows": [
+      "p:3"
+    ]
+  },
+  {
+    "f": "AdmissionRequests.jsx",
+    "rows": [
+      "px:{ xs: 0.45, sm: 0.65, md: 0.8 } py:{ xs: 0.45, sm: 0.65, md: 0.8 } minHeight:\"100dvh\""
+    ]
+  },
+  {
+    "f": "AdmissionRequestsReport.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.65, md: 0.8 } py:{ xs: 0.45, sm: 0.65, md: 0.8 }"
+    ]
+  },
+  {
+    "f": "AfterSalesFollow.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" p:{ xs: 0.5, sm: 0.75, md: 1 }"
+    ]
+  },
+  {
+    "f": "AfterSalesReport.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" p:{ xs: 0.5, sm: 0.75, md: 1 }"
+    ]
+  },
+  {
+    "f": "AttendancePage.js",
+    "rows": [
+      "p:3 minHeight:\"100vh\""
+    ]
+  },
+  {
+    "f": "BalanceReviewPage.jsx",
+    "rows": [
+      "maxWidth:\"100vw\" padding:isDesktop ? \"18px 20px\" : isPhone ? \"6px 5px\" : \"10px\""
+    ]
+  },
+  {
+    "f": "BatchCountManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "BatchManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "BatchSeatsCounter.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" p:{ xs: 0.45, sm: 0.7, md: 1, lg: 1.3 }"
+    ]
+  },
+  {
+    "f": "BatchStatistics.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1.25, sm: 2, md: 3 }",
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.7 } py:{ xs: 0.45, sm: 0.7 }"
+    ]
+  },
+  {
+    "f": "BranchDailyReport.jsx",
+    "rows": [
+      "p:{ xs: 1.2, md: 2 }"
+    ]
+  },
+  {
+    "f": "BranchReportsPage.jsx",
+    "rows": [
+      "pr:isMobile ? 2 : 3 pl:isMobile ? 2 : 3"
+    ]
+  },
+  {
+    "f": "CashDisbursement.jsx",
+    "rows": [
+      "p:{ xs: .75, sm: 1, lg: 1.5 }"
+    ]
+  },
+  {
+    "f": "CashPaymentOrder.jsx",
+    "rows": [
+      "p:{ xs: 1.2, md: 2 }"
+    ]
+  },
+  {
+    "f": "CashReceiptAcknowledgment.jsx",
+    "rows": [
+      "p:{ xs: 1.2, md: 2 }"
+    ]
+  },
+  {
+    "f": "ChangeUserPassword.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "ChatMian.jsx",
+    "rows": [
+      "minHeight:'48px'",
+      "height:'100vh'",
+      "height:'100vh'"
+    ]
+  },
+  {
+    "f": "Chats.jsx",
+    "rows": [
+      "height:'100vh'"
+    ]
+  },
+  {
+    "f": "CircularsList.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1, sm: 1.25, md: 1.5 }"
+    ]
+  },
+  {
+    "f": "CircularsUpload.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1, sm: 1.25, md: 1.5 }"
+    ]
+  },
+  {
+    "f": "ClosingEntry.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 0.8, sm: 1, lg: 1.3 }"
+    ]
+  },
+  {
+    "f": "CollectionCommissionsReport.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1.5, md: 3 }",
+      "maxWidth:\"100%\" px:{ xs: 0.45, sm: 0.7 } py:{ xs: 0.45, sm: 0.7 }"
+    ]
+  },
+  {
+    "f": "Complaiments.jsx",
+    "rows": [
+      "p:3"
+    ]
+  },
+  {
+    "f": "ConsolidatedIncomeStatement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "CourseStudentsPage.jsx",
+    "rows": [
+      "p:1",
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.65, md: 0.8 } py:{ xs: 0.45, sm: 0.65, md: 0.8 }"
+    ]
+  },
+  {
+    "f": "CreateExam.jsx",
+    "rows": [
+      "minHeight:'100vh'"
+    ]
+  },
+  {
+    "f": "DailyAttendanceReport.jsx",
+    "rows": [
+      "p:4 minHeight:'100vh'"
+    ]
+  },
+  {
+    "f": "DailyFollowUpReport.jsx",
+    "rows": [
+      "padding:theme.spacing(4)"
+    ]
+  },
+  {
+    "f": "Dashboard.jsx",
+    "rows": [
+      "maxWidth:\"100%\""
+    ]
+  },
+  {
+    "f": "DeregistrationRequestsReport.jsx",
+    "rows": [
+      "p:isDesktop ? 2 : isPhone ? 0.45 : 0.75"
+    ]
+  },
+  {
+    "f": "DesktopDevicesAccessPage.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1.5, md: 2.5 }"
+    ]
+  },
+  {
+    "f": "DiplomaStudentsPage.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: .45, sm: .65, md: .8 } py:{ xs: .45, sm: .65, md: .8 }"
+    ]
+  },
+  {
+    "f": "DiscountRequestsReport.jsx",
+    "rows": [
+      "p:isDesktop ? 2 : isPhone ? 0.45 : 0.75"
+    ]
+  },
+  {
+    "f": "DiscountTypeManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "ExploerNetwork.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "GeneralAccountStatement.jsx",
+    "rows": [
+      "p:isDesktop ? \"16px 18px\" : isPhone ? \"6px\" : \"10px\""
+    ]
+  },
+  {
+    "f": "GeneralDaily.jsx",
+    "rows": [
+      "p:isDesktop ? \"12px 14px\" : isPhone ? \"5px\" : \"8px\""
+    ]
+  },
+  {
+    "f": "GraduatesFollowReport.jsx",
+    "rows": [
+      "p:isDesktop ? 2 : isPhone ? 0.45 : 0.75"
+    ]
+  },
+  {
+    "f": "HrDepartmentsPage.jsx",
+    "rows": [
+      "px:{ xs: 0.7, sm: 1, md: 1.3 } py:{ xs: 0.8, sm: 1.1, md: 1.4 }"
+    ]
+  },
+  {
+    "f": "HrEmployeesPage.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.65, sm: 1, md: 1.25 } py:{ xs: 0.7, sm: 1, md: 1.25 }"
+    ]
+  },
+  {
+    "f": "HrJobTitlesPage.jsx",
+    "rows": [
+      "minHeight:\"100vh\""
+    ]
+  },
+  {
+    "f": "HrLeavesPage.jsx",
+    "rows": [
+      "p:{ xs: 1, md: 1.5 }"
+    ]
+  },
+  {
+    "f": "HrPermissionsPage.jsx",
+    "rows": [
+      "p:{ xs: 1, md: 1.5 }"
+    ]
+  },
+  {
+    "f": "JournalEntry.jsx",
+    "rows": [
+      "p:{ xs: 0.75, sm: 1, lg: 1.5 }"
+    ]
+  },
+  {
+    "f": "MarketersReport.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1.5, md: 3 }",
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.7 } py:{ xs: 0.45, sm: 0.7 }"
+    ]
+  },
+  {
+    "f": "MonthlyAttendanceReport.jsx",
+    "rows": [
+      "p:4 minHeight:'100vh'"
+    ]
+  },
+  {
+    "f": "NewStudentsPage.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.65, md: 0.8 } py:{ xs: 0.45, sm: 0.65, md: 0.8 }"
+    ]
+  },
+  {
+    "f": "OtherInstituteRegistrationsPage.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" p:{ xs: 0.55, sm: 0.8, md: 1 }"
+    ]
+  },
+  {
+    "f": "PaymentFollowReport.jsx",
+    "rows": [
+      "p:isDesktop ? 2.5 : isPhone ? 0.45 : 0.75"
+    ]
+  },
+  {
+    "f": "PaymentRequestsReport.jsx",
+    "rows": [
+      "px:isDesktop ? 2 : isPhone ? 0.85 : 1.25 py:isDesktop ? 2 : isPhone ? 0.7 : 1"
+    ]
+  },
+  {
+    "f": "PeriodicReports.jsx",
+    "rows": [
+      "p:4 minHeight:'100vh'"
+    ]
+  },
+  {
+    "f": "PeriodicReportsForManagers.jsx",
+    "rows": [
+      "p:4 minHeight:'100vh'"
+    ]
+  },
+  {
+    "f": "PrintExamPage.jsx",
+    "rows": [
+      "minHeight:'100vh'"
+    ]
+  },
+  {
+    "f": "QualityFormsAudit.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "QualityFormsPage.jsx",
+    "rows": [
+      "maxWidth:\"100%\" p:{ xs: 0.45, sm: 0.7, md: 1, lg: 1.3 }"
+    ]
+  },
+  {
+    "f": "ReceptionOffice.jsx",
+    "rows": [
+      "maxWidth:\"100%\" p:isDesktop ? 2.5 : { xs: 0.35, sm: 0.6, md: 0.9 } pt:isDesktop ? 2.5 : { xs: \"var(--app-header-height, 56px)\", sm: \"var(--app-header-height, 56px)\", md: \"var(--app-header-height, 56px)\" }"
+    ]
+  },
+  {
+    "f": "RefundRequestsReport.jsx",
+    "rows": [
+      "p:isDesktop ? 2 : isPhone ? 0.45 : 0.75"
+    ]
+  },
+  {
+    "f": "RegistrationRequestReport.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.65, md: 0.8 } py:{ xs: 0.45, sm: 0.65, md: 0.8 }"
+    ]
+  },
+  {
+    "f": "RewardsList.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 1.5, md: 3 }",
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.7 } py:{ xs: 0.45, sm: 0.7 }"
+    ]
+  },
+  {
+    "f": "SalesManManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "SalesReport.jsx",
+    "rows": [
+      "p:{ xs: 0.55, sm: 0.85, md: 1.2 }"
+    ]
+  },
+  {
+    "f": "ServiceManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "SidebarSettings.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "TaxReturnsReport.jsx",
+    "rows": [
+      "p:isDesktop ? \"12px 14px\" : isPhone ? \"5px\" : \"8px\""
+    ]
+  },
+  {
+    "f": "TaxSalesReport.jsx",
+    "rows": [
+      "p:isDesktop ? \"12px 14px\" : isPhone ? \"5px\" : \"8px\""
+    ]
+  },
+  {
+    "f": "TrainerManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "TrainingAgreementsFollow.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" p:{ xs: 0.5, sm: 0.75, md: 1 }"
+    ]
+  },
+  {
+    "f": "TransferRequestsReport.jsx",
+    "rows": [
+      "p:isDesktop ? 2 : isPhone ? 0.45 : 0.75"
+    ]
+  },
+  {
+    "f": "TrialBalance.jsx",
+    "rows": [
+      "minHeight:\"100vh\" p:{ xs: 0.6, sm: 1, lg: 1.2 }"
+    ]
+  },
+  {
+    "f": "UserActionReport.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "UserManagement.jsx",
+    "rows": [
+      ""
+    ]
+  },
+  {
+    "f": "VipCustomers.jsx",
+    "rows": [
+      "maxWidth:\"100%\" minHeight:\"100dvh\" px:{ xs: 0.45, sm: 0.65, md: 0.8 } py:{ xs: 0.45, sm: 0.65, md: 0.8 }"
+    ]
+  }
+]

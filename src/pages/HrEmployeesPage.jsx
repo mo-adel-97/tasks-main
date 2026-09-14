@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { hrChipSx, hrEmployeeFieldSx, hrTabIconSx } from "../components/hrControlStyles";
@@ -3373,7 +3374,7 @@ const HrEmployeesPage = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           ml: 0,
@@ -3385,16 +3386,8 @@ const HrEmployeesPage = () => {
           maxWidth: "100%",
           minWidth: 0,
           minHeight: "100dvh",
-          px: {
-            xs: 0.65,
-            sm: 1,
-            md: 1.25
-          },
-          py: {
-            xs: 0.7,
-            sm: 1,
-            md: 1.25
-          },
+          
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
@@ -10063,7 +10056,7 @@ const HrEmployeesPage = () => {
 
 
         </Stack>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 };

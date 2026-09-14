@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1081,15 +1082,11 @@ export default function TrialBalance() {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           minHeight: "100vh",
-          p: {
-            xs: 0.6,
-            sm: 1,
-            lg: 1.2
-          },
+          
           ...navigationContentSx
         }}
       >
@@ -2021,7 +2018,7 @@ export default function TrialBalance() {
             )}
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Dialog sx={uiLayout.dialogLayoutSx}
         open={branchOpen}

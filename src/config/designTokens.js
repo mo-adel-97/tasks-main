@@ -2,8 +2,10 @@
 export const designTokens = Object.freeze({
   headerHeight: 56,
   pagePadding: { xs: 12, sm: 16, lg: 20 },
-  cardPadding: 'clamp(0.875rem, 1.5vw, 1.25rem)',
-  layoutGap: 'clamp(0.75rem, 1.2vw, 1rem)',
+  dataRegionHeight: 'clamp(18rem, 55dvh, 38rem)',
+  pageGutter: 'clamp(0.625rem, 1vw, 1rem)',
+  cardPadding: 'clamp(0.75rem, 1vw, 1rem)',
+  layoutGap: 'clamp(0.625rem, 0.8vw, 0.875rem)',
   typography: {
     pageTitle: 'clamp(1.125rem, 1rem + 0.3vw, 1.375rem)',
     sectionTitle: 'clamp(0.9375rem, 0.875rem + 0.2vw, 1.0625rem)',
@@ -14,7 +16,7 @@ export const designTokens = Object.freeze({
     sidebar: '0.75rem',
     helper: '0.75rem',
   },
-  controlHeight: 40,
+  controlHeight: 36,
   touchHeight: 44,
   radius: 10,
   text: '#203b30',

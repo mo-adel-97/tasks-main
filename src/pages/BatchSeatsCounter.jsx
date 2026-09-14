@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -863,7 +864,7 @@ const BatchSeatsCounter = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           width: "100%",
@@ -872,12 +873,7 @@ const BatchSeatsCounter = () => {
           ml: 0,
           mr: 0,
           minHeight: "100dvh",
-          p: {
-            xs: 0.45,
-            sm: 0.7,
-            md: 1,
-            lg: 1.3
-          },
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
@@ -2176,7 +2172,7 @@ const BatchSeatsCounter = () => {
             </Box>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 };

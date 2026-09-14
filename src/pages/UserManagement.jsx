@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1181,7 +1182,7 @@ export default function UserManagement() {
         ];
 
   const content = (
-    <Box
+    <PageContainer
       dir="rtl"
       sx={{
         minHeight: "100vh",
@@ -1189,7 +1190,7 @@ export default function UserManagement() {
         maxWidth: "100vw",
         overflowX: "hidden",
         bgcolor: soft,
-        p: { xs: 0.5, sm: 0.75, md: 1 }
+        
       }}
     >
       <Paper
@@ -2290,7 +2291,7 @@ export default function UserManagement() {
         onPick={pickLookup}
         columns={lookupColumns}
       />
-    </Box>
+    </PageContainer>
   );
 
   return (

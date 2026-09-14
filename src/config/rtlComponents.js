@@ -6,13 +6,14 @@ const labelPosition = ({ ownerState }) => {
   if (!ownerState.formControl) return { textAlign: 'start' };
   return {
     position: 'static', transform: 'none', width: 'auto', maxWidth: '100%',
-    minHeight: 24, marginBottom: 6, padding: 0,
-    fontSize: '0.8125rem', lineHeight: '24px', fontWeight: 700,
+    minHeight: 20, marginBottom: 4, padding: 0,
+    fontSize: '0.8125rem', lineHeight: '20px', fontWeight: 700,
     whiteSpace: 'normal', overflow: 'visible', overflowWrap: 'anywhere', textAlign: 'start', pointerEvents: 'auto',
   };
 };
 
 export const rtlComponents = {
+  MuiDataGrid: { defaultProps: { density: "compact" } },
   MuiAppBar: { styleOverrides: { root: ({ ownerState }) =>
     ['fixed', 'sticky'].includes(ownerState.position) ? {
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {

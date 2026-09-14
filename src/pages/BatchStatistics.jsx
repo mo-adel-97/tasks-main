@@ -1,3 +1,5 @@
+import { designTokens } from '../config/designTokens';
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -167,7 +169,7 @@ const StatCard = ({
     sx={{
       flex: 1,
       minWidth: { xs: "100%", sm: 220 },
-      p: 2,
+      p: designTokens.cardPadding,
       borderRadius: 3,
       border: `1px solid ${COLORS.border}`,
       background: "#fff",
@@ -1033,15 +1035,11 @@ const BatchStatistics = () => {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           minHeight: "100vh",
-          p: {
-            xs: 1.25,
-            sm: 2,
-            md: 3
-          },
+          
           direction: "rtl",
           ...navigationContentSx
         }}
@@ -1787,7 +1785,7 @@ const BatchStatistics = () => {
             )}
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
     ) : (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
@@ -1899,7 +1897,7 @@ const BatchStatistics = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           mt: {
@@ -1909,14 +1907,8 @@ const BatchStatistics = () => {
           width: "100%",
           maxWidth: "100%",
           minHeight: "100dvh",
-          px: {
-            xs: 0.45,
-            sm: 0.7
-          },
-          py: {
-            xs: 0.45,
-            sm: 0.7
-          },
+          
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           ...navigationContentSx
@@ -2953,7 +2945,7 @@ const BatchStatistics = () => {
             </Dialog>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
     )
   );

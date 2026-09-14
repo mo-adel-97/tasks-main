@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useState } from "react";
@@ -281,27 +282,16 @@ export default function Dashboard() {
           ...navigationContentSx
         }}
       >
-        <Box
+        <PageContainer
           sx={{
             width: "100%",
             maxWidth: "100%",
             minWidth: 0,
             boxSizing: "border-box",
 
-            px: {
-              xs: 0.55,
-              sm: 0.8,
-              md: 1.1,
-              lg: 1.5,
-              xl: 2,
-            },
+            
 
-            py: {
-              xs: 0.55,
-              sm: 0.8,
-              md: 1.1,
-              lg: 1.5,
-            },
+            
 
             "& img, & video, & canvas":
               {
@@ -324,7 +314,7 @@ export default function Dashboard() {
           <Box
             sx={{
               width: "100%",
-              maxWidth: 1700,
+              maxWidth: "100%",
               mx: "auto",
               minWidth: 0,
             }}
@@ -351,7 +341,7 @@ export default function Dashboard() {
               />
             </Routes>
           </Box>
-        </Box>
+        </PageContainer>
       </Box>
     </Box></NavigationShell>
   );

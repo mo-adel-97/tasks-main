@@ -1,3 +1,5 @@
+import { designTokens } from '../config/designTokens';
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -905,14 +907,11 @@ const MarketersReport = () => {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           minHeight: "100vh",
-          p: {
-            xs: 1.5,
-            md: 3
-          },
+          
           direction: "rtl",
           ...navigationContentSx
         }}
@@ -929,10 +928,7 @@ const MarketersReport = () => {
         >
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              },
+              p: designTokens.cardPadding,
               background:
                 "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
               borderBottom:
@@ -978,17 +974,14 @@ const MarketersReport = () => {
 
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              }
+              p: designTokens.cardPadding
             }}
           >
             <Paper
               elevation={0}
               sx={{
                 mb: 2,
-                p: 2,
+                p: designTokens.cardPadding,
                 borderRadius: 3,
                 border:
                   "1px solid rgba(5,117,70,0.13)",
@@ -1156,7 +1149,7 @@ const MarketersReport = () => {
             <Box
               sx={uiLayout.withUiSx({
                 width: "100%",
-                height: 690,
+                height: designTokens.dataRegionHeight,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
@@ -1328,7 +1321,7 @@ const MarketersReport = () => {
             )}
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
     ) : (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
@@ -1454,7 +1447,7 @@ const MarketersReport = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           mt: {
@@ -1464,14 +1457,8 @@ const MarketersReport = () => {
           width: "100%",
           maxWidth: "100%",
           minHeight: "100dvh",
-          px: {
-            xs: 0.45,
-            sm: 0.7
-          },
-          py: {
-            xs: 0.45,
-            sm: 0.7
-          },
+          
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           ...navigationContentSx
@@ -2102,7 +2089,7 @@ const MarketersReport = () => {
             </Dialog>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
     )
   );

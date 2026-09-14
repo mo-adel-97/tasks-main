@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { SIDEBAR_ICON_OPTIONS as ICON_OPTIONS } from '../config/sidebarNavigation';
@@ -347,7 +348,7 @@ export default function SidebarSettings() {
   };
 
   const screensList = (
-    <Paper variant="outlined" sx={uiLayout.withUiSx({ p: 1, borderRadius: 3, borderColor: border, minHeight: 460 }, uiLayout.filterBarSx)}>
+    <Paper variant="outlined" sx={{ p: 1, borderRadius: 3, borderColor: border, display: "flex", flexDirection: "column", alignSelf: "start", gap: 1, minWidth: 0 }}>
       <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
         fullWidth
         size="small"
@@ -366,7 +367,7 @@ export default function SidebarSettings() {
         </Select>
       </FormControl>
       <Button fullWidth sx={uiLayout.withUiSx({ mt: 1 }, uiLayout.buttonSx)} variant="outlined" startIcon={<AddIcon />} onClick={newScreen}>شاشة / تابة جديدة</Button>
-      <Stack spacing={0.8} sx={{ mt: 1, maxHeight: "58vh", overflow: "auto" }}>
+      <Stack spacing={0.8} sx={{ maxHeight: "65dvh", overflow: "auto", minWidth: 0, "& > .MuiButton-root": { flexShrink: 0 }, "& .MuiTypography-root": { overflowWrap: "anywhere" } }}>
         {filteredScreens.map((row) => (
           <Button
             key={row.formGuid}
@@ -516,7 +517,7 @@ export default function SidebarSettings() {
   );
 
   const main = (
-    <Box
+    <PageContainer
       dir="rtl"
       sx={uiLayout.withUiSx({
         minHeight: "100vh",
@@ -524,7 +525,7 @@ export default function SidebarSettings() {
         boxSizing: "border-box",
         bgcolor: soft,
         p: { xs: 1, md: 2 }
-      }, uiLayout.mobileHeaderSx)}
+      }, {})}
     >
       <Paper sx={{ bgcolor: primary, color: "white", p: { xs: 1.4, md: 2 }, borderRadius: 3, mb: 1.5 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -555,13 +556,13 @@ export default function SidebarSettings() {
       )}
 
       {section === 0 && (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "340px minmax(0,1fr)" }, gap: 1.3 }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "minmax(15rem, 0.8fr) minmax(0, 2fr)" }, gap: 1.3 }}>
           {screensList}
           {screenEditor}
         </Box>
       )}
       {section === 1 && groupsEditor}
-    </Box>
+    </PageContainer>
   );
 
   return (

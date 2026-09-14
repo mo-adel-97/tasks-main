@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1976,10 +1977,10 @@ export default function PaymentRequestsReport() {
 
       
 
-      <Box
+      <PageContainer
         sx={{
-          px: isDesktop ? 2 : isPhone ? 0.85 : 1.25,
-          py: isDesktop ? 2 : isPhone ? 0.7 : 1,
+          
+          
           mt: !isDesktop ? isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)" : 0,
           mx: "auto",
           boxSizing: "border-box",
@@ -2504,7 +2505,7 @@ export default function PaymentRequestsReport() {
             </Box>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)} dir="rtl">
         <MenuItem onClick={() => menuRow && openRequest(menuRow)}><VisibilityIcon fontSize="small" sx={{ ml: 1 }} />عرض طلب السداد</MenuItem>

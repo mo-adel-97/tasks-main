@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -752,13 +753,10 @@ export default function HrPermissionsPage() {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: bg }}>
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={uiLayout.withUiSx({
-          p: {
-            xs: 1,
-            md: 1.5
-          },
+          
           ...navigationContentSx
         }, uiLayout.mobileHeaderSx)}
       >
@@ -1032,7 +1030,7 @@ export default function HrPermissionsPage() {
             </Stack>
           </Stack>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}

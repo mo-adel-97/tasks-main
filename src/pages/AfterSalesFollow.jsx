@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1124,7 +1125,7 @@ const AfterSalesFollow = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           ml: 0,
@@ -1136,11 +1137,7 @@ const AfterSalesFollow = () => {
           maxWidth: "100%",
           minWidth: 0,
           minHeight: "100dvh",
-          p: {
-            xs: 0.5,
-            sm: 0.75,
-            md: 1
-          },
+          
           direction: "rtl",
           boxSizing: "border-box",
           overflowX: "hidden",
@@ -1775,7 +1772,7 @@ const AfterSalesFollow = () => {
             </Box>
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 };

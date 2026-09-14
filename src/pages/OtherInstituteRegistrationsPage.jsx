@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -500,7 +501,7 @@ export default function OtherInstituteRegistrationsPage() {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           width: "100%",
@@ -512,11 +513,7 @@ export default function OtherInstituteRegistrationsPage() {
             sm: "var(--app-header-height, 56px)"
           },
           minHeight: "100dvh",
-          p: {
-            xs: 0.55,
-            sm: 0.8,
-            md: 1
-          },
+          
           backgroundColor: "#f7faf9",
           direction: "rtl",
           textAlign: "start",
@@ -1529,7 +1526,7 @@ export default function OtherInstituteRegistrationsPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 }

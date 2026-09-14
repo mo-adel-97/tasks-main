@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -2111,13 +2112,9 @@ export default function SalesReport() {
 
       
 
-      <Box
+      <PageContainer
         sx={{
-          p: {
-            xs: 0.55,
-            sm: 0.85,
-            md: 1.2
-          },
+          
           direction: "rtl",
           minWidth: 0,
           boxSizing: "border-box",
@@ -3029,7 +3026,7 @@ export default function SalesReport() {
         details={creditDetails}
         userGuid={userGuid}
       />
-    </Box>
+    </PageContainer>
     </></NavigationShell>
   );
 }

@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -2638,15 +2639,11 @@ const handleAcceptOrder = (row) => {
         duration={5200}
       /> */}
 
-      <Box
+      <PageContainer
         sx={{
           maxWidth: "100%",
-          p: isDesktop ? 2.5 : {
-            xs: 0.35,
-            sm: 0.6,
-            md: 0.9
-          },
-          pt: isDesktop ? 2.5 : {
+          
+          mt: isDesktop ? 0 : {
             xs: "var(--app-header-height, 56px)",
             sm: "var(--app-header-height, 56px)",
             md: "var(--app-header-height, 56px)"
@@ -3274,7 +3271,7 @@ const handleAcceptOrder = (row) => {
         </ActionMenuSection>
       </Menu>
 
-        </Box>
+        </PageContainer>
       <Backdrop
         open={actionLoading}
         sx={{

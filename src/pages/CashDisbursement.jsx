@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -620,12 +621,8 @@ export default function CashDisbursement() {
       {!isDesktop && <AppBar position="sticky" sx={{ bgcolor: primary }}><Toolbar variant="dense"><IconButton color="inherit" onClick={() => setMobileSidebarOpen(true)}><MenuRoundedIcon /></IconButton><Typography sx={{ flex: 1, fontWeight: 900 }}>سند صرف</Typography><Chip size="small" label={code ? `سند ${code}` : "جديد"} sx={{ bgcolor: "white", color: primaryDark, fontWeight: 900 }} /></Toolbar></AppBar>}
       
 
-      <Box sx={{
-        p: {
-          xs: .75,
-          sm: 1,
-          lg: 1.5
-        },
+      <PageContainer sx={{
+        
         minWidth: 0,
         ...navigationContentSx
       }}>
@@ -692,7 +689,7 @@ export default function CashDisbursement() {
             )}
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Dialog sx={uiLayout.dialogLayoutSx} open={accountOpen} onClose={() => setAccountOpen(false)} fullScreen={isMobile} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 900 }}>قائمة الحسابات<IconButton onClick={() => setAccountOpen(false)} sx={{ position: "absolute", left: 12, top: 10 }}><CloseIcon /></IconButton></DialogTitle>

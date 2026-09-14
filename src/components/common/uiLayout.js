@@ -12,9 +12,9 @@ export const sidebarSurfaceSx = {
   '&& .MuiListItemText-primary': { fontSize: designTokens.typography.sidebar, fontWeight: 600, lineHeight: 1.5 },
   '& .MuiListItemText-secondary': { fontSize: '0.75rem', lineHeight: 1.5 },
   '&& .MuiListItemIcon-root .MuiSvgIcon-root': { fontSize: '1rem' },
-  '& .MuiListItemButton-root, & .MuiListItem-root': { minHeight: 40, borderRadius: '8px' },
+  '&& .MuiListItemButton-root, && .MuiListItem-root': { minHeight: '2.125rem', paddingBlock: '0.25rem', marginBlock: '0.125rem', borderRadius: '8px' },
   [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-    '& .MuiListItemButton-root, & .MuiListItem-root': { minHeight: 44 },
+    '&& .MuiListItemButton-root, && .MuiListItem-root': { minHeight: 44 },
   },
 };
 export const withUiSx = (original, ...additions) => [
@@ -28,9 +28,9 @@ export const formFieldSx = {
   textAlign: 'start',
   '&& > .MuiInputLabel-root': {
     position: 'static', transform: 'none', maxWidth: '100%', width: 'auto',
-    height: 'auto', minHeight: '24px', margin: '0 0 6px', padding: 0,
+    height: 'auto', minHeight: '20px', margin: '0 0 4px', padding: 0,
     whiteSpace: 'normal', overflow: 'visible', overflowWrap: 'anywhere', textAlign: 'start',
-    fontSize: '0.8125rem', fontWeight: 700, lineHeight: '24px',
+    fontSize: '0.8125rem', fontWeight: 700, lineHeight: '20px',
     pointerEvents: 'auto',
   },
   '&& > .MuiInputBase-root': {
@@ -49,14 +49,14 @@ export const formFieldSx = {
   },
   [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
     '&& > .MuiInputBase-root': { minHeight: designTokens.controlHeight },
-    '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingBlock: '8px', lineHeight: '24px', fontSize: designTokens.typography.control },
+    '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingBlock: '6px', lineHeight: '22px', fontSize: designTokens.typography.control },
     '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: '0px' },
   },
 };
 
 export const formGridSx = {
   direction: 'rtl', textAlign: 'start',
-  display: 'grid', minWidth: 0, alignItems: 'start', gap: designTokens.layoutGap,
+  display: 'grid', minWidth: 0, alignItems: 'start', alignContent: 'start', gap: designTokens.layoutGap,
   gridTemplateColumns: {
     xs: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))',
   },
@@ -68,13 +68,13 @@ export const formGridSx = {
 export const filterBarSx = {
   direction: 'rtl', textAlign: 'start',
   display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-  alignItems: 'flex-end', gap: 1.5, minWidth: 0,
+  alignItems: 'flex-end', alignContent: 'flex-start', gap: designTokens.layoutGap, minWidth: 0,
   '& > .MuiFormControl-root, & > .MuiAutocomplete-root': {
-    flex: '1 1 210px', minWidth: 0, width: { xs: '100%', sm: 'auto' },
+    flex: '1 1 auto', minWidth: 0, width: 'min(100%, 14rem)',
   },
-  '& > .MuiButton-root': { minHeight: { xs: 44, lg: 40 }, flexShrink: 0 },
+  '& > .MuiButton-root': { minHeight: { xs: 44, lg: designTokens.controlHeight }, flexShrink: 0 },
   '@media (max-width: 599.95px)': {
-    '& > .MuiFormControl-root, & > .MuiAutocomplete-root': { flexBasis: '100%' },
+    '& > .MuiFormControl-root, & > .MuiAutocomplete-root': { width: '100%', flex: '0 1 auto' },
     '& > .MuiButton-root': { flex: '1 1 130px' },
   },
 };
@@ -89,7 +89,7 @@ export const actionBarSx = {
 export const checkboxFieldSx = {
   alignSelf: 'start', minHeight: 44, margin: 0, paddingInline: 0,
   paddingBlock: 0, border: 0, background: 'transparent',
-  marginTop: { xs: 0, sm: '30px' },
+  marginTop: { xs: 0, sm: '24px' },
   '& .MuiFormControlLabel-label': { fontSize: '0.875rem', lineHeight: 1.6 },
 };
 

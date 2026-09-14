@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1731,7 +1732,7 @@ const handleExportPdf = () => {
 
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
           width: "100%",
@@ -1742,12 +1743,7 @@ const handleExportPdf = () => {
           boxSizing: "border-box",
           overflowX: "hidden",
           direction: "rtl",
-          p: {
-            xs: 0.45,
-            sm: 0.7,
-            md: 1,
-            lg: 1.3
-          },
+          
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
             p: 2
           },
@@ -2564,7 +2560,7 @@ const handleExportPdf = () => {
             </Stack>
           </Paper>
         )}
-      </Box>
+      </PageContainer>
 
       <Box
         sx={{

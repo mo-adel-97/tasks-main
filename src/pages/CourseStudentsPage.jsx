@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -847,8 +848,8 @@ export default function CourseStudentsPage() {
       
 
       {isDesktop ? (
-      <Box component="main" sx={{
-        p: 1,
+      <PageContainer component="main" sx={{
+        
         ...navigationContentSx
       }}>
         <Paper elevation={0} sx={{ p: 1.2, borderRadius: 3, border: "1px solid #dbece4" }}>
@@ -950,9 +951,9 @@ export default function CourseStudentsPage() {
             />
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
       ) : (
-      <Box
+      <PageContainer
         component="main"
         sx={{
           ml: 0,
@@ -964,16 +965,8 @@ export default function CourseStudentsPage() {
           maxWidth: "100%",
           minWidth: 0,
           minHeight: "100dvh",
-          px: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.8
-          },
-          py: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.8
-          },
+          
+          
           boxSizing: "border-box",
           overflowX: "hidden",
           [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
@@ -1466,7 +1459,7 @@ export default function CourseStudentsPage() {
             />
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
       )}
 
       <Menu

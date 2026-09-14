@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -620,13 +621,10 @@ const CashPaymentOrder = () => {
     >
       
 
-      <Box
+      <PageContainer
         component="main"
         sx={{
-          p: {
-            xs: 1.2,
-            md: 2
-          },
+          
           ...navigationContentSx
         }}
       >
@@ -1020,7 +1018,7 @@ const CashPaymentOrder = () => {
             </>
           )}
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Dialog sx={uiLayout.dialogLayoutSx}
         open={orderDialogOpen}

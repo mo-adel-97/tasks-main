@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1029,13 +1030,9 @@ th{background:#eef6f2}
 
       
 
-      <Box
+      <PageContainer
         sx={{
-          p: {
-            xs: 0.75,
-            sm: 1,
-            lg: 1.5
-          },
+          
           minWidth: 0,
           ...navigationContentSx
         }}
@@ -1778,7 +1775,7 @@ th{background:#eef6f2}
           )}
         </DialogContent>
       </Dialog>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 }

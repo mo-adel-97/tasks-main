@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import deepmerge from '@mui/utils/deepmerge';
@@ -386,12 +387,12 @@ const BranchReportsPage = () => {
       <Box sx={{ minHeight: '100vh', backgroundColor: customTheme.palette.background.default }}>
         
         
-        <Box 
+        <PageContainer 
           component="main" 
           sx={{
             flexGrow: 1,
-            pr: isMobile ? 2 : 3,
-            pl: isMobile ? 2 : 3,
+            
+            
             transition: customTheme.transitions.create('margin', {
               easing: customTheme.transitions.easing.sharp,
               duration: customTheme.transitions.duration.leavingScreen
@@ -1256,7 +1257,7 @@ const BranchReportsPage = () => {
               </Paper>
             </Container>
           </LocalizationProvider>
-        </Box>
+        </PageContainer>
       </Box>
       <ExportReportsDialog
   open={exportOpen}

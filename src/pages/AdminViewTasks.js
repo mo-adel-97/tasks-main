@@ -1,3 +1,4 @@
+import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -525,9 +526,9 @@ const AdminViewTasksByBranches = () => {
     <NavigationShell variant="admin" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.background }}>
       
       
-      <Box component="main" sx={{
+      <PageContainer component="main" sx={{
         flexGrow: 1,
-        p: 3,
+        
         ...navigationContentSx
       }}>
         <Stack spacing={3}>
@@ -1367,7 +1368,7 @@ const AdminViewTasksByBranches = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
+      </PageContainer>
     </Box></NavigationShell>
   );
 };
