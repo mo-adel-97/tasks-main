@@ -1487,7 +1487,7 @@ export default function GeneralDaily() {
                 minHeight:
                   isPhone
                     ? "42px !important"
-                    : "48px !important"
+                    : "var(--app-header-height, 56px)"
               }}
             >
               <IconButton

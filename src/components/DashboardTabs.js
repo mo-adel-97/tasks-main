@@ -58,24 +58,9 @@ const DashboardTabs = ({
       id: 4,
       label: "الإعلانات والمنشورات",
       icon: (
-        <Badge
-          badgeContent={unseenPostsCount > 0 ? unseenPostsCount : 0}
-          color="error"
-          overlap="circular"
-          sx={{
-            "& .MuiBadge-badge": {
-              backgroundColor: COLOR_SCHEME.accent,
-              color: "white",
-              fontWeight: 900,
-              fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-              minWidth: { xs: 16, sm: 18, md: 20 },
-              height: { xs: 16, sm: 18, md: 20 },
-              borderRadius: 999,
-            },
-          }}
-        >
+        <>
           <Announcement />
-        </Badge>
+        </>
       ),
       visible: true,
     },

@@ -22,7 +22,7 @@ import CallHistory from './CallHistory';
 import StudentStatementDialog from './StudentStatementDialog';
 
 import MyCallHistoryDialog from './MyCallHistoryDialog';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsIcon from "@mui/icons-material/InfoOutlined";
 import { Badge } from '@mui/material';
 
 // الألوان الجديدة
@@ -476,7 +476,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             </Button>
 
                             {user.userJop === 17 && (
-                                <Badge badgeContent={followUpCount} color="error" max={99}>
+                                <>
                                     <Button
                                         variant="outlined"
                                         sx={uiLayout.withUiSx({
@@ -496,7 +496,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     >
                                         مكالمات تحتاج إلى متابعة
                                     </Button>
-                                </Badge>
+                                </>
                             )}
 
                             <Button
@@ -747,9 +747,9 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                                         }
                                                     }, uiLayout.buttonSx)}
                                                 >
-                                                    <Badge badgeContent={followUpCalls.length} color="error">
+                                                    <>
                                                         <NotificationsIcon />
-                                                    </Badge>
+                                                    </>
                                                     <span style={{ marginRight: 8, fontWeight: 'bold', fontFamily: "Cairo" }}>متابعة لاحقًا</span>
                                                 </Button>
                                             )}

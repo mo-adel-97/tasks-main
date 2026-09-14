@@ -149,7 +149,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
           <Toolbar
             sx={{
               direction: "rtl",
-              minHeight: { xs: "50px !important", sm: "56px !important" },
+              minHeight: { xs: "var(--app-header-height, 56px)", sm: "var(--app-header-height, 56px)" },
               px: { xs: 0.75, sm: 1 },
               gap: { xs: 0.7, sm: 0.9 }
             }}
@@ -204,8 +204,8 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
           minWidth: 0,
           ml: 0,
           mt: {
-            xs: "50px",
-            sm: "56px"
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)"
           },
           p: {
             xs: 0.55,

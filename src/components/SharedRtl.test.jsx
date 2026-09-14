@@ -33,15 +33,14 @@ test('Arabic buttons retain leading/trailing icons and logical gaps', () => {
   expect(click).toHaveBeenCalledTimes(1);
 });
 
-test('form labels and select arrows use separate physical edges', () => {
+test('form labels stay above the field while select arrows use the RTL edge', () => {
   const { container } = render(<SharedUI><TextField label="Selection" select value="a" onChange={() => {}}>
     <MenuItem value="a">Option</MenuItem>
   </TextField><TextField label="Email" inputProps={{ dir: 'ltr' }} defaultValue="test@example.com"
     InputProps={{ startAdornment: <InputAdornment position="start">@</InputAdornment> }} /></SharedUI>);
   const label = container.querySelector('.MuiInputLabel-root');
-  expect(getComputedStyle(label).right).toBe('0px');
-  expect(getComputedStyle(label).transformOrigin).toBe('top right');
-  expect(getComputedStyle(label).transform).toBe('translate(-14px, -9px) scale(0.75)');
+  expect(getComputedStyle(label).position).toBe('static');
+  expect(getComputedStyle(label).transform).toBe('none');
   expect(getComputedStyle(container.querySelector('.MuiSelect-icon')).left).toBe('7px');
   expect(screen.getByDisplayValue('test@example.com')).toHaveAttribute('dir', 'ltr');
   expect(getComputedStyle(container.querySelector('.MuiInputAdornment-root')).marginInlineEnd).toBe('8px');
@@ -62,14 +61,14 @@ test('shared table defaults use start alignment and preserve explicit numeric al
   expect(getComputedStyle(screen.getByText('123')).textAlign).toBe('right');
 });
 
-test('shared header reserves right space on desktop and releases it on mobile', () => {
+test('shared header leaves the content gutter to NavigationShell on every viewport', () => {
   useMediaQuery.mockReturnValue(true);
   const ui = <SharedUI><MemoryRouter><Header user={{ fullName: 'User' }} /></MemoryRouter></SharedUI>;
   const { container, rerender } = render(ui);
-  expect(container.querySelector('header').style.marginRight).toBe('280px');
+  expect(container.querySelector('header').style.marginRight).toBe('');
   useMediaQuery.mockReturnValue(false);
   rerender(<SharedUI><MemoryRouter><Header user={{ fullName: 'User' }} /></MemoryRouter></SharedUI>);
-  expect(container.querySelector('header').style.marginRight).toBe('0px');
+  expect(container.querySelector('header').style.marginRight).toBe('');
 });
 
 test('student card uses RTL while phone and ID are isolated LTR values', () => {

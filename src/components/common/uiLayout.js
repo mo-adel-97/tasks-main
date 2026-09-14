@@ -1,5 +1,21 @@
 // Opt-in presentation primitives. These never receive data, handlers or state.
 // Keep the stock Emotion cache: no direction-transforming middleware is needed.
+import { designTokens, mobileHeaderStyles } from '../../config/designTokens';
+import { DESKTOP_BREAKPOINT } from '../../config/sidebarLayout';
+
+export const mobileHeaderSx = {
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { ...mobileHeaderStyles, px: '12px', gap: '10px' },
+};
+
+export const sidebarSurfaceSx = {
+  overflowY: 'auto', overscrollBehavior: 'contain',
+  '& .MuiListItemText-primary': { fontSize: '0.8125rem', lineHeight: 1.6 },
+  '& .MuiListItemText-secondary': { fontSize: '0.75rem', lineHeight: 1.5 },
+  '& .MuiListItemButton-root, & .MuiListItem-root': { minHeight: 40, borderRadius: '8px' },
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+    '& .MuiListItemButton-root, & .MuiListItem-root': { minHeight: 44 },
+  },
+};
 export const withUiSx = (original, ...additions) => [
   ...(Array.isArray(original) ? original : [original]), ...additions,
 ];
@@ -13,12 +29,12 @@ export const formFieldSx = {
     position: 'static', transform: 'none', maxWidth: '100%', width: 'auto',
     height: 'auto', minHeight: '24px', margin: '0 0 6px', padding: 0,
     whiteSpace: 'normal', overflow: 'visible', textAlign: 'start',
-    fontSize: '0.875rem', fontWeight: 700, lineHeight: '24px',
+    fontSize: '0.8125rem', fontWeight: 700, lineHeight: '24px',
     pointerEvents: 'auto',
   },
   '&& > .MuiInputBase-root': {
     marginTop: 0, minHeight: 44, height: 'auto', borderRadius: '10px',
-    fontSize: '0.9375rem',
+    fontSize: '0.875rem',
   },
   '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': {
     paddingBlock: '10px', height: 'auto', lineHeight: '24px',
@@ -29,6 +45,11 @@ export const formFieldSx = {
   '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: '2px' },
   '&& .MuiFormHelperText-root': {
     marginInline: 0, lineHeight: 1.6, textAlign: 'start',
+  },
+  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+    '&& > .MuiInputBase-root': { minHeight: designTokens.controlHeight },
+    '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingBlock: '8px' },
+    '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: '0px' },
   },
 };
 
@@ -51,7 +72,7 @@ export const filterBarSx = {
   '& > .MuiFormControl-root, & > .MuiAutocomplete-root': {
     flex: '1 1 210px', minWidth: 0, width: { xs: '100%', sm: 'auto' },
   },
-  '& > .MuiButton-root': { minHeight: 44, flexShrink: 0 },
+  '& > .MuiButton-root': { minHeight: { xs: 44, lg: 40 }, flexShrink: 0 },
   '@media (max-width: 599.95px)': {
     '& > .MuiFormControl-root, & > .MuiAutocomplete-root': { flexBasis: '100%' },
     '& > .MuiButton-root': { flex: '1 1 130px' },
@@ -62,7 +83,7 @@ export const actionBarSx = {
   direction: 'rtl', textAlign: 'start',
   display: 'flex', flexWrap: 'wrap', gap: 1.25, minWidth: 0,
   alignItems: 'center',
-  '& > .MuiButton-root': { flexShrink: 0, minHeight: 44 },
+  '& > .MuiButton-root': { flexShrink: 0, minHeight: { xs: 44, lg: 40 } },
 };
 
 export const checkboxFieldSx = {

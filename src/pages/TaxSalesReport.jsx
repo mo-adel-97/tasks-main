@@ -1392,7 +1392,7 @@ export default function TaxSalesReport() {
                 minHeight:
                   isPhone
                     ? "42px !important"
-                    : "48px !important"
+                    : "var(--app-header-height, 56px)"
               }}
             >
               <IconButton

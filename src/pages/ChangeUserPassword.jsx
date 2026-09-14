@@ -214,7 +214,7 @@ export default function ChangeUserPassword() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 0.65, sm: 1.5 },
@@ -222,7 +222,7 @@ export default function ChangeUserPassword() {
             display: "flex",
             alignItems: "center",
             gap: 0.55
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

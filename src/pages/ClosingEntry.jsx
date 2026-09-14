@@ -858,7 +858,7 @@ export default function ClosingEntry() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primaryDark,
               color: "#fff",
               px: 1.5,
@@ -867,7 +867,7 @@ export default function ClosingEntry() {
               alignItems: "center",
               justifyContent: "space-between",
               gap: 1
-            }}
+            }, uiLayout.mobileHeaderSx)}
           >
             <Stack
               direction="row"

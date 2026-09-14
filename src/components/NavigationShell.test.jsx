@@ -60,3 +60,35 @@ test('embedded mobile controls open and close the parent renderer', () => {
   fireEvent.click(screen.getByTestId('close-sidebar'));
   expect(onClose).toHaveBeenCalledTimes(1);
 });
+
+test('opening the mobile overlay preserves the content node, width and entered value', () => {
+  useMediaQuery.mockReturnValue(false);
+  const View = ({ open }) => <NavigationShell mobileOpen={open}>
+    <input aria-label="بيانات غير محفوظة" defaultValue="" />
+  </NavigationShell>;
+  const { rerender } = render(<View open={false} />);
+  const input = screen.getByRole('textbox');
+  const content = input.parentElement;
+  const initialWidth = content.style.width;
+  fireEvent.change(input, { target: { value: 'بيانات يجب الاحتفاظ بها' } });
+  rerender(<View open />);
+  expect(screen.getByRole('textbox')).toBe(input);
+  expect(input).toHaveValue('بيانات يجب الاحتفاظ بها');
+  expect(content.style.width).toBe(initialWidth);
+  expect(content.style.marginRight).toBe('0px');
+  rerender(<View open={false} />);
+  expect(screen.getByRole('textbox')).toBe(input);
+  expect(input).toHaveValue('بيانات يجب الاحتفاظ بها');
+});
+
+test('fallback mobile header opens the same overlay without replacing children', () => {
+  useMediaQuery.mockReturnValue(false);
+  render(<NavigationShell title="صفحة اختبار"><input aria-label="حقل" /></NavigationShell>);
+  const input = screen.getByRole('textbox');
+  fireEvent.click(screen.getByRole('button', { name: 'فتح القائمة' }));
+  expect(screen.getByTestId('sidebar')).toHaveAttribute('data-open', 'true');
+  expect(screen.getByRole('textbox')).toBe(input);
+  fireEvent.click(screen.getByTestId('close-sidebar'));
+  expect(screen.getByTestId('sidebar')).toHaveAttribute('data-open', 'false');
+  expect(screen.getByRole('textbox')).toBe(input);
+});

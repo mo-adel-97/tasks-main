@@ -37,21 +37,9 @@ export default function DashboardTabs({
       id: 4,
       label: "الإعلانات والمنشورات",
       icon: (
-        <Badge
-          badgeContent={unseenPostsCount || 0}
-          color="error"
-          overlap="circular"
-          sx={{
-            "& .MuiBadge-badge": {
-              backgroundColor: COLORS.accent,
-              fontSize: "0.75rem",
-              minWidth: 16,
-              height: 16,
-            },
-          }}
-        >
+        <>
           <Announcement />
-        </Badge>
+        </>
       ),
       visible: true,
     },

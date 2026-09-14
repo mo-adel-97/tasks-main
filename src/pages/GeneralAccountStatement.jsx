@@ -1365,7 +1365,7 @@ export default function GeneralAccountStatement() {
                 minHeight:
                   isPhone
                     ? "44px !important"
-                    : "50px !important"
+                    : "var(--app-header-height, 56px)"
               }}
             >
               <IconButton

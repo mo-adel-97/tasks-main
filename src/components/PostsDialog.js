@@ -840,9 +840,9 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
           <Toolbar
             sx={{
               minHeight: {
-                xs: '52px !important',
-                sm: '60px !important',
-                md: '68px !important'
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)",
+                md: "var(--app-header-height, 56px)"
               },
               px: { xs: 1, sm: 1.4, md: 2.2 },
               gap: { xs: 0.5, sm: 0.8, md: 1.2 }

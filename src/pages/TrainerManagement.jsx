@@ -501,7 +501,7 @@ export default function TrainerManagement() {
   const page = (
     <Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: soft, p: { xs: 0.35, sm: 0.8 }, overflowX: "hidden" }}>
       <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: { xs: 1.1, sm: 2 }, overflow: "hidden" }}>
-        <Box sx={{ bgcolor: primaryDark, color: "#fff", px: { xs: 0.65, sm: 1.4 }, py: { xs: 0.55, sm: 0.9 }, display: "flex", alignItems: "center", gap: 0.55 }}>
+        <Box sx={uiLayout.withUiSx({ bgcolor: primaryDark, color: "#fff", px: { xs: 0.65, sm: 1.4 }, py: { xs: 0.55, sm: 0.9 }, display: "flex", alignItems: "center", gap: 0.55 }, uiLayout.mobileHeaderSx)}>
           {!isDesktop && <IconButton onClick={() => setMobileSidebarOpen(true)} sx={{ color: "#fff", p: 0.3 }}><MenuRoundedIcon /></IconButton>}
           <SchoolIcon />
           <Box sx={{ flex: 1, minWidth: 0 }}>

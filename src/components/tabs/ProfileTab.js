@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Typography, Grid, List, ListItem, ListItemText, Divider } from "@mui/material";
 import { motion } from "framer-motion";
 import { alpha } from "@mui/material/styles";
-import { Person, Work, Notifications } from "@mui/icons-material";
+import { Person, Work, InfoOutlined as Notifications } from "@mui/icons-material";
 import { format } from "date-fns";
 
 const COLOR_SCHEME = {

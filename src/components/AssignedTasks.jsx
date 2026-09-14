@@ -598,9 +598,9 @@ if (loading || externalLoading) {
           <Toolbar
             sx={{
               minHeight: {
-                xs: '50px !important',
-                sm: '56px !important',
-                md: '60px !important',
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)",
+                md: "var(--app-header-height, 56px)",
               },
               px: { xs: 0.8, sm: 1.2, md: 1.6 },
               gap: 0.8,
@@ -695,9 +695,9 @@ if (loading || externalLoading) {
           <Toolbar
             sx={{
               minHeight: {
-                xs: '50px !important',
-                sm: '56px !important',
-                md: '60px !important',
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)",
+                md: "var(--app-header-height, 56px)",
               },
               px: { xs: 0.8, sm: 1.2, md: 1.6 },
               gap: 0.8,
@@ -751,9 +751,9 @@ if (loading || externalLoading) {
             md: 1.35
           },
           pt: isDesktop ? '20px' : {
-            xs: '64px',
-            sm: '70px',
-            md: '74px'
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)",
+            md: "var(--app-header-height, 56px)"
           },
           pb: isDesktop ? '20px' : {
             xs: 1.5,

@@ -1440,7 +1440,7 @@ export default function HrJobTitlesPage() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primaryDark,
               color: "#fff",
               px: { xs: 1.3, sm: 2.2 },
@@ -1450,7 +1450,7 @@ export default function HrJobTitlesPage() {
               gap: 1,
               alignItems: "center",
               justifyContent: "space-between"
-            }}
+            }, uiLayout.mobileHeaderSx)}
           >
             <Stack
               direction="row"

@@ -865,7 +865,7 @@ export default function BatchManagement() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 0.7, sm: 1.4 },
@@ -873,7 +873,7 @@ export default function BatchManagement() {
             display: "flex",
             alignItems: "center",
             gap: 0.55
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

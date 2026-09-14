@@ -2581,9 +2581,9 @@ const handleAcceptOrder = (row) => {
           <Toolbar
             sx={{
               minHeight: {
-                xs: "50px !important",
-                sm: "56px !important",
-                md: "60px !important"
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)",
+                md: "var(--app-header-height, 56px)"
               },
               px: { xs: 0.8, sm: 1.2, md: 1.6 },
               gap: 0.8,
@@ -2647,9 +2647,9 @@ const handleAcceptOrder = (row) => {
             md: 0.9
           },
           pt: isDesktop ? 2.5 : {
-            xs: "54px",
-            sm: "62px",
-            md: "66px"
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)",
+            md: "var(--app-header-height, 56px)"
           },
           boxSizing: "border-box",
           overflowX: "hidden",

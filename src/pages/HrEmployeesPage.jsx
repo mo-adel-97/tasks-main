@@ -3313,8 +3313,8 @@ const HrEmployeesPage = () => {
             disableGutters
             sx={{
               minHeight: {
-                xs: "50px !important",
-                sm: "56px !important"
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)"
               },
               px: { xs: 0.75, sm: 1 },
               gap: 0.8
@@ -3378,8 +3378,8 @@ const HrEmployeesPage = () => {
         sx={{
           ml: 0,
           mt: {
-            xs: "50px",
-            sm: "56px"
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)"
           },
           width: "100%",
           maxWidth: "100%",

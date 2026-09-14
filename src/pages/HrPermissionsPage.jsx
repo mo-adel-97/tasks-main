@@ -754,13 +754,13 @@ export default function HrPermissionsPage() {
 
       <Box
         component="main"
-        sx={{
+        sx={uiLayout.withUiSx({
           p: {
             xs: 1,
             md: 1.5
           },
           ...navigationContentSx
-        }}
+        }, uiLayout.mobileHeaderSx)}
       >
         <Paper
           elevation={0}

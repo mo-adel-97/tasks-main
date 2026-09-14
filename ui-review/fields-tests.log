@@ -1,0 +1,25 @@
+FAIL src/components/common/uiLayout.test.jsx
+  ● static Arabic labels retain accessible fields, change handlers and validation styling
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "none"
+    Received: "block"
+
+      25 |   expect(getComputedStyle(label).position).toBe('static');
+      26 |   expect(getComputedStyle(label).transform).toBe('none');
+    > 27 |   expect(getComputedStyle(container.querySelector('legend')).display).toBe('none');
+         |                                                                       ^
+      28 |   expect(screen.getByText('بيانات غير صالحة')).toBeInTheDocument();
+      29 | });
+      30 |
+
+      at Object.<anonymous> (src/components/common/uiLayout.test.jsx:27:71)
+
+PASS src/components/SharedRtl.test.jsx
+PASS src/components/hrControlStyles.test.jsx
+
+Test Suites: 1 failed, 2 passed, 3 total
+Tests:       1 failed, 8 passed, 9 total
+Snapshots:   0 total
+Time:        4.89 s, estimated 47 s

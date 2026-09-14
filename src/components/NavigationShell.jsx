@@ -8,9 +8,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { IconButton, useMediaQuery } from '@mui/material';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { useMediaQuery } from '@mui/material';
+import MobileHeader from './MobileHeader';
+import { designTokens } from '../config/designTokens';
 import Sidebar from './Sidebar';
 import { getSidebarOffset, SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
 
@@ -108,6 +108,7 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
           minHeight: '100dvh',
           '--navigation-direction': 'rtl',
           '--navigation-content-offset': `${offset}px`,
+          '--app-header-height': `${designTokens.headerHeight}px`,
         }}
       >
         <Sidebar
@@ -126,27 +127,11 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
           tablet/mobile without page-specific sidebar code.
         */}
         {shellOwnsMobileTrigger && (
-          <IconButton
-            aria-label={mobileOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-            aria-expanded={mobileOpen}
-            onClick={() => setInternalMobileOpen((current) => !current)}
-            className="sstli-shell-menu-button"
-            sx={{
-              position: 'fixed',
-              top: { xs: 8, sm: 10 },
-              right: { xs: 8, sm: 10 },
-              zIndex: 1450,
-              width: { xs: 36, sm: 40 },
-              height: { xs: 36, sm: 40 },
-              color: '#fff',
-              bgcolor: '#057546',
-              border: '1px solid rgba(255,255,255,.42)',
-              boxShadow: '0 6px 18px rgba(3,77,49,.25)',
-              '&:hover': { bgcolor: '#034d31' },
-            }}
-          >
-            {mobileOpen ? <CloseRoundedIcon /> : <MenuRoundedIcon />}
-          </IconButton>
+          <MobileHeader
+            title={sidebarProps.title}
+            open={mobileOpen}
+            onToggle={() => setInternalMobileOpen((current) => !current)}
+          />
         )}
 
         <div
@@ -160,7 +145,7 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
             minWidth: 0,
             minHeight: '100dvh',
             boxSizing: 'border-box',
-            paddingTop: shellOwnsMobileTrigger ? '52px' : 0,
+            paddingTop: shellOwnsMobileTrigger ? `${designTokens.headerHeight}px` : 0,
             transition: 'margin-right 180ms ease, width 180ms ease, max-width 180ms ease',
           }}
         >

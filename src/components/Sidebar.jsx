@@ -1,4 +1,5 @@
 import * as uiLayout from './common/uiLayout';
+import { DrawerHeader } from './MobileHeader';
 import {
   SIDEBAR_WIDTH,
   SIDEBAR_COLLAPSED_WIDTH,
@@ -93,7 +94,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 
 
-import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
 import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded';
 
 
@@ -993,7 +993,7 @@ const childItemSx = (selected) => ({
       dir="rtl"
       style={sidebarPositionStyle}
       onClick={(event) => event.stopPropagation()}
-      sx={{
+      sx={uiLayout.withUiSx({
         // الديسكتوب يرجع لنفس العرض والشكل القديم 100%.
         // الموبايل/التابلت Drawer صغير فقط بعرض التابات.
         width: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_WIDTH,
@@ -1031,16 +1031,17 @@ const childItemSx = (selected) => ({
           ? '8px 0 28px rgba(5,117,70,0.10)'
           : 'none',
         transition: 'all 0.3s ease'
-      }}
+      }, uiLayout.sidebarSurfaceSx)}
     >
       <Box sx={{ width: '100%' }}>
+        {!isDesktop && <DrawerHeader onClose={onMobileClose} />}
         <Box
           sx={{
             display: isDesktop ? 'flex' : 'none',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            py: 3,
+            py: 2,
             width: '100%',
             overflow: 'hidden',
             background: `linear-gradient(145deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
@@ -1052,9 +1053,9 @@ const childItemSx = (selected) => ({
         >
           <Box
             sx={{
-              width: '116px',
-              height: '116px',
-              borderRadius: '28px',
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
               overflow: 'hidden',
               border: `3px solid ${whiteColor}`,
               background: whiteColor,
@@ -1095,56 +1096,6 @@ const childItemSx = (selected) => ({
               نظام الإدارة
             </Typography>
 
-            <Tooltip
-              title={
-                notificationUnreadCount > 0
-                  ? `الإشعارات (${notificationUnreadCount})`
-                  : "الإشعارات"
-              }
-              placement="top"
-            >
-              <IconButton
-                aria-label="الإشعارات"
-                onClick={(event) =>
-                  setNotificationAnchor(event.currentTarget)
-                }
-                size="small"
-                sx={{
-                  width: 27,
-                  height: 27,
-                  p: 0,
-                  color: whiteColor,
-                  bgcolor: "rgba(255,255,255,.13)",
-                  border: "1px solid rgba(255,255,255,.25)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,.10)",
-                  "&:hover": {
-                    bgcolor: "rgba(255,255,255,.22)"
-                  },
-                  "& svg": {
-                    fontSize: 17
-                  }
-                }}
-              >
-                <Badge
-                  badgeContent={notificationUnreadCount}
-                  color="error"
-                  max={99}
-                  overlap="circular"
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      minWidth: 14,
-                      height: 14,
-                      px: .25,
-                      fontSize: 12,
-                      fontWeight: 950,
-                      border: "1.5px solid #fff"
-                    }
-                  }}
-                >
-                  <NotificationsNoneRoundedIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
           </Stack>
 
           <Typography
@@ -1159,93 +1110,6 @@ const childItemSx = (selected) => ({
           </Typography>
         </Box>
 
-        {/* على الموبايل/التابلت فقط: جرس ثابت بجوار زر القائمة */}
-        {!isDesktop && (
-<Tooltip
-          title={
-            notificationUnreadCount > 0
-              ? `الإشعارات (${notificationUnreadCount})`
-              : "الإشعارات"
-          }
-          placement={isDesktop ? "left" : "bottom"}
-        >
-          <IconButton
-            aria-label="الإشعارات"
-            onClick={(event) =>
-              setNotificationAnchor(event.currentTarget)
-            }
-            sx={{
-              position: "fixed",
-
-              top: {
-                xs: 7,
-                sm: 9,
-                md: 10
-              },
-
-              right: {
-                xs: 50,
-                sm: 56,
-                md: 60
-              },
-
-              width: {
-                xs: 34,
-                sm: 36,
-                md: 38
-              },
-
-              height: {
-                xs: 34,
-                sm: 36,
-                md: 38
-              },
-
-              zIndex: 1455,
-              color: whiteColor,
-              bgcolor: primaryColor,
-              border: "1px solid rgba(255,255,255,.38)",
-              boxShadow: "0 5px 14px rgba(3,77,49,.24)",
-              backdropFilter: "blur(8px)",
-              transition: "transform .18s ease, box-shadow .18s ease",
-
-              "&:hover": {
-                bgcolor: primaryDark,
-                transform: "translateY(-1px)",
-                boxShadow: "0 8px 20px rgba(3,77,49,.24)"
-              },
-
-              "& svg": {
-                fontSize: {
-                  xs: 18,
-                  sm: 19,
-                  md: 20
-                }
-              }
-            }}
-          >
-            <Badge
-              badgeContent={notificationUnreadCount}
-              color="error"
-              max={99}
-              overlap="circular"
-              sx={{
-                "& .MuiBadge-badge": {
-                  minWidth: 16,
-                  height: 16,
-                  px: .35,
-                  fontSize: 12,
-                  fontWeight: 950,
-                  border: "2px solid #fff"
-                }
-              }}
-            >
-              <NotificationsNoneRoundedIcon />
-            </Badge>
-          </IconButton>
-        </Tooltip>
-        )}
-
         <List
           sx={{
             width: '100%',
@@ -1254,13 +1118,7 @@ const childItemSx = (selected) => ({
 
             // على الموبايل/التابلت نسيب مساحة تحت الهيدر الثابت
             // عشان أول التابات ما تتغطاش.
-            pt: isDesktop
-              ? 1.2
-              : {
-                  xs: 6.6,
-                  sm: 7,
-                  md: 7.3,
-                },
+            pt: 1.2,
 
             pb: isDesktop ? 1.2 : 0.5,
 
@@ -1516,6 +1374,7 @@ const childItemSx = (selected) => ({
       transitionDuration={{ enter: 180, exit: 140 }}
       ModalProps={{
         keepMounted: true,
+        disableScrollLock: true,
       }}
       slotProps={{
         backdrop: {
@@ -1657,7 +1516,7 @@ function AdminSidebar({
     <Box
       dir="rtl"
       style={sidebarPositionStyle}
-      sx={{
+      sx={uiLayout.withUiSx({
         width: isDesktop
           ? (collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH)
           : SIDEBAR_MOBILE_WIDTH,
@@ -1675,9 +1534,10 @@ function AdminSidebar({
         boxShadow: "0 18px 45px rgba(0,0,0,0.35)",
         transition: "width .25s ease",
         overflow: "hidden",
-      }}
+      }, uiLayout.sidebarSurfaceSx)}
     >
       {/* ====== Top / Brand ====== */}
+      {!isDesktop && <DrawerHeader onClose={onMobileClose} />}
       <Box sx={{ p: 2.2 }}>
         <Box
           sx={{
@@ -1917,7 +1777,7 @@ function AdminSidebar({
       open={mobileOpen}
       onClose={onMobileClose}
       transitionDuration={{ enter: 180, exit: 140 }}
-      ModalProps={{ keepMounted: true }}
+      ModalProps={{ keepMounted: true, disableScrollLock: true }}
       slotProps={{
         backdrop: { sx: { backgroundColor: "rgba(0,0,0,0.42)" } },
       }}

@@ -846,7 +846,7 @@ export default function SalesManManagement() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 0.8, sm: 1.5 },
@@ -854,7 +854,7 @@ export default function SalesManManagement() {
             display: "flex",
             alignItems: "center",
             gap: 0.6
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

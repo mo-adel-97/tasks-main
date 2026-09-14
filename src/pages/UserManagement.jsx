@@ -1220,7 +1220,7 @@ export default function UserManagement() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 1, sm: 1.5 },
@@ -1228,7 +1228,7 @@ export default function UserManagement() {
             display: "flex",
             alignItems: "center",
             gap: 1
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

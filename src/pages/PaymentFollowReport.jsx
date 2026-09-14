@@ -3250,8 +3250,8 @@ const exportExcel = () => {
             <Toolbar
               sx={{
                 minHeight: {
-                  xs: "50px !important",
-                  sm: "56px !important"
+                  xs: "var(--app-header-height, 56px)",
+                  sm: "var(--app-header-height, 56px)"
                 },
                 px: { xs: 0.75, sm: 1 },
                 gap: 0.8
@@ -3308,7 +3308,7 @@ const exportExcel = () => {
       <Box
         component="main"
         sx={{
-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
+          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
           p: isDesktop ? 2.5 : isPhone ? 0.45 : 0.75,
           direction: "rtl",
           boxSizing: "border-box",

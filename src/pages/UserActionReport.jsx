@@ -751,7 +751,7 @@ export default function UserActionReport() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             minHeight: {
               xs: 48,
               sm: 62
@@ -769,7 +769,7 @@ export default function UserActionReport() {
             display: "flex",
             alignItems: "center",
             gap: 0.6
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

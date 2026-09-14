@@ -854,7 +854,7 @@ export default function ServiceManagement() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 0.6, sm: 1.4 },
@@ -862,7 +862,7 @@ export default function ServiceManagement() {
             display: "flex",
             alignItems: "center",
             gap: 0.5
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

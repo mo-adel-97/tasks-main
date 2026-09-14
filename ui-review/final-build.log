@@ -1,0 +1,1023 @@
+
+> tasks@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Browserslist: browsers data (caniuse-lite) is 13 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: browsers data (caniuse-lite) is 13 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Compiled with warnings.
+
+Critical dependency: Accessing import.meta directly is unsupported (only property access or destructuring is supported)
+
+[eslint] 
+src\App.js
+  Line 41:8:    'AdminDashboard' is defined but never used              no-unused-vars
+  Line 45:8:    'TrainerStudentGrid' is defined but never used          no-unused-vars
+  Line 1533:7:  'loadingStyles' is assigned a value but never used      no-unused-vars
+  Line 1543:7:  'spinnerStyles' is assigned a value but never used      no-unused-vars
+  Line 1553:7:  'loadingTextStyles' is assigned a value but never used  no-unused-vars
+
+src\MyRequests.jsx
+  Line 50:8:     'MoreVertIcon' is defined but never used                                                                     no-unused-vars
+  Line 1525:6:   React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 2174:9:   'printApproval' is assigned a value but never used                                                           no-unused-vars
+  Line 3297:23:  Duplicate key '& .MuiDataGrid-columnHeaders'                                                                 no-dupe-keys
+
+src\components\Achievements.jsx
+  Line 32:17:   'AssessmentIcon' is defined but never used        no-unused-vars
+  Line 40:23:   'WorkspacePremiumIcon' is defined but never used  no-unused-vars
+  Line 49:12:   'NotesIcon' is defined but never used             no-unused-vars
+  Line 56:42:   'getISOWeek' is defined but never used            no-unused-vars
+  Line 56:54:   'getISOWeekYear' is defined but never used        no-unused-vars
+  Line 125:9:   'theme' is assigned a value but never used        no-unused-vars
+  Line 424:13:  'existing' is assigned a value but never used     no-unused-vars
+
+src\components\AddStudentDialog.jsx
+  Line 409:6:  React Hook useEffect has a missing dependency: 'loadContext'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\AddTaskDialog.js
+  Line 4:39:   'DialogActions' is defined but never used      no-unused-vars
+  Line 5:15:   'Tooltip' is defined but never used            no-unused-vars
+  Line 5:85:   'Zoom' is defined but never used               no-unused-vars
+  Line 5:91:   'Grow' is defined but never used               no-unused-vars
+  Line 6:10:   'Collapse' is defined but never used           no-unused-vars
+  Line 220:9:  'isPhone' is assigned a value but never used   no-unused-vars
+  Line 221:9:  'isTablet' is assigned a value but never used  no-unused-vars
+
+src\components\AdminAchievementsPage.jsx
+  Line 25:3:   'List' is defined but never used                                                                                                                                              no-unused-vars
+  Line 26:3:   'ListItem' is defined but never used                                                                                                                                          no-unused-vars
+  Line 28:3:   'Collapse' is defined but never used                                                                                                                                          no-unused-vars
+  Line 57:17:  'ExpandLessIcon' is defined but never used                                                                                                                                    no-unused-vars
+  Line 58:17:  'ExpandMoreIcon2' is defined but never used                                                                                                                                   no-unused-vars
+  Line 65:18:  'DescriptionIcon' is defined but never used                                                                                                                                   no-unused-vars
+  Line 69:16:  'FilterAltIcon' is defined but never used                                                                                                                                     no-unused-vars
+  Line 78:11:  'ListIcon' is defined but never used                                                                                                                                          no-unused-vars
+  Line 81:12:  'ShareIcon' is defined but never used                                                                                                                                         no-unused-vars
+  Line 82:11:  'EditIcon' is defined but never used                                                                                                                                          no-unused-vars
+  Line 83:13:  'DeleteIcon' is defined but never used                                                                                                                                        no-unused-vars
+  Line 84:14:  'ArchiveIcon' is defined but never used                                                                                                                                       no-unused-vars
+  Line 85:11:  'LockIcon' is defined but never used                                                                                                                                          no-unused-vars
+  Line 86:13:  'PublicIcon' is defined but never used                                                                                                                                        no-unused-vars
+  Line 89:16:  'LightbulbIcon' is defined but never used                                                                                                                                     no-unused-vars
+  Line 92:13:  'FolderIcon' is defined but never used                                                                                                                                        no-unused-vars
+  Line 93:17:  'ViewModuleIcon' is defined but never used                                                                                                                                    no-unused-vars
+  Line 94:15:  'ViewListIcon' is defined but never used                                                                                                                                      no-unused-vars
+  Line 188:9:  'theme' is assigned a value but never used                                                                                                                                    no-unused-vars
+  Line 454:6:  React Hook useMemo has missing dependencies: 'resolveAchievementBranchGuid', 'resolveBranchName', and 'resolveOwnerName'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\AdminIncomeDashboard.jsx
+  Line 35:8:  'AccountBalanceWalletRoundedIcon' is defined but never used  no-unused-vars
+  Line 36:8:  'CalendarMonthRoundedIcon' is defined but never used         no-unused-vars
+
+src\components\AdminStudentNotes.jsx
+  Line 17:3:   'Tooltip' is defined but never used                                                                         no-unused-vars
+  Line 27:3:   'AvatarGroup' is defined but never used                                                                     no-unused-vars
+  Line 28:3:   'Badge' is defined but never used                                                                           no-unused-vars
+  Line 39:12:  'ClearIcon' is defined but never used                                                                       no-unused-vars
+  Line 314:9:  'isCompact' is assigned a value but never used                                                              no-unused-vars
+  Line 413:6:  React Hook useEffect has a missing dependency: 'loadAll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\AdmissionOrderDialog.jsx
+  Line 16:3:   'Divider' is defined but never used                    no-unused-vars
+  Line 100:7:  'showSweetSuccess' is assigned a value but never used  no-unused-vars
+
+src\components\Announcements.jsx
+  Line 29:3:   'Stack' is defined but never used                                                                                       no-unused-vars
+  Line 211:6:  React Hook useEffect has a missing dependency: 'sampleAnnouncements'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\BranchesDashboard.js
+  Line 7:8:  'DateRangeIcon' is defined but never used  no-unused-vars
+
+src\components\CallHistory.jsx
+  Line 8:3:     'FormHelperText' is defined but never used                              no-unused-vars
+  Line 21:10:   'errors' is assigned a value but never used                             no-unused-vars
+  Line 21:18:   'setErrors' is assigned a value but never used                          no-unused-vars
+  Line 43:24:   'setStatusFilter' is assigned a value but never used                    no-unused-vars
+  Line 318:49:  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+  Line 412:69:  Expected '===' and instead saw '=='                                     eqeqeq
+
+src\components\ChangePaymentStatusDialog.jsx
+  Line 189:6:  React Hook React.useEffect has a missing dependency: 'loadCurrentStatus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\ChangeStudentStatusDialog.jsx
+  Line 18:3:   'Stack' is defined but never used                                                                                             no-unused-vars
+  Line 174:6:  React Hook useEffect has a missing dependency: 'loadStatuses'. Either include it or remove the dependency array               react-hooks/exhaustive-deps
+  Line 184:6:  React Hook useEffect has missing dependencies: 'loadStatuses' and 'open'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\ComplaintsSuggestionsTasks.js
+  Line 9:3:   'Button' is defined but never used                no-unused-vars
+  Line 10:3:  'Divider' is defined but never used               no-unused-vars
+  Line 13:3:  'ListItemText' is defined but never used          no-unused-vars
+  Line 15:3:  'Checkbox' is defined but never used              no-unused-vars
+  Line 17:3:  'Table' is defined but never used                 no-unused-vars
+  Line 18:3:  'TableBody' is defined but never used             no-unused-vars
+  Line 19:3:  'TableCell' is defined but never used             no-unused-vars
+  Line 21:3:  'TableHead' is defined but never used             no-unused-vars
+  Line 22:3:  'TableRow' is defined but never used              no-unused-vars
+  Line 23:3:  'Snackbar' is defined but never used              no-unused-vars
+  Line 24:3:  'Alert' is defined but never used                 no-unused-vars
+  Line 34:7:  'StyledPaper' is assigned a value but never used  no-unused-vars
+  Line 42:7:  'TaskTable' is assigned a value but never used    no-unused-vars
+
+src\components\DashboardTabs.js
+  Line 2:32:  'Badge' is defined but never used               no-unused-vars
+  Line 36:9:  'isHRLocal' is assigned a value but never used  no-unused-vars
+
+src\components\DiplomaStatistics.js
+  Line 10:3:  'Table' is defined but never used                          no-unused-vars
+  Line 11:3:  'TableBody' is defined but never used                      no-unused-vars
+  Line 12:3:  'TableCell' is defined but never used                      no-unused-vars
+  Line 15:3:  'TableRow' is defined but never used                       no-unused-vars
+  Line 16:3:  'Paper' is defined but never used                          no-unused-vars
+  Line 17:3:  'Divider' is defined but never used                        no-unused-vars
+  Line 22:7:  'StyledTableContainer' is assigned a value but never used  no-unused-vars
+  Line 39:7:  'StyledTableHead' is assigned a value but never used       no-unused-vars
+
+src\components\DiscountOrderDialog.jsx
+  Line 832:6:  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\EditStudentDialog.jsx
+  Line 238:17:  Unnecessary escape character: \/  no-useless-escape
+  Line 238:20:  Unnecessary escape character: \-  no-useless-escape
+  Line 238:33:  Unnecessary escape character: \/  no-useless-escape
+  Line 238:36:  Unnecessary escape character: \-  no-useless-escape
+
+src\components\EmployeeEvaluationPage.jsx
+  Line 5:37:     'useRef' is defined but never used                                                                                                                                                   no-unused-vars
+  Line 40:3:     'Badge' is defined but never used                                                                                                                                                    no-unused-vars
+  Line 43:3:     'List' is defined but never used                                                                                                                                                     no-unused-vars
+  Line 44:3:     'ListItem' is defined but never used                                                                                                                                                 no-unused-vars
+  Line 45:3:     'ListItemIcon' is defined but never used                                                                                                                                             no-unused-vars
+  Line 46:3:     'ListItemText' is defined but never used                                                                                                                                             no-unused-vars
+  Line 47:3:     'CardMedia' is defined but never used                                                                                                                                                no-unused-vars
+  Line 55:3:     'TextareaAutosize' is defined but never used                                                                                                                                         no-unused-vars
+  Line 61:3:     'StarHalf' is defined but never used                                                                                                                                                 no-unused-vars
+  Line 63:3:     'Comment' is defined but never used                                                                                                                                                  no-unused-vars
+  Line 64:3:     'Recommend' is defined but never used                                                                                                                                                no-unused-vars
+  Line 71:3:     'TrendingUp' is defined but never used                                                                                                                                               no-unused-vars
+  Line 72:3:     'TrendingDown' is defined but never used                                                                                                                                             no-unused-vars
+  Line 73:3:     'Equalizer' is defined but never used                                                                                                                                                no-unused-vars
+  Line 74:3:     'InsertChart' is defined but never used                                                                                                                                              no-unused-vars
+  Line 75:3:     'BarChart' is defined but never used                                                                                                                                                 no-unused-vars
+  Line 76:3:     'PieChart' is defined but never used                                                                                                                                                 no-unused-vars
+  Line 77:3:     'Timeline' is defined but never used                                                                                                                                                 no-unused-vars
+  Line 78:3:     'ShowChart' is defined but never used                                                                                                                                                no-unused-vars
+  Line 79:3:     'MultilineChart' is defined but never used                                                                                                                                           no-unused-vars
+  Line 80:3:     'DonutLarge' is defined but never used                                                                                                                                               no-unused-vars
+  Line 81:3:     'DonutSmall' is defined but never used                                                                                                                                               no-unused-vars
+  Line 82:3:     'BubbleChart' is defined but never used                                                                                                                                              no-unused-vars
+  Line 83:3:     'ScatterPlot' is defined but never used                                                                                                                                              no-unused-vars
+  Line 84:3:     'StackedLineChart' is defined but never used                                                                                                                                         no-unused-vars
+  Line 95:8:     'SchoolIcon' is defined but never used                                                                                                                                               no-unused-vars
+  Line 96:8:     'MenuBookIcon' is defined but never used                                                                                                                                             no-unused-vars
+  Line 98:8:     'TrendingUpIcon' is defined but never used                                                                                                                                           no-unused-vars
+  Line 99:8:     'DateRangeIcon' is defined but never used                                                                                                                                            no-unused-vars
+  Line 101:8:    'FolderOpenIcon' is defined but never used                                                                                                                                           no-unused-vars
+  Line 108:8:    'ZoomInIcon' is defined but never used                                                                                                                                               no-unused-vars
+  Line 117:8:    'SendIcon' is defined but never used                                                                                                                                                 no-unused-vars
+  Line 118:8:    'VisibilityIcon' is defined but never used                                                                                                                                           no-unused-vars
+  Line 119:8:    'CalendarMonthIcon' is defined but never used                                                                                                                                        no-unused-vars
+  Line 148:7:    'BRAND_LIGHT' is assigned a value but never used                                                                                                                                     no-unused-vars
+  Line 267:10:   'stringToColor' is defined but never used                                                                                                                                            no-unused-vars
+  Line 429:9:    'getTaskStatusHex' is assigned a value but never used                                                                                                                                no-unused-vars
+  Line 453:9:    The 'now' object construction makes the dependencies of useMemo Hook (at line 2975) change on every render. To fix this, wrap the initialization of 'now' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  Line 1058:19:  'finalStatusNote' is assigned a value but never used                                                                                                                                 no-unused-vars
+  Line 1059:19:  'finalAttachment' is assigned a value but never used                                                                                                                                 no-unused-vars
+  Line 1464:7:   'swalInfo' is assigned a value but never used                                                                                                                                        no-unused-vars
+  Line 1517:9:   'renderRegChip' is assigned a value but never used                                                                                                                                   no-unused-vars
+  Line 1566:9:   'renderProdChip' is assigned a value but never used                                                                                                                                  no-unused-vars
+  Line 1616:9:   'renderTasksChip' is assigned a value but never used                                                                                                                                 no-unused-vars
+
+src\components\EmployeeOfTheMonthBanner.js
+  Line 10:3:   'Button' is defined but never used                                                                                         no-unused-vars
+  Line 15:8:   'dangerSound' is defined but never used                                                                                    no-unused-vars
+  Line 21:10:  'showAudioPrompt' is assigned a value but never used                                                                       no-unused-vars
+  Line 22:10:  'userBranch' is assigned a value but never used                                                                            no-unused-vars
+  Line 32:6:   React Hook useEffect has a missing dependency: 'fetchUserInfoAndWinner'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\EmployeeProfileDialog.jsx
+  Line 15:3:  'Divider' is defined but never used  no-unused-vars
+
+src\components\EmployeeSurveys.js
+  Line 16:3:   'Alert' is defined but never used                    no-unused-vars
+  Line 43:3:   'TrendingUp' is defined but never used               no-unused-vars
+  Line 162:9:  'isUserEligible' is assigned a value but never used  no-unused-vars
+
+src\components\ExceptionsListsAdmin.jsx
+  Line 286:6:  React Hook useMemo has a missing dependency: 'getBranchName'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\FollowUpCallsDialog.jsx
+  Line 7:33:   'Pagination' is defined but never used                                                                              no-unused-vars
+  Line 8:36:   'Menu' is defined but never used                                                                                    no-unused-vars
+  Line 8:42:   'ListItemIcon' is defined but never used                                                                            no-unused-vars
+  Line 8:56:   'ListItemText' is defined but never used                                                                            no-unused-vars
+  Line 9:28:   'Alert' is defined but never used                                                                                   no-unused-vars
+  Line 13:19:  'ClearAll' is defined but never used                                                                                no-unused-vars
+  Line 13:29:  'Refresh' is defined but never used                                                                                 no-unused-vars
+  Line 13:38:  'MoreVert' is defined but never used                                                                                no-unused-vars
+  Line 13:48:  'DoneAll' is defined but never used                                                                                 no-unused-vars
+  Line 49:9:   'openFilterMenu' is assigned a value but never used                                                                 no-unused-vars
+  Line 56:6:   React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array        react-hooks/exhaustive-deps
+  Line 261:6:  React Hook useEffect has a missing dependency: 'getUserFullName'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 273:9:  'handleFilterMenuClick' is assigned a value but never used                                                          no-unused-vars
+
+src\components\GroupChat.jsx
+  Line 27:25:  'AdminIcon' is defined but never used                                                                                                                                         no-unused-vars
+  Line 28:25:  'CheckCircleOutlineIcon' is defined but never used                                                                                                                            no-unused-vars
+  Line 29:11:  'ChatIcon' is defined but never used                                                                                                                                          no-unused-vars
+  Line 445:6:  React Hook useEffect has missing dependencies: 'deleteReadMessages', 'fetchGroupMessages', and 'markGroupMessagesAsRead'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 717:9:  'cancelRecording' is assigned a value but never used                                                                                                                          no-unused-vars
+  Line 855:6:  React Hook useEffect has missing dependencies: 'isNearBottom' and 'prevMessagesLength'. Either include them or remove the dependency array                                    react-hooks/exhaustive-deps
+
+src\components\HRCreateExams.jsx
+  Line 153:6:  React Hook useEffect has a missing dependency: 'initializeData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 220:6:  React Hook useMemo has a missing dependency: 'getCreatorName'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+src\components\HRCreateSurvey.js
+  Line 58:3:    'Divider' is defined but never used                                                                                          no-unused-vars
+  Line 76:3:    'EmojiEvents' is defined but never used                                                                                      no-unused-vars
+  Line 167:7:   'exportSurveyReport' is assigned a value but never used                                                                      no-unused-vars
+  Line 606:10:  'selectedSurveyForDetails' is assigned a value but never used                                                                no-unused-vars
+  Line 606:36:  'setSelectedSurveyForDetails' is assigned a value but never used                                                             no-unused-vars
+  Line 607:10:  'showResponsesDialog' is assigned a value but never used                                                                     no-unused-vars
+  Line 607:31:  'setShowResponsesDialog' is assigned a value but never used                                                                  no-unused-vars
+  Line 1027:6:  React Hook useEffect has a missing dependency: 'initializeData'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+  Line 1152:6:  React Hook useEffect has a missing dependency: 'fetchDiplomasForBranches'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 2421:8:  React Hook useEffect has a missing dependency: 'fetchUserImage'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+  Line 2474:5:  Expected a default case                                                                                                      default-case
+  Line 2676:9:  'isFormValid' is assigned a value but never used                                                                             no-unused-vars
+
+src\components\Header.jsx
+  Line 200:7:  'logoutIconStyles' is assigned a value but never used  no-unused-vars
+
+src\components\InquiriesPage.jsx
+  Line 10:15:   'Stack' is defined but never used                 no-unused-vars
+  Line 661:29:  'studentInfo' is assigned a value but never used  no-unused-vars
+  Line 662:29:  'isLoading' is assigned a value but never used    no-unused-vars
+
+src\components\InvoiceReturnDialog.jsx
+  Line 70:7:   'warning' is assigned a value but never used                                                                         no-unused-vars
+  Line 358:6:  React Hook useEffect has a missing dependency: 'loadInvoices'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  Line 363:6:  React Hook useEffect has a missing dependency: 'loadContext'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  Line 368:6:  React Hook useEffect has a missing dependency: 'loadDocuments'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+  Line 372:6:  React Hook useEffect has a missing dependency: 'loadDocumentInfo'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\MyCallHistoryDialog.jsx
+  Line 39:6:  React Hook useEffect has a missing dependency: 'fetchCalls'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  Line 43:6:  React Hook useEffect has a missing dependency: 'applyFilters'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\P2PMarketingAdmin.jsx
+  Line 120:9:  'isMobile' is assigned a value but never used  no-unused-vars
+
+src\components\PastReports.jsx
+  Line 4:27:   'useEffect' is defined but never used               no-unused-vars
+  Line 19:10:  'format' is defined but never used                  no-unused-vars
+  Line 33:7:   'textPrimary' is assigned a value but never used    no-unused-vars
+  Line 34:7:   'textSecondary' is assigned a value but never used  no-unused-vars
+
+src\components\PaymentOrderDialog.jsx
+  Line 220:10:  'editCostCenterGuid' is assigned a value but never used  no-unused-vars
+
+src\components\PostsDialog.js
+  Line 6:3:    'DialogTitle' is defined but never used                no-unused-vars
+  Line 20:3:   'Fab' is defined but never used                        no-unused-vars
+  Line 26:3:   'ImageList' is defined but never used                  no-unused-vars
+  Line 27:3:   'ImageListItem' is defined but never used              no-unused-vars
+  Line 85:10:  'unseenPostsCount' is assigned a value but never used  no-unused-vars
+
+src\components\ProfileStatsTab.js
+  Line 144:24:  'setEmployeeData' is assigned a value but never used                                                           no-unused-vars
+  Line 213:4:   React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\PublicTaskDialog.jsx
+  Line 24:3:   'Divider' is defined but never used                                                                                                                                                                                                                                                              no-unused-vars
+  Line 40:13:  'CancelIcon' is defined but never used                                                                                                                                                                                                                                                           no-unused-vars
+  Line 49:13:  'PeopleIcon' is defined but never used                                                                                                                                                                                                                                                           no-unused-vars
+  Line 50:11:  'EditIcon' is defined but never used                                                                                                                                                                                                                                                             no-unused-vars
+  Line 383:6:  React Hook useEffect has missing dependencies: 'handleTaskUsersChange', 'setMainTaskName', and 'setMainTaskTime'. Either include them or remove the dependency array. If 'setMainTaskName' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+src\components\ReceptionCelebration.jsx
+  Line 11:7:  'primaryLight' is assigned a value but never used  no-unused-vars
+
+src\components\RegisterDocumentDialog.jsx
+  Line 360:12:  Unnecessary escape character: \/  no-useless-escape
+
+src\components\RegistrationCommissions.jsx
+  Line 66:13:  'PersonIcon' is defined but never used         no-unused-vars
+  Line 67:12:  'BadgeIcon' is defined but never used          no-unused-vars
+  Line 68:17:  'TimeIcon' is defined but never used           no-unused-vars
+  Line 570:9:  'isMobile' is assigned a value but never used  no-unused-vars
+
+src\components\RegistrationRequestsPage.jsx
+  Line 14:3:  'Stack' is defined but never used  no-unused-vars
+
+src\components\RegistrationReturnDialog.jsx
+  Line 235:6:  React Hook useEffect has a missing dependency: 'loadContext'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  Line 243:6:  React Hook useEffect has a missing dependency: 'loadDocuments'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+  Line 247:6:  React Hook useEffect has a missing dependency: 'loadDocumentInfo'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\ReportViewer.jsx
+  Line 17:3:  'Divider' is defined but never used  no-unused-vars
+
+src\components\RportForClinets.jsx
+  Line 12:10:  'arabicFont' is defined but never used                                                                         no-unused-vars
+  Line 24:10:  'jsPDF' is defined but never used                                                                              no-unused-vars
+  Line 69:10:  'studentInfoMap' is assigned a value but never used                                                            no-unused-vars
+  Line 217:6:  React Hook useEffect has a missing dependency: 'userFilter'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\SalesInvoiceDialog.jsx
+  Line 166:7:  'formatHijriDate' is assigned a value but never used  no-unused-vars
+
+src\components\SentTasks.js
+  Line 6:45:  'CardActions' is defined but never used  no-unused-vars
+
+src\components\Sidebar.jsx
+  Line 32:3:    'Badge' is defined but never used                             no-unused-vars
+  Line 47:8:    'AssignmentIcon' is defined but never used                    no-unused-vars
+  Line 238:7:   'backgroundColor' is assigned a value but never used          no-unused-vars
+  Line 272:10:  'notificationUnreadCount' is assigned a value but never used  no-unused-vars
+
+src\components\SpecialComponent.jsx
+  Line 64:9:   'theme' is assigned a value but never used       no-unused-vars
+  Line 69:9:   'isTablet' is assigned a value but never used    no-unused-vars
+  Line 88:10:  'branchName' is assigned a value but never used  no-unused-vars
+  Line 89:10:  'loading' is assigned a value but never used     no-unused-vars
+
+src\components\StudentNotes.jsx
+  Line 128:65:  React Hook useEffect has a missing dependency: 'loadMy'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\StudentPaymentOrderDialog.jsx
+  Line 46:7:   'softBg' is assigned a value but never used             no-unused-vars
+  Line 383:7:  'askPrintAfterSave' is assigned a value but never used  no-unused-vars
+
+src\components\StudentRegFeesDialog.jsx
+  Line 709:6:  React Hook useEffect has a missing dependency: 'loadContext'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  Line 715:6:  React Hook useEffect has a missing dependency: 'loadDocuments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\StudentSearch.jsx
+  Line 6:14:    'Container' is defined but never used                                                                            no-unused-vars
+  Line 34:7:    'textPrimary' is assigned a value but never used                                                                 no-unused-vars
+  Line 64:15:   'branches' is assigned a value but never used                                                                    no-unused-vars
+  Line 65:12:   'snackbar' is assigned a value but never used                                                                    no-unused-vars
+  Line 72:35:   'setFollowUpCallsForSales' is assigned a value but never used                                                    no-unused-vars
+  Line 84:8:    React Hook useEffect has a missing dependency: 'fetchStudent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 295:19:  'response' is assigned a value but never used                                                                    no-unused-vars
+  Line 399:11:  'getUserName' is assigned a value but never used                                                                 no-unused-vars
+
+src\components\StudentStatementDialog.jsx
+  Line 19:6:  React Hook useEffect has a missing dependency: 'fetchStatements'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\StudentStatementDialog2.jsx
+  Line 19:3:   'TextField' is defined but never used  no-unused-vars
+  Line 239:5:  Duplicate key 'width'                  no-dupe-keys
+
+src\components\StudentStudyFileDialog.jsx
+  Line 13:3:    'Divider' is defined but never used               no-unused-vars
+  Line 18:3:    'TextField' is defined but never used             no-unused-vars
+  Line 25:8:    'FolderSharedIcon' is defined but never used      no-unused-vars
+  Line 295:9:   'updateClass' is assigned a value but never used  no-unused-vars
+  Line 630:19:  Duplicate key 'color'                             no-dupe-keys
+  Line 669:19:  Duplicate key 'color'                             no-dupe-keys
+
+src\components\StudyApprovalDialog.jsx
+  Line 23:3:   'Typography' is defined but never used                                                                                                                                                                    no-unused-vars
+  Line 178:9:  'selectedSector' is assigned a value but never used                                                                                                                                                       no-unused-vars
+  Line 642:6:  React Hook useEffect has missing dependencies: 'accountGuid', 'currentSellerGuid', 'initialStudyType', 'loadBaseLookups', and 'loadExistingApproval'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 667:6:  React Hook useEffect has missing dependencies: 'batchGuid', 'editMode', 'loadBatches', and 'open'. Either include them or remove the dependency array                                                     react-hooks/exhaustive-deps
+  Line 684:6:  React Hook useEffect has missing dependencies: 'diplomGuid', 'editMode', 'loadPrograms', and 'open'. Either include them or remove the dependency array                                                   react-hooks/exhaustive-deps
+  Line 695:6:  React Hook useEffect has a missing dependency: 'calculateStudyDates'. Either include it or remove the dependency array                                                                                    react-hooks/exhaustive-deps
+  Line 757:6:  React Hook useEffect has missing dependencies: 'calculateStudyDates' and 'selectedBatch'. Either include them or remove the dependency array                                                              react-hooks/exhaustive-deps
+
+src\components\SurveyReportExporter.js
+  Line 1:8:    'React' is defined but never used                                  no-unused-vars
+  Line 3:3:    'Box' is defined but never used                                    no-unused-vars
+  Line 4:3:    'Typography' is defined but never used                             no-unused-vars
+  Line 5:3:    'Card' is defined but never used                                   no-unused-vars
+  Line 6:3:    'CardContent' is defined but never used                            no-unused-vars
+  Line 7:3:    'Grid' is defined but never used                                   no-unused-vars
+  Line 8:3:    'LinearProgress' is defined but never used                         no-unused-vars
+  Line 9:3:    'Table' is defined but never used                                  no-unused-vars
+  Line 10:3:   'TableBody' is defined but never used                              no-unused-vars
+  Line 11:3:   'TableCell' is defined but never used                              no-unused-vars
+  Line 12:3:   'TableContainer' is defined but never used                         no-unused-vars
+  Line 13:3:   'TableHead' is defined but never used                              no-unused-vars
+  Line 14:3:   'TableRow' is defined but never used                               no-unused-vars
+  Line 15:3:   'Paper' is defined but never used                                  no-unused-vars
+  Line 16:3:   'Chip' is defined but never used                                   no-unused-vars
+  Line 17:3:   'Divider' is defined but never used                                no-unused-vars
+  Line 20:3:   'Star' is defined but never used                                   no-unused-vars
+  Line 21:3:   'CheckCircle' is defined but never used                            no-unused-vars
+  Line 22:3:   'RadioButtonChecked' is defined but never used                     no-unused-vars
+  Line 23:3:   'BarChart' is defined but never used                               no-unused-vars
+  Line 24:3:   'PieChart' is defined but never used                               no-unused-vars
+  Line 25:3:   'TrendingUp' is defined but never used                             no-unused-vars
+  Line 31:7:   'primaryLight' is assigned a value but never used                  no-unused-vars
+  Line 32:7:   'backgroundColor' is assigned a value but never used               no-unused-vars
+  Line 33:7:   'textColor' is assigned a value but never used                     no-unused-vars
+  Line 228:9:  'calculateCompletionRate' is assigned a value but never used       no-unused-vars
+  Line 276:9:  'calculateOverallSatisfaction' is assigned a value but never used  no-unused-vars
+
+src\components\TechnicalSupport.jsx
+  Line 101:21:  'setUploading' is assigned a value but never used                                                                                            no-unused-vars
+  Line 119:26:  'setViewAllTickets' is assigned a value but never used                                                                                       no-unused-vars
+  Line 125:10:  'checkingPendingTicket' is assigned a value but never used                                                                                   no-unused-vars
+  Line 210:6:   React Hook useEffect has missing dependencies: 'fetchAllTickets' and 'fetchUserTickets'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 222:6:   React Hook useEffect has a missing dependency: 'checkForPendingTickets'. Either include it or remove the dependency array                    react-hooks/exhaustive-deps
+  Line 742:73:  Unnecessary escape character: \/                                                                                                             no-useless-escape
+
+src\components\TrainerStudentGrid.jsx
+  Line 26:8:   'SchoolIcon' is defined but never used             no-unused-vars
+  Line 64:10:  'studyInfo' is assigned a value but never used     no-unused-vars
+  Line 65:10:  'studyLoading' is assigned a value but never used  no-unused-vars
+
+src\components\TrainerStudentGrid2.jsx
+  Line 10:14:   'Grid' is defined but never used                         no-unused-vars
+  Line 10:20:   'Stack' is defined but never used                        no-unused-vars
+  Line 59:9:    'isTablet' is assigned a value but never used            no-unused-vars
+  Line 101:10:  'studyInfo' is assigned a value but never used           no-unused-vars
+  Line 102:10:  'studyLoading' is assigned a value but never used        no-unused-vars
+  Line 545:9:   'uniqueByNationalId' is assigned a value but never used  no-unused-vars
+  Line 995:62:  Unnecessary escape character: \(                         no-useless-escape
+  Line 995:64:  Unnecessary escape character: \)                         no-useless-escape
+  Line 995:66:  Unnecessary escape character: \+                         no-useless-escape
+  Line 1737:9:  'handleExportReport' is assigned a value but never used  no-unused-vars
+
+src\components\UploadGrades.jsx
+  Line 31:9:  'user' is assigned a value but never used  no-unused-vars
+
+src\components\attendance\AttendanceDialog.js
+  Line 42:10:  'availableSubjects' is assigned a value but never used                                                                      no-unused-vars
+  Line 43:10:  'loadingSubjects' is assigned a value but never used                                                                        no-unused-vars
+  Line 68:6:   React Hook useEffect has a missing dependency: 'fetchStudentStudyInfo'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  Line 75:6:   React Hook useEffect has a missing dependency: 'fetchSubjectsForDiploma'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\attendance\StudentInfoCard.js
+  Line 19:3:  'Schedule' is defined but never used  no-unused-vars
+
+src\components\tabs\EmployeeOfTheMonthTab.js
+  Line 34:3:    'Tooltip' is defined but never used                                                                                                                                                                                                                   no-unused-vars
+  Line 41:3:    'Business' is defined but never used                                                                                                                                                                                                                  no-unused-vars
+  Line 44:3:    'Add' is defined but never used                                                                                                                                                                                                                       no-unused-vars
+  Line 45:3:    'Edit' is defined but never used                                                                                                                                                                                                                      no-unused-vars
+  Line 46:3:    'Visibility' is defined but never used                                                                                                                                                                                                                no-unused-vars
+  Line 64:10:   'employees' is assigned a value but never used                                                                                                                                                                                                        no-unused-vars
+  Line 80:10:   'existingEvaluations' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  Line 102:6:   React Hook useEffect has missing dependencies: 'checkExistingEvaluations' and 'fetchEmployees'. Either include them or remove the dependency array                                                                                                    react-hooks/exhaustive-deps
+  Line 414:15:  'result' is assigned a value but never used                                                                                                                                                                                                           no-unused-vars
+  Line 455:8:   React Hook useEffect has an unnecessary dependency: 'currentEmployees'. Either exclude it or remove the dependency array. Outer scope values like 'currentEmployees' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+src\components\tabs\HRVacationsTab.js
+  Line 31:3:   'Badge' is defined but never used                                                                                                    no-unused-vars
+  Line 43:3:   'Schedule' is defined but never used                                                                                                 no-unused-vars
+  Line 52:3:   'FilterList' is defined but never used                                                                                               no-unused-vars
+  Line 54:3:   'Download' is defined but never used                                                                                                 no-unused-vars
+  Line 55:3:   'Person' is defined but never used                                                                                                   no-unused-vars
+  Line 57:3:   'CalendarToday' is defined but never used                                                                                            no-unused-vars
+  Line 58:3:   'AccessTime' is defined but never used                                                                                               no-unused-vars
+  Line 309:6:  React Hook useEffect has missing dependencies: 'fetchBranches' and 'fetchUsers'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 316:6:  React Hook useEffect has a missing dependency: 'fetchHRRequests'. Either include it or remove the dependency array                   react-hooks/exhaustive-deps
+  Line 327:4:  React Hook useEffect has a missing dependency: 'userImages'. Either include it or remove the dependency array                        react-hooks/exhaustive-deps
+
+src\components\tabs\MeetingRoomTab.js
+  Line 40:3:   'Add' is defined but never used                                                                                                                           no-unused-vars
+  Line 51:11:  'LinkIcon' is defined but never used                                                                                                                      no-unused-vars
+  Line 52:3:   'Launch' is defined but never used                                                                                                                        no-unused-vars
+  Line 53:15:  'DepartmentIcon' is defined but never used                                                                                                                no-unused-vars
+  Line 54:11:  'WorkIcon' is defined but never used                                                                                                                      no-unused-vars
+  Line 98:9:   'userFullName' is assigned a value but never used                                                                                                         no-unused-vars
+  Line 99:9:   'userGuid' is assigned a value but never used                                                                                                             no-unused-vars
+  Line 136:9:  'isPhone' is assigned a value but never used                                                                                                              no-unused-vars
+  Line 137:9:  'isTablet' is assigned a value but never used                                                                                                             no-unused-vars
+  Line 159:6:  React Hook useEffect has missing dependencies: 'fetchDepartments', 'fetchMeetings', and 'fetchUsers'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 462:7:  'copyToClipboard' is assigned a value but never used                                                                                                      no-unused-vars
+
+src\components\tabs\TasksTab.js
+  Line 105:13:  'monthIndex' is assigned a value but never used  no-unused-vars
+
+src\components\tabs\VacationPermissionsTab.js
+  Line 31:3:   'Badge' is defined but never used                                                                                                                         no-unused-vars
+  Line 32:3:   'Divider' is defined but never used                                                                                                                       no-unused-vars
+  Line 35:3:   'FormGroup' is defined but never used                                                                                                                     no-unused-vars
+  Line 36:3:   'Accordion' is defined but never used                                                                                                                     no-unused-vars
+  Line 37:3:   'AccordionSummary' is defined but never used                                                                                                              no-unused-vars
+  Line 38:3:   'AccordionDetails' is defined but never used                                                                                                              no-unused-vars
+  Line 46:3:   'ListItemText' is defined but never used                                                                                                                  no-unused-vars
+  Line 53:3:   'CheckCircle' is defined but never used                                                                                                                   no-unused-vars
+  Line 54:3:   'Pending' is defined but never used                                                                                                                       no-unused-vars
+  Line 55:3:   'Cancel' is defined but never used                                                                                                                        no-unused-vars
+  Line 60:13:  'CancelIcon' is defined but never used                                                                                                                    no-unused-vars
+  Line 62:3:   'FilterList' is defined but never used                                                                                                                    no-unused-vars
+  Line 65:3:   'Business' is defined but never used                                                                                                                      no-unused-vars
+  Line 66:3:   'ExpandMore' is defined but never used                                                                                                                    no-unused-vars
+  Line 67:3:   'AccessTime' is defined but never used                                                                                                                    no-unused-vars
+  Line 68:3:   'CalendarMonth' is defined but never used                                                                                                                 no-unused-vars
+  Line 72:3:   'HourglassEmpty' is defined but never used                                                                                                                no-unused-vars
+  Line 78:3:   'DateRange' is defined but never used                                                                                                                     no-unused-vars
+  Line 674:6:  React Hook useEffect has missing dependencies: 'fetchBranches', 'fetchPermissions', and 'fetchUsers'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 686:6:  React Hook useEffect has a missing dependency: 'userImages'. Either include it or remove the dependency array                                             react-hooks/exhaustive-deps
+
+src\components\tabs\VacationsTab.js
+  Line 32:3:    'CheckCircle' is defined but never used                                                                                                                            no-unused-vars
+  Line 34:3:    'Cancel' is defined but never used                                                                                                                                 no-unused-vars
+  Line 40:3:    'Person' is defined but never used                                                                                                                                 no-unused-vars
+  Line 41:3:    'Warning' is defined but never used                                                                                                                                no-unused-vars
+  Line 45:3:    'FilterList' is defined but never used                                                                                                                             no-unused-vars
+  Line 46:3:    'Refresh' is defined but never used                                                                                                                                no-unused-vars
+  Line 48:3:    'EventBusy' is defined but never used                                                                                                                              no-unused-vars
+  Line 52:3:    'CalendarMonth' is defined but never used                                                                                                                          no-unused-vars
+  Line 55:3:    'Security' is defined but never used                                                                                                                               no-unused-vars
+  Line 79:10:   'deleteDialog' is assigned a value but never used                                                                                                                  no-unused-vars
+  Line 79:24:   'setDeleteDialog' is assigned a value but never used                                                                                                               no-unused-vars
+  Line 276:6:   React Hook useEffect has missing dependencies: 'fetchRequests', 'fetchUsedPermissions', and 'fetchUserLimits'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 394:11:  'daysDiff' is assigned a value but never used                                                                                                                      no-unused-vars
+  Line 395:11:  'hoursDiff' is assigned a value but never used                                                                                                                     no-unused-vars
+  Line 633:9:   'formatTime' is assigned a value but never used                                                                                                                    no-unused-vars
+
+src\hooks\useFetchReports.js
+  Line 45:6:  React Hook useEffect has a missing dependency: 'fetchReports'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\AdmissionRequests.jsx
+  Line 35:3:     'Tabs' is defined but never used                                                                                     no-unused-vars
+  Line 36:3:     'Tab' is defined but never used                                                                                      no-unused-vars
+  Line 112:21:   Unnecessary escape character: \-                                                                                     no-useless-escape
+  Line 1766:6:   React Hook useMemo has a missing dependency: 'getOrderStatusChip'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 2289:19:  Duplicate key 'px'                                                                                                   no-dupe-keys
+
+src\pages\AdmissionRequestsReport.jsx
+  Line 13:3:   'Stack' is defined but never used                                                                               no-unused-vars
+  Line 668:6:  React Hook useMemo has a missing dependency: 'openVipDialog'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\AfterSalesFollow.jsx
+  Line 18:3:   'Stack' is defined but never used                                                                               no-unused-vars
+  Line 50:7:   'getMonthAgo' is assigned a value but never used                                                                no-unused-vars
+  Line 61:7:   'normalize' is assigned a value but never used                                                                  no-unused-vars
+  Line 490:6:  React Hook useMemo has a missing dependency: 'openNotesForm'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\AttendancePage.js
+  Line 14:3:    'Button' is defined but never used                   no-unused-vars
+  Line 15:3:    'CircularProgress' is defined but never used         no-unused-vars
+  Line 98:10:   'success' is assigned a value but never used         no-unused-vars
+  Line 107:23:  'setSelectedTab' is assigned a value but never used  no-unused-vars
+
+src\pages\BalanceReviewPage.jsx
+  Line 56:7:  'firstDayOfMonth' is assigned a value but never used  no-unused-vars
+
+src\pages\BatchManagement.jsx
+  Line 17:3:  'Divider' is defined but never used    no-unused-vars
+  Line 22:3:  'Stack' is defined but never used      no-unused-vars
+  Line 31:8:  'CloseIcon' is defined but never used  no-unused-vars
+
+src\pages\BatchSeatsCounter.jsx
+  Line 16:3:  'Chip' is defined but never used  no-unused-vars
+
+src\pages\BatchStatistics.jsx
+  Line 867:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\BranchReportsPage.jsx
+  Line 20:3:   'IconButton' is defined but never used           no-unused-vars
+  Line 21:3:   'Tooltip' is defined but never used              no-unused-vars
+  Line 22:3:   'Badge' is defined but never used                no-unused-vars
+  Line 29:3:   'Avatar' is defined but never used               no-unused-vars
+  Line 36:3:   'TablePagination' is defined but never used      no-unused-vars
+  Line 44:28:  'isToday' is defined but never used              no-unused-vars
+  Line 54:8:   'ArrowForwardIosIcon' is defined but never used  no-unused-vars
+
+src\pages\CashPaymentOrder.jsx
+  Line 22:3:  'IconButton' is defined but never used  no-unused-vars
+  Line 28:3:  'Tooltip' is defined but never used     no-unused-vars
+
+src\pages\ChangeUserPassword.jsx
+  Line 37:7:  'primary' is assigned a value but never used  no-unused-vars
+
+src\pages\ChatMian.jsx
+  Line 10:5:   'Divider' is defined but never used             no-unused-vars
+  Line 61:10:  'groups' is assigned a value but never used     no-unused-vars
+  Line 61:18:  'setGroups' is assigned a value but never used  no-unused-vars
+
+src\pages\Chats.jsx
+  Line 4:46:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 16:13:  'PersonIcon' is defined but never used                                                                                                      no-unused-vars
+  Line 25:12:  'ImageIcon' is defined but never used                                                                                                       no-unused-vars
+  Line 58:10:  'conversations' is assigned a value but never used                                                                                          no-unused-vars
+  Line 63:10:  'lastMessageTime' is assigned a value but never used                                                                                        no-unused-vars
+  Line 65:10:  'audioBlob' is assigned a value but never used                                                                                              no-unused-vars
+  Line 120:6:  React Hook useEffect has missing dependencies: 'isNearBottom' and 'prevMessagesLength'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 183:6:  React Hook useEffect has a missing dependency: 'handleUserClick'. Either include it or remove the dependency array                          react-hooks/exhaustive-deps
+  Line 284:6:  React Hook useEffect has a missing dependency: 'fetchMessages'. Either include it or remove the dependency array                            react-hooks/exhaustive-deps
+  Line 510:9:  'cancelRecording' is assigned a value but never used                                                                                        no-unused-vars
+
+src\pages\CollectionCommissionsReport.jsx
+  Line 707:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\Complaiments.jsx
+  Line 16:3:    'Paper' is defined but never used                     no-unused-vars
+  Line 27:3:    'Divider' is defined but never used                   no-unused-vars
+  Line 28:3:    'Tabs' is defined but never used                      no-unused-vars
+  Line 29:3:    'Tab' is defined but never used                       no-unused-vars
+  Line 37:3:    'TablePagination' is defined but never used           no-unused-vars
+  Line 213:7:   'CommentText' is assigned a value but never used      no-unused-vars
+  Line 255:10:  'tabValue' is assigned a value but never used         no-unused-vars
+  Line 390:13:  'result' is assigned a value but never used           no-unused-vars
+  Line 581:9:   'handleTabChange' is assigned a value but never used  no-unused-vars
+
+src\pages\ConsolidatedIncomeStatement.jsx
+  Line 23:3:  'Tooltip' is defined but never used           no-unused-vars
+  Line 30:8:  'CloseIcon' is defined but never used         no-unused-vars
+  Line 50:7:  'primary' is assigned a value but never used  no-unused-vars
+
+src\pages\CreateExam.jsx
+  Line 19:3:     'Switch' is defined but never used                                                                                  no-unused-vars
+  Line 20:3:     'FormControlLabel' is defined but never used                                                                        no-unused-vars
+  Line 25:3:     'Divider' is defined but never used                                                                                 no-unused-vars
+  Line 26:3:     'AppBar' is defined but never used                                                                                  no-unused-vars
+  Line 27:3:     'Toolbar' is defined but never used                                                                                 no-unused-vars
+  Line 29:3:     'useTheme' is defined but never used                                                                                no-unused-vars
+  Line 30:3:     'useMediaQuery' is defined but never used                                                                           no-unused-vars
+  Line 51:20:    'ViewOffIcon' is defined but never used                                                                             no-unused-vars
+  Line 58:13:    'CancelIcon' is defined but never used                                                                              no-unused-vars
+  Line 60:10:    'API_BASE' is defined but never used                                                                                no-unused-vars
+  Line 61:10:    'LEVEL_ORDER' is defined but never used                                                                             no-unused-vars
+  Line 108:10:   'showAlert' is assigned a value but never used                                                                      no-unused-vars
+  Line 118:9:    'showConfirm' is assigned a value but never used                                                                    no-unused-vars
+  Line 1296:10:  'branchCoursesLoading' is assigned a value but never used                                                           no-unused-vars
+  Line 1297:10:  'branchCoursesErr' is assigned a value but never used                                                               no-unused-vars
+  Line 1299:8:   'allBranchCoursesLoading' is assigned a value but never used                                                        no-unused-vars
+  Line 1300:8:   'allBranchCoursesErr' is assigned a value but never used                                                            no-unused-vars
+  Line 1441:10:  'sharedCourseCombinations' is assigned a value but never used                                                       no-unused-vars
+  Line 1441:36:  'setSharedCourseCombinations' is assigned a value but never used                                                    no-unused-vars
+  Line 1445:10:  'copyingExam' is assigned a value but never used                                                                    no-unused-vars
+  Line 1690:6:   React Hook useEffect has a missing dependency: 'userBranch.guid'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 1711:9:   'courseTitle' is assigned a value but never used                                                                    no-unused-vars
+  Line 2319:9:   'tfQuestions' is assigned a value but never used                                                                    no-unused-vars
+  Line 2320:9:   'mcqQuestions' is assigned a value but never used                                                                   no-unused-vars
+
+src\pages\DailyAttendanceReport.jsx
+  Line 184:9:   'theme' is assigned a value but never used           no-unused-vars
+  Line 188:23:  'setSelectedTab' is assigned a value but never used  no-unused-vars
+  Line 212:10:  'students' is assigned a value but never used        no-unused-vars
+  Line 469:13:  'key' is assigned a value but never used             no-unused-vars
+
+src\pages\DailyFollowUpReport.jsx
+  Line 35:3:    'ListItemSecondaryAction' is defined but never used     no-unused-vars
+  Line 37:3:    'Chip' is defined but never used                        no-unused-vars
+  Line 49:3:    'Dialog' is defined but never used                      no-unused-vars
+  Line 50:3:    'DialogTitle' is defined but never used                 no-unused-vars
+  Line 51:3:    'DialogContent' is defined but never used               no-unused-vars
+  Line 52:3:    'DialogActions' is defined but never used               no-unused-vars
+  Line 62:3:    'Visibility' is defined but never used                  no-unused-vars
+  Line 63:3:    'Close' is defined but never used                       no-unused-vars
+  Line 256:26:  'setPositionFilter' is assigned a value but never used  no-unused-vars
+  Line 320:9:   'positions' is assigned a value but never used          no-unused-vars
+  Line 444:23:  'statusOption' is assigned a value but never used       no-unused-vars
+
+src\pages\DeregistrationRequestsReport.jsx
+  Line 1076:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\DesktopDevicesAccessPage.jsx
+  Line 30:8:    'DevicesIcon' is defined but never used                                                                           no-unused-vars
+  Line 34:8:    'PublicIcon' is defined but never used                                                                            no-unused-vars
+  Line 519:7:   'StatCard' is assigned a value but never used                                                                     no-unused-vars
+  Line 691:9:   'userGuid' is assigned a value but never used                                                                     no-unused-vars
+  Line 695:10:  'summary' is assigned a value but never used                                                                      no-unused-vars
+  Line 1193:5:  React Hook useMemo has a missing dependency: 'runDeviceAction'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\DiplomaStudentsPage.jsx
+  Line 31:3:    'Tooltip' is defined but never used                     no-unused-vars
+  Line 476:10:  'filterBatchGuid' is assigned a value but never used    no-unused-vars
+  Line 477:10:  'filterSectionGuid' is assigned a value but never used  no-unused-vars
+  Line 818:9:   'batchOptions' is assigned a value but never used       no-unused-vars
+
+src\pages\DiscountRequestsReport.jsx
+  Line 1380:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\ExploerNetwork.jsx
+  Line 6:8:    'PropTypes' is defined but never used     no-unused-vars
+  Line 30:3:   'CardMedia' is defined but never used     no-unused-vars
+  Line 31:3:   'Grid' is defined but never used          no-unused-vars
+  Line 36:15:  'ComputerIcon' is defined but never used  no-unused-vars
+
+src\pages\GeneralAccountStatement.jsx
+  Line 25:3:   'FormControl' is defined but never used                    no-unused-vars
+  Line 28:3:   'InputLabel' is defined but never used                     no-unused-vars
+  Line 32:3:   'MenuItem' is defined but never used                       no-unused-vars
+  Line 33:3:   'OutlinedInput' is defined but never used                  no-unused-vars
+  Line 35:3:   'Select' is defined but never used                         no-unused-vars
+  Line 141:7:  'multiSelectMenuProps' is assigned a value but never used  no-unused-vars
+
+src\pages\GeneralDaily.jsx
+  Line 27:3:   'FormControl' is defined but never used               no-unused-vars
+  Line 30:3:   'InputLabel' is defined but never used                no-unused-vars
+  Line 32:3:   'MenuItem' is defined but never used                  no-unused-vars
+  Line 33:3:   'OutlinedInput' is defined but never used             no-unused-vars
+  Line 35:3:   'Select' is defined but never used                    no-unused-vars
+  Line 225:7:  'selectMenuProps' is assigned a value but never used  no-unused-vars
+
+src\pages\GraduatesFollowReport.jsx
+  Line 1287:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\HrAttendancePage.js
+  Line 37:8:    'CalendarMonthRoundedIcon' is defined but never used                                                                     no-unused-vars
+  Line 38:8:    'CloseRoundedIcon' is defined but never used                                                                             no-unused-vars
+  Line 581:10:  'bioBulkTotalCount' is assigned a value but never used                                                                   no-unused-vars
+  Line 2095:6:  React Hook useEffect has a missing dependency: 'loadBioBulkWorkspace'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\HrContractsPage.jsx
+  Line 251:7:  'RTL_AUTOCOMPLETE_LISTBOX_PROPS' is assigned a value but never used  no-unused-vars
+
+src\pages\HrDepartmentsPage.jsx
+  Line 33:3:    'Tab' is defined but never used                                 no-unused-vars
+  Line 34:3:    'Tabs' is defined but never used                                no-unused-vars
+  Line 51:8:    'PersonIcon' is defined but never used                          no-unused-vars
+  Line 57:8:    'DeleteOutlineRoundedIcon' is defined but never used            no-unused-vars
+  Line 58:8:    'SupervisorAccountRoundedIcon' is defined but never used        no-unused-vars
+  Line 316:9:   'isPhone' is assigned a value but never used                    no-unused-vars
+  Line 321:10:  'managers' is assigned a value but never used                   no-unused-vars
+  Line 328:10:  'lookupsLoading' is assigned a value but never used             no-unused-vars
+  Line 332:10:  'orgTab' is assigned a value but never used                     no-unused-vars
+  Line 332:18:  'setOrgTab' is assigned a value but never used                  no-unused-vars
+  Line 333:10:  'orgLoading' is assigned a value but never used                 no-unused-vars
+  Line 334:10:  'orgLookups' is assigned a value but never used                 no-unused-vars
+  Line 337:10:  'orgAssignments' is assigned a value but never used             no-unused-vars
+  Line 338:10:  'orgRules' is assigned a value but never used                   no-unused-vars
+  Line 349:34:  'setOrgPreviewEmployeeGuid' is assigned a value but never used  no-unused-vars
+  Line 350:10:  'orgPreview' is assigned a value but never used                 no-unused-vars
+  Line 976:9:   'saveOrgAssignment' is assigned a value but never used          no-unused-vars
+  Line 1005:9:  'removeOrgAssignment' is assigned a value but never used        no-unused-vars
+  Line 1024:9:  'saveOrgRule' is assigned a value but never used                no-unused-vars
+  Line 1060:9:  'removeOrgRule' is assigned a value but never used              no-unused-vars
+  Line 1079:9:  'previewOrgManager' is assigned a value but never used          no-unused-vars
+
+src\pages\HrEmployeeHomePage.jsx
+  Line 65:8:     'ContactPhoneRoundedIcon' is defined but never used                                                                                                                                                          no-unused-vars
+  Line 280:7:    'RTL_AUTOCOMPLETE_LISTBOX_PROPS' is assigned a value but never used                                                                                                                                          no-unused-vars
+  Line 299:7:    'SECTION_DIRECTION' is assigned a value but never used                                                                                                                                                       no-unused-vars
+  Line 305:7:    'FORM_DIRECTION' is assigned a value but never used                                                                                                                                                          no-unused-vars
+  Line 306:7:    'FORM_TEXT_ALIGN' is assigned a value but never used                                                                                                                                                         no-unused-vars
+  Line 1486:9:   The 'hrPermissions' logical expression could make the dependencies of useMemo Hook (at line 1530) change on every render. To fix this, wrap the initialization of 'hrPermissions' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  Line 1496:9:   'contractDaysLeft' is assigned a value but never used                                                                                                                                                        no-unused-vars
+  Line 4023:19:  No duplicate props allowed                                                                                                                                                                                   react/jsx-no-duplicate-props
+  Line 4155:21:  No duplicate props allowed                                                                                                                                                                                   react/jsx-no-duplicate-props
+
+src\pages\HrEmployeesPage.jsx
+  Line 11:3:     'Card' is defined but never used                                     no-unused-vars
+  Line 12:3:     'CardContent' is defined but never used                              no-unused-vars
+  Line 53:8:     'PhoneIcon' is defined but never used                                no-unused-vars
+  Line 54:8:     'EmailIcon' is defined but never used                                no-unused-vars
+  Line 55:8:     'WorkIcon' is defined but never used                                 no-unused-vars
+  Line 56:8:     'ApartmentIcon' is defined but never used                            no-unused-vars
+  Line 57:8:     'FingerprintIcon' is defined but never used                          no-unused-vars
+  Line 58:8:     'AccountBalanceIcon' is defined but never used                       no-unused-vars
+  Line 71:8:     'DownloadOutlinedIcon' is defined but never used                     no-unused-vars
+  Line 282:7:    'RTL_AUTOCOMPLETE_LISTBOX_PROPS' is assigned a value but never used  no-unused-vars
+  Line 311:7:    'IS_RTL' is assigned a value but never used                          no-unused-vars
+  Line 319:7:    'EMPLOYEE_DIALOG_IS_RTL' is assigned a value but never used          no-unused-vars
+  Line 330:7:    'ATTENDANCE_TAB_TEXT_ALIGN' is assigned a value but never used       no-unused-vars
+  Line 338:7:    'LEAVES_TAB_DIRECTION' is assigned a value but never used            no-unused-vars
+  Line 339:7:    'LEAVES_TAB_TEXT_ALIGN' is assigned a value but never used           no-unused-vars
+  Line 376:7:    'EMPLOYEE_DIALOG_STACK_GAP' is assigned a value but never used       no-unused-vars
+  Line 506:9:    'isCompact' is assigned a value but never used                       no-unused-vars
+  Line 563:10:   'employeeSaveSuccess' is assigned a value but never used             no-unused-vars
+  Line 6326:45:  Unnecessary escape character: \"                                     no-useless-escape
+  Line 6326:47:  Unnecessary escape character: \"                                     no-useless-escape
+  Line 10449:7:  'InfoLine' is assigned a value but never used                        no-unused-vars
+
+src\pages\HrJobTitlesPage.jsx
+  Line 9:3:    'Card' is defined but never used                                     no-unused-vars
+  Line 10:3:   'CardContent' is defined but never used                              no-unused-vars
+  Line 246:7:  'RTL_AUTOCOMPLETE_LISTBOX_PROPS' is assigned a value but never used  no-unused-vars
+  Line 269:7:  'DIALOG_CENTER_TEXT_ALIGN' is assigned a value but never used        no-unused-vars
+
+src\pages\HrLeavesPage.jsx
+  Line 48:25:  'CheckCircleRoundedIcon' is defined but never used           no-unused-vars
+  Line 51:19:  'EventRoundedIcon' is defined but never used                 no-unused-vars
+  Line 53:21:  'HistoryRoundedIcon' is defined but never used               no-unused-vars
+  Line 283:7:  'LEAVES_GRID_TEXT_ALIGN' is assigned a value but never used  no-unused-vars
+  Line 953:9:  'getWorkflowEmployee' is assigned a value but never used     no-unused-vars
+
+src\pages\JournalEntry.jsx
+  Line 38:8:  'AccountBalanceWalletIcon' is defined but never used  no-unused-vars
+  Line 41:8:  'DescriptionIcon' is defined but never used           no-unused-vars
+  Line 43:8:  'RefreshIcon' is defined but never used               no-unused-vars
+  Line 67:7:  'soft' is assigned a value but never used             no-unused-vars
+
+src\pages\MarketersReport.jsx
+  Line 658:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\MeetingPage.js
+  Line 12:10:  'alpha' is defined but never used  no-unused-vars
+
+src\pages\MonthlyAttendanceReport.jsx
+  Line 26:3:    'Menu' is defined but never used                                                                                                              no-unused-vars
+  Line 181:9:   'theme' is assigned a value but never used                                                                                                    no-unused-vars
+  Line 190:23:  'setSelectedTab' is assigned a value but never used                                                                                           no-unused-vars
+  Line 289:6:   React Hook useEffect has missing dependencies: 'fetchAttendanceData' and 'fetchStudents'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 435:11:  'headerCell' is assigned a value but never used                                                                                               no-unused-vars
+  Line 442:11:  'cell' is assigned a value but never used                                                                                                     no-unused-vars
+  Line 449:11:  'makeTable' is assigned a value but never used                                                                                                no-unused-vars
+  Line 463:11:  'Title' is assigned a value but never used                                                                                                    no-unused-vars
+
+src\pages\OtherInstituteRegistrationsPage.jsx
+  Line 55:7:  'primaryLight' is assigned a value but never used  no-unused-vars
+
+src\pages\PaymentFollowReport.jsx
+  Line 24:3:     'FormControlLabel' is defined but never used                                                                    no-unused-vars
+  Line 2079:6:   React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 2597:9:   'toggleCustomStudent' is assigned a value but never used                                                        no-unused-vars
+  Line 3908:21:  Duplicate key 'whiteSpace'                                                                                      no-dupe-keys
+
+src\pages\PaymentRequestsReport.jsx
+  Line 40:8:    'BlockIcon' is defined but never used                                                                                                                                                                                                    no-unused-vars
+  Line 410:5:   React Hook useMemo has an unnecessary dependency: 'rows'. Either exclude it or remove the dependency array                                                                                                                               react-hooks/exhaustive-deps
+  Line 616:9:   The 'copyToClipboard' function makes the dependencies of useMemo Hook (at line 1700) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'copyToClipboard' in its own useCallback() Hook  react-hooks/exhaustive-deps
+  Line 1765:9:  'desktopResizableColumns' is assigned a value but never used                                                                                                                                                                             no-unused-vars
+  Line 1784:9:  'columnVisibilityModel' is assigned a value but never used                                                                                                                                                                               no-unused-vars
+
+src\pages\PeriodicReports.jsx
+  Line 33:3:    'Divider' is defined but never used                                                                              no-unused-vars
+  Line 35:3:    'Tooltip' is defined but never used                                                                              no-unused-vars
+  Line 40:3:    'List' is defined but never used                                                                                 no-unused-vars
+  Line 41:3:    'ListItem' is defined but never used                                                                             no-unused-vars
+  Line 42:3:    'ListItemText' is defined but never used                                                                         no-unused-vars
+  Line 43:3:    'Badge' is defined but never used                                                                                no-unused-vars
+  Line 64:12:   'BlockIcon' is defined but never used                                                                            no-unused-vars
+  Line 70:17:   'FilterIcon' is defined but never used                                                                           no-unused-vars
+  Line 74:10:   'Document' is defined but never used                                                                             no-unused-vars
+  Line 74:20:   'Paragraph' is defined but never used                                                                            no-unused-vars
+  Line 74:31:   'Packer' is defined but never used                                                                               no-unused-vars
+  Line 74:39:   'AlignmentType' is defined but never used                                                                        no-unused-vars
+  Line 74:54:   'HeadingLevel' is defined but never used                                                                         no-unused-vars
+  Line 74:77:   'DocxTable' is defined but never used                                                                            no-unused-vars
+  Line 74:100:  'DocxRow' is defined but never used                                                                              no-unused-vars
+  Line 74:122:  'DocxCell' is defined but never used                                                                             no-unused-vars
+  Line 74:132:  'WidthType' is defined but never used                                                                            no-unused-vars
+  Line 74:143:  'BorderStyle' is defined but never used                                                                          no-unused-vars
+  Line 90:31:   'Pie' is defined but never used                                                                                  no-unused-vars
+  Line 166:7:   'StyledTablePagination' is assigned a value but never used                                                       no-unused-vars
+  Line 249:7:   'ProgressBar' is assigned a value but never used                                                                 no-unused-vars
+  Line 281:9:   'theme' is assigned a value but never used                                                                       no-unused-vars
+  Line 287:23:  'setSelectedTab' is assigned a value but never used                                                              no-unused-vars
+  Line 442:6:   React Hook useEffect has a missing dependency: 'students'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  Line 454:9:   'handleChangePage' is assigned a value but never used                                                            no-unused-vars
+  Line 455:9:   'handleChangeRowsPerPage' is assigned a value but never used                                                     no-unused-vars
+  Line 459:9:   'clearFilters' is assigned a value but never used                                                                no-unused-vars
+  Line 660:6:   React Hook useMemo has a missing dependency: 'getTrainerName'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 852:9:   'paginatedStats' is assigned a value but never used                                                              no-unused-vars
+
+src\pages\PeriodicReportsForManagers.jsx
+  Line 31:3:   'TablePagination' is defined but never used                                                                                                       no-unused-vars
+  Line 33:3:   'Divider' is defined but never used                                                                                                               no-unused-vars
+  Line 35:3:   'Tooltip' is defined but never used                                                                                                               no-unused-vars
+  Line 40:3:   'List' is defined but never used                                                                                                                  no-unused-vars
+  Line 41:3:   'ListItem' is defined but never used                                                                                                              no-unused-vars
+  Line 42:3:   'ListItemText' is defined but never used                                                                                                          no-unused-vars
+  Line 43:3:   'Badge' is defined but never used                                                                                                                 no-unused-vars
+  Line 49:13:  'SearchIcon' is defined but never used                                                                                                            no-unused-vars
+  Line 52:15:  'DownloadIcon' is defined but never used                                                                                                          no-unused-vars
+  Line 55:13:  'SchoolIcon' is defined but never used                                                                                                            no-unused-vars
+  Line 58:15:  'ChartIcon' is defined but never used                                                                                                             no-unused-vars
+  Line 64:17:  'FilterIcon' is defined but never used                                                                                                            no-unused-vars
+  Line 66:17:  'ExpandMoreIcon' is defined but never used                                                                                                        no-unused-vars
+  Line 68:50:  'eachDayOfInterval' is defined but never used                                                                                                     no-unused-vars
+  Line 85:15:  'Line' is defined but never used                                                                                                                  no-unused-vars
+  Line 85:31:  'Pie' is defined but never used                                                                                                                   no-unused-vars
+  Line 214:7:  'ViewMoreButton' is assigned a value but never used                                                                                               no-unused-vars
+  Line 246:9:  'theme' is assigned a value but never used                                                                                                        no-unused-vars
+  Line 247:9:  'navigate' is assigned a value but never used                                                                                                     no-unused-vars
+  Line 527:6:  React Hook useEffect has a missing dependency: 'fetchBranchStatistics'. Either include it or remove the dependency array                          react-hooks/exhaustive-deps
+  Line 533:6:  React Hook useEffect has missing dependencies: 'branches.length' and 'fetchBranchStatistics'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\PrintExamPage.jsx
+  Line 25:3:   'AppBar' is defined but never used                                                                           no-unused-vars
+  Line 26:3:   'Toolbar' is defined but never used                                                                          no-unused-vars
+  Line 32:12:  'PrintIcon' is defined but never used                                                                        no-unused-vars
+  Line 34:15:  'DownloadIcon' is defined but never used                                                                     no-unused-vars
+  Line 40:10:  'styled' is defined but never used                                                                           no-unused-vars
+  Line 44:10:  'COURSE_CATALOG' is defined but never used                                                                   no-unused-vars
+  Line 45:10:  'API_BASE' is defined but never used                                                                         no-unused-vars
+  Line 186:9:  'courseCode' is assigned a value but never used                                                              no-unused-vars
+  Line 772:9:  'isMobile' is assigned a value but never used                                                                no-unused-vars
+  Line 942:6:  React Hook useEffect has a missing dependency: 'selected'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\QualityFormsAudit.jsx
+  Line 25:8:   'RefreshIcon' is defined but never used                                                                    no-unused-vars
+  Line 241:6:  React Hook useEffect has a missing dependency: 'search'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\QualityFormsPage.jsx
+  Line 46:10:    'mt' is defined but never used                        no-unused-vars
+  Line 3732:7:   'coopSignLabelSx' is assigned a value but never used  no-unused-vars
+  Line 3765:13:  'hoursNumber' is assigned a value but never used      no-unused-vars
+  Line 5725:7:   'SheetFrame' is assigned a value but never used       no-unused-vars
+  Line 5734:7:   'PrintFooter' is assigned a value but never used      no-unused-vars
+
+src\pages\ReceptionOffice.jsx
+  Line 21:8:     'ReceptionCelebration' is defined but never used                                                                                                    no-unused-vars
+  Line 62:8:     'ReceiptLongIcon' is defined but never used                                                                                                         no-unused-vars
+  Line 63:8:     'PaymentsIcon' is defined but never used                                                                                                            no-unused-vars
+  Line 65:8:     'HistoryIcon' is defined but never used                                                                                                             no-unused-vars
+  Line 69:8:     'DiscountIcon' is defined but never used                                                                                                            no-unused-vars
+  Line 70:8:     'VerifiedIcon' is defined but never used                                                                                                            no-unused-vars
+  Line 71:8:     'ReplayIcon' is defined but never used                                                                                                              no-unused-vars
+  Line 72:8:     'ChangeCircleIcon' is defined but never used                                                                                                        no-unused-vars
+  Line 74:8:     'FolderSharedIcon' is defined but never used                                                                                                        no-unused-vars
+  Line 402:7:    'ComingSoonMenuItem' is assigned a value but never used                                                                                             no-unused-vars
+  Line 785:9:    'theme' is assigned a value but never used                                                                                                          no-unused-vars
+  Line 833:26:   'setDetailsLoading' is assigned a value but never used                                                                                              no-unused-vars
+  Line 1012:6:   React Hook useEffect has a missing dependency: 'handleSearch'. Either include it or remove the dependency array                                     react-hooks/exhaustive-deps
+  Line 1931:9:   'handleRePay' is assigned a value but never used                                                                                                    no-unused-vars
+  Line 2372:5:   React Hook useMemo has missing dependencies: 'handleAcceptOldStudent' and 'handleOldStatement'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 2838:21:  Duplicate key 'justifyContent'                                                                                                                      no-dupe-keys
+  Line 3112:13:  Duplicate key 'overflow'                                                                                                                            no-dupe-keys
+
+src\pages\RefundRequestsReport.jsx
+  Line 146:7:   'money' is assigned a value but never used                                                                      no-unused-vars
+  Line 1076:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\RewardsList.jsx
+  Line 605:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\SalesManManagement.jsx
+  Line 20:3:  'Stack' is defined but never used  no-unused-vars
+
+src\pages\SalesReport.jsx
+  Line 22:3:    'Divider' is defined but never used                    no-unused-vars
+  Line 39:8:    'AssessmentIcon' is defined but never used             no-unused-vars
+  Line 176:7:   'getInvoiceField' is assigned a value but never used   no-unused-vars
+  Line 2006:9:  'tabletVisibility' is assigned a value but never used  no-unused-vars
+
+src\pages\SidebarSettings.jsx
+  Line 84:9:  'isMobile' is assigned a value but never used  no-unused-vars
+
+src\pages\TasksTab.jsx
+  Line 15:3:   'CircularProgress' is defined but never used            no-unused-vars
+  Line 21:11:  'PrivateIcon' is defined but never used                 no-unused-vars
+  Line 22:11:  'SendIcon' is defined but never used                    no-unused-vars
+  Line 24:13:  'GroupsIcon' is defined but never used                  no-unused-vars
+  Line 25:15:  'ScheduleIcon' is defined but never used                no-unused-vars
+  Line 58:10:  'tasksForDept' is assigned a value but never used       no-unused-vars
+  Line 65:10:  'loadingTasks' is assigned a value but never used       no-unused-vars
+  Line 117:9:  'handleTaskCheck' is assigned a value but never used    no-unused-vars
+  Line 144:9:  'canShowPublicTask' is assigned a value but never used  no-unused-vars
+
+src\pages\TrainerManagement.jsx
+  Line 21:3:  'Stack' is defined but never used      no-unused-vars
+  Line 32:8:  'CloseIcon' is defined but never used  no-unused-vars
+
+src\pages\TrainingAgreementsFollow.jsx
+  Line 18:3:  'Stack' is defined but never used  no-unused-vars
+
+src\pages\TransferRequestsReport.jsx
+  Line 524:9:   'currentType' is assigned a value but never used                                                                no-unused-vars
+  Line 1198:6:  React Hook useMemo has an unnecessary dependency: 'isTablet'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\UserActionReport.jsx
+  Line 40:7:   'primary' is assigned a value but never used                                                                       no-unused-vars
+  Line 60:20:  Unnecessary escape character: \-                                                                                   no-useless-escape
+  Line 325:5:  React Hook useMemo has a missing dependency: 'getColumnCaption'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\UserManagement.jsx
+  Line 561:6:   React Hook useCallback has an unnecessary dependency: 'forms'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 733:15:  'permissionMap' is assigned a value but never used                                                               no-unused-vars
+
+src\pages\VipCustomers.jsx
+  Line 18:3:  'MenuItem' is defined but never used  no-unused-vars
+
+src\pages\components\HrOrgOverviewPanel.jsx
+  Line 3:41:  'useMemo' is defined but never used  no-unused-vars
+
+src\pages\components\HrPermissionWorkflowManager.jsx
+  Line 36:7:  'primary' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+File sizes after gzip:
+
+  2.74 MB (-64 B)  build\static\js\main.5a0f8c70.js
+  43.71 kB         build\static\js\455.ecf2a3dd.chunk.js
+  8.71 kB          build\static\js\213.3cb97a70.chunk.js
+  8.68 kB          build\static\js\337.3ced6c6f.chunk.js
+  6.58 kB          build\static\css\main.300b3fb4.css
+  1.76 kB          build\static\js\453.c978ec56.chunk.js
+
+The bundle size is significantly larger than recommended.
+Consider reducing it with code splitting: https://goo.gl/9VhYWB
+You can also analyze the project dependencies: https://goo.gl/LeUzfb
+
+The project was built assuming it is hosted at /.
+You can control this with the homepage field in your package.json.
+
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  npm install -g serve
+  serve -s build
+
+Find out more about deployment here:
+
+  https://cra.link/deployment
+

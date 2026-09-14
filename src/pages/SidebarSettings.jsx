@@ -518,13 +518,13 @@ export default function SidebarSettings() {
   const main = (
     <Box
       dir="rtl"
-      sx={{
+      sx={uiLayout.withUiSx({
         minHeight: "100vh",
         width: "100%",
         boxSizing: "border-box",
         bgcolor: soft,
         p: { xs: 1, md: 2 }
-      }}
+      }, uiLayout.mobileHeaderSx)}
     >
       <Paper sx={{ bgcolor: primary, color: "white", p: { xs: 1.4, md: 2 }, borderRadius: 3, mb: 1.5 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">

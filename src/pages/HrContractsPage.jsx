@@ -48,7 +48,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
-import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsActiveRounded";
+import NotificationsActiveRoundedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 
@@ -1313,12 +1313,7 @@ export default function HrContractsPage() {
               spacing={0.7}
               alignItems="center"
             >
-              <Badge
-                badgeContent={notificationCount}
-                color="error"
-                max={99}
-                overlap="rectangular"
-              >
+              <>
                 <Button
                   variant="outlined"
                   startIcon={
@@ -1343,7 +1338,7 @@ export default function HrContractsPage() {
                 >
                   تنبيهات العقود
                 </Button>
-              </Badge>
+              </>
 
               <Tooltip title="تحديث">
                 <IconButton

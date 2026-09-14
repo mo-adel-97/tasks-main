@@ -1,18 +1,42 @@
 // Shared MUI geometry for the non-mirroring cache. Logical spacing follows the
 // element's direction; physical anchors are set deliberately, never mirrored.
+import { mobileHeaderStyles } from './designTokens';
+import { DESKTOP_BREAKPOINT } from './sidebarLayout';
 const labelPosition = ({ ownerState }) => {
-  const { variant, size, shrink, formControl } = ownerState;
-  if (!formControl) return { textAlign: 'start' };
-  const small = size === 'small';
-  const x = variant === 'outlined' ? -14 : variant === 'filled' ? -12 : 0;
-  const y = variant === 'outlined' ? (shrink ? -9 : small ? 9 : 16)
-    : variant === 'filled' ? (shrink ? (small ? 4 : 7) : small ? 13 : 16)
-    : shrink ? -1.5 : small ? 17 : 20;
-  return { left: 'auto', right: 0, transformOrigin: 'top right',
-    transform: 'translate(' + x + 'px, ' + y + 'px) scale(' + (shrink ? 0.75 : 1) + ')', textAlign: 'start' };
+  if (!ownerState.formControl) return { textAlign: 'start' };
+  return {
+    position: 'static', transform: 'none', width: 'auto', maxWidth: '100%',
+    minHeight: 24, marginBottom: 6, padding: 0,
+    fontSize: '0.8125rem', lineHeight: '24px', fontWeight: 700,
+    whiteSpace: 'normal', overflow: 'visible', textAlign: 'start', pointerEvents: 'auto',
+  };
 };
 
 export const rtlComponents = {
+  MuiAppBar: { styleOverrides: { root: ({ ownerState }) =>
+    ['fixed', 'sticky'].includes(ownerState.position) ? {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+        '&&': { ...mobileHeaderStyles, width: '100%', right: 0, left: 0, marginInline: 0 },
+      },
+    } : {},
+  } },
+  MuiTabs: { styleOverrides: {
+    root: ({ ownerState }) => ({ minWidth: 0, maxWidth: '100%',
+      ...(ownerState.orientation !== 'vertical' && ownerState.variant !== 'scrollable' ? {
+        '@media (max-width: 599.95px)': {
+          '&& .MuiTabs-flexContainer': { flexWrap: 'wrap', gap: '4px' },
+          '&& .MuiTab-root': { flex: '1 1 130px', minWidth: 0, maxWidth: '100%', minHeight: 44 },
+          '& .MuiTabs-indicator': { display: 'none' },
+          '& .MuiTab-root.Mui-selected': { boxShadow: 'inset 0 -2px currentColor', borderRadius: '6px' },
+        },
+      } : {}),
+    }),
+    flexContainer: { gap: '4px' },
+  } },
+  MuiTab: { styleOverrides: {
+    root: { minHeight: 44, padding: '10px 14px', fontSize: '0.8125rem', lineHeight: 1.5 },
+    iconWrapper: { marginLeft: 0, marginRight: 0, marginInlineEnd: '6px' },
+  } },
   MuiStack: { defaultProps: { useFlexGap: true } },
   MuiButton: { styleOverrides: {
     startIcon: ({ ownerState }) => ({ marginLeft: 0, marginRight: 0,
@@ -25,7 +49,7 @@ export const rtlComponents = {
     marginInlineStart: ownerState.position === 'end' ? 8 : 0,
     marginInlineEnd: ownerState.position === 'start' ? 8 : 0,
   }) } },
-  MuiOutlinedInput: { styleOverrides: {
+  MuiOutlinedInput: { defaultProps: { notched: false }, styleOverrides: {
     root: ({ ownerState }) => {
       // Autocomplete manages its own control gutter, including the compact size.
       if (ownerState.className?.includes('MuiAutocomplete-inputRoot')) {
@@ -41,7 +65,7 @@ export const rtlComponents = {
       paddingLeft: ownerState.endAdornment ? 0 : 14,
     },
   } },
-  MuiInputLabel: { styleOverrides: { root: labelPosition } },
+  MuiInputLabel: { defaultProps: { shrink: true }, styleOverrides: { root: labelPosition } },
   MuiFormHelperText: { styleOverrides: { root: { textAlign: 'start' } } },
   MuiFormControlLabel: { styleOverrides: { root: ({ ownerState }) => ({
     marginLeft: 0, marginRight: 0,

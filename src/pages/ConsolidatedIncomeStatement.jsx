@@ -514,7 +514,7 @@ export default function ConsolidatedIncomeStatement() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 1.5, sm: 2 },
@@ -522,7 +522,7 @@ export default function ConsolidatedIncomeStatement() {
             display: "flex",
             alignItems: "center",
             gap: 1
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

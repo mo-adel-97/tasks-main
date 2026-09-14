@@ -446,8 +446,8 @@ export default function OtherInstituteRegistrationsPage() {
             sx={{
               direction: "rtl",
               minHeight: {
-                xs: "50px !important",
-                sm: "56px !important"
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)"
               },
               px: { xs: 0.75, sm: 1 },
               gap: 0.8
@@ -508,8 +508,8 @@ export default function OtherInstituteRegistrationsPage() {
           minWidth: 0,
           ml: 0,
           mt: {
-            xs: "50px",
-            sm: "56px"
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)"
           },
           minHeight: "100dvh",
           p: {

@@ -1935,7 +1935,7 @@ export default function PaymentRequestsReport() {
           <Toolbar
             variant="dense"
             sx={{
-              minHeight: isPhone ? "50px !important" : "56px !important",
+              minHeight: isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
               px: isPhone ? 0.75 : 1
             }}
           >
@@ -1980,7 +1980,7 @@ export default function PaymentRequestsReport() {
         sx={{
           px: isDesktop ? 2 : isPhone ? 0.85 : 1.25,
           py: isDesktop ? 2 : isPhone ? 0.7 : 1,
-          mt: !isDesktop ? isPhone ? "50px" : "56px" : 0,
+          mt: !isDesktop ? isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)" : 0,
           mx: "auto",
           boxSizing: "border-box",
           overflowX: "hidden",

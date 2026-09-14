@@ -1105,7 +1105,7 @@ export default function TrialBalance() {
           }}
         >
           <Box
-            sx={{
+            sx={uiLayout.withUiSx({
               bgcolor: primaryDark,
               color: "#fff",
 
@@ -1122,7 +1122,7 @@ export default function TrialBalance() {
                 "space-between",
 
               gap: 1
-            }}
+            }, uiLayout.mobileHeaderSx)}
           >
             <Stack
               direction="row"

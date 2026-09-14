@@ -761,7 +761,7 @@ export default function DiscountTypeManagement() {
         }}
       >
         <Box
-          sx={{
+          sx={uiLayout.withUiSx({
             bgcolor: primaryDark,
             color: "#fff",
             px: { xs: 0.65, sm: 1.4 },
@@ -769,7 +769,7 @@ export default function DiscountTypeManagement() {
             display: "flex",
             alignItems: "center",
             gap: 0.55
-          }}
+          }, uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton

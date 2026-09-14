@@ -33,7 +33,7 @@ import {
   InsertEmoticon as EmojiIcon,
   Close as CloseIcon,
   Search as SearchIcon,
-  Notifications as NotificationsIcon
+  InfoOutlined as NotificationsIcon
 } from '@mui/icons-material';
 import EmojiPicker from 'emoji-picker-react';
 import notificationSoundFile from "../../src/notification-sound-effect-372475.mp3";
@@ -928,16 +928,7 @@ const GroupChat = ({
                   onClick={() => handleGroupClick(group)}
                 >
                   {(groupUnreadCounts[group.group_id] > 0) && (
-                    <Badge 
-                      badgeContent={groupUnreadCounts[group.group_id]} 
-                      color="error"
-                      sx={{
-                        position: 'absolute',
-                        top: 8,
-                        left: 8,
-                        zIndex: 1
-                      }}
-                    />
+                    <></>
                   )}
                   
                   <Card sx={{ 

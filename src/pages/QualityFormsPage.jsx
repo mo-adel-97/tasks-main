@@ -1648,9 +1648,9 @@ const handleExportPdf = () => {
             sx={{
               direction: "rtl",
               minHeight: {
-                xs: "50px !important",
-                sm: "56px !important",
-                md: "60px !important"
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)",
+                md: "var(--app-header-height, 56px)"
               },
               px: {
                 xs: 0.8,

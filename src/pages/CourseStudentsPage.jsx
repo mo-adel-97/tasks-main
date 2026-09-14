@@ -801,8 +801,8 @@ export default function CourseStudentsPage() {
           <Toolbar
             sx={{
               minHeight: {
-                xs: "50px !important",
-                sm: "56px !important"
+                xs: "var(--app-header-height, 56px)",
+                sm: "var(--app-header-height, 56px)"
               },
               px: { xs: 0.75, sm: 1 },
               gap: 0.8
@@ -957,8 +957,8 @@ export default function CourseStudentsPage() {
         sx={{
           ml: 0,
           mt: {
-            xs: "50px",
-            sm: "56px"
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)"
           },
           width: "100%",
           maxWidth: "100%",

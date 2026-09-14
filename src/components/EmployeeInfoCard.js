@@ -21,7 +21,7 @@ import {
   CameraAlt,
   Delete,
   Edit,
-  Notifications,
+  InfoOutlined as Notifications,
   Security,
   Work
 } from "@mui/icons-material";

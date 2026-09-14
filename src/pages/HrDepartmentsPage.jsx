@@ -1241,7 +1241,7 @@ const HrDepartmentsPage = () => {
         >
           <Toolbar
             disableGutters
-            sx={{ minHeight: { xs: "50px !important", sm: "56px !important" }, px: 1 }}
+            sx={{ minHeight: { xs: "var(--app-header-height, 56px)", sm: "var(--app-header-height, 56px)" }, px: 1 }}
           >
             <IconButton
               onClick={() => setMobileSidebarOpen(true)}
@@ -1276,8 +1276,8 @@ const HrDepartmentsPage = () => {
         component="main"
         sx={{
           mt: {
-            xs: "50px",
-            sm: "56px"
+            xs: "var(--app-header-height, 56px)",
+            sm: "var(--app-header-height, 56px)"
           },
           width: "100%",
           minWidth: 0,

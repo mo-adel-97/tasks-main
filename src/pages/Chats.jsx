@@ -27,7 +27,7 @@ import {
   PictureAsPdf as PdfIcon,
   Description as DocIcon,
   Search as SearchIcon,
-  Notifications as NotificationsIcon
+  InfoOutlined as NotificationsIcon
 } from '@mui/icons-material';
 
 // تعريف الألوان الجديدة
@@ -649,16 +649,7 @@ if (loading) {
         }}
       >
         {(user.unreadCount > 0 || newMessageNotifications[user.guid] > 0) && (
-          <Badge 
-            badgeContent={user.unreadCount + (newMessageNotifications[user.guid] || 0)} 
-            color="error"
-            sx={{
-              position: 'absolute',
-              top: 8,
-              left: 8,
-              zIndex: 1
-            }}
-          />
+          <></>
         )}
         
         <Card sx={{ 

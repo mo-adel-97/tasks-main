@@ -13,7 +13,7 @@ import {
   AccessTime, 
   Update, 
   Download, 
-  NotificationsActive,
+  InfoOutlined as NotificationsActive,
   EmojiObjects
 } from '@mui/icons-material';
 

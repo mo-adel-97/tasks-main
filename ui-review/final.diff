@@ -1,0 +1,1270 @@
+diff --git a/src/App.test.js b/src/App.test.js
+index 1f03afe..e5a9d15 100644
+--- a/src/App.test.js
++++ b/src/App.test.js
+@@ -1,2 +1,7 @@
+-import { render, screen } from '@testing-library/react';
+-import App from './App';
++import React from 'react';
++import { fireEvent, render, screen } from '@testing-library/react';
++import { MemoryRouter } from 'react-router-dom';
++import { ThemeProvider } from '@mui/material';
++import Login from './pages/Login';
++import { AuthProvider } from './contexts/AuthContext';
++import theme from './theme';
+@@ -4,4 +9,19 @@ import App from './App';
+-test('renders learn react link', () => {
+-  render(<App />);
+-  const linkElement = screen.getByText(/learn react/i);
+-  expect(linkElement).toBeInTheDocument();
++// This test covers the login form, not MUI's entire icon catalogue.
++jest.mock('@mui/icons-material', () => Object.fromEntries(
++  ['AdminPanelSettings', 'AssessmentOutlined', 'BusinessOutlined', 'GroupsOutlined',
++    'LockOutlined', 'PersonOutline', 'SecurityOutlined', 'Visibility', 'VisibilityOff']
++    .map(name => [name, () => null])
++));
++
++test('Arabic login keeps its controls and rejects an empty submission locally', () => {
++  const fetchBefore = global.fetch;
++  global.fetch = jest.fn();
++  try {
++    render(<MemoryRouter><AuthProvider><ThemeProvider theme={theme}><Login /></ThemeProvider></AuthProvider></MemoryRouter>);
++    expect(screen.getByRole('heading', { name: 'تسجيل الدخول' })).toBeInTheDocument();
++    expect(screen.getByLabelText('اسم المستخدم')).toBeInTheDocument();
++    expect(screen.getByLabelText('كلمة المرور', { selector: 'input' })).toBeInTheDocument();
++    fireEvent.click(screen.getByRole('button', { name: 'دخول', exact: true }));
++    expect(screen.getByText('برجاء إدخال اسم المستخدم وكلمة المرور')).toBeInTheDocument();
++    expect(global.fetch).not.toHaveBeenCalled();
++  } finally { global.fetch = fetchBefore; }
+diff --git a/src/components/AdminStudentNotes.jsx b/src/components/AdminStudentNotes.jsx
+index 534b920..ca2c55f 100644
+--- a/src/components/AdminStudentNotes.jsx
++++ b/src/components/AdminStudentNotes.jsx
+@@ -542,2 +542,2 @@ export default function AdminStudentNotes() {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -610,2 +610,2 @@ export default function AdminStudentNotes() {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/components/AssignedTasks.jsx b/src/components/AssignedTasks.jsx
+index d59f7ef..87d1881 100644
+--- a/src/components/AssignedTasks.jsx
++++ b/src/components/AssignedTasks.jsx
+@@ -601,3 +601,3 @@ if (loading || externalLoading) {
+-                xs: '50px !important',
+-                sm: '56px !important',
+-                md: '60px !important',
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)",
+@@ -698,3 +698,3 @@ if (loading || externalLoading) {
+-                xs: '50px !important',
+-                sm: '56px !important',
+-                md: '60px !important',
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)",
+@@ -754,3 +754,3 @@ if (loading || externalLoading) {
+-            xs: '64px',
+-            sm: '70px',
+-            md: '74px'
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)",
++            md: "var(--app-header-height, 56px)"
+diff --git a/src/components/DashboardTabs.js b/src/components/DashboardTabs.js
+index a9545bf..ea0367d 100644
+--- a/src/components/DashboardTabs.js
++++ b/src/components/DashboardTabs.js
+@@ -61,16 +61 @@ const DashboardTabs = ({
+-        <Badge
+-          badgeContent={unseenPostsCount > 0 ? unseenPostsCount : 0}
+-          color="error"
+-          overlap="circular"
+-          sx={{
+-            "& .MuiBadge-badge": {
+-              backgroundColor: COLOR_SCHEME.accent,
+-              color: "white",
+-              fontWeight: 900,
+-              fontSize: { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+-              minWidth: { xs: 16, sm: 18, md: 20 },
+-              height: { xs: 16, sm: 18, md: 20 },
+-              borderRadius: 999,
+-            },
+-          }}
+-        >
++        <>
+@@ -78 +63 @@ const DashboardTabs = ({
+-        </Badge>
++        </>
+diff --git a/src/components/DashboardTabs.jsx b/src/components/DashboardTabs.jsx
+index ee96fbc..26f22dc 100644
+--- a/src/components/DashboardTabs.jsx
++++ b/src/components/DashboardTabs.jsx
+@@ -40,13 +40 @@ export default function DashboardTabs({
+-        <Badge
+-          badgeContent={unseenPostsCount || 0}
+-          color="error"
+-          overlap="circular"
+-          sx={{
+-            "& .MuiBadge-badge": {
+-              backgroundColor: COLORS.accent,
+-              fontSize: "0.75rem",
+-              minWidth: 16,
+-              height: 16,
+-            },
+-          }}
+-        >
++        <>
+@@ -54 +42 @@ export default function DashboardTabs({
+-        </Badge>
++        </>
+diff --git a/src/components/EmployeeInfoCard.js b/src/components/EmployeeInfoCard.js
+index e71823b..b72377c 100644
+--- a/src/components/EmployeeInfoCard.js
++++ b/src/components/EmployeeInfoCard.js
+@@ -24 +24 @@ import {
+-  Notifications,
++  InfoOutlined as Notifications,
+diff --git a/src/components/EmployeeInfoCard.jsx b/src/components/EmployeeInfoCard.jsx
+index e619d23..b1d294c 100644
+--- a/src/components/EmployeeInfoCard.jsx
++++ b/src/components/EmployeeInfoCard.jsx
+@@ -24 +24 @@ import {
+-  Notifications,
++  InfoOutlined as Notifications,
+diff --git a/src/components/GroupChat.jsx b/src/components/GroupChat.jsx
+index 4be8577..deb360f 100644
+--- a/src/components/GroupChat.jsx
++++ b/src/components/GroupChat.jsx
+@@ -36 +36 @@ import {
+-  Notifications as NotificationsIcon
++  InfoOutlined as NotificationsIcon
+@@ -931,10 +931 @@ const GroupChat = ({
+-                    <Badge 
+-                      badgeContent={groupUnreadCounts[group.group_id]} 
+-                      color="error"
+-                      sx={{
+-                        position: 'absolute',
+-                        top: 8,
+-                        left: 8,
+-                        zIndex: 1
+-                      }}
+-                    />
++                    <></>
+diff --git a/src/components/NavigationShell.jsx b/src/components/NavigationShell.jsx
+index 62706eb..e98a0ca 100644
+--- a/src/components/NavigationShell.jsx
++++ b/src/components/NavigationShell.jsx
+@@ -11,3 +11,3 @@ import React, {
+-import { IconButton, useMediaQuery } from '@mui/material';
+-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
++import { useMediaQuery } from '@mui/material';
++import MobileHeader from './MobileHeader';
++import { designTokens } from '../config/designTokens';
+@@ -110,0 +111 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
++          '--app-header-height': `${designTokens.headerHeight}px`,
+@@ -129,21 +130,5 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
+-          <IconButton
+-            aria-label={mobileOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+-            aria-expanded={mobileOpen}
+-            onClick={() => setInternalMobileOpen((current) => !current)}
+-            className="sstli-shell-menu-button"
+-            sx={{
+-              position: 'fixed',
+-              top: { xs: 8, sm: 10 },
+-              right: { xs: 8, sm: 10 },
+-              zIndex: 1450,
+-              width: { xs: 36, sm: 40 },
+-              height: { xs: 36, sm: 40 },
+-              color: '#fff',
+-              bgcolor: '#057546',
+-              border: '1px solid rgba(255,255,255,.42)',
+-              boxShadow: '0 6px 18px rgba(3,77,49,.25)',
+-              '&:hover': { bgcolor: '#034d31' },
+-            }}
+-          >
+-            {mobileOpen ? <CloseRoundedIcon /> : <MenuRoundedIcon />}
+-          </IconButton>
++          <MobileHeader
++            title={sidebarProps.title}
++            open={mobileOpen}
++            onToggle={() => setInternalMobileOpen((current) => !current)}
++          />
+@@ -163 +148 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
+-            paddingTop: shellOwnsMobileTrigger ? '52px' : 0,
++            paddingTop: shellOwnsMobileTrigger ? `${designTokens.headerHeight}px` : 0,
+diff --git a/src/components/NavigationShell.test.jsx b/src/components/NavigationShell.test.jsx
+index d3392a1..c212d17 100644
+--- a/src/components/NavigationShell.test.jsx
++++ b/src/components/NavigationShell.test.jsx
+@@ -62,0 +63,32 @@ test('embedded mobile controls open and close the parent renderer', () => {
++
++test('opening the mobile overlay preserves the content node, width and entered value', () => {
++  useMediaQuery.mockReturnValue(false);
++  const View = ({ open }) => <NavigationShell mobileOpen={open}>
++    <input aria-label="بيانات غير محفوظة" defaultValue="" />
++  </NavigationShell>;
++  const { rerender } = render(<View open={false} />);
++  const input = screen.getByRole('textbox');
++  const content = input.parentElement;
++  const initialWidth = content.style.width;
++  fireEvent.change(input, { target: { value: 'بيانات يجب الاحتفاظ بها' } });
++  rerender(<View open />);
++  expect(screen.getByRole('textbox')).toBe(input);
++  expect(input).toHaveValue('بيانات يجب الاحتفاظ بها');
++  expect(content.style.width).toBe(initialWidth);
++  expect(content.style.marginRight).toBe('0px');
++  rerender(<View open={false} />);
++  expect(screen.getByRole('textbox')).toBe(input);
++  expect(input).toHaveValue('بيانات يجب الاحتفاظ بها');
++});
++
++test('fallback mobile header opens the same overlay without replacing children', () => {
++  useMediaQuery.mockReturnValue(false);
++  render(<NavigationShell title="صفحة اختبار"><input aria-label="حقل" /></NavigationShell>);
++  const input = screen.getByRole('textbox');
++  fireEvent.click(screen.getByRole('button', { name: 'فتح القائمة' }));
++  expect(screen.getByTestId('sidebar')).toHaveAttribute('data-open', 'true');
++  expect(screen.getByRole('textbox')).toBe(input);
++  fireEvent.click(screen.getByTestId('close-sidebar'));
++  expect(screen.getByTestId('sidebar')).toHaveAttribute('data-open', 'false');
++  expect(screen.getByRole('textbox')).toBe(input);
++});
+diff --git a/src/components/PostsDialog.js b/src/components/PostsDialog.js
+index af00c8e..b1da4b1 100644
+--- a/src/components/PostsDialog.js
++++ b/src/components/PostsDialog.js
+@@ -843,3 +843,3 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
+-                xs: '52px !important',
+-                sm: '60px !important',
+-                md: '68px !important'
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)"
+diff --git a/src/components/RegistrationCommissions.jsx b/src/components/RegistrationCommissions.jsx
+index 408338d..5102cdc 100644
+--- a/src/components/RegistrationCommissions.jsx
++++ b/src/components/RegistrationCommissions.jsx
+@@ -797,3 +797,3 @@ setData(zeroizeForHamza(json[0]));
+-                  xs: "50px !important",
+-                  sm: "56px !important",
+-                  md: "60px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)",
++                  md: "var(--app-header-height, 56px)"
+diff --git a/src/components/RegistrationRequestsPage.jsx b/src/components/RegistrationRequestsPage.jsx
+index 88cf383..759db7b 100644
+--- a/src/components/RegistrationRequestsPage.jsx
++++ b/src/components/RegistrationRequestsPage.jsx
+@@ -152 +152 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) =>
+-              minHeight: { xs: "50px !important", sm: "56px !important" },
++              minHeight: { xs: "var(--app-header-height, 56px)", sm: "var(--app-header-height, 56px)" },
+@@ -207,2 +207,2 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) =>
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/components/SharedRtl.test.jsx b/src/components/SharedRtl.test.jsx
+index ffe2f0c..3a7a776 100644
+--- a/src/components/SharedRtl.test.jsx
++++ b/src/components/SharedRtl.test.jsx
+@@ -36 +36 @@ test('Arabic buttons retain leading/trailing icons and logical gaps', () => {
+-test('form labels and select arrows use separate physical edges', () => {
++test('form labels stay above the field while select arrows use the RTL edge', () => {
+@@ -42,3 +42,2 @@ test('form labels and select arrows use separate physical edges', () => {
+-  expect(getComputedStyle(label).right).toBe('0px');
+-  expect(getComputedStyle(label).transformOrigin).toBe('top right');
+-  expect(getComputedStyle(label).transform).toBe('translate(-14px, -9px) scale(0.75)');
++  expect(getComputedStyle(label).position).toBe('static');
++  expect(getComputedStyle(label).transform).toBe('none');
+@@ -65 +64 @@ test('shared table defaults use start alignment and preserve explicit numeric al
+-test('shared header reserves right space on desktop and releases it on mobile', () => {
++test('shared header leaves the content gutter to NavigationShell on every viewport', () => {
+@@ -69 +68 @@ test('shared header reserves right space on desktop and releases it on mobile',
+-  expect(container.querySelector('header').style.marginRight).toBe('280px');
++  expect(container.querySelector('header').style.marginRight).toBe('');
+@@ -72 +71 @@ test('shared header reserves right space on desktop and releases it on mobile',
+-  expect(container.querySelector('header').style.marginRight).toBe('0px');
++  expect(container.querySelector('header').style.marginRight).toBe('');
+diff --git a/src/components/Sidebar.jsx b/src/components/Sidebar.jsx
+index a4ed7e7..c6f1f7b 100644
+--- a/src/components/Sidebar.jsx
++++ b/src/components/Sidebar.jsx
+@@ -1,0 +2 @@ import * as uiLayout from './common/uiLayout';
++import { DrawerHeader } from './MobileHeader';
+@@ -96 +96,0 @@ import { useEffect, useMemo, useState } from 'react';
+-import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
+@@ -996 +996 @@ const childItemSx = (selected) => ({
+-      sx={{
++      sx={uiLayout.withUiSx({
+@@ -1034 +1034 @@ const childItemSx = (selected) => ({
+-      }}
++      }, uiLayout.sidebarSurfaceSx)}
+@@ -1036,0 +1037 @@ const childItemSx = (selected) => ({
++        {!isDesktop && <DrawerHeader onClose={onMobileClose} />}
+@@ -1043 +1044 @@ const childItemSx = (selected) => ({
+-            py: 3,
++            py: 2,
+@@ -1055,3 +1056,3 @@ const childItemSx = (selected) => ({
+-              width: '116px',
+-              height: '116px',
+-              borderRadius: '28px',
++              width: '64px',
++              height: '64px',
++              borderRadius: '16px',
+@@ -1098,50 +1098,0 @@ const childItemSx = (selected) => ({
+-            <Tooltip
+-              title={
+-                notificationUnreadCount > 0
+-                  ? `الإشعارات (${notificationUnreadCount})`
+-                  : "الإشعارات"
+-              }
+-              placement="top"
+-            >
+-              <IconButton
+-                aria-label="الإشعارات"
+-                onClick={(event) =>
+-                  setNotificationAnchor(event.currentTarget)
+-                }
+-                size="small"
+-                sx={{
+-                  width: 27,
+-                  height: 27,
+-                  p: 0,
+-                  color: whiteColor,
+-                  bgcolor: "rgba(255,255,255,.13)",
+-                  border: "1px solid rgba(255,255,255,.25)",
+-                  boxShadow: "0 4px 12px rgba(0,0,0,.10)",
+-                  "&:hover": {
+-                    bgcolor: "rgba(255,255,255,.22)"
+-                  },
+-                  "& svg": {
+-                    fontSize: 17
+-                  }
+-                }}
+-              >
+-                <Badge
+-                  badgeContent={notificationUnreadCount}
+-                  color="error"
+-                  max={99}
+-                  overlap="circular"
+-                  sx={{
+-                    "& .MuiBadge-badge": {
+-                      minWidth: 14,
+-                      height: 14,
+-                      px: .25,
+-                      fontSize: 12,
+-                      fontWeight: 950,
+-                      border: "1.5px solid #fff"
+-                    }
+-                  }}
+-                >
+-                  <NotificationsNoneRoundedIcon />
+-                </Badge>
+-              </IconButton>
+-            </Tooltip>
+@@ -1162,87 +1112,0 @@ const childItemSx = (selected) => ({
+-        {/* على الموبايل/التابلت فقط: جرس ثابت بجوار زر القائمة */}
+-        {!isDesktop && (
+-<Tooltip
+-          title={
+-            notificationUnreadCount > 0
+-              ? `الإشعارات (${notificationUnreadCount})`
+-              : "الإشعارات"
+-          }
+-          placement={isDesktop ? "left" : "bottom"}
+-        >
+-          <IconButton
+-            aria-label="الإشعارات"
+-            onClick={(event) =>
+-              setNotificationAnchor(event.currentTarget)
+-            }
+-            sx={{
+-              position: "fixed",
+-
+-              top: {
+-                xs: 7,
+-                sm: 9,
+-                md: 10
+-              },
+-
+-              right: {
+-                xs: 50,
+-                sm: 56,
+-                md: 60
+-              },
+-
+-              width: {
+-                xs: 34,
+-                sm: 36,
+-                md: 38
+-              },
+-
+-              height: {
+-                xs: 34,
+-                sm: 36,
+-                md: 38
+-              },
+-
+-              zIndex: 1455,
+-              color: whiteColor,
+-              bgcolor: primaryColor,
+-              border: "1px solid rgba(255,255,255,.38)",
+-              boxShadow: "0 5px 14px rgba(3,77,49,.24)",
+-              backdropFilter: "blur(8px)",
+-              transition: "transform .18s ease, box-shadow .18s ease",
+-
+-              "&:hover": {
+-                bgcolor: primaryDark,
+-                transform: "translateY(-1px)",
+-                boxShadow: "0 8px 20px rgba(3,77,49,.24)"
+-              },
+-
+-              "& svg": {
+-                fontSize: {
+-                  xs: 18,
+-                  sm: 19,
+-                  md: 20
+-                }
+-              }
+-            }}
+-          >
+-            <Badge
+-              badgeContent={notificationUnreadCount}
+-              color="error"
+-              max={99}
+-              overlap="circular"
+-              sx={{
+-                "& .MuiBadge-badge": {
+-                  minWidth: 16,
+-                  height: 16,
+-                  px: .35,
+-                  fontSize: 12,
+-                  fontWeight: 950,
+-                  border: "2px solid #fff"
+-                }
+-              }}
+-            >
+-              <NotificationsNoneRoundedIcon />
+-            </Badge>
+-          </IconButton>
+-        </Tooltip>
+-        )}
+-
+@@ -1257,7 +1121 @@ const childItemSx = (selected) => ({
+-            pt: isDesktop
+-              ? 1.2
+-              : {
+-                  xs: 6.6,
+-                  sm: 7,
+-                  md: 7.3,
+-                },
++            pt: 1.2,
+@@ -1518,0 +1377 @@ const childItemSx = (selected) => ({
++        disableScrollLock: true,
+@@ -1660 +1519 @@ function AdminSidebar({
+-      sx={{
++      sx={uiLayout.withUiSx({
+@@ -1678 +1537 @@ function AdminSidebar({
+-      }}
++      }, uiLayout.sidebarSurfaceSx)}
+@@ -1680,0 +1540 @@ function AdminSidebar({
++      {!isDesktop && <DrawerHeader onClose={onMobileClose} />}
+@@ -1920 +1780 @@ function AdminSidebar({
+-      ModalProps={{ keepMounted: true }}
++      ModalProps={{ keepMounted: true, disableScrollLock: true }}
+diff --git a/src/components/SpecialComponent.jsx b/src/components/SpecialComponent.jsx
+index 17e7b67..1239449 100644
+--- a/src/components/SpecialComponent.jsx
++++ b/src/components/SpecialComponent.jsx
+@@ -818,3 +818,3 @@ const SpecialComponent = () => {
+-                xs: '50px !important',
+-                sm: '56px !important',
+-                md: '60px !important',
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)",
+@@ -860,3 +860,3 @@ const SpecialComponent = () => {
+-              xs: '54px',
+-              sm: '62px',
+-              md: '66px'
++              xs: "var(--app-header-height, 56px)",
++              sm: "var(--app-header-height, 56px)",
++              md: "var(--app-header-height, 56px)"
+diff --git a/src/components/StudentNotes.jsx b/src/components/StudentNotes.jsx
+index 6c50ae1..5a1ecd0 100644
+--- a/src/components/StudentNotes.jsx
++++ b/src/components/StudentNotes.jsx
+@@ -238,2 +238,2 @@ export default function StudentNotes() {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -308,2 +308,2 @@ export default function StudentNotes() {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/components/StudentSearch.jsx b/src/components/StudentSearch.jsx
+index 5662504..c192250 100644
+--- a/src/components/StudentSearch.jsx
++++ b/src/components/StudentSearch.jsx
+@@ -25 +25 @@ import MyCallHistoryDialog from './MyCallHistoryDialog';
+-import NotificationsIcon from '@mui/icons-material/Notifications';
++import NotificationsIcon from "@mui/icons-material/InfoOutlined";
+@@ -479 +479 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
+-                                <Badge badgeContent={followUpCount} color="error" max={99}>
++                                <>
+@@ -499 +499 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
+-                                </Badge>
++                                </>
+@@ -750 +750 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
+-                                                    <Badge badgeContent={followUpCalls.length} color="error">
++                                                    <>
+@@ -752 +752 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
+-                                                    </Badge>
++                                                    </>
+diff --git a/src/components/TrainerStudentGrid2.jsx b/src/components/TrainerStudentGrid2.jsx
+index 6cdfb37..694b029 100644
+--- a/src/components/TrainerStudentGrid2.jsx
++++ b/src/components/TrainerStudentGrid2.jsx
+@@ -2361,3 +2361,3 @@ const getStatusDisplayText = (status) => {
+-                xs: '50px !important',
+-                sm: '56px !important',
+-                md: '60px !important',
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)",
+@@ -2416,3 +2416,3 @@ const getStatusDisplayText = (status) => {
+-              xs: '54px',
+-              sm: '62px',
+-              md: '66px'
++              xs: "var(--app-header-height, 56px)",
++              sm: "var(--app-header-height, 56px)",
++              md: "var(--app-header-height, 56px)"
+diff --git a/src/components/common/uiLayout.js b/src/components/common/uiLayout.js
+index 32696f4..18b274d 100644
+--- a/src/components/common/uiLayout.js
++++ b/src/components/common/uiLayout.js
+@@ -2,0 +3,16 @@
++import { designTokens, mobileHeaderStyles } from '../../config/designTokens';
++import { DESKTOP_BREAKPOINT } from '../../config/sidebarLayout';
++
++export const mobileHeaderSx = {
++  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { ...mobileHeaderStyles, px: '12px', gap: '10px' },
++};
++
++export const sidebarSurfaceSx = {
++  overflowY: 'auto', overscrollBehavior: 'contain',
++  '& .MuiListItemText-primary': { fontSize: '0.8125rem', lineHeight: 1.6 },
++  '& .MuiListItemText-secondary': { fontSize: '0.75rem', lineHeight: 1.5 },
++  '& .MuiListItemButton-root, & .MuiListItem-root': { minHeight: 40, borderRadius: '8px' },
++  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
++    '& .MuiListItemButton-root, & .MuiListItem-root': { minHeight: 44 },
++  },
++};
+@@ -16 +32 @@ export const formFieldSx = {
+-    fontSize: '0.875rem', fontWeight: 700, lineHeight: '24px',
++    fontSize: '0.8125rem', fontWeight: 700, lineHeight: '24px',
+@@ -21 +37 @@ export const formFieldSx = {
+-    fontSize: '0.9375rem',
++    fontSize: '0.875rem',
+@@ -32,0 +49,5 @@ export const formFieldSx = {
++  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
++    '&& > .MuiInputBase-root': { minHeight: designTokens.controlHeight },
++    '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingBlock: '8px' },
++    '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: '0px' },
++  },
+@@ -54 +75 @@ export const filterBarSx = {
+-  '& > .MuiButton-root': { minHeight: 44, flexShrink: 0 },
++  '& > .MuiButton-root': { minHeight: { xs: 44, lg: 40 }, flexShrink: 0 },
+@@ -65 +86 @@ export const actionBarSx = {
+-  '& > .MuiButton-root': { flexShrink: 0, minHeight: 44 },
++  '& > .MuiButton-root': { flexShrink: 0, minHeight: { xs: 44, lg: 40 } },
+diff --git a/src/components/tabs/ProfileTab.js b/src/components/tabs/ProfileTab.js
+index abfbf97..5dca208 100644
+--- a/src/components/tabs/ProfileTab.js
++++ b/src/components/tabs/ProfileTab.js
+@@ -5 +5 @@ import { alpha } from "@mui/material/styles";
+-import { Person, Work, Notifications } from "@mui/icons-material";
++import { Person, Work, InfoOutlined as Notifications } from "@mui/icons-material";
+diff --git a/src/config/rtlComponents.js b/src/config/rtlComponents.js
+index c80b94d..779839c 100644
+--- a/src/config/rtlComponents.js
++++ b/src/config/rtlComponents.js
+@@ -2,0 +3,2 @@
++import { mobileHeaderStyles } from './designTokens';
++import { DESKTOP_BREAKPOINT } from './sidebarLayout';
+@@ -4,9 +6,7 @@ const labelPosition = ({ ownerState }) => {
+-  const { variant, size, shrink, formControl } = ownerState;
+-  if (!formControl) return { textAlign: 'start' };
+-  const small = size === 'small';
+-  const x = variant === 'outlined' ? -14 : variant === 'filled' ? -12 : 0;
+-  const y = variant === 'outlined' ? (shrink ? -9 : small ? 9 : 16)
+-    : variant === 'filled' ? (shrink ? (small ? 4 : 7) : small ? 13 : 16)
+-    : shrink ? -1.5 : small ? 17 : 20;
+-  return { left: 'auto', right: 0, transformOrigin: 'top right',
+-    transform: 'translate(' + x + 'px, ' + y + 'px) scale(' + (shrink ? 0.75 : 1) + ')', textAlign: 'start' };
++  if (!ownerState.formControl) return { textAlign: 'start' };
++  return {
++    position: 'static', transform: 'none', width: 'auto', maxWidth: '100%',
++    minHeight: 24, marginBottom: 6, padding: 0,
++    fontSize: '0.8125rem', lineHeight: '24px', fontWeight: 700,
++    whiteSpace: 'normal', overflow: 'visible', textAlign: 'start', pointerEvents: 'auto',
++  };
+@@ -15,0 +16,24 @@ export const rtlComponents = {
++  MuiAppBar: { styleOverrides: { root: ({ ownerState }) =>
++    ['fixed', 'sticky'].includes(ownerState.position) ? {
++      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
++        '&&': { ...mobileHeaderStyles, width: '100%', right: 0, left: 0, marginInline: 0 },
++      },
++    } : {},
++  } },
++  MuiTabs: { styleOverrides: {
++    root: ({ ownerState }) => ({ minWidth: 0, maxWidth: '100%',
++      ...(ownerState.orientation !== 'vertical' && ownerState.variant !== 'scrollable' ? {
++        '@media (max-width: 599.95px)': {
++          '&& .MuiTabs-flexContainer': { flexWrap: 'wrap', gap: '4px' },
++          '&& .MuiTab-root': { flex: '1 1 130px', minWidth: 0, maxWidth: '100%', minHeight: 44 },
++          '& .MuiTabs-indicator': { display: 'none' },
++          '& .MuiTab-root.Mui-selected': { boxShadow: 'inset 0 -2px currentColor', borderRadius: '6px' },
++        },
++      } : {}),
++    }),
++    flexContainer: { gap: '4px' },
++  } },
++  MuiTab: { styleOverrides: {
++    root: { minHeight: 44, padding: '10px 14px', fontSize: '0.8125rem', lineHeight: 1.5 },
++    iconWrapper: { marginLeft: 0, marginRight: 0, marginInlineEnd: '6px' },
++  } },
+@@ -28 +52 @@ export const rtlComponents = {
+-  MuiOutlinedInput: { styleOverrides: {
++  MuiOutlinedInput: { defaultProps: { notched: false }, styleOverrides: {
+@@ -44 +68 @@ export const rtlComponents = {
+-  MuiInputLabel: { styleOverrides: { root: labelPosition } },
++  MuiInputLabel: { defaultProps: { shrink: true }, styleOverrides: { root: labelPosition } },
+diff --git a/src/pages/AdmissionRequests.jsx b/src/pages/AdmissionRequests.jsx
+index 4ba8206..1851489 100644
+--- a/src/pages/AdmissionRequests.jsx
++++ b/src/pages/AdmissionRequests.jsx
+@@ -1878 +1878 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
+-              minHeight: { xs: "50px !important", sm: "56px !important" },
++              minHeight: { xs: "var(--app-header-height, 56px)", sm: "var(--app-header-height, 56px)" },
+@@ -1925,2 +1925,2 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/AdmissionRequestsReport.jsx b/src/pages/AdmissionRequestsReport.jsx
+index 18a7e1e..b809702 100644
+--- a/src/pages/AdmissionRequestsReport.jsx
++++ b/src/pages/AdmissionRequestsReport.jsx
+@@ -1306,2 +1306,2 @@ const AdmissionRequestsReport = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -1371,2 +1371,2 @@ const AdmissionRequestsReport = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/AfterSalesFollow.jsx b/src/pages/AfterSalesFollow.jsx
+index 05bdbdb..f13117a 100644
+--- a/src/pages/AfterSalesFollow.jsx
++++ b/src/pages/AfterSalesFollow.jsx
+@@ -1068,2 +1068,2 @@ const AfterSalesFollow = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -1132,2 +1132,2 @@ const AfterSalesFollow = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/AfterSalesReport.jsx b/src/pages/AfterSalesReport.jsx
+index f5818b7..43af9fc 100644
+--- a/src/pages/AfterSalesReport.jsx
++++ b/src/pages/AfterSalesReport.jsx
+@@ -1200,2 +1200,2 @@ const AfterSalesReport = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -1265,2 +1265,2 @@ const AfterSalesReport = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/BatchCountManagement.jsx b/src/pages/BatchCountManagement.jsx
+index 3843d46..72a6450 100644
+--- a/src/pages/BatchCountManagement.jsx
++++ b/src/pages/BatchCountManagement.jsx
+@@ -726 +726 @@ export default function BatchCountManagement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -734 +734 @@ export default function BatchCountManagement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/BatchManagement.jsx b/src/pages/BatchManagement.jsx
+index 6fdc0e2..b7b62ec 100644
+--- a/src/pages/BatchManagement.jsx
++++ b/src/pages/BatchManagement.jsx
+@@ -868 +868 @@ export default function BatchManagement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -876 +876 @@ export default function BatchManagement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/BatchSeatsCounter.jsx b/src/pages/BatchSeatsCounter.jsx
+index 77e17c4..f188dbb 100644
+--- a/src/pages/BatchSeatsCounter.jsx
++++ b/src/pages/BatchSeatsCounter.jsx
+@@ -797,3 +797,3 @@ const BatchSeatsCounter = () => {
+-                xs: "50px !important",
+-                sm: "56px !important",
+-                md: "60px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)"
+diff --git a/src/pages/BatchStatistics.jsx b/src/pages/BatchStatistics.jsx
+index 076ba2f..64003c5 100644
+--- a/src/pages/BatchStatistics.jsx
++++ b/src/pages/BatchStatistics.jsx
+@@ -1840,2 +1840,2 @@ const BatchStatistics = () => {
+-              xs: "50px !important",
+-              sm: "56px !important"
++              xs: "var(--app-header-height, 56px)",
++              sm: "var(--app-header-height, 56px)"
+@@ -1906,2 +1906,2 @@ const BatchStatistics = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/ChangeUserPassword.jsx b/src/pages/ChangeUserPassword.jsx
+index 23d6270..fa30ffd 100644
+--- a/src/pages/ChangeUserPassword.jsx
++++ b/src/pages/ChangeUserPassword.jsx
+@@ -217 +217 @@ export default function ChangeUserPassword() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -225 +225 @@ export default function ChangeUserPassword() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/Chats.jsx b/src/pages/Chats.jsx
+index d92779b..59ccf08 100644
+--- a/src/pages/Chats.jsx
++++ b/src/pages/Chats.jsx
+@@ -30 +30 @@ import {
+-  Notifications as NotificationsIcon
++  InfoOutlined as NotificationsIcon
+@@ -652,10 +652 @@ if (loading) {
+-          <Badge 
+-            badgeContent={user.unreadCount + (newMessageNotifications[user.guid] || 0)} 
+-            color="error"
+-            sx={{
+-              position: 'absolute',
+-              top: 8,
+-              left: 8,
+-              zIndex: 1
+-            }}
+-          />
++          <></>
+diff --git a/src/pages/ClosingEntry.jsx b/src/pages/ClosingEntry.jsx
+index af1c768..1b729f0 100644
+--- a/src/pages/ClosingEntry.jsx
++++ b/src/pages/ClosingEntry.jsx
+@@ -861 +861 @@ export default function ClosingEntry() {
+-            sx={{
++            sx={uiLayout.withUiSx({
+@@ -870 +870 @@ export default function ClosingEntry() {
+-            }}
++            }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/CollectionCommissionsReport.jsx b/src/pages/CollectionCommissionsReport.jsx
+index 58fb285..2df9a1a 100644
+--- a/src/pages/CollectionCommissionsReport.jsx
++++ b/src/pages/CollectionCommissionsReport.jsx
+@@ -1458,2 +1458,2 @@ const CollectionCommissionsReport = () => {
+-              xs: "50px !important",
+-              sm: "56px !important"
++              xs: "var(--app-header-height, 56px)",
++              sm: "var(--app-header-height, 56px)"
+@@ -1527,2 +1527,2 @@ const CollectionCommissionsReport = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/ConsolidatedIncomeStatement.jsx b/src/pages/ConsolidatedIncomeStatement.jsx
+index 8ad2052..4f31d5c 100644
+--- a/src/pages/ConsolidatedIncomeStatement.jsx
++++ b/src/pages/ConsolidatedIncomeStatement.jsx
+@@ -517 +517 @@ export default function ConsolidatedIncomeStatement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -525 +525 @@ export default function ConsolidatedIncomeStatement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/CourseStudentsPage.jsx b/src/pages/CourseStudentsPage.jsx
+index ea364ce..e192f9b 100644
+--- a/src/pages/CourseStudentsPage.jsx
++++ b/src/pages/CourseStudentsPage.jsx
+@@ -804,2 +804,2 @@ export default function CourseStudentsPage() {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -960,2 +960,2 @@ export default function CourseStudentsPage() {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/Dashboard.jsx b/src/pages/Dashboard.jsx
+index 55eb9f1..d13a015 100644
+--- a/src/pages/Dashboard.jsx
++++ b/src/pages/Dashboard.jsx
+@@ -182,3 +182,3 @@ export default function Dashboard() {
+-                xs: "50px !important",
+-                sm: "56px !important",
+-                md: "60px !important",
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)",
+diff --git a/src/pages/DeregistrationRequestsReport.jsx b/src/pages/DeregistrationRequestsReport.jsx
+index 52bf087..faee47e 100644
+--- a/src/pages/DeregistrationRequestsReport.jsx
++++ b/src/pages/DeregistrationRequestsReport.jsx
+@@ -1390,2 +1390,2 @@ const DeregistrationRequestsReport =
+-                  xs: "50px !important",
+-                  sm: "56px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)"
+@@ -1457 +1457 @@ const DeregistrationRequestsReport =
+-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
++          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+diff --git a/src/pages/DiplomaStudentsPage.jsx b/src/pages/DiplomaStudentsPage.jsx
+index 1935772..4a667c5 100644
+--- a/src/pages/DiplomaStudentsPage.jsx
++++ b/src/pages/DiplomaStudentsPage.jsx
+@@ -2774 +2774 @@ ${record.map((value) =>
+-              minHeight: { xs: "50px !important", sm: "56px !important" },
++              minHeight: { xs: "var(--app-header-height, 56px)", sm: "var(--app-header-height, 56px)" },
+@@ -2827,2 +2827,2 @@ ${record.map((value) =>
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/DiscountRequestsReport.jsx b/src/pages/DiscountRequestsReport.jsx
+index 7286ac6..d0c9207 100644
+--- a/src/pages/DiscountRequestsReport.jsx
++++ b/src/pages/DiscountRequestsReport.jsx
+@@ -1611,2 +1611,2 @@ const DiscountRequestsReport = () => {
+-                  xs: "50px !important",
+-                  sm: "56px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)"
+@@ -1678 +1678 @@ const DiscountRequestsReport = () => {
+-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
++          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+diff --git a/src/pages/DiscountTypeManagement.jsx b/src/pages/DiscountTypeManagement.jsx
+index 93547fe..6bed123 100644
+--- a/src/pages/DiscountTypeManagement.jsx
++++ b/src/pages/DiscountTypeManagement.jsx
+@@ -764 +764 @@ export default function DiscountTypeManagement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -772 +772 @@ export default function DiscountTypeManagement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/GeneralAccountStatement.jsx b/src/pages/GeneralAccountStatement.jsx
+index ba56d54..c8d9c37 100644
+--- a/src/pages/GeneralAccountStatement.jsx
++++ b/src/pages/GeneralAccountStatement.jsx
+@@ -1368 +1368 @@ export default function GeneralAccountStatement() {
+-                    : "50px !important"
++                    : "var(--app-header-height, 56px)"
+diff --git a/src/pages/GeneralDaily.jsx b/src/pages/GeneralDaily.jsx
+index fcdfc90..9603329 100644
+--- a/src/pages/GeneralDaily.jsx
++++ b/src/pages/GeneralDaily.jsx
+@@ -1490 +1490 @@ export default function GeneralDaily() {
+-                    : "48px !important"
++                    : "var(--app-header-height, 56px)"
+diff --git a/src/pages/GraduatesFollowReport.jsx b/src/pages/GraduatesFollowReport.jsx
+index aabdc4e..c9a56fe 100644
+--- a/src/pages/GraduatesFollowReport.jsx
++++ b/src/pages/GraduatesFollowReport.jsx
+@@ -1994,2 +1994,2 @@ const GraduatesFollowReport = () => {
+-                  xs: "50px !important",
+-                  sm: "56px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)"
+@@ -2061 +2061 @@ const GraduatesFollowReport = () => {
+-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
++          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+diff --git a/src/pages/HrContractsPage.jsx b/src/pages/HrContractsPage.jsx
+index 553d435..fee50fd 100644
+--- a/src/pages/HrContractsPage.jsx
++++ b/src/pages/HrContractsPage.jsx
+@@ -51 +51 @@ import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+-import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsActiveRounded";
++import NotificationsActiveRoundedIcon from "@mui/icons-material/InfoOutlined";
+@@ -1316,6 +1316 @@ export default function HrContractsPage() {
+-              <Badge
+-                badgeContent={notificationCount}
+-                color="error"
+-                max={99}
+-                overlap="rectangular"
+-              >
++              <>
+@@ -1346 +1341 @@ export default function HrContractsPage() {
+-              </Badge>
++              </>
+diff --git a/src/pages/HrDepartmentsPage.jsx b/src/pages/HrDepartmentsPage.jsx
+index 63d601d..cf46186 100644
+--- a/src/pages/HrDepartmentsPage.jsx
++++ b/src/pages/HrDepartmentsPage.jsx
+@@ -1244 +1244 @@ const HrDepartmentsPage = () => {
+-            sx={{ minHeight: { xs: "50px !important", sm: "56px !important" }, px: 1 }}
++            sx={{ minHeight: { xs: "var(--app-header-height, 56px)", sm: "var(--app-header-height, 56px)" }, px: 1 }}
+@@ -1279,2 +1279,2 @@ const HrDepartmentsPage = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/HrEmployeesPage.jsx b/src/pages/HrEmployeesPage.jsx
+index 3246165..b2d3148 100644
+--- a/src/pages/HrEmployeesPage.jsx
++++ b/src/pages/HrEmployeesPage.jsx
+@@ -3316,2 +3316,2 @@ const HrEmployeesPage = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -3381,2 +3381,2 @@ const HrEmployeesPage = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/HrJobTitlesPage.jsx b/src/pages/HrJobTitlesPage.jsx
+index 6ca842e..3cce062 100644
+--- a/src/pages/HrJobTitlesPage.jsx
++++ b/src/pages/HrJobTitlesPage.jsx
+@@ -1443 +1443 @@ export default function HrJobTitlesPage() {
+-            sx={{
++            sx={uiLayout.withUiSx({
+@@ -1453 +1453 @@ export default function HrJobTitlesPage() {
+-            }}
++            }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/HrPermissionsPage.jsx b/src/pages/HrPermissionsPage.jsx
+index ada3d95..40ab0aa 100644
+--- a/src/pages/HrPermissionsPage.jsx
++++ b/src/pages/HrPermissionsPage.jsx
+@@ -757 +757 @@ export default function HrPermissionsPage() {
+-        sx={{
++        sx={uiLayout.withUiSx({
+@@ -763 +763 @@ export default function HrPermissionsPage() {
+-        }}
++        }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/MaintenancePage.jsx b/src/pages/MaintenancePage.jsx
+index 1a87a29..9f26159 100644
+--- a/src/pages/MaintenancePage.jsx
++++ b/src/pages/MaintenancePage.jsx
+@@ -16 +16 @@ import {
+-  NotificationsActive,
++  InfoOutlined as NotificationsActive,
+diff --git a/src/pages/MarketersReport.jsx b/src/pages/MarketersReport.jsx
+index 8d04225..6a73389 100644
+--- a/src/pages/MarketersReport.jsx
++++ b/src/pages/MarketersReport.jsx
+@@ -1402,2 +1402,2 @@ const MarketersReport = () => {
+-              xs: "50px !important",
+-              sm: "56px !important"
++              xs: "var(--app-header-height, 56px)",
++              sm: "var(--app-header-height, 56px)"
+@@ -1461,2 +1461,2 @@ const MarketersReport = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/NewStudentsPage.jsx b/src/pages/NewStudentsPage.jsx
+index d8d5da4..e9a83af 100644
+--- a/src/pages/NewStudentsPage.jsx
++++ b/src/pages/NewStudentsPage.jsx
+@@ -1304,2 +1304,2 @@ const NewStudentsPage = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -1378,2 +1378,2 @@ const NewStudentsPage = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/OtherInstituteRegistrationsPage.jsx b/src/pages/OtherInstituteRegistrationsPage.jsx
+index e751c26..eaa9210 100644
+--- a/src/pages/OtherInstituteRegistrationsPage.jsx
++++ b/src/pages/OtherInstituteRegistrationsPage.jsx
+@@ -449,2 +449,2 @@ export default function OtherInstituteRegistrationsPage() {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -511,2 +511,2 @@ export default function OtherInstituteRegistrationsPage() {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/PaymentFollowReport.jsx b/src/pages/PaymentFollowReport.jsx
+index 2b2e33e..e747204 100644
+--- a/src/pages/PaymentFollowReport.jsx
++++ b/src/pages/PaymentFollowReport.jsx
+@@ -3253,2 +3253,2 @@ const exportExcel = () => {
+-                  xs: "50px !important",
+-                  sm: "56px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)"
+@@ -3311 +3311 @@ const exportExcel = () => {
+-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
++          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+diff --git a/src/pages/PaymentRequestsReport.jsx b/src/pages/PaymentRequestsReport.jsx
+index 2789c11..79be68e 100644
+--- a/src/pages/PaymentRequestsReport.jsx
++++ b/src/pages/PaymentRequestsReport.jsx
+@@ -1938 +1938 @@ export default function PaymentRequestsReport() {
+-              minHeight: isPhone ? "50px !important" : "56px !important",
++              minHeight: isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+@@ -1983 +1983 @@ export default function PaymentRequestsReport() {
+-          mt: !isDesktop ? isPhone ? "50px" : "56px" : 0,
++          mt: !isDesktop ? isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)" : 0,
+diff --git a/src/pages/QualityFormsAudit.jsx b/src/pages/QualityFormsAudit.jsx
+index b3a38a4..298ea5b 100644
+--- a/src/pages/QualityFormsAudit.jsx
++++ b/src/pages/QualityFormsAudit.jsx
+@@ -423 +423 @@ export default function QualityFormsAudit() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -432 +432 @@ export default function QualityFormsAudit() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/QualityFormsPage.jsx b/src/pages/QualityFormsPage.jsx
+index f77ac00..10b799e 100644
+--- a/src/pages/QualityFormsPage.jsx
++++ b/src/pages/QualityFormsPage.jsx
+@@ -1651,3 +1651,3 @@ const handleExportPdf = () => {
+-                xs: "50px !important",
+-                sm: "56px !important",
+-                md: "60px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)"
+diff --git a/src/pages/ReceptionOffice.jsx b/src/pages/ReceptionOffice.jsx
+index d6b4829..92a4b5a 100644
+--- a/src/pages/ReceptionOffice.jsx
++++ b/src/pages/ReceptionOffice.jsx
+@@ -2584,3 +2584,3 @@ const handleAcceptOrder = (row) => {
+-                xs: "50px !important",
+-                sm: "56px !important",
+-                md: "60px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)",
++                md: "var(--app-header-height, 56px)"
+@@ -2650,3 +2650,3 @@ const handleAcceptOrder = (row) => {
+-            xs: "54px",
+-            sm: "62px",
+-            md: "66px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)",
++            md: "var(--app-header-height, 56px)"
+diff --git a/src/pages/RefundRequestsReport.jsx b/src/pages/RefundRequestsReport.jsx
+index 4af3496..fcbbb4f 100644
+--- a/src/pages/RefundRequestsReport.jsx
++++ b/src/pages/RefundRequestsReport.jsx
+@@ -1390,2 +1390,2 @@ const RefundRequestsReport =
+-                  xs: "50px !important",
+-                  sm: "56px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)"
+@@ -1457 +1457 @@ const RefundRequestsReport =
+-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
++          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+diff --git a/src/pages/RegistrationRequestReport.jsx b/src/pages/RegistrationRequestReport.jsx
+index f7c5007..c50f4f1 100644
+--- a/src/pages/RegistrationRequestReport.jsx
++++ b/src/pages/RegistrationRequestReport.jsx
+@@ -753,2 +753,2 @@ const RegistrationRequestReport = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -827,2 +827,2 @@ const RegistrationRequestReport = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/RewardsList.jsx b/src/pages/RewardsList.jsx
+index ab81253..de09c64 100644
+--- a/src/pages/RewardsList.jsx
++++ b/src/pages/RewardsList.jsx
+@@ -1139,2 +1139,2 @@ const RewardsList = () => {
+-              xs: "50px !important",
+-              sm: "56px !important"
++              xs: "var(--app-header-height, 56px)",
++              sm: "var(--app-header-height, 56px)"
+@@ -1205,2 +1205,2 @@ const RewardsList = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/SalesManManagement.jsx b/src/pages/SalesManManagement.jsx
+index 434be66..466ae8f 100644
+--- a/src/pages/SalesManManagement.jsx
++++ b/src/pages/SalesManManagement.jsx
+@@ -849 +849 @@ export default function SalesManManagement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -857 +857 @@ export default function SalesManManagement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/ServiceManagement.jsx b/src/pages/ServiceManagement.jsx
+index 7408a5d..ae1053e 100644
+--- a/src/pages/ServiceManagement.jsx
++++ b/src/pages/ServiceManagement.jsx
+@@ -857 +857 @@ export default function ServiceManagement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -865 +865 @@ export default function ServiceManagement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/SidebarSettings.jsx b/src/pages/SidebarSettings.jsx
+index e05c067..7b88820 100644
+--- a/src/pages/SidebarSettings.jsx
++++ b/src/pages/SidebarSettings.jsx
+@@ -521 +521 @@ export default function SidebarSettings() {
+-      sx={{
++      sx={uiLayout.withUiSx({
+@@ -527 +527 @@ export default function SidebarSettings() {
+-      }}
++      }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/TaxReturnsReport.jsx b/src/pages/TaxReturnsReport.jsx
+index 2380c9f..6606df9 100644
+--- a/src/pages/TaxReturnsReport.jsx
++++ b/src/pages/TaxReturnsReport.jsx
+@@ -1395 +1395 @@ export default function TaxReturnsReport() {
+-                    : "48px !important"
++                    : "var(--app-header-height, 56px)"
+diff --git a/src/pages/TaxSalesReport.jsx b/src/pages/TaxSalesReport.jsx
+index 5b50dd4..0b6f6ca 100644
+--- a/src/pages/TaxSalesReport.jsx
++++ b/src/pages/TaxSalesReport.jsx
+@@ -1395 +1395 @@ export default function TaxSalesReport() {
+-                    : "48px !important"
++                    : "var(--app-header-height, 56px)"
+diff --git a/src/pages/TrainerManagement.jsx b/src/pages/TrainerManagement.jsx
+index d4cddf9..5de1f84 100644
+--- a/src/pages/TrainerManagement.jsx
++++ b/src/pages/TrainerManagement.jsx
+@@ -504 +504 @@ export default function TrainerManagement() {
+-        <Box sx={{ bgcolor: primaryDark, color: "#fff", px: { xs: 0.65, sm: 1.4 }, py: { xs: 0.55, sm: 0.9 }, display: "flex", alignItems: "center", gap: 0.55 }}>
++        <Box sx={uiLayout.withUiSx({ bgcolor: primaryDark, color: "#fff", px: { xs: 0.65, sm: 1.4 }, py: { xs: 0.55, sm: 0.9 }, display: "flex", alignItems: "center", gap: 0.55 }, uiLayout.mobileHeaderSx)}>
+diff --git a/src/pages/TrainingAgreementsFollow.jsx b/src/pages/TrainingAgreementsFollow.jsx
+index 120a201..17ae76a 100644
+--- a/src/pages/TrainingAgreementsFollow.jsx
++++ b/src/pages/TrainingAgreementsFollow.jsx
+@@ -820,2 +820,2 @@ const TrainingAgreementsFollow = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -893,2 +893,2 @@ const TrainingAgreementsFollow = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/pages/TransferRequestsReport.jsx b/src/pages/TransferRequestsReport.jsx
+index 9fb7b14..5de9199 100644
+--- a/src/pages/TransferRequestsReport.jsx
++++ b/src/pages/TransferRequestsReport.jsx
+@@ -1467,2 +1467,2 @@ const TransferRequestsReport = () => {
+-                  xs: "50px !important",
+-                  sm: "56px !important"
++                  xs: "var(--app-header-height, 56px)",
++                  sm: "var(--app-header-height, 56px)"
+@@ -1534 +1534 @@ const TransferRequestsReport = () => {
+-          mt: isDesktop ? 0 : isPhone ? "50px" : "56px",
++          mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
+diff --git a/src/pages/TrialBalance.jsx b/src/pages/TrialBalance.jsx
+index 5f0c73a..e1b7922 100644
+--- a/src/pages/TrialBalance.jsx
++++ b/src/pages/TrialBalance.jsx
+@@ -1108 +1108 @@ export default function TrialBalance() {
+-            sx={{
++            sx={uiLayout.withUiSx({
+@@ -1125 +1125 @@ export default function TrialBalance() {
+-            }}
++            }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/UserActionReport.jsx b/src/pages/UserActionReport.jsx
+index 469bf79..70246ee 100644
+--- a/src/pages/UserActionReport.jsx
++++ b/src/pages/UserActionReport.jsx
+@@ -754 +754 @@ export default function UserActionReport() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -772 +772 @@ export default function UserActionReport() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/UserManagement.jsx b/src/pages/UserManagement.jsx
+index a86bcd1..348c50d 100644
+--- a/src/pages/UserManagement.jsx
++++ b/src/pages/UserManagement.jsx
+@@ -1223 +1223 @@ export default function UserManagement() {
+-          sx={{
++          sx={uiLayout.withUiSx({
+@@ -1231 +1231 @@ export default function UserManagement() {
+-          }}
++          }, uiLayout.mobileHeaderSx)}
+diff --git a/src/pages/VipCustomers.jsx b/src/pages/VipCustomers.jsx
+index 8364a2d..26bf387 100644
+--- a/src/pages/VipCustomers.jsx
++++ b/src/pages/VipCustomers.jsx
+@@ -825,2 +825,2 @@ const VipCustomers = () => {
+-                xs: "50px !important",
+-                sm: "56px !important"
++                xs: "var(--app-header-height, 56px)",
++                sm: "var(--app-header-height, 56px)"
+@@ -890,2 +890,2 @@ const VipCustomers = () => {
+-            xs: "50px",
+-            sm: "56px"
++            xs: "var(--app-header-height, 56px)",
++            sm: "var(--app-header-height, 56px)"
+diff --git a/src/theme.js b/src/theme.js
+index 9a8c9cd..9885d63 100644
+--- a/src/theme.js
++++ b/src/theme.js
+@@ -4,0 +5 @@ import { rtlComponents } from './config/rtlComponents';
++import { designTokens } from './config/designTokens';
+@@ -16,0 +18,8 @@ const theme = createTheme({
++  palette: {
++    primary: { main: designTokens.primary, dark: designTokens.primaryDark },
++    background: { default: designTokens.background, paper: designTokens.surface },
++    text: { primary: designTokens.text, secondary: designTokens.muted },
++    divider: designTokens.border,
++  },
++  // Existing sx values use MUI's four-pixel radius multiplier.
++  shape: { borderRadius: 4 },
+@@ -18,0 +28,10 @@ const theme = createTheme({
++    fontSize: 14,
++    h1: { fontSize: 'clamp(1.5rem, 2.4vw, 2rem)', fontWeight: 800, lineHeight: 1.45 },
++    h2: { fontSize: 'clamp(1.375rem, 2vw, 1.75rem)', fontWeight: 800, lineHeight: 1.45 },
++    h3: { fontSize: '1.5rem', fontWeight: 700, lineHeight: 1.5 },
++    h4: { fontSize: '1.25rem', fontWeight: 700, lineHeight: 1.5 },
++    h5: { fontSize: '1.125rem', fontWeight: 700, lineHeight: 1.5 },
++    h6: { fontSize: '1rem', fontWeight: 700, lineHeight: 1.5 },
++    body1: { fontSize: '0.875rem', lineHeight: 1.7 },
++    body2: { fontSize: '0.8125rem', lineHeight: 1.65 },
++    button: { fontSize: '0.8125rem', fontWeight: 700, textTransform: 'none' },
