@@ -1,3 +1,4 @@
+import { hrChipSx } from "../hrControlStyles";
 import React from "react";
 import { 
   Card, 
@@ -227,7 +228,7 @@ const availableYears = Array.from(
               sx={{
                 display: "flex",
                 alignItems: "center",
-                mr: { xs: 0, md: 1 },
+                marginInlineEnd: { xs: 0, md: 1 },
                 width: { xs: "100%", sm: "auto" },
                 justifyContent: { xs: "center", sm: "flex-start" },
                 fontSize: { xs: "0.78rem", sm: "0.9rem", md: "1rem" },
@@ -312,9 +313,9 @@ const availableYears = Array.from(
                 </Box>
                 
                 <Box sx={{ mt: { xs: 1, md: 2 }, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: { xs: 0.5, sm: 0.75 } }}>
-                  <Chip icon={<CheckCircle />} label={`${sentStats.completed} مكتملة`} sx={{ background: COLOR_SCHEME.success, color: 'white' }} size="small" />
-                  <Chip icon={<Pending />} label={`${sentStats.inProgress} قيد التنفيذ`} sx={{ background: COLOR_SCHEME.warning, color: 'white' }} size="small" />
-                  <Chip icon={<Schedule />} label={`${sentStats.pending} معلقة`} sx={{ background: COLOR_SCHEME.error, color: 'white' }} size="small" />
+                  <Chip icon={<CheckCircle />} label={`${sentStats.completed} مكتملة`} sx={[hrChipSx("small"), { background: COLOR_SCHEME.success, color: 'white' }]} size="small" />
+                  <Chip icon={<Pending />} label={`${sentStats.inProgress} قيد التنفيذ`} sx={[hrChipSx("small"), { background: COLOR_SCHEME.warning, color: 'white' }]} size="small" />
+                  <Chip icon={<Schedule />} label={`${sentStats.pending} معلقة`} sx={[hrChipSx("small"), { background: COLOR_SCHEME.error, color: 'white' }]} size="small" />
                 </Box>
               </Card>
             </motion.div>
@@ -362,9 +363,9 @@ const availableYears = Array.from(
                 </Box>
                 
                 <Box sx={{ mt: { xs: 1, md: 2 }, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: { xs: 0.5, sm: 0.75 } }}>
-                  <Chip icon={<CheckCircle />} label={`${receivedStats.completed} مكتملة`} sx={{ background: COLOR_SCHEME.success, color: 'white' }} size="small" />
-                  <Chip icon={<Pending />} label={`${receivedStats.inProgress} قيد التنفيذ`} sx={{ background: COLOR_SCHEME.warning, color: 'white' }} size="small" />
-                  <Chip icon={<Schedule />} label={`${receivedStats.pending} معلقة`} sx={{ background: COLOR_SCHEME.error, color: 'white' }} size="small" />
+                  <Chip icon={<CheckCircle />} label={`${receivedStats.completed} مكتملة`} sx={[hrChipSx("small"), { background: COLOR_SCHEME.success, color: 'white' }]} size="small" />
+                  <Chip icon={<Pending />} label={`${receivedStats.inProgress} قيد التنفيذ`} sx={[hrChipSx("small"), { background: COLOR_SCHEME.warning, color: 'white' }]} size="small" />
+                  <Chip icon={<Schedule />} label={`${receivedStats.pending} معلقة`} sx={[hrChipSx("small"), { background: COLOR_SCHEME.error, color: 'white' }]} size="small" />
                 </Box>
               </Card>
             </motion.div>

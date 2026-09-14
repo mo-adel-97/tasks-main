@@ -1,3 +1,4 @@
+import { hrChipSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -773,12 +774,12 @@ const copyToClipboard = (text) => {
                             icon={getStatusIcon(meeting.status)}
                             label={meeting.status} 
                             size="small"
-                            sx={{ 
+                            sx={[hrChipSx("small"), { 
                               bgcolor: getStatusColor(meeting.status),
                               color: 'white',
                               fontWeight: 'bold',
                               '& .MuiChip-icon': { color: 'white' }
-                            }}
+                            }]}
                           />
                         </Box>
                         
@@ -1084,10 +1085,10 @@ const copyToClipboard = (text) => {
                                         key={u.guid}
                                         label={u.fullName}
                                         avatar={<Avatar sx={{ backgroundColor: COLOR_SCHEME.primary, fontSize: '0.75rem' }}>{u.fullName?.charAt(0) || ''}</Avatar>}
-                                        sx={{
+                                        sx={[hrChipSx(), {
                                           backgroundColor: COLOR_SCHEME.primaryLight,
                                           color: 'white',
-                                        }}
+                                        }]}
                                       />
                                     ))
                                 )}

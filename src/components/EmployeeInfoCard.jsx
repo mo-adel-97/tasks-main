@@ -1,3 +1,4 @@
+import { hrChipSx } from "./hrControlStyles";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -422,10 +423,10 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
             <Chip
               icon={<CalendarMonth />}
               label={isActive ? "الحالة: نشط" : "الحالة: غير نشط"}
-              sx={{
+              sx={[hrChipSx(), {
                 ...glassChipSx,
                 background: isActive ? "rgba(255,255,255,0.18)" : alpha(COLOR_SCHEME.accent, 0.22)
-              }}
+              }]}
             />
           </Box>
         </Box>
@@ -436,18 +437,18 @@ const EmployeeInfoCard = ({ user, isHRUser, isHRManager }) => {
           gap={0.65}
           sx={{ mt: 0.55, position: "relative", zIndex: 2 }}
         >
-          <Chip icon={<Work />} label={`كود الموظف: ${employeeCode}`} sx={glassChipSx} />
-          <Chip icon={<Security />} label={`الحالة: ${isActive ? "نشط" : "غير نشط"}`} sx={glassChipSx} />
-          <Chip icon={<Notifications />} label={`اسم المستخدم: ${userName}`} sx={glassChipSx} />
+          <Chip icon={<Work />} label={`كود الموظف: ${employeeCode}`} sx={[hrChipSx(), glassChipSx]} />
+          <Chip icon={<Security />} label={`الحالة: ${isActive ? "نشط" : "غير نشط"}`} sx={[hrChipSx(), glassChipSx]} />
+          <Chip icon={<Notifications />} label={`اسم المستخدم: ${userName}`} sx={[hrChipSx(), glassChipSx]} />
           {isHRUser && (
             <Chip
               icon={<Security />}
               label={`الصلاحية: ${isHRManager ? "مدير" : "موظف"}`}
-              sx={{
+              sx={[hrChipSx(), {
                 ...glassChipSx,
                 background: alpha(COLOR_SCHEME.gold, 0.22),
                 borderColor: alpha(COLOR_SCHEME.gold, 0.65)
-              }}
+              }]}
             />
           )}
         </Stack>

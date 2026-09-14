@@ -1,0 +1,29 @@
+﻿158: const normalizeResponseArray = (json) => {
+165: const toLocalDateInputValue = (date) => {
+176: const currentMonthAttendanceRange = () => {
+190: const previousDaysAttendanceRange = (days) => {
+206: const formatAttendanceDate = (value) => {
+220: const formatAttendanceTime = (value) => {
+232: const formatMinutesAsHours = (minutes) => {
+243: const HrEmployeesPage = () => {
+462: const getCurrentActor = () => {
+488: const fillProfileForm = (profile) => {
+518: const fillEditForm = (employee) => {
+547: const openEmployeeCard = (employee) => {
+566: const closeEmployeeCard = () => {
+587: const handleEditField = (field, value) => {
+594: const startEditingEmployee = () => {
+603: const cancelEditingEmployee = () => {
+612: const showEmployeeAlert = (icon, title, text) => {
+1209: const openEmployeeDocument = (document) => {
+1232: const closeEmployeeDocumentPreview = () => {
+1497: const openEmployeeContractExternal = (contract = employeeContract) => {
+1580: const openPreviewFileExternally = () => {
+1747: const openCareerAction = (mode) => {
+1814: const buildUrl = (pageNumber) => {
+2457: const formatFileSize = (bytes) => {
+2472: const formatDateTime = (value) => {
+2741: const handleFilterChange = (key, value) => {
+2748: const applyFilters = () => {
+2753: const resetFilters = () => {
+2800: const renderMobileEmployee = (employee) => (

@@ -1,0 +1,97 @@
+﻿3360: <TextField
+3392: "& .MuiInputLabel-root": {
+3424: "& .MuiInputLabel-root": {
+3430: <FormControl size="small" fullWidth>
+3431: <InputLabel>الفرع</InputLabel>
+3432: <Select
+3448: <FormControl size="small" fullWidth>
+3449: <InputLabel>القسم</InputLabel>
+3450: <Select
+3469: <FormControl size="small" fullWidth>
+3470: <InputLabel>الوظيفة</InputLabel>
+3471: <Select
+3487: <FormControl size="small" fullWidth>
+3488: <InputLabel>الحالة</InputLabel>
+3489: <Select
+3614: <FormControl
+3622: "& .MuiInputLabel-root": {
+3627: <InputLabel>عدد الصفوف</InputLabel>
+3628: <Select
+4219: "& .MuiInputBase-input, & .MuiSelect-select, & .MuiInputLabel-root": {
+4736: "& .MuiInputLabel-root": {
+4748: <TextField
+4763: <TextField
+4775: <TextField
+4787: <TextField
+4799: <TextField
+4811: <TextField
+4826: <FormControl
+4830: <InputLabel>
+4832: </InputLabel>
+4833: <Select
+4855: <TextField
+4873: <FormControl
+4883: <InputLabel>
+4885: </InputLabel>
+4886: <Select
+4915: <FormControl
+4919: <InputLabel>
+4921: </InputLabel>
+4922: <Select
+4957: <FormControl
+4961: <InputLabel>
+4963: </InputLabel>
+4964: <Select
+4990: <FormControl
+4994: <InputLabel>
+4996: </InputLabel>
+4997: <Select
+5326: "& .MuiInputLabel-root": {
+5332: <TextField
+5344: InputLabelProps={{
+5349: <TextField
+5364: <FormControl
+5368: <InputLabel>
+5370: </InputLabel>
+5371: <Select
+5408: <FormControl
+5412: <InputLabel>
+5414: </InputLabel>
+5415: <Select
+5446: <TextField
+5458: <TextField
+5477: <TextField
+5492: <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+5507: <TextField
+5522: <TextField
+5809: "& .MuiInputLabel-root": {
+5858: <FormControl
+5862: <InputLabel>
+5864: </InputLabel>
+5865: <Select
+5896: <TextField
+5912: InputLabelProps={{
+5917: <TextField
+5933: InputLabelProps={{
+5938: <TextField
+6516: <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+6531: <TextField
+6545: InputLabelProps={{ shrink: true }}
+6548: <TextField
+6562: InputLabelProps={{ shrink: true }}
+6565: <TextField
+6581: <TextField
+7753: <TextField
+7769: InputLabelProps={{
+7790: <TextField
+7806: InputLabelProps={{
+8665: <TextField
+8679: InputLabelProps={{
+9496: <FormControl fullWidth size="small">
+9497: <InputLabel>
+9499: </InputLabel>
+9500: <Select
+9523: <TextField
+9537: InputLabelProps={{
+9542: <TextField
+9562: <TextField

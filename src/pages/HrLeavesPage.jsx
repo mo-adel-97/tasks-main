@@ -60,6 +60,208 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
 
+// ============================================================
+// RTL dialog form system
+// Keeps Arabic labels above controls instead of floating on the outline,
+// normalizes spacing/alignment, and preserves LTR rendering for date/time.
+// ============================================================
+const RTL_DIALOG_SX = {
+  "& .MuiDialog-paper": {
+    direction: "rtl",
+    textAlign: "right",
+    backgroundImage: "none"
+  },
+  "& .MuiDialogTitle-root": {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  },
+  "& .MuiDialogContent-root": {
+    direction: "rtl",
+    textAlign: "right",
+    overflowX: "hidden",
+
+    "& .MuiFormControl-root": {
+      direction: "rtl",
+      textAlign: "right"
+    },
+
+    // Use a real external-looking label above the control. This avoids the
+    // outlined-border/label collision that appears in Arabic RTL forms.
+    "& .MuiInputLabel-root": {
+      position: "static !important",
+      transform: "none !important",
+      transformOrigin: "top right !important",
+      width: "100%",
+      maxWidth: "100%",
+      margin: "0 0 6px 0",
+      padding: 0,
+      direction: "rtl",
+      textAlign: "right",
+      whiteSpace: "normal",
+      overflow: "visible",
+      lineHeight: 1.45,
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontSize: "0.78rem",
+      fontWeight: 800,
+      color: "#52635c",
+      pointerEvents: "auto"
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#057546"
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "#d32f2f"
+    },
+    "& .MuiInputLabel-root.Mui-disabled": {
+      color: "rgba(0,0,0,.42)"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      direction: "rtl",
+      textAlign: "right",
+      borderRadius: "10px",
+      backgroundColor: "#fff",
+      transition: "border-color .18s ease, box-shadow .18s ease, background-color .18s ease",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d7e3dd"
+      },
+      "&:hover .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#9fc7b5"
+      },
+      "&.Mui-focused": {
+        boxShadow: "0 0 0 3px rgba(5,117,70,.08)"
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#057546",
+        borderWidth: "1.5px"
+      },
+      "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d32f2f"
+      }
+    },
+
+    // The label is no longer inside the outline, so remove MUI's notch.
+    "& .MuiOutlinedInput-notchedOutline legend": {
+      maxWidth: "0 !important"
+    },
+    "& .MuiOutlinedInput-notchedOutline legend > span": {
+      display: "none !important"
+    },
+
+    "& .MuiInputBase-input, & textarea, & .MuiSelect-select": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiSelect-select": {
+      paddingRight: "14px !important",
+      paddingLeft: "40px !important"
+    },
+    "& .MuiSelect-icon": {
+      right: "auto !important",
+      left: "10px !important"
+    },
+    "& .MuiInputAdornment-positionStart": {
+      marginRight: "0 !important",
+      marginLeft: "8px !important"
+    },
+    "& .MuiInputAdornment-positionEnd": {
+      marginLeft: "0 !important",
+      marginRight: "8px !important"
+    },
+    "& .MuiFormHelperText-root": {
+      direction: "rtl",
+      textAlign: "right",
+      marginLeft: 0,
+      marginRight: 0,
+      marginTop: "5px",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiAutocomplete-inputRoot": {
+      direction: "rtl",
+      paddingRight: "10px !important",
+      paddingLeft: "38px !important"
+    },
+    "& .MuiAutocomplete-endAdornment": {
+      right: "auto !important",
+      left: "8px !important"
+    },
+    "& .MuiFormControlLabel-root": {
+      direction: "rtl",
+      marginLeft: 0,
+      marginRight: 0,
+      gap: "3px"
+    },
+    "& .MuiFormControlLabel-label": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+
+    // Dates and times must keep their natural numeric order in Arabic UI.
+    '& input[type="date"], & input[type="time"], & input[type="datetime-local"]': {
+      direction: "ltr !important",
+      textAlign: "center !important",
+      unicodeBidi: "isolate"
+    }
+  },
+  "& .MuiDialogActions-root": {
+    direction: "rtl",
+    gap: "8px",
+    flexWrap: "wrap",
+    padding: { xs: "12px 14px", sm: "14px 20px" },
+    borderTop: "1px solid #edf2ef",
+    "& .MuiButton-root": {
+      minHeight: 38,
+      borderRadius: "10px",
+      textTransform: "none",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontWeight: 800
+    },
+    "& .MuiButton-startIcon": {
+      marginRight: "0 !important",
+      marginLeft: "6px !important"
+    },
+    "& .MuiButton-endIcon": {
+      marginLeft: "0 !important",
+      marginRight: "6px !important"
+    }
+  }
+};
+
+const RTL_MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      direction: "rtl",
+      textAlign: "right",
+      mt: 0.5,
+      borderRadius: "10px",
+      maxHeight: 360,
+      "& .MuiMenuItem-root": {
+        direction: "rtl",
+        textAlign: "right",
+        justifyContent: "flex-start",
+        minHeight: 40,
+        fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+      }
+    }
+  },
+  MenuListProps: {
+    dir: "rtl",
+    sx: { py: 0.5 }
+  }
+};
+
+const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
+  dir: "rtl",
+  style: {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  }
+};
+
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
@@ -76,8 +278,8 @@ const bg = "#f5f8f6";
 // اتجاهات شاشة الإجازات مستقلة
 // ============================================================
 const LEAVES_PAGE_DIRECTION = "rtl";
-const LEAVES_TEXT_ALIGN = "left";
-const LEAVES_GRID_DIRECTION = "ltr";
+const LEAVES_TEXT_ALIGN = "right";
+const LEAVES_GRID_DIRECTION = "rtl";
 const LEAVES_GRID_TEXT_ALIGN = "right";
 const LEAVES_DATE_DIRECTION = "ltr";
 
@@ -2003,6 +2205,7 @@ export default function HrLeavesPage() {
                     الحالة
                   </InputLabel>
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     label="الحالة"
                     value={
                       requestFilters.status
@@ -2043,6 +2246,7 @@ export default function HrLeavesPage() {
                     نوع الإجازة
                   </InputLabel>
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     label="نوع الإجازة"
                     value={
                       requestFilters.leaveTypeGuid
@@ -2086,6 +2290,7 @@ export default function HrLeavesPage() {
                     الفرع
                   </InputLabel>
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     label="الفرع"
                     value={
                       requestFilters.branchGuid
@@ -2466,6 +2671,7 @@ export default function HrLeavesPage() {
                     نوع الإجازة
                   </InputLabel>
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     label="نوع الإجازة"
                     value={balanceTypeGuid}
                     onChange={(e) => {
@@ -3032,6 +3238,7 @@ export default function HrLeavesPage() {
                   <FormControl size="small" sx={{ minWidth: 240 }}>
                     <InputLabel>نوع الإجازة</InputLabel>
                     <Select
+                  MenuProps={RTL_MENU_PROPS}
                       label="نوع الإجازة"
                       value={workflowLeaveFilter}
                       onChange={(e) => setWorkflowLeaveFilter(e.target.value)}
@@ -3131,6 +3338,7 @@ export default function HrLeavesPage() {
       </Box>
 
         <Dialog
+        sx={RTL_DIALOG_SX}
           open={policyOpen}
           onClose={() => setPolicyOpen(false)}
           fullWidth
@@ -3149,11 +3357,13 @@ export default function HrLeavesPage() {
               <Box sx={{display:"grid",gridTemplateColumns:{xs:"1fr",md:"1fr 1fr 1fr"},gap:1.2}}>
                 <FormControl size="small">
                   <InputLabel>نوع الإجازة</InputLabel>
-                  <Select label="نوع الإجازة" value={policyForm.leaveTypeGuid} onChange={(e) => setPolicyForm((value) => ({...value,leaveTypeGuid:e.target.value}))}>
+                  <Select
+                  MenuProps={RTL_MENU_PROPS} label="نوع الإجازة" value={policyForm.leaveTypeGuid} onChange={(e) => setPolicyForm((value) => ({...value,leaveTypeGuid:e.target.value}))}>
                     {workflowConfig.leaveTypes.map((type) => <MenuItem key={type.leaveTypeGuid} value={type.leaveTypeGuid}>{type.leaveTypeName}</MenuItem>)}
                   </Select>
                 </FormControl>
                 <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                   options={workflowConfig.jobTitles}
                   groupBy={(option) => option.departmentName || "بدون قسم"}
                   value={getWorkflowJobTitle(policyForm.sourceJobTitleGuid)}
@@ -3164,7 +3374,8 @@ export default function HrLeavesPage() {
                 />
                 <FormControl size="small">
                   <InputLabel>الفرع - اختياري</InputLabel>
-                  <Select label="الفرع - اختياري" value={policyForm.branchGuid} onChange={(e) => setPolicyForm((value) => ({...value,branchGuid:e.target.value}))}>
+                  <Select
+                  MenuProps={RTL_MENU_PROPS} label="الفرع - اختياري" value={policyForm.branchGuid} onChange={(e) => setPolicyForm((value) => ({...value,branchGuid:e.target.value}))}>
                     <MenuItem value="">كل الفروع</MenuItem>
                     {workflowConfig.branches.map((branch) => <MenuItem key={branch.branchGuid} value={branch.branchGuid}>{branch.branchName}</MenuItem>)}
                   </Select>
@@ -3208,7 +3419,8 @@ export default function HrLeavesPage() {
                         <TextField size="small" label="الخطوة" value={index+1} disabled/>
                         <FormControl size="small">
                           <InputLabel>تذهب إلى</InputLabel>
-                          <Select label="تذهب إلى" value={step.approverType} onChange={(e) => {
+                          <Select
+                  MenuProps={RTL_MENU_PROPS} label="تذهب إلى" value={step.approverType} onChange={(e) => {
                             const type=e.target.value;
                             const stepName = type === "ORG_DIRECT_MANAGER" ? "المسؤول المباشر من الهيكل" : type === "ORG_PARENT_MANAGER" ? "مسؤول الوحدة الأعلى" : type === "ORG_ROOT_MANAGER" ? "الإدارة العليا من الهيكل" : type === "SAME_BRANCH_JOB_TITLE" ? "وظيفة في نفس الفرع" : type === "SOURCE_DEPARTMENT_MANAGER" ? "مدير القسم" : type === "TARGET_DEPARTMENT_MANAGER" ? "مدير قسم محدد" : type === "SOURCE_DEPARTMENT_PEOPLE" ? "أشخاص من قسم المسمى" : type === "TARGET_DEPARTMENT_PEOPLE" ? "أشخاص من قسم محدد" : type === "EXECUTIVE_MANAGER" ? "الإدارة التنفيذية" : "الموارد البشرية";
                             updatePolicyStep(index,{approverType:type,targetJobTitleGuid:"",targetDepartmentGuid:"",approverUserGuid:"",approverUserGuids:[],stepName});
@@ -3228,6 +3440,7 @@ export default function HrLeavesPage() {
 
                         {step.approverType === "SAME_BRANCH_JOB_TITLE" ? (
                           <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                             options={workflowConfig.jobTitles}
                             groupBy={(option) => option.departmentName || "بدون قسم"}
                             value={getWorkflowJobTitle(step.targetJobTitleGuid)}
@@ -3239,7 +3452,8 @@ export default function HrLeavesPage() {
                         ) : (step.approverType === "TARGET_DEPARTMENT_MANAGER" || step.approverType === "TARGET_DEPARTMENT_PEOPLE") ? (
                           <FormControl size="small">
                             <InputLabel>القسم المطلوب</InputLabel>
-                            <Select label="القسم المطلوب" value={step.targetDepartmentGuid} onChange={(e) => {
+                            <Select
+                  MenuProps={RTL_MENU_PROPS} label="القسم المطلوب" value={step.targetDepartmentGuid} onChange={(e) => {
                               const department=getWorkflowDepartment(e.target.value);
                               updatePolicyStep(index,{targetDepartmentGuid:e.target.value,approverUserGuid:"",approverUserGuids:[],stepName:department ? (step.approverType === "TARGET_DEPARTMENT_MANAGER" ? `مدير قسم ${department.departmentName}` : department.departmentName) : (step.approverType === "TARGET_DEPARTMENT_MANAGER" ? "مدير قسم محدد" : "أشخاص من قسم محدد")});
                             }}>
@@ -3266,6 +3480,7 @@ export default function HrLeavesPage() {
                         ) : (
                           <>
                             <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                               multiple
                               disableCloseOnSelect
                               limitTags={3}
@@ -3296,13 +3511,17 @@ export default function HrLeavesPage() {
           </DialogActions>
         </Dialog>
 
-      <Dialog open={initOpen} onClose={()=>!initSaving&&setInitOpen(false)} fullWidth maxWidth="sm" dir={LEAVES_PAGE_DIRECTION}>
+      <Dialog
+        sx={RTL_DIALOG_SX} open={initOpen} onClose={()=>!initSaving&&setInitOpen(false)} fullWidth maxWidth="sm" dir={LEAVES_PAGE_DIRECTION}>
         <DialogTitle sx={{fontWeight:950}}>تهيئة أرصدة الموظفين</DialogTitle><DialogContent dividers><Stack spacing={1}>
           <Alert severity="info">اختار السنة ونوع الإجازة والرصيد. بدون فرع أو موظف = كل الموظفين النشطين. الافتراضي لا يلمس أي رصيد موجود مسبقًا.</Alert>
           <Stack direction={{xs:"column",sm:"row"}} spacing={1}><TextField fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /><TextField fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /></Stack>
-          <FormControl fullWidth><InputLabel>نوع الإجازة</InputLabel><Select label="نوع الإجازة" value={initForm.leaveTypeGuid} onChange={e=>setInitForm(x=>({...x,leaveTypeGuid:e.target.value}))}>{lookups.leaveTypes.filter(x=>x.requiresBalance).map(x=><MenuItem key={x.leaveTypeGuid} value={x.leaveTypeGuid}>{x.leaveTypeName}</MenuItem>)}</Select></FormControl>
-          <FormControl fullWidth><InputLabel>الفرع - اختياري</InputLabel><Select label="الفرع - اختياري" value={initForm.branchGuid} onChange={e=>setInitForm(x=>({...x,branchGuid:e.target.value}))}><MenuItem value="">كل الفروع</MenuItem>{lookups.branches.map(x=><MenuItem key={x.branchGuid} value={x.branchGuid}>{x.branchName}</MenuItem>)}</Select></FormControl>
-          <Autocomplete options={lookups.employees} value={initForm.employee} onChange={(_,v)=>setInitForm(x=>({...x,employee:v}))} getOptionLabel={o=>`${o.employeeName||""} • #${o.employeeCode||"-"}`} renderInput={params=><TextField {...params} label="موظف محدد - اختياري"/>}/>
+          <FormControl fullWidth><InputLabel>نوع الإجازة</InputLabel><Select
+                  MenuProps={RTL_MENU_PROPS} label="نوع الإجازة" value={initForm.leaveTypeGuid} onChange={e=>setInitForm(x=>({...x,leaveTypeGuid:e.target.value}))}>{lookups.leaveTypes.filter(x=>x.requiresBalance).map(x=><MenuItem key={x.leaveTypeGuid} value={x.leaveTypeGuid}>{x.leaveTypeName}</MenuItem>)}</Select></FormControl>
+          <FormControl fullWidth><InputLabel>الفرع - اختياري</InputLabel><Select
+                  MenuProps={RTL_MENU_PROPS} label="الفرع - اختياري" value={initForm.branchGuid} onChange={e=>setInitForm(x=>({...x,branchGuid:e.target.value}))}><MenuItem value="">كل الفروع</MenuItem>{lookups.branches.map(x=><MenuItem key={x.branchGuid} value={x.branchGuid}>{x.branchName}</MenuItem>)}</Select></FormControl>
+          <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS} options={lookups.employees} value={initForm.employee} onChange={(_,v)=>setInitForm(x=>({...x,employee:v}))} getOptionLabel={o=>`${o.employeeName||""} • #${o.employeeCode||"-"}`} renderInput={params=><TextField {...params} label="موظف محدد - اختياري"/>}/>
           <FormControlLabel control={<Checkbox checked={initForm.overwriteExisting} onChange={e=>setInitForm(x=>({...x,overwriteExisting:e.target.checked}))}/>} label="استبدال الرصيد الافتتاحي الموجود بالفعل (استخدمها بحذر)"/>
           <TextField label="سبب التهيئة" value={initForm.reason} onChange={e=>setInitForm(x=>({...x,reason:e.target.value}))}/>
         </Stack></DialogContent><DialogActions><Button onClick={()=>setInitOpen(false)}>إلغاء</Button><Button variant="contained" disabled={initSaving} onClick={initializeBalances}>تنفيذ التهيئة</Button></DialogActions>
@@ -3310,6 +3529,7 @@ export default function HrLeavesPage() {
 
       {/* Request dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={requestOpen}
         onClose={() =>
           !requestSaving &&
@@ -3328,6 +3548,7 @@ export default function HrLeavesPage() {
         <DialogContent dividers>
           <Stack spacing={1.2}>
             <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
               options={lookups.employees}
               value={requestForm.employee}
               onChange={(_, value) =>
@@ -3355,6 +3576,7 @@ export default function HrLeavesPage() {
                 نوع الإجازة
               </InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="نوع الإجازة"
                 value={
                   requestForm.leaveTypeGuid
@@ -3454,6 +3676,7 @@ export default function HrLeavesPage() {
                     نوع اليوم
                   </InputLabel>
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     label="نوع اليوم"
                     value={
                       requestForm.dayPart
@@ -3610,6 +3833,7 @@ export default function HrLeavesPage() {
 
       {/* Balance dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={balanceOpen}
         onClose={() =>
           !balanceSaving &&
@@ -3775,6 +3999,7 @@ export default function HrLeavesPage() {
 
       {/* Type dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={typeOpen}
         onClose={() =>
           !typeSaving &&
@@ -3837,6 +4062,7 @@ export default function HrLeavesPage() {
                 طريقة احتساب الأيام
               </InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="طريقة احتساب الأيام"
                 value={typeForm.countMode}
                 onChange={(e) =>
@@ -4074,6 +4300,7 @@ export default function HrLeavesPage() {
 
       {/* Holiday dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={holidayOpen}
         onClose={() =>
           !holidaySaving &&
@@ -4129,6 +4356,7 @@ export default function HrLeavesPage() {
                 الفرع
               </InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الفرع"
                 value={
                   holidayForm.branchGuid

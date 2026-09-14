@@ -1,3 +1,4 @@
+import { hrChipSx } from "../../components/hrControlStyles";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -426,7 +427,7 @@ export default function HrOrganizationDesigner() {
             return <Paper key={u.orgUnitGuid} variant="outlined" sx={{ p: 1, borderRadius: 2 }}>
               <Typography sx={{ fontWeight: 950, mb: 0.7 }}>{u.unitName} <Chip size="small" label={members.length} /></Typography>
               <Stack direction="row" flexWrap="wrap" gap={0.6}>
-                {members.map((m) => <Chip key={m.orgUnitMemberGuid} label={`${m.employeeName}${m.isPrimary ? " • أساسي" : ""}`} color={m.isPrimary ? "success" : "default"} onDelete={() => removeMember(m.orgUnitMemberGuid)} />)}
+                {members.map((m) => <Chip sx={hrChipSx()} key={m.orgUnitMemberGuid} label={`${m.employeeName}${m.isPrimary ? " • أساسي" : ""}`} color={m.isPrimary ? "success" : "default"} onDelete={() => removeMember(m.orgUnitMemberGuid)} />)}
               </Stack>
             </Paper>;
           })}
@@ -444,7 +445,7 @@ export default function HrOrganizationDesigner() {
           {preview && <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 2.5 }}>
             <Typography sx={{ fontWeight: 950, mb: 1 }}>السلسلة الإدارية الفعلية</Typography>
             {(preview.chain || []).map((level) => (
-              <Box key={level.orgUnitGuid} sx={{ pl: Math.min(4, level.depth || 0) * 2, mb: 1 }}>
+              <Box key={level.orgUnitGuid} sx={{ paddingInlineStart: Math.min(4, level.depth || 0) * 2, mb: 1 }}>
                 <Typography sx={{ fontWeight: 900 }}>{level.unitName} <Chip size="small" label={unitTypeName(level.unitType)} /></Typography>
                 <Stack direction="row" gap={0.5} flexWrap="wrap" sx={{ mt: 0.5 }}>
                   {(level.managers || []).map((m) => <Chip key={m.managerUserGuid} label={`${m.managerName} • ${roleName(m.managerRole)}`} color={m.isPrimary ? "success" : "default"} />)}

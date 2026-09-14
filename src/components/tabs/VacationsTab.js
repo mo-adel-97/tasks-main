@@ -1,3 +1,4 @@
+import { hrChipSx, hrTabIconSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import { 
   Grid, 
@@ -926,12 +927,12 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                 label={getStatusText(request.status)}
                 size="small"
                 icon={getStatusIcon(request.status)}
-                sx={{ 
+                sx={[hrChipSx("small"), { 
                   backgroundColor: alpha(getStatusColor(request.status), 0.1),
                   color: getStatusColor(request.status),
                   fontWeight: 'bold',
                   '& .MuiChip-icon': { color: 'inherit' }
-                }}
+                }]}
               />
             </Box>
           </Box>
@@ -1144,20 +1145,20 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
               }
             }}
           >
-            <Tab 
+            <Tab sx={hrTabIconSx} 
               icon={<BeachAccess />}
               iconPosition="start"
               label={
-                <Badge badgeContent={stats.vacations} color="primary" sx={{ mr: 1 }}>
+                <Badge badgeContent={stats.vacations} color="primary" sx={{ marginInlineEnd: 1 }}>
                   الإجازات
                 </Badge>
               }
             />
-            <Tab 
+            <Tab sx={hrTabIconSx} 
               icon={<Schedule />}
               iconPosition="start"
               label={
-                <Badge badgeContent={stats.permissions} color="primary" sx={{ mr: 1 }}>
+                <Badge badgeContent={stats.permissions} color="primary" sx={{ marginInlineEnd: 1 }}>
                   الإذونات
                 </Badge>
               }
@@ -1348,7 +1349,7 @@ if (requestData.request_type === 'إذن' && userLimits.permission_advance_notic
                   </Box>
                 )}
                 {!fileName && (
-                  <Typography variant="caption" color="textSecondary" sx={{ ml: 1, display: 'block', mt: 1 }}>
+                  <Typography variant="caption" color="textSecondary" sx={{ marginInlineEnd: 1, display: 'block', mt: 1 }}>
                     اختياري - إذا لم تختار ملف، سيتم إنشاء ملف وهمي تلقائياً
                   </Typography>
                 )}

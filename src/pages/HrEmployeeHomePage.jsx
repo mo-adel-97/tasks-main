@@ -84,6 +84,208 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import TodayRoundedIcon from "@mui/icons-material/TodayRounded";
 import HrOrgOverviewPanel from "./components/HrOrgOverviewPanel";
 
+// ============================================================
+// RTL dialog form system
+// Keeps Arabic labels above controls instead of floating on the outline,
+// normalizes spacing/alignment, and preserves LTR rendering for date/time.
+// ============================================================
+const RTL_DIALOG_SX = {
+  "& .MuiDialog-paper": {
+    direction: "rtl",
+    textAlign: "right",
+    backgroundImage: "none"
+  },
+  "& .MuiDialogTitle-root": {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  },
+  "& .MuiDialogContent-root": {
+    direction: "rtl",
+    textAlign: "right",
+    overflowX: "hidden",
+
+    "& .MuiFormControl-root": {
+      direction: "rtl",
+      textAlign: "right"
+    },
+
+    // Use a real external-looking label above the control. This avoids the
+    // outlined-border/label collision that appears in Arabic RTL forms.
+    "& .MuiInputLabel-root": {
+      position: "static !important",
+      transform: "none !important",
+      transformOrigin: "top right !important",
+      width: "100%",
+      maxWidth: "100%",
+      margin: "0 0 6px 0",
+      padding: 0,
+      direction: "rtl",
+      textAlign: "right",
+      whiteSpace: "normal",
+      overflow: "visible",
+      lineHeight: 1.45,
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontSize: "0.78rem",
+      fontWeight: 800,
+      color: "#52635c",
+      pointerEvents: "auto"
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#057546"
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "#d32f2f"
+    },
+    "& .MuiInputLabel-root.Mui-disabled": {
+      color: "rgba(0,0,0,.42)"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      direction: "rtl",
+      textAlign: "right",
+      borderRadius: "10px",
+      backgroundColor: "#fff",
+      transition: "border-color .18s ease, box-shadow .18s ease, background-color .18s ease",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d7e3dd"
+      },
+      "&:hover .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#9fc7b5"
+      },
+      "&.Mui-focused": {
+        boxShadow: "0 0 0 3px rgba(5,117,70,.08)"
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#057546",
+        borderWidth: "1.5px"
+      },
+      "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d32f2f"
+      }
+    },
+
+    // The label is no longer inside the outline, so remove MUI's notch.
+    "& .MuiOutlinedInput-notchedOutline legend": {
+      maxWidth: "0 !important"
+    },
+    "& .MuiOutlinedInput-notchedOutline legend > span": {
+      display: "none !important"
+    },
+
+    "& .MuiInputBase-input, & textarea, & .MuiSelect-select": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiSelect-select": {
+      paddingRight: "14px !important",
+      paddingLeft: "40px !important"
+    },
+    "& .MuiSelect-icon": {
+      right: "auto !important",
+      left: "10px !important"
+    },
+    "& .MuiInputAdornment-positionStart": {
+      marginRight: "0 !important",
+      marginLeft: "8px !important"
+    },
+    "& .MuiInputAdornment-positionEnd": {
+      marginLeft: "0 !important",
+      marginRight: "8px !important"
+    },
+    "& .MuiFormHelperText-root": {
+      direction: "rtl",
+      textAlign: "right",
+      marginLeft: 0,
+      marginRight: 0,
+      marginTop: "5px",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiAutocomplete-inputRoot": {
+      direction: "rtl",
+      paddingRight: "10px !important",
+      paddingLeft: "38px !important"
+    },
+    "& .MuiAutocomplete-endAdornment": {
+      right: "auto !important",
+      left: "8px !important"
+    },
+    "& .MuiFormControlLabel-root": {
+      direction: "rtl",
+      marginLeft: 0,
+      marginRight: 0,
+      gap: "3px"
+    },
+    "& .MuiFormControlLabel-label": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+
+    // Dates and times must keep their natural numeric order in Arabic UI.
+    '& input[type="date"], & input[type="time"], & input[type="datetime-local"]': {
+      direction: "ltr !important",
+      textAlign: "center !important",
+      unicodeBidi: "isolate"
+    }
+  },
+  "& .MuiDialogActions-root": {
+    direction: "rtl",
+    gap: "8px",
+    flexWrap: "wrap",
+    padding: { xs: "12px 14px", sm: "14px 20px" },
+    borderTop: "1px solid #edf2ef",
+    "& .MuiButton-root": {
+      minHeight: 38,
+      borderRadius: "10px",
+      textTransform: "none",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontWeight: 800
+    },
+    "& .MuiButton-startIcon": {
+      marginRight: "0 !important",
+      marginLeft: "6px !important"
+    },
+    "& .MuiButton-endIcon": {
+      marginLeft: "0 !important",
+      marginRight: "6px !important"
+    }
+  }
+};
+
+const RTL_MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      direction: "rtl",
+      textAlign: "right",
+      mt: 0.5,
+      borderRadius: "10px",
+      maxHeight: 360,
+      "& .MuiMenuItem-root": {
+        direction: "rtl",
+        textAlign: "right",
+        justifyContent: "flex-start",
+        minHeight: 40,
+        fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+      }
+    }
+  },
+  MenuListProps: {
+    dir: "rtl",
+    sx: { py: 0.5 }
+  }
+};
+
+const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
+  dir: "rtl",
+  style: {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  }
+};
+
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5258";
 
@@ -506,6 +708,7 @@ function DetailTile({
 
       {canOpenDetails && (
         <Dialog
+        sx={RTL_DIALOG_SX}
           dir={DETAIL_DIALOG_DIRECTION}
           open={detailsOpen}
           onClose={() => setDetailsOpen(false)}
@@ -665,6 +868,7 @@ function ProfileDetailsDialog({
 }) {
   return (
     <Dialog
+        sx={RTL_DIALOG_SX}
       dir={DETAIL_DIALOG_DIRECTION}
       open={open}
       onClose={onClose}
@@ -932,6 +1136,7 @@ function HomeSkeleton() {
 function FilePreviewDialog({ preview, onClose, onDownload }) {
   return (
     <Dialog
+        sx={RTL_DIALOG_SX}
       open={preview.open}
       onClose={onClose}
       maxWidth={false}
@@ -2084,8 +2289,7 @@ const decideLeaveApproval = async (
               useFlexGap
               sx={{
                 mt: { xs: 0.65, sm: 0.9, md: 1.05 },
-                justifyContent: "flex-start",
-                "& .MuiChip-root": {
+                            "& .MuiChip-root": {
                   height: { xs: 22, sm: 25, md: 28 },
                   fontSize: { xs: 8.2, sm: 9, md: 10 }
                 }
@@ -3025,6 +3229,7 @@ const decideLeaveApproval = async (
       </ProfileDetailsDialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         dir={LEAVE_TRACKING_DIALOG_DIRECTION}
         open={leaveTrackingOpen}
         onClose={() =>
@@ -3415,6 +3620,7 @@ const decideLeaveApproval = async (
       <FilePreviewDialog preview={preview} onClose={closePreview} onDownload={downloadCurrentPreview} />
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         dir={LEAVE_DIALOG_DIRECTION}
         open={permissionDialogOpen}
         onClose={() =>
@@ -3526,6 +3732,7 @@ const decideLeaveApproval = async (
                 </Typography>
                 <FormControl size="small" fullWidth>
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     value={permissionForm.permissionType}
                     onChange={(event) =>
                       setPermissionForm((current) => ({
@@ -3653,8 +3860,7 @@ const decideLeaveApproval = async (
             py: { xs: 0.9, sm: 1.35 },
             borderTop: `1px solid ${border}`,
             background: "#fbfdfc",
-            justifyContent: "flex-start",
-            gap: 0.7
+                    gap: 0.7
           }}
         >
           <Button
@@ -3679,6 +3885,7 @@ const decideLeaveApproval = async (
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         dir={LEAVE_DIALOG_DIRECTION}
         open={leaveDialogOpen}
         onClose={() =>
@@ -3802,6 +4009,7 @@ const decideLeaveApproval = async (
                 fullWidth
               >
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   value={leaveForm.leaveTypeGuid}
                   displayEmpty
                   onChange={(event) =>
@@ -3934,6 +4142,7 @@ const decideLeaveApproval = async (
                   fullWidth
                 >
                   <Select
+                  MenuProps={RTL_MENU_PROPS}
                     value={leaveForm.dayPart}
                     onChange={(event) =>
                       setLeaveForm((current) => ({
@@ -4021,8 +4230,7 @@ const decideLeaveApproval = async (
                 sx={{
                   minHeight: { xs: 40, sm: 46 },
                   borderRadius: 2,
-                  justifyContent: "flex-start",
-                  px: { xs: 1, sm: 1.4 },
+                                px: { xs: 1, sm: 1.4 },
                   fontSize: { xs: 9.2, sm: 10.5 },
                   overflow: "hidden"
                 }}
@@ -4154,8 +4362,7 @@ const decideLeaveApproval = async (
             py: { xs: 0.9, sm: 1.35 },
             borderTop: `1px solid ${border}`,
             background: "#fbfdfc",
-            justifyContent: "flex-start",
-            gap: { xs: 0.55, sm: 0.7 },
+                    gap: { xs: 0.55, sm: 0.7 },
             "& .MuiButton-root": {
               minHeight: { xs: 38, sm: 40 },
               fontSize: { xs: 9.6, sm: 10.5 }

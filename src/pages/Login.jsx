@@ -28,6 +28,7 @@ import {
   VisibilityOff
 } from '@mui/icons-material';
 import logo from '../images/logo.jpg';
+import { useAuth } from '../contexts/AuthContext';
 
 const COLORS = {
   primary: '#057546',
@@ -79,6 +80,7 @@ export default function Login() {
   const [animate, setAnimate] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const isShortScreen = useMediaQuery('(max-height: 760px)');
@@ -134,11 +136,17 @@ export default function Login() {
         return;
       }
 
+      if (typeof token !== 'string' || !token.trim()) {
+        setErrorMsg('الخادم لم يُرجع رمز جلسة صالحًا. يرجى مراجعة خدمة تسجيل الدخول.');
+        return;
+      }
+
       const branchesResponse = await fetch(
         'https://api1.sstli.com/api/branches/all',
         {
           mode: 'cors',
-          credentials: 'omit'
+          credentials: 'omit',
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
@@ -151,13 +159,7 @@ export default function Login() {
         (branch) => branch.guid === verifiedUser.branchForWork
       );
 
-      if (token) {
-        localStorage.setItem('token', token);
-      } else {
-        // توافق مؤقت عند نشر الفرونت قبل الباك الجديد.
-        localStorage.removeItem('token');
-      }
-      localStorage.setItem('user', JSON.stringify(verifiedUser));
+      login(verifiedUser, token);
       localStorage.setItem('user_branch', JSON.stringify(userBranch || null));
 
       const normalizedUsername = (verifiedUser.userName || '')
@@ -376,57 +378,77 @@ export default function Login() {
 
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                   <Stack spacing={{ xs: 1.25, sm: 1.8, md: 2.1 }}>
-                    <TextField
-                      label="اسم المستخدم"
-                      autoComplete="username"
-                      autoFocus={!isVerySmallScreen}
-                      fullWidth
-                      value={username}
-                      onChange={(event) => setUsername(event.target.value)}
-                      disabled={isLoading}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <PersonOutline sx={{ color: COLORS.primary }} />
-                          </InputAdornment>
-                        )
-                      }}
-                      sx={fieldStyles}
-                    />
+                    <Box sx={fieldGroupStyles}>
+                      <Typography component="label" htmlFor="login-username" sx={fieldLabelStyles}>
+                        اسم المستخدم
+                      </Typography>
+                      <TextField
+                        id="login-username"
+                        placeholder="أدخل اسم المستخدم"
+                        autoComplete="username"
+                        autoFocus={!isVerySmallScreen}
+                        fullWidth
+                        value={username}
+                        onChange={(event) => setUsername(event.target.value)}
+                        disabled={isLoading}
+                        inputProps={{
+                          dir: 'rtl',
+                          'aria-label': 'اسم المستخدم'
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <PersonOutline sx={{ color: COLORS.primary }} />
+                            </InputAdornment>
+                          )
+                        }}
+                        sx={fieldStyles}
+                      />
+                    </Box>
 
-                    <TextField
-                      label="كلمة المرور"
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      fullWidth
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                      disabled={isLoading}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockOutlined sx={{ color: COLORS.primary }} />
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              aria-label={
-                                showPassword
-                                  ? 'إخفاء كلمة المرور'
-                                  : 'إظهار كلمة المرور'
-                              }
-                              onClick={() => setShowPassword((current) => !current)}
-                              edge="end"
-                              disabled={isLoading}
-                            >
-                              {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        )
-                      }}
-                      sx={fieldStyles}
-                    />
+                    <Box sx={fieldGroupStyles}>
+                      <Typography component="label" htmlFor="login-password" sx={fieldLabelStyles}>
+                        كلمة المرور
+                      </Typography>
+                      <TextField
+                        id="login-password"
+                        placeholder="أدخل كلمة المرور"
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        fullWidth
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        disabled={isLoading}
+                        inputProps={{
+                          dir: 'rtl',
+                          'aria-label': 'كلمة المرور'
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <LockOutlined sx={{ color: COLORS.primary }} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label={
+                                  showPassword
+                                    ? 'إخفاء كلمة المرور'
+                                    : 'إظهار كلمة المرور'
+                                }
+                                onClick={() => setShowPassword((current) => !current)}
+                                edge="end"
+                                disabled={isLoading}
+                              >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                        sx={fieldStyles}
+                      />
+                    </Box>
 
                     <Stack
                       direction={{ xs: 'column', sm: 'row' }}
@@ -687,40 +709,66 @@ export default function Login() {
   );
 }
 
+const fieldGroupStyles = {
+  width: '100%'
+};
+
+const fieldLabelStyles = {
+  display: 'block',
+  marginBottom: '7px',
+  paddingRight: '2px',
+  textAlign: 'right',
+  direction: 'rtl',
+  color: COLORS.text,
+  fontFamily: 'Cairo, Arial, sans-serif',
+  fontWeight: 800,
+  fontSize: '0.88rem',
+  lineHeight: 1.6
+};
+
 const fieldStyles = {
+  width: '100%',
+  direction: 'rtl',
+
   '& .MuiOutlinedInput-root': {
-    minHeight: { xs: 41, sm: 48, md: 56 },
-    borderRadius: { xs: 1.8, sm: 2.3, md: 2.5 },
-    backgroundColor: '#fbfdfc',
-    transition: 'border-color 180ms ease, box-shadow 180ms ease',
-    '& fieldset': {
-      borderColor: '#dce8e3'
-    },
-    '&:hover fieldset': {
-      borderColor: COLORS.primary
-    },
-    '&.Mui-focused': {
-      backgroundColor: COLORS.white,
-      boxShadow: '0 0 0 4px rgba(5,117,70,0.09)'
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: COLORS.primary,
-      borderWidth: 1.5
-    }
+    minHeight: '52px',
+    direction: 'rtl',
+    borderRadius: '12px',
+    backgroundColor: '#fbfdfc'
   },
-  '& .MuiInputLabel-root': {
+
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: '#dce8e3'
+  },
+
+  '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+    borderColor: COLORS.primary
+  },
+
+  '& .MuiOutlinedInput-root.Mui-focused': {
+    backgroundColor: COLORS.white,
+    boxShadow: '0 0 0 4px rgba(5,117,70,0.09)'
+  },
+
+  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    borderColor: COLORS.primary,
+    borderWidth: '1.5px'
+  },
+
+  '& .MuiOutlinedInput-input': {
+    direction: 'rtl',
+    textAlign: 'right',
     fontFamily: 'Cairo, Arial, sans-serif',
-    fontSize: { xs: '0.69rem', sm: '0.82rem', md: '1rem' }
+    fontSize: '0.95rem',
+    paddingTop: '13px',
+    paddingBottom: '13px'
   },
-  '& .MuiInputLabel-root.Mui-focused': {
-    color: COLORS.primary
+
+  '& .MuiInputAdornment-root': {
+    direction: 'ltr'
   },
-  '& input': {
-    fontFamily: 'Cairo, Arial, sans-serif',
-    fontSize: { xs: '0.74rem', sm: '0.86rem', md: '1rem' },
-    py: { xs: 1, sm: 1.25 }
-  },
+
   '& .MuiInputAdornment-root svg': {
-    fontSize: { xs: '1.05rem', sm: '1.25rem' }
+    fontSize: '1.2rem'
   }
 };

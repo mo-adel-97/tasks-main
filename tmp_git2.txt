@@ -1,0 +1,125 @@
+﻿diff --git a/src/config/rtlComponents.js b/src/config/rtlComponents.js
+new file mode 100644
+index 0000000..c80b94d
+--- /dev/null
++++ b/src/config/rtlComponents.js
+@@ -0,0 +1,91 @@
++// Shared MUI geometry for the non-mirroring cache. Logical spacing follows the
++// element's direction; physical anchors are set deliberately, never mirrored.
++const labelPosition = ({ ownerState }) => {
++  const { variant, size, shrink, formControl } = ownerState;
++  if (!formControl) return { textAlign: 'start' };
++  const small = size === 'small';
++  const x = variant === 'outlined' ? -14 : variant === 'filled' ? -12 : 0;
++  const y = variant === 'outlined' ? (shrink ? -9 : small ? 9 : 16)
++    : variant === 'filled' ? (shrink ? (small ? 4 : 7) : small ? 13 : 16)
++    : shrink ? -1.5 : small ? 17 : 20;
++  return { left: 'auto', right: 0, transformOrigin: 'top right',
++    transform: 'translate(' + x + 'px, ' + y + 'px) scale(' + (shrink ? 0.75 : 1) + ')', textAlign: 'start' };
++};
++
++export const rtlComponents = {
++  MuiStack: { defaultProps: { useFlexGap: true } },
++  MuiButton: { styleOverrides: {
++    startIcon: ({ ownerState }) => ({ marginLeft: 0, marginRight: 0,
++      marginInlineStart: ownerState.size === 'small' ? -2 : -4, marginInlineEnd: 8 }),
++    endIcon: ({ ownerState }) => ({ marginLeft: 0, marginRight: 0,
++      marginInlineStart: 8, marginInlineEnd: ownerState.size === 'small' ? -2 : -4 }),
++  } },
++  MuiInputAdornment: { styleOverrides: { root: ({ ownerState }) => ({
++    marginLeft: 0, marginRight: 0,
++    marginInlineStart: ownerState.position === 'end' ? 8 : 0,
++    marginInlineEnd: ownerState.position === 'start' ? 8 : 0,
++  }) } },
++  MuiOutlinedInput: { styleOverrides: {
++    root: ({ ownerState }) => {
++      // Autocomplete manages its own control gutter, including the compact size.
++      if (ownerState.className?.includes('MuiAutocomplete-inputRoot')) {
++        return { paddingRight: ownerState.size === 'small' ? 6 : 9 };
++      }
++      if (ownerState.multiline) return {};
++      return { paddingRight: ownerState.startAdornment ? 14 : 0,
++        paddingLeft: ownerState.endAdornment ? 14 : 0 };
++    },
++    input: ({ ownerState }) => ownerState.multiline || ownerState.className?.includes('MuiAutocomplete-inputRoot') ? {} : {
++      // The Arabic field shell owns icon placement even when its value is LTR.
++      paddingRight: ownerState.startAdornment ? 0 : 14,
++      paddingLeft: ownerState.endAdornment ? 0 : 14,
++    },
++  } },
++  MuiInputLabel: { styleOverrides: { root: labelPosition } },
++  MuiFormHelperText: { styleOverrides: { root: { textAlign: 'start' } } },
++  MuiFormControlLabel: { styleOverrides: { root: ({ ownerState }) => ({
++    marginLeft: 0, marginRight: 0,
++    marginInlineStart: ['start', 'top', 'bottom'].includes(ownerState.labelPlacement) ? 16 : -11,
++    marginInlineEnd: ownerState.labelPlacement === 'start' ? -11 : 16,
++  }) } },
++  MuiSelect: { styleOverrides: {
++    icon: ({ ownerState }) => ({ right: 'auto', left: ownerState.variant === 'standard' ? 0 : 7 }),
++    select: ({ ownerState }) => ({ '&&': {
++      paddingRight: ownerState.variant === 'standard' ? 0 : ownerState.variant === 'filled' ? 12 : 14,
++      paddingLeft: ownerState.variant === 'standard' ? 24 : 32,
++      textAlign: 'start',
++    } }),
++  } },
++  MuiAutocomplete: { styleOverrides: {
++    endAdornment: { right: 'auto' },
++    root: ({ ownerState }) => {
++      const icons = (ownerState.hasClearIcon ? 26 : 0) + (ownerState.hasPopupIcon ? 26 : 0);
++      const space = icons ? icons + 4 : 0;
++      return {
++        '&& .MuiAutocomplete-inputRoot': { paddingRight: 0, paddingLeft: space },
++        '& .MuiInput-root .MuiAutocomplete-endAdornment': { left: 0 },
++        '&& .MuiOutlinedInput-root': {
++          paddingRight: ownerState.size === 'small' ? 6 : 9, paddingLeft: space + 9,
++          '& .MuiAutocomplete-endAdornment': { right: 'auto', left: 9 },
++          '& .MuiAutocomplete-input': { paddingLeft: 4, paddingRight: ownerState.size === 'small' ? 8 : 5 },
++        },
++        '&& .MuiFilledInput-root': { paddingRight: 8, paddingLeft: space + 9,
++          '& .MuiAutocomplete-endAdornment': { right: 'auto', left: 9 } },
++      };
++    },
++  } },
++  MuiDialogActions: { styleOverrides: { root: ({ ownerState }) => ownerState.disableSpacing ? {} : {
++    '& > :not(style) ~ :not(style)': { marginLeft: 0, marginInlineStart: 8 },
++  } } },
++  MuiListItem: { styleOverrides: { root: { textAlign: 'start' } } },
++  MuiListItemButton: { styleOverrides: { root: { textAlign: 'start' } } },
++  MuiMenuItem: { styleOverrides: { root: { textAlign: 'start' } } },
++  MuiTableCell: { defaultProps: { align: 'inherit' }, styleOverrides: {
++    root: ({ ownerState }) => ownerState.align === 'inherit' ? { textAlign: 'start' } : {},
++  } },
++  MuiAlert: { styleOverrides: {
++    icon: { marginRight: 0, marginInlineEnd: 12 },
++    action: { marginLeft: 0, marginRight: 0, marginInlineStart: 'auto', marginInlineEnd: -8,
++      paddingLeft: 0, paddingInlineStart: 16 },
++  } },
++};
+diff --git a/src/theme.js b/src/theme.js
+index e69de29..9a8c9cd 100644
+--- a/src/theme.js
++++ b/src/theme.js
+@@ -0,0 +1,22 @@
++import { createTheme } from '@mui/material/styles';
++import createCache from '@emotion/cache';
++import { prefixer } from 'stylis';
++import { rtlComponents } from './config/rtlComponents';
++
++// Direction comes from the document/theme. Physical CSS properties and explicit
++// LTR values must retain their meaning; do not run a CSS mirroring plugin here.
++export const createAppCache = (options = {}) => createCache({
++  key: 'muirtl',
++  ...options,
++  stylisPlugins: [prefixer],
++});
++
++const theme = createTheme({
++  direction: 'rtl',
++  components: rtlComponents,
++  typography: {
++    fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
++  },
++});
++
++export default theme;
+

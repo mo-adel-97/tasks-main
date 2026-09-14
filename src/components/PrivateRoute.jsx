@@ -9,6 +9,8 @@ const API_BASE_URL =
 
 const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v4';
 
+const responseError = (message, status) => Object.assign(new Error(message), { status });
+
 /*
  * Fast route guard
  * ----------------
@@ -94,7 +96,7 @@ const verifySessionShared = async (token) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Session verification failed: ${response.status}`);
+      throw responseError(`Session verification failed: ${response.status}`, response.status);
     }
 
     const user = await response.json();
@@ -214,7 +216,7 @@ const verifyScreenShared = async (token, route) => {
     );
 
     if (response.status === 401) {
-      throw new Error('Screen access session is invalid');
+      throw responseError('Screen access session is invalid', response.status);
     }
 
     // صفحات داخلية قديمة غير مسجلة في Form_Name لا تُكسر أثناء الانتقال.
@@ -261,6 +263,7 @@ const getInitialStatus = (route) => {
 export default function PrivateRoute({ children }) {
   const location = useLocation();
   const [status, setStatus] = useState(() => getInitialStatus(location.pathname));
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -311,12 +314,18 @@ export default function PrivateRoute({ children }) {
 
         setStatus('allowed');
       } catch (error) {
+        if (cancelled) return;
         console.error('Session verification error:', error);
         clearRuntimeCaches();
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('user_branch');
-        if (!cancelled) setStatus('denied');
+        if (error.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('user_branch');
+          window.dispatchEvent(new Event('sstli-auth-refreshed'));
+          setStatus('denied');
+        } else {
+          setStatus('error');
+        }
       }
     };
 
@@ -325,7 +334,7 @@ export default function PrivateRoute({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [location.pathname]);
+  }, [location.pathname, retryCount]);
 
   useEffect(() => {
     const refreshPermissions = () => {
@@ -346,6 +355,15 @@ export default function PrivateRoute({ children }) {
     window.addEventListener('sstli:sidebar-refresh', refreshPermissions);
     return () => window.removeEventListener('sstli:sidebar-refresh', refreshPermissions);
   }, []);
+
+  if (status === 'error') {
+    return (
+      <div role="alert" dir="rtl" style={{ padding: 32, textAlign: 'center' }}>
+        <p>تعذر الاتصال بخدمة التحقق من الجلسة والصلاحيات. يرجى المحاولة مرة أخرى.</p>
+        <button onClick={() => setRetryCount((count) => count + 1)}>إعادة المحاولة</button>
+      </div>
+    );
+  }
 
   if (status === 'checking') {
     return (

@@ -1,3 +1,4 @@
+import { hrChipSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -55,6 +56,208 @@ import Swal from "sweetalert2";
 
 
 
+// ============================================================
+// RTL dialog form system
+// Keeps Arabic labels above controls instead of floating on the outline,
+// normalizes spacing/alignment, and preserves LTR rendering for date/time.
+// ============================================================
+const RTL_DIALOG_SX = {
+  "& .MuiDialog-paper": {
+    direction: "rtl",
+    textAlign: "right",
+    backgroundImage: "none"
+  },
+  "& .MuiDialogTitle-root": {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  },
+  "& .MuiDialogContent-root": {
+    direction: "rtl",
+    textAlign: "right",
+    overflowX: "hidden",
+
+    "& .MuiFormControl-root": {
+      direction: "rtl",
+      textAlign: "right"
+    },
+
+    // Use a real external-looking label above the control. This avoids the
+    // outlined-border/label collision that appears in Arabic RTL forms.
+    "& .MuiInputLabel-root": {
+      position: "static !important",
+      transform: "none !important",
+      transformOrigin: "top right !important",
+      width: "100%",
+      maxWidth: "100%",
+      margin: "0 0 6px 0",
+      padding: 0,
+      direction: "rtl",
+      textAlign: "right",
+      whiteSpace: "normal",
+      overflow: "visible",
+      lineHeight: 1.45,
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontSize: "0.78rem",
+      fontWeight: 800,
+      color: "#52635c",
+      pointerEvents: "auto"
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#057546"
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "#d32f2f"
+    },
+    "& .MuiInputLabel-root.Mui-disabled": {
+      color: "rgba(0,0,0,.42)"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      direction: "rtl",
+      textAlign: "right",
+      borderRadius: "10px",
+      backgroundColor: "#fff",
+      transition: "border-color .18s ease, box-shadow .18s ease, background-color .18s ease",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d7e3dd"
+      },
+      "&:hover .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#9fc7b5"
+      },
+      "&.Mui-focused": {
+        boxShadow: "0 0 0 3px rgba(5,117,70,.08)"
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#057546",
+        borderWidth: "1.5px"
+      },
+      "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d32f2f"
+      }
+    },
+
+    // The label is no longer inside the outline, so remove MUI's notch.
+    "& .MuiOutlinedInput-notchedOutline legend": {
+      maxWidth: "0 !important"
+    },
+    "& .MuiOutlinedInput-notchedOutline legend > span": {
+      display: "none !important"
+    },
+
+    "& .MuiInputBase-input, & textarea, & .MuiSelect-select": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiSelect-select": {
+      paddingRight: "14px !important",
+      paddingLeft: "40px !important"
+    },
+    "& .MuiSelect-icon": {
+      right: "auto !important",
+      left: "10px !important"
+    },
+    "& .MuiInputAdornment-positionStart": {
+      marginRight: "0 !important",
+      marginLeft: "8px !important"
+    },
+    "& .MuiInputAdornment-positionEnd": {
+      marginLeft: "0 !important",
+      marginRight: "8px !important"
+    },
+    "& .MuiFormHelperText-root": {
+      direction: "rtl",
+      textAlign: "right",
+      marginLeft: 0,
+      marginRight: 0,
+      marginTop: "5px",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiAutocomplete-inputRoot": {
+      direction: "rtl",
+      paddingRight: "10px !important",
+      paddingLeft: "38px !important"
+    },
+    "& .MuiAutocomplete-endAdornment": {
+      right: "auto !important",
+      left: "8px !important"
+    },
+    "& .MuiFormControlLabel-root": {
+      direction: "rtl",
+      marginLeft: 0,
+      marginRight: 0,
+      gap: "3px"
+    },
+    "& .MuiFormControlLabel-label": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+
+    // Dates and times must keep their natural numeric order in Arabic UI.
+    '& input[type="date"], & input[type="time"], & input[type="datetime-local"]': {
+      direction: "ltr !important",
+      textAlign: "center !important",
+      unicodeBidi: "isolate"
+    }
+  },
+  "& .MuiDialogActions-root": {
+    direction: "rtl",
+    gap: "8px",
+    flexWrap: "wrap",
+    padding: { xs: "12px 14px", sm: "14px 20px" },
+    borderTop: "1px solid #edf2ef",
+    "& .MuiButton-root": {
+      minHeight: 38,
+      borderRadius: "10px",
+      textTransform: "none",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontWeight: 800
+    },
+    "& .MuiButton-startIcon": {
+      marginRight: "0 !important",
+      marginLeft: "6px !important"
+    },
+    "& .MuiButton-endIcon": {
+      marginLeft: "0 !important",
+      marginRight: "6px !important"
+    }
+  }
+};
+
+const RTL_MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      direction: "rtl",
+      textAlign: "right",
+      mt: 0.5,
+      borderRadius: "10px",
+      maxHeight: 360,
+      "& .MuiMenuItem-root": {
+        direction: "rtl",
+        textAlign: "right",
+        justifyContent: "flex-start",
+        minHeight: 40,
+        fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+      }
+    }
+  },
+  MenuListProps: {
+    dir: "rtl",
+    sx: { py: 0.5 }
+  }
+};
+
+const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
+  dir: "rtl",
+  style: {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  }
+};
+
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
@@ -64,7 +267,7 @@ const API_BASE_URL =
 
 
 const PAGE_DIRECTION = "rtl";
-const PAGE_TEXT_ALIGN = "left";
+const PAGE_TEXT_ALIGN = "right";
 const DIALOG_DIRECTION = "rtl";
 
 const primary = "#057546";
@@ -2796,6 +2999,7 @@ export default function HrAttendancePage() {
                 alignItems={{ xs: "stretch", md: "center" }}
               >
                 <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                   sx={{ flex: 1, minWidth: { md: 360 } }}
                   options={reportEmployees}
                   value={reportSelectedEmployee}
@@ -3312,6 +3516,7 @@ export default function HrAttendancePage() {
             <FormControl size="small">
               <InputLabel>الفرع</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الفرع"
                 value={branchGuid}
                 onChange={(e) => {
@@ -3342,6 +3547,7 @@ export default function HrAttendancePage() {
             <FormControl size="small">
               <InputLabel>القسم</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="القسم"
                 value={departmentGuid}
                 onChange={(e) => {
@@ -3375,6 +3581,7 @@ export default function HrAttendancePage() {
             <FormControl size="small">
               <InputLabel>الحالة</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الحالة"
                 value={status}
                 onChange={(e) => {
@@ -3398,6 +3605,7 @@ export default function HrAttendancePage() {
             <FormControl size="small">
               <InputLabel>الصفوف</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الصفوف"
                 value={pageSize}
                 onChange={(e) => {
@@ -3684,11 +3892,11 @@ export default function HrAttendancePage() {
                                   : "default"
                               }
                               variant="outlined"
-                              sx={{
+                              sx={[hrChipSx("small"), {
                                 height: 22,
                                 fontSize: 9.5,
                                 fontWeight: 850
-                              }}
+                              }]}
                             />
                           </Stack>
                         </Box>
@@ -3829,7 +4037,7 @@ export default function HrAttendancePage() {
                             )}`}
                             color="warning"
                             variant="outlined"
-                            sx={{ height: 24 }}
+                            sx={[hrChipSx("small"), { height: 24 }]}
                           />
                         )}
 
@@ -4035,6 +4243,7 @@ export default function HrAttendancePage() {
 
       {/* Shift dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={shiftDialogOpen}
         onClose={() =>
           setShiftDialogOpen(false)
@@ -4250,6 +4459,7 @@ export default function HrAttendancePage() {
 
       {/* Assignment dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={assignmentOpen}
         onClose={() =>
           setAssignmentOpen(false)
@@ -4292,6 +4502,7 @@ export default function HrAttendancePage() {
             <FormControl>
               <InputLabel>الوردية</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الوردية"
                 value={assignmentForm.shiftGuid}
                 onChange={(e) =>
@@ -4464,6 +4675,7 @@ export default function HrAttendancePage() {
 
       {/* Bulk shift assignment dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={bulkAssignmentOpen}
         onClose={() =>
           !bulkAssignmentSaving &&
@@ -4490,6 +4702,7 @@ export default function HrAttendancePage() {
             <FormControl>
               <InputLabel>الوردية</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الوردية"
                 value={bulkAssignmentForm.shiftGuid}
                 onChange={(e) =>
@@ -4661,6 +4874,7 @@ export default function HrAttendancePage() {
 
       {/* Attendance edit dialog */}
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={attendanceOpen}
         onClose={() =>
           setAttendanceOpen(false)
@@ -4743,6 +4957,7 @@ export default function HrAttendancePage() {
             <FormControl>
               <InputLabel>الحالة</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="الحالة"
                 value={attendanceForm.status}
                 onChange={(e) =>
@@ -4840,6 +5055,7 @@ export default function HrAttendancePage() {
       {/* BioTime employee linking dialog */}
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={reportOpen}
         onClose={() => !reportLoading && setReportOpen(false)}
         maxWidth="lg"
@@ -4877,6 +5093,7 @@ export default function HrAttendancePage() {
               <FormControl fullWidth size="small">
                 <InputLabel>الموظف</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الموظف"
                   value={reportForm.employeeGuid}
                   disabled={reportLoadingEmployees || reportLoading}
@@ -5126,6 +5343,7 @@ export default function HrAttendancePage() {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={bioExcelOpen}
         onClose={() =>
           !bioExcelSaving &&
@@ -5337,6 +5555,7 @@ export default function HrAttendancePage() {
                   >
                     <InputLabel>حالة المطابقة</InputLabel>
                     <Select
+                  MenuProps={RTL_MENU_PROPS}
                       label="حالة المطابقة"
                       value={bioExcelStatus}
                       onChange={(event) =>
@@ -5477,7 +5696,7 @@ export default function HrAttendancePage() {
                             icon={<FingerprintRoundedIcon />}
                             label={row.fingerprintCode || "-"}
                             variant="outlined"
-                            sx={{ fontWeight: 950 }}
+                            sx={[hrChipSx("small"), { fontWeight: 950 }]}
                           />
 
                           {row.status === "already-linked" ? (
@@ -5496,6 +5715,7 @@ export default function HrAttendancePage() {
                             </Box>
                           ) : (
                             <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                               size="small"
                               options={
                                 Array.isArray(row.suggestions)
@@ -5629,6 +5849,7 @@ export default function HrAttendancePage() {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={bioBulkOpen}
         onClose={() =>
           !bioBulkSaving &&
@@ -5806,6 +6027,7 @@ export default function HrAttendancePage() {
               >
                 <InputLabel>الفرع</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الفرع"
                   value={bioBulkBranchGuid}
                   onChange={(e) => {
@@ -5847,6 +6069,7 @@ export default function HrAttendancePage() {
               >
                 <InputLabel>الصفوف</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الصفوف"
                   value={bioBulkPageSize}
                   onChange={(e) => {
@@ -6064,6 +6287,7 @@ export default function HrAttendancePage() {
                         </Box>
 
                         <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                           size="small"
                           options={rowOptions}
                           value={selected}
@@ -6337,6 +6561,7 @@ export default function HrAttendancePage() {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={bioDialogOpen}
         onClose={() =>
           !bioSavingId &&

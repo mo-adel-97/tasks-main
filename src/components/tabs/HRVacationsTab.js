@@ -1,3 +1,4 @@
+import { hrChipSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import { 
   Grid, 
@@ -518,7 +519,7 @@ const fetchHRRequests = async () => {
             {isHRManager() && (
               <Chip 
                 label="مدير موارد بشرية" 
-                sx={{ ml: 2, backgroundColor: COLOR_SCHEME.primary, color: 'white' }}
+                sx={{ marginInlineStart: 2, backgroundColor: COLOR_SCHEME.primary, color: 'white' }}
                 size="small"
               />
             )}
@@ -725,7 +726,7 @@ const fetchHRRequests = async () => {
       {(loading || usersLoading || branchesLoading) ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress sx={{ color: COLOR_SCHEME.primary }} />
-          <Typography variant="body2" sx={{ ml: 2, alignSelf: 'center' }}>
+          <Typography variant="body2" sx={{ marginInlineStart: 2, alignSelf: 'center' }}>
             جاري تحميل البيانات...
           </Typography>
         </Box>
@@ -850,12 +851,12 @@ const fetchHRRequests = async () => {
                           label={getStatusText(request.status)}
                           size="small"
                           icon={getStatusIcon(request.status)}
-                          sx={{ 
+                          sx={[hrChipSx("small"), { 
                             backgroundColor: alpha(getStatusColor(request.status), 0.1),
                             color: getStatusColor(request.status),
                             fontWeight: 'bold',
                             '& .MuiChip-icon': { color: 'inherit' }
-                          }}
+                          }]}
                         />
                       </TableCell>
                       <TableCell>

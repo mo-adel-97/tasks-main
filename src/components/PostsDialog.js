@@ -1,3 +1,4 @@
+import { hrChipSx } from "./hrControlStyles";
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
@@ -879,7 +880,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                 </Avatar>
               </Badge>
 
-              <Box sx={{ ml: { xs: 1, sm: 1.5, md: 2.2 }, minWidth: 0 }}>
+              <Box sx={{ marginInlineStart: { xs: 1, sm: 1.5, md: 2.2 }, minWidth: 0 }}>
                 <Typography variant="h5" fontWeight="bold" color="white" sx={{ mb: 0.25, fontSize: { xs: "0.78rem", sm: "0.9rem", md: "1rem" }, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {userFullName}
                 </Typography>
@@ -904,7 +905,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
           boxShadow: '0 6px 20px rgba(255,255,255,0.3)'
         },
         transition: 'all 0.3s ease',
-        mr: { xs: 0.5, sm: 1, md: 2 },
+        marginInlineStart: { xs: 0.5, sm: 1, md: 2 },
         px: { xs: 1, sm: 1.4, md: 2 },
         py: { xs: 0.55, sm: 0.7, md: 0.9 },
         borderRadius: 3,
@@ -1279,7 +1280,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               <Avatar
                                 src={post.user_image}
                                 sx={{
-                                  width: { xs: 34, sm: 40, md: 48 }, height: { xs: 34, sm: 40, md: 48 }, mr: { xs: 1, sm: 1.4, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.76rem', sm: '0.9rem', md: '1.05rem' },
+                                  width: { xs: 34, sm: 40, md: 48 }, height: { xs: 34, sm: 40, md: 48 }, marginInlineEnd: { xs: 1, sm: 1.4, md: 2 }, bgcolor: COLOR_SCHEME.primary, fontWeight: 'bold', fontSize: { xs: '0.76rem', sm: '0.9rem', md: '1.05rem' },
                                   border: `3px solid ${COLOR_SCHEME.primaryLight}50`, boxShadow: '0 4px 15px rgba(128, 180, 158, 0.3)'
                                 }}
                               >
@@ -1405,7 +1406,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                               size="medium"
                               variant="outlined"
                               onClick={() => openLikesModal(post.likes)}
-                              sx={{
+                              sx={[hrChipSx("medium"), {
                                 borderRadius: 3,
                                 borderColor: COLOR_SCHEME.primaryLight,
                                 color: COLOR_SCHEME.primaryDark,
@@ -1415,7 +1416,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                 '&:hover': { bgcolor: `${COLOR_SCHEME.primaryLight}25`, transform: 'translateY(-2px)' },
                                 transition: 'all 0.3s ease',
                                 '& .MuiChip-icon': { color: post.user_has_liked ? COLOR_SCHEME.secondary : COLOR_SCHEME.primary }
-                              }}
+                              }]}
                             />
                           </Tooltip>
 
@@ -1424,7 +1425,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             label={`${post.comments_count} تعليق`}
                             size="medium"
                             variant="outlined"
-                            sx={{ borderRadius: 3, borderColor: COLOR_SCHEME.primaryLight, color: COLOR_SCHEME.primaryDark, bgcolor: `${COLOR_SCHEME.primaryLight}15`, fontWeight: 'bold' }}
+                            sx={[hrChipSx("medium"), { borderRadius: 3, borderColor: COLOR_SCHEME.primaryLight, color: COLOR_SCHEME.primaryDark, bgcolor: `${COLOR_SCHEME.primaryLight}15`, fontWeight: 'bold' }]}
                           />
 
                           {post.user_guid === userGuid && (
@@ -1435,7 +1436,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                 size="medium"
                                 variant="outlined"
                                 onClick={() => fetchPostViews(post.id)}
-                                sx={{
+                                sx={[hrChipSx("medium"), {
                                   borderRadius: 3,
                                   borderColor: COLOR_SCHEME.primaryLight,
                                   color: COLOR_SCHEME.primaryDark,
@@ -1444,7 +1445,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                   cursor: 'pointer',
                                   '&:hover': { bgcolor: `${COLOR_SCHEME.primaryLight}25`, transform: 'translateY(-2px)' },
                                   transition: 'all 0.3s ease'
-                                }}
+                                }]}
                               />
                             </Tooltip>
                           )}
@@ -1528,7 +1529,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                                       </Avatar>
                                       <Box sx={{ flex: 1 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5, flexWrap: 'wrap' }}>
-                                          <Typography variant="subtitle1" fontWeight="bold" sx={{ mr: { xs: 0.6, md: 1.2 }, color: COLOR_SCHEME.text, fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' } }}>
+                                          <Typography variant="subtitle1" fontWeight="bold" sx={{ marginInlineEnd: { xs: 0.6, md: 1.2 }, color: COLOR_SCHEME.text, fontSize: { xs: '0.68rem', sm: '0.76rem', md: '0.86rem' } }}>
                                             {comment.user_full_name}
                                           </Typography>
                                           <Typography variant="caption" color={COLOR_SCHEME.textSecondary} sx={{ fontSize: { xs: '0.54rem', sm: '0.62rem', md: '0.72rem' } }}>

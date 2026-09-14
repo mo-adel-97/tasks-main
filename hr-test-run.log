@@ -1,0 +1,132 @@
+  console.error
+    Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+    [0m [90m 19 |[39m test([32m'employee profile keeps all six tabs in an RTL dialog and isolates contact values'[39m[33m,[39m () [33m=>[39m {
+     [90m 20 |[39m   [36mconst[39m close [33m=[39m jest[33m.[39mfn()[33m;[39m
+    [31m[1m>[22m[39m[90m 21 |[39m   render([33m<[39m[33mUI[39m[33m>[39m[33m<[39m[33mEmployeeProfileDialog[39m open onClose[33m=[39m{close}
+     [90m    |[39m         [31m[1m^[22m[39m
+     [90m 22 |[39m     employee[33m=[39m{{ fullName[33m:[39m [32m'+‡+Í+++¸ +∫+´+¨+ø+∫+¶'[39m[33m,[39m userName[33m:[39m [32m'employee'[39m[33m,[39m email[33m:[39m [32m'hr@example.com'[39m[33m,[39m phone[33m:[39m [32m'+966501234567'[39m }}
+     [90m 23 |[39m   [33m/[39m[33m>[39m[33m<[39m[33m/[39m[33mUI[39m[33m>[39m)[33m;[39m
+     [90m 24 |[39m   [36mconst[39m dialog [33m=[39m screen[33m.[39mgetByRole([32m'dialog'[39m)[33m;[39m[0m
+
+      at printWarning (node_modules/react-dom/cjs/react-dom-test-utils.development.js:71:30)
+      at error (node_modules/react-dom/cjs/react-dom-test-utils.development.js:45:7)
+      at actWithWarning (node_modules/react-dom/cjs/react-dom-test-utils.development.js:1736:7)
+      at node_modules/@testing-library/react/dist/act-compat.js:63:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:159:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:246:10)
+      at Object.<anonymous> (src/components/HrRtl.test.jsx:21:9)
+      at TestScheduler.scheduleTests (node_modules/@jest/core/build/TestScheduler.js:333:13)
+      at runJest (node_modules/@jest/core/build/runJest.js:404:19)
+      at _run10000 (node_modules/@jest/core/build/cli/index.js:320:7)
+      at runCLI (node_modules/@jest/core/build/cli/index.js:173:3)
+
+  console.error
+    Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Box (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\system\createBox.js:31:41)
+        at p
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Typography (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Typography\Typography.js:92:64)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at ListItemText (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\ListItemText\ListItemText.js:66:59)
+        at li
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at ListItem (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\ListItem\ListItem.js:147:59)
+        at ul
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at List (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\List\List.js:58:59)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Paper (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Paper\Paper.js:70:59)
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Card (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Card\Card.js:43:59)
+        at InfoCard (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\src\components\EmployeeProfileDialog.jsx:365:23)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Grid (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Grid\Grid.js:381:64)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Grid (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Grid\Grid.js:381:64)
+        at div
+        at MotionComponent (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\framer-motion\dist\cjs\index.js:202:22)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at DialogContent (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\DialogContent\DialogContent.js:61:59)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Paper (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Paper\Paper.js:70:59)
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Transition (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\react-transition-group\cjs\Transition.js:135:30)
+        at Fade (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Fade\Fade.js:37:39)
+        at FocusTrap (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Unstable_TrapFocus\FocusTrap.js:86:5)
+        at div
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Portal (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Portal\Portal.js:34:5)
+        at Modal (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Modal\Modal.js:88:59)
+        at C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@emotion\react\dist\emotion-element-a1829a1e.cjs.js:58:23
+        at Dialog (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\Dialog\Dialog.js:161:59)
+        at EmployeeProfileDialog (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\src\components\EmployeeProfileDialog.jsx:73:34)
+        at div
+        at DefaultPropsProvider (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\system\DefaultPropsProvider\DefaultPropsProvider.js:18:3)
+        at RtlProvider (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\system\RtlProvider\index.js:19:7)
+        at ThemeProvider (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\private-theming\node\ThemeProvider\ThemeProvider.js:39:5)
+        at ThemeProvider (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\system\ThemeProvider\ThemeProvider.js:53:5)
+        at ThemeProvider (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\node_modules\@mui\material\node\styles\ThemeProvider.js:21:14)
+        at UI (C:\Users\ma109\Desktop\tasks-main\tasks-main\tasks-main\src\components\HrRtl.test.jsx:13:15)
+
+    [0m [90m 30 |[39m   expect(tabs)[33m.[39mtoHaveLength([35m6[39m)[33m;[39m
+     [90m 31 |[39m   [36mfor[39m ([36mconst[39m tab [36mof[39m tabs) {
+    [31m[1m>[22m[39m[90m 32 |[39m     fireEvent[33m.[39mclick(tab)[33m;[39m
+     [90m    |[39m               [31m[1m^[22m[39m
+     [90m 33 |[39m     expect(tab)[33m.[39mtoHaveAttribute([32m'aria-selected'[39m[33m,[39m [32m'true'[39m)[33m;[39m
+     [90m 34 |[39m     expect(dialog[33m.[39mclosest([32m'[dir]'[39m))[33m.[39mtoHaveAttribute([32m'dir'[39m[33m,[39m [32m'rtl'[39m)[33m;[39m
+     [90m 35 |[39m   }[0m
+
+      at printWarning (node_modules/react-dom/cjs/react-dom.development.js:86:30)
+      at error (node_modules/react-dom/cjs/react-dom.development.js:60:7)
+      at validateDOMNesting (node_modules/react-dom/cjs/react-dom.development.js:10849:7)
+      at createInstance (node_modules/react-dom/cjs/react-dom.development.js:10930:5)
+      at completeWork (node_modules/react-dom/cjs/react-dom.development.js:22226:28)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26632:16)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26607:5)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushActQueue (node_modules/react/cjs/react.development.js:2667:24)
+      at act (node_modules/react/cjs/react.development.js:2582:11)
+      at actWithWarning (node_modules/react-dom/cjs/react-dom-test-utils.development.js:1740:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:63:25
+      at Object.eventWrapper (node_modules/@testing-library/react/dist/pure.js:78:28)
+      at fireEvent (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/events.js:12:35)
+      at Function.fireEvent.<computed> [as click] (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/events.js:110:36)
+      at Function.click (node_modules/@testing-library/react/dist/fire-event.js:18:52)
+      at Object.<anonymous> (src/components/HrRtl.test.jsx:32:15)
+      at TestScheduler.scheduleTests (node_modules/@jest/core/build/TestScheduler.js:333:13)
+      at runJest (node_modules/@jest/core/build/runJest.js:404:19)
+      at _run10000 (node_modules/@jest/core/build/cli/index.js:320:7)
+      at runCLI (node_modules/@jest/core/build/cli/index.js:173:3)
+
+node : PASS src/components/HrRtl.test.jsx (41.59 s)
+At line:1 char:17
++ ... :CI='true'; node node_modules/react-scripts/scripts/test.js --watchAl ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PASS src/compon...t.jsx (41.59 s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  GÍ‹ employee profile keeps all six tabs in an RTL dialog and isolates contact values (1251 ms)
+  GÍ‹ HR tab and chip icons use logical spacing without changing action behavior (33 ms)
+  GÍ‹ all HR page direction constants keep Arabic containers RTL and dates LTR (546 ms)
+  GÍ‹ employee history uses natural grid order and date fields do not flip the control shell (93 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        42.576 s, estimated 360 s
+Ran all test suites matching /HrRtl/i.
+

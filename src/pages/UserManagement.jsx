@@ -76,16 +76,16 @@ const readUser = () => {
   }
 };
 
-const currentUser = readUser();
-
-const getUserGuid = () =>
-  String(
+const getUserGuid = () => {
+  const currentUser = readUser();
+  return String(
     currentUser?.guid ||
     currentUser?.Guid ||
     currentUser?.userGuid ||
     currentUser?.UserGuid ||
     ""
   ).trim();
+};
 
 const norm = (value) =>
   String(value ?? "").trim().toLowerCase();
@@ -138,6 +138,7 @@ function LookupDialog({
   title,
   rows,
   loading,
+  error,
   search,
   setSearch,
   onClose,
@@ -202,6 +203,8 @@ function LookupDialog({
           <Box sx={{ py: 5, textAlign: "center" }}>
             <CircularProgress />
           </Box>
+        ) : error ? (
+          <Alert severity="error">{error}</Alert>
         ) : (
           <Box
             sx={{
@@ -566,7 +569,8 @@ export default function UserManagement() {
       type,
       title,
       rows: [],
-      loading: false,
+      loading: true,
+      error: "",
       search: ""
     });
   }, []);
@@ -581,10 +585,12 @@ export default function UserManagement() {
   useEffect(() => {
     if (!lookup.open || !authorized) return;
 
+    let cancelled = false;
     const timer = setTimeout(async () => {
       setLookup((current) => ({
         ...current,
-        loading: true
+        loading: true,
+        error: ""
       }));
 
       try {
@@ -635,27 +641,30 @@ export default function UserManagement() {
           );
         }
 
+        if (cancelled) return;
         setLookup((current) => ({
           ...current,
           rows:
-            Array.isArray(result?.data)
+            Array.isArray(result) ? result : Array.isArray(result?.data)
               ? result.data
               : []
         }));
       } catch (e) {
+        if (cancelled) return;
         setLookup((current) => ({
           ...current,
-          rows: []
+          rows: [],
+          error: e?.message || "تعذر تحميل القائمة. يرجى المحاولة مرة أخرى."
         }));
       } finally {
-        setLookup((current) => ({
+        if (!cancelled) setLookup((current) => ({
           ...current,
           loading: false
         }));
       }
     }, 250);
 
-    return () => clearTimeout(timer);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [
     lookup.open,
     lookup.type,
@@ -2280,6 +2289,7 @@ export default function UserManagement() {
         title={lookup.title}
         rows={lookup.rows}
         loading={lookup.loading}
+        error={lookup.error}
         search={lookup.search}
         setSearch={(value) =>
           setLookup((current) => ({

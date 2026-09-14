@@ -1,3 +1,4 @@
+import { hrChipSx } from "./hrControlStyles";
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -2259,7 +2260,7 @@ const swalInfo = (title, text = "") =>
                             label="معدلة"
                             size="small"
                             color="secondary"
-                            sx={{ ml: 1, fontSize: "0.7rem" }}
+                            sx={{ marginInlineStart: 1, fontSize: "0.7rem" }}
                           />
                         )}
                         {task.isPassedTask && (
@@ -2267,7 +2268,7 @@ const swalInfo = (title, text = "") =>
                             label="ممررة"
                             size="small"
                             color="primary"
-                            sx={{ ml: 1, fontSize: "0.7rem" }}
+                            sx={{ marginInlineStart: 1, fontSize: "0.7rem" }}
                           />
                         )}
                       </Typography>
@@ -2311,7 +2312,7 @@ const swalInfo = (title, text = "") =>
                         label={task.statusInfo.label}
                         color={task.statusInfo.color}
                         size="small"
-                        sx={{ fontWeight: 600 }}
+                        sx={[hrChipSx("small"), { fontWeight: 600 }]}
                       />
 
                       {task.ended && (
@@ -2331,7 +2332,7 @@ const swalInfo = (title, text = "") =>
                           color="success"
                           variant="outlined"
                           icon={<CheckCircleOutlineIcon />}
-                          sx={{ fontSize: "0.7rem" }}
+                          sx={[hrChipSx("small"), { fontSize: "0.7rem" }]}
                         />
                       )}
                     </Box>
@@ -2865,7 +2866,7 @@ const renderHREvaluationDetails = () => {
                                 label="الحالي" 
                                 size="small" 
                                 sx={{ 
-                                  ml: 1, 
+                                  marginInlineStart: 1, 
                                   bgcolor: '#4caf50', 
                                   color: 'white',
                                   fontWeight: 700,
@@ -2884,7 +2885,7 @@ const renderHREvaluationDetails = () => {
                               icon={<Star fontSize="inherit" sx={{ color: "#ff9800" }} />}
                               emptyIcon={<StarBorder fontSize="inherit" sx={{ color: "#ddd" }} />}
                             />
-                            <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>
+                            <Typography variant="body2" sx={{ marginInlineStart: 1, fontWeight: 600 }}>
                               ({evalItem.rating})
                             </Typography>
                           </Box>
@@ -2983,10 +2984,6 @@ const renderHREvaluationDetails = () => {
           p: {
             xs: 2,
             md: 3
-          },
-          "& .ltrText": {
-            direction: "ltr",
-            textAlign: "left"
           },
           "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: BRAND
@@ -3247,7 +3244,7 @@ const renderHREvaluationDetails = () => {
                   <Chip
                     icon={<PersonIcon />}
                     label={`عدد الموظفين: ${employees.length}`}
-                    sx={{ fontWeight: 700 }}
+                    sx={[hrChipSx(), { fontWeight: 700 }]}
                   />
                   <Chip
                     icon={<ApartmentIcon />}
@@ -3256,17 +3253,17 @@ const renderHREvaluationDetails = () => {
                         ? "فرع: الكل"
                         : `فرع: ${getBranchName(branchGuid)}`
                     }
-                    sx={{ fontWeight: 700 }}
+                    sx={[hrChipSx(), { fontWeight: 700 }]}
                   />
                   <Chip
                     icon={<CheckCircleIcon />}
                     label="الحالة: نشط فقط"
-                    sx={{
+                    sx={[hrChipSx(), {
                       fontWeight: 800,
                       bgcolor: alpha(BRAND, 0.14),
                       color: BRAND_DARK,
                       border: `1px solid ${alpha(BRAND, 0.25)}`,
-                    }}
+                    }]}
                   />
                   <Chip
                     label={`نتائج: ${filteredAndSorted.length}`}
@@ -3398,13 +3395,13 @@ const renderHREvaluationDetails = () => {
                               size="small"
                               icon={<CheckCircleIcon />}
                               label="نشط"
-                              sx={{
+                              sx={[hrChipSx("small"), {
                                 fontWeight: 800,
                                 bgcolor: alpha(BRAND, 0.14),
                                 color: BRAND_DARK,
                                 border: `1px solid ${alpha(BRAND, 0.25)}`,
                                 flexShrink: 0,
-                              }}
+                              }]}
                             />
                           </Box>
 

@@ -67,17 +67,219 @@ import HrOrganizationDesigner from "./components/HrOrganizationDesigner";
 /* ============================================================
    الاتجاهات - عدل القيم الثلاث فقط لو احتجت
    ============================================================ */
+// ============================================================
+// RTL dialog form system
+// Keeps Arabic labels above controls instead of floating on the outline,
+// normalizes spacing/alignment, and preserves LTR rendering for date/time.
+// ============================================================
+const RTL_DIALOG_SX = {
+  "& .MuiDialog-paper": {
+    direction: "rtl",
+    textAlign: "right",
+    backgroundImage: "none"
+  },
+  "& .MuiDialogTitle-root": {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  },
+  "& .MuiDialogContent-root": {
+    direction: "rtl",
+    textAlign: "right",
+    overflowX: "hidden",
+
+    "& .MuiFormControl-root": {
+      direction: "rtl",
+      textAlign: "right"
+    },
+
+    // Use a real external-looking label above the control. This avoids the
+    // outlined-border/label collision that appears in Arabic RTL forms.
+    "& .MuiInputLabel-root": {
+      position: "static !important",
+      transform: "none !important",
+      transformOrigin: "top right !important",
+      width: "100%",
+      maxWidth: "100%",
+      margin: "0 0 6px 0",
+      padding: 0,
+      direction: "rtl",
+      textAlign: "right",
+      whiteSpace: "normal",
+      overflow: "visible",
+      lineHeight: 1.45,
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontSize: "0.78rem",
+      fontWeight: 800,
+      color: "#52635c",
+      pointerEvents: "auto"
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#057546"
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "#d32f2f"
+    },
+    "& .MuiInputLabel-root.Mui-disabled": {
+      color: "rgba(0,0,0,.42)"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      direction: "rtl",
+      textAlign: "right",
+      borderRadius: "10px",
+      backgroundColor: "#fff",
+      transition: "border-color .18s ease, box-shadow .18s ease, background-color .18s ease",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d7e3dd"
+      },
+      "&:hover .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#9fc7b5"
+      },
+      "&.Mui-focused": {
+        boxShadow: "0 0 0 3px rgba(5,117,70,.08)"
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#057546",
+        borderWidth: "1.5px"
+      },
+      "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d32f2f"
+      }
+    },
+
+    // The label is no longer inside the outline, so remove MUI's notch.
+    "& .MuiOutlinedInput-notchedOutline legend": {
+      maxWidth: "0 !important"
+    },
+    "& .MuiOutlinedInput-notchedOutline legend > span": {
+      display: "none !important"
+    },
+
+    "& .MuiInputBase-input, & textarea, & .MuiSelect-select": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiSelect-select": {
+      paddingRight: "14px !important",
+      paddingLeft: "40px !important"
+    },
+    "& .MuiSelect-icon": {
+      right: "auto !important",
+      left: "10px !important"
+    },
+    "& .MuiInputAdornment-positionStart": {
+      marginRight: "0 !important",
+      marginLeft: "8px !important"
+    },
+    "& .MuiInputAdornment-positionEnd": {
+      marginLeft: "0 !important",
+      marginRight: "8px !important"
+    },
+    "& .MuiFormHelperText-root": {
+      direction: "rtl",
+      textAlign: "right",
+      marginLeft: 0,
+      marginRight: 0,
+      marginTop: "5px",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiAutocomplete-inputRoot": {
+      direction: "rtl",
+      paddingRight: "10px !important",
+      paddingLeft: "38px !important"
+    },
+    "& .MuiAutocomplete-endAdornment": {
+      right: "auto !important",
+      left: "8px !important"
+    },
+    "& .MuiFormControlLabel-root": {
+      direction: "rtl",
+      marginLeft: 0,
+      marginRight: 0,
+      gap: "3px"
+    },
+    "& .MuiFormControlLabel-label": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+
+    // Dates and times must keep their natural numeric order in Arabic UI.
+    '& input[type="date"], & input[type="time"], & input[type="datetime-local"]': {
+      direction: "ltr !important",
+      textAlign: "center !important",
+      unicodeBidi: "isolate"
+    }
+  },
+  "& .MuiDialogActions-root": {
+    direction: "rtl",
+    gap: "8px",
+    flexWrap: "wrap",
+    padding: { xs: "12px 14px", sm: "14px 20px" },
+    borderTop: "1px solid #edf2ef",
+    "& .MuiButton-root": {
+      minHeight: 38,
+      borderRadius: "10px",
+      textTransform: "none",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontWeight: 800
+    },
+    "& .MuiButton-startIcon": {
+      marginRight: "0 !important",
+      marginLeft: "6px !important"
+    },
+    "& .MuiButton-endIcon": {
+      marginLeft: "0 !important",
+      marginRight: "6px !important"
+    }
+  }
+};
+
 const PAGE_DIRECTION = "rtl"; // اتجاه الصفحة الرئيسية
-const PAGE_TEXT_ALIGN = "left"; // محاذاة نصوص الصفحة الرئيسية
+const PAGE_TEXT_ALIGN = "right"; // محاذاة نصوص الصفحة الرئيسية
 const CENTER_TEXT_ALIGN = "center";
 
 // ============================================================
 // اتجاهات الديالوج مستقلة تمامًا عن الصفحة
 // غيّر القيم دي فقط لو عايز تعكس الديالوجات بدون لمس الصفحة
 // ============================================================
-const DIALOG_DIRECTION = "ltr"; // عكس اتجاه الصفحة عندك بصريًا
-const DIALOG_TEXT_ALIGN = "left";
+const DIALOG_DIRECTION = "rtl"; // عكس اتجاه الصفحة عندك بصريًا
+const DIALOG_TEXT_ALIGN = "right";
 const DIALOG_CENTER_TEXT_ALIGN = "center";
+
+const RTL_MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      direction: "rtl",
+      textAlign: "right",
+      mt: 0.5,
+      borderRadius: "10px",
+      maxHeight: 360,
+      "& .MuiMenuItem-root": {
+        direction: "rtl",
+        textAlign: "right",
+        justifyContent: "flex-start",
+        minHeight: 40,
+        fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+      }
+    }
+  },
+  MenuListProps: {
+    dir: "rtl",
+    sx: { py: 0.5 }
+  }
+};
+
+const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
+  dir: "rtl",
+  style: {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  }
+};
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1205,6 +1407,7 @@ const HrDepartmentsPage = () => {
               <FormControl size="small" fullWidth>
                 <InputLabel>الحالة</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الحالة"
                   value={filters.isActive}
                   onChange={(e) => setFilters((p) => ({ ...p, isActive: e.target.value }))}
@@ -1259,7 +1462,7 @@ const HrDepartmentsPage = () => {
                   <TableHead>
                     <TableRow>
                       {["الكود", "القسم", "مدير القسم", "الموظفون", "المسميات", "نشط", "غير نشط", "الحالة", "الإجراءات"].map((h) => (
-                        <TableCell key={h} align="center" sx={headCellSx}>{h}</TableCell>
+                        <TableCell key={h} align="right" sx={headCellSx}>{h}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
@@ -1267,17 +1470,17 @@ const HrDepartmentsPage = () => {
                     {departments.map((department) => (
                       <TableRow key={department?.departmentGuid} hover>
                         <TableCell align="center">{department?.departmentCode ?? "-"}</TableCell>
-                        <TableCell align="center">
+                        <TableCell align="right">
                           <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: ".78rem" }}>
                             {department?.departmentName || "-"}
                           </Typography>
                         </TableCell>
-                        <TableCell align="center">{department?.managerName || "غير محدد"}</TableCell>
+                        <TableCell align="right">{department?.managerName || "غير محدد"}</TableCell>
                         <TableCell align="center">{department?.employeeCount || 0}</TableCell>
                         <TableCell align="center">{department?.jobTitleCount || 0}</TableCell>
                         <TableCell align="center">{department?.activeEmployeeCount || 0}</TableCell>
                         <TableCell align="center">{department?.inactiveEmployeeCount || 0}</TableCell>
-                        <TableCell align="center">
+                        <TableCell align="right">
                           <Chip
                             size="small"
                             label={department?.isActive ? "نشط" : "غير نشط"}
@@ -1315,6 +1518,7 @@ const HrDepartmentsPage = () => {
       </Box>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={formOpen}
         onClose={() => {
           if (!saving) {
@@ -1412,6 +1616,7 @@ const HrDepartmentsPage = () => {
             />
 
             <Autocomplete
+              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
               fullWidth
               options={departmentManagers}
               loading={departmentManagersLoading}
@@ -1610,6 +1815,7 @@ const HrDepartmentsPage = () => {
               <FormControl fullWidth>
                 <InputLabel>الحالة</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الحالة"
                   value={form.isActive}
                   onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.value }))}
@@ -1649,6 +1855,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={employeesOpen}
         onClose={() => setEmployeesOpen(false)}
         fullWidth
@@ -1739,6 +1946,7 @@ const HrDepartmentsPage = () => {
                   <FormControl size="small" fullWidth>
                     <InputLabel>نقل إلى قسم</InputLabel>
                     <Select
+                  MenuProps={RTL_MENU_PROPS}
                       label="نقل إلى قسم"
                       value={transferTargetGuid}
                       onChange={(event) => {
@@ -1920,6 +2128,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={transferConfirmOpen}
         onClose={() =>
           !transferringEmployees &&
@@ -1978,6 +2187,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={orgOpen}
         onClose={() => setOrgOpen(false)}
         maxWidth="xl"
@@ -2010,6 +2220,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={deactivateBlockedOpen}
         onClose={() => setDeactivateBlockedOpen(false)}
         fullWidth
@@ -2061,6 +2272,7 @@ const HrDepartmentsPage = () => {
       </Dialog>
 
       <Dialog
+        sx={RTL_DIALOG_SX}
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
         fullWidth

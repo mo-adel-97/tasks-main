@@ -1,3 +1,4 @@
+import { hrChipSx, hrEmployeeFieldSx, hrTabIconSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -85,6 +86,208 @@ import "sweetalert2/dist/sweetalert2.min.css";
 
 
 
+// ============================================================
+// RTL dialog form system
+// Keeps Arabic labels above controls instead of floating on the outline,
+// normalizes spacing/alignment, and preserves LTR rendering for date/time.
+// ============================================================
+const RTL_DIALOG_SX = {
+  "& .MuiDialog-paper": {
+    direction: "rtl",
+    textAlign: "right",
+    backgroundImage: "none"
+  },
+  "& .MuiDialogTitle-root": {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  },
+  "& .MuiDialogContent-root": {
+    direction: "rtl",
+    textAlign: "right",
+    overflowX: "hidden",
+
+    "& .MuiFormControl-root": {
+      direction: "rtl",
+      textAlign: "right"
+    },
+
+    // Use a real external-looking label above the control. This avoids the
+    // outlined-border/label collision that appears in Arabic RTL forms.
+    "& .MuiInputLabel-root": {
+      position: "static !important",
+      transform: "none !important",
+      transformOrigin: "top right !important",
+      width: "100%",
+      maxWidth: "100%",
+      margin: "0 0 6px 0",
+      padding: 0,
+      direction: "rtl",
+      textAlign: "right",
+      whiteSpace: "normal",
+      overflow: "visible",
+      lineHeight: 1.45,
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontSize: "0.78rem",
+      fontWeight: 800,
+      color: "#52635c",
+      pointerEvents: "auto"
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#057546"
+    },
+    "& .MuiInputLabel-root.Mui-error": {
+      color: "#d32f2f"
+    },
+    "& .MuiInputLabel-root.Mui-disabled": {
+      color: "rgba(0,0,0,.42)"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      direction: "rtl",
+      textAlign: "right",
+      borderRadius: "10px",
+      backgroundColor: "#fff",
+      transition: "border-color .18s ease, box-shadow .18s ease, background-color .18s ease",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d7e3dd"
+      },
+      "&:hover .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#9fc7b5"
+      },
+      "&.Mui-focused": {
+        boxShadow: "0 0 0 3px rgba(5,117,70,.08)"
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#057546",
+        borderWidth: "1.5px"
+      },
+      "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#d32f2f"
+      }
+    },
+
+    // The label is no longer inside the outline, so remove MUI's notch.
+    "& .MuiOutlinedInput-notchedOutline legend": {
+      maxWidth: "0 !important"
+    },
+    "& .MuiOutlinedInput-notchedOutline legend > span": {
+      display: "none !important"
+    },
+
+    "& .MuiInputBase-input, & textarea, & .MuiSelect-select": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiSelect-select": {
+      paddingRight: "14px !important",
+      paddingLeft: "40px !important"
+    },
+    "& .MuiSelect-icon": {
+      right: "auto !important",
+      left: "10px !important"
+    },
+    "& .MuiInputAdornment-positionStart": {
+      marginRight: "0 !important",
+      marginLeft: "8px !important"
+    },
+    "& .MuiInputAdornment-positionEnd": {
+      marginLeft: "0 !important",
+      marginRight: "8px !important"
+    },
+    "& .MuiFormHelperText-root": {
+      direction: "rtl",
+      textAlign: "right",
+      marginLeft: 0,
+      marginRight: 0,
+      marginTop: "5px",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+    "& .MuiAutocomplete-inputRoot": {
+      direction: "rtl",
+      paddingRight: "10px !important",
+      paddingLeft: "38px !important"
+    },
+    "& .MuiAutocomplete-endAdornment": {
+      right: "auto !important",
+      left: "8px !important"
+    },
+    "& .MuiFormControlLabel-root": {
+      direction: "rtl",
+      marginLeft: 0,
+      marginRight: 0,
+      gap: "3px"
+    },
+    "& .MuiFormControlLabel-label": {
+      direction: "rtl",
+      textAlign: "right",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+    },
+
+    // Dates and times must keep their natural numeric order in Arabic UI.
+    '& input[type="date"], & input[type="time"], & input[type="datetime-local"]': {
+      direction: "ltr !important",
+      textAlign: "center !important",
+      unicodeBidi: "isolate"
+    }
+  },
+  "& .MuiDialogActions-root": {
+    direction: "rtl",
+    gap: "8px",
+    flexWrap: "wrap",
+    padding: { xs: "12px 14px", sm: "14px 20px" },
+    borderTop: "1px solid #edf2ef",
+    "& .MuiButton-root": {
+      minHeight: 38,
+      borderRadius: "10px",
+      textTransform: "none",
+      fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
+      fontWeight: 800
+    },
+    "& .MuiButton-startIcon": {
+      marginRight: "0 !important",
+      marginLeft: "6px !important"
+    },
+    "& .MuiButton-endIcon": {
+      marginLeft: "0 !important",
+      marginRight: "6px !important"
+    }
+  }
+};
+
+const RTL_MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      direction: "rtl",
+      textAlign: "right",
+      mt: 0.5,
+      borderRadius: "10px",
+      maxHeight: 360,
+      "& .MuiMenuItem-root": {
+        direction: "rtl",
+        textAlign: "right",
+        justifyContent: "flex-start",
+        minHeight: 40,
+        fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+      }
+    }
+  },
+  MenuListProps: {
+    dir: "rtl",
+    sx: { py: 0.5 }
+  }
+};
+
+const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
+  dir: "rtl",
+  style: {
+    direction: "rtl",
+    textAlign: "right",
+    fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
+  }
+};
+
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
@@ -111,8 +314,8 @@ const IS_RTL = PAGE_DIRECTION === "rtl";
 // إعدادات اتجاه ملف الموظف فقط - مستقلة تمامًا عن اتجاه الصفحة
 // غيّر السطرين دول فقط لو أردت قلب Dialog الموظف بدون لمس الصفحة.
 // ============================================================
-const EMPLOYEE_DIALOG_DIRECTION = "ltr"; // "rtl" أو "ltr"
-const EMPLOYEE_DIALOG_TEXT_ALIGN = "left"; // "right" أو "left"
+const EMPLOYEE_DIALOG_DIRECTION = "rtl"; // "rtl" أو "ltr"
+const EMPLOYEE_DIALOG_TEXT_ALIGN = "right"; // "right" أو "left"
 const EMPLOYEE_DIALOG_IS_RTL = EMPLOYEE_DIALOG_DIRECTION === "rtl";
 
 // تبويبا المسار الوظيفي والحضور فقط - مستقلة عن باقي اتجاه ملف الموظف.
@@ -140,6 +343,37 @@ const LEAVES_TAB_TEXT_ALIGN = "right";
 const ATTENDANCE_DATE_DIRECTION = "ltr";
 const ATTENDANCE_DATE_TEXT_ALIGN = "center";
 
+// ============================================================
+// هندسة حقول ملف الموظف - مشتركة بين الصفحة وكل نوافذ ملف الموظف.
+// تضمن أن يكون لعنوان الحقل (label) مساحة رأسية كافية داخل الحقل
+// فلا يتراكب العنوان مع نص الحقل أو مع الحقل الذي فوقه.
+// ============================================================
+const EMPLOYEE_PAGE_FIELD_SX = hrEmployeeFieldSx({
+  height: { xs: 36, sm: 38, lg: 40 },
+  inputSize: { xs: 0.68, sm: 0.73, lg: 0.82 },
+  radius: 2
+});
+
+const EMPLOYEE_DIALOG_FIELD_SX = hrEmployeeFieldSx({
+  height: { xs: 42, sm: 44 },
+  inputSize: { xs: 0.74, sm: 0.8 },
+  radius: 2
+});
+
+// مسافات شبكة الحقول في الصفحة (أعمدة ضيقة وصفوف واسعة لعنوان الحقل العائم).
+const EMPLOYEE_PAGE_FIELD_GAP = {
+  columnGap: { xs: .65, sm: .8, lg: 1.3 },
+  rowGap: { xs: 1.5, sm: 1.6, lg: 1.8 }
+};
+
+// مسافات شبكة الحقول داخل نوافذ ملف الموظف.
+const EMPLOYEE_DIALOG_FIELD_GAP = {
+  columnGap: { xs: .85, sm: 1.1, lg: 1.25 },
+  rowGap: { xs: 1.5, sm: 1.7, lg: 1.8 }
+};
+
+// أقل مسافة رأسية بين أي عنصرين يحتويان حقولًا داخل النوافذ.
+const EMPLOYEE_DIALOG_STACK_GAP = { xs: 1.6, sm: 1.8 };
 const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024;
 const ALLOWED_DOCUMENT_EXTENSIONS = [
   ".pdf",
@@ -158,6 +392,19 @@ const normalizeResponseArray = (json) => {
   if (Array.isArray(json)) return json;
   if (Array.isArray(json?.data)) return json.data;
   return [];
+};
+
+// Keep the employee's current assignment visible even if it is no longer
+// offered for new assignments. MUI Select requires an exact matching value.
+const withCurrentEmployeeOption = (options, key, value, name) => {
+  if (value === null || value === undefined || value === "") return options;
+  const match = options.find((option) =>
+    String(option?.[key] ?? "").toLowerCase() === String(value).toLowerCase()
+  );
+  if (match) {
+    return options.map((option) => option === match ? { ...option, [key]: value } : option);
+  }
+  return [...options, { [key]: value, name: name || String(value) }];
 };
 
 
@@ -332,6 +579,12 @@ const HrEmployeesPage = () => {
   });
 
   const [profileTab, setProfileTab] = useState(0);
+
+  const employeeEditLookups = useMemo(() => ({
+    branches: withCurrentEmployeeOption(lookups.branches, "guid", selectedEmployee?.branchGuid, selectedEmployee?.branchName),
+    departments: withCurrentEmployeeOption(lookups.departments, "guid", selectedEmployee?.departmentGuid, selectedEmployee?.departmentName),
+    jobs: withCurrentEmployeeOption(lookups.jobs, "code", selectedEmployee?.jobCode, selectedEmployee?.jobTitle)
+  }), [lookups, selectedEmployee]);
 
   const [profileLoading, setProfileLoading] =
     useState(false);
@@ -3377,22 +3630,15 @@ const HrEmployeesPage = () => {
                 </InputAdornment>
               )
             }}
-            sx={{
-              mb: isDesktop ? 1.3 : 0,
+            sx={[EMPLOYEE_PAGE_FIELD_SX, {
+              mb: { xs: 1.5, lg: 1.3 },
               "& .MuiInputBase-root": {
-                minHeight: { xs: 36, sm: 38, lg: 40 },
-                fontFamily: "Cairo",
-                fontSize: { xs: ".68rem", sm: ".73rem", lg: ".82rem" },
                 transition: "box-shadow .2s ease, border-color .2s ease"
               },
               "& .MuiInputBase-root.Mui-focused": {
                 boxShadow: "0 0 0 4px rgba(5,117,70,.07)"
-              },
-              "& .MuiInputLabel-root": {
-                fontFamily: "Cairo",
-                fontSize: { xs: ".65rem", sm: ".7rem", lg: ".8rem" }
               }
-            }}
+            }]}
           />
 
           <Collapse
@@ -3401,7 +3647,7 @@ const HrEmployeesPage = () => {
             unmountOnExit={!isDesktop}
           >
             <Box
-              sx={{
+              sx={[EMPLOYEE_PAGE_FIELD_GAP, EMPLOYEE_PAGE_FIELD_SX, {
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "repeat(2, minmax(0, 1fr))",
@@ -3409,26 +3655,19 @@ const HrEmployeesPage = () => {
                   md: "repeat(2, minmax(0, 1fr))",
                   lg: "repeat(4, minmax(0, 1fr))"
                 },
-                gap: { xs: .65, sm: .8, lg: 1.3 },
-                mt: isDesktop ? 0 : 1,
+                mt: isDesktop ? 0 : 1.6,
                 "& .MuiInputBase-root": {
-                  minHeight: { xs: 36, sm: 38, lg: 40 },
-                  fontFamily: "Cairo",
-                  fontSize: { xs: ".68rem", sm: ".73rem", lg: ".82rem" },
                   transition: "box-shadow .2s ease"
                 },
                 "& .MuiInputBase-root.Mui-focused": {
                   boxShadow: "0 0 0 4px rgba(5,117,70,.06)"
-                },
-                "& .MuiInputLabel-root": {
-                  fontFamily: "Cairo",
-                  fontSize: { xs: ".65rem", sm: ".7rem", lg: ".8rem" }
                 }
-              }}
+              }]}
             >
               <FormControl size="small" fullWidth>
                 <InputLabel>الفرع</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الفرع"
                   value={filters.branchGuid}
                   onChange={(event) =>
@@ -3447,6 +3686,7 @@ const HrEmployeesPage = () => {
               <FormControl size="small" fullWidth>
                 <InputLabel>القسم</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="القسم"
                   value={filters.departmentGuid}
                   onChange={(event) =>
@@ -3468,6 +3708,7 @@ const HrEmployeesPage = () => {
               <FormControl size="small" fullWidth>
                 <InputLabel>الوظيفة</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الوظيفة"
                   value={filters.jobCode}
                   onChange={(event) =>
@@ -3486,6 +3727,7 @@ const HrEmployeesPage = () => {
               <FormControl size="small" fullWidth>
                 <InputLabel>الحالة</InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="الحالة"
                   value={filters.isActive}
                   onChange={(event) =>
@@ -3583,10 +3825,8 @@ const HrEmployeesPage = () => {
           >
             <Box
               sx={{
-                order: { xs: 2, lg: 1 },
                 textAlign: PAGE_TEXT_ALIGN,
-                ml: { xs: "auto", lg: 0 },
-                mr: { xs: 0, lg: "auto" }
+                marginInlineEnd: "auto"
               }}
             >
               <Typography
@@ -3614,20 +3854,13 @@ const HrEmployeesPage = () => {
 
             <FormControl
               size="small"
-              sx={{
-                order: { xs: 1, lg: 2 },
-                minWidth: { xs: 82, sm: 92, lg: 120 },
-                "& .MuiInputBase-root": {
-                  height: { xs: 34, sm: 36, lg: 40 },
-                  fontSize: { xs: ".65rem", sm: ".7rem", lg: ".8rem" }
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: { xs: ".62rem", sm: ".68rem", lg: ".8rem" }
-                }
-              }}
+              sx={[EMPLOYEE_PAGE_FIELD_SX, {
+                minWidth: { xs: 96, sm: 104, lg: 132 }
+              }]}
             >
               <InputLabel>عدد الصفوف</InputLabel>
               <Select
+                  MenuProps={RTL_MENU_PROPS}
                 label="عدد الصفوف"
                 value={pageSize}
                 onChange={(event) => {
@@ -3739,7 +3972,7 @@ const HrEmployeesPage = () => {
                   tableLayout: "fixed",
 
                   "& .MuiTableCell-root": {
-                    textAlign: CENTER_TEXT_ALIGN,
+                    textAlign: PAGE_TEXT_ALIGN,
                     verticalAlign: "middle",
                     px: { lg: .75, xl: 1 },
                     py: .7,
@@ -3807,7 +4040,7 @@ const HrEmployeesPage = () => {
                     ].map((header) => (
                       <TableCell
                         key={header}
-                        align="center"
+                        align="right"
                         sx={{
                           bgcolor: "#f6faf8",
                           color: primaryDark,
@@ -3847,7 +4080,7 @@ const HrEmployeesPage = () => {
                         />
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Typography
                           sx={{
                             fontFamily: "Cairo",
@@ -3872,14 +4105,14 @@ const HrEmployeesPage = () => {
                         <bdi dir="ltr">{employee?.mobile || "-"}</bdi>
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Typography
                           sx={{
                             width: "100%",
                             fontFamily: "Cairo",
                             fontSize: ".73rem",
                             lineHeight: 1.45,
-                            textAlign: CENTER_TEXT_ALIGN,
+                            textAlign: PAGE_TEXT_ALIGN,
                             mx: "auto",
                             whiteSpace: "normal",
                             overflowWrap: "anywhere"
@@ -3890,7 +4123,7 @@ const HrEmployeesPage = () => {
                         </Typography>
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Typography
                           sx={{
                             width: "100%",
@@ -3906,7 +4139,7 @@ const HrEmployeesPage = () => {
                         </Typography>
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Chip
                           size="small"
                           icon={<BadgeIcon />}
@@ -3914,7 +4147,7 @@ const HrEmployeesPage = () => {
                             employee?.jobTitle ||
                             "غير محدد"
                           }
-                          sx={{
+                          sx={[hrChipSx("small"), {
                             maxWidth: "100%",
                             height: "auto",
                             fontFamily: "Cairo",
@@ -3930,11 +4163,11 @@ const HrEmployeesPage = () => {
                             "& .MuiChip-icon": {
                               fontSize: 15
                             }
-                          }}
+                          }]}
                         />
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Chip
                           size="small"
                           label={
@@ -4038,6 +4271,7 @@ const HrEmployeesPage = () => {
 
 
         <Dialog
+        sx={RTL_DIALOG_SX}
           disablePortal
           disableEnforceFocus
           dir={EMPLOYEE_DIALOG_DIRECTION}
@@ -4539,7 +4773,7 @@ const HrEmployeesPage = () => {
                       }
                     }}
                   >
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <InfoOutlinedIcon
                           sx={{ fontSize: 17 }}
@@ -4548,7 +4782,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label="البيانات الأساسية"
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <PersonOutlineRoundedIcon
                           sx={{ fontSize: 17 }}
@@ -4557,7 +4791,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label="البيانات الشخصية"
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <FolderOpenRoundedIcon
                           sx={{ fontSize: 17 }}
@@ -4566,7 +4800,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label={`المرفقات (${documents.length})`}
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <DescriptionOutlinedIcon
                           sx={{ fontSize: 17 }}
@@ -4575,7 +4809,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label="العقد الوظيفي"
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <TrendingUpRoundedIcon
                           sx={{ fontSize: 17 }}
@@ -4584,7 +4818,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label="الترقيات والمسميات السابقة"
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <AccessTimeRoundedIcon
                           sx={{ fontSize: 17 }}
@@ -4593,7 +4827,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label="الحضور والانصراف"
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <EventNoteRoundedIcon
                           sx={{ fontSize: 17 }}
@@ -4602,7 +4836,7 @@ const HrEmployeesPage = () => {
                       iconPosition="start"
                       label="الإجازات"
                     />
-                    <Tab
+                    <Tab sx={hrTabIconSx}
                       icon={
                         <HistoryRoundedIcon
                           sx={{ fontSize: 17 }}
@@ -4639,12 +4873,28 @@ const HrEmployeesPage = () => {
                       }}
                     >
                       <Stack
-                         direction="row"
-  justifyContent="space-between"
-  alignItems="center"
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
                         spacing={1}
                         sx={{ mb: 1 }}
                       >
+                        {/* العنوان في جهة البداية (يمين) والإجراء في أقصى اليسار */}
+                        <Typography
+                          sx={{
+                            fontFamily: "Cairo",
+                            fontWeight: 1000,
+                            color: primaryDark,
+                            fontSize: {
+                              xs: ".78rem",
+                              sm: ".9rem"
+                            },
+                            textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+                          }}
+                        >
+                          البيانات الأساسية
+                        </Typography>
+
                         {!editMode ? (
                           <Button
                             variant="outlined"
@@ -4669,27 +4919,13 @@ const HrEmployeesPage = () => {
                             sx={{
                               fontFamily: "Cairo",
                               fontSize: ".62rem",
-                              color: "#718078"
+                              color: "#718078",
+                              textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             }}
                           >
                             عدّل البيانات ثم اضغط حفظ
                           </Typography>
                         )}
-
-                        <Typography
-                          sx={{
-                            fontFamily: "Cairo",
-                            fontWeight: 1000,
-                            color: primaryDark,
-                            fontSize: {
-                              xs: ".78rem",
-                              sm: ".9rem"
-                            },
-                            textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
-                          }}
-                        >
-                          البيانات الأساسية
-                        </Typography>
                       </Stack>
 
                       {employeeSaveError && (
@@ -4708,44 +4944,20 @@ const HrEmployeesPage = () => {
                       {editMode ? (
                         <>
                           <Box
-                                            sx={{
+                            sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
                               display: "grid",
                               gridTemplateColumns: {
                                 xs: "1fr",
                                 sm:
                                   "repeat(2,minmax(0,1fr))"
                               },
-                              gap: {
-                                xs: .85,
-                                sm: 1.1,
-                                lg: 1.25
-                              },
-                              "& .MuiInputBase-root": {
-                                minHeight: {
-                                  xs: 42,
-                                  sm: 45
-                                },
-                                fontFamily: "Cairo",
-                                fontSize: {
-                                  xs: ".72rem",
-                                  sm: ".8rem"
-                                },
-                                borderRadius: 2
-                              },
                               "& .MuiInputBase-input": {
                                 textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
-                              },
-                              "& .MuiInputLabel-root": {
-                                fontFamily: "Cairo",
-                                fontSize: {
-                                  xs: ".66rem",
-                                  sm: ".74rem"
-                                },
                               },
                               "& .MuiSelect-select": {
                                 textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                               }
-                            }}
+                            }]}
                           >
                             <TextField
                               size="small"
@@ -4833,6 +5045,7 @@ const HrEmployeesPage = () => {
                                 نوع الدوام
                               </InputLabel>
                               <Select
+                  MenuProps={RTL_MENU_PROPS}
                                 label="نوع الدوام"
                                 value={editForm.workType}
                                 onChange={(event) =>
@@ -4886,6 +5099,7 @@ const HrEmployeesPage = () => {
                                 الفرع
                               </InputLabel>
                               <Select
+                  MenuProps={RTL_MENU_PROPS}
                                 label="الفرع"
                                 value={editForm.branchGuid}
                                 onChange={(event) =>
@@ -4898,7 +5112,7 @@ const HrEmployeesPage = () => {
                                 <MenuItem value="">
                                   غير محدد
                                 </MenuItem>
-                                {lookups.branches.map(
+                                {employeeEditLookups.branches.map(
                                   (branch) => (
                                     <MenuItem
                                       key={branch?.guid}
@@ -4922,6 +5136,7 @@ const HrEmployeesPage = () => {
                                 القسم
                               </InputLabel>
                               <Select
+                  MenuProps={RTL_MENU_PROPS}
                                 label="القسم"
                                 value={
                                   editForm.departmentGuid
@@ -4936,7 +5151,7 @@ const HrEmployeesPage = () => {
                                 <MenuItem value="">
                                   غير محدد
                                 </MenuItem>
-                                {lookups.departments.map(
+                                {employeeEditLookups.departments.map(
                                   (department) => (
                                     <MenuItem
                                       key={
@@ -4964,6 +5179,7 @@ const HrEmployeesPage = () => {
                                 المسمى الوظيفي
                               </InputLabel>
                               <Select
+                  MenuProps={RTL_MENU_PROPS}
                                 label="المسمى الوظيفي"
                                 value={editForm.jobCode}
                                 onChange={(event) =>
@@ -4976,7 +5192,7 @@ const HrEmployeesPage = () => {
                                 <MenuItem value="">
                                   غير محدد
                                 </MenuItem>
-                                {lookups.jobs.map(
+                                {employeeEditLookups.jobs.map(
                                   (job) => (
                                     <MenuItem
                                       key={job?.code}
@@ -4997,6 +5213,7 @@ const HrEmployeesPage = () => {
                                 الحالة
                               </InputLabel>
                               <Select
+                  MenuProps={RTL_MENU_PROPS}
                                 label="الحالة"
                                 value={
                                   editForm.isActive
@@ -5111,37 +5328,37 @@ const HrEmployeesPage = () => {
                             }
                           }}
                         >
-                          <EmployeeDetail
+                          <EmployeeDetail ltr
                             label="كود الموظف"
                             value={
                               selectedEmployee?.employeeCode
                             }
                           />
-                          <EmployeeDetail
+                          <EmployeeDetail ltr
                             label="رقم الهوية"
                             value={
                               selectedEmployee?.nationalId
                             }
                           />
-                          <EmployeeDetail
+                          <EmployeeDetail ltr
                             label="الجوال"
                             value={
                               selectedEmployee?.mobile
                             }
                           />
-                          <EmployeeDetail
+                          <EmployeeDetail ltr
                             label="الجوال الإضافي"
                             value={
                               selectedEmployee?.mobile2
                             }
                           />
-                          <EmployeeDetail
+                          <EmployeeDetail ltr
                             label="البريد الإلكتروني"
                             value={
                               selectedEmployee?.email
                             }
                           />
-                          <EmployeeDetail
+                          <EmployeeDetail ltr
                             label="IBAN"
                             value={
                               selectedEmployee?.iban
@@ -5216,11 +5433,39 @@ const HrEmployeesPage = () => {
                   >
                     <Stack
                       direction="row"
-  justifyContent="space-between"
-  alignItems="center"
+                      justifyContent="space-between"
+                      alignItems="center"
                       spacing={1}
                       sx={{ mb: 1 }}
                     >
+                      {/* العنوان في جهة البداية (يمين) والإجراء في أقصى اليسار */}
+                      <Stack
+                        direction="row"
+                        spacing={.5}
+                        alignItems="center"
+                      >
+                        <ContactEmergencyOutlinedIcon
+                          sx={{
+                            color: primaryColor,
+                            fontSize: 19
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontFamily: "Cairo",
+                            fontWeight: 1000,
+                            color: primaryDark,
+                            fontSize: {
+                              xs: ".78rem",
+                              sm: ".9rem"
+                            },
+                            textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+                          }}
+                        >
+                          البيانات الشخصية
+                        </Typography>
+                      </Stack>
+
                       {!profileEditMode ? (
                         <Button
                           variant="outlined"
@@ -5250,38 +5495,13 @@ const HrEmployeesPage = () => {
                           sx={{
                             fontFamily: "Cairo",
                             fontSize: ".62rem",
-                            color: "#718078"
+                            color: "#718078",
+                            textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                           }}
                         >
                           البيانات هنا امتداد لملف الموظف
                         </Typography>
                       )}
-
-                      <Stack
-                        direction="row"
-                        spacing={.5}
-                        alignItems="center"
-                      >
-                        <ContactEmergencyOutlinedIcon
-                          sx={{
-                            color: primaryColor,
-                            fontSize: 19
-                          }}
-                        />
-                        <Typography
-                          sx={{
-                            fontFamily: "Cairo",
-                            fontWeight: 1000,
-                            color: primaryDark,
-                            fontSize: {
-                              xs: ".78rem",
-                              sm: ".9rem"
-                            },
-                          }}
-                        >
-                          البيانات الشخصية
-                        </Typography>
-                      </Stack>
                     </Stack>
 
                     {profileLoading ? (
@@ -5302,7 +5522,7 @@ const HrEmployeesPage = () => {
                     ) : profileEditMode ? (
                       <>
                         <Box
-                                        sx={{
+                          sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
                             display: "grid",
                             direction: EMPLOYEE_DIALOG_DIRECTION,
                             gridTemplateColumns: {
@@ -5310,26 +5530,13 @@ const HrEmployeesPage = () => {
                               sm:
                                 "repeat(2,minmax(0,1fr))"
                             },
-                            gap: {
-                              xs: .85,
-                              sm: 1.05
-                            },
-                            "& .MuiInputBase-root": {
-                              fontFamily: "Cairo",
-                              fontSize: ".78rem",
-                              borderRadius: 2
-                            },
                             "& .MuiInputBase-input": {
                               textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             },
                             "& .MuiSelect-select": {
                               textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
-                            },
-                            "& .MuiInputLabel-root": {
-                              fontFamily: "Cairo",
-                              fontSize: ".72rem"
                             }
-                          }}
+                          }]}
                         >
                           <TextField
                             size="small"
@@ -5371,6 +5578,7 @@ const HrEmployeesPage = () => {
                               الجنس
                             </InputLabel>
                             <Select
+                  MenuProps={RTL_MENU_PROPS}
                               label="الجنس"
                               value={profileForm.gender}
                               onChange={(e) =>
@@ -5415,6 +5623,7 @@ const HrEmployeesPage = () => {
                               الحالة الاجتماعية
                             </InputLabel>
                             <Select
+                  MenuProps={RTL_MENU_PROPS}
                               label="الحالة الاجتماعية"
                               value={
                                 profileForm.maritalStatus
@@ -5491,7 +5700,7 @@ const HrEmployeesPage = () => {
                             }
                           />
 
-                          <TextField
+                          <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                             size="small"
                             label="جوال الطوارئ"
                             value={
@@ -5675,7 +5884,7 @@ const HrEmployeesPage = () => {
                             profileData?.emergencyContactName
                           }
                         />
-                        <EmployeeDetail
+                        <EmployeeDetail ltr
                           label="جوال الطوارئ"
                           value={
                             profileData?.emergencyContactPhone
@@ -5795,7 +6004,7 @@ const HrEmployeesPage = () => {
                         }}
                       >
                         <Box
-                                        sx={{
+                          sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
                             display: "grid",
                             direction: EMPLOYEE_DIALOG_DIRECTION,
                             gridTemplateColumns: {
@@ -5803,16 +6012,13 @@ const HrEmployeesPage = () => {
                               sm:
                                 "repeat(2,minmax(0,1fr))"
                             },
-                            gap: .8,
-                            "& .MuiInputBase-root": {
-                              fontFamily: "Cairo",
-                              fontSize: ".76rem"
+                            "& .MuiInputBase-input": {
+                              textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             },
-                            "& .MuiInputLabel-root": {
-                              fontFamily: "Cairo",
-                              fontSize: ".7rem"
+                            "& .MuiSelect-select": {
+                              textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             }
-                          }}
+                          }]}
                         >
                           <Button
                             component="label"
@@ -5865,6 +6071,7 @@ const HrEmployeesPage = () => {
                               نوع المرفق
                             </InputLabel>
                             <Select
+                  MenuProps={RTL_MENU_PROPS}
                               label="نوع المرفق"
                               value={
                                 documentForm.documentTypeCode
@@ -6515,7 +6722,7 @@ const HrEmployeesPage = () => {
                               />
                             </Button>
 
-                            <TextField
+                            <TextField inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                               size="small"
                               label="رقم العقد"
                               value={contractForm.contractNumber}
@@ -6749,7 +6956,7 @@ const HrEmployeesPage = () => {
                                 gap: .9
                               }}
                             >
-                              <EmployeeDetail
+                              <EmployeeDetail ltr
                                 label="رقم العقد"
                                 value={
                                   employeeContract?.contractNumber ||
@@ -7715,7 +7922,7 @@ const HrEmployeesPage = () => {
                                 </Stack>
                               }
                               variant="outlined"
-                              sx={{
+                              sx={[hrChipSx(), {
                                 alignSelf: {
                                   xs: "flex-start",
                                   md: "center"
@@ -7726,7 +7933,7 @@ const HrEmployeesPage = () => {
                                 bgcolor: "#fff",
                                 borderColor:
                                   "rgba(5,117,70,.16)"
-                              }}
+                              }]}
                             />
                           </Stack>
                         </Box>
@@ -7776,9 +7983,7 @@ const HrEmployeesPage = () => {
                                     md: 185
                                   },
                                   "& .MuiInputBase-root": {
-                                    borderRadius: 2,
-                                    direction:
-                                      ATTENDANCE_DATE_DIRECTION
+                                    borderRadius: 2
                                   },
                                   "& input": {
                                     direction:
@@ -7815,9 +8020,7 @@ const HrEmployeesPage = () => {
                                     md: 185
                                   },
                                   "& .MuiInputBase-root": {
-                                    borderRadius: 2,
-                                    direction:
-                                      ATTENDANCE_DATE_DIRECTION
+                                    borderRadius: 2
                                   },
                                   "& input": {
                                     direction:
@@ -9358,9 +9561,7 @@ const HrEmployeesPage = () => {
                                         gridTemplateColumns: { xs: "1fr", sm: "repeat(2,minmax(0,1fr))" },
                                         gridTemplateAreas: {
                                           xs: '"old" "new"',
-                                          sm: EMPLOYEE_DIALOG_IS_RTL
-                                            ? '"new old"'
-                                            : '"old new"'
+                                          sm: '"old new"'
                                         },
                                         gap: .48,
                                         direction: EMPLOYEE_DIALOG_DIRECTION
@@ -9423,6 +9624,7 @@ const HrEmployeesPage = () => {
             Dialog - نقل / ترقية / خطة ترقية من ملف الموظف
         ====================================================== */}
         <Dialog
+        sx={RTL_DIALOG_SX}
           open={careerActionOpen}
           onClose={() => {
             if (!careerActionSaving) {
@@ -9506,6 +9708,7 @@ const HrEmployeesPage = () => {
                   المسمى الوظيفي المستهدف
                 </InputLabel>
                 <Select
+                  MenuProps={RTL_MENU_PROPS}
                   label="المسمى الوظيفي المستهدف"
                   value={careerTargetJobGuid}
                   onChange={(event) =>
@@ -9587,8 +9790,7 @@ const HrEmployeesPage = () => {
               p: 1.2,
               display: "flex",
               gap: .7,
-              justifyContent: "flex-start",
-              borderTop:
+                        borderTop:
                 "1px solid rgba(5,117,70,.08)"
             }}
           >
@@ -9630,6 +9832,7 @@ const HrEmployeesPage = () => {
         </Dialog>
 
         <Dialog
+        sx={RTL_DIALOG_SX}
           open={documentPreviewOpen}
           onClose={closeEmployeeDocumentPreview}
           maxWidth={false}
@@ -10143,7 +10346,7 @@ const EmployeeDetail = ({
 
     <Typography
       sx={{
-        fontFamily: ltr ? "monospace" : "Cairo",
+        fontFamily: "Cairo",
         fontWeight: 900,
         fontSize: { xs: ".76rem", sm: ".9rem" },
         color: "#18241f",
@@ -10152,7 +10355,7 @@ const EmployeeDetail = ({
         lineHeight: 1.55
       }}
     >
-      {value || "-"}
+      {ltr ? <bdi dir="ltr">{value || "-"}</bdi> : value || "-"}
     </Typography>
   </Paper>
 );

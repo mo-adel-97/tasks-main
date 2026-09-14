@@ -56,16 +56,16 @@ const readUser = () => {
   }
 };
 
-const currentUser = readUser();
-
-const getUserGuid = () =>
-  String(
+const getUserGuid = () => {
+  const currentUser = readUser();
+  return String(
     currentUser?.guid ||
     currentUser?.Guid ||
     currentUser?.userGuid ||
     currentUser?.UserGuid ||
     ""
   ).trim();
+};
 
 const norm = (value) =>
   String(value ?? "").trim().toLowerCase();
@@ -286,6 +286,7 @@ export default function SalesManManagement() {
     useState(true);
 
   const [authorized, setAuthorized] = useState(false);
+  const [permissionError, setPermissionError] = useState("");
 
   const [ops, setOps] = useState({
     canView: false,
@@ -338,6 +339,10 @@ export default function SalesManManagement() {
           .json()
           .catch(() => null);
 
+        if (!response.ok) {
+          throw new Error(result?.message || "تعذر التحقق من الصلاحيات. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.");
+        }
+
         const allowed =
           response.ok &&
           result?.data?.file?.canView === true &&
@@ -346,8 +351,11 @@ export default function SalesManManagement() {
         if (alive) {
           setAuthorized(Boolean(allowed));
         }
-      } catch {
-        if (alive) setAuthorized(false);
+      } catch (error) {
+        if (alive) {
+          setAuthorized(false);
+          setPermissionError(error?.message || "تعذر الاتصال بخدمة الصلاحيات. يرجى إعادة المحاولة.");
+        }
       } finally {
         if (alive) setPermissionLoading(false);
       }
@@ -790,7 +798,7 @@ export default function SalesManManagement() {
     return (
       <Box sx={{ p: 1 }}>
         <Alert severity="error">
-          لا توجد لديك صلاحية إضافة مندوب بيع ضمن قائمة ملف.
+          {permissionError || "لا توجد لديك صلاحية إضافة مندوب بيع ضمن قائمة ملف."}
         </Alert>
       </Box>
     );

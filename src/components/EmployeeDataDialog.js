@@ -702,7 +702,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                             onChange={(e) => handleSimNumberChange(index, simIndex, e.target.value)}
                             placeholder="05xxxxxxxx"
                             required
-                            inputProps={{
+                            inputProps={{dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" },
                               maxLength: 10
                             }}
                             error={simNumber && !validateSaudiPhoneNumber(simNumber)}

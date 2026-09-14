@@ -1,3 +1,4 @@
+import { hrChipSx } from "./hrControlStyles";
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -1092,7 +1093,7 @@ const exportAttemptsToExcel = () => {
                   icon={<Quiz />}
                   label={`${exam.questions_count || 0} سؤال`}
                   size="small"
-                  sx={{ backgroundColor, color: primaryDark }}
+                  sx={[hrChipSx("small"), { backgroundColor, color: primaryDark }]}
                 />
               </Box>
 
@@ -1399,7 +1400,7 @@ const exportAttemptsToExcel = () => {
 
                       {q.attachment_url && (
                         <>
-                          <Chip
+                          <Chip sx={hrChipSx()}
                             icon={<AttachFileIcon />}
                             label={q.attachment_name || 'مرفق السؤال'}
                             component="a"
@@ -1460,7 +1461,7 @@ const exportAttemptsToExcel = () => {
 
                       {answer.attachment_url && (
                         <>
-                          <Chip
+                          <Chip sx={hrChipSx("small")}
                             icon={<AttachFileIcon />}
                             label={answer.attachment_name || 'مرفق الإجابة'}
                             component="a"
@@ -1482,7 +1483,7 @@ const exportAttemptsToExcel = () => {
                       )}
 
                       {Number(answer.is_correct) === 1 && (
-                        <Chip icon={<CheckCircle />} label="مفتاح الإجابة" color="success" size="small" />
+                        <Chip sx={hrChipSx("small")} icon={<CheckCircle />} label="مفتاح الإجابة" color="success" size="small" />
                       )}
 
                       {q.type !== 'true_false' && q.answers.length > 2 && (
@@ -1804,9 +1805,9 @@ const exportAttemptsToExcel = () => {
                                 </TableCell>
                                 <TableCell align="center">
                                   {Number(ans.is_correct) === 1 ? (
-                                    <Chip icon={<CheckCircle />} label="صحيح" color="success" size="small" />
+                                    <Chip sx={hrChipSx("small")} icon={<CheckCircle />} label="صحيح" color="success" size="small" />
                                   ) : (
-                                    <Chip icon={<Cancel />} label="خطأ" color="error" size="small" />
+                                    <Chip sx={hrChipSx("small")} icon={<Cancel />} label="خطأ" color="error" size="small" />
                                   )}
                                 </TableCell>
                                 <TableCell align="center">

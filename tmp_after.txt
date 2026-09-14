@@ -1,0 +1,223 @@
+﻿93: const EMPLOYEE_IMAGE_API =
+115: const EMPLOYEE_DIALOG_DIRECTION = "rtl"; // "rtl" أو "ltr"
+116: const EMPLOYEE_DIALOG_TEXT_ALIGN = "right"; // "right" أو "left"
+117: const EMPLOYEE_DIALOG_IS_RTL = EMPLOYEE_DIALOG_DIRECTION === "rtl";
+149: const EMPLOYEE_PAGE_FIELD_SX = hrEmployeeFieldSx({
+155: const EMPLOYEE_DIALOG_FIELD_SX = hrEmployeeFieldSx({
+162: const EMPLOYEE_PAGE_FIELD_GAP = {
+163: columnGap: { xs: .65, sm: .8, lg: 1.3 },
+164: rowGap: { xs: 1.5, sm: 1.6, lg: 1.8 }
+168: const EMPLOYEE_DIALOG_FIELD_GAP = {
+169: columnGap: { xs: .85, sm: 1.1, lg: 1.25 },
+170: rowGap: { xs: 1.5, sm: 1.7, lg: 1.8 }
+174: const EMPLOYEE_DIALOG_STACK_GAP = { xs: 1.6, sm: 1.8 };
+3097: gap: 0.8
+3186: spacing={{
+3231: spacing={2}
+3294: gridTemplateColumns: {
+3300: gap: { xs: .65, sm: .8, lg: 1.5 }
+3335: spacing={1}
+3412: sx={[EMPLOYEE_PAGE_FIELD_SX, {
+3414: "& .MuiInputBase-root": {
+3417: "& .MuiInputBase-root.Mui-focused": {
+3429: sx={[EMPLOYEE_PAGE_FIELD_GAP, EMPLOYEE_PAGE_FIELD_SX, {
+3431: gridTemplateColumns: {
+3438: "& .MuiInputBase-root": {
+3441: "& .MuiInputBase-root.Mui-focused": {
+3522: spacing={0.7}
+3598: spacing={1}
+3632: sx={[EMPLOYEE_PAGE_FIELD_SX, {
+3671: spacing={1.5}
+3716: gridTemplateColumns: {
+3720: gap: {
+4009: spacing={1.5}
+4050: dir={EMPLOYEE_DIALOG_DIRECTION}
+4057: dir: EMPLOYEE_DIALOG_DIRECTION,
+4059: direction: EMPLOYEE_DIALOG_DIRECTION,
+4060: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+4107: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+4125: dir={EMPLOYEE_DIALOG_DIRECTION}
+4130: gap: 1.2,
+4132: direction: EMPLOYEE_DIALOG_DIRECTION
+4139: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4152: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4168: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4207: dir={EMPLOYEE_DIALOG_DIRECTION}
+4209: direction: EMPLOYEE_DIALOG_DIRECTION,
+4210: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+4225: "& .MuiInputBase-root": {
+4229: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4234: <Stack spacing={{ xs: .8, sm: 1 }}>
+4286: dir={EMPLOYEE_DIALOG_DIRECTION}
+4290: spacing={{ xs: .75, sm: 1.2 }}
+4294: direction: EMPLOYEE_DIALOG_DIRECTION
+4300: spacing={{ xs: .8, sm: 1.1 }}
+4305: direction: EMPLOYEE_DIALOG_DIRECTION
+4321: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+4383: spacing={.55}
+4387: direction: EMPLOYEE_DIALOG_DIRECTION
+4438: gridTemplateColumns: {
+4442: gap: { xs: .55, sm: .8 }
+4473: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4487: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4514: dir={EMPLOYEE_DIALOG_DIRECTION}
+4524: direction: EMPLOYEE_DIALOG_DIRECTION,
+4541: gap: .5
+4652: spacing={1}
+4665: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4696: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4720: sx={[EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {
+4722: gridTemplateColumns: {
+4728: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+4731: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+5011: spacing={.8}
+5087: direction: EMPLOYEE_DIALOG_DIRECTION,
+5088: gridTemplateColumns: {
+5093: gap: {
+5206: spacing={1}
+5212: spacing={.5}
+5230: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+5267: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+5295: direction: EMPLOYEE_DIALOG_DIRECTION,
+5296: gridTemplateColumns: {
+5301: gap: {
+5305: "& .MuiInputBase-root": {
+5311: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+5314: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+5316: "& .MuiInputLabel-root": {
+5532: spacing={.8}
+5599: direction: EMPLOYEE_DIALOG_DIRECTION,
+5600: gridTemplateColumns: {
+5605: gap: {
+5712: spacing={1}
+5719: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+5788: direction: EMPLOYEE_DIALOG_DIRECTION,
+5789: gridTemplateColumns: {
+5794: gap: .8,
+5795: "& .MuiInputBase-root": {
+5799: "& .MuiInputLabel-root": {
+5946: spacing={.7}
+6066: direction: EMPLOYEE_DIALOG_DIRECTION,
+6067: gridTemplateColumns: {
+6072: gap: { xs: .8, sm: 1, lg: 1.15 }
+6130: spacing={1}
+6134: spacing={.45}
+6196: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6201: spacing={.55}
+6249: spacing={.8}
+6251: sx={{ mt: .7, flexWrap: "wrap", rowGap: .35 }}
+6349: spacing={1.2}
+6358: spacing={1}
+6386: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6401: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6457: gridTemplateColumns: {
+6462: gap: 1
+6595: spacing={1}
+6667: direction: EMPLOYEE_DIALOG_DIRECTION,
+6668: gridTemplateColumns: {
+6672: gap: 1.4
+6692: spacing={1}
+6701: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6712: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6733: gridTemplateColumns: {
+6737: gap: .9
+6803: spacing={1}
+6812: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+6825: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6840: spacing={.7}
+6884: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6910: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+6917: spacing={.7}
+6949: spacing={1}
+6959: EMPLOYEE_DIALOG_TEXT_ALIGN,
+6976: EMPLOYEE_DIALOG_TEXT_ALIGN
+7083: spacing={1}
+7120: spacing={.65}
+7248: spacing={.7}
+7273: spacing={.8}
+7278: spacing={.5}
+7360: spacing={.5}
+7431: <Stack spacing={.7}>
+7449: spacing={.7}
+7582: <Stack spacing={1.1}>
+7614: spacing={1}
+7618: spacing={.8}
+7674: spacing={.45}
+7731: <Stack spacing={.9}>
+7737: spacing={.75}
+7766: "& .MuiInputBase-root": {
+7803: "& .MuiInputBase-root": {
+7877: spacing={.55}
+7965: spacing={1}
+7999: spacing={.8}
+8024: spacing={.45}
+8060: gridTemplateColumns: {
+8068: gap: .7
+8143: spacing={.55}
+8208: gridTemplateColumns:
+8210: gap: .7,
+8239: <Stack spacing={0}>
+8306: gridTemplateColumns: {
+8312: gap: {
+8602: <Stack spacing={1}>
+8623: spacing={1}
+8652: spacing={.6}
+8729: gridTemplateColumns: {
+8737: gap: .7
+8832: gridTemplateColumns:
+8834: gap: .7,
+8862: <Stack spacing={0}>
+8901: gridTemplateColumns: {
+8907: gap: .7,
+9039: dir={EMPLOYEE_DIALOG_DIRECTION}
+9046: direction: EMPLOYEE_DIALOG_DIRECTION,
+9054: spacing={1}
+9055: sx={{ mb: { xs: .8, sm: 1.1 }, direction: EMPLOYEE_DIALOG_DIRECTION }}
+9057: <Box sx={{ minWidth: 0, textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9064: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9075: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9137: gridTemplateColumns: {
+9141: gap: { xs: .65, sm: .8 },
+9142: direction: EMPLOYEE_DIALOG_DIRECTION
+9204: direction: EMPLOYEE_DIALOG_DIRECTION
+9210: spacing={.7}
+9211: sx={{ direction: EMPLOYEE_DIALOG_DIRECTION }}
+9272: <Box sx={{ minWidth: 0, flex: 1, textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9277: spacing={{ xs: .25, sm: .7 }}
+9278: sx={{ direction: EMPLOYEE_DIALOG_DIRECTION }}
+9283: spacing={.45}
+9285: sx={{ flexWrap: "wrap", rowGap: .3, direction: EMPLOYEE_DIALOG_DIRECTION }}
+9293: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9317: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9330: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9342: gridTemplateColumns: { xs: "1fr", sm: "repeat(2,minmax(0,1fr))" },
+9347: gap: .48,
+9348: direction: EMPLOYEE_DIALOG_DIRECTION
+9358: direction: EMPLOYEE_DIALOG_DIRECTION,
+9359: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9362: <Typography sx={{ fontFamily: "Cairo", fontSize: ".43rem", color: "#8b9690", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9365: <Typography sx={{ mt: .08, fontFamily: "Cairo", fontSize: { xs: ".55rem", sm: ".59rem" }, fontWeight: 800, color: "#58655f", wordBreak: "break-word", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9377: direction: EMPLOYEE_DIALOG_DIRECTION,
+9378: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9381: <Typography sx={{ fontFamily: "Cairo", fontSize: ".43rem", color: "#6f897c", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9384: <Typography sx={{ mt: .08, fontFamily: "Cairo", fontSize: { xs: ".55rem", sm: ".59rem" }, fontWeight: 900, color: primaryDark, wordBreak: "break-word", textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9416: dir={EMPLOYEE_DIALOG_DIRECTION}
+9430: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+9443: direction: EMPLOYEE_DIALOG_DIRECTION
+9446: <Stack spacing={1.1}>
+9462: EMPLOYEE_DIALOG_TEXT_ALIGN
+9475: EMPLOYEE_DIALOG_TEXT_ALIGN
+9571: gap: .7,
+9641: <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+9649: <Box sx={{ minWidth: 0, textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN }}>
+9707: spacing={1}
+9737: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+9893: `${EMPLOYEE_IMAGE_API}?action=get&userGuid=${encodeURIComponent(employeeGuid)}&t=${timestamp}`;
+9991: `${EMPLOYEE_IMAGE_API}?action=get&userGuid=${encodeURIComponent(employeeGuid)}&t=${Date.now()}`
+10079: dir={EMPLOYEE_DIALOG_DIRECTION}
+10092: direction: EMPLOYEE_DIALOG_DIRECTION,
+10093: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+10120: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
+10132: textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN,
+10160: spacing={1.2}
+10235: spacing={1}

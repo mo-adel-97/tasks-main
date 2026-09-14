@@ -936,11 +936,7 @@ export default function EmployeeCVAdminPage() {
                   direction: "rtl",
                   textAlign: "right"
                 },
-                "& .MuiInputLabel-root": {
-                  right: 24,
-                  left: "auto",
-                  transformOrigin: "right"
-                }
+
               }}
             />
           </Grid>
@@ -1014,7 +1010,7 @@ export default function EmployeeCVAdminPage() {
               >
                 {exporting ? (
                   <>
-                    <CircularProgress size={18} sx={{ color: "#fff", ml: 1 }} />
+                    <CircularProgress size={18} sx={{ color: "#fff", marginInlineEnd: 1 }} />
                     جاري التصدير...
                   </>
                 ) : (

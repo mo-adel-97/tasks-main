@@ -1,3 +1,4 @@
+import { hrChipSx } from "./hrControlStyles";
 // EmployeeProfileDialog.jsx
 import React from 'react';
 import {
@@ -369,7 +370,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
           borderRadius: 1, 
           backgroundColor: alpha(color, 0.1),
           color: color,
-          mr: 1
+          marginInlineEnd: 1
         }}>
           {icon}
         </Box>
@@ -382,7 +383,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
   );
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth dir="rtl" PaperProps={{ sx: { textAlign: "start" } }}>
       <DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5" fontWeight="bold">
@@ -465,23 +466,23 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
 
                 {/* مؤشرات سريعة */}
                 <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
-                  <Chip 
+                  <Chip sx={hrChipSx()} 
                     icon={<BeachAccess />} 
                     label={`${permissions?.annual_vacation_max_days || 0} يوم إجازة`}
                     variant="outlined"
                   />
-                  <Chip 
+                  <Chip sx={hrChipSx()} 
                     icon={<Schedule />} 
                     label={`${permissions?.permission_max_hours_month || 0} ساعة إذن`}
                     variant="outlined"
                   />
-                  <Chip 
+                  <Chip sx={hrChipSx()} 
                     icon={<AttachMoney />} 
                     label={formatCurrency(employeeData.salaryInfo.netSalary)}
                     color="success"
                     variant="outlined"
                   />
-                  <Chip 
+                  <Chip sx={hrChipSx()} 
                     icon={<Star />} 
                     label={`تقييم ${employeeData.performance.rating}/5`}
                     color="warning"
@@ -495,7 +496,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
 
         {/* التبويبات - مركزة */}
         <Card sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
             <Tabs 
               value={activeTab} 
               onChange={(e, newValue) => setActiveTab(newValue)}
@@ -530,11 +531,11 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                   <List dense>
                     <ListItem>
                       <ListItemIcon><Email color="action" /></ListItemIcon>
-                      <ListItemText primary="البريد الإلكتروني" secondary={employeeData.personalInfo.email} />
+                      <ListItemText primary="البريد الإلكتروني" secondary={<bdi dir="ltr">{employeeData.personalInfo.email}</bdi>} />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><Phone color="action" /></ListItemIcon>
-                      <ListItemText primary="رقم الهاتف" secondary={employeeData.personalInfo.phone} />
+                      <ListItemText primary="رقم الهاتف" secondary={<bdi dir="ltr">{employeeData.personalInfo.phone}</bdi>} />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><Business color="action" /></ListItemIcon>
@@ -548,7 +549,7 @@ const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage
                 <InfoCard title="المعلومات الوظيفية" icon={<Work />} color={COLOR_SCHEME.info}>
                   <List dense>
                     <ListItem>
-                      <ListItemText primary="رقم الهوية" secondary={employeeData.personalInfo.nationalId} />
+                      <ListItemText primary="رقم الهوية" secondary={<bdi dir="ltr">{employeeData.personalInfo.nationalId}</bdi>} />
                     </ListItem>
                     <ListItem>
                       <ListItemText primary="تاريخ الميلاد" secondary={formatDate(employeeData.personalInfo.birthDate)} />

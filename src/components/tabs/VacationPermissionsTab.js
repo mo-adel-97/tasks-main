@@ -1,3 +1,4 @@
+import { hrTabIconSx } from "../hrControlStyles";
 import React, { useState, useEffect } from "react";
 import { 
   Grid, 
@@ -838,17 +839,17 @@ const calculateServiceDuration = (employmentStartDate) => {
             }
           }}
         >
-          <Tab 
+          <Tab sx={hrTabIconSx} 
             icon={<Group />}
             iconPosition="start"
             label="إدارة صلاحيات الموظفين"
           />
-          <Tab 
+          <Tab sx={hrTabIconSx} 
             icon={<Event />}
             iconPosition="start"
             label="الإجازات العامة"
           />
-          <Tab 
+          <Tab sx={hrTabIconSx} 
             icon={<Settings />}
             iconPosition="start"
             label="الإعدادات العامة"

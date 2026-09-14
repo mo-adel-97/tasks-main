@@ -1,0 +1,26 @@
+﻿2841: "translateY(-1px)",
+2856: position: "absolute",
+2863: "translateY(-50%)",
+2882: position: "absolute",
+2889: "translateY(-50%)",
+3016: from: { opacity: 0, transform: "translateY(12px)" },
+3017: to: { opacity: 1, transform: "translateY(0)" }
+3020: from: { opacity: 0, transform: "translateY(9px) scale(.985)" },
+3021: to: { opacity: 1, transform: "translateY(0) scale(1)" }
+3024: from: { opacity: 0, transform: "translateY(5px)" },
+3025: to: { opacity: 1, transform: "translateY(0)" }
+3028: from: { opacity: 0, transform: "translateY(14px) scale(.975)" },
+3029: to: { opacity: 1, transform: "translateY(0) scale(1)" }
+3183: transform: isDesktop ? "translateY(-2px)" : "none",
+3532: transform: isDesktop ? "translateY(-1px)" : "none",
+3550: transform: isDesktop ? "translateY(-1px)" : "none",
+4254: position: "absolute",
+4258: top: -110,
+4265: position: "absolute",
+4454: transform: "translateY(-2px)",
+6118: position: "absolute",
+6123: top: -42,
+6128: transform: "translateY(-4px)",
+10053: position: "absolute",
+10107: position: "absolute",
+10116: transform: "translateY(-1px)",

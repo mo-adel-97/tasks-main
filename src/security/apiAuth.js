@@ -3,15 +3,26 @@ import axios from 'axios';
 const API_HOSTS = new Set([
   'api1.sstli.com',
   'api4.sstli.com',
+  'localhost:5258',
+  '127.0.0.1:5258',
   'localhost:5275',
   '127.0.0.1:5275'
 ]);
+
+const configuredApiOrigins = new Set(
+  [process.env.REACT_APP_API_BASE_URL, process.env.REACT_APP_API_URL]
+    .filter(Boolean)
+    .flatMap((value) => {
+      try { return [new URL(value, window.location.origin).origin]; }
+      catch { return []; }
+    })
+);
 
 const shouldAttachAuth = (rawUrl) => {
   try {
     const url = new URL(rawUrl, window.location.origin);
     const sameOriginApi = url.origin === window.location.origin && url.pathname.startsWith('/api/');
-    return API_HOSTS.has(url.host) || sameOriginApi;
+    return API_HOSTS.has(url.host) || configuredApiOrigins.has(url.origin) || sameOriginApi;
   } catch {
     return false;
   }

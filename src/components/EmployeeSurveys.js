@@ -1,3 +1,4 @@
+import { hrChipSx, hrTabIconSx } from "./hrControlStyles";
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect } from 'react';
@@ -422,13 +423,13 @@ const fetchSubmittedSurveys = async (user) => {
                     icon={<AccessTime />}
                     label={`${getDaysRemaining(survey.end_date)} أيام`}
                     size="small"
-                    sx={{ 
+                    sx={[hrChipSx("small"), { 
                       backgroundColor: getUrgencyColor(getDaysRemaining(survey.end_date)) + '15',
                       color: getUrgencyColor(getDaysRemaining(survey.end_date)),
                       fontFamily: '"Cairo", sans-serif',
                       fontWeight: 'bold',
                       border: `1px solid ${getUrgencyColor(getDaysRemaining(survey.end_date))}30`
-                    }}
+                    }]}
                   />
                 </Box>
 
@@ -520,12 +521,12 @@ const fetchSubmittedSurveys = async (user) => {
                     icon={<CheckCircle />}
                     label="مكتمل"
                     size="small"
-                    sx={{ 
+                    sx={[hrChipSx("small"), { 
                       backgroundColor: '#4caf50',
                       color: 'white',
                       fontFamily: '"Cairo", sans-serif',
                       fontWeight: 'bold'
-                    }}
+                    }]}
                   />
                 </Box>
 
@@ -661,12 +662,12 @@ const fetchSubmittedSurveys = async (user) => {
                     }
                   }}
                 >
-                  <Tab 
+                  <Tab sx={hrTabIconSx} 
                     icon={<EmojiEvents />}
                     iconPosition="start"
                     label={`استبيانات جديدة (${surveys.length})`} 
                   />
-                  <Tab 
+                  <Tab sx={hrTabIconSx} 
                     icon={<History />}
                     iconPosition="start"
                     label={`الاستبيانات السابقة (${submittedSurveys.length})`} 

@@ -1087,7 +1087,7 @@ const EmployeeCVDialog = ({ user, initialData, onSubmitted }) => {
             >
               {saving ? (
                 <>
-                  <CircularProgress size={20} sx={{ color: "#fff", mr: 1 }} />
+                  <CircularProgress size={20} sx={{ color: "#fff", marginInlineEnd: 1 }} />
                   جاري الحفظ...
                 </>
               ) : (

@@ -1,3 +1,4 @@
+import { hrChipSx, hrTabIconSx } from "./hrControlStyles";
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -2091,13 +2092,13 @@ const ResponsesMasterDetail = ({
   const columns = useMemo(() => {
     if (isExternal) {
       return [
-        { field: 'student_name', headerName: 'الطالب', flex: 1, minWidth: 180 },
-        { field: 'branch_name', headerName: 'الفرع', flex: 1, minWidth: 140 },
-        { field: 'diplom_name', headerName: 'الدبلوم', flex: 1, minWidth: 180 },
-        { field: 'student_tel', headerName: 'الجوال', flex: 0.8, minWidth: 130 },
+        { field: 'student_name', align: "right", headerAlign: "right", headerName: 'الطالب', flex: 1, minWidth: 180 },
+        { field: 'branch_name', align: "right", headerAlign: "right", headerName: 'الفرع', flex: 1, minWidth: 140 },
+        { field: 'diplom_name', align: "right", headerAlign: "right", headerName: 'الدبلوم', flex: 1, minWidth: 180 },
+        { field: 'student_tel', renderCell: (params) => <bdi dir="ltr">{params.value}</bdi>, align: "right", headerAlign: "right", headerName: 'الجوال', flex: 0.8, minWidth: 130 },
         {
           field: 'submitted_at',
-          headerName: 'التاريخ',
+          align: "right", headerAlign: "right", headerName: 'التاريخ',
           flex: 0.8,
           minWidth: 140,
           valueGetter: (p) => formatDate(p.row.submitted_at)
@@ -2106,11 +2107,11 @@ const ResponsesMasterDetail = ({
     }
 
     return [
-      { field: 'employee_name', headerName: 'الموظف', flex: 1, minWidth: 200 },
-      { field: 'department', headerName: 'القسم', flex: 1, minWidth: 160 },
+      { field: 'employee_name', align: "right", headerAlign: "right", headerName: 'الموظف', flex: 1, minWidth: 200 },
+      { field: 'department', align: "right", headerAlign: "right", headerName: 'القسم', flex: 1, minWidth: 160 },
       {
         field: 'submitted_at',
-        headerName: 'التاريخ',
+        align: "right", headerAlign: "right", headerName: 'التاريخ',
         flex: 0.8,
         minWidth: 140,
         valueGetter: (p) => formatDate(p.row.submitted_at)
@@ -2814,7 +2815,7 @@ async function chartToPngBase64({
                   </Box>
                 )}
                 startAdornment={
-                  <Business sx={{ color: primaryColor, mr: 1 }} />
+                  <Business sx={{ color: primaryColor, marginInlineEnd: 1 }} />
                 }
               >
                 {departments.map((dept) => (
@@ -2860,7 +2861,7 @@ async function chartToPngBase64({
                     </Box>
                   )}
                   startAdornment={
-                    <Work sx={{ color: primaryColor, mr: 1 }} />
+                    <Work sx={{ color: primaryColor, marginInlineEnd: 1 }} />
                   }
                 >
                   <MenuItem value="all" sx={{ fontFamily: '"Cairo", sans-serif' }}>
@@ -2907,7 +2908,7 @@ async function chartToPngBase64({
                               avatar={<Avatar sx={{ backgroundColor: primaryColor, fontSize: '0.75rem' }}>
                                 {u.fullName?.charAt(0) || ''}
                               </Avatar>}
-                              sx={chipStyle}
+                              sx={[hrChipSx(), chipStyle]}
                             />
                           ))
                       )}
@@ -2916,7 +2917,7 @@ async function chartToPngBase64({
                   startAdornment={
                     <Badge 
                       badgeContent={selectedUsers.includes("all") ? filteredUsers.length : selectedUsers.length} 
-                      sx={{ mr: 1 }}
+                      sx={{ marginInlineEnd: 1 }}
                     >
                       <Person sx={{ color: primaryColor }} />
                     </Badge>
@@ -3072,7 +3073,7 @@ async function chartToPngBase64({
         </Box>
       )}
       startAdornment={
-        <LocationOn sx={{ color: primaryColor, mr: 1 }} />
+        <LocationOn sx={{ color: primaryColor, marginInlineEnd: 1 }} />
       }
     >
       {branches.map((branch) => (
@@ -3116,7 +3117,7 @@ async function chartToPngBase64({
                     </Box>
                   )}
                   startAdornment={
-                    <School sx={{ color: primaryColor, mr: 1 }} />
+                    <School sx={{ color: primaryColor, marginInlineEnd: 1 }} />
                   }
                 >
                   <MenuItem value="all" sx={{ fontFamily: '"Cairo", sans-serif' }}>
@@ -4259,7 +4260,7 @@ const renderExternalSurveysTable = () => (
       {loadingExternalSurveys ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
           <CircularProgress sx={{ color: primaryColor }} />
-          <Typography sx={{ ml: 2, fontFamily: '"Cairo", sans-serif' }}>
+          <Typography sx={{ marginInlineStart: 2, fontFamily: '"Cairo", sans-serif' }}>
             جاري تحميل البيانات...
           </Typography>
         </Box>
@@ -4371,24 +4372,24 @@ const renderExternalSurveysTable = () => (
     }
   }}
 >
-  <Tab 
+  <Tab sx={hrTabIconSx} 
     icon={<Poll />}
     iconPosition="start"
     label="الاستبيانات الداخلية" 
   />
-  <Tab 
+  <Tab sx={hrTabIconSx} 
     icon={<Groups />}
     iconPosition="start"
     label="الاستبيانات الخارجية" 
   />
-  <Tab 
+  <Tab sx={hrTabIconSx} 
     icon={<History />}
     iconPosition="start"
     label="الردود والمشاركات" 
   />
 
   {/* 👇 الجديد */}
-  <Tab 
+  <Tab sx={hrTabIconSx} 
     icon={<Quiz />}
     iconPosition="start"
     label="الاختبارات" 
