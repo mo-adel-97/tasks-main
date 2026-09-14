@@ -12,10 +12,7 @@ export const sidebarSurfaceSx = {
   '&& .MuiListItemText-primary': { fontSize: designTokens.typography.sidebar, fontWeight: 600, lineHeight: 1.5 },
   '& .MuiListItemText-secondary': { fontSize: '0.75rem', lineHeight: 1.5 },
   '&& .MuiListItemIcon-root .MuiSvgIcon-root': { fontSize: '1rem' },
-  '&& .MuiListItemButton-root, && .MuiListItem-root': { minHeight: '2.125rem', paddingBlock: '0.25rem', marginBlock: '0.125rem', borderRadius: '8px' },
-  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-    '&& .MuiListItemButton-root, && .MuiListItem-root': { minHeight: 44 },
-  },
+  '&& .MuiListItemButton-root, && .MuiListItem-root': { minHeight: { xs: 44, lg: 34 }, paddingBlock: { xs: '0.375rem', lg: '0.25rem' }, marginBlock: '0.125rem', borderRadius: '8px' },
 };
 export const withUiSx = (original, ...additions) => [
   ...(Array.isArray(original) ? original : [original]), ...additions,
@@ -34,23 +31,18 @@ export const formFieldSx = {
     pointerEvents: 'auto',
   },
   '&& > .MuiInputBase-root': {
-    marginTop: 0, minHeight: 44, height: 'auto', borderRadius: '10px',
+    marginTop: 0, minHeight: { xs: 44, lg: designTokens.controlHeight }, height: 'auto', borderRadius: '10px',
     fontSize: '0.875rem',
   },
   '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': {
-    paddingBlock: '10px', height: 'auto', lineHeight: '24px',
+    paddingBlock: { xs: '10px', lg: '6px' }, height: 'auto', lineHeight: { xs: '24px', lg: '22px' },
   },
   '&& > .MuiInputBase-root > .MuiOutlinedInput-notchedOutline > legend': {
     display: 'none',
   },
-  '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: '2px' },
+  '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: { xs: '2px', lg: '0px' } },
   '&& .MuiFormHelperText-root': {
     marginInline: 0, lineHeight: 1.6, textAlign: 'start',
-  },
-  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-    '&& > .MuiInputBase-root': { minHeight: designTokens.controlHeight },
-    '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingBlock: '6px', lineHeight: '22px', fontSize: designTokens.typography.control },
-    '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: '0px' },
   },
 };
 

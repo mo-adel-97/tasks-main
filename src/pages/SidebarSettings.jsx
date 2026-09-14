@@ -524,7 +524,7 @@ export default function SidebarSettings() {
         width: "100%",
         boxSizing: "border-box",
         bgcolor: soft,
-        p: { xs: 1, md: 2 }
+
       }, {})}
     >
       <Paper sx={{ bgcolor: primary, color: "white", p: { xs: 1.4, md: 2 }, borderRadius: 3, mb: 1.5 }}>
