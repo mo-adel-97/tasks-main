@@ -1,5 +1,6 @@
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
+import { designTokens } from '../config/designTokens';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -2254,8 +2255,8 @@ const handleAcceptOrder = (row) => {
       {
         field: "actions",
         headerName: "الإجراءات",
-        flex: 0.55,
-        minWidth: 115,
+        flex: 0.75,
+        minWidth: 138,
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
@@ -2267,11 +2268,13 @@ const handleAcceptOrder = (row) => {
             endIcon={<MoreVertIcon />}
             onClick={(event) => handleOpenActionMenu(event, params.row)}
             sx={uiLayout.withUiSx({
-              minWidth: 95,
+              minWidth: 126,
+              width: "100%",
               height: 32,
               borderRadius: 999,
               fontWeight: 900,
-              fontSize: "0.78rem",
+              fontSize: designTokens.typography.table,
+              whiteSpace: "nowrap",
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
               boxShadow: "0 6px 16px rgba(5,117,70,0.22)",
               "&:hover": {
@@ -2659,11 +2662,11 @@ const handleAcceptOrder = (row) => {
           elevation={0}
           sx={{
             mb: isDesktop ? 1.8 : { xs: 0.45, sm: 0.7, md: 0.9 },
-            borderRadius: isDesktop ? 5 : { xs: 1.6, sm: 2, md: 2.4 },
+            borderRadius: isDesktop ? `${designTokens.radius}px` : { xs: 1.6, sm: 2, md: 2.4 },
             border: `1px solid rgba(5,117,70,0.16)`,
             overflow: "hidden",
             backgroundColor: whiteColor,
-            boxShadow: "0 22px 55px rgba(5,117,70,0.13)",
+            boxShadow: "0 14px 32px rgba(5,117,70,0.10)",
             position: "relative"
           }}
         >
@@ -2675,9 +2678,9 @@ const handleAcceptOrder = (row) => {
               flexWrap: "wrap",
               alignItems: "center",
               justifyContent: "space-between",
-              px: isDesktop ? 2 : { xs: 0.45, sm: 0.7, md: 1 },
-              py: isDesktop ? 1.4 : { xs: 0.45, sm: 0.6, md: 0.8 },
-              gap: isDesktop ? 2 : { xs: 0.35, sm: 0.55, md: 0.75 },
+              px: isDesktop ? 1.25 : { xs: 0.45, sm: 0.7, md: 1 },
+              py: isDesktop ? 0.8 : { xs: 0.45, sm: 0.6, md: 0.8 },
+              gap: isDesktop ? 1 : { xs: 0.35, sm: 0.55, md: 0.75 },
               background: `
                 radial-gradient(circle at 12% 0%, rgba(174,30,33,0.10), transparent 30%),
                 radial-gradient(circle at 88% 0%, rgba(5,117,70,0.16), transparent 34%),
@@ -2690,7 +2693,7 @@ const handleAcceptOrder = (row) => {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: 4,
+                height: 3,
                 background: `linear-gradient(90deg, ${accentColor}, #f4c542, ${primaryColor})`
               }
             }}
@@ -2698,19 +2701,19 @@ const handleAcceptOrder = (row) => {
             <Box
               sx={{
                 display: isDesktop ? "flex" : "none",
-                width: "clamp(8rem, 12vw, 10rem)",
+                width: "clamp(7.5rem, 11vw, 9rem)",
                 maxWidth: "100%",
                 minWidth: 0,
-                padding: "0.625rem 1rem",
+                padding: "0.5rem 0.75rem",
                 alignItems: "center",
                 justifyContent: "center",
-                borderRadius: 4,
+                borderRadius: `${designTokens.radius}px`,
                 border: `2px solid rgba(5,117,70,0.26)`,
                 background: `linear-gradient(145deg, ${whiteColor} 0%, #edf9f3 100%)`,
                 color: primaryDark,
                 fontWeight: 1000,
                 textAlign: "center",
-                fontSize: "0.95rem",
+                fontSize: designTokens.typography.control,
                 letterSpacing: "0.3px",
                 boxShadow: "0 16px 35px rgba(5,117,70,0.17)",
                 position: "relative",
@@ -2732,7 +2735,7 @@ const handleAcceptOrder = (row) => {
 
             <Stack
               direction="row"
-              spacing={isDesktop ? 1.2 : 0}
+              spacing={isDesktop ? 0.8 : 0}
               alignItems="center"
               sx={{ ...uiLayout.actionBarSx, width: { xs: '100%', md: 'auto' },
           '& > .MuiButton-root': { flex: { xs: '1 1 120px', md: '0 0 auto' }, width: 'auto', minHeight: { xs: 44, lg: 36 }, px: 1.5, fontSize: '0.8125rem' } }}
@@ -2764,20 +2767,20 @@ const handleAcceptOrder = (row) => {
 
           <Box
             sx={{
-              px: isDesktop ? 2 : { xs: 0.45, sm: 0.7, md: 1 },
-              py: isDesktop ? 1.5 : { xs: 0.45, sm: 0.6, md: 0.8 },
+              px: isDesktop ? 1.25 : { xs: 0.45, sm: 0.7, md: 1 },
+              py: isDesktop ? 0.9 : { xs: 0.45, sm: 0.6, md: 0.8 },
               background: `linear-gradient(180deg, ${whiteColor} 0%, #fbfffd 100%)`
             }}
           >
             <Grid
               container
-              spacing={1.2}
+              spacing={0.8}
               alignItems="center"
               sx={{
                 direction: "rtl"
               }}
             >
-              <Grid item xs={12} md={3.8} sx={{ width: "100%" }}>
+              <Grid item xs={12} md={4} sx={{ width: "100%" }}>
                 <RadioGroup
                   row
                   value={searchType}
@@ -2830,7 +2833,7 @@ const handleAcceptOrder = (row) => {
                 </RadioGroup>
               </Grid>
 
-              <Grid item xs={12} md={4.2} sx={{ width: "100%" }}>
+              <Grid item xs={12} md={4} sx={{ width: "100%" }}>
                 <TextField
                   fullWidth
                   size="small"
@@ -2864,26 +2867,22 @@ const handleAcceptOrder = (row) => {
   }
 , shrink: true }}
                   inputProps={{
-  style: {
-    textAlign: "right",
-    fontWeight: 900,
-    direction: "rtl",
-    fontSize: isPhone
-      ? "0.75rem"
-      : isTablet
-        ? "0.82rem"
-        : "1rem",
-  }
-}}
+                    style: {
+                      textAlign: "right",
+                      fontWeight: 900,
+                      direction: "rtl",
+                      fontSize: designTokens.typography.control
+                    }
+                  }}
                   sx={uiLayout.withUiSx({
                     backgroundColor: whiteColor,
-                    borderRadius: 3,
+                    borderRadius: `${designTokens.radius}px`,
                     direction: "rtl",
                     boxShadow: "0 8px 22px rgba(5,117,70,0.07)",
                     "& .MuiOutlinedInput-root": {
                       fontWeight: 900,
                       minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 40 },
-                      borderRadius: isDesktop ? 3 : 1.5,
+                      borderRadius: isDesktop ? `${designTokens.radius}px` : 1.5,
                       "& fieldset": { borderColor: primaryLight },
                       "&:hover fieldset": { borderColor: primaryColor },
                       "&.Mui-focused fieldset": { borderColor: primaryColor, borderWidth: 2 }
@@ -2905,10 +2904,11 @@ const handleAcceptOrder = (row) => {
                     display: isDesktop ? "flex" : "grid",
                     alignItems: "center",
                     justifyContent: isDesktop ? "center" : "stretch",
+                    flexWrap: isDesktop ? "nowrap" : undefined,
 
                     // Mobile / Tablet: العداد + العنوان + الزرين في صف مرتب.
                     gridTemplateColumns: isDesktop
-                      ? "none"
+                      ? "auto auto minmax(0, 1fr) minmax(0, 1fr)"
                       : "auto auto minmax(0, 1fr) minmax(0, 1fr)",
 
                     gap: isDesktop
@@ -2918,9 +2918,9 @@ const handleAcceptOrder = (row) => {
                     "& .MuiButton-root": {
                       width: isDesktop ? "auto" : "100%",
                       minWidth: isDesktop ? 95 : 0,
-                      height: isDesktop ? 40 : { xs: 30, sm: 33, md: 36 },
+                      height: isDesktop ? designTokens.controlHeight : { xs: 30, sm: 33, md: 36 },
                       fontSize: isDesktop
-                        ? "0.82rem"
+                        ? designTokens.typography.control
                         : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       whiteSpace: "nowrap"
                     }
@@ -2934,7 +2934,7 @@ const handleAcceptOrder = (row) => {
                       whiteSpace: "nowrap",
                       minWidth: isDesktop ? 120 : "auto",
                       fontSize: isDesktop
-                        ? "0.9rem"
+                        ? designTokens.typography.control
                         : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       textAlign: "center"
                     }}
@@ -2947,7 +2947,7 @@ const handleAcceptOrder = (row) => {
                       color: accentColor,
                       fontWeight: 900,
                       fontSize: isDesktop
-                        ? "1.25rem"
+                        ? "1rem"
                         : { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
                       minWidth: isDesktop ? 34 : 22,
                       textAlign: "center"
@@ -3060,7 +3060,7 @@ const handleAcceptOrder = (row) => {
             width: "100%",
             overflow: "hidden",
             maxWidth: "100%",
-            borderRadius: 4,
+            borderRadius: `${designTokens.radius}px`,
             border: `1px solid rgba(5,117,70,0.16)`,
             overflow: "hidden",
             backgroundColor: whiteColor,
@@ -3084,8 +3084,8 @@ const handleAcceptOrder = (row) => {
             }
             loading={loading}
             disableRowSelectionOnClick
-            rowHeight={isDesktop ? 60 : isPhone ? 38 : 44}
-            columnHeaderHeight={isDesktop ? 48 : isPhone ? 34 : 40}
+            rowHeight={isDesktop ? 44 : isPhone ? 38 : 44}
+            columnHeaderHeight={isDesktop ? 42 : isPhone ? 34 : 40}
             pageSizeOptions={[30, 60, 100]}
             initialState={{
               pagination: {
@@ -3285,9 +3285,9 @@ const handleAcceptOrder = (row) => {
           elevation={0}
           sx={{
             minWidth: 300,
-            px: 4,
-            py: 3.2,
-            borderRadius: 4,
+            px: 2.5,
+            py: 2,
+            borderRadius: `${designTokens.radius}px`,
             textAlign: "center",
             direction: "rtl",
             border: "1px solid rgba(255,255,255,0.32)",
@@ -3296,7 +3296,7 @@ const handleAcceptOrder = (row) => {
           }}
         >
           <Box sx={{ position: "relative", display: "inline-flex" }}>
-            <CircularProgress size={58} thickness={4.2} sx={{ color: primaryColor }} />
+            <CircularProgress size={48} thickness={4} sx={{ color: primaryColor }} />
             <Box
               sx={{
                 position: "absolute",
@@ -3306,10 +3306,10 @@ const handleAcceptOrder = (row) => {
                 justifyContent: "center"
               }}
             >
-              <SchoolIcon sx={{ color: primaryColor, fontSize: 25 }} />
+              <SchoolIcon sx={{ color: primaryColor, fontSize: 22 }} />
             </Box>
           </Box>
-          <Typography sx={{ mt: 1.8, color: textColor, fontWeight: 950, fontSize: "1rem" }}>
+          <Typography sx={{ mt: 1.2, color: textColor, fontWeight: 950, fontSize: designTokens.typography.control }}>
             {actionLoadingLabel}
           </Typography>
           <Typography sx={{ mt: 0.55, color: "#6b7b75", fontWeight: 700, fontSize: "0.78rem" }}>
@@ -3323,7 +3323,7 @@ const handleAcceptOrder = (row) => {
         onClose={() => !detailsLoading && setDetailsOpen(false)}
         fullWidth
         maxWidth="lg"
-        PaperProps={{ sx: { borderRadius: 3, direction: "rtl", textAlign: "start" } }}
+        PaperProps={{ sx: { borderRadius: `${designTokens.radius}px`, direction: "rtl", textAlign: "start" } }}
       >
         <DialogTitle sx={{ fontWeight: 900, color: textColor }}>
           بيانات تسجيل طالب

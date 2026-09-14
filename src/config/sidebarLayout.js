@@ -11,9 +11,9 @@ export const SIDEBAR_DESKTOP_QUERY = `(min-width:${DESKTOP_BREAKPOINT}px)`;
 
 // Drawer is fluid and capped, so it works on small phones through tablets.
 export const SIDEBAR_MOBILE_WIDTH = {
-  xs: 'min(86vw, 312px)',
-  sm: 'min(72vw, 320px)',
-  md: 'min(42vw, 336px)',
+  xs: 'min(86vw, 300px)',
+  sm: 'min(72vw, 308px)',
+  md: 'min(42vw, 324px)',
 };
 export const SIDEBAR_MOBILE_MAX_WIDTH = 'calc(100vw - 40px)';
 

@@ -10,6 +10,7 @@ import {
   sidebarPositionStyle,
 } from '../config/sidebarLayout';
 import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
+import { designTokens } from '../config/designTokens';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
@@ -772,10 +773,10 @@ const childItemSx = (selected) => ({
           sx={{
             mb: isDesktop ? 0.6 : 0.3,
             mx: isDesktop ? 1 : 0.45,
-            minHeight: isDesktop ? 48 : 38,
-            px: isDesktop ? 1.15 : 0.72,
-            py: isDesktop ? 0.75 : 0.38,
-            borderRadius: isDesktop ? 3 : 2,
+            minHeight: designTokens.sidebar.itemHeight,
+            px: isDesktop ? 0.75 : 0.5,
+            py: isDesktop ? 0.5 : 0.375,
+            borderRadius: designTokens.sidebar.itemRadius,
             color: selected ? whiteColor : textColor,
             background: selected
               ? 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
@@ -810,7 +811,7 @@ const childItemSx = (selected) => ({
                 sx={{
                   minWidth: isDesktop ? 26 : 22,
                   color: selected ? whiteColor : '#1976d2',
-                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
+                  '& svg': { fontSize: designTokens.sidebar.iconSize }
                 }}
               >
                 {item.icon}
@@ -824,13 +825,13 @@ const childItemSx = (selected) => ({
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
                   fontWeight: 800,
-                  fontSize: isDesktop ? '0.9rem' : "0.75rem",
+                  fontSize: designTokens.sidebar.titleSize,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? "0.75rem" : "0.75rem",
+                  fontSize: designTokens.typography.helper,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px',
                   color: selected ? 'rgba(255,255,255,.78)' : mutedTextColor
@@ -849,7 +850,7 @@ const childItemSx = (selected) => ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontFamily: 'Cairo',
-                    fontSize: isDesktop ? "0.75rem" : "0.75rem",
+                    fontSize: designTokens.typography.helper,
                     fontWeight: 900,
                     color: selected ? '#1976d2' : whiteColor,
                     background: selected
@@ -895,10 +896,10 @@ const childItemSx = (selected) => ({
           sx={{
             mb: isDesktop ? 0.45 : 0.25,
             mx: isDesktop ? 1 : 0.45,
-            minHeight: isDesktop ? 48 : 38,
-            px: isDesktop ? 1.15 : 0.72,
-            py: isDesktop ? 0.75 : 0.38,
-            borderRadius: isDesktop ? 3 : 2,
+            minHeight: designTokens.sidebar.itemHeight,
+            px: isDesktop ? 0.75 : 0.5,
+            py: isDesktop ? 0.5 : 0.375,
+            borderRadius: designTokens.sidebar.itemRadius,
             color: open || active ? whiteColor : textColor,
             background: open || active
               ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`
@@ -929,7 +930,7 @@ const childItemSx = (selected) => ({
                 sx={{
                   minWidth: isDesktop ? 26 : 22,
                   color: 'inherit',
-                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
+                  '& svg': { fontSize: designTokens.sidebar.iconSize }
                 }}
               >
                 {icon}
@@ -941,7 +942,7 @@ const childItemSx = (selected) => ({
                 '.MuiTypography-root': {
                   fontFamily: 'Cairo',
                   fontWeight: 800,
-                  fontSize: isDesktop ? '0.8rem' : "0.75rem",
+                  fontSize: designTokens.sidebar.titleSize,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
                 }
@@ -958,9 +959,9 @@ const childItemSx = (selected) => ({
               
 
               {open ? (
-                <ExpandLess sx={{ fontSize: isDesktop ? '1.05rem' : '0.9rem' }} />
+                <ExpandLess sx={{ fontSize: designTokens.sidebar.iconSize }} />
               ) : (
-                <ExpandMore sx={{ fontSize: isDesktop ? '1.05rem' : '0.9rem' }} />
+                <ExpandMore sx={{ fontSize: designTokens.sidebar.iconSize }} />
               )}
             </Box>
           </Box>
@@ -980,7 +981,7 @@ const childItemSx = (selected) => ({
                   borderRadius: isDesktop ? 2.5 : 1.8,
                   textAlign: 'center',
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? '0.76rem' : "0.75rem",
+                  fontSize: designTokens.typography.helper,
                   color: mutedTextColor,
                   background: '#ffffff',
                   border: '1px solid rgba(5,117,70,0.09)'
@@ -1343,10 +1344,10 @@ const childItemSx = (selected) => ({
           startIcon={<ExitToAppIcon />}
           onClick={handleLogout}
           sx={uiLayout.withUiSx({
-            borderRadius: 3,
+            borderRadius: designTokens.sidebar.itemRadius,
             fontWeight: 'bold',
-            py: isDesktop ? 1.2 : 0.65,
-            fontSize: isDesktop ? '0.84rem' : "0.75rem",
+            py: isDesktop ? 0.75 : 0.65,
+            fontSize: designTokens.typography.control,
             minHeight: isDesktop ? 'auto' : 34,
             background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
             color: whiteColor,

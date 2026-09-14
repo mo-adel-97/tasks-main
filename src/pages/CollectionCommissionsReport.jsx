@@ -962,7 +962,7 @@ const CollectionCommissionsReport = () => {
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: `${designTokens.radius}px`,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -986,7 +986,7 @@ const CollectionCommissionsReport = () => {
               <PaidIcon
                 sx={{
                   color: "#057546",
-                  fontSize: 38
+                  fontSize: 30
                 }}
               />
 
@@ -1025,23 +1025,34 @@ const CollectionCommissionsReport = () => {
               sx={{
                 mb: 2,
                 p: designTokens.cardPadding,
-                borderRadius: 3,
+                borderRadius: `${designTokens.radius}px`,
                 border:
                   "1px solid rgba(5,117,70,0.13)",
                 background: "#fbfdfc"
               }}
             >
-              <Stack sx={uiLayout.filterBarSx}
-                direction={{
-                  xs: "column",
-                  xl: "row"
-                }}
-                spacing={1.4}
-                alignItems={{
-                  xs: "stretch",
-                  xl: "center"
+              <Stack
+                spacing={1}
+                sx={{
+                  direction: "rtl",
+                  minWidth: 0
                 }}
               >
+                <Box
+                  sx={{
+                    direction: "rtl",
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(3,minmax(0,1fr))",
+                    gap: designTokens.layoutGap,
+                    minWidth: 0,
+                    alignItems: "start",
+                    "& > *": {
+                      minWidth: 0,
+                      width: "100%"
+                    }
+                  }}
+                >
                 <TextField sx={uiLayout.formFieldSx}
                   type="date"
                   size="small"
@@ -1094,12 +1105,21 @@ const CollectionCommissionsReport = () => {
                   getOptionLabel={(option) =>
                     option?.name || ""
                   }
-                  sx={{
-                    minWidth: {
-                      xs: "100%",
-                      xl: 330
+                  sx={uiLayout.withUiSx({
+                    minWidth: 0,
+                    width: "100%",
+                    "& .MuiInputBase-root": {
+                      minHeight: designTokens.controlHeight,
+                      height: designTokens.controlHeight,
+                      boxSizing: "border-box"
+                    },
+                    "& .MuiAutocomplete-inputRoot": {
+                      paddingBlock: 0
+                    },
+                    "& .MuiAutocomplete-input": {
+                      paddingBlock: 0
                     }
-                  }}
+                  }, uiLayout.formFieldSx)}
                   renderInput={(params) => (
                     <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                       {...params}
@@ -1127,7 +1147,14 @@ const CollectionCommissionsReport = () => {
                     />
                   )}
                 />
+              </Box>
 
+              <Stack
+                direction="row"
+                spacing={1}
+                justifyContent="flex-start"
+                sx={uiLayout.actionBarSx}
+              >
                 <Button
                   variant="contained"
                   startIcon={<SearchIcon />}
@@ -1199,6 +1226,7 @@ const CollectionCommissionsReport = () => {
                     : "ترحيل لشيت المكافآت"}
                 </Button>
               </Stack>
+              </Stack>
             </Paper>
 
             <Stack
@@ -1253,7 +1281,8 @@ const CollectionCommissionsReport = () => {
             <Box
               sx={uiLayout.withUiSx({
                 width: "100%",
-                height: designTokens.dataRegionHeight,
+                height: "clamp(24rem, calc(100dvh - 360px), 42rem)",
+                minHeight: 420,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,

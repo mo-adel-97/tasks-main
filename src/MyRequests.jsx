@@ -1,4 +1,6 @@
 import * as uiLayout from './components/common/uiLayout';
+import PageContainer from './components/common/PageContainer';
+import { designTokens } from './config/designTokens';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from './config/sidebarLayout';
 import NavigationShell from './components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
@@ -11,8 +13,6 @@ import {
   Button,
   Chip,
   CircularProgress,
-  Checkbox,
-  FormControlLabel,
   Dialog,
   DialogActions,
   DialogContent,
@@ -424,7 +424,7 @@ const showSuccess = (text) =>
 function GenericItemsTable({ title, rows }) {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   if (!Array.isArray(rows) || rows.length === 0) return null;
@@ -507,7 +507,7 @@ function GenericItemsTable({ title, rows }) {
           fontWeight: 950,
           mb: isPhone ? 0.35 : isTablet ? 0.5 : 1,
           color: primaryColor,
-          fontSize: isPhone ? "0.48rem" : isTablet ? "0.58rem" : undefined
+          fontSize: designTokens.typography.control
         }}
       >
         {title}
@@ -526,7 +526,7 @@ function GenericItemsTable({ title, rows }) {
               py: isPhone ? 0.35 : isTablet ? 0.5 : 0.8,
               whiteSpace: "nowrap",
               textAlign: "center",
-              fontSize: isPhone ? "0.39rem" : isTablet ? "0.48rem" : undefined
+              fontSize: designTokens.typography.table
             },
             "& th": {
               backgroundColor: "#edf8f2",
@@ -560,7 +560,7 @@ function GenericItemsTable({ title, rows }) {
 function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }) {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const salesNotes =
@@ -579,10 +579,10 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
 
   const compactFieldSx = {
     "& .MuiInputLabel-root": {
-      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+          fontSize: designTokens.typography.helper
     },
-    "& .MuiInputBase-input": {
-      fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+        "& .MuiInputBase-input": {
+          fontSize: designTokens.typography.table,
       fontWeight: 800,
       py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
     },
@@ -675,7 +675,7 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
         {loading ? (
           <Stack alignItems="center" spacing={1} sx={{ py: isCompact ? 4 : 8 }}>
             <CircularProgress size={isPhone ? 24 : isTablet ? 30 : 40} />
-            <Typography sx={{ fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined }}>
+            <Typography sx={{ fontSize: designTokens.typography.control }}>
               جاري تحميل بيانات الطلب...
             </Typography>
           </Stack>
@@ -781,7 +781,7 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
                       borderRadius: isCompact ? 1.2 : 3
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: designTokens.typography.helper }}>
                       {label}
                     </Typography>
                     <Typography
@@ -878,7 +878,7 @@ function PaymentDetailsDialog({
 }) {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const accountNotes =
@@ -897,10 +897,10 @@ function PaymentDetailsDialog({
 
   const compactFieldSx = {
     "& .MuiInputLabel-root": {
-      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+      fontSize: designTokens.typography.helper
     },
     "& .MuiInputBase-input": {
-      fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+      fontSize: designTokens.typography.table,
       fontWeight: 800,
       py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
     },
@@ -993,7 +993,7 @@ function PaymentDetailsDialog({
         {loading ? (
           <Stack alignItems="center" spacing={1} sx={{ py: isCompact ? 4 : 8 }}>
             <CircularProgress size={isPhone ? 24 : isTablet ? 30 : 40} />
-            <Typography sx={{ fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined }}>
+            <Typography sx={{ fontSize: designTokens.typography.control }}>
               جاري تحميل بيانات طلب السداد...
             </Typography>
           </Stack>
@@ -1098,7 +1098,7 @@ function PaymentDetailsDialog({
                     py: isPhone ? 0.35 : isTablet ? 0.5 : 0.9,
                     whiteSpace: "nowrap",
                     textAlign: "center",
-                    fontSize: isPhone ? "0.39rem" : isTablet ? "0.48rem" : undefined
+                    fontSize: designTokens.typography.table
                   },
                   "& th": {
                     backgroundColor: "#f7d58b",
@@ -1157,7 +1157,7 @@ function PaymentDetailsDialog({
                       borderRadius: isCompact ? 1.2 : 3
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.34rem" : isTablet ? "0.44rem" : undefined }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: designTokens.typography.helper }}>
                       {label}
                     </Typography>
                     <Typography
@@ -1366,9 +1366,10 @@ const shortStudentName = (value) => {
 export default function MyRequests() {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isCompact = isPhone || isTablet;
+  const isTableCompact = isCompact;
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const user = useMemo(() => readCurrentUser(), []);
@@ -1381,7 +1382,7 @@ export default function MyRequests() {
   const [searchText, setSearchText] = useState("");
   const [fromDate, setFromDate] = useState(todayText());
   const [toDate, setToDate] = useState(todayText());
-  const [showAll, setShowAll] = useState(false);
+  const showAll = false;
   const [loading, setLoading] = useState(false);
   const [sendingId, setSendingId] = useState("");
   const [savingTraineeNoteId, setSavingTraineeNoteId] = useState("");
@@ -2688,7 +2689,7 @@ export default function MyRequests() {
             width: "100%",
             px: 0.05,
             fontWeight: 850,
-            fontSize: isPhone ? "0.33rem" : "0.43rem",
+            fontSize: designTokens.typography.table,
             lineHeight: 1.15,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -2913,7 +2914,15 @@ export default function MyRequests() {
     ];
   };
 
-  const responsiveColumns = isCompact ? getCompactColumns() : columns;
+  const responsiveColumns = isTableCompact
+    ? getCompactColumns()
+    : columns.map((column) => ({
+        ...column,
+        minWidth: column.field === "actions" || column.field === "approvalActions"
+          ? 72
+          : 0,
+        flex: column.flex || 1
+      }));
 
   const selectedTab = tabs.find((item) => item.key === activeTab);
 
@@ -2921,10 +2930,11 @@ export default function MyRequests() {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       dir="rtl"
       sx={{
-        minHeight: "100dvh",
+        height: isDesktop ? "100dvh" : "auto",
+        minHeight: isDesktop ? 0 : "100dvh",
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "hidden",
+        overflow: isDesktop ? "hidden" : "visible",
         background: "linear-gradient(180deg, #f8fcfa 0%, #eef8f3 100%)",
         fontFamily: "Cairo, Arial, sans-serif",
         position: "relative"
@@ -2981,31 +2991,22 @@ export default function MyRequests() {
 
       
 
-      <Box
+      <PageContainer
+        component="main"
         sx={{
-          width: "100%",
-          maxWidth: "100%",
-          minWidth: 0,
-          ml: 0,
-          mr: 0,
-          p: {
-            xs: 0.45,
-            sm: 0.65,
-            md: 0.9,
-            lg: 1.2
-          },
-          boxSizing: "border-box",
-          overflowX: "hidden",
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            p: 2.2
-          },
+          mt: 0,
+          height: isDesktop ? "100%" : "auto",
+          overflow: isDesktop ? "hidden" : "visible",
           ...navigationContentSx
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            height: isDesktop ? "100%" : "auto",
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: `${designTokens.radius}px`,
             overflow: "hidden",
             border: "1px solid rgba(5,117,70,0.14)",
             boxShadow: "0 18px 45px rgba(5,117,70,0.10)"
@@ -3014,20 +3015,21 @@ export default function MyRequests() {
           <Box
             dir="rtl"
             sx={{
-              px: isPhone ? 0.75 : isTablet ? 1.1 : 3,
-              py: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+              px: isPhone ? 0.75 : isTablet ? 1.1 : designTokens.cardPadding,
+              py: isPhone ? 0.65 : isTablet ? 0.9 : designTokens.cardPadding,
               color: "white",
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center"
+              alignItems: "center",
+              flexShrink: 0
             }}
           >
             <Box>
               <Typography
                 sx={{
                   fontWeight: 950,
-                  fontSize: isPhone ? "0.7rem" : isTablet ? "0.85rem" : "1.5rem"
+                  fontSize: isDesktop ? "0.9rem" : designTokens.typography.pageTitle
                 }}
               >
                 قائمة طلباتي
@@ -3035,7 +3037,7 @@ export default function MyRequests() {
               <Typography
                 sx={{
                   opacity: 0.86,
-                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : "0.85rem",
+                  fontSize: isDesktop ? "0.625rem" : designTokens.typography.helper,
                   display: isPhone ? "none" : "block"
                 }}
               >
@@ -3049,8 +3051,8 @@ export default function MyRequests() {
                 backgroundColor: "white",
                 color: primaryDark,
                 fontWeight: 950,
-                height: isPhone ? 22 : isTablet ? 26 : undefined,
-                fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                height: isPhone ? 22 : 24,
+                fontSize: isDesktop ? "0.625rem" : designTokens.typography.helper
               }}
             />
           </Box>
@@ -3058,21 +3060,26 @@ export default function MyRequests() {
           <Tabs
             value={activeTab}
             onChange={(_, value) => setActiveTab(value)}
-            variant="scrollable"
-            scrollButtons="auto"
+            variant={isPhone ? "scrollable" : "standard"}
+            scrollButtons={isPhone ? "auto" : false}
             dir="rtl"
             sx={{
               borderBottom: "1px solid rgba(5,117,70,0.12)",
+              flexShrink: 0,
               "& .MuiTab-root": {
-                minHeight: isPhone ? 38 : isTablet ? 44 : 62,
-                minWidth: isPhone ? 82 : isTablet ? 98 : 120,
-                px: isPhone ? 0.45 : isTablet ? 0.7 : 1.2,
-                py: isPhone ? 0.3 : isTablet ? 0.45 : 0.8,
+                minHeight: isPhone ? 38 : 38,
+                minWidth: isPhone ? 82 : isTablet ? 96 : 0,
+                flex: isPhone ? undefined : 1,
+                px: isPhone ? 0.45 : isTablet ? 0.7 : 0.75,
+                py: isPhone ? 0.3 : 0.2,
                 fontFamily: "Cairo",
                 fontWeight: 850,
-                fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
-                gap: isPhone ? 0.25 : isTablet ? 0.4 : 0.8,
-                "& svg": { fontSize: isPhone ? 15 : isTablet ? 17 : undefined }
+                fontSize: isDesktop ? "0.6875rem" : designTokens.typography.label,
+                whiteSpace: "normal",
+                lineHeight: 1.25,
+                overflowWrap: "anywhere",
+                gap: isPhone ? 0.25 : 0.25,
+                "& svg": { fontSize: isPhone ? 15 : 14 }
               },
               "& .MuiTabs-indicator": {
                 height: isCompact ? 2.5 : 4,
@@ -3091,7 +3098,13 @@ export default function MyRequests() {
             ))}
           </Tabs>
 
-          <Box sx={{ p: isPhone ? 0.45 : isTablet ? 0.7 : 2 }}>
+          <Box sx={{
+            p: isPhone ? 0.45 : isTablet ? 0.7 : designTokens.cardPadding,
+            minHeight: 0,
+            flex: isDesktop ? 1 : "none",
+            display: isDesktop ? "flex" : "block",
+            flexDirection: isDesktop ? "column" : undefined
+          }}>
             {true ? (
               <>
                 <Stack
@@ -3099,7 +3112,7 @@ export default function MyRequests() {
                   spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.2}
                   justifyContent="space-between"
                   alignItems={isCompact ? "stretch" : "center"}
-                  sx={{ mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.6 }}
+                  sx={{ mb: isPhone ? 0.55 : isTablet ? 0.75 : 0.75 }}
                 >
                   <Box
                     sx={uiLayout.withUiSx({
@@ -3107,8 +3120,21 @@ export default function MyRequests() {
                       display: isCompact ? "grid" : "flex",
                       gridTemplateColumns: isCompact ? "repeat(2, minmax(0, 1fr))" : undefined,
                       gap: isPhone ? 0.45 : isTablet ? 0.6 : 1.2,
-                      alignItems: "center"
-                    }, uiLayout.formGridSx)}
+                      alignItems: "center",
+                      flexWrap: isCompact ? "wrap" : "nowrap",
+                      flex: isCompact ? "none" : 1,
+                      minWidth: 0,
+                      "& > *": { minWidth: 0 },
+                      "& > .MuiFormControl-root, & > .MuiAutocomplete-root": {
+                        flex: isCompact ? "none" : "1 1 0",
+                        width: isCompact ? "100%" : "auto"
+                      }
+                    }, uiLayout.formGridSx, {
+                      display: isCompact ? "grid" : "flex",
+                      gridTemplateColumns: isCompact ? "repeat(2, minmax(0, 1fr))" : undefined,
+                      flexWrap: isCompact ? "wrap" : "nowrap",
+                      flex: isCompact ? "none" : 1
+                    })}
                   >
                     <TextField InputLabelProps={{ shrink: true }}
                       size="small"
@@ -3116,10 +3142,10 @@ export default function MyRequests() {
                       onChange={(event) => setSearchText(event.target.value)}
                       placeholder="بحث بالاسم أو الهوية أو الجوال..."
                       sx={uiLayout.withUiSx({
-                        width: isCompact ? "100%" : 390,
+                        width: isCompact ? "100%" : "auto",
                         gridColumn: isCompact ? "1 / -1" : undefined,
                         "& .MuiInputBase-input": {
-                          fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                          fontSize: isDesktop ? "0.6875rem" : designTokens.typography.control,
                           py: isPhone ? 0.38 : isTablet ? 0.48 : undefined
                         },
                         "& .MuiOutlinedInput-root": {
@@ -3143,20 +3169,18 @@ export default function MyRequests() {
                         <TextField
                           size="small"
                           type="date"
-                          label="من تاريخ"
                           value={fromDate}
                           onChange={(event) => setFromDate(event.target.value)}
                           InputLabelProps={{ shrink: true }}
-                          disabled={showAll}
                           inputProps={{ max: toDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                           sx={uiLayout.withUiSx({
                             width: "100%",
                             minWidth: 0,
                             "& .MuiInputLabel-root": {
-                              fontSize: isPhone ? "0.38rem" : isTablet ? "0.47rem" : undefined
+                              fontSize: designTokens.typography.label
                             },
                             "& .MuiInputBase-input": {
-                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              fontSize: isDesktop ? "0.6875rem" : designTokens.typography.control,
                               py: isPhone ? 0.32 : isTablet ? 0.42 : undefined,
                               px: isPhone ? 0.35 : isTablet ? 0.5 : undefined
                             },
@@ -3168,20 +3192,18 @@ export default function MyRequests() {
                         <TextField
                           size="small"
                           type="date"
-                          label="إلى تاريخ"
                           value={toDate}
                           onChange={(event) => setToDate(event.target.value)}
                           InputLabelProps={{ shrink: true }}
-                          disabled={showAll}
                           inputProps={{ min: fromDate || undefined , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
                           sx={uiLayout.withUiSx({
                             width: "100%",
                             minWidth: 0,
                             "& .MuiInputLabel-root": {
-                              fontSize: isPhone ? "0.38rem" : isTablet ? "0.47rem" : undefined
+                              fontSize: designTokens.typography.label
                             },
                             "& .MuiInputBase-input": {
-                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              fontSize: isDesktop ? "0.6875rem" : designTokens.typography.control,
                               py: isPhone ? 0.32 : isTablet ? 0.42 : undefined,
                               px: isPhone ? 0.35 : isTablet ? 0.5 : undefined
                             },
@@ -3189,27 +3211,6 @@ export default function MyRequests() {
                               minHeight: isPhone ? 30 : isTablet ? 33 : undefined
                             }
                           }, uiLayout.formFieldSx)}
-                        />
-                        <FormControlLabel
-                          control={<Checkbox checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />}
-                          label="عرض الكل"
-                          sx={{
-                            mr: 0,
-                            m: 0,
-                            gridColumn: isCompact ? "1 / -1" : undefined,
-                            justifySelf: "start",
-                            whiteSpace: "nowrap",
-                            "& .MuiFormControlLabel-label": {
-                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
-                              fontWeight: 850
-                            },
-                            "& .MuiCheckbox-root": {
-                              p: isPhone ? 0.25 : isTablet ? 0.4 : undefined
-                            },
-                            "& .MuiSvgIcon-root": {
-                              fontSize: isPhone ? 16 : isTablet ? 18 : undefined
-                            }
-                          }}
                         />
                       </>
                     ) : null}
@@ -3229,7 +3230,7 @@ export default function MyRequests() {
                       minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
                       backgroundColor: primaryColor,
                       fontWeight: 900,
-                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+                      fontSize: isDesktop ? "0.6875rem" : designTokens.typography.control
                     }, uiLayout.buttonSx)}
                   >
                     عرض
@@ -3240,19 +3241,25 @@ export default function MyRequests() {
 
                 <Box
                   sx={uiLayout.withUiSx({
-                    height: isPhone ? "calc(100dvh - 300px)" : isTablet ? "calc(100dvh - 330px)" : 590,
-                    minHeight: isPhone ? 360 : isTablet ? 430 : 590,
+                    height: isPhone ? "calc(100dvh - 300px)" : isTablet ? "calc(100dvh - 330px)" : "100%",
+                    minHeight: isPhone ? 360 : isTablet ? 380 : 0,
+                    flex: isDesktop ? 1 : "none",
                     width: "100%",
-                    direction: "rtl"
-                  }, uiLayout.tableContainerSx)}
+                    direction: "rtl",
+                    overflowX: "hidden",
+                    overflowY: "hidden"
+                  }, uiLayout.tableContainerSx, {
+                    overflowX: "hidden",
+                    overflowY: "hidden"
+                  })}
                 >
                   <DataGrid
                     rows={filteredRows}
                     columns={responsiveColumns}
                     loading={loading}
                     disableRowSelectionOnClick
-                    disableColumnFilter={isCompact}
-                    disableColumnMenu={isCompact}
+                    disableColumnFilter={isTableCompact}
+                    disableColumnMenu={isTableCompact}
                     onRowDoubleClick={(params) => {
                       if (activeTab === "admission") {
                         openAdmission(params.row);
@@ -3273,6 +3280,7 @@ export default function MyRequests() {
                       noRowsLabel: `لا توجد بيانات في ${selectedTab?.label || "هذا التبويب"}${showAll ? "" : " خلال الفترة المحددة"}`
                     }}
                     sx={uiLayout.withUiSx({
+                      height: "100%",
                       borderRadius: 3,
                       backgroundColor: "#fff",
                       "& .MuiDataGrid-columnHeaders": {
@@ -3281,38 +3289,41 @@ export default function MyRequests() {
                       },
                       "& .MuiDataGrid-columnHeaderTitle": {
                         fontWeight: 950,
-                        fontSize: isPhone ? "0.31rem" : isTablet ? "0.41rem" : undefined
+                        fontSize: isDesktop ? "0.6875rem" : designTokens.typography.table
                       },
                       "& .MuiDataGrid-row:nth-of-type(even)": { backgroundColor: "#fff8ef" },
                       "& .MuiDataGrid-row:hover": { backgroundColor: "#eaf7f0" },
+                      "&& .MuiDataGrid-virtualScroller": {
+                        overflowX: "hidden"
+                      },
                       "& .MuiDataGrid-cell": {
                         fontFamily: "Cairo",
                         fontWeight: 700,
-                        fontSize: isPhone ? "0.31rem" : isTablet ? "0.41rem" : undefined,
+                        fontSize: isDesktop ? "0.6875rem" : designTokens.typography.table,
                         px: isPhone ? 0.1 : isTablet ? 0.25 : undefined
                       },
                       "& .MuiDataGrid-columnHeader": {
                         px: isPhone ? 0.05 : isTablet ? 0.18 : undefined
                       },
                       "& .MuiDataGrid-columnHeaders": {
-                        minHeight: `${isPhone ? 29 : isTablet ? 34 : 56}px !important`,
-                        maxHeight: `${isPhone ? 29 : isTablet ? 34 : 56}px !important`
+                        minHeight: `${isPhone ? 29 : 36}px !important`,
+                        maxHeight: `${isPhone ? 29 : 36}px !important`
                       },
                       "& .MuiDataGrid-row": {
-                        minHeight: `${isPhone ? 32 : isTablet ? 37 : 52}px !important`,
-                        maxHeight: `${isPhone ? 32 : isTablet ? 37 : 52}px !important`
+                        minHeight: `${isPhone ? 32 : 36}px !important`,
+                        maxHeight: `${isPhone ? 32 : 36}px !important`
                       },
                       "& .MuiDataGrid-columnSeparator": {
-                        display: isCompact ? "none" : undefined
+                        display: isTableCompact ? "none" : undefined
                       },
                       "& .MuiDataGrid-menuIcon": {
-                        display: isCompact ? "none" : undefined
+                        display: isTableCompact ? "none" : undefined
                       },
                       "& .MuiDataGrid-footerContainer": {
                         minHeight: isPhone ? 38 : isTablet ? 44 : undefined
                       },
                       "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                        fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                        fontSize: isDesktop ? "0.6875rem" : designTokens.typography.label
                       }
                     }, uiLayout.dataGridSx)}
                   />
@@ -3342,7 +3353,7 @@ export default function MyRequests() {
             )}
           </Box>
         </Paper>
-      </Box>
+      </PageContainer>
 
       <Menu
         open={contextMenu !== null}
