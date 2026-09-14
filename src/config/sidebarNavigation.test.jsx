@@ -84,7 +84,8 @@ test('real admin renderer preserves links and collapses in RTL', () => {
     <MemoryRouter><Sidebar variant="admin" /></MemoryRouter>
   </RtlEnvironment>);
   const sidebar = container.querySelector('[dir="rtl"]');
-  expect(getComputedStyle(sidebar).width).toBe('280px');
+  // JSDOM cannot resolve clamp(); check the emitted rule for this sidebar.
+  expect(Array.from(document.styleSheets).flatMap(sheet => Array.from(sheet.cssRules)).some(rule => rule.selectorText && rule.style?.getPropertyValue('width') === SIDEBAR_WIDTH && sidebar.matches(rule.selectorText))).toBe(true);
   expect(getComputedStyle(sidebar).direction).toBe('rtl');
   expect(sidebar.style.right).toBe('0px');
   expect(container.querySelector('a[href="/admin-all-tasks"]')).not.toBeNull();
@@ -141,8 +142,8 @@ test('expanded and collapsed content gutters remain on the RTL start side under 
   const content = screen.getByTestId('main-content');
   const main = content.parentElement;
   expect(shell.style.getPropertyValue('--navigation-direction')).toBe('rtl');
-  expect(shell.style.getPropertyValue('--navigation-content-offset')).toBe('280px');
-  expect(main.style.marginRight).toBe('280px');
+  expect(shell.style.getPropertyValue('--navigation-content-offset')).toBe(SIDEBAR_WIDTH);
+
   expect(getComputedStyle(content).direction).toBe('var(--navigation-direction, rtl)');
   expect(getComputedStyle(content).marginInlineStart).toBe('0px');
   expect(getComputedStyle(content).marginInlineEnd).toBe('0px');
@@ -162,6 +163,7 @@ test('standard desktop sidebar is physically right under the real RTL cache', as
     expect(getComputedStyle(sidebar).direction).toBe('rtl');
     expect(getComputedStyle(sidebar).position).toBe('fixed');
     expect(sidebar.style.right).toBe('0px');
-    expect(getComputedStyle(sidebar).width).toBe('280px');
+    // JSDOM cannot resolve clamp(); check the emitted rule for this sidebar.
+  expect(Array.from(document.styleSheets).flatMap(sheet => Array.from(sheet.cssRules)).some(rule => rule.selectorText && rule.style?.getPropertyValue('width') === SIDEBAR_WIDTH && sidebar.matches(rule.selectorText))).toBe(true);
   } finally { global.fetch = oldFetch; }
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { useMediaQuery } from '@mui/material';
 import NavigationShell from './NavigationShell';
+import { SIDEBAR_WIDTH } from '../config/sidebarLayout';
 
 jest.mock('@mui/material', () => ({ ...jest.requireActual('@mui/material'), useMediaQuery: jest.fn() }));
 jest.mock('./Sidebar', () => function TestSidebar(props) {
@@ -17,8 +18,8 @@ test('admin collapse updates the shared content gutter', () => {
   const main = screen.getByTestId('content').parentElement;
   const wrapper = main.parentElement;
   expect(wrapper.dir).toBe('rtl');
-  expect(wrapper.style.getPropertyValue('--navigation-content-offset')).toBe('280px');
-  expect(main.style.marginRight).toBe('280px');
+  expect(wrapper.style.getPropertyValue('--navigation-content-offset')).toBe(SIDEBAR_WIDTH);
+  // JSDOM does not compute clamp(); assert the shared CSS contract above.
   fireEvent.click(screen.getByTestId('sidebar'));
   expect(wrapper.style.getPropertyValue('--navigation-content-offset')).toBe('86px');
   expect(main.style.marginRight).toBe('86px');
@@ -40,7 +41,7 @@ test('embedded screens share one renderer and restore parent navigation on unmou
   const { rerender } = render(<View nested />);
   expect(screen.getAllByTestId('sidebar')).toHaveLength(1);
   expect(screen.getByTestId('sidebar')).toHaveAttribute('data-variant', 'admin');
-  expect(screen.getByTestId('nested').parentElement.style.marginRight).toBe('280px');
+  expect(screen.getByTestId('nested').parentElement.parentElement.style.getPropertyValue('--navigation-content-offset')).toBe(SIDEBAR_WIDTH);
   rerender(<View nested={false} />);
   expect(screen.getByTestId('sidebar')).toHaveAttribute('data-variant', 'standard');
 });

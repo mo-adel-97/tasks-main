@@ -1,6 +1,6 @@
 // One responsive navigation contract for the whole application.
 // Pages must never calculate their own sidebar gutter.
-export const SIDEBAR_WIDTH = 280;
+export const SIDEBAR_WIDTH = 'clamp(13rem, 17vw, 17rem)';
 export const SIDEBAR_COLLAPSED_WIDTH = 86;
 
 // >= 1200px: permanent sidebar (desktop/laptop)

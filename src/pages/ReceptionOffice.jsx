@@ -301,8 +301,8 @@ const HeaderButton = ({ icon, label, onClick, color = primaryColor }) => (
     startIcon={icon}
     onClick={onClick}
     sx={uiLayout.withUiSx({
-      height: { xs: 42, sm: 46 },
-      minWidth: { xs: 0, sm: 125 },
+      height: "auto",
+      minWidth: 0,
       width: { xs: "100%", sm: "auto" },
       borderRadius: 2.5,
       fontWeight: 950,
@@ -2657,7 +2657,7 @@ const handleAcceptOrder = (row) => {
           ...navigationContentSx
         }}
       >
-        <Box sx={{ width: "100%", maxWidth: isDesktop ? 1720 : "100%", mx: "auto", minWidth: 0 }}>
+        <Box sx={{ width: "100%", maxWidth: "100%", mx: "auto", minWidth: 0 }}>
         <Paper
           elevation={0}
           sx={{
@@ -2672,10 +2672,10 @@ const handleAcceptOrder = (row) => {
         >
           <Box
             sx={{
-              minHeight: { xs: "auto", md: 115 },
+              minHeight: "auto",
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
-              flexWrap: { xs: "wrap", md: "nowrap" },
+              flexWrap: "wrap",
               alignItems: "center",
               justifyContent: "space-between",
               px: isDesktop ? 2 : { xs: 0.45, sm: 0.7, md: 1 },
@@ -2701,9 +2701,10 @@ const handleAcceptOrder = (row) => {
             <Box
               sx={{
                 display: isDesktop ? "flex" : "none",
-                width: 154,
-                maxWidth: 154,
-                height: 94,
+                width: "clamp(8rem, 12vw, 10rem)",
+                maxWidth: "100%",
+                minWidth: 0,
+                padding: "0.625rem 1rem",
                 alignItems: "center",
                 justifyContent: "center",
                 borderRadius: 4,
@@ -2737,7 +2738,7 @@ const handleAcceptOrder = (row) => {
               spacing={isDesktop ? 1.2 : 0}
               alignItems="center"
               sx={{ ...uiLayout.actionBarSx, width: { xs: '100%', md: 'auto' },
-          '& > .MuiButton-root': { flex: { xs: '1 1 120px', md: '0 0 auto' }, width: 'auto', minHeight: 44, px: 2, fontSize: '0.875rem' } }}
+          '& > .MuiButton-root': { flex: { xs: '1 1 120px', md: '0 0 auto' }, width: 'auto', minHeight: { xs: 44, lg: 36 }, px: 1.5, fontSize: '0.8125rem' } }}
             >
               <HeaderButton
                 label="طالب جديد"
@@ -3112,7 +3113,7 @@ const handleAcceptOrder = (row) => {
               maxWidth: "100%",
               minWidth: 0,
               direction: "rtl",
-              height: isDesktop ? 520 : { xs: "68dvh", sm: "72dvh", md: "74dvh" },
+              height: "clamp(18rem, 58dvh, 38rem)",
 
               "& .MuiDataGrid-main": {
                 overflow: "hidden"

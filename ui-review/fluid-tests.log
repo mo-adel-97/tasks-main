@@ -1,0 +1,60 @@
+PASS src/components/common/uiLayout.test.jsx (51.114 s)
+FAIL src/config/sidebarNavigation.test.jsx (10.458 s)
+  ● real admin renderer preserves links and collapses in RTL
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "280px"
+    Received: ""
+
+      85 |   </RtlEnvironment>);
+      86 |   const sidebar = container.querySelector('[dir="rtl"]');
+    > 87 |   expect(getComputedStyle(sidebar).width).toBe('280px');
+         |                                           ^
+      88 |   expect(getComputedStyle(sidebar).direction).toBe('rtl');
+      89 |   expect(sidebar.style.right).toBe('0px');
+      90 |   expect(container.querySelector('a[href="/admin-all-tasks"]')).not.toBeNull();
+
+      at Object.<anonymous> (src/config/sidebarNavigation.test.jsx:87:43)
+
+  ● expanded and collapsed content gutters remain on the RTL start side under the real cache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "280px"
+    Received: "clamp(13rem, 17vw, 17rem)"
+
+      142 |   const main = content.parentElement;
+      143 |   expect(shell.style.getPropertyValue('--navigation-direction')).toBe('rtl');
+    > 144 |   expect(shell.style.getPropertyValue('--navigation-content-offset')).toBe('280px');
+          |                                                                       ^
+      145 |   expect(main.style.marginRight).toBe('280px');
+      146 |   expect(getComputedStyle(content).direction).toBe('var(--navigation-direction, rtl)');
+      147 |   expect(getComputedStyle(content).marginInlineStart).toBe('0px');
+
+      at Object.<anonymous> (src/config/sidebarNavigation.test.jsx:144:71)
+
+  ● standard desktop sidebar is physically right under the real RTL cache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "280px"
+    Received: ""
+
+      163 |     expect(getComputedStyle(sidebar).position).toBe('fixed');
+      164 |     expect(sidebar.style.right).toBe('0px');
+    > 165 |     expect(getComputedStyle(sidebar).width).toBe('280px');
+          |                                             ^
+      166 |   } finally { global.fetch = oldFetch; }
+      167 | });
+      168 |
+
+      at Object.<anonymous> (src/config/sidebarNavigation.test.jsx:165:45)
+
+PASS src/theme.test.jsx
+PASS src/components/NavigationShell.test.jsx
+
+Test Suites: 1 failed, 3 passed, 4 total
+Tests:       3 failed, 14 passed, 17 total
+Snapshots:   0 total
+Time:        94.521 s

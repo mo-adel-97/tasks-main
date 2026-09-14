@@ -1,6 +1,6 @@
 // Shared MUI geometry for the non-mirroring cache. Logical spacing follows the
 // element's direction; physical anchors are set deliberately, never mirrored.
-import { mobileHeaderStyles } from './designTokens';
+import { designTokens, mobileHeaderStyles } from './designTokens';
 import { DESKTOP_BREAKPOINT } from './sidebarLayout';
 const labelPosition = ({ ownerState }) => {
   if (!ownerState.formControl) return { textAlign: 'start' };
@@ -8,7 +8,7 @@ const labelPosition = ({ ownerState }) => {
     position: 'static', transform: 'none', width: 'auto', maxWidth: '100%',
     minHeight: 24, marginBottom: 6, padding: 0,
     fontSize: '0.8125rem', lineHeight: '24px', fontWeight: 700,
-    whiteSpace: 'normal', overflow: 'visible', textAlign: 'start', pointerEvents: 'auto',
+    whiteSpace: 'normal', overflow: 'visible', overflowWrap: 'anywhere', textAlign: 'start', pointerEvents: 'auto',
   };
 };
 
@@ -39,11 +39,16 @@ export const rtlComponents = {
   } },
   MuiStack: { defaultProps: { useFlexGap: true } },
   MuiButton: { styleOverrides: {
+    root: { maxWidth: '100%', whiteSpace: 'normal', overflowWrap: 'anywhere', lineHeight: 1.5 },
     startIcon: ({ ownerState }) => ({ marginLeft: 0, marginRight: 0,
       marginInlineStart: ownerState.size === 'small' ? -2 : -4, marginInlineEnd: 8 }),
     endIcon: ({ ownerState }) => ({ marginLeft: 0, marginRight: 0,
       marginInlineStart: 8, marginInlineEnd: ownerState.size === 'small' ? -2 : -4 }),
   } },
+  MuiCardContent: { styleOverrides: { root: {
+    padding: designTokens.cardPadding,
+    '&:last-child': { paddingBottom: designTokens.cardPadding },
+  } } },
   MuiInputAdornment: { styleOverrides: { root: ({ ownerState }) => ({
     marginLeft: 0, marginRight: 0,
     marginInlineStart: ownerState.position === 'end' ? 8 : 0,
@@ -77,7 +82,7 @@ export const rtlComponents = {
     select: ({ ownerState }) => ({ '&&': {
       paddingRight: ownerState.variant === 'standard' ? 0 : ownerState.variant === 'filled' ? 12 : 14,
       paddingLeft: ownerState.variant === 'standard' ? 24 : 32,
-      textAlign: 'start',
+      textAlign: 'start', whiteSpace: 'normal', overflowWrap: 'anywhere',
     } }),
   } },
   MuiAutocomplete: { styleOverrides: {

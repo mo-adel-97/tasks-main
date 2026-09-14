@@ -1,0 +1,11 @@
+PASS src/components/common/uiLayout.test.jsx (51.597 s)
+PASS src/components/hrControlStyles.test.jsx
+PASS src/components/SharedRtl.test.jsx
+PASS src/App.test.js
+PASS src/components/NavigationShell.test.jsx
+PASS src/theme.test.jsx
+
+Test Suites: 6 passed, 6 total
+Tests:       19 passed, 19 total
+Snapshots:   0 total
+Time:        92.528 s

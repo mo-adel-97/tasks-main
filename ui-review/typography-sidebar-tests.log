@@ -1,0 +1,7 @@
+PASS src/components/SidebarHome.test.jsx (12.53 s)
+PASS src/config/sidebarNavigation.test.jsx (7.168 s)
+
+Test Suites: 2 passed, 2 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        20.959 s, estimated 24 s

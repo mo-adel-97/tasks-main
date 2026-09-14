@@ -18,6 +18,8 @@ export default function StatsCard({
         p: 0.8,
         minHeight: 92,
         height: "100%",
+        minWidth: 0,
+        maxWidth: '100%',
         borderRadius: 2.5,
         color: "#fff",
         background: `linear-gradient(135deg, ${color}, ${gradient})`,
@@ -60,7 +62,7 @@ export default function StatsCard({
         {icon}
       </Box>
 
-      <Box sx={{ minWidth: 0, position: "relative", zIndex: 1 }}>
+      <Box sx={{ minWidth: 0, overflowWrap: 'anywhere', position: "relative", zIndex: 1 }}>
         <Typography sx={{ fontSize: "0.75rem", fontWeight: 850, opacity: 0.92 }}>
           {title}
         </Typography>

@@ -301,6 +301,10 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
     openKey: null
   });
 
+  useEffect(() => {
+    setDbGroupUi({ touched: false, openKey: null });
+  }, [location.pathname]);
+
   /*
    * القائمة الجانبية لا تختفي أثناء التنقل.
    * نعرض آخر نسخة ناجحة فوراً من الذاكرة/الكاش، ثم نعيد التحقق من السيرفر
@@ -511,6 +515,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const handleDbGroupToggle = (groupKey, currentlyOpen) => {
     setDbGroupUi({
       touched: true,
+      pathname: location.pathname,
       openKey: currentlyOpen ? null : groupKey
     });
   };
@@ -561,9 +566,11 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
           (item) => item.path === location.pathname
         );
 
-        const open = dbGroupUi.touched
+        // Home links must not auto-expand a submenu; manual choices belong to one route.
+        const isHome = ['/dashboard', '/dashboard/home', '/dashboard/classic-home'].includes(location.pathname.replace(/\/$/, ''));
+        const open = dbGroupUi.touched && dbGroupUi.pathname === location.pathname
           ? dbGroupUi.openKey === groupKey
-          : activeByRoute;
+          : !isHome && activeByRoute;
 
         return {
           groupKey,
@@ -1053,8 +1060,8 @@ const childItemSx = (selected) => ({
         >
           <Box
             sx={{
-              width: '64px',
-              height: '64px',
+              width: 'clamp(2.75rem, 3.5vw, 3.5rem)',
+              aspectRatio: '1',
               borderRadius: '16px',
               overflow: 'hidden',
               border: `3px solid ${whiteColor}`,

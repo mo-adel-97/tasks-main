@@ -1,14 +1,14 @@
 import { styled } from "@mui/system";
 import { Card } from "@mui/material";
+import { designTokens } from '../../config/designTokens';
 
-const ProfessionalCard = styled(Card)(({ theme }) => ({
+const ProfessionalCard = styled(Card)(() => ({
   width: '100%',
   maxWidth: '950px',
   margin: '0 auto',
-  padding: theme.spacing(4),
+  padding: designTokens.cardPadding,
   minWidth: 0,
   boxSizing: 'border-box',
-  [theme.breakpoints.down('sm')]: { padding: theme.spacing(2) },
   borderRadius: '16px',
   boxShadow: '0 12px 35px rgba(0, 0, 0, 0.1)',
   background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',

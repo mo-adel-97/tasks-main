@@ -1244,15 +1244,7 @@ export default function UserManagement() {
           <PersonAddAlt1Icon />
 
           <Box sx={{ flex: 1 }}>
-            <Typography
-              sx={{
-                fontWeight: 900,
-                fontSize: {
-                  xs: 17,
-                  sm: 20,
-                  md: 22
-                }
-              }}
+            <Typography variant="h1" sx={{ fontWeight: 900 }}
             >
               إضافة مستخدم
             </Typography>
@@ -1815,12 +1807,7 @@ export default function UserManagement() {
 
             <Divider sx={{ my: { xs: 1, sm: 1.5 } }} />
 
-            <Typography
-              sx={{
-                fontWeight: 900,
-                mb: { xs: 0.5, sm: 0.75 },
-                fontSize: { xs: 14, sm: 16 }
-              }}
+            <Typography variant="h6" sx={{ fontWeight: 900, mb: { xs: 0.5, sm: 0.75 } }}
             >
               الفروع المسموح بها للمستخدم
             </Typography>

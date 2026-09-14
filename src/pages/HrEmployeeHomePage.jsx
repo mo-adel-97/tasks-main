@@ -537,11 +537,10 @@ function Section({ title, subtitle, action, children, sectionRef }) {
         }}
       >
         <Box sx={{ minWidth: 0 }}>
-          <Typography
+          <Typography variant="h6"
             sx={{
               fontWeight: 950,
               color: "#17372b",
-              fontSize: { xs: 13.2, sm: 14, md: 15 },
               lineHeight: 1.35,
               textAlign: SECTION_TEXT_ALIGN
             }}

@@ -107,7 +107,7 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
           minWidth: 0,
           minHeight: '100dvh',
           '--navigation-direction': 'rtl',
-          '--navigation-content-offset': `${offset}px`,
+          '--navigation-content-offset': typeof offset === 'number' ? `${offset}px` : offset,
           '--app-header-height': `${designTokens.headerHeight}px`,
         }}
       >
@@ -138,10 +138,10 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
           className="sstli-navigation-main"
           data-navigation-variant={activeVariant}
           style={{
-            marginRight: `${offset}px`,
+            marginRight: typeof offset === 'number' ? `${offset}px` : offset,
             marginLeft: 0,
-            width: `calc(100% - ${offset}px)`,
-            maxWidth: `calc(100% - ${offset}px)`,
+            width: `calc(100% - ${typeof offset === 'number' ? `${offset}px` : offset})`,
+            maxWidth: `calc(100% - ${typeof offset === 'number' ? `${offset}px` : offset})`,
             minWidth: 0,
             minHeight: '100dvh',
             boxSizing: 'border-box',
