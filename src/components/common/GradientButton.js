@@ -1,19 +1,20 @@
 import { styled } from "@mui/system";
 import { Button } from "@mui/material";
+import { designTokens } from '../../config/designTokens';
 
 const GradientButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(45deg, #1976d2, #2196f3)',
   color: 'white',
   fontWeight: 600,
   letterSpacing: '0.5px',
-  padding: '14px 28px',
-  borderRadius: '10px',
-  fontSize: '16px',
+  padding: '5px 12px',
+  minHeight: designTokens.controlHeight,
+  borderRadius: `${designTokens.radius}px`,
+  fontSize: designTokens.typography.control,
   boxShadow: '0 4px 8px rgba(25, 118, 210, 0.2)',
-  transition: 'all 0.3s ease',
+  transition: 'box-shadow 0.2s ease',
   '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 16px rgba(25, 118, 210, 0.3)',
+    boxShadow: '0 6px 12px rgba(25, 118, 210, 0.24)',
     background: 'linear-gradient(45deg, #1565c0, #1e88e5)'
   }
 }));

@@ -612,10 +612,10 @@ const childItemSx = (selected) => ({
   ml: isDesktop ? 1 : 0.45,
   mr: isDesktop ? 1 : 0.45,
 
-  minHeight: isDesktop ? 38 : 32,
+  minHeight: designTokens.sidebar.itemHeight,
 
-  px: isDesktop ? 1 : 0.65,
-  py: isDesktop ? 0.4 : 0.22,
+  px: isDesktop ? 0.6 : 0.45,
+  py: isDesktop ? 0.25 : 0.18,
 
   borderRadius: isDesktop ? 2.5 : 1.8,
 
@@ -691,9 +691,9 @@ const childItemSx = (selected) => ({
           >
             <ListItemIcon
                 sx={{
-                  minWidth: isDesktop ? 26 : 22,
+                  minWidth: isDesktop ? 22 : 20,
                   color: selected ? whiteColor : primaryColor,
-                  '& svg': { fontSize: isDesktop ? '1.08rem' : '0.95rem' }
+                  '& svg': { fontSize: designTokens.sidebar.iconSize }
                 }}
               >
                 {item.icon}
@@ -706,15 +706,15 @@ const childItemSx = (selected) => ({
                 minWidth: 0,
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
-                  fontWeight: 700,
-                  fontSize: isDesktop ? "0.75rem" : "0.75rem",
+                  fontWeight: 500,
+                  fontSize: designTokens.sidebar.titleSize,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px',
                   lineHeight: isDesktop ? 1.45 : 1.3
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? "0.75rem" : "0.75rem",
+                  fontSize: designTokens.typography.helper,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px',
                   color: selected
@@ -732,8 +732,8 @@ const childItemSx = (selected) => ({
                     py: 0.18,
                     borderRadius: 999,
                     fontFamily: 'Cairo',
-                    fontSize: isDesktop ? "0.75rem" : "0.75rem",
-                    fontWeight: 900,
+                    fontSize: designTokens.typography.helper,
+                    fontWeight: 600,
                     whiteSpace: 'nowrap',
                     color: selected ? accentColor : whiteColor,
                     background: selected
@@ -824,7 +824,7 @@ const childItemSx = (selected) => ({
                 minWidth: 0,
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
-                  fontWeight: 800,
+                  fontWeight: 500,
                   fontSize: designTokens.sidebar.titleSize,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
@@ -941,7 +941,7 @@ const childItemSx = (selected) => ({
                 m: 0,
                 '.MuiTypography-root': {
                   fontFamily: 'Cairo',
-                  fontWeight: 800,
+                  fontWeight: 500,
                   fontSize: designTokens.sidebar.titleSize,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
@@ -1049,7 +1049,7 @@ const childItemSx = (selected) => ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            py: 2,
+            py: 1,
             width: '100%',
             overflow: 'hidden',
             background: `linear-gradient(145deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
@@ -1063,12 +1063,12 @@ const childItemSx = (selected) => ({
             sx={{
               width: 'clamp(2.75rem, 3.5vw, 3.5rem)',
               aspectRatio: '1',
-              borderRadius: '16px',
+              borderRadius: designTokens.radius,
               overflow: 'hidden',
               border: `3px solid ${whiteColor}`,
               background: whiteColor,
               boxShadow: softShadow,
-              mb: 1.5
+              mb: 0.75
             }}
           >
             <Box

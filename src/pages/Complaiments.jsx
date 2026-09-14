@@ -50,9 +50,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import appTheme from '../theme';
 
 // إنشاء الثيم الجديد باللون #80b49e
-const theme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
+const theme = createTheme(deepmerge(appTheme, {
   palette: {
     primary: {
       main: '#80b49e',

@@ -71,19 +71,20 @@ import {
 
 import DiplomaStatistics from '../components/DiplomaStatistics';
 import ComplaintsSuggestionsTasks from '../components/ComplaintsSuggestionsTasks';
+import appTheme from '../theme';
 // Professional theme with Cairo font and updated color scheme
-const theme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
+const theme = createTheme(deepmerge(appTheme, {
   typography: {
     fontFamily: '"Cairo", sans-serif',
     h4: {
-      fontWeight: 700,
+      fontWeight: 600,
       color: '#80b49e',
-      fontSize: '1.8rem'
+      fontSize: '1.15rem'
     },
     h6: {
       fontWeight: 600,
       color: '#6a9a87',
-      fontSize: '1.1rem'
+      fontSize: '0.9rem'
     },
     body1: {
       color: '#2c3e50'

@@ -25,9 +25,9 @@ export const formFieldSx = {
   textAlign: 'start',
   '&& > .MuiInputLabel-root': {
     position: 'static', transform: 'none', maxWidth: '100%', width: 'auto',
-    height: 'auto', minHeight: '18px', margin: '0 0 5px', padding: 0,
+    height: 'auto', minHeight: '17px', margin: '0 0 3px', padding: 0,
     whiteSpace: 'normal', overflow: 'visible', overflowWrap: 'anywhere', textAlign: 'start',
-    fontSize: designTokens.typography.label, fontWeight: 700, lineHeight: '18px',
+    fontSize: designTokens.typography.label, fontWeight: 500, lineHeight: '17px',
     pointerEvents: 'auto',
   },
   '&& > .MuiInputBase-root': {
@@ -35,7 +35,7 @@ export const formFieldSx = {
     fontSize: designTokens.typography.control,
   },
   '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': {
-    paddingBlock: { xs: '10px', lg: '6px' }, height: 'auto', lineHeight: { xs: '24px', lg: '22px' },
+    paddingBlock: { xs: '9px', lg: '4px' }, height: 'auto', lineHeight: { xs: '22px', lg: '18px' },
   },
   '&& > .MuiInputBase-root > .MuiOutlinedInput-notchedOutline > legend': {
     display: 'none',
@@ -73,7 +73,7 @@ export const filterBarSx = {
 
 export const actionBarSx = {
   direction: 'rtl', textAlign: 'start',
-  display: 'flex', flexWrap: 'wrap', gap: 1.25, minWidth: 0,
+  display: 'flex', flexWrap: 'wrap', gap: 0.75, minWidth: 0,
   alignItems: 'center',
   '& > .MuiButton-root': { minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', minHeight: { xs: 44, lg: designTokens.controlHeight } },
 };
@@ -89,21 +89,21 @@ export const dialogLayoutSx = {
   direction: 'rtl', textAlign: 'start',
   '& .MuiDialog-paper': { direction: 'rtl', textAlign: 'start' },
   '& .MuiDialog-paper:not(.MuiDialog-paperFullScreen)': {
-    margin: { xs: '12px', sm: '16px' },
+    margin: { xs: '10px', sm: '12px' },
     maxHeight: 'calc(100dvh - 24px)',
     '&.MuiDialog-paperFullWidth': { width: { xs: 'calc(100% - 24px)', sm: 'calc(100% - 48px)' } },
     '@media (max-width: 599.95px)': { maxWidth: 'calc(100% - 24px)', minWidth: 0 },
   },
   '& .MuiDialogTitle-root': {
-    textAlign: 'start', padding: { xs: '12px', sm: '14px 16px' },
+    textAlign: 'start', padding: { xs: '10px', sm: '10px 14px' },
     overflowWrap: 'anywhere',
   },
-  '& .MuiDialogContent-root': { minWidth: 0, padding: { xs: '12px', sm: '14px 16px' } },
+  '& .MuiDialogContent-root': { minWidth: 0, padding: { xs: '10px', sm: '10px 14px' } },
 };
 
 export const dialogActionsSx = {
   direction: 'rtl', textAlign: 'start', justifyContent: 'flex-start',
-  flexWrap: 'wrap', gap: 1.25, padding: '16px 24px',
+  flexWrap: 'wrap', gap: 0.75, padding: '8px 14px',
   '&& > :not(style) ~ :not(style)': { margin: 0 },
   '& > .MuiButton-root': { minHeight: 44 },
   '@media (max-width: 599.95px)': { padding: '12px 16px', '& > .MuiButton-root': { flex: '1 1 auto' } },
@@ -126,10 +126,10 @@ export const dataGridSx = {
   direction: 'rtl', textAlign: 'start',
   minWidth: 0, maxWidth: '100%', fontSize: designTokens.typography.table,
   '&& .MuiDataGrid-virtualScroller': { overflowX: 'auto' },
-  '&& .MuiDataGrid-columnHeaderTitle': { fontSize: designTokens.typography.table, lineHeight: 1.4 },
-  '&& .MuiDataGrid-cell': { fontSize: designTokens.typography.table, paddingInline: '8px' },
-  '&& .MuiDataGrid-toolbarContainer': { flexWrap: 'wrap', gap: 0.75, padding: 1 },
-  '&& .MuiDataGrid-footerContainer': { flexWrap: 'wrap', minHeight: 44 },
+  '&& .MuiDataGrid-columnHeaderTitle': { fontSize: designTokens.typography.table, lineHeight: 1.25 },
+  '&& .MuiDataGrid-cell': { fontSize: designTokens.typography.table, paddingInline: '5px' },
+  '&& .MuiDataGrid-toolbarContainer': { flexWrap: 'wrap', gap: 0.5, padding: 0.75 },
+  '&& .MuiDataGrid-footerContainer': { flexWrap: 'wrap', minHeight: 38 },
   '& .MuiTablePagination-toolbar': { flexWrap: 'wrap', gap: 1, paddingInline: 1 },
   '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': { marginBlock: 1 },
 };
@@ -149,8 +149,8 @@ export const pageHeaderSx = {
 };
 
 export const buttonSx = {
-  minHeight: { xs: designTokens.touchHeight, lg: designTokens.controlHeight }, maxWidth: '100%', fontSize: designTokens.typography.control, lineHeight: 1.5,
+  minHeight: { xs: designTokens.touchHeight, lg: designTokens.controlHeight }, maxWidth: '100%', fontSize: designTokens.typography.control, lineHeight: 1.35,
   whiteSpace: 'normal', overflowWrap: 'anywhere', borderRadius: '8px',
-  '&& .MuiButton-startIcon': { marginLeft: 0, marginRight: 0, marginInlineEnd: '8px' },
-  '&& .MuiButton-endIcon': { marginLeft: 0, marginRight: 0, marginInlineStart: '8px' },
+  '&& .MuiButton-startIcon': { marginLeft: 0, marginRight: 0, marginInlineEnd: '5px' },
+  '&& .MuiButton-endIcon': { marginLeft: 0, marginRight: 0, marginInlineStart: '5px' },
 };

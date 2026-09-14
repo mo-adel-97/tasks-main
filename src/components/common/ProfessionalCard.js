@@ -9,14 +9,13 @@ const ProfessionalCard = styled(Card)(() => ({
   padding: designTokens.cardPadding,
   minWidth: 0,
   boxSizing: 'border-box',
-  borderRadius: '16px',
-  boxShadow: '0 12px 35px rgba(0, 0, 0, 0.1)',
+  borderRadius: `${designTokens.radius}px`,
+  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.07)',
   background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
   border: '1px solid rgba(0, 0, 0, 0.05)',
-  transition: 'all 0.3s ease',
+  transition: 'box-shadow 0.2s ease',
   '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 15px 40px rgba(0, 0, 0, 0.15)'
+    boxShadow: '0 8px 22px rgba(0, 0, 0, 0.10)'
   }
 }));
 

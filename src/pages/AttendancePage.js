@@ -1,6 +1,7 @@
 import PageContainer from '../components/common/PageContainer';
 import deepmerge from '@mui/utils/deepmerge';
 import { rtlComponents } from '../config/rtlComponents';
+import appTheme from '../theme';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState } from "react";
@@ -30,7 +31,7 @@ import StudentInfoCard from "../components/attendance/StudentInfoCard";
 import AttendanceDialog from "../components/attendance/AttendanceDialog";
 
 
-const theme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
+const theme = createTheme(deepmerge(appTheme, {
   direction: 'rtl',
   palette: {
     primary: {

@@ -58,10 +58,11 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ExportReportsDialog from "../components/ExportReportsDialog";
+import appTheme from "../theme";
 
 
 // Create custom theme with #80b49e as primary color
-const customTheme = createTheme(deepmerge({ direction: "rtl", components: rtlComponents }, {
+const customTheme = createTheme(deepmerge(appTheme, {
   palette: {
     primary: {
       main: '#80b49e',

@@ -592,7 +592,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                     sx={{ 
                                         mb: 2, 
                                         fontWeight: 'bold', 
-                                        fontSize: '16px', 
+                                        fontSize: '0.75rem', 
                                         display: 'inline-block', 
                                         borderRadius: 2,
                                         backgroundColor: '#ffeaea',

@@ -124,7 +124,7 @@ const StatCard = styled(Card)(({ theme }) => ({
   transition: 'all 0.3s ease',
   background: 'linear-gradient(135deg, #ffffff, #f8fbf9)',
   border: `1px solid ${colorPalette.primaryLighter}`,
-  borderRadius: '16px',
+  borderRadius: '8px',
   '&:hover': {
     transform: 'translateY(-4px)',
     boxShadow: `0 8px 25px ${alpha(colorPalette.primary, 0.15)}`
@@ -132,13 +132,13 @@ const StatCard = styled(Card)(({ theme }) => ({
 }));
 
 const ChartCard = styled(Card)(({ theme }) => ({
-  height: '400px',
+  height: 'clamp(15rem, 34dvh, 22rem)',
   display: 'flex',
   flexDirection: 'column',
   transition: 'all 0.3s ease',
   background: 'linear-gradient(135deg, #ffffff, #f8fbf9)',
   border: `1px solid ${colorPalette.primaryLighter}`,
-  borderRadius: '16px',
+  borderRadius: '8px',
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: `0 6px 20px ${alpha(colorPalette.primary, 0.1)}`
