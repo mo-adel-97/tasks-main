@@ -7,11 +7,13 @@ import React, {
 } from "react";
 import {
   Alert,
+  AppBar,
   Box,
   Button,
   CircularProgress,
   Checkbox,
   Divider,
+  IconButton,
   FormControlLabel,
   FormControl,
   InputLabel,
@@ -20,20 +22,28 @@ import {
   Select,
   Stack,
   TextField,
-  Typography
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SearchIcon from "@mui/icons-material/Search";
 import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Swal from "sweetalert2";
 import { QRCodeSVG } from "qrcode.react";
 import Sidebar from "../components/Sidebar";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { mt } from "date-fns/locale";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -156,10 +166,13 @@ const emptyForm = {
   examRows: [
     {
       dayDate: "",
+      examDateValue: "",
       courseName: "",
       timeOne: "",
+      timeOneValue: "",
       courseTwo: "",
-      timeTwo: ""
+      timeTwo: "",
+      timeTwoValue: ""
     }
   ],
   sessionNo: "108",
@@ -223,10 +236,71 @@ const fieldSx = {
   },
   "& .MuiInputLabel-root": {
     fontFamily: "Cairo"
+  },
+
+  "@media (max-width:1599px)": {
+    "& .MuiInputLabel-root": {
+      fontFamily: "Cairo",
+      fontSize: "0.56rem",
+      fontWeight: 800
+    },
+
+    "& .MuiInputBase-input, & .MuiSelect-select": {
+      fontFamily: "Cairo",
+      fontSize: "0.6rem",
+      fontWeight: 750,
+      paddingTop: "8px",
+      paddingBottom: "8px"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      minHeight: 35,
+      borderRadius: "9px"
+    }
+  },
+
+  "@media (max-width:599px)": {
+    "& .MuiInputLabel-root": {
+      fontSize: "0.46rem"
+    },
+
+    "& .MuiInputBase-input, & .MuiSelect-select": {
+      fontSize: "0.5rem",
+      paddingTop: "6px",
+      paddingBottom: "6px"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      minHeight: 31,
+      borderRadius: "8px"
+    }
   }
 };
 
 const QualityFormsPage = () => {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  const [exportingPdf, setExportingPdf] =
+    useState(false);
+
   const currentUser = useMemo(() => {
     try {
       return JSON.parse(
@@ -265,6 +339,37 @@ const QualityFormsPage = () => {
   const printRef = useRef(null);
   const lastLoadedNationalIdRef = useRef("");
   const loadSequenceRef = useRef(0);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
+  const compactMenuProps = {
+    MenuListProps: {
+      dense: true,
+      sx: {
+        p: isCompact ? 0.25 : 0.75
+      }
+    },
+    PaperProps: {
+      sx: {
+        maxHeight: isPhone ? 220 : isTablet ? 280 : 360,
+        borderRadius: isCompact ? 1.3 : 2,
+        "& .MuiMenuItem-root": {
+          minHeight: isPhone ? 30 : isTablet ? 34 : 40,
+          py: isPhone ? 0.35 : isTablet ? 0.48 : 0.75,
+          px: isPhone ? 0.75 : isTablet ? 0.95 : 1.5,
+          pl: isPhone ? 2 : isTablet ? 2.4 : 1.5,
+          fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : "0.875rem",
+          fontWeight: 850,
+          lineHeight: 1.2,
+          whiteSpace: "normal"
+        }
+      }
+    }
+  };
 
   const update = (field) => (event) => {
     const rawValue = event.target.value;
@@ -1294,36 +1399,370 @@ const exportPdfDirect = async () => {
   }
 };
 
+
+const exportPdfMobile = async () => {
+  if (!form.documentGuid) {
+    await showError("احفظ النموذج أولًا قبل التصدير");
+    return;
+  }
+
+  const sourceNode = printRef.current;
+
+  if (!sourceNode) {
+    await showError("تعذر تجهيز نموذج PDF");
+    return;
+  }
+
+  let exportHost = null;
+
+  try {
+    setExportingPdf(true);
+
+    if (document.fonts?.ready) {
+      try {
+        await document.fonts.ready;
+      } catch {}
+    }
+
+    exportHost = document.createElement("div");
+    exportHost.setAttribute("data-quality-pdf-host", "true");
+
+    Object.assign(exportHost.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "210mm",
+      background: "#fff",
+      opacity: "1",
+      pointerEvents: "none",
+      zIndex: "-10000",
+      overflow: "visible"
+    });
+
+    const clonedNode = sourceNode.cloneNode(true);
+
+    clonedNode.style.opacity = "1";
+    clonedNode.style.visibility = "visible";
+    clonedNode.style.pointerEvents = "none";
+    clonedNode.style.transform = "none";
+    clonedNode.style.margin = "0";
+
+    clonedNode
+      .querySelectorAll("img")
+      .forEach((image) => {
+        const value = image.getAttribute("src");
+
+        if (!value) return;
+
+        try {
+          image.src = new URL(
+            value,
+            window.location.origin
+          ).href;
+          image.crossOrigin = "anonymous";
+        } catch {}
+      });
+
+    exportHost.appendChild(clonedNode);
+    document.body.appendChild(exportHost);
+
+    const images = Array.from(
+      clonedNode.querySelectorAll("img")
+    );
+
+    await Promise.all(
+      images.map(
+        (image) =>
+          new Promise((resolve) => {
+            if (
+              image.complete &&
+              image.naturalWidth > 0
+            ) {
+              resolve();
+              return;
+            }
+
+            const finish = () => resolve();
+
+            image.addEventListener(
+              "load",
+              finish,
+              { once: true }
+            );
+
+            image.addEventListener(
+              "error",
+              finish,
+              { once: true }
+            );
+
+            window.setTimeout(finish, 5000);
+          })
+      )
+    );
+
+    const explicitPages = Array.from(
+      clonedNode.querySelectorAll(".print-page")
+    );
+
+    const pages =
+      explicitPages.length > 0
+        ? explicitPages
+        : [clonedNode];
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true
+    });
+
+    for (
+      let index = 0;
+      index < pages.length;
+      index += 1
+    ) {
+      const pageNode = pages[index];
+
+      const canvas = await html2canvas(
+        pageNode,
+        {
+          scale: isPhone ? 2 : 2.25,
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: "#ffffff",
+          logging: false,
+          imageTimeout: 7000,
+          width: pageNode.scrollWidth,
+          height: pageNode.scrollHeight,
+          windowWidth: Math.max(
+            pageNode.scrollWidth,
+            794
+          ),
+          windowHeight: Math.max(
+            pageNode.scrollHeight,
+            1123
+          ),
+          scrollX: 0,
+          scrollY: 0
+        }
+      );
+
+      const imageData =
+        canvas.toDataURL(
+          "image/jpeg",
+          0.96
+        );
+
+      if (index > 0) {
+        pdf.addPage("a4", "portrait");
+      }
+
+      pdf.addImage(
+        imageData,
+        "JPEG",
+        0,
+        0,
+        210,
+        297,
+        undefined,
+        "FAST"
+      );
+    }
+
+    const safeName = String(
+      selected?.name || "نموذج جودة"
+    )
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .trim();
+
+    const fileName =
+      `${safeName}${
+        form.documentNo
+          ? `-${form.documentNo}`
+          : ""
+      }.pdf`;
+
+    pdf.save(fileName);
+  } catch (error) {
+    await showError(
+      error?.message ||
+        "تعذر إنشاء ملف PDF مباشرة"
+    );
+  } finally {
+    if (
+      exportHost &&
+      exportHost.parentNode
+    ) {
+      exportHost.parentNode.removeChild(
+        exportHost
+      );
+    }
+
+    setExportingPdf(false);
+  }
+};
+
+const handleExportPdf = () => {
+  if (isCompact) {
+    return exportPdfMobile();
+  }
+
+  return exportPdfDirect();
+};
+
   return (
     <Box
+      dir="rtl"
       sx={{
-        minHeight: "100vh",
-        direction: "ltr",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        direction: "rtl",
         background:
-          "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
+          "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)",
+        position: "relative"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <AppBar
+          position="sticky"
+          elevation={0}
+          sx={{
+            top: 0,
+            background: "rgba(255,255,255,.96)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important",
+                md: "60px !important"
+              },
+              px: {
+                xs: 0.8,
+                sm: 1.2,
+                md: 1.5
+              },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              aria-label={
+                mobileSidebarOpen
+                  ? "إغلاق القائمة"
+                  : "فتح القائمة"
+              }
+              aria-expanded={
+                mobileSidebarOpen
+              }
+              sx={{
+                width: {
+                  xs: 36,
+                  sm: 40,
+                  md: 42
+                },
+                height: {
+                  xs: 36,
+                  sm: 40,
+                  md: 42
+                },
+                flexShrink: 0,
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 6px 16px rgba(5,117,70,.22)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 22,
+                    md: 23
+                  }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.7rem",
+                  sm: "0.8rem",
+                  md: "0.88rem"
+                },
+                color: "#17372b",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              نماذج الجودة
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md: `${SIDEBAR_WIDTH}px`
-          },
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          ml: 0,
+          mr: 0,
+          boxSizing: "border-box",
+          overflowX: "hidden",
+          direction: "ltr",
+
           p: {
-            xs: 1.2,
-            md: 2
+            xs: 0.45,
+            sm: 0.7,
+            md: 1,
+            lg: 1.3
+          },
+
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width:
+              `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            p: 2
           }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 1.5,
-            borderRadius: 4,
+            p: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+            mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
             direction: "ltr"
@@ -1331,13 +1770,13 @@ const exportPdfDirect = async () => {
         >
           <Stack
             direction="row"
-            spacing={1.2}
+            spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.2}
             alignItems="center"
           >
             <DescriptionIcon
               sx={{
                 color: "#057546",
-                fontSize: 40
+                fontSize: isPhone ? 20 : isTablet ? 25 : 40
               }}
             />
 
@@ -1346,7 +1785,7 @@ const exportPdfDirect = async () => {
                 sx={{
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: "1.25rem",
+                  fontSize: isPhone ? "0.7rem" : isTablet ? "0.86rem" : "1.25rem",
                   color: "#173b2b"
                 }}
               >
@@ -1357,7 +1796,8 @@ const exportPdfDirect = async () => {
                 sx={{
                   fontFamily: "Cairo",
                   color: "#708179",
-                  fontSize: ".78rem"
+                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.5rem" : ".78rem",
+                  display: isPhone ? "none" : "block"
                 }}
               >
                 إنشاء وحفظ وتصدير نماذج الجودة بصيغة PDF
@@ -1369,9 +1809,9 @@ const exportPdfDirect = async () => {
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 1.5,
-            borderRadius: 4,
+            p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
+            mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
+            borderRadius: isPhone ? 1.4 : isTablet ? 2 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
             direction: "ltr"
@@ -1388,6 +1828,7 @@ const exportPdfDirect = async () => {
             <Select
               value={selectedTemplate}
               label="اختر نوع النموذج"
+              MenuProps={compactMenuProps}
               onChange={(event) => {
                 const code =
                   event.target.value;
@@ -1440,10 +1881,13 @@ const exportPdfDirect = async () => {
                   examRows: [
                     {
                       dayDate: "",
+                      examDateValue: "",
                       courseName: "",
                       timeOne: "",
+                      timeOneValue: "",
                       courseTwo: "",
-                      timeTwo: ""
+                      timeTwo: "",
+                      timeTwoValue: ""
                     }
                   ],
                   statementText: code === "EXAM_SCHEDULE"
@@ -1532,16 +1976,114 @@ const exportPdfDirect = async () => {
           "NOT_REGISTERED_LETTER"
         ].includes(selected?.code) && (
           <Paper
+            className="quality-editor-shell"
             elevation={0}
             sx={{
-              p: {
-                xs: 1.5,
-                md: 2.5
-              },
-              borderRadius: 4,
+              p: isPhone ? 0.55 : isTablet ? 0.85 : 2.5,
+              borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
               border:
                 "1px solid rgba(5,117,70,.14)",
-              direction: "ltr"
+              direction: "ltr",
+
+              "& .MuiPaper-outlined": {
+                "@media (max-width:1599px)": {
+                  padding: "9px !important",
+                  marginBottom: "9px !important",
+                  borderRadius: "11px !important"
+                },
+
+                "@media (max-width:599px)": {
+                  padding: "6px !important",
+                  marginBottom: "6px !important",
+                  borderRadius: "9px !important"
+                }
+              },
+
+              "& .MuiInputLabel-root": {
+                "@media (max-width:1599px)": {
+                  fontSize: "0.56rem !important",
+                  fontWeight: "800 !important"
+                },
+
+                "@media (max-width:599px)": {
+                  fontSize: "0.46rem !important"
+                }
+              },
+
+              "& .MuiInputBase-input, & .MuiSelect-select": {
+                "@media (max-width:1599px)": {
+                  fontSize: "0.6rem !important",
+                  paddingTop: "8px !important",
+                  paddingBottom: "8px !important"
+                },
+
+                "@media (max-width:599px)": {
+                  fontSize: "0.5rem !important",
+                  paddingTop: "6px !important",
+                  paddingBottom: "6px !important"
+                }
+              },
+
+              "& .MuiOutlinedInput-root": {
+                "@media (max-width:1599px)": {
+                  minHeight: "35px !important",
+                  borderRadius: "9px !important"
+                },
+
+                "@media (max-width:599px)": {
+                  minHeight: "31px !important",
+                  borderRadius: "8px !important"
+                }
+              },
+
+              "& .MuiFormControl-root": {
+                "@media (max-width:1599px)": {
+                  marginTop: "3px",
+                  marginBottom: "3px"
+                },
+
+                "@media (max-width:599px)": {
+                  marginTop: "4px",
+                  marginBottom: "4px"
+                }
+              },
+
+              "& .MuiButton-root": {
+                "@media (max-width:1599px)": {
+                  minHeight: "33px",
+                  fontSize: "0.56rem",
+                  padding: "5px 9px"
+                },
+
+                "@media (max-width:599px)": {
+                  minHeight: "30px",
+                  fontSize: "0.48rem",
+                  padding: "4px 7px"
+                }
+              },
+
+              "& .MuiFormControlLabel-label": {
+                "@media (max-width:1599px)": {
+                  fontSize: "0.56rem",
+                  fontWeight: 800
+                },
+
+                "@media (max-width:599px)": {
+                  fontSize: "0.47rem"
+                }
+              },
+
+              "& .MuiAlert-root": {
+                "@media (max-width:1599px)": {
+                  fontSize: "0.55rem",
+                  paddingTop: "4px",
+                  paddingBottom: "4px"
+                },
+
+                "@media (max-width:599px)": {
+                  fontSize: "0.46rem"
+                }
+              }
             }}
           >
             <Typography
@@ -1549,7 +2091,7 @@ const exportPdfDirect = async () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: "2rem",
+                fontSize: isPhone ? "0.78rem" : isTablet ? "0.95rem" : "2rem",
                 color: "#057546"
               }}
             >
@@ -1562,7 +2104,8 @@ const exportPdfDirect = async () => {
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 color: "#ae1e21",
-                mb: 2
+                mb: isPhone ? 0.55 : isTablet ? 0.75 : 2,
+                fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined
               }}
             >
               إدخال بيانات نموذج {selected?.name}
@@ -1822,9 +2365,9 @@ const exportPdfDirect = async () => {
             <Paper
               variant="outlined"
               sx={{
-                p: 2,
-                mb: 2,
-                borderRadius: 3
+                p: isPhone ? 0.4 : isTablet ? 0.55 : 2,
+                mb: isPhone ? 0.55 : isTablet ? 0.75 : 2,
+                borderRadius: isPhone ? 1.2 : isTablet ? 1.5 : 3
               }}
             >
               <Typography
@@ -1832,7 +2375,13 @@ const exportPdfDirect = async () => {
                   fontFamily: "Cairo",
                   color: "#057546",
                   fontWeight: 900,
-                  mb: 1
+                  mb: isPhone ? 0.3 : isTablet ? 0.4 : 1,
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.58rem"
+                      : undefined,
+                  lineHeight: 1.15
                 }}
               >
                 {selectedTemplate ===
@@ -1843,11 +2392,38 @@ const exportPdfDirect = async () => {
 
               <TextField
                 multiline
-                minRows={3}
+                minRows={1}
+                maxRows={isPhone ? 1 : isTablet ? 2 : 3}
                 fullWidth
                 value={form.specialization}
                 onChange={update("specialization")}
-                sx={fieldSx}
+                sx={{
+                  ...fieldSx,
+
+                  "@media (max-width:1599px)": {
+                    "& .MuiOutlinedInput-root": {
+                      minHeight: "44px !important",
+                      p: "5px 7px !important"
+                    },
+                    "& textarea": {
+                      fontSize: "0.54rem !important",
+                      lineHeight: 1.35,
+                      padding: "0 !important"
+                    }
+                  },
+
+                  "@media (max-width:599px)": {
+                    "& .MuiOutlinedInput-root": {
+                      minHeight: "38px !important",
+                      maxHeight: "42px !important",
+                      p: "4px 6px !important"
+                    },
+                    "& textarea": {
+                      fontSize: "0.46rem !important",
+                      lineHeight: 1.3
+                    }
+                  }
+                }}
               />
             </Paper>
             </>
@@ -1865,6 +2441,7 @@ const exportPdfDirect = async () => {
               <AbsenceWarningEditor
                 form={form}
                 update={update}
+                setForm={setForm}
                 loadStudent={loadStudent}
                 loadingStudent={loadingStudent}
               />
@@ -1916,12 +2493,13 @@ const exportPdfDirect = async () => {
             )}
 
             <Stack
-              direction={{
-                xs: "column",
-                sm: "row"
-              }}
+              direction="row"
               justifyContent="center"
-              spacing={1.2}
+              spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.2}
+              sx={{
+                width: "100%",
+                flexWrap: "nowrap"
+              }}
             >
               <Button
                 variant="contained"
@@ -1945,9 +2523,11 @@ const exportPdfDirect = async () => {
                   )
                 }
                 sx={{
-                  minWidth: 180,
+                  minWidth: isPhone ? 0 : isTablet ? 120 : 180,
+                  flex: isCompact ? 1 : "initial",
                   background:
-                    "linear-gradient(135deg,#057546,#034d31)"
+                    "linear-gradient(135deg,#057546,#034d31)",
+                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
                 }}
               >
                 حفظ النموذج
@@ -1955,11 +2535,34 @@ const exportPdfDirect = async () => {
 
               <Button
                 variant="outlined"
-                startIcon={<PrintIcon />}
-                onClick={exportPdfDirect}
-                disabled={!form.documentGuid}
+                startIcon={
+                  exportingPdf ? (
+                    <CircularProgress
+                      size={isPhone ? 13 : 16}
+                      color="inherit"
+                    />
+                  ) : isCompact ? (
+                    <PictureAsPdfIcon />
+                  ) : (
+                    <PrintIcon />
+                  )
+                }
+                onClick={handleExportPdf}
+                disabled={
+                  !form.documentGuid ||
+                  exportingPdf
+                }
+                sx={{
+                  flex: isCompact ? 1 : "initial",
+                  minWidth: isPhone ? 0 : isTablet ? 120 : undefined,
+                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+                }}
               >
-                تصدير PDF / طباعة
+                {isCompact
+                  ? exportingPdf
+                    ? "جاري التصدير..."
+                    : "تصدير PDF"
+                  : "تصدير PDF / طباعة"}
               </Button>
             </Stack>
           </Paper>
@@ -2045,7 +2648,19 @@ const Section = ({
     sx={{
       p: 2,
       mb: 2,
-      borderRadius: 3
+      borderRadius: 3,
+
+      "@media (max-width:1599px)": {
+        p: 0.85,
+        mb: 0.85,
+        borderRadius: 2
+      },
+
+      "@media (max-width:599px)": {
+        p: 0.55,
+        mb: 0.55,
+        borderRadius: 1.5
+      }
     }}
   >
     <Typography
@@ -2053,7 +2668,17 @@ const Section = ({
         fontFamily: "Cairo",
         color: "#057546",
         fontWeight: 900,
-        mb: 1.5
+        mb: 1.5,
+
+        "@media (max-width:1599px)": {
+          mb: 0.55,
+          fontSize: "0.58rem"
+        },
+
+        "@media (max-width:599px)": {
+          mb: 0.4,
+          fontSize: "0.49rem"
+        }
       }}
     >
       {title}
@@ -2063,16 +2688,66 @@ const Section = ({
       sx={{
         display: "grid",
         gridTemplateColumns: {
-          xs: "1fr",
+          xs: "repeat(2,minmax(0,1fr))",
+          sm: "repeat(2,minmax(0,1fr))",
           md: "1fr 1fr"
         },
-        gap: 1.5
+        columnGap: {
+          xs: 1.05,
+          sm: 1.25,
+          md: 1.5
+        },
+        rowGap: {
+          xs: 1.4,
+          sm: 1.55,
+          md: 1.5
+        },
+
+        "& > *": {
+          minWidth: 0
+        }
       }}
     >
       {children}
     </Box>
   </Paper>
 );
+
+const compactTextAreaSx = {
+  ...fieldSx,
+
+  "@media (max-width:1599px)": {
+    "& .MuiInputLabel-root": {
+      fontSize: "0.5rem !important"
+    },
+
+    "& textarea": {
+      fontSize: "0.54rem !important",
+      lineHeight: "1.45 !important",
+      padding: "0 !important"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      padding: "7px 9px !important"
+    }
+  },
+
+  "@media (max-width:599px)": {
+    "& .MuiInputLabel-root": {
+      fontSize: "0.42rem !important"
+    },
+
+    "& textarea": {
+      fontSize: "0.46rem !important",
+      lineHeight: "1.4 !important",
+      padding: "0 !important"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      padding: "5px 7px !important"
+    }
+  }
+};
 
 const ReadOnlyField = ({
   label,
@@ -3599,11 +4274,92 @@ const StudentLookupFields = ({
 
 const createEmptyExamRow = () => ({
   dayDate: "",
+  examDateValue: "",
   courseName: "",
   timeOne: "",
+  timeOneValue: "",
   courseTwo: "",
-  timeTwo: ""
+  timeTwo: "",
+  timeTwoValue: ""
 });
+
+const formatExamHijriDate = (gregorianValue) => {
+  if (!gregorianValue) return "";
+
+  try {
+    const [year, month, day] = String(gregorianValue)
+      .split("-")
+      .map(Number);
+
+    if (!year || !month || !day) return "";
+
+    const date = new Date(
+      year,
+      month - 1,
+      day,
+      12,
+      0,
+      0
+    );
+
+    const weekday = new Intl.DateTimeFormat(
+      "ar-SA",
+      {
+        weekday: "long"
+      }
+    ).format(date);
+
+    const hijriDate = new Intl.DateTimeFormat(
+      "ar-SA-u-ca-islamic-umalqura",
+      {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }
+    ).format(date);
+
+    return `${weekday} ${hijriDate}`;
+  } catch {
+    return "";
+  }
+};
+
+const formatExamTime = (timeValue) => {
+  if (!timeValue) return "";
+
+  try {
+    const [hour, minute] = String(timeValue)
+      .split(":")
+      .map(Number);
+
+    if (
+      Number.isNaN(hour) ||
+      Number.isNaN(minute)
+    ) {
+      return "";
+    }
+
+    const date = new Date(
+      2000,
+      0,
+      1,
+      hour,
+      minute,
+      0
+    );
+
+    return new Intl.DateTimeFormat(
+      "ar-SA",
+      {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      }
+    ).format(date);
+  } catch {
+    return "";
+  }
+};
 
 const EXAM_ROW_PLACEHOLDERS = {
   dayDate: "مثال: الاثنين 1445/04/04 هـ",
@@ -3646,6 +4402,35 @@ const ExamScheduleEditor = ({
               ? {
                   ...row,
                   [field]: value
+                }
+              : row
+        ),
+        documentGuid: "",
+        documentNo: "",
+        verificationUrl: ""
+      };
+    });
+  };
+
+  const changeRowFields = (
+    index,
+    patch
+  ) => {
+    setForm((current) => {
+      const currentRows =
+        Array.isArray(current.examRows) &&
+        current.examRows.length > 0
+          ? current.examRows
+          : [createEmptyExamRow()];
+
+      return {
+        ...current,
+        examRows: currentRows.map(
+          (row, rowIndex) =>
+            rowIndex === index
+              ? {
+                  ...row,
+                  ...patch
                 }
               : row
         ),
@@ -3728,7 +4513,17 @@ const ExamScheduleEditor = ({
         sx={{
           p: 2,
           mb: 2,
-          borderRadius: 3
+          borderRadius: 3,
+          "@media (max-width:1599px)": {
+            p: 0.75,
+            mb: 0.85,
+            borderRadius: 2
+          },
+          "@media (max-width:599px)": {
+            p: 0.55,
+            mb: 0.65,
+            borderRadius: 1.5
+          }
         }}
       >
         <Typography
@@ -3736,7 +4531,15 @@ const ExamScheduleEditor = ({
             fontFamily: "Cairo",
             color: "#057546",
             fontWeight: 900,
-            mb: 1
+            mb: 1,
+            "@media (max-width:1599px)": {
+              mb: 0.45,
+              fontSize: "0.58rem"
+            },
+            "@media (max-width:599px)": {
+              mb: 0.3,
+              fontSize: "0.49rem"
+            }
           }}
         >
           نص الخطاب
@@ -3745,10 +4548,11 @@ const ExamScheduleEditor = ({
         <TextField
           fullWidth
           multiline
-          minRows={2}
+          minRows={1}
+          maxRows={3}
           value={form.statementText}
           onChange={update("statementText")}
-          sx={fieldSx}
+          sx={compactTextAreaSx}
         />
       </Paper>
 
@@ -3758,7 +4562,19 @@ const ExamScheduleEditor = ({
           p: 2,
           mb: 2,
           borderRadius: 3,
-          overflowX: "auto"
+          overflowX: "hidden",
+
+          "@media (max-width:1599px)": {
+            p: 0.75,
+            mb: 0.85,
+            borderRadius: 2
+          },
+
+          "@media (max-width:599px)": {
+            p: 0.55,
+            mb: 0.65,
+            borderRadius: 1.5
+          }
         }}
       >
         <Stack
@@ -3794,7 +4610,20 @@ const ExamScheduleEditor = ({
               <AddCircleOutlineIcon />
             }
             sx={{
-              minWidth: 155,
+              minWidth: {
+                xs: 78,
+                sm: 92,
+                lg: 155
+              },
+              minHeight: {
+                xs: 30,
+                sm: 33
+              },
+              fontSize: {
+                xs: "0.48rem",
+                sm: "0.56rem",
+                lg: undefined
+              },
               fontFamily: "Cairo",
               background:
                 "linear-gradient(135deg,#057546,#034d31)"
@@ -3804,10 +4633,272 @@ const ExamScheduleEditor = ({
           </Button>
         </Stack>
 
+        {/* Mobile / Tablet: compact cards, no horizontal table */}
         <Box
           sx={{
+            display: {
+              xs: "block",
+              md: "block",
+              lg: "none"
+            }
+          }}
+        >
+          <Stack
+            spacing={{
+              xs: 0.65,
+              sm: 0.85
+            }}
+          >
+            {rows.map((row, index) => (
+              <Paper
+                key={index}
+                variant="outlined"
+                sx={{
+                  p: {
+                    xs: 0.5,
+                    sm: 0.7
+                  },
+                  borderRadius: {
+                    xs: 1.25,
+                    sm: 1.6
+                  },
+                  background: "#fbfefc"
+                }}
+              >
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  sx={{
+                    mb: {
+                      xs: 0.45,
+                      sm: 0.6
+                    }
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      color: "#057546",
+                      fontSize: {
+                        xs: "0.46rem",
+                        sm: "0.55rem"
+                      }
+                    }}
+                  >
+                    يوم الاختبار {index + 1}
+                  </Typography>
+
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() =>
+                      deleteExamDay(index)
+                    }
+                    sx={{
+                      width: {
+                        xs: 25,
+                        sm: 29
+                      },
+                      height: {
+                        xs: 25,
+                        sm: 29
+                      }
+                    }}
+                  >
+                    <DeleteOutlineIcon
+                      sx={{
+                        fontSize: {
+                          xs: 15,
+                          sm: 17
+                        }
+                      }}
+                    />
+                  </IconButton>
+                </Stack>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(2,minmax(0,1fr))",
+                    columnGap: {
+                      xs: 0.55,
+                      sm: 0.75
+                    },
+                    rowGap: {
+                      xs: 0.75,
+                      sm: 0.95
+                    }
+                  }}
+                >
+                  <TextField
+                    type="date"
+                    label="اليوم / التاريخ"
+                    value={row.examDateValue || ""}
+                    onChange={(event) => {
+                      const value = event.target.value;
+
+                      changeRowFields(
+                        index,
+                        {
+                          examDateValue: value,
+                          dayDate:
+                            formatExamHijriDate(
+                              value
+                            )
+                        }
+                      );
+                    }}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    helperText={
+                      row.dayDate ||
+                      "اختر التاريخ"
+                    }
+                    sx={{
+                      ...fieldSx,
+                      "& .MuiFormHelperText-root": {
+                        m: 0,
+                        mt: 0.25,
+                        textAlign: "right",
+                        color: "#057546",
+                        fontWeight: 900,
+                        fontSize: {
+                          xs: "0.38rem",
+                          sm: "0.46rem"
+                        },
+                        lineHeight: 1.25
+                      }
+                    }}
+                  />
+
+                  <TextField
+                    label="المقرر الأول"
+                    value={row.courseName || ""}
+                    placeholder={
+                      EXAM_ROW_PLACEHOLDERS.courseName
+                    }
+                    onChange={(event) =>
+                      changeRow(
+                        index,
+                        "courseName",
+                        event.target.value
+                      )
+                    }
+                    sx={fieldSx}
+                  />
+
+                  <TextField
+                    type="time"
+                    label="التوقيت الأول"
+                    value={row.timeOneValue || ""}
+                    onChange={(event) => {
+                      const value = event.target.value;
+
+                      changeRowFields(
+                        index,
+                        {
+                          timeOneValue: value,
+                          timeOne:
+                            formatExamTime(value)
+                        }
+                      );
+                    }}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    helperText={
+                      row.timeOne || "اختر الوقت"
+                    }
+                    sx={{
+                      ...fieldSx,
+                      "& .MuiFormHelperText-root": {
+                        m: 0,
+                        mt: 0.25,
+                        textAlign: "right",
+                        color: "#057546",
+                        fontWeight: 850,
+                        fontSize: {
+                          xs: "0.37rem",
+                          sm: "0.45rem"
+                        },
+                        lineHeight: 1.2
+                      }
+                    }}
+                  />
+
+                  <TextField
+                    label="المقرر الثاني"
+                    value={row.courseTwo || ""}
+                    placeholder={
+                      EXAM_ROW_PLACEHOLDERS.courseTwo
+                    }
+                    onChange={(event) =>
+                      changeRow(
+                        index,
+                        "courseTwo",
+                        event.target.value
+                      )
+                    }
+                    sx={fieldSx}
+                  />
+
+                  <TextField
+                    type="time"
+                    label="التوقيت الثاني"
+                    value={row.timeTwoValue || ""}
+                    onChange={(event) => {
+                      const value = event.target.value;
+
+                      changeRowFields(
+                        index,
+                        {
+                          timeTwoValue: value,
+                          timeTwo:
+                            formatExamTime(value)
+                        }
+                      );
+                    }}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    helperText={
+                      row.timeTwo || "اختر الوقت"
+                    }
+                    sx={{
+                      ...fieldSx,
+                      gridColumn: "1 / -1",
+                      "& .MuiFormHelperText-root": {
+                        m: 0,
+                        mt: 0.25,
+                        textAlign: "right",
+                        color: "#057546",
+                        fontWeight: 850,
+                        fontSize: {
+                          xs: "0.37rem",
+                          sm: "0.45rem"
+                        },
+                        lineHeight: 1.2
+                      }
+                    }}
+                  />
+                </Box>
+              </Paper>
+            ))}
+          </Stack>
+        </Box>
+
+        {/* Desktop: keep table layout */}
+        <Box
+          sx={{
+            display: {
+              xs: "none",
+              lg: "grid"
+            },
             minWidth: 980,
-            display: "grid",
             gridTemplateColumns:
               "46px 1.35fr 1fr .8fr 1fr .8fr",
             gap: 1,
@@ -3844,10 +4935,6 @@ const ExamScheduleEditor = ({
                 onClick={() =>
                   deleteExamDay(index)
                 }
-                title="حذف اليوم"
-                aria-label={`حذف اليوم ${
-                  index + 1
-                }`}
                 sx={{
                   minWidth: 42,
                   width: 42,
@@ -3859,22 +4946,26 @@ const ExamScheduleEditor = ({
               </Button>
 
               <TextField
-                value={row.dayDate || ""}
-                placeholder={
-                  EXAM_ROW_PLACEHOLDERS.dayDate
-                }
-                onChange={(event) =>
-                  changeRow(
+                type="date"
+                label="التاريخ"
+                value={row.examDateValue || ""}
+                onChange={(event) => {
+                  const value = event.target.value;
+
+                  changeRowFields(
                     index,
-                    "dayDate",
-                    event.target.value
-                  )
-                }
-                sx={fieldSx}
-                inputProps={{
-                  "aria-label":
-                    "اليوم والتاريخ"
+                    {
+                      examDateValue: value,
+                      dayDate:
+                        formatExamHijriDate(value)
+                    }
+                  );
                 }}
+                InputLabelProps={{
+                  shrink: true
+                }}
+                helperText={row.dayDate || ""}
+                sx={fieldSx}
               />
 
               <TextField
@@ -3890,29 +4981,29 @@ const ExamScheduleEditor = ({
                   )
                 }
                 sx={fieldSx}
-                inputProps={{
-                  "aria-label":
-                    "المقرر الأول"
-                }}
               />
 
               <TextField
-                value={row.timeOne || ""}
-                placeholder={
-                  EXAM_ROW_PLACEHOLDERS.timeOne
-                }
-                onChange={(event) =>
-                  changeRow(
+                type="time"
+                label="التوقيت الأول"
+                value={row.timeOneValue || ""}
+                onChange={(event) => {
+                  const value = event.target.value;
+
+                  changeRowFields(
                     index,
-                    "timeOne",
-                    event.target.value
-                  )
-                }
-                sx={fieldSx}
-                inputProps={{
-                  "aria-label":
-                    "التوقيت الأول"
+                    {
+                      timeOneValue: value,
+                      timeOne:
+                        formatExamTime(value)
+                    }
+                  );
                 }}
+                InputLabelProps={{
+                  shrink: true
+                }}
+                helperText={row.timeOne || ""}
+                sx={fieldSx}
               />
 
               <TextField
@@ -3928,29 +5019,29 @@ const ExamScheduleEditor = ({
                   )
                 }
                 sx={fieldSx}
-                inputProps={{
-                  "aria-label":
-                    "المقرر الثاني"
-                }}
               />
 
               <TextField
-                value={row.timeTwo || ""}
-                placeholder={
-                  EXAM_ROW_PLACEHOLDERS.timeTwo
-                }
-                onChange={(event) =>
-                  changeRow(
+                type="time"
+                label="التوقيت الثاني"
+                value={row.timeTwoValue || ""}
+                onChange={(event) => {
+                  const value = event.target.value;
+
+                  changeRowFields(
                     index,
-                    "timeTwo",
-                    event.target.value
-                  )
-                }
-                sx={fieldSx}
-                inputProps={{
-                  "aria-label":
-                    "التوقيت الثاني"
+                    {
+                      timeTwoValue: value,
+                      timeTwo:
+                        formatExamTime(value)
+                    }
+                  );
                 }}
+                InputLabelProps={{
+                  shrink: true
+                }}
+                helperText={row.timeTwo || ""}
+                sx={fieldSx}
               />
             </React.Fragment>
           ))}
@@ -3960,7 +5051,242 @@ const ExamScheduleEditor = ({
   );
 };
 
-const AbsenceWarningEditor = ({ form, update, loadStudent, loadingStudent }) => <>
+
+const CourseListEditor = ({
+  value,
+  setForm
+}) => {
+  const [newCourse, setNewCourse] = useState("");
+
+  const courses = String(value || "")
+    .split(/[،,\n]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const commit = (nextCourses) => {
+    setForm((current) => ({
+      ...current,
+      courses: nextCourses.join("، "),
+      documentGuid: "",
+      documentNo: "",
+      verificationUrl: ""
+    }));
+  };
+
+  const addCourse = () => {
+    const cleanValue = newCourse.trim();
+
+    if (!cleanValue) return;
+
+    commit([...courses, cleanValue]);
+    setNewCourse("");
+  };
+
+  const removeCourse = (index) => {
+    commit(
+      courses.filter(
+        (_, courseIndex) =>
+          courseIndex !== index
+      )
+    );
+  };
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 2,
+        mb: 2,
+        borderRadius: 3,
+
+        "@media (max-width:1599px)": {
+          p: 0.75,
+          mb: 0.85,
+          borderRadius: 2
+        },
+
+        "@media (max-width:599px)": {
+          p: 0.55,
+          mb: 0.65,
+          borderRadius: 1.5
+        }
+      }}
+    >
+      <Typography
+        sx={{
+          fontFamily: "Cairo",
+          color: "#057546",
+          fontWeight: 900,
+          mb: 1,
+
+          "@media (max-width:1599px)": {
+            mb: 0.55,
+            fontSize: "0.58rem"
+          },
+
+          "@media (max-width:599px)": {
+            mb: 0.4,
+            fontSize: "0.49rem"
+          }
+        }}
+      >
+        المقررات
+      </Typography>
+
+      <Stack
+        direction="row"
+        spacing={{
+          xs: 0.45,
+          sm: 0.65,
+          md: 1
+        }}
+        alignItems="center"
+        sx={{ mb: courses.length ? 0.6 : 0 }}
+      >
+        <TextField
+          fullWidth
+          size="small"
+          label="اسم المقرر"
+          placeholder="اكتب المقرر"
+          value={newCourse}
+          onChange={(event) =>
+            setNewCourse(event.target.value)
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              addCourse();
+            }
+          }}
+          sx={fieldSx}
+        />
+
+        <Button
+          variant="contained"
+          onClick={addCourse}
+          startIcon={<AddCircleOutlineIcon />}
+          sx={{
+            flexShrink: 0,
+            minWidth: {
+              xs: 72,
+              sm: 86,
+              md: 105
+            },
+            minHeight: {
+              xs: 31,
+              sm: 34
+            },
+            fontFamily: "Cairo",
+            fontWeight: 900,
+            background:
+              "linear-gradient(135deg,#057546,#034d31)",
+            fontSize: {
+              xs: "0.46rem",
+              sm: "0.54rem",
+              md: "0.72rem"
+            }
+          }}
+        >
+          إضافة
+        </Button>
+      </Stack>
+
+      {courses.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: {
+              xs: 0.4,
+              sm: 0.55,
+              md: 0.75
+            }
+          }}
+        >
+          {courses.map((course, index) => (
+            <Box
+              key={`${course}-${index}`}
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 0.25,
+                border: "1px solid #cfe7dc",
+                background: "#f4fbf7",
+                borderRadius: 999,
+                py: {
+                  xs: 0.2,
+                  sm: 0.3
+                },
+                pr: {
+                  xs: 0.55,
+                  sm: 0.7
+                },
+                pl: {
+                  xs: 0.25,
+                  sm: 0.35
+                },
+                maxWidth: "100%"
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  color: "#17372b",
+                  fontSize: {
+                    xs: "0.42rem",
+                    sm: "0.5rem",
+                    md: "0.66rem"
+                  },
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: {
+                    xs: 150,
+                    sm: 220,
+                    md: 320
+                  }
+                }}
+              >
+                {course}
+              </Typography>
+
+              <IconButton
+                size="small"
+                color="error"
+                onClick={() =>
+                  removeCourse(index)
+                }
+                sx={{
+                  width: {
+                    xs: 21,
+                    sm: 24
+                  },
+                  height: {
+                    xs: 21,
+                    sm: 24
+                  },
+                  p: 0
+                }}
+              >
+                <DeleteOutlineIcon
+                  sx={{
+                    fontSize: {
+                      xs: 13,
+                      sm: 15
+                    }
+                  }}
+                />
+              </IconButton>
+            </Box>
+          ))}
+        </Box>
+      )}
+    </Paper>
+  );
+};
+
+const AbsenceWarningEditor = ({ form, update, setForm, loadStudent, loadingStudent }) => <>
   <Section title="البيانات الأساسية">
     <StudentLookupFields form={form} update={update} loadStudent={loadStudent} loadingStudent={loadingStudent} />
     <TextField label="الفصل التدريبي" value={form.termName} onChange={update("termName")} sx={fieldSx}/>
@@ -3973,10 +5299,10 @@ const AbsenceWarningEditor = ({ form, update, loadStudent, loadingStudent }) => 
     <TextField label="نسبة الإنذار" value={form.absencePercent} onChange={update("absencePercent")} sx={fieldSx}/>
     <TextField label="نسبة الحرمان النهائية" value={form.denialPercent} onChange={update("denialPercent")} sx={fieldSx}/>
   </Section>
-  <Paper variant="outlined" sx={{p:2,mb:2,borderRadius:3}}>
-    <Typography sx={{fontFamily:"Cairo",color:"#057546",fontWeight:900,mb:1}}>المقررات</Typography>
-    <TextField fullWidth multiline minRows={3} placeholder="مثال: الرياضيات، اللغة الإنجليزية، تطبيقات الحاسب" value={form.courses} onChange={update("courses")} sx={fieldSx}/>
-  </Paper>
+  <CourseListEditor
+    value={form.courses}
+    setForm={setForm}
+  />
 </>;
 
 const GradeWarningEditor = ({
@@ -4054,7 +5380,17 @@ const GradeWarningEditor = ({
       sx={{
         p: 2,
         mb: 2,
-        borderRadius: 3
+        borderRadius: 3,
+        "@media (max-width:1599px)": {
+          p: 0.75,
+          mb: 0.85,
+          borderRadius: 2
+        },
+        "@media (max-width:599px)": {
+          p: 0.55,
+          mb: 0.65,
+          borderRadius: 1.5
+        }
       }}
     >
       <Typography
@@ -4062,7 +5398,15 @@ const GradeWarningEditor = ({
           fontFamily: "Cairo",
           color: "#057546",
           fontWeight: 900,
-          mb: 1
+          mb: 1,
+          "@media (max-width:1599px)": {
+            mb: 0.5,
+            fontSize: "0.58rem"
+          },
+          "@media (max-width:599px)": {
+            mb: 0.35,
+            fontSize: "0.49rem"
+          }
         }}
       >
         سبب انخفاض المعدل
@@ -4071,11 +5415,12 @@ const GradeWarningEditor = ({
       <TextField
         fullWidth
         multiline
-        minRows={3}
+        minRows={1}
+        maxRows={3}
         value={form.reasonText}
         onChange={update("reasonText")}
         placeholder="مثال: نظراً لحرمانك / غيابك عن أداء الاختبارات"
-        sx={fieldSx}
+        sx={compactTextAreaSx}
       />
     </Paper>
   </>
@@ -4248,7 +5593,19 @@ const GeneralLetterEditor = ({
             p: 2,
             mb: 2,
             borderRadius: 3,
-            direction: "rtl"
+            direction: "rtl",
+
+            "@media (max-width:1599px)": {
+              p: 0.75,
+              mb: 0.85,
+              borderRadius: 2
+            },
+
+            "@media (max-width:599px)": {
+              p: 0.55,
+              mb: 0.65,
+              borderRadius: 1.5
+            }
           }}
         >
           <Typography
@@ -4256,13 +5613,29 @@ const GeneralLetterEditor = ({
               fontFamily: "Cairo",
               color: "#057546",
               fontWeight: 900,
-              mb: 1
+              mb: 1,
+
+              "@media (max-width:1599px)": {
+                mb: 0.45,
+                fontSize: "0.58rem"
+              },
+
+              "@media (max-width:599px)": {
+                mb: 0.3,
+                fontSize: "0.49rem"
+              }
             }}
           >
             أسباب تعذر التسجيل
           </Typography>
 
-          <Stack spacing={1}>
+          <Stack
+            spacing={{
+              xs: 0.35,
+              sm: 0.5,
+              md: 1
+            }}
+          >
             <FormControlLabel
               control={
                 <Checkbox
@@ -4282,7 +5655,25 @@ const GeneralLetterEditor = ({
               sx={{
                 "& .MuiFormControlLabel-label": {
                   fontFamily: "Cairo",
-                  fontWeight: 800
+                  fontWeight: 800,
+                  "@media (max-width:1599px)": {
+                    fontSize: "0.54rem",
+                    lineHeight: 1.35
+                  },
+                  "@media (max-width:599px)": {
+                    fontSize: "0.45rem",
+                    lineHeight: 1.3
+                  }
+                },
+                "& .MuiCheckbox-root": {
+                  "@media (max-width:599px)": {
+                    padding: "4px"
+                  }
+                },
+                "& .MuiSvgIcon-root": {
+                  "@media (max-width:599px)": {
+                    fontSize: "17px"
+                  }
                 }
               }}
             />
@@ -4306,7 +5697,25 @@ const GeneralLetterEditor = ({
               sx={{
                 "& .MuiFormControlLabel-label": {
                   fontFamily: "Cairo",
-                  fontWeight: 800
+                  fontWeight: 800,
+                  "@media (max-width:1599px)": {
+                    fontSize: "0.54rem",
+                    lineHeight: 1.35
+                  },
+                  "@media (max-width:599px)": {
+                    fontSize: "0.45rem",
+                    lineHeight: 1.3
+                  }
+                },
+                "& .MuiCheckbox-root": {
+                  "@media (max-width:599px)": {
+                    padding: "4px"
+                  }
+                },
+                "& .MuiSvgIcon-root": {
+                  "@media (max-width:599px)": {
+                    fontSize: "17px"
+                  }
                 }
               }}
             />

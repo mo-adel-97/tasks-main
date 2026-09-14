@@ -22,7 +22,9 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import SaveIcon from "@mui/icons-material/Save";
@@ -80,6 +82,29 @@ export default function InvoiceReturnDialog({
   onClose,
   onSaved
 }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
+  const getResponsiveSwalOptions = () => {
+    if (!isCompact) return {};
+
+    return {
+      width: isPhone ? "82vw" : "420px",
+      padding: isPhone ? "0.65rem" : "0.85rem",
+      customClass: {
+        popup: "sstli-invoice-return-swal",
+        icon: "sstli-invoice-return-swal-icon",
+        title: "sstli-invoice-return-swal-title",
+        htmlContainer: "sstli-invoice-return-swal-text",
+        actions: "sstli-invoice-return-swal-actions",
+        confirmButton: "sstli-invoice-return-swal-confirm",
+        cancelButton: "sstli-invoice-return-swal-cancel"
+      }
+    };
+  };
+
   const userGuid = useMemo(
     () => getUserGuid(getCurrentUser()),
     []
@@ -134,6 +159,16 @@ export default function InvoiceReturnDialog({
   const selectedInvoice = invoices.find(
     (item) => item.billGuid === selectedBillGuid
   );
+
+  const showWarning = (message) =>
+    Swal.fire({
+      ...getResponsiveSwalOptions(),
+      icon: "warning",
+      title: "تنبيه",
+      text: message,
+      confirmButtonText: "حسناً",
+      confirmButtonColor: accentColor
+    });
 
   const totals = useMemo(() => {
     const total = items.reduce(
@@ -213,7 +248,7 @@ export default function InvoiceReturnDialog({
       setContext(null);
       setItems([]);
 
-      return warning(
+      return showWarning(
         "تم عمل استرجاع للفاتورة بالفعل، ويمكن عرض المرتجع من كشف الحساب"
       );
     }
@@ -419,23 +454,23 @@ export default function InvoiceReturnDialog({
 
   const save = async () => {
     if (!selectedInvoice) {
-      return warning("برجاء اختيار الفاتورة المراد عمل مرتجع لها");
+      return showWarning("برجاء اختيار الفاتورة المراد عمل مرتجع لها");
     }
 
     if (!selectedDocGuid) {
-      return warning("برجاء اختيار نوع المستند");
+      return showWarning("برجاء اختيار نوع المستند");
     }
 
     if (!context?.salesManGuid) {
-      return warning("برجاء اختيار محصل الفاتورة");
+      return showWarning("برجاء اختيار محصل الفاتورة");
     }
 
     if (!notes.trim()) {
-      return warning("لا يمكن حفظ مرتجع المبيعات بدون ملاحظات");
+      return showWarning("لا يمكن حفظ مرتجع المبيعات بدون ملاحظات");
     }
 
     if (items.length === 0) {
-      return warning("لا توجد بنود بالفاتورة المختارة");
+      return showWarning("لا توجد بنود بالفاتورة المختارة");
     }
 
     try {
@@ -484,6 +519,7 @@ export default function InvoiceReturnDialog({
       }
 
       await Swal.fire({
+        ...getResponsiveSwalOptions(),
         icon: "success",
         title: "تم الحفظ",
         text:
@@ -504,16 +540,115 @@ export default function InvoiceReturnDialog({
   };
 
   return (
-    <Dialog
+    <>
+      <style>
+        {`
+          @media (max-width: 1599px) {
+            .sstli-invoice-return-swal {
+              max-width: 420px !important;
+              border-radius: 14px !important;
+              font-family: Cairo, Arial, sans-serif !important;
+            }
+            .sstli-invoice-return-swal-icon {
+              width: 3.4em !important;
+              height: 3.4em !important;
+              margin: 0.6em auto 0.25em !important;
+            }
+            .sstli-invoice-return-swal-icon .swal2-icon-content {
+              font-size: 2.3em !important;
+            }
+            .sstli-invoice-return-swal-title {
+              font-size: 0.95rem !important;
+              line-height: 1.2 !important;
+              padding-top: 0.2em !important;
+            }
+            .sstli-invoice-return-swal-text {
+              font-size: 0.68rem !important;
+              line-height: 1.4 !important;
+              padding: 0 0.75em !important;
+            }
+            .sstli-invoice-return-swal-actions {
+              margin-top: 0.65em !important;
+            }
+            .sstli-invoice-return-swal-confirm,
+            .sstli-invoice-return-swal-cancel {
+              min-width: 76px !important;
+              min-height: 31px !important;
+              padding: 0.38rem 0.75rem !important;
+              margin: 0 !important;
+              font-size: 0.66rem !important;
+              border-radius: 8px !important;
+              font-weight: 900 !important;
+            }
+          }
+
+          @media (max-width: 599px) {
+            .sstli-invoice-return-swal {
+              width: 82vw !important;
+              max-width: 300px !important;
+              border-radius: 12px !important;
+            }
+            .sstli-invoice-return-swal-icon {
+              width: 3em !important;
+              height: 3em !important;
+              margin: 0.5em auto 0.2em !important;
+            }
+            .sstli-invoice-return-swal-icon .swal2-icon-content {
+              font-size: 2em !important;
+            }
+            .sstli-invoice-return-swal-title {
+              font-size: 0.8rem !important;
+            }
+            .sstli-invoice-return-swal-text {
+              font-size: 0.57rem !important;
+              padding: 0 0.5em !important;
+            }
+            .sstli-invoice-return-swal-confirm,
+            .sstli-invoice-return-swal-cancel {
+              min-width: 64px !important;
+              min-height: 28px !important;
+              padding: 0.32rem 0.55rem !important;
+              font-size: 0.56rem !important;
+            }
+          }
+        `}
+      </style>
+
+      <Dialog
       open={open}
       onClose={saving ? undefined : onClose}
       maxWidth="xl"
       fullWidth
+      fullScreen={isPhone}
       dir="rtl"
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          minHeight: "86vh"
+          width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "1180px" : undefined,
+          height: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "90vh",
+          maxHeight: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "90vh",
+          minHeight: 0,
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
         }
       }}
     >
@@ -521,26 +656,71 @@ export default function InvoiceReturnDialog({
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: 1,
+          gap: isCompact ? 0.35 : 1,
           color: primaryColor,
-          fontWeight: 950
+          fontWeight: 950,
+          py: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
+          px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+          fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : undefined,
+          flexShrink: 0
         }}
       >
-        <ChangeCircleIcon />
+        <ChangeCircleIcon sx={{ fontSize: isPhone ? 16 : isTablet ? 19 : undefined }} />
         مرتجع فاتورة
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 3 }}>
+      <DialogContent
+        dividers
+        sx={{
+          p: isPhone ? 0.3 : isTablet ? 0.55 : 3,
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0,
+
+          "& .MuiInputLabel-root": {
+            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+          },
+          "& .MuiInputBase-input, & .MuiSelect-select": {
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            py: isPhone ? 0.52 : isTablet ? 0.67 : undefined
+          },
+
+          "& .MuiSelect-select": {
+            minWidth: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            pr: isPhone ? "24px !important" : undefined
+          },
+          "& .MuiOutlinedInput-root": {
+            minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+            borderRadius: isCompact ? 1.25 : undefined
+          }
+        }}
+      >
         {error ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert
+            severity="error"
+            sx={{
+              mb: isCompact ? 0.35 : 2,
+              py: isCompact ? 0.15 : undefined,
+              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+            }}
+          >
             {error}
           </Alert>
         ) : null}
 
-        <Stack spacing={2}>
-          <Paper variant="outlined" sx={{ p: 2 }}>
-            <Grid container spacing={1.5}>
-              <Grid item xs={12} md={4}>
+        <Stack spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
+              borderRadius: isCompact ? 1.4 : undefined
+            }}
+          >
+            <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   fullWidth
                   label="اسم الطالب"
@@ -549,7 +729,7 @@ export default function InvoiceReturnDialog({
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={6} sm={3} md={4}>
                 <TextField
                   fullWidth
                   label="رقم الهوية"
@@ -558,7 +738,7 @@ export default function InvoiceReturnDialog({
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={6} sm={3} md={4}>
                 <TextField
                   fullWidth
                   label="رقم الجوال"
@@ -569,8 +749,8 @@ export default function InvoiceReturnDialog({
             </Grid>
           </Paper>
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
+          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
+            <Grid item xs={12} sm={4} md={4}>
               <FormControl
                 fullWidth
                 disabled={loadingInvoices}
@@ -583,6 +763,66 @@ export default function InvoiceReturnDialog({
                   onChange={(event) =>
                     setSelectedBillGuid(event.target.value)
                   }
+                  renderValue={(value) => {
+                    const invoice = invoices.find(
+                      (item) => item.billGuid === value
+                    );
+
+                    if (!invoice) return "";
+
+                    return isCompact
+                      ? `رقم ${invoice.code} - ${invoice.documentType || ""}`
+                      : `رقم ${invoice.code} — ${invoice.date} — ${invoice.documentType || ""}`;
+                  }}
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "right"
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "right"
+                    },
+                    MenuListProps: {
+                      dense: true,
+                      sx: {
+                        p: isPhone ? 0.25 : isTablet ? 0.35 : 0.75
+                      }
+                    },
+                    PaperProps: {
+                      sx: {
+                        width: isPhone
+                          ? "calc(100vw - 16px)"
+                          : isTablet
+                            ? "min(620px, calc(100vw - 32px))"
+                            : undefined,
+                        maxWidth: isPhone
+                          ? "calc(100vw - 16px)"
+                          : isTablet
+                            ? "calc(100vw - 32px)"
+                            : undefined,
+                        maxHeight: isPhone ? 210 : isTablet ? 260 : 360,
+                        mt: 0.35,
+                        borderRadius: isCompact ? 1.35 : 2,
+                        overflowX: "hidden",
+                        boxShadow: "0 10px 28px rgba(31,45,61,0.18)",
+
+                       "& .MuiMenuItem-root": {
+  minHeight: isPhone ? 38 : isTablet ? 44 : 46,
+
+  py: isPhone ? 0.4 : isTablet ? 0.5 : 0.75,
+
+  pl: isPhone ? 2 : isTablet ? 2.5 : 3,
+  pr: isPhone ? 0.65 : isTablet ? 0.85 : 1.5,
+
+  borderRadius: isCompact ? 1 : 0,
+  mb: isCompact ? 0.18 : 0,
+  alignItems: "stretch",
+  whiteSpace: "normal",
+}
+                      }
+                    }
+                  }}
                 >
                   {invoices.map((invoice) => (
                     <MenuItem
@@ -590,18 +830,96 @@ export default function InvoiceReturnDialog({
                       value={invoice.billGuid}
                       disabled={invoice.isReturned}
                     >
-                      رقم {invoice.code} — {invoice.date} —{" "}
-                      {invoice.documentType}
-                      {invoice.isReturned
-                        ? " — تم استرجاعها"
-                        : ""}
+                      <Box
+                        sx={{
+                          width: "100%",
+                          minWidth: 0,
+                          display: "grid",
+                          gridTemplateColumns: isPhone
+                            ? "52px minmax(0,1fr)"
+                            : isTablet
+                              ? "64px minmax(0,1fr) auto"
+                              : "auto",
+                          gap: isCompact ? 0.5 : 0,
+                          alignItems: "center"
+                        }}
+                      >
+                        {isCompact ? (
+                          <>
+                            <Typography
+                              sx={{
+                                fontSize: isPhone ? "0.46rem" : "0.55rem",
+                                fontWeight: 1000,
+                                color: primaryColor,
+                                whiteSpace: "nowrap"
+                              }}
+                            >
+                              #{invoice.code}
+                            </Typography>
+
+                            <Box sx={{ minWidth: 0 }}>
+                              <Typography
+                                sx={{
+                                  fontSize: isPhone ? "0.47rem" : "0.56rem",
+                                  fontWeight: 900,
+                                  color: "#24364b",
+                                  lineHeight: 1.15,
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                {invoice.documentType || "فاتورة"}
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  mt: 0.08,
+                                  fontSize: isPhone ? "0.39rem" : "0.47rem",
+                                  color: "#6f8a81",
+                                  lineHeight: 1.1,
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                {invoice.date || "-"}
+                                {invoice.isReturned ? " • تم استرجاعها" : ""}
+                              </Typography>
+                            </Box>
+
+                            {isTablet && (
+                              <Typography
+                                sx={{
+                                  fontSize: "0.48rem",
+                                  fontWeight: 900,
+                                  color: invoice.isReturned
+                                    ? accentColor
+                                    : primaryColor,
+                                  whiteSpace: "nowrap"
+                                }}
+                              >
+                                {invoice.isReturned ? "مسترجعة" : "متاحة"}
+                              </Typography>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            رقم {invoice.code} — {invoice.date} —{" "}
+                            {invoice.documentType}
+                            {invoice.isReturned
+                              ? " — تم استرجاعها"
+                              : ""}
+                          </>
+                        )}
+                      </Box>
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <TextField
                 fullWidth
                 type="datetime-local"
@@ -614,7 +932,7 @@ export default function InvoiceReturnDialog({
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <FormControl
                 fullWidth
                 disabled={
@@ -630,6 +948,45 @@ export default function InvoiceReturnDialog({
                   onChange={(event) =>
                     setSelectedDocGuid(event.target.value)
                   }
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "right"
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "right"
+                    },
+                    MenuListProps: {
+                      dense: true,
+                      sx: { p: isCompact ? 0.25 : 0.75 }
+                    },
+                    PaperProps: {
+                      sx: {
+                        width: isPhone
+                          ? "min(260px, calc(100vw - 20px))"
+                          : isTablet
+                            ? "min(360px, calc(100vw - 32px))"
+                            : undefined,
+                        maxHeight: isPhone ? 175 : isTablet ? 220 : 320,
+                        mt: 0.35,
+                        borderRadius: isCompact ? 1.25 : 2,
+                        boxShadow: "0 10px 26px rgba(31,45,61,0.16)",
+
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone ? 30 : isTablet ? 34 : 40,
+                          py: isPhone ? 0.35 : isTablet ? 0.48 : 0.75,
+                          px: isPhone ? 0.65 : isTablet ? 0.85 : 1.5,
+                          borderRadius: isCompact ? 0.9 : 0,
+                          mb: isCompact ? 0.15 : 0,
+                          fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : "0.875rem",
+                          fontWeight: 850,
+                          lineHeight: 1.15,
+                          whiteSpace: "normal"
+                        }
+                      }
+                    }
+                  }}
                 >
                   {documents.map((document) => (
                     <MenuItem
@@ -645,15 +1002,15 @@ export default function InvoiceReturnDialog({
           </Grid>
 
           {loadingInvoices || loadingContext ? (
-            <Box sx={{ py: 6, textAlign: "center" }}>
+            <Box sx={{ py: isPhone ? 2.5 : isTablet ? 3.5 : 6, textAlign: "center" }}>
               <CircularProgress />
             </Box>
           ) : null}
 
           {context ? (
             <>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
+                <Grid item xs={6} sm={6} md={6}>
                   <TextField
                     fullWidth
                     label="الفرع"
@@ -665,7 +1022,7 @@ export default function InvoiceReturnDialog({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} sm={6} md={6}>
                   <TextField
                     fullWidth
                     label="المحصل"
@@ -678,7 +1035,7 @@ export default function InvoiceReturnDialog({
               <TextField
                 fullWidth
                 multiline
-                minRows={3}
+                minRows={isPhone ? 2 : isTablet ? 2 : 3}
                 label="ملاحظات"
                 value={notes}
                 onChange={(event) =>
@@ -689,6 +1046,36 @@ export default function InvoiceReturnDialog({
               <TableContainer
                 component={Paper}
                 variant="outlined"
+                sx={{
+                  borderRadius: isCompact ? 1.3 : undefined,
+                  overflowX: "auto",
+
+                  "& .MuiTableCell-root": {
+                    py: isPhone ? 0.4 : isTablet ? 0.55 : undefined,
+                    px: isPhone ? 0.28 : isTablet ? 0.45 : undefined,
+                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                    whiteSpace: "nowrap"
+                  },
+
+                  "& .MuiTableHead-root .MuiTableCell-root": {
+                    fontSize: isPhone ? "0.4rem" : isTablet ? "0.49rem" : undefined,
+                    lineHeight: 1.05
+                  },
+
+                  "& .MuiTextField-root": {
+                    width: isPhone ? "54px !important" : isTablet ? "72px !important" : undefined
+                  },
+
+                  "& .MuiOutlinedInput-root": {
+                    minHeight: isPhone ? 27 : isTablet ? 31 : undefined
+                  },
+
+                  "& .MuiInputBase-input": {
+                    px: isPhone ? 0.25 : isTablet ? 0.4 : undefined,
+                    py: isPhone ? 0.35 : isTablet ? 0.45 : undefined,
+                    fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                  }
+                }}
               >
                 <Table size="small">
                   <TableHead>
@@ -704,7 +1091,10 @@ export default function InvoiceReturnDialog({
 
                       <TableCell
                         align="center"
-                        sx={{ fontWeight: 950 }}
+                        sx={{
+                          fontWeight: 950,
+                          display: isPhone ? "none" : "table-cell"
+                        }}
                       >
                         الوحدة
                       </TableCell>
@@ -732,7 +1122,10 @@ export default function InvoiceReturnDialog({
 
                       <TableCell
                         align="center"
-                        sx={{ fontWeight: 950 }}
+                        sx={{
+                          fontWeight: 950,
+                          display: isPhone ? "none" : "table-cell"
+                        }}
                       >
                         الضريبة
                       </TableCell>
@@ -753,12 +1146,21 @@ export default function InvoiceReturnDialog({
                       >
                         <TableCell
                           align="right"
-                          sx={{ fontWeight: 850 }}
+                          sx={{
+                            fontWeight: 850,
+                            maxWidth: isPhone ? 110 : isTablet ? 180 : undefined,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                          }}
                         >
                           {item.name}
                         </TableCell>
 
-                        <TableCell align="center">
+                        <TableCell
+                          align="center"
+                          sx={{ display: isPhone ? "none" : "table-cell" }}
+                        >
                           {item.unit}
                         </TableCell>
 
@@ -831,7 +1233,10 @@ export default function InvoiceReturnDialog({
                           />
                         </TableCell>
 
-                        <TableCell align="center">
+                        <TableCell
+                          align="center"
+                          sx={{ display: isPhone ? "none" : "table-cell" }}
+                        >
                           {money(item.tax)}
                         </TableCell>
 
@@ -847,23 +1252,25 @@ export default function InvoiceReturnDialog({
                 </Table>
               </TableContainer>
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
+                <Grid item xs={4} sm={4} md={4}>
                   <Paper
                     variant="outlined"
                     sx={{
-                      p: 2,
+                      p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                      minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
+                      borderRadius: isCompact ? 1.3 : undefined,
                       textAlign: "center"
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900 }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>
                       الإجمالي
                     </Typography>
 
                     <Typography
                       sx={{
                         color: "#d71920",
-                        fontSize: 25,
+                        fontSize: isPhone ? 14 : isTablet ? 17 : 25,
                         fontWeight: 950
                       }}
                     >
@@ -872,22 +1279,24 @@ export default function InvoiceReturnDialog({
                   </Paper>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={4} sm={4} md={4}>
                   <Paper
                     variant="outlined"
                     sx={{
-                      p: 2,
+                      p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                      minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
+                      borderRadius: isCompact ? 1.3 : undefined,
                       textAlign: "center"
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900 }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>
                       الضريبة
                     </Typography>
 
                     <Typography
                       sx={{
                         color: "#d71920",
-                        fontSize: 25,
+                        fontSize: isPhone ? 14 : isTablet ? 17 : 25,
                         fontWeight: 950
                       }}
                     >
@@ -896,22 +1305,24 @@ export default function InvoiceReturnDialog({
                   </Paper>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={4} sm={4} md={4}>
                   <Paper
                     variant="outlined"
                     sx={{
-                      p: 2,
+                      p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                      minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
+                      borderRadius: isCompact ? 1.3 : undefined,
                       textAlign: "center"
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900 }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>
                       الصافي
                     </Typography>
 
                     <Typography
                       sx={{
                         color: "#d71920",
-                        fontSize: 25,
+                        fontSize: isPhone ? 14 : isTablet ? 17 : 25,
                         fontWeight: 950
                       }}
                     >
@@ -925,7 +1336,14 @@ export default function InvoiceReturnDialog({
         </Stack>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions
+        sx={{
+          px: isPhone ? 0.35 : isTablet ? 0.55 : 3,
+          py: isPhone ? 0.28 : isTablet ? 0.42 : 2,
+          gap: isCompact ? 0.35 : 1,
+          flexShrink: 0
+        }}
+      >
         <Button
           variant="contained"
           onClick={save}
@@ -946,7 +1364,10 @@ export default function InvoiceReturnDialog({
           }
           sx={{
             backgroundColor: primaryColor,
-            minWidth: 140
+            minWidth: isPhone ? 92 : isTablet ? 110 : 140,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
           }}
         >
           حفظ
@@ -957,12 +1378,16 @@ export default function InvoiceReturnDialog({
           disabled={saving}
           sx={{
             color: accentColor,
-            fontWeight: 900
+            fontWeight: 900,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
           }}
         >
           إغلاق
         </Button>
       </DialogActions>
     </Dialog>
+    </>
   );
 }

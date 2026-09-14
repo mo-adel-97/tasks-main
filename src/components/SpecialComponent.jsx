@@ -17,12 +17,15 @@ import {
   DialogActions,
   Alert,
   useTheme,
+  useMediaQuery,
   alpha,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Chip,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -34,6 +37,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import InfoIcon from '@mui/icons-material/Info';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -55,6 +59,28 @@ const PHP_BASE = 'https://filesregsiteration.sstli.com';
 const SpecialComponent = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const DESKTOP_BREAKPOINT = 1600;
+  const SIDEBAR_WIDTH = 280;
+  const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
+  const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
+  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const [trainerPaginationModel, setTrainerPaginationModel] = useState({
+    page: 0,
+    pageSize: 30,
+  });
+
+  const [studentPaginationModel, setStudentPaginationModel] = useState({
+    page: 0,
+    pageSize: 30,
+  });
+
+  useEffect(() => {
+    if (isDesktop) setMobileSidebarOpen(false);
+  }, [isDesktop]);
+
 
   const [branchName, setBranchName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -94,17 +120,17 @@ const SpecialComponent = () => {
       bonus = 0;
     } else if (percentage >= 76 && percentage <= 85) {
       commissionRate = 0.5;
-      bonus = 500;
+      bonus = 250;
     } else if (percentage >= 86 && percentage <= 100) {
       commissionRate = 0.5;
-      bonus = 1000;
+      bonus = 500;
     }
 
     return { commissionRate, bonus };
   };
 
   useEffect(() => {
-    const userRaw = localStorage.getItem("user");
+  const userRaw = localStorage.getItem("user");
     const user = userRaw ? JSON.parse(userRaw) : null;
 
     if (user?.guid) {
@@ -345,69 +371,96 @@ const SpecialComponent = () => {
 
   // عرض تفاصيل القرار الإداري (محدث: المكافأة للفرع مرة واحدة)
   const renderCommissionPolicyCard = () => (
-    <Card sx={{ mb: 3, borderRadius: 3, boxShadow: 3, border: `2px solid ${PRIMARY_COLOR}` }}>
-      <CardContent sx={{ p: 3 }}>
-        <Box display="flex" alignItems="center" gap={1} mb={2}>
-          <EmojiEventsIcon sx={{ color: PRIMARY_COLOR_DARK }} />
+    <Card
+      sx={{
+        mb: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.9 },
+        borderRadius: isDesktop ? 3 : 1.5,
+        boxShadow: isDesktop ? 3 : 1,
+        border: `${isDesktop ? 2 : 1}px solid ${PRIMARY_COLOR}`,
+      }}
+    >
+      <CardContent sx={{ p: isDesktop ? 2.2 : { xs: 0.45, sm: 0.65, md: 0.9 } }}>
+        <Box display="flex" alignItems="center" gap={isDesktop ? 1 : 0.35} mb={isDesktop ? 2 : 0.45}>
+          <EmojiEventsIcon sx={{ color: PRIMARY_COLOR_DARK, fontSize: isDesktop ? 24 : { xs: 14, sm: 16, md: 18 } }} />
           <Typography variant="h6" fontWeight="bold" sx={{ color: PRIMARY_COLOR_DARK }}>
             📋 القرار الإداري رقم 7 لعام 2025 - نظام العمولة (على مستوى الفرع)
           </Typography>
         </Box>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#f44336', 0.1) }}>
+        <Grid container spacing={isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.7 }}>
+          <Grid item xs={6} sm={6} md={3}>
+            <Card sx={{ textAlign: 'center', p: isDesktop ? 1.5 : { xs: 0.35, sm: 0.5, md: 0.65 }, minHeight: isDesktop ? undefined : { xs: 72, sm: 82, md: 90 }, bgcolor: alpha('#f44336', 0.1) }}>
               <Typography variant="h4" sx={{ mb: 1, color: '#f44336' }}>❌</Typography>
               <Typography variant="h6" fontWeight="bold" color="#f44336">أقل من 45%</Typography>
               <Typography variant="body1" fontWeight="bold" sx={{ mb: 1, color: '#f44336' }}>لا عمولة</Typography>
+              {isDesktop && (
               <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#f44336' }}>
                 لا يستحق عمولة حسب القرار الإداري
               </Typography>
+            )}
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#4caf50', 0.1) }}>
+          <Grid item xs={6} sm={6} md={3}>
+            <Card sx={{ textAlign: 'center', p: isDesktop ? 1.5 : { xs: 0.35, sm: 0.5, md: 0.65 }, minHeight: isDesktop ? undefined : { xs: 72, sm: 82, md: 90 }, bgcolor: alpha('#4caf50', 0.1) }}>
               <Typography variant="h4" sx={{ mb: 1, color: '#4caf50' }}>💰</Typography>
               <Typography variant="h6" fontWeight="bold" color="#4caf50">45% - 75%</Typography>
               <Typography variant="body1" fontWeight="bold" sx={{ mb: 1, color: '#4caf50' }}>0.5% عمولة</Typography>
+              {isDesktop && (
               <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#4caf50' }}>
                 نصف في المية من إجمالي التحصيل
               </Typography>
+            )}
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#2196f3', 0.1) }}>
+          <Grid item xs={6} sm={6} md={3}>
+            <Card sx={{ textAlign: 'center', p: isDesktop ? 1.5 : { xs: 0.35, sm: 0.5, md: 0.65 }, minHeight: isDesktop ? undefined : { xs: 72, sm: 82, md: 90 }, bgcolor: alpha('#2196f3', 0.1) }}>
               <Typography variant="h4" sx={{ mb: 1, color: '#2196f3' }}>🎯</Typography>
               <Typography variant="h6" fontWeight="bold" color="#2196f3">76% - 85%</Typography>
-              <Typography variant="body1" fontWeight="bold" sx={{ mb: 1, color: '#2196f3' }}>0.5% + 500﷼</Typography>
+              <Typography variant="body1" fontWeight="bold" sx={{ mb: 1, color: '#2196f3' }}>0.5% + 250﷼</Typography>
+              {isDesktop && (
               <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#2196f3' }}>
-                مكافأة 500 ريال (مرة واحدة للفرع)
+                مكافأة 250 ريال (مرة واحدة للفرع)
               </Typography>
+            )}
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#9c27b0', 0.1) }}>
+          <Grid item xs={6} sm={6} md={3}>
+            <Card sx={{ textAlign: 'center', p: isDesktop ? 1.5 : { xs: 0.35, sm: 0.5, md: 0.65 }, minHeight: isDesktop ? undefined : { xs: 72, sm: 82, md: 90 }, bgcolor: alpha('#9c27b0', 0.1) }}>
               <Typography variant="h4" sx={{ mb: 1, color: '#9c27b0' }}>🏆</Typography>
               <Typography variant="h6" fontWeight="bold" color="#9c27b0">86% - 100%</Typography>
-              <Typography variant="body1" fontWeight="bold" sx={{ mb: 1, color: '#9c27b0' }}>0.5% + 1000﷼</Typography>
+              <Typography variant="body1" fontWeight="bold" sx={{ mb: 1, color: '#9c27b0' }}>0.5% + 500﷼</Typography>
+              {isDesktop && (
               <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#9c27b0' }}>
                 مكافأة 500 ريال (مرة واحدة للفرع)
               </Typography>
+            )}
             </Card>
           </Grid>
         </Grid>
 
-        <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }} icon={<InfoIcon />}>
-          <Typography variant="body2" fontWeight="bold">
-            النسبة والـ Bonus يتم حسابهم على إجمالي الفرع، والعمولة (0.5%) تطبق على إجمالي التحصيل.
-          </Typography>
-        </Alert>
+        {isDesktop && (
+          <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }} icon={<InfoIcon />}>
+            <Typography variant="body2" fontWeight="bold">
+              النسبة والـ Bonus يتم حسابهم على إجمالي الفرع، والعمولة (0.5%) تطبق على إجمالي التحصيل.
+            </Typography>
+          </Alert>
+        )}
       </CardContent>
     </Card>
   );
+
+  const getCompactName = (fullName) => {
+    const parts = String(fullName || '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (parts.length <= 2) return parts.join(' ');
+    return `${parts[0]} ${parts[parts.length - 1]}`;
+  };
 
   // أعمدة الجدول
   const columns = [
@@ -419,19 +472,47 @@ const SpecialComponent = () => {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <Box display="flex" alignItems="center" gap={1.5} sx={{ py: 1, width: '100%', justifyContent: 'center' }}>
-          <Box sx={{
-            p: 1,
-            borderRadius: '50%',
-            backgroundColor: alpha(PRIMARY_COLOR, 0.1),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <PersonIcon sx={{ color: PRIMARY_COLOR, fontSize: 20 }} />
-          </Box>
-          <Typography fontWeight={700} fontSize="15px" sx={{ color: '#2d3748' }}>
-            {params.value}
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={isDesktop ? 1.5 : { xs: 0.35, sm: 0.5 }}
+          sx={{
+            py: isDesktop ? 1 : 0,
+            width: '100%',
+            justifyContent: isDesktop ? 'center' : 'flex-start',
+            minWidth: 0,
+          }}
+        >
+          {!isPhone && (
+            <Box
+              sx={{
+                p: isDesktop ? 1 : 0.35,
+                borderRadius: '50%',
+                backgroundColor: alpha(PRIMARY_COLOR, 0.1),
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <PersonIcon sx={{ color: PRIMARY_COLOR, fontSize: isDesktop ? 20 : { sm: 14, md: 16 } }} />
+            </Box>
+          )}
+
+          <Typography
+            fontWeight={700}
+            title={params.value || ''}
+            sx={{
+              color: '#2d3748',
+              fontSize: isDesktop ? '15px' : { xs: '0.49rem', sm: '0.58rem', md: '0.66rem' },
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              minWidth: 0,
+            }}
+          >
+            {isDesktop ? params.value : getCompactName(params.value)}
           </Typography>
         </Box>
       )
@@ -508,6 +589,39 @@ const SpecialComponent = () => {
     },
   ];
 
+  const responsiveTrainerColumns = isDesktop
+    ? columns
+    : columns
+        .filter((column) =>
+          (isPhone
+            ? ['مسؤول_الاتصال', 'عدد_الطلاب', 'نسبة_التحصيل', 'actions']
+            : ['مسؤول_الاتصال', 'عدد_الطلاب', 'غير_مسددين', 'نسبة_التحصيل', 'actions']
+          ).includes(column.field)
+        )
+        .map((column) => {
+          const widths = isPhone
+            ? {
+                مسؤول_الاتصال: 128,
+                عدد_الطلاب: 62,
+                نسبة_التحصيل: 76,
+                actions: 40,
+              }
+            : {
+                مسؤول_الاتصال: 180,
+                عدد_الطلاب: 82,
+                غير_مسددين: 90,
+                نسبة_التحصيل: 108,
+                actions: 48,
+              };
+
+          return {
+            ...column,
+            flex: column.field === 'مسؤول_الاتصال' ? 1 : undefined,
+            minWidth: column.field === 'مسؤول_الاتصال' ? widths.مسؤول_الاتصال : undefined,
+            width: column.field === 'مسؤول_الاتصال' ? undefined : widths[column.field],
+          };
+        });
+
   // أعمدة طلاب المدرب
   const studentColumns = [
     {
@@ -516,10 +630,34 @@ const SpecialComponent = () => {
       flex: 1.5,
       minWidth: 200,
       renderCell: (params) => (
-        <Box display="flex" alignItems="center" gap={1}>
-          <PersonIcon sx={{ color: PRIMARY_COLOR }} fontSize="small" />
-          <Typography variant="body2" fontWeight="500">
-            {params.value || '-'}
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={isDesktop ? 1 : 0.35}
+          sx={{ width: '100%', minWidth: 0 }}
+        >
+          {!isPhone && (
+            <PersonIcon
+              sx={{
+                color: PRIMARY_COLOR,
+                fontSize: isDesktop ? 18 : { sm: 14, md: 16 },
+                flexShrink: 0,
+              }}
+            />
+          )}
+          <Typography
+            variant="body2"
+            fontWeight="600"
+            title={params.value || ''}
+            sx={{
+              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.56rem', md: '0.64rem' },
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              minWidth: 0,
+            }}
+          >
+            {isDesktop ? (params.value || '-') : (getCompactName(params.value) || '-')}
           </Typography>
         </Box>
       ),
@@ -607,6 +745,39 @@ const SpecialComponent = () => {
     },
   ];
 
+  const responsiveStudentColumns = isDesktop
+    ? studentColumns
+    : studentColumns
+        .filter((column) =>
+          (isPhone
+            ? ['studentName', 'studentTel', 'monthpay', 'status']
+            : ['studentName', 'studentTel', 'balance', 'monthpay', 'status']
+          ).includes(column.field)
+        )
+        .map((column) => {
+          const widths = isPhone
+            ? {
+                studentName: 112,
+                studentTel: 86,
+                monthpay: 72,
+                status: 68,
+              }
+            : {
+                studentName: 160,
+                studentTel: 115,
+                balance: 105,
+                monthpay: 105,
+                status: 95,
+              };
+
+          return {
+            ...column,
+            flex: column.field === 'studentName' ? 1 : undefined,
+            minWidth: column.field === 'studentName' ? widths.studentName : undefined,
+            width: column.field === 'studentName' ? undefined : widths[column.field],
+          };
+        });
+
   const userRaw = localStorage.getItem("user");
   const user = userRaw ? JSON.parse(userRaw) : null;
   const branchGuid = user?.userName;
@@ -623,24 +794,112 @@ const SpecialComponent = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-        <Sidebar />
+        {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1401,
+            background: 'rgba(255,255,255,0.96)',
+            backdropFilter: 'blur(14px)',
+            color: '#17372b',
+            borderBottom: '1px solid rgba(5,117,70,0.12)',
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: {
+                xs: '50px !important',
+                sm: '56px !important',
+                md: '60px !important',
+              },
+              px: { xs: 0.8, sm: 1.2, md: 1.6 },
+              gap: 0.8,
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              sx={{
+                width: { xs: 36, sm: 40, md: 42 },
+                height: { xs: 36, sm: 40, md: 42 },
+                color: '#fff',
+                background: 'linear-gradient(135deg, #057546, #034d31)',
+              }}
+            >
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
+            </IconButton>
+            <Typography sx={{ flex: 1, fontWeight: 900, fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' } }}>
+              نظام الإدارة
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
 
         <Box
           component="main"
           sx={{
             flexGrow: 1,
-            p: 4,
-            marginLeft: '280px',
-            width: 'calc(100% - 280px)',
+            p: isDesktop ? 4 : { xs: 0.35, sm: 0.6, md: 0.9 },
+            pt: isDesktop ? 4 : { xs: '54px', sm: '62px', md: '66px' },
+
+            marginLeft: isDesktop ? '280px' : 0,
+            marginRight: 0,
+
+            width: isDesktop ? 'calc(100% - 280px)' : '100%',
+            maxWidth: '100%',
+            minWidth: 0,
+            boxSizing: 'border-box',
+            overflowX: 'hidden',
+
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'
+            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+
+            '& .MuiTypography-h4': {
+              fontSize: isDesktop ? undefined : { xs: '0.86rem', sm: '0.98rem', md: '1.1rem' },
+              lineHeight: 1.2,
+            },
+            '& .MuiTypography-h5': {
+              fontSize: isDesktop ? undefined : { xs: '0.7rem', sm: '0.82rem', md: '0.94rem' },
+              lineHeight: 1.25,
+            },
+            '& .MuiTypography-h6': {
+              fontSize: isDesktop ? undefined : { xs: '0.58rem', sm: '0.67rem', md: '0.76rem' },
+              lineHeight: 1.3,
+            },
+            '& .MuiTypography-body1, & .MuiTypography-body2': {
+              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.63rem' },
+              lineHeight: 1.35,
+            },
+            '& .MuiButton-root': {
+              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.63rem' },
+              minHeight: isDesktop ? undefined : { xs: 28, sm: 31, md: 34 },
+            },
+            '& .MuiInputBase-root, & .MuiInputLabel-root': {
+              fontSize: isDesktop ? undefined : { xs: '0.49rem', sm: '0.57rem', md: '0.65rem' },
+            },
+            '& .MuiChip-root': {
+              fontSize: isDesktop ? undefined : { xs: '0.42rem', sm: '0.49rem', md: '0.56rem' },
+              height: isDesktop ? undefined : { xs: 18, sm: 21, md: 24 },
+            },
           }}
         >
           {/* الهيدر */}
           <Card
             sx={{
-              mb: 4,
-              borderRadius: 4,
+              mb: isDesktop ? 4 : { xs: 0.45, sm: 0.7, md: 1 },
+              borderRadius: isDesktop ? 4 : { xs: 1.5, sm: 1.8, md: 2.2 },
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
               background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, ${PRIMARY_COLOR_DARK} 100%)`,
               border: 'none',
@@ -657,17 +916,33 @@ const SpecialComponent = () => {
               }
             }}
           >
-            <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
-              <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={3}>
-                <Box display="flex" alignItems="center" gap={2}>
+            <CardContent sx={{ p: isDesktop ? 4 : { xs: 0.65, sm: 0.9, md: 1.2 }, position: 'relative', zIndex: 1 }}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                flexWrap="wrap"
+                gap={isDesktop ? 3 : { xs: 0.5, sm: 0.8, md: 1 }}
+              >
+                <Box display="flex" alignItems="center" gap={isDesktop ? 2 : { xs: 0.45, sm: 0.65, md: 0.8 }}>
                   <Box sx={{
-                    p: 2, borderRadius: 3, backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    p: isDesktop ? 2 : { xs: 0.5, sm: 0.65, md: 0.8 },
+                    borderRadius: isDesktop ? 3 : 1.5,
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
                     backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
-                    <BusinessIcon sx={{ color: 'white', fontSize: 32 }} />
+                    <BusinessIcon sx={{ color: 'white', fontSize: isDesktop ? 32 : { xs: 17, sm: 20, md: 22 } }} />
                   </Box>
                   <Box>
-                    <Typography variant="h4" fontWeight="bold" color="white" sx={{ mb: 0.5 }}>
+                    <Typography
+                      variant="h4"
+                      fontWeight="bold"
+                      color="white"
+                      sx={{
+                        mb: isDesktop ? 0.5 : 0,
+                        fontSize: isDesktop ? undefined : { xs: '0.8rem', sm: '0.92rem', md: '1.04rem' },
+                      }}
+                    >
                       لوحة التحكم - المدربين
                     </Typography>
                   </Box>
@@ -680,11 +955,11 @@ const SpecialComponent = () => {
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.15)',
                     backdropFilter: 'blur(10px)',
-                    p: 2,
-                    borderRadius: 3
+                    p: isDesktop ? 2 : { xs: 0.45, sm: 0.6, md: 0.75 },
+                    borderRadius: isDesktop ? 3 : 1.5
                   }}
                 >
-                  <CalendarTodayIcon sx={{ color: 'white' }} />
+                  <CalendarTodayIcon sx={{ color: 'white', fontSize: isDesktop ? 24 : { xs: 14, sm: 16, md: 18 } }} />
                   <Typography variant="body1" color="white" fontWeight="500">
                     {fromDate.format('YYYY/MM/DD')} - {toDate.format('YYYY/MM/DD')}
                   </Typography>
@@ -698,18 +973,30 @@ const SpecialComponent = () => {
           {/* الفلاتر */}
           <Card
             sx={{
-              mb: 4,
-              borderRadius: 3,
+              mb: isDesktop ? 4 : { xs: 0.45, sm: 0.65, md: 0.9 },
+              borderRadius: isDesktop ? 3 : 1.5,
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
               border: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
               background: 'white'
             }}
           >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, color: PRIMARY_COLOR_DARK }}>
+            <CardContent sx={{ p: isDesktop ? 3 : { xs: 0.5, sm: 0.7, md: 0.95 } }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: isDesktop ? 3 : 0.55, color: PRIMARY_COLOR_DARK }}>
                 ⚙️ إعدادات الفلترة
               </Typography>
-              <Box display="flex" gap={3} alignItems="center" flexWrap="wrap">
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: isDesktop
+                    ? 'repeat(3, max-content)'
+                    : isPhone
+                      ? 'repeat(2, minmax(0, 1fr))'
+                      : 'repeat(3, minmax(0, 1fr))',
+                  gap: isDesktop ? 3 : { xs: 0.35, sm: 0.5, md: 0.7 },
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+              >
                 <DatePicker
                   label="من تاريخ"
                   value={fromDate}
@@ -719,7 +1006,8 @@ const SpecialComponent = () => {
                       variant: "outlined",
                       size: "medium",
                       sx: {
-                        minWidth: 180,
+                        minWidth: isDesktop ? 180 : 0,
+                        width: '100%',
                         bgcolor: '#fff',
                         '& .MuiOutlinedInput-root': { borderRadius: 2 }
                       }
@@ -735,7 +1023,8 @@ const SpecialComponent = () => {
                       variant: "outlined",
                       size: "medium",
                       sx: {
-                        minWidth: 180,
+                        minWidth: isDesktop ? 180 : 0,
+                        width: '100%',
                         bgcolor: '#fff',
                         '& .MuiOutlinedInput-root': { borderRadius: 2 }
                       }
@@ -749,8 +1038,10 @@ const SpecialComponent = () => {
                     setToDate(dayjs());
                   }}
                   sx={{
-                    px: 4,
-                    py: 1.2,
+                    px: isDesktop ? 4 : { xs: 0.7, sm: 1, md: 1.2 },
+                    py: isDesktop ? 1.2 : { xs: 0.45, sm: 0.55, md: 0.7 },
+                    width: isDesktop ? 'auto' : '100%',
+                    gridColumn: isPhone ? '1 / -1' : 'auto',
                     borderRadius: 2,
                     backgroundColor: PRIMARY_COLOR_LIGHT,
                     color: 'white',
@@ -770,180 +1061,246 @@ const SpecialComponent = () => {
           </Card>
 
           {/* الإحصائيات */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid
+            container
+            spacing={isDesktop ? 3 : { xs: 0.35, sm: 0.5, md: 0.7 }}
+            sx={{ mb: isDesktop ? 4 : { xs: 0.5, sm: 0.75, md: 1 } }}
+          >
             {/* إجمالي التحصيل */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, ${PRIMARY_COLOR_SUPER_LIGHT} 0%, ${alpha(PRIMARY_COLOR, 0.2)} 100%)`,
                 border: `1px solid ${alpha(PRIMARY_COLOR, 0.2)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha(PRIMARY_COLOR, 0.15)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha(PRIMARY_COLOR, 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha(PRIMARY_COLOR, 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <AccountBalanceWalletIcon sx={{ color: PRIMARY_COLOR, fontSize: 32 }} />
+                  <AccountBalanceWalletIcon sx={{ color: PRIMARY_COLOR, fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   إجمالي التحصيل
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color={PRIMARY_COLOR_DARK} mt={1} textAlign="center">
                   {Number(totalCollected || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: 18, marginRight: 6, color: PRIMARY_COLOR }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: PRIMARY_COLOR }}>ر.س</span>
                 </Typography>
               </Paper>
             </Grid>
 
             {/* عمولة النسبة فقط */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, #f0f9ff 0%, ${alpha('#0ea5e9', 0.1)} 100%)`,
                 border: `1px solid ${alpha('#0ea5e9', 0.2)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha('#0ea5e9', 0.15)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha('#0ea5e9', 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha('#0ea5e9', 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <PercentIcon sx={{ color: '#0ea5e9', fontSize: 32 }} />
+                  <PercentIcon sx={{ color: '#0ea5e9', fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   إجمالي العمولة (0.5% فقط)
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#0c4a6e" mt={1} textAlign="center">
                   {Number(totalCommissionOnly || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: 18, marginRight: 6, color: '#0ea5e9' }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#0ea5e9' }}>ر.س</span>
                 </Typography>
-                <Typography variant="body2" color="#0ea5e9" sx={{ mt: 1, textAlign: 'center' }}>
-                  معدل الفرع الحالي: {overallCommissionRate}% | نسبة الفرع: {overallPercentage}%
-                </Typography>
+                {isDesktop && (
+                  <Typography variant="body2" color="#0ea5e9" sx={{ mt: 1, textAlign: 'center' }}>
+                    معدل الفرع الحالي: {overallCommissionRate}% | نسبة الفرع: {overallPercentage}%
+                  </Typography>
+                )}
               </Paper>
             </Grid>
 
             {/* مكافأة الفرع (مرة واحدة) */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, #fdf2f8 0%, ${alpha('#db2777', 0.08)} 100%)`,
                 border: `1px solid ${alpha('#db2777', 0.18)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha('#db2777', 0.12)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha('#db2777', 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha('#db2777', 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <EmojiEventsIcon sx={{ color: '#db2777', fontSize: 32 }} />
+                  <EmojiEventsIcon sx={{ color: '#db2777', fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   مكافأة الفرع
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#9d174d" mt={1} textAlign="center">
                   {Number(overallBonus || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: 18, marginRight: 6, color: '#db2777' }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#db2777' }}>ر.س</span>
                 </Typography>
-                <Typography variant="body2" color="#db2777" sx={{ mt: 1, textAlign: 'center' }}>
-                  حسب نسبة الفرع الكلية
-                </Typography>
+                {isDesktop && (
+                  <Typography variant="body2" color="#db2777" sx={{ mt: 1, textAlign: 'center' }}>
+                    حسب نسبة الفرع الكلية
+                  </Typography>
+                )}
               </Paper>
             </Grid>
 
             {/* الإجمالي النهائي */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, #ecfdf5 0%, ${alpha('#10b981', 0.1)} 100%)`,
                 border: `1px solid ${alpha('#10b981', 0.2)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha('#10b981', 0.15)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha('#10b981', 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha('#10b981', 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <AttachMoneyIcon sx={{ color: '#10b981', fontSize: 32 }} />
+                  <AttachMoneyIcon sx={{ color: '#10b981', fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   إجمالي العمولة النهائي
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#065f46" mt={1} textAlign="center">
                   {Number(totalFinalCommission || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: 18, marginRight: 6, color: '#10b981' }}>ر.س</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#10b981' }}>ر.س</span>
                 </Typography>
-                <Typography variant="body2" color="#059669" sx={{ mt: 1, textAlign: 'center', fontWeight: 'bold' }}>
-                  (0.5% من التحصيل) + مكافأة الفرع
-                </Typography>
+                {isDesktop && (
+                  <Typography variant="body2" color="#059669" sx={{ mt: 1, textAlign: 'center', fontWeight: 'bold' }}>
+                    (0.5% من التحصيل) + مكافأة الفرع
+                  </Typography>
+                )}
               </Paper>
             </Grid>
 
             {/* إجمالي الطلاب */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, #fefce8 0%, ${alpha('#eab308', 0.1)} 100%)`,
                 border: `1px solid ${alpha('#eab308', 0.2)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha('#eab308', 0.15)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha('#eab308', 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha('#eab308', 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <GroupIcon sx={{ color: '#eab308', fontSize: 32 }} />
+                  <GroupIcon sx={{ color: '#eab308', fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   إجمالي الطلاب
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#713f12" mt={1} textAlign="center">
                   {totalStudents}
-                  <span style={{ fontSize: 18, marginRight: 6, color: '#eab308' }}>طالب</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#eab308' }}>طالب</span>
                 </Typography>
               </Paper>
             </Grid>
 
             {/* غير مسددين */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, #fee2e2 0%, ${alpha('#ef4444', 0.1)} 100%)`,
                 border: `1px solid ${alpha('#ef4444', 0.2)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha('#ef4444', 0.15)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha('#ef4444', 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha('#ef4444', 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <MonetizationOnIcon sx={{ color: '#ef4444', fontSize: 32 }} />
+                  <MonetizationOnIcon sx={{ color: '#ef4444', fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   غير مسددين
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#dc2626" mt={1} textAlign="center">
                   {totalUnpaid}
-                  <span style={{ fontSize: 18, marginRight: 6, color: '#ef4444' }}>طالب</span>
+                  <span style={{ fontSize: isDesktop ? 18 : 8, marginRight: isDesktop ? 6 : 2, color: '#ef4444' }}>طالب</span>
                 </Typography>
               </Paper>
             </Grid>
 
             {/* نسبة التحصيل الكلية */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper elevation={0} sx={{
-                p: 3, display: "flex", flexDirection: "column", alignItems: "center", borderRadius: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.85 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: isDesktop ? 3 : 1.5,
+                minHeight: isDesktop ? undefined : { xs: 78, sm: 88, md: 96 },
                 background: `linear-gradient(135deg, #ecfdf5 0%, ${alpha('#10b981', 0.1)} 100%)`,
                 border: `1px solid ${alpha('#10b981', 0.2)}`, height: '100%',
                 transition: 'all 0.3s ease',
                 '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 25px ${alpha('#10b981', 0.15)}` }
               }}>
                 <Box sx={{
-                  p: 2, borderRadius: '50%', backgroundColor: alpha('#10b981', 0.1),
-                  mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  p: isDesktop ? 2 : { xs: 0.35, sm: 0.45, md: 0.55 },
+                  borderRadius: '50%', backgroundColor: alpha('#10b981', 0.1),
+                  mb: isDesktop ? 2 : { xs: 0.25, sm: 0.35, md: 0.45 },
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <TrendingUpIcon sx={{ color: '#10b981', fontSize: 32 }} />
+                  <TrendingUpIcon sx={{ color: '#10b981', fontSize: isDesktop ? 32 : { xs: 16, sm: 19, md: 21 } }} />
                 </Box>
                 <Typography variant="h6" fontWeight="600" color="text.secondary" textAlign="center">
                   📈 نسبة التحصيل الكلية
@@ -951,9 +1308,11 @@ const SpecialComponent = () => {
                 <Typography variant="h4" fontWeight="bold" color="#065f46" mt={1} textAlign="center">
                   {overallPercentage}%
                 </Typography>
-                <Typography variant="body2" color="#10b981" sx={{ mt: 1, textAlign: 'center' }}>
-                  (المعيار الحاكم للعمولة والمكافأة)
-                </Typography>
+                {isDesktop && (
+                  <Typography variant="body2" color="#10b981" sx={{ mt: 1, textAlign: 'center' }}>
+                    (المعيار الحاكم للعمولة والمكافأة)
+                  </Typography>
+                )}
               </Paper>
             </Grid>
           </Grid>
@@ -968,7 +1327,7 @@ const SpecialComponent = () => {
           }}>
             <CardContent sx={{ p: 0 }}>
               <Box sx={{
-                p: 3,
+                p: isDesktop ? 3 : { xs: 0.45, sm: 0.6, md: 0.8 },
                 borderBottom: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
                 background: `linear-gradient(135deg, ${PRIMARY_COLOR_SUPER_LIGHT} 0%, ${alpha(PRIMARY_COLOR, 0.05)} 100%)`
               }}>
@@ -977,31 +1336,47 @@ const SpecialComponent = () => {
                 </Typography>
               </Box>
 
-              <Box sx={{ width: '100%', height: 600 }}>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: isDesktop ? 600 : { xs: '72dvh', sm: '74dvh', md: '76dvh' },
+                  minWidth: 0,
+                }}
+              >
                 <DataGrid
                   rows={trainers}
-                  columns={columns}
+                  columns={responsiveTrainerColumns}
                   autoHeight={false}
                   disableRowSelectionOnClick
+                  disableColumnMenu={!isDesktop}
+                  disableColumnFilter={!isDesktop}
                   loading={fetching}
+                  rowHeight={isDesktop ? 52 : isPhone ? 36 : 42}
+                  columnHeaderHeight={isDesktop ? 60 : isPhone ? 34 : 40}
+                  paginationModel={trainerPaginationModel}
+                  onPaginationModelChange={setTrainerPaginationModel}
                   sx={{
                     fontFamily: "'Tajawal', 'Cairo', sans-serif",
                     border: 'none',
                     '& .MuiDataGrid-columnHeaders': {
                       backgroundColor: PRIMARY_COLOR_SUPER_LIGHT,
                       borderBottom: `2px solid ${PRIMARY_COLOR}`,
-                      minHeight: '60px !important',
-                      maxHeight: '60px !important',
+                      minHeight: `${isDesktop ? 60 : isPhone ? 34 : 40}px !important`,
+                      maxHeight: `${isDesktop ? 60 : isPhone ? 34 : 40}px !important`,
                     },
                     '& .MuiDataGrid-columnHeaderTitle': {
                       fontWeight: 800,
-                      fontSize: '14px',
+                      fontSize: isDesktop ? '14px' : isPhone ? '0.43rem' : '0.54rem',
+                      lineHeight: 1.15,
+                      whiteSpace: 'normal',
+                      textAlign: 'center',
                       color: PRIMARY_COLOR_DARK,
                     },
                     '& .MuiDataGrid-cell': {
                       borderBottom: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
-                      fontSize: '14px',
+                      fontSize: isDesktop ? '14px' : isPhone ? '0.45rem' : '0.55rem',
                       fontWeight: 500,
+                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
                     },
                     '& .MuiDataGrid-row': {
                       transition: 'all 0.2s ease',
@@ -1018,10 +1393,8 @@ const SpecialComponent = () => {
                     errorOverlayDefaultLabel: "حدث خطأ في جلب البيانات",
                     footerTotalRows: "إجمالي الصفوف:",
                   }}
-                  pageSizeOptions={[10, 25, 50, 100]}
-                  initialState={{
-                    pagination: { paginationModel: { pageSize: 25, page: 0 } },
-                  }}
+                  pageSizeOptions={[30, 60, 100]}
+                  
                 />
               </Box>
             </CardContent>
@@ -1033,52 +1406,61 @@ const SpecialComponent = () => {
             onClose={() => setTrainerDialogOpen(false)}
             maxWidth="xl"
             fullWidth
-            sx={{ '& .MuiDialog-paper': { borderRadius: 3, minHeight: '80vh' } }}
+            fullScreen={isPhone}
+            sx={{
+              '& .MuiDialog-paper': {
+                borderRadius: isDesktop ? 3 : isPhone ? 0 : 2,
+                minHeight: isDesktop ? '80vh' : isPhone ? '100dvh' : '86dvh',
+                maxHeight: isPhone ? '100dvh' : '92dvh',
+                m: isPhone ? 0 : 1,
+              }
+            }}
           >
             <DialogTitle sx={{
               bgcolor: PRIMARY_COLOR,
               color: 'white',
-              py: 3,
+              py: isDesktop ? 3 : { xs: 0.6, sm: 0.8, md: 1 },
+              px: isDesktop ? 3 : { xs: 0.75, sm: 1, md: 1.2 },
               textAlign: 'center',
-              fontSize: '1.5rem',
+              fontSize: isDesktop ? '1.5rem' : { xs: '0.66rem', sm: '0.78rem', md: '0.9rem' },
               fontWeight: 'bold',
             }}>
-              <Box display="flex" alignItems="center" justifyContent="center" gap={2}>
+              <Box display="flex" alignItems="center" justifyContent="center" gap={isDesktop ? 2 : 0.45}>
                 <PersonIcon fontSize="large" />
                 طلاب المدرب - {selectedTrainer?.مسؤول_الاتصال}
               </Box>
             </DialogTitle>
 
-            <DialogContent sx={{ p: 3 }}>
-              <Grid container spacing={2} sx={{ mb: 3 }}>
+            <DialogContent sx={{ p: isDesktop ? 3 : { xs: 0.45, sm: 0.7, md: 0.95 } }}>
+              <Grid container spacing={isDesktop ? 2 : 0.35} sx={{ mb: isDesktop ? 3 : 0.5 }}>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha(PRIMARY_COLOR, 0.1) }}>
+                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha(PRIMARY_COLOR, 0.1) }}>
                     <Typography variant="h6" fontWeight="bold" color={PRIMARY_COLOR_DARK}>{dialogTotalStudents}</Typography>
                     <Typography variant="body2" color="text.secondary">إجمالي الطلاب</Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#4caf50', 0.1) }}>
+                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha('#4caf50', 0.1) }}>
                     <Typography variant="h6" fontWeight="bold" color="#2e7d32">{dialogPaidStudents}</Typography>
                     <Typography variant="body2" color="text.secondary">مسددين</Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#ff9800', 0.1) }}>
+                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha('#ff9800', 0.1) }}>
                     <Typography variant="h6" fontWeight="bold" color="#ed6c02">{dialogNotedStudents}</Typography>
                     <Typography variant="body2" color="text.secondary">متابعة</Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#f44336', 0.1) }}>
+                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha('#f44336', 0.1) }}>
                     <Typography variant="h6" fontWeight="bold" color="#c62828">{dialogLateStudents}</Typography>
                     <Typography variant="body2" color="text.secondary">متأخرين</Typography>
                   </Card>
                 </Grid>
               </Grid>
 
-              <Box sx={{ mb: 3 }}>
-                <FormControl sx={{ minWidth: 200 }}>
+              <Box sx={{ mb: isDesktop ? 3 : 0.5 }}>
+                <FormControl sx={{ minWidth: isDesktop ? 200 : 0, width: isDesktop ? 'auto' : '100%' }}>
                   <InputLabel>فلتر حسب الحالة</InputLabel>
                   <Select
                     value={filterStatus}
@@ -1103,11 +1485,17 @@ const SpecialComponent = () => {
                   لا توجد بيانات للطلاب
                 </Typography>
               ) : (
-                <Box sx={{ height: 500, width: '100%' }}>
+                <Box sx={{ height: isDesktop ? 500 : { xs: '72dvh', sm: '70dvh', md: '72dvh' }, width: '100%', minWidth: 0 }}>
                   <DataGrid
                     rows={filteredStudents}
-                    columns={studentColumns}
+                    columns={responsiveStudentColumns}
                     disableRowSelectionOnClick
+                    disableColumnMenu={!isDesktop}
+                    disableColumnFilter={!isDesktop}
+                    rowHeight={isDesktop ? 52 : isPhone ? 36 : 42}
+                    columnHeaderHeight={isDesktop ? 56 : isPhone ? 34 : 40}
+                    paginationModel={studentPaginationModel}
+                    onPaginationModelChange={setStudentPaginationModel}
                     sx={{
                       fontFamily: "'Tajawal', 'Cairo', sans-serif",
                       border: 'none',
@@ -1118,9 +1506,14 @@ const SpecialComponent = () => {
                       '& .MuiDataGrid-columnHeaderTitle': {
                         fontWeight: 700,
                         color: PRIMARY_COLOR_DARK,
+                        fontSize: isDesktop ? undefined : { xs: '0.43rem', sm: '0.52rem', md: '0.6rem' },
+                        whiteSpace: 'normal',
+                        lineHeight: 1.15,
                       },
                       '& .MuiDataGrid-cell': {
                         borderBottom: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
+                        fontSize: isDesktop ? undefined : { xs: '0.44rem', sm: '0.53rem', md: '0.61rem' },
+                        px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
                       },
                       '& .status-paid': { backgroundColor: '#dcfce7 !important' },
                       '& .status-note': { backgroundColor: '#fef9c3 !important' },
@@ -1135,14 +1528,14 @@ const SpecialComponent = () => {
                       if (status === 'late') return 'status-late';
                       return '';
                     }}
-                    pageSizeOptions={[10, 25, 50]}
-                    initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
+                    pageSizeOptions={[30, 60, 100]}
+                    
                   />
                 </Box>
               )}
             </DialogContent>
 
-            <DialogActions sx={{ p: 3 }}>
+            <DialogActions sx={{ p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.8 } }}>
               <Button
                 onClick={() => setTrainerDialogOpen(false)}
                 variant="contained"
@@ -1153,13 +1546,13 @@ const SpecialComponent = () => {
             </DialogActions>
           </Dialog>
 
-          <Box display="flex" justifyContent="center" mt={4}>
+          <Box display="flex" justifyContent="center" mt={isDesktop ? 4 : { xs: 0.6, sm: 0.8, md: 1 }}>
             <Button
               sx={{
                 fontWeight: "bold",
-                px: 6,
-                py: 1.8,
-                fontSize: 16,
+                px: isDesktop ? 6 : { xs: 1.2, sm: 1.6, md: 2 },
+                py: isDesktop ? 1.8 : { xs: 0.45, sm: 0.6, md: 0.75 },
+                fontSize: isDesktop ? 16 : { xs: '0.5rem', sm: '0.58rem', md: '0.66rem' },
                 borderRadius: 3,
                 bgcolor: PRIMARY_COLOR,
                 color: "#fff",

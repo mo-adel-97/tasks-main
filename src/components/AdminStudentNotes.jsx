@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  AppBar,
   Box,
   Paper,
   Typography,
@@ -21,7 +22,11 @@ import {
   MenuItem,
   Avatar,
   AvatarGroup,
-  Badge
+  Badge,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+  GlobalStyles
 } from "@mui/material";
 import {
   OpenInNew as OpenInNewIcon,
@@ -33,11 +38,13 @@ import {
   Person as PersonIcon,
   Business as BusinessIcon,
   Description as DescriptionIcon,
-  CalendarToday as CalendarIcon
+  CalendarToday as CalendarIcon,
+  MenuRounded as MenuRoundedIcon
 } from "@mui/icons-material";
 import Sidebar from "./Sidebar";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 // APIs
 const NOTES_API = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
@@ -88,7 +95,13 @@ function NoteCard({ note, usersMap, branchesMap }) {
         }
       }}
     >
-      <CardContent sx={{ p: 2.5 }}>
+      <CardContent
+        sx={{
+          p: 2.5,
+          "@media (max-width:1599px)": { p: 1 },
+          "@media (max-width:599px)": { p: 0.7 }
+        }}
+      >
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
           <Box sx={{ flex: 1 }}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
@@ -96,6 +109,14 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 sx={{
                   width: 40,
                   height: 40,
+                  "@media (max-width:1599px)": {
+                    width: 30,
+                    height: 30
+                  },
+                  "@media (max-width:599px)": {
+                    width: 26,
+                    height: 26
+                  },
                   bgcolor: theme.primary,
                   fontWeight: 'bold',
                   fontSize: '0.875rem'
@@ -109,6 +130,12 @@ function NoteCard({ note, usersMap, branchesMap }) {
                   sx={{ 
                     fontWeight: 800,
                     color: theme.text,
+                    "@media (max-width:1599px)": {
+                      fontSize: "0.62rem"
+                    },
+                    "@media (max-width:599px)": {
+                      fontSize: "0.52rem"
+                    },
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
@@ -129,6 +156,17 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 mb: 2,
                 lineHeight: 1.6,
                 minHeight: 48,
+                "@media (max-width:1599px)": {
+                  mb: 0.7,
+                  minHeight: 34,
+                  fontSize: "0.54rem",
+                  lineHeight: 1.45
+                },
+                "@media (max-width:599px)": {
+                  mb: 0.55,
+                  minHeight: 30,
+                  fontSize: "0.46rem"
+                },
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
@@ -193,7 +231,19 @@ function NoteCard({ note, usersMap, branchesMap }) {
       
       <Divider />
       
-      <CardActions sx={{ p: 1.5, pt: 1 }}>
+      <CardActions
+        sx={{
+          p: 1.5,
+          pt: 1,
+          "@media (max-width:1599px)": {
+            p: 0.65,
+            pt: 0.55
+          },
+          "@media (max-width:599px)": {
+            p: 0.5
+          }
+        }}
+      >
         <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
           <Button
             fullWidth
@@ -243,6 +293,32 @@ function NoteCard({ note, usersMap, branchesMap }) {
 }
 
 export default function AdminStudentNotes() {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(() => {
     try { return JSON.parse(localStorage.getItem("user") || "{}"); }
     catch { return {}; }
@@ -410,31 +486,183 @@ export default function AdminStudentNotes() {
   }
 
   return (
-    <Box sx={{ display: "flex", background: theme.bg, minHeight: "100vh" }}>
-      <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
-        <Sidebar />
-      </Box>
+    <Box
+      sx={{
+        display: "flex",
+        background: theme.bg,
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        direction: "ltr"
+      }}
+    >
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            }
+          }}
+        />
+      )}
 
-      <Box sx={{ flex: 1, p: { xs: 2, md: 3 } }}>
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: theme.text,
+            borderBottom: `1px solid ${theme.border}`,
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: { xs: 0.75, sm: 1 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: { xs: 20, sm: 22 }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.68rem",
+                  sm: "0.8rem"
+                },
+                color: theme.text,
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              ملاحظات المتدربين
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
+
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          width: "100%",
+          maxWidth: "100%",
+          ml: 0,
+          p: {
+            xs: 0.5,
+            sm: 0.8,
+            md: 1
+          },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          boxSizing: "border-box",
+          overflowX: "hidden",
+
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            p: 3,
+            mt: 0
+          }
+        }}
+      >
         {/* Header */}
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            borderRadius: 4,
+            p: isPhone ? 0.7 : isTablet ? 1 : 3,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             border: `1px solid ${theme.border}`,
             background: 'white',
-            mb: 3
+            mb: isPhone ? 0.65 : isTablet ? 0.9 : 3
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 900, color: theme.text, mb: 0.5 }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 900,
+                  color: theme.text,
+                  mb: 0.5,
+                  fontSize: isPhone
+                    ? "0.72rem"
+                    : isTablet
+                      ? "0.88rem"
+                      : undefined
+                }}
+              >
                 📋 ملاحظات المتدربين
               </Typography>
             </Box>
 
-            <Stack direction="row" spacing={2} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}
+              alignItems="center"
+              sx={{
+                "& .MuiButton-root": {
+                  minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
+                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  px: isPhone ? 0.7 : isTablet ? 1 : undefined
+                }
+              }}
+            >
               <Button
                 variant="outlined"
                 startIcon={<FilterListIcon />}
@@ -472,13 +700,17 @@ export default function AdminStudentNotes() {
           </Stack>
 
           {/* Stats Cards */}
-          <Grid container spacing={2} sx={{ mt: 3 }}>
+          <Grid
+            container
+            spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}
+            sx={{ mt: isPhone ? 0.7 : isTablet ? 1 : 3 }}
+          >
             <Grid item xs={6} md={3}>
               <Paper
                 elevation={0}
                 sx={{
-                  p: 2.5,
-                  borderRadius: 3,
+                  p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
+                  borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
                   background: `linear-gradient(135deg, rgba(128,180,158,0.1) 0%, rgba(128,180,158,0.05) 100%)`,
                   border: `1px solid ${theme.border}`
                 }}
@@ -503,8 +735,8 @@ export default function AdminStudentNotes() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 2.5,
-                  borderRadius: 3,
+                  p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
+                  borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
                   background: `linear-gradient(135deg, rgba(93,124,166,0.1) 0%, rgba(93,124,166,0.05) 100%)`,
                   border: `1px solid rgba(93,124,166,0.2)`
                 }}
@@ -529,8 +761,8 @@ export default function AdminStudentNotes() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 2.5,
-                  borderRadius: 3,
+                  p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
+                  borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
                   background: `linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(76,175,80,0.05) 100%)`,
                   border: `1px solid rgba(76,175,80,0.2)`
                 }}
@@ -555,8 +787,8 @@ export default function AdminStudentNotes() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 2.5,
-                  borderRadius: 3,
+                  p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
+                  borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
                   background: `linear-gradient(135deg, rgba(255,152,0,0.1) 0%, rgba(255,152,0,0.05) 100%)`,
                   border: `1px solid rgba(255,152,0,0.2)`
                 }}
@@ -583,11 +815,11 @@ export default function AdminStudentNotes() {
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            borderRadius: 4,
+            p: isPhone ? 0.7 : isTablet ? 1 : 3,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             border: `1px solid ${theme.border}`,
             background: 'white',
-            mb: 3
+            mb: isPhone ? 0.65 : isTablet ? 0.9 : 3
           }}
         >
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -597,7 +829,10 @@ export default function AdminStudentNotes() {
             </Typography>
           </Stack>
 
-          <Grid container spacing={2}>
+          <Grid
+            container
+            spacing={isPhone ? 0.75 : isTablet ? 0.95 : 2}
+          >
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -613,7 +848,7 @@ export default function AdminStudentNotes() {
               />
             </Grid>
             
-            <Grid item xs={12} md={2}>
+            <Grid item xs={6} md={2}>
               <FormControl fullWidth size="small">
                 <InputLabel>الفرع</InputLabel>
                 <Select
@@ -632,7 +867,7 @@ export default function AdminStudentNotes() {
               </FormControl>
             </Grid>
             
-            <Grid item xs={12} md={2}>
+            <Grid item xs={6} md={2}>
               <TextField
                 fullWidth
                 label="من تاريخ"
@@ -649,7 +884,7 @@ export default function AdminStudentNotes() {
               />
             </Grid>
             
-            <Grid item xs={12} md={2}>
+            <Grid item xs={6} md={2}>
               <TextField
                 fullWidth
                 label="إلى تاريخ"
@@ -672,11 +907,11 @@ export default function AdminStudentNotes() {
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            borderRadius: 4,
+            p: isPhone ? 0.7 : isTablet ? 1 : 3,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             border: `1px solid ${theme.border}`,
             background: 'white',
-            minHeight: 400
+            minHeight: isPhone ? 300 : isTablet ? 340 : 400
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
@@ -720,7 +955,10 @@ export default function AdminStudentNotes() {
               </Typography>
             </Box>
           ) : (
-            <Grid container spacing={3}>
+            <Grid
+              container
+              spacing={isPhone ? 0.75 : isTablet ? 1 : 3}
+            >
               {filteredRows.map((note) => (
                 <Grid item xs={12} sm={6} lg={4} key={note.id}>
                   <NoteCard 

@@ -1,26 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Box,
-  Typography,
-  Card,
-  CardContent,
   Button,
-  CircularProgress,
   Chip,
-  Divider,
-  Stack,
+  CircularProgress,
+  InputAdornment,
   Paper,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import DownloadIcon from "@mui/icons-material/Download";
-import DescriptionIcon from "@mui/icons-material/Description";
-import ImageIcon from "@mui/icons-material/Image";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import CampaignIcon from "@mui/icons-material/Campaign";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
+import FolderOpenRoundedIcon from "@mui/icons-material/FolderOpenRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
+import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
+import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -28,347 +35,246 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import Sidebar from "../components/Sidebar";
 
 const SIDEBAR_WIDTH = 280;
-const API_BASE_URL = "https://sstli.com/api";
-const GET_CIRCULARS_API = `${API_BASE_URL}/get_circulars.php`;
+
+const API_BASE_URL = (
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5258"
+).replace(/\/+$/, "");
 
 const PRIMARY = "#057445";
+const PRIMARY_DARK = "#034f31";
 const DANGER = "#8f171a";
+const PAGE_BG = "#f4f7f5";
+const BORDER = "#dbe7e1";
+const TEXT = "#183128";
+const MUTED = "#6d8178";
 const WHITE = "#ffffff";
-const PAGE_BG = "#f7faf8";
-const BORDER = "#dfeae4";
 
-const swalMain = {
+const getUserGuid = () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    return String(user?.guid || user?.Guid || "").trim();
+  } catch {
+    return "";
+  }
+};
+
+const formatBytes = (bytes) => {
+  const value = Number(bytes || 0);
+  if (!Number.isFinite(value) || value <= 0) return "0 KB";
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const formatDate = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat("ar-SA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+};
+
+const getFileIcon = (file, size = 34) => {
+  const extension = String(file?.extension || "").toLowerCase();
+  const contentType = String(file?.contentType || "").toLowerCase();
+
+  if (extension === ".pdf" || contentType.includes("pdf")) {
+    return <PictureAsPdfRoundedIcon sx={{ color: DANGER, fontSize: size }} />;
+  }
+
+  if (
+    [".jpg", ".jpeg", ".png", ".webp"].includes(extension) ||
+    contentType.startsWith("image/")
+  ) {
+    return <ImageRoundedIcon sx={{ color: "#3276b1", fontSize: size }} />;
+  }
+
+  if ([".doc", ".docx", ".txt"].includes(extension)) {
+    return <DescriptionRoundedIcon sx={{ color: PRIMARY, fontSize: size }} />;
+  }
+
+  return <InsertDriveFileRoundedIcon sx={{ color: "#667b72", fontSize: size }} />;
+};
+
+const swalOptions = {
   confirmButtonColor: PRIMARY,
   cancelButtonColor: DANGER,
   customClass: {
-    popup: "swal-rtl-popup",
-    title: "swal-rtl-title",
-    htmlContainer: "swal-rtl-text",
+    popup: "swal-cairo-popup",
+    title: "swal-cairo-title",
+    htmlContainer: "swal-cairo-text",
+    confirmButton: "swal-cairo-button",
   },
 };
 
+const showErrorAlert = (message) =>
+  Swal.fire({
+    icon: "error",
+    title: "تعذر تحميل المحتوى",
+    text: message || "حدث خطأ أثناء تحميل مكتبة المحتوى.",
+    confirmButtonText: "حسنًا",
+    ...swalOptions,
+  });
+
 const CircularsList = () => {
-  const [circulars, setCirculars] = useState([]);
+  const userGuid = getUserGuid();
+
+  const [tree, setTree] = useState([]);
+  const [activeTabGuid, setActiveTabGuid] = useState("");
+  const [activeFolderGuid, setActiveFolderGuid] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const showToast = (icon, titleText) => {
-    Swal.fire({
-      toast: true,
-      position: "top",
-      icon,
-      title: titleText,
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      ...swalMain,
-    });
-  };
-
-  const showLoading = (titleText) => {
-    Swal.fire({
-      title: titleText,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      ...swalMain,
-    });
-  };
-
-  const normalizeFileUrl = (filePath = "") => {
-    const rawPath = String(filePath || "").trim();
-
-    if (!rawPath) return "";
-
-    if (rawPath.startsWith("http://") || rawPath.startsWith("https://")) {
-      return encodeURI(rawPath);
+  const loadTree = async () => {
+    if (!userGuid) {
+      setTree([]);
+      setError("تعذر تحديد المستخدم الحالي.");
+      setLoading(false);
+      return;
     }
 
-    const cleanPath = rawPath.replace(/\\/g, "/").replace(/^\/+/, "");
-    const cleanBase = API_BASE_URL.replace(/\/+$/, "");
-
-    return encodeURI(`${cleanBase}/${cleanPath}`);
-  };
-
-  const getFileIcon = (fileType = "", fileName = "") => {
-    const type = String(fileType || "").toLowerCase();
-    const name = String(fileName || "").toLowerCase();
-
-    if (type.includes("pdf") || name.endsWith(".pdf")) {
-      return <PictureAsPdfIcon sx={{ color: DANGER }} />;
-    }
-
-    if (
-      type.includes("image") ||
-      name.endsWith(".jpg") ||
-      name.endsWith(".jpeg") ||
-      name.endsWith(".png") ||
-      name.endsWith(".webp") ||
-      name.endsWith(".gif")
-    ) {
-      return <ImageIcon sx={{ color: PRIMARY }} />;
-    }
-
-    if (
-      name.endsWith(".doc") ||
-      name.endsWith(".docx") ||
-      type.includes("word") ||
-      type.includes("document")
-    ) {
-      return <DescriptionIcon sx={{ color: PRIMARY }} />;
-    }
-
-    return <InsertDriveFileIcon sx={{ color: PRIMARY }} />;
-  };
-
-  const getCircularFiles = (item) => {
-    if (!item) return [];
-
-    if (Array.isArray(item.Files)) return item.Files;
-    if (Array.isArray(item.files)) return item.files;
-
-    if (typeof item.Files === "string" && item.Files.trim()) {
-      try {
-        const parsed = JSON.parse(item.Files);
-        if (Array.isArray(parsed)) return parsed;
-      } catch {
-        return [];
-      }
-    }
-
-    const singlePath = item.FilePath || item.filePath || "";
-    const singleName = item.FileName || item.fileName || "";
-    const singleType = item.FileType || item.fileType || "";
-
-    if (singlePath) {
-      return [
-        {
-          Id: item.FileId || item.fileId || null,
-          CircularId: item.Id || item.id,
-          FileName: singleName || "ملف مرفق",
-          FilePath: singlePath,
-          FileType: singleType,
-        },
-      ];
-    }
-
-    return [];
-  };
-
-  const getFileName = (fileItem) => {
-    return fileItem?.FileName || fileItem?.fileName || "ملف مرفق";
-  };
-
-  const getFilePath = (fileItem) => {
-    return fileItem?.FilePath || fileItem?.filePath || "";
-  };
-
-  const fetchCirculars = async (withAlert = false) => {
     try {
       setLoading(true);
+      setError("");
 
-      if (withAlert) {
-        showLoading("جاري تحديث التعميمات...");
+      const response = await fetch(
+        `${API_BASE_URL}/api/circulars/view-tree/${encodeURIComponent(userGuid)}`,
+        {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message ||
+            (response.status === 403
+              ? "ليس لديك صلاحية عرض مكتبة المحتوى."
+              : "تعذر تحميل مكتبة المحتوى.")
+        );
       }
 
-      const res = await fetch(GET_CIRCULARS_API);
-      const data = await res.json();
+      const data = Array.isArray(result?.data) ? result.data : [];
+      setTree(data);
 
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "حدث خطأ أثناء تحميل التعميمات");
-      }
-
-      setCirculars(Array.isArray(data.data) ? data.data : []);
-
-      if (withAlert) {
-        Swal.close();
-        showToast("success", "تم تحديث التعميمات");
-      }
-    } catch (error) {
-      if (withAlert) Swal.close();
-
-      Swal.fire({
-        icon: "error",
-        title: "خطأ",
-        text: error.message || "حدث خطأ غير متوقع",
-        ...swalMain,
+      setActiveTabGuid((current) => {
+        if (current && data.some((tab) => String(tab.guid) === String(current))) {
+          return current;
+        }
+        return data[0]?.guid || "";
       });
+    } catch (err) {
+      console.error("Content library load error:", err);
+      setTree([]);
+      const message = err?.message || "تعذر تحميل مكتبة المحتوى.";
+      setError(message);
+      showErrorAlert(message);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCirculars(false);
+    loadTree();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const formatDate = (dateValue) => {
-    if (!dateValue) return "";
+  const activeTab = useMemo(
+    () => tree.find((tab) => String(tab.guid) === String(activeTabGuid)) || null,
+    [tree, activeTabGuid]
+  );
 
-    try {
-      return new Date(dateValue).toLocaleString("ar-SA", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return dateValue;
+  const folders = useMemo(
+    () => (Array.isArray(activeTab?.folders) ? activeTab.folders : []),
+    [activeTab]
+  );
+
+  const activeFolder = useMemo(
+    () =>
+      folders.find(
+        (folder) => String(folder.guid) === String(activeFolderGuid)
+      ) || null,
+    [folders, activeFolderGuid]
+  );
+
+  useEffect(() => {
+    if (
+      activeFolderGuid &&
+      !folders.some((folder) => String(folder.guid) === String(activeFolderGuid))
+    ) {
+      setActiveFolderGuid("");
     }
+  }, [folders, activeFolderGuid]);
+
+  const visibleFolders = useMemo(() => {
+    const search = searchText.trim().toLowerCase();
+    if (!search) return folders;
+
+    return folders.filter((folder) =>
+      [folder?.name, folder?.description]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(search))
+    );
+  }, [folders, searchText]);
+
+  const visibleFiles = useMemo(() => {
+    const files = Array.isArray(activeFolder?.files) ? activeFolder.files : [];
+    const search = searchText.trim().toLowerCase();
+
+    if (!search) return files;
+
+    return files.filter((file) =>
+      [file?.displayName, file?.originalFileName, file?.extension]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(search))
+    );
+  }, [activeFolder, searchText]);
+
+  const changeTab = (_, value) => {
+    setActiveTabGuid(value);
+    setActiveFolderGuid("");
+    setSearchText("");
   };
 
-  const openFile = (fileItem) => {
-    const fileUrl = normalizeFileUrl(getFilePath(fileItem));
-
-    if (!fileUrl) {
-      Swal.fire({
-        icon: "warning",
-        title: "لا يوجد ملف",
-        text: "لا يوجد رابط لهذا الملف.",
-        ...swalMain,
-      });
-      return;
-    }
-
-    window.open(fileUrl, "_blank", "noopener,noreferrer");
+  const enterFolder = (folder) => {
+    setActiveFolderGuid(folder.guid);
+    setSearchText("");
   };
 
-  const FilesList = ({ item }) => {
-    const files = getCircularFiles(item);
+  const leaveFolder = () => {
+    setActiveFolderGuid("");
+    setSearchText("");
+  };
 
-    if (files.length === 0) {
-      return (
-        <Box
-          sx={{
-            mt: 2.5,
-            p: 1.5,
-            borderRadius: 3,
-            background: "#fff7f7",
-            border: "1px solid #f1c9c9",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              fontFamily: "Cairo",
-              fontWeight: 900,
-              color: DANGER,
-            }}
-          >
-            لا توجد ملفات مرفقة لهذا التعميم.
-          </Typography>
-        </Box>
-      );
-    }
+  const openFile = (fileGuid) => {
+    if (!fileGuid || !userGuid) return;
+    window.open(
+      `${API_BASE_URL}/api/circulars/files/${encodeURIComponent(
+        fileGuid
+      )}/open?userGuid=${encodeURIComponent(userGuid)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
 
-    return (
-      <Box
-        sx={{
-          mt: 2.5,
-          p: 1.5,
-          borderRadius: 3,
-          background: "#fbfdfc",
-          border: `1px solid ${BORDER}`,
-        }}
-      >
-        <Typography
-          sx={{
-            fontFamily: "Cairo",
-            fontWeight: 950,
-            color: DANGER,
-            mb: 1.2,
-          }}
-        >
-          الملفات المرفقة: {files.length}
-        </Typography>
-
-        <Stack spacing={1}>
-          {files.map((fileItem, index) => {
-            const fileName = getFileName(fileItem);
-            const filePath = getFilePath(fileItem);
-            const hasFile = Boolean(normalizeFileUrl(filePath));
-
-            return (
-              <Box
-                key={fileItem.Id || fileItem.id || `${fileName}-${index}`}
-                sx={{
-                  p: 1.1,
-                  borderRadius: 2.5,
-                  background: WHITE,
-                  border: `1px solid ${BORDER}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 1.5,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    minWidth: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: 3,
-                      background: "#fbfdfc",
-                      border: `1px solid ${BORDER}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {getFileIcon(fileItem.FileType || fileItem.fileType, fileName)}
-                  </Box>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontFamily: "Cairo",
-                      fontWeight: 900,
-                      color: "#17251f",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {fileName}
-                  </Typography>
-                </Box>
-
-                <Button
-                  variant="contained"
-                  size="small"
-                  startIcon={<DownloadIcon />}
-                  disabled={!hasFile}
-                  onClick={() => openFile(fileItem)}
-                  sx={{
-                    flexShrink: 0,
-                    fontFamily: "Cairo",
-                    fontWeight: 900,
-                    borderRadius: 3,
-                    px: 2,
-                    background: PRIMARY,
-                    boxShadow: "0 8px 18px rgba(5,116,69,0.22)",
-                    "&:hover": { background: DANGER },
-                    "& .MuiButton-startIcon": {
-                      ml: 1,
-                      mr: 0,
-                    },
-                  }}
-                >
-                  فتح
-                </Button>
-              </Box>
-            );
-          })}
-        </Stack>
-      </Box>
+  const downloadFile = (fileGuid) => {
+    if (!fileGuid || !userGuid) return;
+    window.open(
+      `${API_BASE_URL}/api/circulars/files/${encodeURIComponent(
+        fileGuid
+      )}/download?userGuid=${encodeURIComponent(userGuid)}`,
+      "_blank",
+      "noopener,noreferrer"
     );
   };
 
@@ -377,7 +283,7 @@ const CircularsList = () => {
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        background: PAGE_BG,
+        bgcolor: PAGE_BG,
         fontFamily: "Cairo, Arial, sans-serif",
       }}
     >
@@ -387,355 +293,675 @@ const CircularsList = () => {
         component="main"
         sx={{
           minHeight: "100vh",
-          ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
-          p: "20px",
+          width: "100%",
           boxSizing: "border-box",
+          p: { xs: 1, sm: 1.25, md: 1.5 },
+          "@media (min-width:1600px)": {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+          },
         }}
       >
-        <Box sx={{ width: "100%" }}>
-          <Box
+        <Stack spacing={1.25} sx={{ width: "100%" }}>
+          <Paper
+            elevation={0}
             sx={{
-              mb: 2.5,
-              p: { xs: 2.5, md: 3 },
-              borderRadius: 4,
-              background: `linear-gradient(135deg, ${PRIMARY} 0%, ${DANGER} 120%)`,
-              color: WHITE,
-              boxShadow: "0 16px 38px rgba(5,116,69,0.18)",
-              position: "relative",
-              overflow: "hidden",
+              px: { xs: 1.5, md: 2 },
+              py: 1.4,
+              borderRadius: 3,
+              border: `1px solid ${BORDER}`,
+              bgcolor: WHITE,
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "radial-gradient(circle at 10% 10%, rgba(255,255,255,0.22), transparent 30%)",
-              }}
-            />
-
-            <Box
-              sx={{
-                position: "relative",
-                zIndex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 2,
-                flexWrap: "wrap",
-              }}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              alignItems={{ xs: "stretch", sm: "center" }}
+              justifyContent="space-between"
+              spacing={1.25}
             >
-              <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack direction="row" spacing={1.2} alignItems="center">
                 <Box
                   sx={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 4,
-                    background: "rgba(255,255,255,0.16)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1px solid rgba(255,255,255,0.25)",
+                    width: 44,
+                    height: 44,
+                    borderRadius: 2.5,
+                    bgcolor: "#e9f5ef",
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
                   }}
                 >
-                  <LibraryBooksIcon sx={{ fontSize: 34 }} />
+                  <MenuBookRoundedIcon sx={{ color: PRIMARY, fontSize: 27 }} />
                 </Box>
 
                 <Box>
                   <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 950,
-                      fontFamily: "Cairo",
-                      lineHeight: 1.6,
-                    }}
+                    variant="h6"
+                    sx={{ fontFamily: "Cairo", fontWeight: 950, color: TEXT }}
                   >
-                    التعميمات
+                    مكتبة المحتوى
                   </Typography>
-
                   <Typography
-                    variant="body2"
-                    sx={{
-                      opacity: 0.92,
-                      mt: 0.3,
-                      fontFamily: "Cairo",
-                      lineHeight: 1.9,
-                    }}
+                    variant="caption"
+                    sx={{ fontFamily: "Cairo", color: MUTED }}
                   >
-                    هنا تظهر كل التعميمات والملفات المرفقة بها.
+                    الأقسام والمجلدات والملفات في مكان واحد
                   </Typography>
                 </Box>
               </Stack>
 
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Chip
-                  label={`${circulars.length} تعميم`}
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 900,
-                    background: WHITE,
-                    color: PRIMARY,
-                    px: 1,
-                  }}
-                />
+              <Button
+                variant="outlined"
+                startIcon={<RefreshRoundedIcon />}
+                onClick={loadTree}
+                disabled={loading}
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  borderRadius: 2.5,
+                  borderColor: BORDER,
+                  color: PRIMARY,
+                  "& .MuiButton-startIcon": { ml: 0.7, mr: 0 },
+                }}
+              >
+                تحديث
+              </Button>
+            </Stack>
+          </Paper>
 
-                <Button
-                  variant="contained"
-                  startIcon={<RefreshIcon />}
-                  onClick={() => fetchCirculars(true)}
-                  disabled={loading}
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 900,
-                    borderRadius: 3,
-                    background: "rgba(255,255,255,0.16)",
-                    color: WHITE,
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    boxShadow: "none",
-                    "&:hover": {
-                      background: "rgba(255,255,255,0.24)",
-                      boxShadow: "none",
-                    },
-                    "& .MuiButton-startIcon": {
-                      ml: 1,
-                      mr: 0,
-                    },
-                  }}
-                >
-                  تحديث
-                </Button>
-              </Stack>
-            </Box>
-          </Box>
+          {error && (
+            <Alert severity="error" sx={{ borderRadius: 3, fontFamily: "Cairo" }}>
+              {error}
+            </Alert>
+          )}
 
-          {loading && (
+          {loading ? (
             <Paper
               elevation={0}
               sx={{
-                minHeight: 320,
-                borderRadius: 4,
+                minHeight: 360,
+                borderRadius: 3,
                 border: `1px solid ${BORDER}`,
-                boxShadow: "0 10px 28px rgba(5,116,69,0.08)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: WHITE,
+                display: "grid",
+                placeItems: "center",
+                bgcolor: WHITE,
               }}
             >
-              <Stack alignItems="center" spacing={1.5}>
+              <Stack alignItems="center" spacing={1.3}>
                 <CircularProgress sx={{ color: PRIMARY }} />
-
-                <Typography
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 800,
-                    color: PRIMARY,
-                  }}
-                >
-                  جاري تحميل التعميمات...
+                <Typography sx={{ fontFamily: "Cairo", color: MUTED }}>
+                  جاري تحميل مكتبة المحتوى...
                 </Typography>
               </Stack>
             </Paper>
-          )}
-
-          {!loading && circulars.length === 0 && (
+          ) : tree.length === 0 && !error ? (
             <Paper
               elevation={0}
               sx={{
-                minHeight: 300,
-                borderRadius: 4,
-                border: `1px solid ${BORDER}`,
-                boxShadow: "0 10px 28px rgba(5,116,69,0.08)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: WHITE,
-                p: 4,
+                minHeight: 360,
+                borderRadius: 3,
+                border: `1px dashed ${BORDER}`,
+                display: "grid",
+                placeItems: "center",
+                bgcolor: WHITE,
                 textAlign: "center",
+                p: 3,
               }}
             >
-              <Stack alignItems="center" spacing={1.5}>
-                <Box
-                  sx={{
-                    width: 84,
-                    height: 84,
-                    borderRadius: "50%",
-                    background: "#eef7f3",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <FolderOpenIcon sx={{ fontSize: 46, color: PRIMARY }} />
-                </Box>
-
+              <Box>
+                <FolderRoundedIcon sx={{ fontSize: 62, color: "#a9bbb3" }} />
                 <Typography
                   variant="h6"
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 950,
-                    color: DANGER,
-                  }}
+                  sx={{ mt: 1, fontFamily: "Cairo", fontWeight: 900, color: TEXT }}
                 >
-                  لا توجد تعميمات حالياً
+                  لا توجد أقسام حاليًا
                 </Typography>
-
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontFamily: "Cairo",
-                    color: "#60736b",
-                    lineHeight: 1.9,
-                  }}
-                >
-                  عند رفع تعميم جديد من الإدارة سيظهر هنا مباشرة.
-                </Typography>
-              </Stack>
+              </Box>
             </Paper>
-          )}
-
-          {!loading && circulars.length > 0 && (
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "1fr",
-                  lg: "repeat(2, minmax(0, 1fr))",
-                },
-                gap: 2.2,
-              }}
-            >
-              {circulars.map((item) => (
-                <Card
-                  key={item.Id || item.Guid}
-                  elevation={0}
+          ) : (
+            <>
+              <Paper
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  border: `1px solid ${BORDER}`,
+                  bgcolor: WHITE,
+                  overflow: "hidden",
+                }}
+              >
+                <Tabs
+                  value={activeTabGuid || false}
+                  onChange={changeTab}
+                  variant="scrollable"
+                  scrollButtons="auto"
                   sx={{
-                    borderRadius: 4,
-                    overflow: "hidden",
-                    border: `1px solid ${BORDER}`,
-                    boxShadow: "0 10px 28px rgba(5,116,69,0.08)",
-                    transition: "0.2s",
-                    background: WHITE,
-                    "&:hover": {
-                      transform: "translateY(-3px)",
-                      boxShadow: "0 18px 42px rgba(5,116,69,0.14)",
+                    minHeight: 52,
+                    px: 0.75,
+                    "& .MuiTab-root": {
+                      minHeight: 52,
+                      minWidth: 120,
+                      px: 2,
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      color: "#61756c",
+                    },
+                    "& .Mui-selected": {
+                      color: `${PRIMARY} !important`,
+                      bgcolor: "#eef7f2",
+                    },
+                    "& .MuiTabs-indicator": {
+                      height: 3,
+                      bgcolor: PRIMARY,
+                      borderRadius: 3,
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        justifyContent: "space-between",
-                        gap: 2,
-                        mb: 1.5,
-                      }}
+                  {tree.map((tab) => (
+                    <Tab key={tab.guid} value={tab.guid} label={tab.name} />
+                  ))}
+                </Tabs>
+              </Paper>
+
+              <Paper
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  border: `1px solid ${BORDER}`,
+                  bgcolor: WHITE,
+                  overflow: "hidden",
+                  minHeight: 500,
+                }}
+              >
+                <Box
+                  sx={{
+                    px: { xs: 1.5, md: 2 },
+                    py: 1.3,
+                    borderBottom: `1px solid ${BORDER}`,
+                    bgcolor: "#fbfdfc",
+                  }}
+                >
+                  <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    alignItems={{ xs: "stretch", md: "center" }}
+                    justifyContent="space-between"
+                    spacing={1.2}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={0.7}
+                      sx={{ minWidth: 0 }}
                     >
-                      <Stack direction="row" spacing={1.2} alignItems="flex-start" sx={{ minWidth: 0 }}>
-                        <Box
+                      {activeFolder ? (
+                        <Button
+                          onClick={leaveFolder}
+                          startIcon={<ArrowBackRoundedIcon />}
                           sx={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: 3,
-                            background: "#eef7f3",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                          }}
-                        >
-                          <CampaignIcon sx={{ color: PRIMARY }} />
-                        </Box>
-
-                        <Typography
-                          variant="h6"
-                          sx={{
+                            minWidth: "auto",
+                            px: 1,
+                            color: PRIMARY,
                             fontFamily: "Cairo",
-                            fontWeight: 950,
-                            color: "#17251f",
-                            lineHeight: 1.7,
-                            wordBreak: "break-word",
+                            fontWeight: 900,
+                            "& .MuiButton-startIcon": { ml: 0.4, mr: 0 },
                           }}
                         >
-                          {item.Title}
-                        </Typography>
-                      </Stack>
+                          رجوع
+                        </Button>
+                      ) : (
+                        <HomeRoundedIcon sx={{ color: PRIMARY, fontSize: 22 }} />
+                      )}
 
-                      <Chip
-                        label="تعميم"
-                        size="small"
+                      <Typography
+                        sx={{
+                          fontFamily: "Cairo",
+                          color: MUTED,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        مكتبة المحتوى
+                      </Typography>
+
+                      <Typography sx={{ color: "#a3b2ac" }}>/</Typography>
+
+                      <Typography
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          background: PRIMARY,
-                          color: WHITE,
-                          flexShrink: 0,
-                        }}
-                      />
-                    </Box>
-
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontFamily: "Cairo",
-                        color: item.Description ? "#52645d" : "#9aa9a3",
-                        lineHeight: 2,
-                        whiteSpace: "pre-wrap",
-                        mb: 2,
-                        textAlign: "left",
-                        direction: "ltr",
-                      }}
-                    >
-                      {item.Description || "لا يوجد وصف لهذا التعميم."}
-                    </Typography>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    <Stack spacing={0.8}>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontFamily: "Cairo",
-                          color: PRIMARY,
-                          fontWeight: 800,
+                          color: activeFolder ? MUTED : TEXT,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
-                        بواسطة: {item.CreatedByName || "غير محدد"}
+                        {activeTab?.name || ""}
                       </Typography>
 
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontFamily: "Cairo",
-                          color: "#60736b",
-                          fontWeight: 800,
-                        }}
-                      >
-                        تاريخ الرفع: {formatDate(item.CreatedAt)}
-                      </Typography>
+                      {activeFolder && (
+                        <>
+                          <Typography sx={{ color: "#a3b2ac" }}>/</Typography>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontWeight: 950,
+                              color: TEXT,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {activeFolder.name}
+                          </Typography>
+                        </>
+                      )}
                     </Stack>
 
-                    <FilesList item={item} />
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
+                    <TextField
+                      size="small"
+                      value={searchText}
+                      onChange={(event) => setSearchText(event.target.value)}
+                      placeholder={
+                        activeFolder
+                          ? "ابحث في الملفات..."
+                          : "ابحث في المجلدات..."
+                      }
+                      sx={{
+                        width: { xs: "100%", md: 330 },
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2.5,
+                          bgcolor: WHITE,
+                        },
+                        "& input": { fontFamily: "Cairo" },
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchRoundedIcon sx={{ color: "#82968d" }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Stack>
+                </Box>
+
+                {!activeFolder ? (
+                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+                    {activeTab?.description && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          mb: 1.5,
+                          fontFamily: "Cairo",
+                          color: MUTED,
+                        }}
+                      >
+                        {activeTab.description}
+                      </Typography>
+                    )}
+
+                    {visibleFolders.length === 0 ? (
+                      <Box sx={{ py: 8, textAlign: "center" }}>
+                        <FolderRoundedIcon
+                          sx={{ fontSize: 58, color: "#b4c4bd" }}
+                        />
+                        <Typography
+                          sx={{
+                            mt: 1,
+                            fontFamily: "Cairo",
+                            fontWeight: 850,
+                            color: MUTED,
+                          }}
+                        >
+                          {searchText
+                            ? "لا توجد مجلدات مطابقة للبحث."
+                            : "لا توجد مجلدات داخل هذا القسم."}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "repeat(2, minmax(0, 1fr))",
+                            sm: "repeat(3, minmax(0, 1fr))",
+                            md: "repeat(4, minmax(0, 1fr))",
+                            lg: "repeat(5, minmax(0, 1fr))",
+                            xl: "repeat(6, minmax(0, 1fr))",
+                          },
+                          gap: 1.25,
+                        }}
+                      >
+                        {visibleFolders.map((folder) => {
+                          const count = Array.isArray(folder.files)
+                            ? folder.files.length
+                            : 0;
+
+                          return (
+                            <Paper
+                              key={folder.guid}
+                              elevation={0}
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => enterFolder(folder)}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter") enterFolder(folder);
+                              }}
+                              sx={{
+                                p: 1.5,
+                                minHeight: 135,
+                                borderRadius: 3,
+                                border: `1px solid ${BORDER}`,
+                                bgcolor: "#fcfefd",
+                                cursor: "pointer",
+                                transition: "all .18s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                "&:hover": {
+                                  transform: "translateY(-2px)",
+                                  borderColor: "#a9cdbb",
+                                  boxShadow:
+                                    "0 8px 24px rgba(5,116,69,0.09)",
+                                  bgcolor: "#ffffff",
+                                },
+                              }}
+                            >
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="flex-start"
+                              >
+                                <FolderRoundedIcon
+                                  sx={{
+                                    fontSize: 48,
+                                    color: "#d7a429",
+                                    filter:
+                                      "drop-shadow(0 3px 4px rgba(0,0,0,.08))",
+                                  }}
+                                />
+                                <Chip
+                                  size="small"
+                                  label={`${count}`}
+                                  sx={{
+                                    height: 23,
+                                    fontFamily: "Cairo",
+                                    fontWeight: 900,
+                                    bgcolor: "#edf5f1",
+                                    color: PRIMARY,
+                                  }}
+                                />
+                              </Stack>
+
+                              <Box sx={{ mt: 1 }}>
+                                <Typography
+                                  sx={{
+                                    fontFamily: "Cairo",
+                                    fontWeight: 950,
+                                    color: TEXT,
+                                    lineHeight: 1.5,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {folder.name}
+                                </Typography>
+
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontFamily: "Cairo",
+                                    color: MUTED,
+                                  }}
+                                >
+                                  {count} ملف
+                                </Typography>
+                              </Box>
+                            </Paper>
+                          );
+                        })}
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      alignItems={{ xs: "stretch", sm: "center" }}
+                      justifyContent="space-between"
+                      spacing={1}
+                      sx={{ mb: 1.7 }}
+                    >
+                      <Stack direction="row" spacing={1.1} alignItems="center">
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 2.5,
+                            bgcolor: "#fff7dc",
+                            display: "grid",
+                            placeItems: "center",
+                          }}
+                        >
+                          <FolderOpenRoundedIcon
+                            sx={{ color: "#c89512", fontSize: 31 }}
+                          />
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontWeight: 950,
+                              color: TEXT,
+                            }}
+                          >
+                            {activeFolder.name}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontFamily: "Cairo", color: MUTED }}
+                          >
+                            {visibleFiles.length} ملف
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Stack>
+
+                    {activeFolder.description && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          mb: 1.5,
+                          fontFamily: "Cairo",
+                          color: MUTED,
+                        }}
+                      >
+                        {activeFolder.description}
+                      </Typography>
+                    )}
+
+                    {visibleFiles.length === 0 ? (
+                      <Box sx={{ py: 8, textAlign: "center" }}>
+                        <InsertDriveFileRoundedIcon
+                          sx={{ fontSize: 56, color: "#b7c5bf" }}
+                        />
+                        <Typography
+                          sx={{
+                            mt: 1,
+                            fontFamily: "Cairo",
+                            fontWeight: 850,
+                            color: MUTED,
+                          }}
+                        >
+                          {searchText
+                            ? "لا توجد ملفات مطابقة للبحث."
+                            : "هذا المجلد فارغ."}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "1fr",
+                            sm: "repeat(2, minmax(0, 1fr))",
+                            lg: "repeat(3, minmax(0, 1fr))",
+                            xl: "repeat(4, minmax(0, 1fr))",
+                          },
+                          gap: 1.1,
+                        }}
+                      >
+                        {visibleFiles.map((file) => (
+                          <Paper
+                            key={file.guid}
+                            elevation={0}
+                            sx={{
+                              p: 1.3,
+                              borderRadius: 2.8,
+                              border: `1px solid ${BORDER}`,
+                              bgcolor: "#fcfefd",
+                              transition: "all .18s ease",
+                              "&:hover": {
+                                borderColor: "#b4d0c2",
+                                boxShadow: "0 7px 20px rgba(5,116,69,.07)",
+                              },
+                            }}
+                          >
+                            <Stack
+                              direction="row"
+                              spacing={1.1}
+                              alignItems="center"
+                            >
+                              <Box
+                                sx={{
+                                  width: 48,
+                                  height: 48,
+                                  borderRadius: 2.5,
+                                  bgcolor: WHITE,
+                                  border: `1px solid ${BORDER}`,
+                                  display: "grid",
+                                  placeItems: "center",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {getFileIcon(file)}
+                              </Box>
+
+                              <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Tooltip
+                                  title={
+                                    file.displayName ||
+                                    file.originalFileName ||
+                                    ""
+                                  }
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 900,
+                                      color: TEXT,
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {file.displayName || file.originalFileName}
+                                  </Typography>
+                                </Tooltip>
+
+                                <Stack
+                                  direction="row"
+                                  spacing={0.8}
+                                  useFlexGap
+                                  flexWrap="wrap"
+                                  sx={{ mt: 0.25 }}
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontFamily: "Cairo", color: MUTED }}
+                                  >
+                                    {formatBytes(file.fileSize)}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontFamily: "Cairo", color: MUTED }}
+                                  >
+                                    {formatDate(file.createdAt)}
+                                  </Typography>
+                                </Stack>
+                              </Box>
+                            </Stack>
+
+                            <Stack direction="row" spacing={0.7} sx={{ mt: 1.2 }}>
+                              <Button
+                                size="small"
+                                variant="contained"
+                                startIcon={<OpenInNewRoundedIcon />}
+                                onClick={() => openFile(file.guid)}
+                                sx={{
+                                  flex: 1,
+                                  minHeight: 34,
+                                  borderRadius: 2.2,
+                                  bgcolor: PRIMARY,
+                                  fontFamily: "Cairo",
+                                  fontWeight: 900,
+                                  boxShadow: "none",
+                                  "&:hover": {
+                                    bgcolor: PRIMARY_DARK,
+                                    boxShadow: "none",
+                                  },
+                                  "& .MuiButton-startIcon": {
+                                    ml: 0.5,
+                                    mr: 0,
+                                  },
+                                }}
+                              >
+                                فتح
+                              </Button>
+
+                              <Tooltip title="تنزيل الملف">
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  onClick={() => downloadFile(file.guid)}
+                                  sx={{
+                                    minWidth: 42,
+                                    borderRadius: 2.2,
+                                    borderColor: BORDER,
+                                    color: PRIMARY,
+                                  }}
+                                >
+                                  <DownloadRoundedIcon fontSize="small" />
+                                </Button>
+                              </Tooltip>
+                            </Stack>
+                          </Paper>
+                        ))}
+                      </Box>
+                    )}
+                  </Box>
+                )}
+              </Paper>
+            </>
           )}
-        </Box>
+        </Stack>
       </Box>
 
       <style>
         {`
-          .swal-rtl-popup {
+          .swal-cairo-popup,
+          .swal-cairo-title,
+          .swal-cairo-text,
+          .swal-cairo-button {
             font-family: Cairo, Arial, sans-serif !important;
+          }
+
+          .swal-cairo-popup {
             direction: rtl !important;
           }
 
-          .swal-rtl-title,
-          .swal-rtl-text {
-            font-family: Cairo, Arial, sans-serif !important;
-            direction: rtl !important;
+          .swal-cairo-title,
+          .swal-cairo-text {
             text-align: center !important;
           }
         `}

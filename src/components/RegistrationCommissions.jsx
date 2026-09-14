@@ -6,6 +6,7 @@ import { styled } from "@mui/material/styles";
 
 // MUI
 import {
+  AppBar,
   Box,
   Typography,
   Card,
@@ -14,10 +15,12 @@ import {
   Alert,
   Grid,
   Divider,
+  GlobalStyles,
   useTheme,
   useMediaQuery,
   IconButton,
   Stack,
+  Toolbar,
   Chip,
   InputAdornment,
   Tooltip,
@@ -61,6 +64,7 @@ import {
   Badge as BadgeIcon,
   AccessTime as TimeIcon,
   SwapHoriz as SwapIcon,
+  MenuRounded as MenuRoundedIcon,
 } from "@mui/icons-material";
 
 // Pickers
@@ -74,6 +78,9 @@ import Sidebar from "./Sidebar";
 /* ===================== Config ===================== */
 const API_BASE =
   import.meta?.env?.VITE_API_BASE?.replace(/\/+$/, "") || "https://api1.sstli.com";
+
+const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 /* ===================== Color Palette ===================== */
 const colorPalette = {
@@ -94,7 +101,10 @@ const colorPalette = {
 /* ===================== Styled ===================== */
 const DashboardContainer = styled(Box)(({ theme }) => ({
   display: "flex",
-  minHeight: "100vh",
+  minHeight: "100dvh",
+  width: "100%",
+  maxWidth: "100vw",
+  overflowX: "hidden",
   backgroundColor: colorPalette.background,
   fontFamily: "'Tajawal', sans-serif",
   direction: "ltr",
@@ -102,25 +112,41 @@ const DashboardContainer = styled(Box)(({ theme }) => ({
 
 const ContentContainer = styled(Box)(({ theme }) => ({
   flex: 1,
+  minWidth: 0,
+  width: "100%",
+  maxWidth: "100%",
   display: "flex",
   flexDirection: "column",
-  padding: theme.spacing(4),
-  marginLeft: "280px",
-  transition: theme.transitions.create(["margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  [theme.breakpoints.down("lg")]: {
-    marginRight: 0,
-    padding: theme.spacing(3),
+  boxSizing: "border-box",
+  overflowX: "hidden",
+  padding: theme.spacing(1),
+  marginLeft: 0,
+
+  [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+    marginLeft: `${SIDEBAR_WIDTH}px`,
+    width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+    padding: theme.spacing(4),
   },
+
+  [theme.breakpoints.between("sm", "lg")]: {
+    padding: theme.spacing(1.25),
+  },
+
   [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(0.55),
   },
 }));
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 16,
+
+  "@media (max-width:1599px)": {
+    borderRadius: 11,
+  },
+
+  "@media (max-width:599px)": {
+    borderRadius: 9,
+  },
   boxShadow: "0 6px 24px 0 rgba(128, 180, 158, 0.1)",
   transition: "all 0.25s ease",
   borderInlineStart: `5px solid ${colorPalette.primary}`,
@@ -146,13 +172,37 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
 
   return (
     <StyledCard>
-      <CardContent sx={{ p: 3 }}>
-        <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2} gap={2}>
+      <CardContent
+        sx={{
+          p: 3,
+          "@media (max-width:1599px)": { p: 1.1 },
+          "@media (max-width:599px)": { p: 0.75 }
+        }}
+      >
+        <Box
+          display="flex"
+          alignItems="flex-start"
+          justifyContent="space-between"
+          mb={2}
+          gap={2}
+          sx={{
+            "@media (max-width:1599px)": { mb: 0.75, gap: 0.7 },
+            "@media (max-width:599px)": { mb: 0.5, gap: 0.45 }
+          }}
+        >
           <Box display="flex" alignItems="center" gap={1.5}>
             <Box
               sx={{
                 width: 44,
                 height: 44,
+                "@media (max-width:1599px)": {
+                  width: 30,
+                  height: 30
+                },
+                "@media (max-width:599px)": {
+                  width: 26,
+                  height: 26
+                },
                 borderRadius: 2,
                 bgcolor: `${getColor(color)}20`,
                 color: getColor(color),
@@ -164,11 +214,26 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
               {icon}
             </Box>
             <Box>
-              <Typography variant="h6" fontWeight={700} sx={{ color: colorPalette.textDark }}>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{
+                  color: colorPalette.textDark,
+                  "@media (max-width:1599px)": { fontSize: "0.72rem" },
+                  "@media (max-width:599px)": { fontSize: "0.6rem" }
+                }}
+              >
                 {title}
               </Typography>
               {subtitle && (
-                <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: colorPalette.textLight,
+                    "@media (max-width:1599px)": { fontSize: "0.5rem" },
+                    "@media (max-width:599px)": { fontSize: "0.42rem" }
+                  }}
+                >
                   {subtitle}
                 </Typography>
               )}
@@ -178,7 +243,13 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
           {actions ? <Box>{actions}</Box> : null}
         </Box>
 
-        <Divider sx={{ mb: 2, borderColor: colorPalette.primaryLighter }} />
+        <Divider
+          sx={{
+            mb: 2,
+            borderColor: colorPalette.primaryLighter,
+            "@media (max-width:1599px)": { mb: 0.65 }
+          }}
+        />
         {children}
       </CardContent>
     </StyledCard>
@@ -201,17 +272,45 @@ const StatCard = ({ title, value, icon, color, hint }) => {
 
   return (
     <StyledCard sx={{ height: "100%" }}>
-      <CardContent sx={{ p: 2.5 }}>
+      <CardContent
+        sx={{
+          p: 2.5,
+          "@media (max-width:1599px)": { p: 0.85 },
+          "@media (max-width:599px)": { p: 0.6 }
+        }}
+      >
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
-            <Typography variant="subtitle2" sx={{ color: colorPalette.textLight }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: colorPalette.textLight,
+                "@media (max-width:1599px)": { fontSize: "0.52rem" },
+                "@media (max-width:599px)": { fontSize: "0.44rem" }
+              }}
+            >
               {title}
             </Typography>
-            <Typography variant="h4" fontWeight={800} sx={{ color: colorValue }}>
+            <Typography
+              variant="h4"
+              fontWeight={800}
+              sx={{
+                color: colorValue,
+                "@media (max-width:1599px)": { fontSize: "1rem" },
+                "@media (max-width:599px)": { fontSize: "0.82rem" }
+              }}
+            >
               {value}
             </Typography>
             {hint && (
-              <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: colorPalette.textLight,
+                  "@media (max-width:1599px)": { fontSize: "0.45rem" },
+                  "@media (max-width:599px)": { fontSize: "0.38rem" }
+                }}
+              >
                 {hint}
               </Typography>
             )}
@@ -220,6 +319,14 @@ const StatCard = ({ title, value, icon, color, hint }) => {
             sx={{
               width: 48,
               height: 48,
+              "@media (max-width:1599px)": {
+                width: 31,
+                height: 31
+              },
+              "@media (max-width:599px)": {
+                width: 27,
+                height: 27
+              },
               borderRadius: 2,
               bgcolor: `${colorValue}20`,
               color: colorValue,
@@ -236,11 +343,35 @@ const StatCard = ({ title, value, icon, color, hint }) => {
 };
 
 const Row = ({ label, value, color, isCurrency }) => (
-  <Box display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
-    <Typography variant="body2" sx={{ color: colorPalette.textLight }}>
+  <Box
+    display="flex"
+    justifyContent="space-between"
+    alignItems="center"
+    py={0.5}
+    sx={{
+      "@media (max-width:1599px)": { py: 0.2, gap: 0.5 },
+      "@media (max-width:599px)": { py: 0.15 }
+    }}
+  >
+    <Typography
+      variant="body2"
+      sx={{
+        color: colorPalette.textLight,
+        "@media (max-width:1599px)": { fontSize: "0.52rem" },
+        "@media (max-width:599px)": { fontSize: "0.44rem" }
+      }}
+    >
       {label}
     </Typography>
-    <Typography variant="subtitle1" fontWeight={600} sx={{ color: color || colorPalette.textDark }}>
+    <Typography
+      variant="subtitle1"
+      fontWeight={600}
+      sx={{
+        color: color || colorPalette.textDark,
+        "@media (max-width:1599px)": { fontSize: "0.58rem" },
+        "@media (max-width:599px)": { fontSize: "0.49rem" }
+      }}
+    >
       {isCurrency ? `${Number(value || 0).toLocaleString()} ر.س` : Number(value ?? 0).toLocaleString()}
     </Typography>
   </Box>
@@ -260,6 +391,14 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
       sx={{
         p: 1.2,
         borderRadius: 2,
+        "@media (max-width:1599px)": {
+          p: 0.55,
+          borderRadius: 1.4
+        },
+        "@media (max-width:599px)": {
+          p: 0.4,
+          borderRadius: 1.2
+        },
         borderColor: colorPalette.primaryLighter,
         bgcolor: t.bg,
         display: "flex",
@@ -273,6 +412,14 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
           sx={{
             width: 32,
             height: 32,
+            "@media (max-width:1599px)": {
+              width: 24,
+              height: 24
+            },
+            "@media (max-width:599px)": {
+              width: 21,
+              height: 21
+            },
             borderRadius: 2,
             bgcolor: "rgba(128, 180, 158, 0.15)",
             color: colorPalette.primaryDark,
@@ -282,12 +429,27 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
         >
           {icon}
         </Box>
-        <Typography variant="body2" sx={{ color: colorPalette.textLight }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: colorPalette.textLight,
+            "@media (max-width:1599px)": { fontSize: "0.5rem" },
+            "@media (max-width:599px)": { fontSize: "0.42rem" }
+          }}
+        >
           {label}
         </Typography>
       </Box>
 
-      <Typography variant="subtitle1" fontWeight={800} sx={{ color: t.fg }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={800}
+        sx={{
+          color: t.fg,
+          "@media (max-width:1599px)": { fontSize: "0.62rem" },
+          "@media (max-width:599px)": { fontSize: "0.54rem" }
+        }}
+      >
         {Number(value ?? 0).toLocaleString()}
       </Typography>
     </Paper>
@@ -391,7 +553,25 @@ const formatDateTime = (iso) => {
 /* ===================== Component ===================== */
 const RegistrationCommissions = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+  const isMobile = isCompact;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
 
   const [startDate, setStartDate] = useState(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState(endOfMonth(new Date()));
@@ -409,6 +589,12 @@ const RegistrationCommissions = () => {
   // Dialog filters
   const [tab, setTab] = useState(0); // 0=الكل,1=خصم,2=إضافة
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
 
   const userGuid = useMemo(() => {
     try {
@@ -566,35 +752,204 @@ setData(zeroizeForHamza(json[0]));
     setDetailsErr(null);
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: "grid", placeItems: "center", height: "100vh", bgcolor: colorPalette.background }}>
-        <CircularProgress size={60} thickness={4} sx={{ color: colorPalette.primary }} />
-      </Box>
-    );
-  }
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
       <DashboardContainer>
-        <Sidebar />
-        <ContentContainer sx={{ mb: 3 }}>
+        {!isDesktop && (
+          <GlobalStyles
+            styles={{
+              ".MuiDrawer-root, .MuiModal-root.MuiDrawer-root": {
+                zIndex: "2100 !important"
+              },
+              ".MuiDrawer-root .MuiBackdrop-root, .MuiModal-root.MuiDrawer-root .MuiBackdrop-root": {
+                zIndex: "2099 !important"
+              },
+              ".MuiDrawer-root .MuiDrawer-paper, .MuiModal-root.MuiDrawer-root .MuiDrawer-paper": {
+                zIndex: "2101 !important",
+                position: "fixed !important"
+              }
+            }}
+          />
+        )}
+
+        {!isDesktop && (
+          <AppBar
+            position="fixed"
+            elevation={0}
+            sx={{
+              top: 0,
+              left: 0,
+              right: 0,
+              width: "100%",
+              zIndex: 1100,
+              background: "rgba(255,255,255,.97)",
+              backdropFilter: "blur(14px)",
+              color: colorPalette.textDark,
+              borderBottom: `1px solid ${colorPalette.primaryLighter}`,
+              direction: "ltr"
+            }}
+          >
+            <Toolbar
+              sx={{
+                direction: "ltr",
+                minHeight: {
+                  xs: "50px !important",
+                  sm: "56px !important",
+                  md: "60px !important"
+                },
+                px: {
+                  xs: 0.75,
+                  sm: 1,
+                  md: 1.25
+                },
+                gap: {
+                  xs: 0.75,
+                  sm: 1
+                }
+              }}
+            >
+              <IconButton
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  setMobileSidebarOpen(
+                    (current) => !current
+                  );
+                }}
+                aria-label={
+                  mobileSidebarOpen
+                    ? "إغلاق القائمة"
+                    : "فتح القائمة"
+                }
+                aria-expanded={mobileSidebarOpen}
+                sx={{
+                  width: {
+                    xs: 36,
+                    sm: 40
+                  },
+                  height: {
+                    xs: 36,
+                    sm: 40
+                  },
+                  flexShrink: 0,
+                  color: "#fff",
+                  background:
+                    "linear-gradient(135deg,#057546,#034d31)",
+                  boxShadow:
+                    "0 5px 14px rgba(5,117,70,.20)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(135deg,#034d31,#057546)"
+                  }
+                }}
+              >
+                <MenuRoundedIcon
+                  sx={{
+                    fontSize: {
+                      xs: 20,
+                      sm: 22
+                    }
+                  }}
+                />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  flex: 1,
+                  fontFamily: "Tajawal",
+                  fontWeight: 900,
+                  fontSize: {
+                    xs: "0.7rem",
+                    sm: "0.8rem"
+                  },
+                  color: colorPalette.textDark,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  textAlign: "left"
+                }}
+              >
+                العمولات والإحصائيات
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        )}
+
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }
+        />
+
+        <ContentContainer
+          sx={{
+            mb: isCompact ? 0.75 : 3,
+            mt: isPhone
+              ? "56px"
+              : isTablet
+                ? "64px"
+                : 0,
+            pt: isCompact ? 0.45 : undefined
+          }}
+        >
+          {loading && (
+            <Box
+              sx={{
+                position: "fixed",
+                inset: 0,
+                top: isPhone
+                  ? "50px"
+                  : isTablet
+                    ? "56px"
+                    : 0,
+                display: "grid",
+                placeItems: "center",
+                bgcolor: "rgba(248,251,249,.88)",
+                backdropFilter: "blur(2px)",
+                zIndex: 1050,
+                pointerEvents: "none"
+              }}
+            >
+              <CircularProgress
+                size={isPhone ? 30 : isTablet ? 36 : 52}
+                thickness={4}
+                sx={{ color: colorPalette.primary }}
+              />
+            </Box>
+          )}
+
           {/* Header */}
           <Box
             sx={{
               display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              alignItems: isMobile ? "stretch" : "center",
+              flexDirection: isCompact ? "column" : "row",
+              alignItems: isCompact ? "stretch" : "center",
               justifyContent: "space-between",
-              gap: 2,
-              mb: 3,
+              gap: isPhone ? 0.6 : isTablet ? 0.9 : 2,
+              mb: isPhone ? 0.7 : isTablet ? 1 : 3,
             }}
           >
             <Box>
-              <Typography variant="h4" fontWeight={800} sx={{ color: colorPalette.textDark }}>
+              <Typography
+                variant="h4"
+                fontWeight={800}
+                sx={{
+                  color: colorPalette.textDark,
+                  fontSize: isPhone ? "0.85rem" : isTablet ? "1rem" : undefined
+                }}
+              >
                 لوحة العمولات والإحصائيات
               </Typography>
-              <Typography variant="body2" sx={{ color: colorPalette.textLight }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: colorPalette.textLight,
+                  fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
+                  display: isPhone ? "none" : "block"
+                }}
+              >
                 نظرة مركزة على أداء التسجيلات وحساب العمولات للفترة المحددة
               </Typography>
             </Box>
@@ -603,14 +958,23 @@ setData(zeroizeForHamza(json[0]));
             <Paper
               elevation={0}
               sx={{
-                p: 2,
-                borderRadius: 2,
+                p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
+                borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 2,
                 border: `1px solid ${colorPalette.primaryLighter}`,
                 bgcolor: "white",
-                minWidth: isMobile ? "100%" : 560,
+                minWidth: isCompact ? "100%" : 560,
               }}
             >
-              <Stack direction={isMobile ? "column" : "row"} gap={1.5} alignItems="center">
+              <Box
+                sx={{
+                  display: isCompact ? "grid" : "flex",
+                  gridTemplateColumns: isCompact
+                    ? "repeat(2,minmax(0,1fr))"
+                    : undefined,
+                  gap: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  alignItems: "center"
+                }}
+              >
                 <DatePicker
                   label="تاريخ البداية"
                   value={startDate}
@@ -619,6 +983,21 @@ setData(zeroizeForHamza(json[0]));
                     textField: {
                       size: "small",
                       fullWidth: true,
+                      sx: {
+                        "& .MuiInputLabel-root": {
+                          fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                        },
+                        "& .MuiInputBase-input": {
+                          fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                          py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          minHeight: isPhone ? 31 : isTablet ? 34 : undefined
+                        },
+                        "& .MuiSvgIcon-root": {
+                          fontSize: isPhone ? 15 : isTablet ? 17 : undefined
+                        }
+                      },
                       InputProps: {
                         startAdornment: (
                           <InputAdornment position="start">
@@ -637,6 +1016,21 @@ setData(zeroizeForHamza(json[0]));
                     textField: {
                       size: "small",
                       fullWidth: true,
+                      sx: {
+                        "& .MuiInputLabel-root": {
+                          fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                        },
+                        "& .MuiInputBase-input": {
+                          fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                          py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          minHeight: isPhone ? 31 : isTablet ? 34 : undefined
+                        },
+                        "& .MuiSvgIcon-root": {
+                          fontSize: isPhone ? 15 : isTablet ? 17 : undefined
+                        }
+                      },
                       InputProps: {
                         startAdornment: (
                           <InputAdornment position="start">
@@ -654,6 +1048,8 @@ setData(zeroizeForHamza(json[0]));
                       sx={{
                         color: colorPalette.primary,
                         border: `1px solid ${colorPalette.primaryLighter}`,
+                        width: isPhone ? 31 : isTablet ? 34 : undefined,
+                        height: isPhone ? 31 : isTablet ? 34 : undefined,
                         "&:hover": { backgroundColor: colorPalette.primaryLighter },
                       }}
                       onClick={fetchData}
@@ -672,8 +1068,11 @@ setData(zeroizeForHamza(json[0]));
                       sx={{
                         bgcolor: colorPalette.primary,
                         "&:hover": { bgcolor: colorPalette.primaryDark },
-                        borderRadius: 2,
+                        borderRadius: isCompact ? 1.2 : 2,
                         whiteSpace: "nowrap",
+                        gridColumn: isCompact ? "1 / -1" : undefined,
+                        minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                       }}
                       disabled={!startDate || !endDate}
                     >
@@ -681,10 +1080,25 @@ setData(zeroizeForHamza(json[0]));
                     </Button>
                   </span>
                 </Tooltip>
-              </Stack>
+              </Box>
 
               {/* Quick Range */}
-              <Stack direction="row" gap={1} mt={1.5} flexWrap="wrap" alignItems="center">
+              <Stack
+                direction="row"
+                gap={isPhone ? 0.45 : isTablet ? 0.65 : 1}
+                mt={isPhone ? 0.6 : isTablet ? 0.8 : 1.5}
+                flexWrap="wrap"
+                alignItems="center"
+                sx={{
+                  "& .MuiChip-root": {
+                    height: isPhone ? 24 : isTablet ? 27 : undefined,
+                    fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                  },
+                  "& .MuiChip-icon": {
+                    fontSize: isPhone ? 14 : isTablet ? 16 : undefined
+                  }
+                }}
+              >
                 <Chip
                   icon={<FilterIcon sx={{ color: colorPalette.primary }} />}
                   label="الشهر الحالي"
@@ -754,8 +1168,12 @@ setData(zeroizeForHamza(json[0]));
           {data && totals && (
             <>
               {/* Summary Cards */}
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={12} sm={6} md={3}>
+              <Grid
+                container
+                spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}
+                sx={{ mb: isPhone ? 0.75 : isTablet ? 1 : 3 }}
+              >
+                <Grid item xs={6} sm={3} md={3}>
                   <StatCard
                     title="إجمالي التسجيل"
                     value={totals.totalRegistrations.toLocaleString()}
@@ -764,7 +1182,7 @@ setData(zeroizeForHamza(json[0]));
                     hint={data[K.empName]}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={6} sm={3} md={3}>
                   <StatCard
                     title="إجمالي الدبلومات"
                     value={totals.totalDiplomas.toLocaleString()}
@@ -772,7 +1190,7 @@ setData(zeroizeForHamza(json[0]));
                     color="success"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={6} sm={3} md={3}>
                   <StatCard
                     title="إجمالي المرتجعات"
                     value={totals.returns.toLocaleString()}
@@ -780,7 +1198,7 @@ setData(zeroizeForHamza(json[0]));
                     color="error"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={6} sm={3} md={3}>
                   <StatCard
                     title="إجمالي العمولة"
                     value={`${totals.totalCommission.toLocaleString()} ر.س`}
@@ -791,7 +1209,11 @@ setData(zeroizeForHamza(json[0]));
               </Grid>
 
               {/* Civil & Military */}
-              <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid
+                container
+                spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}
+                sx={{ mb: isPhone ? 0.75 : isTablet ? 1 : 3 }}
+              >
                 {/* Civil */}
                 <Grid item xs={12} md={6}>
                   <Panel
@@ -800,7 +1222,7 @@ setData(zeroizeForHamza(json[0]));
                     title="الدبلومات المدنية"
                     subtitle="تفاصيل المدني + المشترك"
                   >
-                    <Grid container spacing={2}>
+                    <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 2}>
                       <Grid item xs={6}>
                         <Row label="الإجمالي" value={data[K.civil]} />
                         <Row label="المرتجعات" value={data[K.civilReturn]} color={colorPalette.error} />
@@ -816,8 +1238,8 @@ setData(zeroizeForHamza(json[0]));
                         <Typography variant="subtitle2" sx={{ color: colorPalette.textDark, mb: 1 }}>
                           المشترك (مدني)
                         </Typography>
-                        <Grid container spacing={1.5}>
-                          <Grid item xs={12} sm={6}>
+                        <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.5}>
+                          <Grid item xs={6} sm={6}>
                             <MiniStat
                               label="خصم"
                               value={data[K.civilSharedDiscount]}
@@ -825,7 +1247,7 @@ setData(zeroizeForHamza(json[0]));
                               tone="discount"
                             />
                           </Grid>
-                          <Grid item xs={12} sm={6}>
+                          <Grid item xs={6} sm={6}>
                             <MiniStat
                               label="إضافة"
                               value={data[K.civilSharedBonus]}
@@ -857,7 +1279,7 @@ setData(zeroizeForHamza(json[0]));
                     title="الدبلومات العسكرية"
                     subtitle="تفاصيل العسكري + المشترك"
                   >
-                    <Grid container spacing={2}>
+                    <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 2}>
                       <Grid item xs={6}>
                         <Row label="الإجمالي" value={data[K.mil]} />
                         <Row label="المرتجعات" value={data[K.milReturn]} color={colorPalette.error} />
@@ -873,8 +1295,8 @@ setData(zeroizeForHamza(json[0]));
                         <Typography variant="subtitle2" sx={{ color: colorPalette.textDark, mb: 1 }}>
                           المشترك (عسكري)
                         </Typography>
-                        <Grid container spacing={1.5}>
-                          <Grid item xs={12} sm={6}>
+                        <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.5}>
+                          <Grid item xs={6} sm={6}>
                             <MiniStat
                               label="خصم"
                               value={data[K.milSharedDiscount]}
@@ -882,7 +1304,7 @@ setData(zeroizeForHamza(json[0]));
                               tone="discount"
                             />
                           </Grid>
-                          <Grid item xs={12} sm={6}>
+                          <Grid item xs={6} sm={6}>
                             <MiniStat
                               label="إضافة"
                               value={data[K.milSharedBonus]}
@@ -908,7 +1330,7 @@ setData(zeroizeForHamza(json[0]));
               </Grid>
 
               {/* Courses */}
-              <Grid container spacing={2}>
+              <Grid container spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}>
                 <Grid item xs={12} md={6}>
                   <Panel color="success" icon={<TrendingUpIcon />} title="الدورات التأهيلية" subtitle="عدد وعمولة">
                     <Row label="عدد الدورات" value={data[K.qual]} />
@@ -935,11 +1357,24 @@ setData(zeroizeForHamza(json[0]));
             open={openDetails}
             onClose={closeDetailsDialog}
             fullWidth
+            fullScreen={isPhone}
             maxWidth="lg"
+            sx={{
+              "& .MuiDialog-container": {
+                pt: isPhone ? "52px" : isTablet ? "62px" : 0,
+                px: isPhone ? 0 : isTablet ? 0.6 : undefined,
+                alignItems: isPhone ? "stretch" : "center"
+              }
+            }}
             PaperProps={{
               sx: {
-                borderRadius: 3,
+                borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
                 overflow: "hidden",
+                width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
+                maxWidth: isPhone ? "100vw" : isTablet ? "1050px" : undefined,
+                height: isPhone ? "calc(100dvh - 52px)" : undefined,
+                maxHeight: isPhone ? "calc(100dvh - 52px)" : isTablet ? "90dvh" : undefined,
+                m: isPhone ? 0 : undefined,
                 border: `1px solid ${colorPalette.primaryLighter}`,
               },
             }}
@@ -951,14 +1386,29 @@ setData(zeroizeForHamza(json[0]));
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: 2,
+                gap: isPhone ? 0.5 : isTablet ? 0.75 : 2,
+                px: isPhone ? 0.7 : isTablet ? 1 : 3,
+                py: isPhone ? 0.55 : isTablet ? 0.75 : 2,
               }}
             >
               <Box>
-                <Typography variant="h6" fontWeight={900} sx={{ color: colorPalette.textDark }}>
+                <Typography
+                  variant="h6"
+                  fontWeight={900}
+                  sx={{
+                    color: colorPalette.textDark,
+                    fontSize: isPhone ? "0.65rem" : isTablet ? "0.78rem" : undefined
+                  }}
+                >
                   تفاصيل الخصم / الإضافة
                 </Typography>
-                <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: colorPalette.textLight,
+                    fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                  }}
+                >
                   {startDate && endDate
                     ? `الفترة: ${format(startDate, "yyyy/MM/dd")} - ${format(endDate, "yyyy/MM/dd")}`
                     : ""}
@@ -970,14 +1420,20 @@ setData(zeroizeForHamza(json[0]));
               </IconButton>
             </DialogTitle>
 
-            <DialogContent sx={{ bgcolor: "white" }}>
+            <DialogContent
+              sx={{
+                bgcolor: "white",
+                px: isPhone ? 0.65 : isTablet ? 1 : 3,
+                py: isPhone ? 0.55 : isTablet ? 0.8 : 2
+              }}
+            >
               {/* top controls */}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mt: 2 }}>
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    alignItems: isMobile ? "stretch" : "center",
+                    flexDirection: isCompact ? "column" : "row",
+                    alignItems: isCompact ? "stretch" : "center",
                     justifyContent: "space-between",
                     gap: 1.5,
                   }}
@@ -996,7 +1452,13 @@ setData(zeroizeForHamza(json[0]));
                       ),
                     }}
                     sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: isCompact ? 1.2 : 2,
+                        minHeight: isPhone ? 31 : isTablet ? 34 : undefined
+                      },
+                      "& .MuiInputBase-input": {
+                        fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined
+                      },
                     }}
                   />
 
@@ -1006,7 +1468,9 @@ setData(zeroizeForHamza(json[0]));
                       startIcon={<RefreshIcon />}
                       variant="outlined"
                       sx={{
-                        borderRadius: 2,
+                        borderRadius: isCompact ? 1.2 : 2,
+                  minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
+                  fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined,
                         borderColor: colorPalette.primaryLight,
                         color: colorPalette.primaryDark,
                       }}
@@ -1020,8 +1484,8 @@ setData(zeroizeForHamza(json[0]));
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    alignItems: isMobile ? "stretch" : "center",
+                    flexDirection: isCompact ? "column" : "row",
+                    alignItems: isCompact ? "stretch" : "center",
                     justifyContent: "space-between",
                     gap: 1.5,
                   }}
@@ -1029,10 +1493,19 @@ setData(zeroizeForHamza(json[0]));
                   <Tabs
                     value={tab}
                     onChange={(_, v) => setTab(v)}
-                    variant={isMobile ? "scrollable" : "standard"}
+                    variant={isCompact ? "scrollable" : "standard"}
                     sx={{
-                      minHeight: 42,
-                      "& .MuiTab-root": { minHeight: 42, borderRadius: 2 },
+                      minHeight: isPhone ? 31 : isTablet ? 35 : 42,
+                      "& .MuiTab-root": {
+                        minHeight: isPhone ? 31 : isTablet ? 35 : 42,
+                        borderRadius: isCompact ? 1.2 : 2,
+                        minWidth: isPhone ? 72 : isTablet ? 90 : undefined,
+                        px: isPhone ? 0.55 : isTablet ? 0.8 : undefined,
+                        fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                      },
+                      "& .MuiSvgIcon-root": {
+                        fontSize: isPhone ? 14 : isTablet ? 16 : undefined
+                      },
                     }}
                   >
                     <Tab
@@ -1067,7 +1540,18 @@ setData(zeroizeForHamza(json[0]));
                     />
                   </Tabs>
 
-                  <Box display="flex" gap={1} flexWrap="wrap" justifyContent="flex-end">
+                  <Box
+                    display={isPhone ? "none" : "flex"}
+                    gap={1}
+                    flexWrap="wrap"
+                    justifyContent="flex-end"
+                    sx={{
+                      "& .MuiChip-root": {
+                        height: isTablet ? 25 : undefined,
+                        fontSize: isTablet ? "0.48rem" : undefined
+                      }
+                    }}
+                  >
                     <Chip
                       icon={<DiscountIcon sx={{ color: colorPalette.error }} />}
                       label={`خصم: ${detailsCounts.discount}`}
@@ -1105,7 +1589,13 @@ setData(zeroizeForHamza(json[0]));
                     <Typography variant="h6" sx={{ color: colorPalette.textLight }}>
                       لا توجد تفاصيل مطابقة.
                     </Typography>
-                    <Typography variant="caption" sx={{ color: colorPalette.textLight }}>
+                    <Typography
+                variant="caption"
+                sx={{
+                  color: colorPalette.textLight,
+                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+                }}
+              >
                       جرّب تغيير الفلتر أو البحث.
                     </Typography>
                   </Box>
@@ -1125,31 +1615,60 @@ setData(zeroizeForHamza(json[0]));
                     <Table size="small">
                       <TableHead>
                         <TableRow sx={{ bgcolor: colorPalette.primaryLighter }}>
-                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <PersonIcon fontSize="small" />
-                              الطالب
-                            </Box>
+                          <TableCell
+                            sx={{
+                              fontWeight: 800,
+                              color: colorPalette.textDark,
+                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              px: isPhone ? 0.45 : isTablet ? 0.65 : 2
+                            }}
+                          >
+                            الطالب
                           </TableCell>
-                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <BadgeIcon fontSize="small" />
-                              الهوية
-                            </Box>
+
+                          <TableCell
+                            sx={{
+                              fontWeight: 800,
+                              color: colorPalette.textDark,
+                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              px: isPhone ? 0.45 : isTablet ? 0.65 : 2
+                            }}
+                          >
+                            الهوية
                           </TableCell>
-                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <TimeIcon fontSize="small" />
-                              تاريخ التسجيل
-                            </Box>
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
-                            مندوب الطالب
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
-                            مندوب الاستمارة
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 900, color: colorPalette.textDark }}>
+
+                          {!isPhone && (
+                            <TableCell
+                              sx={{
+                                fontWeight: 800,
+                                color: colorPalette.textDark,
+                                fontSize: isTablet ? "0.5rem" : undefined,
+                                px: isTablet ? 0.65 : 2
+                              }}
+                            >
+                              التاريخ
+                            </TableCell>
+                          )}
+
+                          {!isCompact && (
+                            <>
+                              <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                                مندوب الطالب
+                              </TableCell>
+                              <TableCell sx={{ fontWeight: 800, color: colorPalette.textDark }}>
+                                مندوب الاستمارة
+                              </TableCell>
+                            </>
+                          )}
+
+                          <TableCell
+                            sx={{
+                              fontWeight: 900,
+                              color: colorPalette.textDark,
+                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              px: isPhone ? 0.45 : isTablet ? 0.65 : 2
+                            }}
+                          >
                             التأثير
                           </TableCell>
                         </TableRow>
@@ -1160,28 +1679,70 @@ setData(zeroizeForHamza(json[0]));
                           const isDiscount = eff === "خصم";
                           return (
                             <TableRow key={`${r.NationalId}-${r.RegDate}-${idx}`} hover>
-                              <TableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>
+                              <TableCell
+                                sx={{
+                                  fontWeight: 700,
+                                  color: colorPalette.textDark,
+                                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined,
+                                  px: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                                  maxWidth: isPhone ? 105 : isTablet ? 150 : undefined,
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
                                 {safeStr(r.StudentName)}
                               </TableCell>
-                              <TableCell sx={{ color: colorPalette.textLight }}>
+
+                              <TableCell
+                                sx={{
+                                  color: colorPalette.textLight,
+                                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined,
+                                  px: isPhone ? 0.45 : isTablet ? 0.65 : 2
+                                }}
+                              >
                                 {safeStr(r.NationalId)}
                               </TableCell>
-                              <TableCell sx={{ color: colorPalette.textLight }}>
-                                {formatDateTime(r.RegDate)}
-                              </TableCell>
-                              <TableCell sx={{ color: colorPalette.textDark }}>
-                                {safeStr(r.StudentSeller)}
-                              </TableCell>
-                              <TableCell sx={{ color: colorPalette.textDark }}>
-                                {safeStr(r.FormSeller)}
-                              </TableCell>
-                              <TableCell>
+
+                              {!isPhone && (
+                                <TableCell
+                                  sx={{
+                                    color: colorPalette.textLight,
+                                    fontSize: isTablet ? "0.48rem" : undefined,
+                                    px: isTablet ? 0.65 : 2
+                                  }}
+                                >
+                                  {formatDateTime(r.RegDate)}
+                                </TableCell>
+                              )}
+
+                              {!isCompact && (
+                                <>
+                                  <TableCell sx={{ color: colorPalette.textDark }}>
+                                    {safeStr(r.StudentSeller)}
+                                  </TableCell>
+                                  <TableCell sx={{ color: colorPalette.textDark }}>
+                                    {safeStr(r.FormSeller)}
+                                  </TableCell>
+                                </>
+                              )}
+
+                              <TableCell
+                                sx={{
+                                  px: isPhone ? 0.35 : isTablet ? 0.55 : 2
+                                }}
+                              >
                                 <Chip
                                   icon={isDiscount ? <DiscountIcon /> : <BonusIcon />}
                                   label={eff}
                                   size="small"
                                   sx={{
                                     fontWeight: 900,
+                                    height: isPhone ? 22 : isTablet ? 25 : undefined,
+                                    fontSize: isPhone ? "0.38rem" : isTablet ? "0.46rem" : undefined,
+                                    "& .MuiChip-icon": {
+                                      fontSize: isPhone ? 13 : isTablet ? 15 : undefined
+                                    },
                                     bgcolor: isDiscount ? "rgba(244,67,54,0.10)" : "rgba(76,175,80,0.12)",
                                     color: isDiscount ? colorPalette.error : colorPalette.success,
                                     borderRadius: 2,
@@ -1203,9 +1764,9 @@ setData(zeroizeForHamza(json[0]));
               sx={{
                 bgcolor: "white",
                 borderTop: `1px solid ${colorPalette.primaryLighter}`,
-                p: 2,
+                p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
                 justifyContent: "space-between",
-                gap: 2,
+                gap: isPhone ? 0.5 : isTablet ? 0.75 : 2,
               }}
             >
               <Typography variant="caption" sx={{ color: colorPalette.textLight }}>

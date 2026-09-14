@@ -1,20 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
+  AppBar,
   Box,
   Button,
   CircularProgress,
+  GlobalStyles,
+  IconButton,
   Paper,
   Stack,
   TextField,
-  Typography
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Sidebar from "../components/Sidebar";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -23,7 +31,11 @@ const exportCsv = (rows, fileName) => {
   const headers = ["اسم المتدرب", "رقم الجوال", "رقم الهوية", "الدبلوم/الدورة", "المدينة"];
   const lines = [
     headers.map(quote).join(","),
-    ...rows.map((row) => [row.name, row.phoneNumber, row.nationalIdNumber, row.diploma, row.city].map(quote).join(","))
+    ...rows.map((row) =>
+      [row.name, row.phoneNumber, row.nationalIdNumber, row.diploma, row.city]
+        .map(quote)
+        .join(",")
+    )
   ];
 
   const blob = new Blob(["\uFEFF", lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
@@ -37,10 +49,34 @@ const exportCsv = (rows, fileName) => {
   URL.revokeObjectURL(url);
 };
 
-const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => {
-  const user = useMemo(() => JSON.parse(localStorage.getItem("user") || "{}"), []);
-  const userGuid = String(user?.guid || user?.Guid || "").trim();
+const shortName = (name) => {
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 2) return parts.join(" ");
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
 
+const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (isDesktop) setMobileSidebarOpen(false);
+  }, [isDesktop]);
+
+  const user = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const userGuid = String(user?.guid || user?.Guid || "").trim();
   const [fromDate, setFromDate] = useState(today());
   const [toDate, setToDate] = useState(today());
   const [rows, setRows] = useState([]);
@@ -61,9 +97,8 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
         headers: { Accept: "application/json" }
       });
 
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
-
+      const raw = await response.text();
+      const result = raw ? JSON.parse(raw) : {};
       if (!response.ok) throw new Error(result?.message || "تعذر تحميل البيانات");
       setRows(Array.isArray(result?.data?.rows) ? result.data.rows : []);
     } catch (ex) {
@@ -80,43 +115,173 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
   }, []);
 
   return (
-    <Box sx={{ minHeight: "100vh", background: "#f5f8f7", direction: "ltr" }}>
-      <Box
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width: `${SIDEBAR_WIDTH}px`,
-          zIndex: 1200,
-          overflowY: "auto",
-          background: "#fff"
-        }}
-      >
-        <Sidebar />
-      </Box>
+    <Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100vw", overflowX: "hidden", background: "#f5f8f7", direction: "ltr" }}>
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": { zIndex: "2100 !important" },
+            ".MuiDrawer-root .MuiBackdrop-root": { zIndex: "2099 !important" },
+            ".MuiDrawer-root .MuiDrawer-paper": { zIndex: "2101 !important" }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom: "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: { xs: "50px !important", sm: "56px !important" },
+              px: { xs: 0.75, sm: 1 },
+              gap: { xs: 0.7, sm: 0.9 }
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              aria-label={mobileSidebarOpen ? "إغلاق القائمة" : "فتح القائمة"}
+              aria-expanded={mobileSidebarOpen}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                flexShrink: 0,
+                color: "#fff",
+                background: "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow: "0 5px 14px rgba(5,117,70,.20)",
+                "&:hover": { background: "linear-gradient(135deg,#034d31,#057546)" }
+              }}
+            >
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22 } }} />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: { xs: "0.68rem", sm: "0.8rem" },
+                color: "#17372b",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              {title}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)} />
 
       <Box
         component="main"
         sx={{
-          marginLeft: `${SIDEBAR_WIDTH}px`,
-          minHeight: "100vh",
-          p: { xs: 1.5, md: 3 },
-          direction: "ltr"
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          ml: 0,
+          mt: { xs: "50px", sm: "56px" },
+          p: { xs: 0.55, sm: 0.8, md: 1 },
+          boxSizing: "border-box",
+          direction: "ltr",
+          overflowX: "hidden",
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            marginLeft: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 3
+          }
         }}
       >
-        <Paper elevation={0} sx={{ borderRadius: 4, border: "1px solid rgba(5,117,70,.13)", overflow: "hidden" }}>
-          <Box sx={{ p: 3, background: "linear-gradient(135deg,#fff,#edf8f3)", borderBottom: "1px solid rgba(5,117,70,.12)" }}>
-            <Typography variant="h5" sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#034d31" }}>
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: isPhone ? 1.6 : isTablet ? 2.1 : 4,
+            border: "1px solid rgba(5,117,70,.13)",
+            overflow: "hidden"
+          }}
+        >
+          <Box
+            sx={{
+              p: isPhone ? 0.7 : isTablet ? 1 : 3,
+              background: "linear-gradient(135deg,#fff,#edf8f3)",
+              borderBottom: "1px solid rgba(5,117,70,.12)"
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                color: "#034d31",
+                fontSize: isPhone ? "0.76rem" : isTablet ? "0.94rem" : undefined
+              }}
+            >
               {title}
             </Typography>
-            <Typography sx={{ mt: .5, fontFamily: "Cairo", color: "#60756d" }}>{subtitle}</Typography>
+
+            <Typography
+              sx={{
+                mt: isPhone ? 0.2 : 0.5,
+                fontFamily: "Cairo",
+                color: "#60756d",
+                fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : undefined,
+                display: isPhone ? "none" : "block"
+              }}
+            >
+              {subtitle}
+            </Typography>
           </Box>
 
-          <Box sx={{ p: 3 }}>
-            <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} sx={{ mb: 2.5 }}>
-              <TextField type="date" label="من تاريخ" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" />
-              <TextField type="date" label="إلى تاريخ" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" />
+          <Box sx={{ p: isPhone ? 0.65 : isTablet ? 0.9 : 3 }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: isCompact ? "repeat(2,minmax(0,1fr))" : "auto auto auto auto auto 1fr auto",
+                gap: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
+                mb: isPhone ? 0.8 : isTablet ? 1 : 2.5,
+                alignItems: "center",
+                "& .MuiInputLabel-root": {
+                  fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                  fontFamily: "Cairo"
+                },
+                "& .MuiInputBase-input": {
+                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                  py: isPhone ? 0.55 : isTablet ? 0.65 : undefined
+                },
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone ? 32 : isTablet ? 35 : undefined,
+                  borderRadius: isCompact ? 1.2 : undefined
+                },
+                "& .MuiButton-root": {
+                  minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  px: isPhone ? 0.65 : isTablet ? 0.9 : undefined
+                }
+              }}
+            >
+              <TextField type="date" label="من تاريخ" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth />
+              <TextField type="date" label="إلى تاريخ" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} size="small" fullWidth />
 
               <Button variant="contained" startIcon={<SearchIcon />} onClick={loadData} disabled={loading} sx={{ fontFamily: "Cairo", fontWeight: 800, background: "#057546" }}>
                 عرض
@@ -126,25 +291,121 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 تحديث
               </Button>
 
-              <Button variant="outlined" startIcon={<FileDownloadIcon />} onClick={() => exportCsv(rows, exportFileName)} disabled={loading || rows.length === 0} sx={{ fontFamily: "Cairo", fontWeight: 800, color: "#ae1e21", borderColor: "#ae1e21" }}>
+              <Button
+                variant="outlined"
+                startIcon={<FileDownloadIcon />}
+                onClick={() => exportCsv(rows, exportFileName)}
+                disabled={loading || rows.length === 0}
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  color: "#ae1e21",
+                  borderColor: "#ae1e21",
+                  gridColumn: isCompact ? "1 / -1" : undefined
+                }}
+              >
                 تصدير Excel
               </Button>
 
-              <Box sx={{ flexGrow: 1 }} />
-              <Box sx={{ px: 2, py: 1, borderRadius: 2, background: "#edf8f3", color: "#034d31", fontFamily: "Cairo", fontWeight: 900 }}>
+              {!isCompact && <Box sx={{ flexGrow: 1 }} />}
+
+              <Box
+                sx={{
+                  px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+                  py: isPhone ? 0.55 : isTablet ? 0.7 : 1,
+                  borderRadius: isCompact ? 1.2 : 2,
+                  background: "#edf8f3",
+                  color: "#034d31",
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+                  textAlign: "center",
+                  gridColumn: isCompact ? "1 / -1" : undefined
+                }}
+              >
                 العدد: {rows.length}
               </Box>
-            </Stack>
+            </Box>
 
-            {error && <Alert severity="error" sx={{ mb: 2, fontFamily: "Cairo" }}>{error}</Alert>}
+            {error && (
+              <Alert
+                severity="error"
+                sx={{
+                  mb: isPhone ? 0.65 : 2,
+                  fontFamily: "Cairo",
+                  fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                  py: isPhone ? 0.25 : undefined
+                }}
+              >
+                {error}
+              </Alert>
+            )}
 
-            <Box sx={{ border: "1px solid rgba(5,117,70,.13)", borderRadius: 3, overflow: "auto", minHeight: 360 }}>
+            <Box
+              sx={{
+                border: "1px solid rgba(5,117,70,.13)",
+                borderRadius: isCompact ? 1.4 : 3,
+                overflow: "hidden",
+                minHeight: isPhone ? 340 : isTablet ? 380 : 360
+              }}
+            >
               {loading ? (
-                <Box sx={{ minHeight: 360, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <CircularProgress />
+                <Box sx={{ minHeight: isPhone ? 340 : isTablet ? 380 : 360, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <CircularProgress size={isPhone ? 28 : isTablet ? 34 : 40} />
+                </Box>
+              ) : isCompact ? (
+                <Box sx={{ display: "grid", gap: isPhone ? 0.45 : 0.65, p: isPhone ? 0.45 : 0.65 }}>
+                  {rows.length === 0 ? (
+                    <Box sx={{ minHeight: 300, display: "grid", placeItems: "center", fontFamily: "Cairo", color: "#60756d", fontSize: isPhone ? "0.5rem" : "0.58rem" }}>
+                      لا توجد بيانات خلال الفترة المحددة
+                    </Box>
+                  ) : (
+                    rows.map((row, index) => (
+                      <Paper
+                        key={`${row.nationalIdNumber}-${index}`}
+                        variant="outlined"
+                        sx={{
+                          p: isPhone ? 0.6 : 0.8,
+                          borderRadius: isPhone ? 1.2 : 1.5,
+                          borderColor: "rgba(5,117,70,.12)",
+                          background: index % 2 === 0 ? "#fff" : "#fbfdfc"
+                        }}
+                      >
+                        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", columnGap: isPhone ? 0.55 : 0.75, rowGap: isPhone ? 0.5 : 0.65 }}>
+                          {[
+                            ["المتدرب", shortName(row.name) || "-"],
+                            ["الهوية", row.nationalIdNumber || "-"],
+                            ["الجوال", row.phoneNumber || "-"],
+                            ["المدينة", row.city || "-"]
+                          ].map(([label, value]) => (
+                            <Box key={label}>
+                              <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.38rem" : "0.45rem", color: "#7a8b84" }}>{label}</Typography>
+                              <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.5rem" : "0.58rem", color: "#1f2d3d" }}>{value}</Typography>
+                            </Box>
+                          ))}
+
+                          <Box sx={{ gridColumn: "1 / -1", pt: 0.2 }}>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.38rem" : "0.45rem", color: "#7a8b84" }}>الدبلوم / الدورة</Typography>
+                            <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.5rem" : "0.58rem", color: "#057546" }}>{row.diploma || "-"}</Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    ))
+                  )}
                 </Box>
               ) : (
-                <Box component="table" sx={{ width: "100%", minWidth: 850, borderCollapse: "collapse", direction: "ltr", "& th": { p: 1.5, background: "#057546", color: "#fff", fontFamily: "Cairo", fontWeight: 900, textAlign: "left" }, "& td": { p: 1.35, borderBottom: "1px solid rgba(5,117,70,.09)", fontFamily: "Cairo", textAlign: "left" }, "& tbody tr:hover": { background: "#f1faf6" } }}>
+                <Box
+                  component="table"
+                  sx={{
+                    width: "100%",
+                    minWidth: 850,
+                    borderCollapse: "collapse",
+                    direction: "ltr",
+                    "& th": { p: 1.5, background: "#057546", color: "#fff", fontFamily: "Cairo", fontWeight: 900, textAlign: "left" },
+                    "& td": { p: 1.35, borderBottom: "1px solid rgba(5,117,70,.09)", fontFamily: "Cairo", textAlign: "left" },
+                    "& tbody tr:hover": { background: "#f1faf6" }
+                  }}
+                >
                   <thead>
                     <tr>
                       <th>اسم المتدرب</th>

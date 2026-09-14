@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Backdrop, Box, Button, Checkbox, CircularProgress, Dialog, DialogActions,
-  DialogContent, DialogTitle, FormControlLabel, IconButton, Menu, MenuItem,
-  Paper, Stack, Tab, Tabs, TextField, Typography
+  AppBar, Backdrop, Box, Button, Checkbox, CircularProgress, Dialog, DialogActions,
+  DialogContent, DialogTitle, FormControlLabel, GlobalStyles, IconButton, Menu, MenuItem,
+  Paper, Stack, Tab, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
@@ -14,6 +14,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import DeselectIcon from "@mui/icons-material/Deselect";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Sidebar from "../components/Sidebar";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
@@ -24,6 +25,50 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5258";
 const ATTACHMENTS_BASE_URL = "https://sstli.com/arc-api/images_view.php";
 const ZERO_GUID = "00000000-0000-0000-0000-000000000000";
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
+
+const compactFilterSx = {
+  minWidth: 0,
+  width: "100%",
+
+  "& .MuiOutlinedInput-root": {
+    height: {
+      xs: 34,
+      sm: 38
+    },
+    borderRadius: 1.2
+  },
+
+  "& .MuiInputBase-input": {
+    fontFamily: "Cairo",
+    fontSize: {
+      xs: "0.48rem",
+      sm: "0.58rem"
+    }
+  },
+
+  "& .MuiSelect-select": {
+    display: "flex",
+    alignItems: "center",
+    py: "4px !important",
+    px: "8px !important"
+  },
+
+  "& .MuiInputLabel-root": {
+    fontFamily: "Cairo",
+    fontSize: {
+      xs: "0.38rem",
+      sm: "0.48rem"
+    }
+  },
+
+  "& .MuiSvgIcon-root": {
+    fontSize: {
+      xs: 16,
+      sm: 18
+    }
+  }
+};
 
 const unwrap = (value) => {
   if (value === null || value === undefined) return value;
@@ -75,6 +120,16 @@ const alertError = (text) => Swal.fire({
   confirmButtonText: "حسنًا", confirmButtonColor: "#ae1e21"
 });
 
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) return parts.join(" ");
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 const normalizeRow = (item, index) => ({
   ...item,
   id: `${pick(item, ["StudentLevelGuid", "Guid"], index + 1)}-${index}`,
@@ -105,6 +160,32 @@ const normalizeRow = (item, index) => ({
 });
 
 export default function CourseStudentsPage() {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(() => {
     try { return JSON.parse(localStorage.getItem("user") || "{}"); }
     catch { return {}; }
@@ -502,41 +583,279 @@ export default function CourseStudentsPage() {
     }
   };
 
-  const columns = useMemo(() => [
-    {
-      field: "actions", headerName: "الإجراءات", width: 52, sortable: false, filterable: false,
+  const columns = useMemo(() => {
+    const actionColumn = {
+      field: "actions",
+      headerName: isCompact ? "" : "الإجراءات",
+      width: isPhone ? 28 : isTablet ? 38 : 52,
+      minWidth: isPhone ? 28 : isTablet ? 38 : 52,
+      maxWidth: isPhone ? 28 : isTablet ? 38 : 52,
+      sortable: false,
+      filterable: false,
       renderCell: (params) => (
-        <IconButton size="small" onClick={(event) => {
-          setAnchorEl(event.currentTarget); setMenuRow(params.row);
-        }}>
-          <MoreVertIcon fontSize="small" />
+        <IconButton
+          size="small"
+          onClick={(event) => {
+            setAnchorEl(event.currentTarget);
+            setMenuRow(params.row);
+          }}
+          sx={{
+            width: isPhone ? 19 : isTablet ? 27 : 32,
+            height: isPhone ? 19 : isTablet ? 27 : 32,
+            p: 0,
+            color: "#057546",
+            backgroundColor: isCompact ? "#eef8f3" : undefined
+          }}
+        >
+          <MoreVertIcon
+            sx={{
+              fontSize: isPhone ? 12 : isTablet ? 16 : 18
+            }}
+          />
         </IconButton>
       )
-    },
-    { field: "code", headerName: "كود", minWidth: 90, flex: .7 },
-    { field: "studentName", headerName: "اسم الطالب", minWidth: 180, flex: 1.5 },
-    { field: "nationalId", headerName: "رقم الهوية", minWidth: 105, flex: .85 },
-    { field: "studentTel", headerName: "رقم الجوال", minWidth: 105, flex: .85 },
-    { field: "batchOrDate", headerName: "الدفعة/اليوم", minWidth: 105, flex: .9 },
-    { field: "programName", headerName: "البرنامج", minWidth: 95, flex: .8 },
-    { field: "courseName", headerName: "الدبلوم/الدورة", minWidth: 170, flex: 1.35 },
-    { field: "studyStatus", headerName: "حالة الدراسة", minWidth: 95, flex: .8 },
-    { field: "levelName", headerName: "المستوى", minWidth: 80, flex: .65 },
-    { field: "email", headerName: "الإيميل", minWidth: 145, flex: 1.1 },
-    { field: "notes", headerName: "ملاحظات", minWidth: 130, flex: 1 },
-    { field: "gender", headerName: "النوع", minWidth: 65, flex: .5 },
-    { field: "ahliTrainingStatus", headerName: "موقف التدريب الأهلي", minWidth: 130, flex: 1 }
-  ], []);
+    };
+
+    if (isPhone) {
+      return [
+        {
+          ...actionColumn,
+          width: 24,
+          minWidth: 24,
+          maxWidth: 24
+        },
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          width: 66,
+          minWidth: 66,
+          maxWidth: 66,
+          renderCell: (params) =>
+            shortStudentName(params.row.studentName)
+        },
+        {
+          field: "nationalId",
+          headerName: "الهوية",
+          width: 54,
+          minWidth: 54,
+          maxWidth: 54
+        },
+        {
+          field: "courseName",
+          headerName: "الدورة",
+          width: 76,
+          minWidth: 76,
+          maxWidth: 76
+        },
+        {
+          field: "studyStatus",
+          headerName: "الحالة",
+          width: 46,
+          minWidth: 46,
+          maxWidth: 46
+        }
+      ];
+    }
+
+    if (isTablet) {
+      return [
+        actionColumn,
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          flex: 1.05,
+          minWidth: 105,
+          renderCell: (params) =>
+            shortStudentName(params.row.studentName)
+        },
+        {
+          field: "nationalId",
+          headerName: "الهوية",
+          flex: 0.82,
+          minWidth: 85
+        },
+        {
+          field: "studentTel",
+          headerName: "الجوال",
+          flex: 0.8,
+          minWidth: 82
+        },
+        {
+          field: "batchOrDate",
+          headerName: "الدفعة/اليوم",
+          flex: 0.82,
+          minWidth: 88
+        },
+        {
+          field: "courseName",
+          headerName: "الدورة",
+          flex: 1.05,
+          minWidth: 110
+        },
+        {
+          field: "studyStatus",
+          headerName: "الحالة",
+          flex: 0.78,
+          minWidth: 82
+        },
+        {
+          field: "gender",
+          headerName: "النوع",
+          flex: 0.5,
+          minWidth: 58
+        }
+      ];
+    }
+
+    return [
+      actionColumn,
+      { field: "code", headerName: "كود", minWidth: 90, flex: .7 },
+      { field: "studentName", headerName: "اسم الطالب", minWidth: 180, flex: 1.5 },
+      { field: "nationalId", headerName: "رقم الهوية", minWidth: 105, flex: .85 },
+      { field: "studentTel", headerName: "رقم الجوال", minWidth: 105, flex: .85 },
+      { field: "batchOrDate", headerName: "الدفعة/اليوم", minWidth: 105, flex: .9 },
+      { field: "programName", headerName: "البرنامج", minWidth: 95, flex: .8 },
+      { field: "courseName", headerName: "الدبلوم/الدورة", minWidth: 170, flex: 1.35 },
+      { field: "studyStatus", headerName: "حالة الدراسة", minWidth: 95, flex: .8 },
+      { field: "levelName", headerName: "المستوى", minWidth: 80, flex: .65 },
+      { field: "email", headerName: "الإيميل", minWidth: 145, flex: 1.1 },
+      { field: "notes", headerName: "ملاحظات", minWidth: 130, flex: 1 },
+      { field: "gender", headerName: "النوع", minWidth: 65, flex: .5 },
+      { field: "ahliTrainingStatus", headerName: "موقف التدريب الأهلي", minWidth: 130, flex: 1 }
+    ];
+  }, [isPhone, isTablet, isCompact]);
 
   return (
-    <Box sx={{ minHeight: "100vh", direction: "ltr", bgcolor: "#f6faf8" }}>
-      <Sidebar />
+    <Box
+      sx={{
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        direction: "ltr",
+        bgcolor: "#f6faf8"
+      }}
+    >
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            },
+            ".swal2-popup": {
+              width: isPhone
+                ? "88vw !important"
+                : isTablet
+                  ? "540px !important"
+                  : undefined
+            },
+            ".swal2-title": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.82rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+            ".swal2-html-container, .swal2-input-label": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.56rem !important"
+                : isTablet
+                  ? "0.68rem !important"
+                  : undefined
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: { xs: 0.75, sm: 1 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={() =>
+                setMobileSidebarOpen(
+                  (current) => !current
+                )
+              }
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)"
+              }}
+            >
+              <MenuRoundedIcon />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.67rem",
+                  sm: "0.79rem"
+                },
+                color: "#17372b",
+                textAlign: "left"
+              }}
+            >
+              قائمة طلاب الدورات
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      {isDesktop ? (
+        <Sidebar />
+      ) : (
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }
+        />
+      )}
+
+      {isDesktop ? (
       <Box component="main" sx={{ ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` }, p: 1 }}>
         <Paper elevation={0} sx={{ p: 1.2, borderRadius: 3, border: "1px solid #dbece4" }}>
           <Stack direction={{ xs: "column", lg: "row" }} spacing={1} alignItems="center" mb={1}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
               <SchoolIcon sx={{ color: "#057546", fontSize: 34 }} />
-              <Box dir="ltr">
+              <Box dir="rtl">
                 <Typography fontWeight={900} fontSize={20}>قائمة طلاب الدورات</Typography>
                 <Typography color="text.secondary" fontSize={12}>
                   عرض البيانات والنقل وتغيير الحالة وإنهاء الدراسة
@@ -632,8 +951,546 @@ export default function CourseStudentsPage() {
           </Box>
         </Paper>
       </Box>
+      ) : (
+      <Box
+        component="main"
+        sx={{
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
+          px: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
+          },
+          py: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
+          },
+          boxSizing: "border-box",
+          overflowX: "hidden",
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width:
+              `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 1
+          }
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: isPhone ? 0.7 : isTablet ? 0.9 : 1.2,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
+            border: "1px solid #dbece4"
+          }}
+        >
+          <Stack
+            direction="row"
+            spacing={isPhone ? 0.55 : isTablet ? 0.7 : 1}
+            alignItems="center"
+            mb={isPhone ? 0.7 : 1}
+            sx={{
+              flexWrap: isCompact ? "wrap" : "nowrap",
+              rowGap: isPhone ? 0.6 : isTablet ? 0.75 : 0
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0.7}
+              sx={{
+                flex: 1,
+                ...(isCompact && {
+                  flexBasis: "100%"
+                })
+              }}
+            >
+              <SchoolIcon
+                sx={{
+                  color: "#057546",
+                  fontSize: isPhone ? 20 : isTablet ? 24 : 34
+                }}
+              />
+              <Box dir="rtl">
+                <Typography
+                  fontWeight={900}
+                  fontSize={
+                    isPhone
+                      ? 11
+                      : isTablet
+                        ? 14
+                        : 20
+                  }
+                >
+                  قائمة طلاب الدورات
+                </Typography>
+                <Typography
+                  color="text.secondary"
+                  fontSize={
+                    isPhone
+                      ? 7
+                      : isTablet
+                        ? 9
+                        : 12
+                  }
+                  sx={{
+                    display: isPhone ? "none" : "block"
+                  }}
+                >
+                  عرض البيانات والنقل وتغيير الحالة وإنهاء الدراسة
+                </Typography>
+              </Box>
+            </Stack>
+
+            <Box
+              sx={{
+                width: "100%",
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "repeat(2,minmax(0,1fr))",
+                  sm: "repeat(3,minmax(0,1fr))"
+                },
+                gap: {
+                  xs: 0.55,
+                  sm: 0.7
+                },
+                flexBasis: isCompact ? "100%" : "auto",
+                flexGrow: isCompact ? 1 : 0,
+                minWidth: 0
+              }}
+            >
+              <TextField
+                select
+                size="small"
+                label="الفرع"
+                value={branchGuid}
+                onChange={(event) =>
+                  setBranchGuid(event.target.value)
+                }
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        maxHeight: isPhone
+                          ? 250
+                          : isTablet
+                            ? 330
+                            : 440,
+
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone
+                            ? 28
+                            : isTablet
+                              ? 32
+                              : 38,
+                          py: isPhone
+                            ? 0.25
+                            : isTablet
+                              ? 0.35
+                              : 0.5,
+                          px: isPhone
+                            ? 0.8
+                            : isTablet
+                              ? 1
+                              : 1.25,
+                          fontFamily: "Cairo",
+                          fontSize: isPhone
+                            ? "0.48rem"
+                            : isTablet
+                              ? "0.58rem"
+                              : "0.78rem",
+                          lineHeight: 1.3,
+                          whiteSpace: "normal"
+                        }
+                      }
+                    }
+                  }
+                }}
+                sx={{
+                  ...compactFilterSx,
+                  gridColumn: {
+                    xs: "1 / -1",
+                    sm: "auto"
+                  }
+                }}
+              >
+                {branches.map((item) => (
+                  <MenuItem
+                    key={item.guid}
+                    value={item.guid}
+                  >
+                    {item.branchName}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                select
+                size="small"
+                label="الدفعة"
+                value={batchKey}
+                onChange={(event) =>
+                  setBatchKey(event.target.value)
+                }
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        maxHeight: isPhone
+                          ? 250
+                          : isTablet
+                            ? 330
+                            : 440,
+
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone
+                            ? 28
+                            : isTablet
+                              ? 32
+                              : 38,
+                          py: isPhone
+                            ? 0.25
+                            : isTablet
+                              ? 0.35
+                              : 0.5,
+                          px: isPhone
+                            ? 0.8
+                            : isTablet
+                              ? 1
+                              : 1.25,
+                          fontFamily: "Cairo",
+                          fontSize: isPhone
+                            ? "0.48rem"
+                            : isTablet
+                              ? "0.58rem"
+                              : "0.78rem",
+                          lineHeight: 1.3,
+                          whiteSpace: "normal"
+                        }
+                      }
+                    }
+                  }
+                }}
+                sx={compactFilterSx}
+              >
+                {batches.map((item) => (
+                  <MenuItem
+                    key={item.key}
+                    value={item.key}
+                  >
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                select
+                size="small"
+                label="الدورة"
+                value={courseGuid}
+                onChange={(event) =>
+                  setCourseGuid(event.target.value)
+                }
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        maxHeight: isPhone
+                          ? 250
+                          : isTablet
+                            ? 330
+                            : 440,
+
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone
+                            ? 28
+                            : isTablet
+                              ? 32
+                              : 38,
+                          py: isPhone
+                            ? 0.25
+                            : isTablet
+                              ? 0.35
+                              : 0.5,
+                          px: isPhone
+                            ? 0.8
+                            : isTablet
+                              ? 1
+                              : 1.25,
+                          fontFamily: "Cairo",
+                          fontSize: isPhone
+                            ? "0.48rem"
+                            : isTablet
+                              ? "0.58rem"
+                              : "0.78rem",
+                          lineHeight: 1.3,
+                          whiteSpace: "normal"
+                        }
+                      }
+                    }
+                  }
+                }}
+                sx={compactFilterSx}
+              >
+                {courses.map((item) => (
+                  <MenuItem
+                    key={item.guid}
+                    value={item.guid}
+                  >
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+
+            <Button
+              size="small"
+              startIcon={<RefreshIcon />}
+              onClick={loadStudents}
+              sx={{
+                flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
+                minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isPhone
+                  ? "0.48rem"
+                  : isTablet
+                    ? "0.58rem"
+                    : undefined
+              }}
+            >
+              تحديث
+            </Button>
+            <Button
+              size="small"
+              startIcon={<FileDownloadIcon />}
+              onClick={exportXlsx}
+              sx={{
+                flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
+                minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isPhone
+                  ? "0.48rem"
+                  : isTablet
+                    ? "0.58rem"
+                    : undefined
+              }}
+            >
+              تصدير Excel
+            </Button>
+          </Stack>
+
+          <Tabs
+            value={regType}
+            onChange={(_, value) => setRegType(value)}
+            variant="fullWidth"
+            sx={{
+              mb: .5,
+              minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+              "& .MuiTab-root": {
+                minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+                minWidth: 0,
+                px: isPhone ? 0.5 : isTablet ? 0.8 : 1.2,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: isPhone
+                  ? "0.44rem"
+                  : isTablet
+                    ? "0.54rem"
+                    : undefined
+              }
+            }}
+          >
+            <Tab value={1} label="الدورات التأهيلية" />
+            <Tab value={2} label="الدورات التطويرية" />
+          </Tabs>
+
+          <Stack
+            direction="row"
+            spacing={isPhone ? 0.35 : isTablet ? 0.5 : 1}
+            mb={.5}
+            dir="ltr"
+            sx={{
+              flexWrap: isCompact ? "wrap" : "nowrap",
+              rowGap: isPhone ? 0.4 : 0
+            }}
+          >
+            <Button
+              size="small"
+              startIcon={<SelectAllIcon />}
+              onClick={() => setSelectionModel(rows.map((x) => x.id))}
+              sx={{
+                fontSize: isPhone ? "0.38rem" : isTablet ? "0.48rem" : undefined,
+                minWidth: 0
+              }}
+            >
+              تحديد الكل
+            </Button>
+            <Button
+              size="small"
+              startIcon={<DeselectIcon />}
+              onClick={() => setSelectionModel([])}
+              sx={{
+                fontSize: isPhone ? "0.38rem" : isTablet ? "0.48rem" : undefined,
+                minWidth: 0
+              }}
+            >
+              إلغاء التحديد
+            </Button>
+            <Button
+              startIcon={<DriveFileMoveIcon />}
+              disabled={!selectedRows.length}
+              onClick={() => openTransferPassword(selectedRows)}
+              size="small"
+              sx={{
+                fontSize: isPhone ? "0.38rem" : isTablet ? "0.48rem" : undefined,
+                minWidth: 0
+              }}
+            >
+              نقل المحدد ({selectedRows.length})
+            </Button>
+            <Typography
+              sx={{
+                ml: isCompact ? 0 : "auto",
+                flexBasis: isPhone ? "100%" : undefined,
+                fontWeight: 900,
+                color: "#ae1e21",
+                fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : undefined,
+                textAlign: isPhone ? "center" : "left"
+              }}
+            >
+              عدد الطلاب: {rows.length}
+            </Typography>
+          </Stack>
+
+          <Box
+            sx={{
+              height: isPhone
+                ? "calc(100dvh - 300px)"
+                : isTablet
+                  ? "calc(100dvh - 270px)"
+                  : "calc(100vh - 225px)",
+              minHeight: isPhone ? 360 : isTablet ? 430 : 520
+            }}
+          >
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              loading={loading}
+              checkboxSelection
+              disableRowSelectionOnClick
+              rowSelectionModel={selectionModel}
+              onRowSelectionModelChange={(value) => setSelectionModel(Array.from(value || []))}
+              slots={{
+                toolbar: isPhone ? undefined : GridToolbar
+              }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: !isPhone
+                }
+              }}
+              rowHeight={isPhone ? 29 : isTablet ? 38 : 52}
+              columnHeaderHeight={isPhone ? 28 : isTablet ? 36 : 52}
+              pageSizeOptions={[15, 25, 50, 100]}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              sx={{
+                direction: "ltr",
+                border: 0,
+                "& .MuiDataGrid-columnHeaders": {
+                  bgcolor: "#edf8f3",
+                  fontWeight: 900
+                },
+                "& .MuiDataGrid-columnHeader": {
+                  px: isPhone ? 0.08 : isTablet ? 0.3 : 0.7
+                },
+                "& .MuiDataGrid-columnHeaderTitle": {
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: isPhone
+                    ? "0.29rem"
+                    : isTablet
+                      ? "0.42rem"
+                      : undefined
+                },
+                "& .MuiDataGrid-row:nth-of-type(odd)": {
+                  bgcolor: "#fff4ea"
+                },
+                "& .MuiDataGrid-cell": {
+                  fontWeight: 700,
+                  fontSize: isPhone
+                    ? "0.29rem"
+                    : isTablet
+                      ? "0.42rem"
+                      : 12.5,
+                  px: isPhone ? 0.08 : isTablet ? 0.3 : 0.7
+                },
+                "& .MuiDataGrid-columnSeparator": {
+                  display: isCompact ? "none" : undefined
+                },
+                "& .MuiDataGrid-toolbarContainer": {
+                  display: isPhone ? "none" : "flex",
+                  p: isTablet ? 0.4 : 1,
+                  gap: isTablet ? 0.4 : 1
+                },
+                "& .MuiDataGrid-scrollbar--horizontal": {
+                  display: isCompact ? "none" : undefined
+                },
+                "& .MuiDataGrid-virtualScroller": {
+                  overflowX: isCompact ? "hidden !important" : undefined
+                },
+                "& .MuiDataGrid-main": {
+                  overflowX: isCompact ? "hidden !important" : undefined
+                },
+                "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox": {
+                  width: isPhone ? "24px !important" : isTablet ? "34px !important" : undefined,
+                  minWidth: isPhone ? "24px !important" : isTablet ? "34px !important" : undefined,
+                  maxWidth: isPhone ? "24px !important" : isTablet ? "34px !important" : undefined,
+                  px: "0 !important"
+                },
+                "& .MuiCheckbox-root": {
+                  p: isPhone ? "1px" : isTablet ? "2px" : undefined
+                },
+                "& .MuiCheckbox-root .MuiSvgIcon-root": {
+                  fontSize: isPhone ? 13 : isTablet ? 17 : undefined
+                }
+              }}
+            />
+          </Box>
+        </Paper>
+      </Box>
+      )}
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={closeMenu}
+        PaperProps={{
+          sx: {
+            minWidth: isPhone ? 150 : isTablet ? 175 : 210,
+            "& .MuiMenuItem-root": {
+              minHeight: isPhone ? 29 : isTablet ? 33 : 40,
+              fontFamily: "Cairo",
+              fontSize: isPhone
+                ? "0.44rem"
+                : isTablet
+                  ? "0.52rem"
+                  : undefined
+            }
+          }
+        }}
+      >
         <MenuItem onClick={() => { setEditStudent(menuRow); setEditOpen(true); closeMenu(); }}>
           عرض البيانات
         </MenuItem>
@@ -682,7 +1539,14 @@ export default function CourseStudentsPage() {
         </MenuItem>
       </Menu>
 
-      <Dialog open={notesOpen} onClose={() => setNotesOpen(false)} fullWidth maxWidth="sm" dir="rtl">
+      <Dialog
+        open={notesOpen}
+        onClose={() => setNotesOpen(false)}
+        fullWidth
+        fullScreen={isPhone}
+        maxWidth="sm"
+        dir="rtl"
+      >
         <DialogTitle>إضافة ملاحظة</DialogTitle>
         <DialogContent>
           <TextField
@@ -732,7 +1596,14 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={statusOpen} onClose={() => setStatusOpen(false)} fullWidth maxWidth="sm" dir="rtl">
+      <Dialog
+        open={statusOpen}
+        onClose={() => setStatusOpen(false)}
+        fullWidth
+        fullScreen={isPhone}
+        maxWidth="sm"
+        dir="rtl"
+      >
         <DialogTitle>تغيير حالة الطالب</DialogTitle>
         <DialogContent>
           <TextField select fullWidth label="حالة التسجيل" value={statusGuid}
@@ -765,7 +1636,14 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={finishOpen} onClose={() => setFinishOpen(false)} fullWidth maxWidth="sm" dir="rtl">
+      <Dialog
+        open={finishOpen}
+        onClose={() => setFinishOpen(false)}
+        fullWidth
+        fullScreen={isPhone}
+        maxWidth="sm"
+        dir="rtl"
+      >
         <DialogTitle>إنهاء دراسة طالب</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5} mt={1}>
@@ -813,7 +1691,14 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={ahliOpen} onClose={() => setAhliOpen(false)} fullWidth maxWidth="sm" dir="rtl">
+      <Dialog
+        open={ahliOpen}
+        onClose={() => setAhliOpen(false)}
+        fullWidth
+        fullScreen={isPhone}
+        maxWidth="sm"
+        dir="rtl"
+      >
         <DialogTitle>موقف الطالب من التدريب الأهلي</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5} mt={1}>
@@ -862,7 +1747,19 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={passwordOpen} onClose={() => setPasswordOpen(false)} fullWidth maxWidth="xs" dir="rtl">
+      <Dialog
+        open={passwordOpen}
+        onClose={() => setPasswordOpen(false)}
+        fullWidth
+        maxWidth="xs"
+        dir="rtl"
+        PaperProps={{
+          sx: {
+            width: isPhone ? "88vw" : undefined,
+            m: isPhone ? 1 : undefined
+          }
+        }}
+      >
         <DialogTitle>التحقق من كلمة المرور</DialogTitle>
         <DialogContent>
           <TextField
@@ -878,7 +1775,14 @@ export default function CourseStudentsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={transferOpen} onClose={() => setTransferOpen(false)} fullWidth maxWidth="md" dir="ltr">
+      <Dialog
+        open={transferOpen}
+        onClose={() => setTransferOpen(false)}
+        fullWidth
+        fullScreen={isPhone}
+        maxWidth="md"
+        dir="ltr"
+      >
         <DialogTitle>
           {pendingTransferRows.length > 1
             ? `نقل كل الطلاب المحددين (${pendingTransferRows.length})`

@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import {
   Alert,
+  AppBar,
   Box,
   Button,
   Chip,
@@ -22,8 +25,11 @@ import {
   Tab,
   Tabs,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -44,13 +50,16 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import StudyApprovalDialog from "./components/StudyApprovalDialog";
 import Swal from "sweetalert2";
 import Sidebar from "./components/Sidebar";
 import instituteLogo from "./images/logo.jpg";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 const API_BASE_URL = "http://localhost:5258";
 
 const primaryColor = "#057546";
@@ -112,6 +121,230 @@ const tabs = [
   { key: "approvals", label: "الموافقات الدراسية", icon: <VerifiedIcon /> },
   { key: "other-institutes", label: "تسجيلات في معاهد أخرى", icon: <SchoolIcon /> }
 ];
+
+
+const exportHtmlDocumentToPdf = async ({
+  html,
+  fileName = "document.pdf",
+  selector = ".sheet, .page, main, body",
+  scale = 2
+}) => {
+  let iframe = null;
+
+  try {
+    iframe = document.createElement("iframe");
+
+    Object.assign(iframe.style, {
+      position: "fixed",
+      left: "-10000px",
+      top: "0",
+      width: "820px",
+      height: "1180px",
+      border: "0",
+      opacity: "0",
+      pointerEvents: "none"
+    });
+
+    iframe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iframe);
+
+    const safeHtml = String(html || "")
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(
+        /<button[^>]*class=["'][^"']*(?:print-btn|no-print)[^"']*["'][^>]*>[\s\S]*?<\/button>/gi,
+        ""
+      );
+
+    const loaded = new Promise((resolve) => {
+      iframe.onload = () => resolve();
+    });
+
+    iframe.srcdoc = safeHtml;
+    await loaded;
+
+    const doc = iframe.contentDocument;
+
+    if (!doc) {
+      throw new Error("تعذر تجهيز محتوى ملف PDF");
+    }
+
+    if (doc.fonts?.ready) {
+      try {
+        await doc.fonts.ready;
+      } catch {}
+    }
+
+    const images = Array.from(doc.images || []);
+
+    await Promise.all(
+      images.map(
+        (image) =>
+          new Promise((resolve) => {
+            if (
+              image.complete &&
+              image.naturalWidth > 0
+            ) {
+              resolve();
+              return;
+            }
+
+            const finish = () => resolve();
+
+            image.addEventListener(
+              "load",
+              finish,
+              { once: true }
+            );
+
+            image.addEventListener(
+              "error",
+              finish,
+              { once: true }
+            );
+
+            window.setTimeout(finish, 5000);
+          })
+      )
+    );
+
+    const target =
+      doc.querySelector(selector) ||
+      doc.body;
+
+    if (!target) {
+      throw new Error("تعذر العثور على نموذج التصدير");
+    }
+
+    target.style.boxShadow = "none";
+    target.style.margin = "0 auto";
+
+    const canvas = await html2canvas(target, {
+      scale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: "#ffffff",
+      logging: false,
+      imageTimeout: 7000,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: Math.max(
+        target.scrollWidth,
+        794
+      ),
+      windowHeight: Math.max(
+        target.scrollHeight,
+        1123
+      )
+    });
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    const canvasRatio =
+      canvas.height / canvas.width;
+
+    const renderedHeight =
+      pageWidth * canvasRatio;
+
+    if (renderedHeight <= pageHeight) {
+      pdf.addImage(
+        canvas.toDataURL("image/jpeg", 0.96),
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        renderedHeight,
+        undefined,
+        "FAST"
+      );
+    } else {
+      const pagePixelHeight =
+        Math.floor(
+          canvas.width *
+            (pageHeight / pageWidth)
+        );
+
+      let offsetY = 0;
+      let pageIndex = 0;
+
+      while (offsetY < canvas.height) {
+        const sliceHeight = Math.min(
+          pagePixelHeight,
+          canvas.height - offsetY
+        );
+
+        const pageCanvas =
+          document.createElement("canvas");
+
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+
+        const context =
+          pageCanvas.getContext("2d");
+
+        context.drawImage(
+          canvas,
+          0,
+          offsetY,
+          canvas.width,
+          sliceHeight,
+          0,
+          0,
+          canvas.width,
+          sliceHeight
+        );
+
+        if (pageIndex > 0) {
+          pdf.addPage("a4", "portrait");
+        }
+
+        const sliceRenderedHeight =
+          pageWidth *
+          (sliceHeight / canvas.width);
+
+        pdf.addImage(
+          pageCanvas.toDataURL(
+            "image/jpeg",
+            0.96
+          ),
+          "JPEG",
+          0,
+          0,
+          pageWidth,
+          sliceRenderedHeight,
+          undefined,
+          "FAST"
+        );
+
+        offsetY += sliceHeight;
+        pageIndex += 1;
+      }
+    }
+
+    pdf.save(
+      fileName.toLowerCase().endsWith(".pdf")
+        ? fileName
+        : `${fileName}.pdf`
+    );
+  } finally {
+    if (
+      iframe &&
+      iframe.parentNode
+    ) {
+      iframe.parentNode.removeChild(
+        iframe
+      );
+    }
+  }
+};
+
 
 const money = (value) => {
   const number = Number(value || 0);
@@ -186,24 +419,24 @@ const showSuccess = (text) =>
   });
 
 function GenericItemsTable({ title, rows }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
   if (!Array.isArray(rows) || rows.length === 0) return null;
 
   const hiddenColumns = new Set([
-    "Type",
-    "type",
-    "Type_",
-    "type_",
-    "DiplomType",
-    "diplomType"
+    "Guid", "guid", "ID", "Id", "id",
+    "RegDocGuid", "regDocGuid",
+    "DiplomGuid", "diplomGuid"
   ]);
 
   const columnNames = {
-    Code: "الكود",
-    code: "الكود",
-    DiplomName: "اسم الدبلوم / الدورة",
-    diplomName: "اسم الدبلوم / الدورة",
-    CourseName: "اسم الدورة",
-    courseName: "اسم الدورة",
+    DiplomName: "الدبلوم / الدورة",
+    diplomName: "الدبلوم / الدورة",
+    CourseName: "الدورة",
+    courseName: "الدورة",
     Cost: "التكلفة",
     cost: "التكلفة",
     Tax: "الضريبة",
@@ -225,41 +458,76 @@ function GenericItemsTable({ title, rows }) {
     FessName: "البيان",
     FeesName: "البيان",
     FeeName: "البيان",
-    PackageName: "اسم الباكدج",
-    packageName: "اسم الباكدج",
+    PackageName: "الباكدج",
+    packageName: "الباكدج",
     Amount: "المبلغ",
     amount: "المبلغ",
     Price: "السعر",
     price: "السعر"
   };
 
-  const keys = Object.keys(rows[0] || {})
+  const allKeys = Object.keys(rows[0] || {})
     .filter((key) => !/guid/i.test(key))
-    .filter((key) => !hiddenColumns.has(key))
-    .slice(0, 8);
+    .filter((key) => !hiddenColumns.has(key));
+
+  const preferredKeys = [
+    "DiplomName", "diplomName",
+    "CourseName", "courseName",
+    "Name", "name",
+    "FessName", "FeesName", "FeeName",
+    "PackageName", "packageName",
+    "Quantity", "quantity", "Qty", "qty",
+    "Cost", "cost",
+    "SubTotal", "subTotal",
+    "Amount", "amount"
+  ];
+
+  const compactKeys = preferredKeys
+    .filter((key) => allKeys.includes(key))
+    .filter((key, index, array) => array.indexOf(key) === index)
+    .slice(0, isPhone ? 4 : 5);
+
+  const keys = isCompact
+    ? (compactKeys.length ? compactKeys : allKeys.slice(0, isPhone ? 4 : 5))
+    : allKeys.slice(0, 8);
 
   return (
-    <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 3 }}>
-      <Typography sx={{ fontWeight: 950, mb: 1, color: primaryColor }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: isPhone ? 0.4 : isTablet ? 0.65 : 1.5,
+        borderRadius: isCompact ? 1.4 : 3
+      }}
+    >
+      <Typography
+        sx={{
+          fontWeight: 950,
+          mb: isPhone ? 0.35 : isTablet ? 0.5 : 1,
+          color: primaryColor,
+          fontSize: isPhone ? "0.48rem" : isTablet ? "0.58rem" : undefined
+        }}
+      >
         {title}
       </Typography>
 
-      <Box sx={{ overflowX: "auto" }}>
+      <Box sx={{ overflowX: "auto", width: "100%" }}>
         <Box
           component="table"
           sx={{
             width: "100%",
+            minWidth: isPhone ? 300 : isTablet ? 420 : undefined,
             borderCollapse: "collapse",
             "& th, & td": {
               border: "1px solid #ddd",
-              px: 1,
-              py: 0.8,
+              px: isPhone ? 0.25 : isTablet ? 0.4 : 1,
+              py: isPhone ? 0.35 : isTablet ? 0.5 : 0.8,
               whiteSpace: "nowrap",
-              textAlign: "center"
+              textAlign: "center",
+              fontSize: isPhone ? "0.39rem" : isTablet ? "0.48rem" : undefined
             },
             "& th": {
               backgroundColor: "#edf8f2",
-              fontWeight: 900
+              fontWeight: 950
             }
           }}
         >
@@ -270,6 +538,7 @@ function GenericItemsTable({ title, rows }) {
               ))}
             </tr>
           </thead>
+
           <tbody>
             {rows.map((row, index) => (
               <tr key={index}>
@@ -286,13 +555,70 @@ function GenericItemsTable({ title, rows }) {
 }
 
 function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
+  const salesNotes =
+    data?.salesNotes ||
+    data?.SalesNotes ||
+    data?.notes ||
+    data?.Notes ||
+    "";
+
+  const orderStatus =
+    data?.orderStatus ||
+    data?.OrderStatus ||
+    data?.status ||
+    data?.Status ||
+    "-";
+
+  const compactFieldSx = {
+    "& .MuiInputLabel-root": {
+      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+    },
+    "& .MuiInputBase-input": {
+      fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+      fontWeight: 800,
+      py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
+    },
+    "& .MuiOutlinedInput-root": {
+      minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+      borderRadius: isCompact ? 1.1 : undefined
+    }
+  };
+
   return (
     <Dialog
       open={open}
       onClose={loading ? undefined : onClose}
       maxWidth="lg"
       fullWidth
+      fullScreen={isPhone}
       dir="rtl"
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
+      PaperProps={{
+        sx: {
+          width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "1000px" : undefined,
+          height: isPhone ? "calc(100dvh - 58px)" : isTablet ? "calc(100dvh - 72px)" : "88vh",
+          maxHeight: isPhone ? "calc(100dvh - 58px)" : isTablet ? "calc(100dvh - 72px)" : "88vh",
+          minHeight: 0,
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
+        }
+      }}
     >
       <DialogTitle
         sx={{
@@ -300,47 +626,118 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
           color: primaryColor,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          px: isPhone ? 0.7 : isTablet ? 1 : 2,
+          py: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
+          flexShrink: 0
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <ReceiptLongIcon />
-          <span>عرض طلب الالتحاق رقم {data?.code || ""}</span>
+        <Stack direction="row" spacing={isCompact ? 0.35 : 1} alignItems="center" minWidth={0}>
+          <ReceiptLongIcon sx={{ fontSize: isPhone ? 15 : isTablet ? 18 : undefined }} />
+          <Typography
+            sx={{
+              fontWeight: 950,
+              fontSize: isPhone ? "0.58rem" : isTablet ? "0.7rem" : "1.1rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            طلب الالتحاق رقم {data?.code || ""}
+          </Typography>
         </Stack>
 
-        <IconButton onClick={onClose} disabled={loading}>
-          <CloseIcon />
+        <IconButton
+          onClick={onClose}
+          disabled={loading}
+          sx={{
+            width: isPhone ? 27 : isTablet ? 31 : 40,
+            height: isPhone ? 27 : isTablet ? 31 : 40
+          }}
+        >
+          <CloseIcon sx={{ fontSize: isPhone ? 15 : isTablet ? 18 : undefined }} />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 2.5 }}>
+      <DialogContent
+        dividers
+        sx={{
+          px: isPhone ? 0.7 : isTablet ? 1 : 2.5,
+          py: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto"
+        }}
+      >
         {loading ? (
-          <Stack alignItems="center" spacing={2} sx={{ py: 8 }}>
-            <CircularProgress />
-            <Typography>جاري تحميل بيانات الطلب...</Typography>
+          <Stack alignItems="center" spacing={1} sx={{ py: isCompact ? 4 : 8 }}>
+            <CircularProgress size={isPhone ? 24 : isTablet ? 30 : 40} />
+            <Typography sx={{ fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined }}>
+              جاري تحميل بيانات الطلب...
+            </Typography>
           </Stack>
         ) : error ? (
-          <Alert severity="error">{error}</Alert>
+          <Alert severity="error" sx={{ fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined }}>
+            {error}
+          </Alert>
         ) : data ? (
-          <Stack spacing={2}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
-              <Grid container spacing={1.5}>
+          <Stack spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
+                borderRadius: isCompact ? 1.4 : 3
+              }}
+            >
+              <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.5}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="اسم الطالب"
+                    value={data.studentName || ""}
+                    InputProps={{ readOnly: true }}
+                    sx={compactFieldSx}
+                  />
+                </Grid>
+
+                <Grid item xs={6} sm={3} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="رقم الهوية"
+                    value={data.nationalId || ""}
+                    InputProps={{ readOnly: true }}
+                    sx={compactFieldSx}
+                  />
+                </Grid>
+
+                <Grid item xs={6} sm={3} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="حالة الطلب"
+                    value={orderStatus}
+                    InputProps={{ readOnly: true }}
+                    sx={compactFieldSx}
+                  />
+                </Grid>
+
                 {[
-                  ["اسم الطالب", data.studentName],
-                  ["رقم الهوية", data.nationalId],
                   ["رقم الجوال", data.studentTel],
                   ["مسؤول التسجيل", data.sellerName],
                   ["الفرع", data.branchName],
                   ["الدفعة", data.batchName],
                   ["الباكدج", data.packageName]
                 ].map(([label, value]) => (
-                  <Grid item xs={12} md={4} key={label}>
+                  <Grid item xs={6} sm={6} md={4} key={label}>
                     <TextField
                       fullWidth
                       size="small"
                       label={label}
                       value={value || ""}
                       InputProps={{ readOnly: true }}
+                      sx={compactFieldSx}
                     />
                   </Grid>
                 ))}
@@ -349,31 +746,48 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
                   <TextField
                     fullWidth
                     multiline
-                    minRows={2}
-                    label="الملاحظات"
-                    value={data.notes || ""}
+                    minRows={isPhone ? 2 : isTablet ? 2 : 3}
+                    label="ملاحظات المبيعات"
+                    value={salesNotes}
                     InputProps={{ readOnly: true }}
+                    sx={{
+                      ...compactFieldSx,
+                      "& .MuiInputBase-inputMultiline": {
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                        lineHeight: 1.45
+                      }
+                    }}
                   />
                 </Grid>
               </Grid>
             </Paper>
 
-            <Grid container spacing={1.5}>
+            <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5}>
               {[
                 ["الإجمالي", data.total],
                 ["الضريبة", data.tax],
                 ["الصافي", data.subTotal],
                 ["المدفوع", data.amount]
               ].map(([label, value]) => (
-                <Grid item xs={12} sm={6} md={3} key={label}>
+                <Grid item xs={6} sm={3} md={3} key={label}>
                   <Paper
                     variant="outlined"
-                    sx={{ p: 1.5, textAlign: "center", borderRadius: 3 }}
+                    sx={{
+                      p: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
+                      textAlign: "center",
+                      borderRadius: isCompact ? 1.2 : 3
+                    }}
                   >
-                    <Typography sx={{ fontWeight: 900 }}>{label}</Typography>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined }}>
+                      {label}
+                    </Typography>
                     <Typography
-                      variant="h6"
-                      sx={{ mt: 0.4, color: accentColor, fontWeight: 950 }}
+                      sx={{
+                        mt: 0.2,
+                        color: accentColor,
+                        fontWeight: 950,
+                        fontSize: isPhone ? "0.58rem" : isTablet ? "0.68rem" : "1.25rem"
+                      }}
                     >
                       {money(value)}
                     </Typography>
@@ -389,25 +803,66 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
         ) : null}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 1.5, justifyContent: "space-between" }}>
+      <DialogActions
+        sx={{
+          px: isPhone ? 0.55 : isTablet ? 0.8 : 3,
+          py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
+          justifyContent: "space-between",
+          flexShrink: 0
+        }}
+      >
         <Button
           variant="contained"
           onClick={() => onPrint?.(data)}
           disabled={loading || !data}
-          startIcon={<PrintIcon />}
-          sx={{ backgroundColor: primaryColor, fontWeight: 900, minWidth: 150 }}
+          startIcon={
+            isCompact ? (
+              <PictureAsPdfIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 14
+                    : undefined
+                }}
+              />
+            ) : (
+              <PrintIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 14
+                    : undefined
+                }}
+              />
+            )
+          }
+          sx={{
+            backgroundColor: primaryColor,
+            fontWeight: 900,
+            minWidth: isPhone ? 105 : isTablet ? 125 : 150,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+          }}
         >
-          طباعة طلب الالتحاق
+          {isCompact
+            ? "تصدير طلب الالتحاق PDF"
+            : "طباعة طلب الالتحاق"}
         </Button>
 
-        <Button onClick={onClose} disabled={loading} sx={{ color: accentColor, fontWeight: 900 }}>
+        <Button
+          onClick={onClose}
+          disabled={loading}
+          sx={{
+            color: accentColor,
+            fontWeight: 900,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+          }}
+        >
           إغلاق
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
-
 
 
 function PaymentDetailsDialog({
@@ -418,13 +873,70 @@ function PaymentDetailsDialog({
   onClose,
   onPrint
 }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
+  const accountNotes =
+    data?.accountNotes ||
+    data?.AccountNotes ||
+    data?.notes ||
+    data?.Notes ||
+    "";
+
+  const orderStatus =
+    data?.orderStatus ||
+    data?.OrderStatus ||
+    data?.status ||
+    data?.Status ||
+    "-";
+
+  const compactFieldSx = {
+    "& .MuiInputLabel-root": {
+      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+    },
+    "& .MuiInputBase-input": {
+      fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+      fontWeight: 800,
+      py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
+    },
+    "& .MuiOutlinedInput-root": {
+      minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+      borderRadius: isCompact ? 1.1 : undefined
+    }
+  };
+
   return (
     <Dialog
       open={open}
       onClose={loading ? undefined : onClose}
       maxWidth="lg"
       fullWidth
+      fullScreen={isPhone}
       dir="rtl"
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
+      PaperProps={{
+        sx: {
+          width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "1000px" : undefined,
+          height: isPhone ? "calc(100dvh - 58px)" : isTablet ? "calc(100dvh - 72px)" : "88vh",
+          maxHeight: isPhone ? "calc(100dvh - 58px)" : isTablet ? "calc(100dvh - 72px)" : "88vh",
+          minHeight: 0,
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
+        }
+      }}
     >
       <DialogTitle
         sx={{
@@ -432,50 +944,120 @@ function PaymentDetailsDialog({
           color: primaryColor,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          px: isPhone ? 0.7 : isTablet ? 1 : 2,
+          py: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
+          flexShrink: 0
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <PaymentIcon />
-          <span>عرض طلب السداد رقم {data?.code || ""}</span>
+        <Stack direction="row" spacing={isCompact ? 0.35 : 1} alignItems="center" minWidth={0}>
+          <PaymentIcon sx={{ fontSize: isPhone ? 15 : isTablet ? 18 : undefined }} />
+          <Typography
+            sx={{
+              fontWeight: 950,
+              fontSize: isPhone ? "0.58rem" : isTablet ? "0.7rem" : "1.1rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            طلب السداد رقم {data?.code || ""}
+          </Typography>
         </Stack>
 
-        <IconButton onClick={onClose} disabled={loading}>
-          <CloseIcon />
+        <IconButton
+          onClick={onClose}
+          disabled={loading}
+          sx={{
+            width: isPhone ? 27 : isTablet ? 31 : 40,
+            height: isPhone ? 27 : isTablet ? 31 : 40
+          }}
+        >
+          <CloseIcon sx={{ fontSize: isPhone ? 15 : isTablet ? 18 : undefined }} />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 2.5 }}>
+      <DialogContent
+        dividers
+        sx={{
+          px: isPhone ? 0.7 : isTablet ? 1 : 2.5,
+          py: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto"
+        }}
+      >
         {loading ? (
-          <Stack alignItems="center" spacing={2} sx={{ py: 8 }}>
-            <CircularProgress />
-            <Typography>جاري تحميل بيانات طلب السداد...</Typography>
+          <Stack alignItems="center" spacing={1} sx={{ py: isCompact ? 4 : 8 }}>
+            <CircularProgress size={isPhone ? 24 : isTablet ? 30 : 40} />
+            <Typography sx={{ fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined }}>
+              جاري تحميل بيانات طلب السداد...
+            </Typography>
           </Stack>
         ) : error ? (
-          <Alert severity="error">{error}</Alert>
+          <Alert severity="error" sx={{ fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined }}>
+            {error}
+          </Alert>
         ) : data ? (
-          <Stack spacing={2}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
-              <Grid container spacing={1.5}>
+          <Stack spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
+                borderRadius: isCompact ? 1.4 : 3
+              }}
+            >
+              <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.5}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="اسم الطالب"
+                    value={data.studentName || ""}
+                    InputProps={{ readOnly: true }}
+                    sx={compactFieldSx}
+                  />
+                </Grid>
+
+                <Grid item xs={6} sm={3} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="رقم الهوية"
+                    value={data.nationalId || ""}
+                    InputProps={{ readOnly: true }}
+                    sx={compactFieldSx}
+                  />
+                </Grid>
+
+                <Grid item xs={6} sm={3} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="حالة الطلب"
+                    value={orderStatus}
+                    InputProps={{ readOnly: true }}
+                    sx={compactFieldSx}
+                  />
+                </Grid>
+
                 {[
-                  ["اسم الطالب", data.studentName],
-                  ["رقم الهوية", data.nationalId],
                   ["رقم الجوال", data.studentTel],
                   ["الفرع", data.branchName],
                   ["الخزينة / البنك", data.cashBoxName],
                   ["رقم المرجع", data.referenceNumber],
                   ["تاريخ الطلب", formatDateTime(data.orderDate)],
                   ["تاريخ الحوالة", formatDateTime(data.paymentDate)],
-                  ["نوع المستند", data.documentName],
-                  ["حالة الطلب", data.orderStatus]
+                  ["نوع المستند", data.documentName]
                 ].map(([label, value]) => (
-                  <Grid item xs={12} md={4} key={label}>
+                  <Grid item xs={6} sm={6} md={4} key={label}>
                     <TextField
                       fullWidth
                       size="small"
                       label={label}
                       value={value || ""}
                       InputProps={{ readOnly: true }}
+                      sx={compactFieldSx}
                     />
                   </Grid>
                 ))}
@@ -484,27 +1066,36 @@ function PaymentDetailsDialog({
                   <TextField
                     fullWidth
                     multiline
-                    minRows={3}
-                    label="الملاحظات"
-                    value={data.notes || ""}
+                    minRows={isPhone ? 2 : isTablet ? 2 : 3}
+                    label="ملاحظات الحسابات"
+                    value={accountNotes}
                     InputProps={{ readOnly: true }}
+                    sx={{
+                      ...compactFieldSx,
+                      "& .MuiInputBase-inputMultiline": {
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                        lineHeight: 1.45
+                      }
+                    }}
                   />
                 </Grid>
               </Grid>
             </Paper>
 
-            <Box sx={{ overflowX: "auto" }}>
+            <Box sx={{ overflowX: "auto", width: "100%" }}>
               <Box
                 component="table"
                 sx={{
                   width: "100%",
+                  minWidth: isPhone ? 310 : isTablet ? 500 : 760,
                   borderCollapse: "collapse",
                   "& th, & td": {
                     border: "1px solid #ddd",
-                    px: 1,
-                    py: 0.9,
+                    px: isPhone ? 0.25 : isTablet ? 0.45 : 1,
+                    py: isPhone ? 0.35 : isTablet ? 0.5 : 0.9,
                     whiteSpace: "nowrap",
-                    textAlign: "center"
+                    textAlign: "center",
+                    fontSize: isPhone ? "0.39rem" : isTablet ? "0.48rem" : undefined
                   },
                   "& th": {
                     backgroundColor: "#f7d58b",
@@ -515,11 +1106,11 @@ function PaymentDetailsDialog({
                 <thead>
                   <tr>
                     <th>البيان</th>
-                    <th>الوحدة</th>
-                    <th>الكمية</th>
+                    {!isPhone && <th>الوحدة</th>}
+                    {!isPhone && <th>الكمية</th>}
                     <th>التكلفة</th>
-                    <th>الضريبة %</th>
-                    <th>الضريبة</th>
+                    {!isCompact && <th>الضريبة %</th>}
+                    {!isCompact && <th>الضريبة</th>}
                     <th>الصافي</th>
                   </tr>
                 </thead>
@@ -529,48 +1120,49 @@ function PaymentDetailsDialog({
                     data.items.map((item, index) => (
                       <tr key={`${item.code || "item"}-${index}`}>
                         <td>{item.statement || ""}</td>
-                        <td>{item.unit || ""}</td>
-                        <td>{item.quantity ?? ""}</td>
+                        {!isPhone && <td>{item.unit || ""}</td>}
+                        {!isPhone && <td>{item.quantity ?? ""}</td>}
                         <td>{money(item.cost)}</td>
-                        <td>{item.taxRate ?? ""}</td>
-                        <td>{money(item.tax)}</td>
+                        {!isCompact && <td>{item.taxRate ?? ""}</td>}
+                        {!isCompact && <td>{money(item.tax)}</td>}
                         <td>{money(item.subTotal)}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7}>لا توجد تفاصيل لطلب السداد</td>
+                      <td colSpan={isPhone ? 3 : isTablet ? 5 : 7}>
+                        لا توجد تفاصيل لطلب السداد
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </Box>
             </Box>
 
-            <Grid container spacing={1.5}>
+            <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5}>
               {[
                 ["الإجمالي", data.total],
                 ["الضريبة", data.tax],
                 ["الصافي", data.subTotal]
               ].map(([label, value]) => (
-                <Grid item xs={12} md={4} key={label}>
+                <Grid item xs={4} md={4} key={label}>
                   <Paper
                     variant="outlined"
                     sx={{
-                      p: 1.5,
+                      p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                       textAlign: "center",
-                      borderRadius: 3
+                      borderRadius: isCompact ? 1.2 : 3
                     }}
                   >
-                    <Typography sx={{ fontWeight: 900 }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.34rem" : isTablet ? "0.44rem" : undefined }}>
                       {label}
                     </Typography>
-
                     <Typography
-                      variant="h6"
                       sx={{
-                        mt: 0.4,
+                        mt: 0.2,
                         color: accentColor,
-                        fontWeight: 950
+                        fontWeight: 950,
+                        fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1.25rem"
                       }}
                     >
                       {money(value)}
@@ -583,21 +1175,59 @@ function PaymentDetailsDialog({
         ) : null}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 1.5, justifyContent: "space-between" }}>
+      <DialogActions
+        sx={{
+          px: isPhone ? 0.55 : isTablet ? 0.8 : 3,
+          py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
+          justifyContent: "space-between",
+          flexShrink: 0
+        }}
+      >
         <Button
           variant="contained"
           onClick={() => onPrint?.(data)}
           disabled={loading || !data}
-          startIcon={<PrintIcon />}
-          sx={{ backgroundColor: primaryColor, fontWeight: 900, minWidth: 145 }}
+          startIcon={
+            isCompact ? (
+              <PictureAsPdfIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 14
+                    : undefined
+                }}
+              />
+            ) : (
+              <PrintIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 14
+                    : undefined
+                }}
+              />
+            )
+          }
+          sx={{
+            backgroundColor: primaryColor,
+            fontWeight: 900,
+            minWidth: isPhone ? 100 : isTablet ? 120 : 145,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+          }}
         >
-          طباعة طلب السداد
+          {isCompact
+            ? "تصدير طلب السداد PDF"
+            : "طباعة طلب السداد"}
         </Button>
 
         <Button
           onClick={onClose}
           disabled={loading}
-          sx={{ color: accentColor, fontWeight: 900 }}
+          sx={{
+            color: accentColor,
+            fontWeight: 900,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+          }}
         >
           إغلاق
         </Button>
@@ -605,6 +1235,7 @@ function PaymentDetailsDialog({
     </Dialog>
   );
 }
+
 
 function ConvertVipDialog({
   open,
@@ -714,7 +1345,29 @@ function ConvertVipDialog({
   );
 }
 
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length === 0) return "-";
+
+  if (parts.length === 1) {
+    return parts[0];
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 export default function MyRequests() {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
+  const isCompact = isPhone || isTablet;
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   const user = useMemo(() => readCurrentUser(), []);
   const sellerGuid = useMemo(() => getSellerGuid(user), [user]);
   const userGuid = useMemo(() => getUserGuid(user), [user]);
@@ -751,6 +1404,10 @@ export default function MyRequests() {
 
   const [approvalOpen, setApprovalOpen] = useState(false);
   const [approvalRow, setApprovalRow] = useState(null);
+
+  useEffect(() => {
+    if (isDesktop) setMobileSidebarOpen(false);
+  }, [isDesktop]);
 
   const dateFilteredTabs = new Set([
     "admission",
@@ -925,7 +1582,7 @@ export default function MyRequests() {
     }
   };
 
-  const printAdmission = (admissionData) => {
+  const printAdmission = async (admissionData) => {
     if (!admissionData) {
       showError("لا توجد بيانات لطلب الالتحاق");
       return;
@@ -946,9 +1603,18 @@ export default function MyRequests() {
         }).join("")
       : `<tr><td class="statement">لا توجد بنود مسجلة</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>`;
 
-    const printWindow = window.open("", "_blank", "width=950,height=1100");
-    if (!printWindow) {
-      showError("المتصفح منع نافذة الطباعة، برجاء السماح بالنوافذ المنبثقة");
+    const printWindow = isCompact
+      ? null
+      : window.open(
+          "",
+          "_blank",
+          "width=950,height=1100"
+        );
+
+    if (!isCompact && !printWindow) {
+      showError(
+        "المتصفح منع نافذة الطباعة، برجاء السماح بالنوافذ المنبثقة"
+      );
       return;
     }
 
@@ -961,8 +1627,7 @@ export default function MyRequests() {
     const subTotal = Number(admissionData.subTotal || total + tax || 0);
     const paid = Number(admissionData.amount || 0);
 
-    printWindow.document.open();
-    printWindow.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"/><title>طلب التحاق رقم ${escapeHtml(code)}</title><style>
+    const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"/><title>طلب التحاق رقم ${escapeHtml(code)}</title><style>
       @page{size:A4 portrait;margin:8mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       body{margin:0;background:#fff;color:#111;font-family:Arial,Tahoma,sans-serif;direction:rtl}.sheet{width:100%;min-height:277mm;border:1px solid #d5d5d5;padding:9mm 9mm 7mm}
       .header{display:grid;grid-template-columns:115px 1fr;gap:14px;align-items:start;border-bottom:3px solid #222;padding-bottom:10px}.logo{width:105px;height:105px;object-fit:contain}
@@ -979,11 +1644,32 @@ export default function MyRequests() {
       <div class="separator"></div><div class="bottom"><table class="totals"><tr><td>الإجمالي قبل الضريبة</td><td class="number">${escapeHtml(money(total))}</td></tr><tr><td>ضريبة القيمة المضافة</td><td class="number">${escapeHtml(money(tax))}</td></tr><tr><td>الإجمالي بعد الضريبة</td><td class="number">${escapeHtml(money(subTotal))}</td></tr><tr><td>المدفوع</td><td class="number">${escapeHtml(money(paid))}</td></tr></table><div class="qr-box"><img src="${escapeHtml(refundQrUrl)}" alt="سياسة الاسترداد"/><div>يرجى مراجعة سياسة الاسترداد</div></div></div>
       ${admissionData.notes ? `<div class="notes"><strong>ملاحظات:</strong> ${escapeHtml(admissionData.notes)}</div>` : ""}
       <div class="policy-note">المبالغ المدفوعة رسوم دراسية غير مستردة</div><div class="footer"><span>${escapeHtml(new Date().toLocaleDateString("en-GB"))}</span><span>Page 1 of 1</span></div>
-    </section><script>window.addEventListener("load",function(){window.setTimeout(function(){window.print()},700)})</script></body></html>`);
+    </section><script>window.addEventListener("load",function(){window.setTimeout(function(){window.print()},700)})</script></body></html>`;
+
+    if (isCompact) {
+      try {
+        await exportHtmlDocumentToPdf({
+          html,
+          fileName: `طلب-التحاق-${code || "طلب"}.pdf`,
+          selector: ".sheet, body",
+          scale: isPhone ? 2 : 2.25
+        });
+      } catch (pdfError) {
+        showError(
+          pdfError?.message ||
+            "تعذر تصدير طلب الالتحاق PDF"
+        );
+      }
+
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(html);
     printWindow.document.close();
   };
 
-  const printPayment = (paymentData) => {
+  const printPayment = async (paymentData) => {
     if (!paymentData) {
       showError("لا توجد بيانات لطلب السداد");
       return;
@@ -1001,9 +1687,18 @@ export default function MyRequests() {
           </tr>`).join("")
       : `<tr><td class="statement">لا توجد بنود مسجلة</td><td>0.00</td><td>0</td><td>0.00</td><td>0.00</td></tr>`;
 
-    const printWindow = window.open("", "_blank", "width=980,height=1100");
-    if (!printWindow) {
-      showError("المتصفح منع نافذة الطباعة، برجاء السماح بالنوافذ المنبثقة");
+    const printWindow = isCompact
+      ? null
+      : window.open(
+          "",
+          "_blank",
+          "width=980,height=1100"
+        );
+
+    if (!isCompact && !printWindow) {
+      showError(
+        "المتصفح منع نافذة الطباعة، برجاء السماح بالنوافذ المنبثقة"
+      );
       return;
     }
 
@@ -1014,8 +1709,7 @@ export default function MyRequests() {
     const tax = Number(paymentData.tax || 0);
     const subTotal = Number(paymentData.subTotal || 0);
 
-    printWindow.document.open();
-    printWindow.document.write(`<!doctype html>
+    const html = `<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
@@ -1067,7 +1761,28 @@ export default function MyRequests() {
     ${paymentData.notes ? `<div class="notes"><strong>الملاحظات:</strong> ${escapeHtml(paymentData.notes)}</div>` : ""}
     <div class="watermark">SSTLI</div>
   </section></div>
-</body></html>`);
+</body></html>`;
+
+    if (isCompact) {
+      try {
+        await exportHtmlDocumentToPdf({
+          html,
+          fileName: `طلب-سداد-${code || "طلب"}.pdf`,
+          selector: ".sheet, .preview, body",
+          scale: isPhone ? 2 : 2.25
+        });
+      } catch (pdfError) {
+        showError(
+          pdfError?.message ||
+            "تعذر تصدير طلب السداد PDF"
+        );
+      }
+
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(html);
     printWindow.document.close();
     printWindow.focus();
   };
@@ -1524,7 +2239,13 @@ export default function MyRequests() {
           </Tooltip>
 
           {activeTab === "admission" ? (
-            <Tooltip title="طباعة طلب الالتحاق">
+            <Tooltip
+              title={
+                isCompact
+                  ? "تصدير طلب الالتحاق PDF"
+                  : "طباعة طلب الالتحاق"
+              }
+            >
               <IconButton
                 onClick={async () => {
                   try {
@@ -1541,13 +2262,27 @@ export default function MyRequests() {
                 }}
                 sx={{ color: primaryColor }}
               >
-                <PrintIcon />
+                {isCompact ? (
+                  <PictureAsPdfIcon />
+                ) : (
+                  <PrintIcon />
+                )}
               </IconButton>
             </Tooltip>
           ) : activeTab === "payment" ? (
-            <Tooltip title="طباعة طلب السداد">
+            <Tooltip
+              title={
+                isCompact
+                  ? "تصدير طلب السداد PDF"
+                  : "طباعة طلب السداد"
+              }
+            >
               <IconButton onClick={() => loadAndPrintPayment(row)} sx={{ color: primaryColor }}>
-                <PrintIcon />
+                {isCompact ? (
+                  <PictureAsPdfIcon />
+                ) : (
+                  <PrintIcon />
+                )}
               </IconButton>
             </Tooltip>
           ) : null}
@@ -1942,24 +2677,325 @@ export default function MyRequests() {
     activeTab === "other-institutes" ? otherInstitutesColumns :
     nonContractColumns;
 
+  const getCompactColumns = () => {
+    const compactTextCell = (value, fullValue = value) => (
+      <Tooltip title={fullValue || "-"} arrow>
+        <Typography
+          sx={{
+            width: "100%",
+            px: 0.05,
+            fontWeight: 850,
+            fontSize: isPhone ? "0.33rem" : "0.43rem",
+            lineHeight: 1.15,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            textAlign: "center"
+          }}
+        >
+          {value || "-"}
+        </Typography>
+      </Tooltip>
+    );
+
+    const actionColumn = {
+      field: "__compactAction",
+      headerName: "",
+      width: isPhone ? 32 : 40,
+      minWidth: isPhone ? 32 : 40,
+      maxWidth: isPhone ? 32 : 40,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row }) => {
+        let onClick = null;
+        let icon = <VisibilityIcon sx={{ fontSize: isPhone ? 12 : 14 }} />;
+        let color = primaryColor;
+
+        if (activeTab === "admission") {
+          onClick = () => openAdmission(row);
+        } else if (activeTab === "payment") {
+          onClick = () => openPayment(row);
+        } else if (activeTab === "approvals") {
+          onClick = () => openApprovalEditor(row);
+          icon = <EditIcon sx={{ fontSize: isPhone ? 12 : 14 }} />;
+          color = accentColor;
+        } else if (activeTab === "other-institutes") {
+          onClick = () => editTraineeStatusNote(row);
+          icon = <NoteAddIcon sx={{ fontSize: isPhone ? 12 : 14 }} />;
+        }
+
+        if (!onClick) return null;
+
+        return (
+          <Tooltip title="عرض الطلب">
+            <IconButton
+              size="small"
+              onClick={onClick}
+              sx={{
+                width: isPhone ? 22 : 26,
+                height: isPhone ? 22 : 26,
+                p: 0,
+                color
+              }}
+            >
+              {icon}
+            </IconButton>
+          </Tooltip>
+        );
+      }
+    };
+
+    const studentColumn = {
+      field: "studentName",
+      headerName: "الطالب",
+      flex: 1.15,
+      minWidth: isPhone ? 73 : 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ value }) =>
+        compactTextCell(shortStudentName(value), value)
+    };
+
+    const nationalIdColumn = {
+      field: "nationalId",
+      headerName: "الهوية",
+      flex: 0.9,
+      minWidth: isPhone ? 63 : 86,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ value }) => compactTextCell(value, value)
+    };
+
+    const statusColumn = {
+      field: "orderStatus",
+      headerName: "الحالة",
+      flex: 0.72,
+      minWidth: isPhone ? 48 : 66,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row, value }) =>
+        compactTextCell(
+          value ||
+            row?.status ||
+            row?.Status ||
+            row?.orderStatusText ||
+            row?.statusName ||
+            "-"
+        )
+    };
+
+    const salesNotesColumn = {
+      field: "salesNotes",
+      headerName: "ملاحظات",
+      flex: 1,
+      minWidth: isPhone ? 68 : 96,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row, value }) => {
+        const note =
+          value ||
+          row?.notes ||
+          row?.Notes ||
+          row?.salesNote ||
+          "-";
+        return compactTextCell(note, note);
+      }
+    };
+
+    const accountNotesColumn = {
+      field: "accountNotes",
+      headerName: "ملاحظات",
+      flex: 1,
+      minWidth: isPhone ? 68 : 96,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row, value }) => {
+        const note =
+          value ||
+          row?.notes ||
+          row?.Notes ||
+          row?.accountNote ||
+          "-";
+        return compactTextCell(note, note);
+      }
+    };
+
+    const programColumn = {
+      field: "__compactProgram",
+      headerName: "الدبلوم",
+      flex: 1,
+      minWidth: isPhone ? 72 : 100,
+      sortable: false,
+      filterable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row }) => {
+        const value =
+          row?.diplomName ||
+          row?.DiplomName ||
+          row?.courseName ||
+          row?.CourseName ||
+          row?.programName ||
+          row?.ProgramName ||
+          "-";
+
+        return compactTextCell(value, value);
+      }
+    };
+
+    if (activeTab === "admission") {
+      return [
+        actionColumn,
+        studentColumn,
+        nationalIdColumn,
+        statusColumn,
+        salesNotesColumn
+      ];
+    }
+
+    if (activeTab === "payment") {
+      return [
+        actionColumn,
+        studentColumn,
+        nationalIdColumn,
+        statusColumn,
+        accountNotesColumn
+      ];
+    }
+
+    if (activeTab === "approvals") {
+      return [
+        actionColumn,
+        studentColumn,
+        nationalIdColumn,
+        statusColumn,
+        accountNotesColumn
+      ];
+    }
+
+    if (["discount", "refund", "de-registration"].includes(activeTab)) {
+      return [
+        studentColumn,
+        nationalIdColumn,
+        statusColumn,
+        accountNotesColumn
+      ];
+    }
+
+    if (activeTab === "other-institutes") {
+      return [
+        actionColumn,
+        studentColumn,
+        nationalIdColumn,
+        {
+          field: "traineeStatusNote",
+          headerName: "الموقف",
+          flex: 1,
+          minWidth: isPhone ? 70 : 100,
+          align: "center",
+          headerAlign: "center",
+          renderCell: ({ value }) => compactTextCell(value, value)
+        }
+      ];
+    }
+
+    // تسجيلات بدون اتفاقية: أهم البيانات الطالب + الهوية + الدبلوم.
+    return [
+      studentColumn,
+      nationalIdColumn,
+      programColumn
+    ];
+  };
+
+  const responsiveColumns = isCompact ? getCompactColumns() : columns;
+
   const selectedTab = tabs.find((item) => item.key === activeTab);
 
   return (
     <Box
+      dir="rtl"
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         background: "linear-gradient(180deg, #f8fcfa 0%, #eef8f3 100%)",
-        fontFamily: "Cairo, Arial, sans-serif"
+        fontFamily: "Cairo, Arial, sans-serif",
+        position: "relative"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <AppBar
+          position="sticky"
+          elevation={0}
+          sx={{
+            top: 0,
+            background: "rgba(255,255,255,0.96)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom: "1px solid rgba(5,117,70,0.12)"
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: { xs: "50px !important", sm: "56px !important", md: "60px !important" },
+              px: { xs: 0.8, sm: 1.2, md: 1.5 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              aria-expanded={mobileSidebarOpen}
+              sx={{
+                width: { xs: 36, sm: 40, md: 42 },
+                height: { xs: 36, sm: 40, md: 42 },
+                color: "#fff",
+                background: "linear-gradient(135deg, #057546, #034d31)"
+              }}
+            >
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.88rem" }
+              }}
+            >
+              قائمة طلباتي
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
 
       <Box
         sx={{
-          ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
-          width: { xs: "100%", md: `calc(100% - ${SIDEBAR_WIDTH}px)` },
-          p: { xs: 1.2, md: 2.2 },
-          boxSizing: "border-box"
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          ml: 0,
+          mr: 0,
+          p: { xs: 0.45, sm: 0.65, md: 0.9, lg: 1.2 },
+          boxSizing: "border-box",
+          overflowX: "hidden",
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            p: 2.2
+          }
         }}
       >
         <Paper
@@ -1974,8 +3010,8 @@ export default function MyRequests() {
           <Box
             dir="rtl"
             sx={{
-              px: 3,
-              py: 2,
+              px: isPhone ? 0.75 : isTablet ? 1.1 : 3,
+              py: isPhone ? 0.65 : isTablet ? 0.9 : 2,
               color: "white",
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
               display: "flex",
@@ -1984,17 +3020,34 @@ export default function MyRequests() {
             }}
           >
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 950 }}>
+              <Typography
+                sx={{
+                  fontWeight: 950,
+                  fontSize: isPhone ? "0.7rem" : isTablet ? "0.85rem" : "1.5rem"
+                }}
+              >
                 قائمة طلباتي
               </Typography>
-              <Typography sx={{ opacity: 0.86, fontSize: "0.85rem" }}>
+              <Typography
+                sx={{
+                  opacity: 0.86,
+                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.52rem" : "0.85rem",
+                  display: isPhone ? "none" : "block"
+                }}
+              >
                 متابعة طلبات التسجيل والسداد والخصم والاسترداد
               </Typography>
             </Box>
 
             <Chip
               label={`الإجمالي: ${filteredRows.length}`}
-              sx={{ backgroundColor: "white", color: primaryDark, fontWeight: 950 }}
+              sx={{
+                backgroundColor: "white",
+                color: primaryDark,
+                fontWeight: 950,
+                height: isPhone ? 22 : isTablet ? 26 : undefined,
+                fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+              }}
             />
           </Box>
 
@@ -2007,13 +3060,18 @@ export default function MyRequests() {
             sx={{
               borderBottom: "1px solid rgba(5,117,70,0.12)",
               "& .MuiTab-root": {
-                minHeight: 62,
+                minHeight: isPhone ? 38 : isTablet ? 44 : 62,
+                minWidth: isPhone ? 82 : isTablet ? 98 : 120,
+                px: isPhone ? 0.45 : isTablet ? 0.7 : 1.2,
+                py: isPhone ? 0.3 : isTablet ? 0.45 : 0.8,
                 fontFamily: "Cairo",
                 fontWeight: 850,
-                gap: 0.8
+                fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                gap: isPhone ? 0.25 : isTablet ? 0.4 : 0.8,
+                "& svg": { fontSize: isPhone ? 15 : isTablet ? 17 : undefined }
               },
               "& .MuiTabs-indicator": {
-                height: 4,
+                height: isCompact ? 2.5 : 4,
                 backgroundColor: accentColor
               }
             }}
@@ -2029,23 +3087,44 @@ export default function MyRequests() {
             ))}
           </Tabs>
 
-          <Box sx={{ p: 2 }}>
+          <Box sx={{ p: isPhone ? 0.45 : isTablet ? 0.7 : 2 }}>
             {true ? (
               <>
                 <Stack
-                  direction={{ xs: "column", lg: "row" }}
-                  spacing={1.2}
+                  direction={isCompact ? "column" : "row"}
+                  spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.2}
                   justifyContent="space-between"
-                  alignItems={{ xs: "stretch", lg: "center" }}
-                  sx={{ mb: 1.6 }}
+                  alignItems={isCompact ? "stretch" : "center"}
+                  sx={{ mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.6 }}
                 >
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={1.2}>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: isCompact ? "grid" : "flex",
+                      gridTemplateColumns: isCompact ? "repeat(2, minmax(0, 1fr))" : undefined,
+                      gap: isPhone ? 0.45 : isTablet ? 0.6 : 1.2,
+                      alignItems: "center"
+                    }}
+                  >
                     <TextField
                       size="small"
                       value={searchText}
                       onChange={(event) => setSearchText(event.target.value)}
                       placeholder="بحث بالاسم أو الهوية أو الجوال..."
-                      sx={{ width: { xs: "100%", md: 390 } }}
+                      sx={{
+                        width: isCompact ? "100%" : 390,
+                        gridColumn: isCompact ? "1 / -1" : undefined,
+                        "& .MuiInputBase-input": {
+                          fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                          py: isPhone ? 0.38 : isTablet ? 0.48 : undefined
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          minHeight: isPhone ? 30 : isTablet ? 33 : undefined
+                        },
+                        "& .MuiSvgIcon-root": {
+                          fontSize: isPhone ? 14 : isTablet ? 16 : undefined
+                        }
+                      }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -2066,6 +3145,21 @@ export default function MyRequests() {
                           InputLabelProps={{ shrink: true }}
                           disabled={showAll}
                           inputProps={{ max: toDate || undefined }}
+                          sx={{
+                            width: "100%",
+                            minWidth: 0,
+                            "& .MuiInputLabel-root": {
+                              fontSize: isPhone ? "0.38rem" : isTablet ? "0.47rem" : undefined
+                            },
+                            "& .MuiInputBase-input": {
+                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              py: isPhone ? 0.32 : isTablet ? 0.42 : undefined,
+                              px: isPhone ? 0.35 : isTablet ? 0.5 : undefined
+                            },
+                            "& .MuiOutlinedInput-root": {
+                              minHeight: isPhone ? 30 : isTablet ? 33 : undefined
+                            }
+                          }}
                         />
                         <TextField
                           size="small"
@@ -2076,15 +3170,46 @@ export default function MyRequests() {
                           InputLabelProps={{ shrink: true }}
                           disabled={showAll}
                           inputProps={{ min: fromDate || undefined }}
+                          sx={{
+                            width: "100%",
+                            minWidth: 0,
+                            "& .MuiInputLabel-root": {
+                              fontSize: isPhone ? "0.38rem" : isTablet ? "0.47rem" : undefined
+                            },
+                            "& .MuiInputBase-input": {
+                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              py: isPhone ? 0.32 : isTablet ? 0.42 : undefined,
+                              px: isPhone ? 0.35 : isTablet ? 0.5 : undefined
+                            },
+                            "& .MuiOutlinedInput-root": {
+                              minHeight: isPhone ? 30 : isTablet ? 33 : undefined
+                            }
+                          }}
                         />
                         <FormControlLabel
                           control={<Checkbox checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />}
                           label="عرض الكل"
-                          sx={{ mr: 0.5, whiteSpace: "nowrap" }}
+                          sx={{
+                            mr: 0,
+                            m: 0,
+                            gridColumn: isCompact ? "1 / -1" : undefined,
+                            justifySelf: "start",
+                            whiteSpace: "nowrap",
+                            "& .MuiFormControlLabel-label": {
+                              fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                              fontWeight: 850
+                            },
+                            "& .MuiCheckbox-root": {
+                              p: isPhone ? 0.25 : isTablet ? 0.4 : undefined
+                            },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: isPhone ? 16 : isTablet ? 18 : undefined
+                            }
+                          }}
                         />
                       </>
                     ) : null}
-                  </Stack>
+                  </Box>
 
                   <Button
                     variant="contained"
@@ -2095,7 +3220,13 @@ export default function MyRequests() {
                         ? <CircularProgress size={18} color="inherit" />
                         : <RefreshIcon />
                     }
-                    sx={{ minWidth: 135, backgroundColor: primaryColor, fontWeight: 900 }}
+                    sx={{
+                      minWidth: isPhone ? 82 : isTablet ? 100 : 135,
+                      minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+                      backgroundColor: primaryColor,
+                      fontWeight: 900,
+                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+                    }}
                   >
                     عرض
                   </Button>
@@ -2103,12 +3234,21 @@ export default function MyRequests() {
 
                 {error ? <Alert severity="error" sx={{ mb: 1.5 }}>{error}</Alert> : null}
 
-                <Box sx={{ height: 590, width: "100%", direction: "ltr" }}>
+                <Box
+                  sx={{
+                    height: isPhone ? "calc(100dvh - 300px)" : isTablet ? "calc(100dvh - 330px)" : 590,
+                    minHeight: isPhone ? 360 : isTablet ? 430 : 590,
+                    width: "100%",
+                    direction: "ltr"
+                  }}
+                >
                   <DataGrid
                     rows={filteredRows}
-                    columns={columns}
+                    columns={responsiveColumns}
                     loading={loading}
                     disableRowSelectionOnClick
+                    disableColumnFilter={isCompact}
+                    disableColumnMenu={isCompact}
                     onRowDoubleClick={(params) => {
                       if (activeTab === "admission") {
                         openAdmission(params.row);
@@ -2135,12 +3275,40 @@ export default function MyRequests() {
                         background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
                         color: "#fff"
                       },
-                      "& .MuiDataGrid-columnHeaderTitle": { fontWeight: 950 },
+                      "& .MuiDataGrid-columnHeaderTitle": {
+                        fontWeight: 950,
+                        fontSize: isPhone ? "0.31rem" : isTablet ? "0.41rem" : undefined
+                      },
                       "& .MuiDataGrid-row:nth-of-type(even)": { backgroundColor: "#fff8ef" },
                       "& .MuiDataGrid-row:hover": { backgroundColor: "#eaf7f0" },
                       "& .MuiDataGrid-cell": {
                         fontFamily: "Cairo",
-                        fontWeight: 700
+                        fontWeight: 700,
+                        fontSize: isPhone ? "0.31rem" : isTablet ? "0.41rem" : undefined,
+                        px: isPhone ? 0.1 : isTablet ? 0.25 : undefined
+                      },
+                      "& .MuiDataGrid-columnHeader": {
+                        px: isPhone ? 0.05 : isTablet ? 0.18 : undefined
+                      },
+                      "& .MuiDataGrid-columnHeaders": {
+                        minHeight: `${isPhone ? 29 : isTablet ? 34 : 56}px !important`,
+                        maxHeight: `${isPhone ? 29 : isTablet ? 34 : 56}px !important`
+                      },
+                      "& .MuiDataGrid-row": {
+                        minHeight: `${isPhone ? 32 : isTablet ? 37 : 52}px !important`,
+                        maxHeight: `${isPhone ? 32 : isTablet ? 37 : 52}px !important`
+                      },
+                      "& .MuiDataGrid-columnSeparator": {
+                        display: isCompact ? "none" : undefined
+                      },
+                      "& .MuiDataGrid-menuIcon": {
+                        display: isCompact ? "none" : undefined
+                      },
+                      "& .MuiDataGrid-footerContainer": {
+                        minHeight: isPhone ? 38 : isTablet ? 44 : undefined
+                      },
+                      "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+                        fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
                       }
                     }}
                   />
@@ -2213,8 +3381,24 @@ export default function MyRequests() {
                 if (row) loadAndPrintPayment(row);
               }}
             >
-              <PrintIcon sx={{ ml: 1, color: primaryColor }} />
-              طباعة طلب السداد
+              {isCompact ? (
+                <PictureAsPdfIcon
+                  sx={{
+                    ml: 1,
+                    color: primaryColor
+                  }}
+                />
+              ) : (
+                <PrintIcon
+                  sx={{
+                    ml: 1,
+                    color: primaryColor
+                  }}
+                />
+              )}
+              {isCompact
+                ? "تصدير طلب السداد PDF"
+                : "طباعة طلب السداد"}
             </MenuItem>
           </Box>
         ) : (

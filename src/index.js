@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import './security/apiAuth';
 import { AuthProvider } from './contexts/AuthContext';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';

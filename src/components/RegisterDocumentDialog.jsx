@@ -15,7 +15,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -63,6 +65,16 @@ const InfoField = ({ label, value }) => (
       gridTemplateColumns: "125px 1fr",
       gap: 1,
       py: 0.65,
+      "@media (max-width:1599px)": {
+        gridTemplateColumns: "82px 1fr",
+        gap: 0.45,
+        py: 0.35
+      },
+      "@media (max-width:599px)": {
+        gridTemplateColumns: "68px 1fr",
+        gap: 0.3,
+        py: 0.25
+      },
       borderBottom: "1px solid #eeeeee"
     }}
   >
@@ -70,13 +82,21 @@ const InfoField = ({ label, value }) => (
       sx={{
         fontWeight: 950,
         whiteSpace: "nowrap",
-        lineHeight: 1.5
+        lineHeight: 1.5,
+        "@media (max-width:1599px)": { fontSize: "0.58rem" },
+        "@media (max-width:599px)": { fontSize: "0.5rem" }
       }}
     >
       {label}
     </Typography>
 
-    <Typography sx={{ fontWeight: 800 }}>
+    <Typography
+      sx={{
+        fontWeight: 800,
+        "@media (max-width:1599px)": { fontSize: "0.58rem" },
+        "@media (max-width:599px)": { fontSize: "0.5rem" }
+      }}
+    >
       {value || "-"}
     </Typography>
   </Box>
@@ -89,6 +109,11 @@ const RegisterDocumentDialog = ({
   documentNo,
   apiBaseUrl
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const previewScale = isPhone ? 0.40 : isTablet ? 0.72 : 1;
+
   const [documentData, setDocumentData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -347,6 +372,10 @@ const RegisterDocumentDialog = ({
       onClose={onClose}
       fullScreen
       dir="rtl"
+      sx={{
+        // لازم استمارة التسجيل تظهر فوق كشف الحساب المفتوح تحتها.
+        zIndex: 1800
+      }}
     >
       <DialogTitle
         className="no-print"
@@ -356,18 +385,19 @@ const RegisterDocumentDialog = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          py: 1.3
+          py: isPhone ? 0.5 : isTablet ? 0.7 : 1.3,
+          px: isPhone ? 0.65 : isTablet ? 0.9 : 2
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <ReceiptLongIcon />
 
           <Box>
-            <Typography sx={{ fontWeight: 950 }}>
+            <Typography sx={{ fontWeight: 950, fontSize: isPhone ? "0.62rem" : isTablet ? "0.72rem" : undefined }}>
               عرض استمارة التسجيل
             </Typography>
 
-            <Typography sx={{ fontSize: "0.78rem", opacity: 0.9 }}>
+            <Typography sx={{ fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.78rem", opacity: 0.9 }}>
               رقم المستند:{" "}
               {documentData?.documentNo || documentNo || "-"}
             </Typography>
@@ -379,7 +409,13 @@ const RegisterDocumentDialog = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ backgroundColor: "#eeeeee", p: 2 }}>
+      <DialogContent
+        sx={{
+          backgroundColor: "#eeeeee",
+          p: isPhone ? 0.25 : isTablet ? 0.5 : 2,
+          overflow: "auto"
+        }}
+      >
         {loading ? (
           <Box
             sx={{
@@ -405,6 +441,15 @@ const RegisterDocumentDialog = ({
             {error}
           </Box>
         ) : documentData ? (
+          <Box
+            sx={{
+              width: isPhone ? `${210 * previewScale}mm` : isTablet ? `${210 * previewScale}mm` : "210mm",
+              height: isPhone ? `${297 * previewScale}mm` : isTablet ? `${297 * previewScale}mm` : "297mm",
+              mx: "auto",
+              position: "relative",
+              flexShrink: 0
+            }}
+          >
           <Paper
             ref={printRef}
             className="print-page"
@@ -419,7 +464,9 @@ const RegisterDocumentDialog = ({
               p: "10mm",
               overflow: "hidden",
               backgroundColor: "#fff",
-              color: "#111"
+              color: "#111",
+              transform: previewScale === 1 ? "none" : `scale(${previewScale})`,
+              transformOrigin: "top left"
             }}
           >
             {/* Header */}
@@ -711,7 +758,12 @@ const RegisterDocumentDialog = ({
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "flex-start"
+                  justifyContent: "flex-start",
+          "& .MuiButton-root": {
+            minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
+            px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+          }
                 }}
               >
                 <Box
@@ -829,15 +881,16 @@ const RegisterDocumentDialog = ({
               المبالغ المدفوعة رسوم دراسية غير مستردة
             </Typography>
           </Paper>
+          </Box>
         ) : null}
       </DialogContent>
 
       <DialogActions
         className="no-print"
         sx={{
-          px: 2,
-          py: 1.5,
-          gap: 1,
+          px: isPhone ? 0.45 : isTablet ? 0.7 : 2,
+          py: isPhone ? 0.35 : isTablet ? 0.55 : 1.5,
+          gap: isPhone ? 0.35 : isTablet ? 0.55 : 1,
           justifyContent: "flex-start"
         }}
       >

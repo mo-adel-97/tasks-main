@@ -439,19 +439,47 @@ const actionMenuItemSx = (color = primaryColor) => ({
   borderRadius: 2.2,
   direction: "rtl",
   transition: "all 160ms ease",
+
   "& .MuiListItemIcon-root": {
     minWidth: 0,
     ml: 1.1,
     mr: 0
   },
+
   "&:hover": {
     backgroundColor: `${color}10`,
     transform: "translateX(-3px)",
+
     "& .action-menu-icon": {
       backgroundColor: color,
       color: "#fff",
       boxShadow: `0 7px 16px ${color}35`
     }
+  },
+
+  // موبايل + تابلت فقط
+  "@media (max-width:1599px)": {
+    mx: 0.35,
+    my: 0.12,
+    minHeight: 33,
+    px: 0.55,
+    py: 0.22,
+    borderRadius: 1.35,
+
+    "& .MuiListItemIcon-root": {
+      ml: 0.5
+    },
+
+    "&:hover": {
+      transform: "none"
+    }
+  },
+
+  "@media (max-width:599px)": {
+    minHeight: 30,
+    mx: 0.25,
+    px: 0.45,
+    py: 0.16
   }
 });
 
@@ -471,26 +499,69 @@ const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
           backgroundColor: `${color}12`,
           border: `1px solid ${color}28`,
           transition: "all 160ms ease",
-          "& svg": { fontSize: "1.18rem" }
+
+          "& svg": {
+            fontSize: "1.18rem"
+          },
+
+          "@media (max-width:1599px)": {
+            width: 25,
+            height: 25,
+            borderRadius: 1.15,
+
+            "& svg": {
+              fontSize: "0.82rem"
+            }
+          },
+
+          "@media (max-width:599px)": {
+            width: 23,
+            height: 23,
+
+            "& svg": {
+              fontSize: "0.76rem"
+            }
+          }
         }}
       >
         {icon}
       </Box>
     </ListItemIcon>
+
     <ListItemText
       primary={label}
       primaryTypographyProps={{
         fontWeight: 900,
-        fontSize: "0.88rem",
         color: textColor,
-        textAlign: "left"
+        textAlign: "left",
+
+        sx: {
+          fontSize: "0.88rem",
+          lineHeight: 1.25,
+          whiteSpace: "nowrap",
+
+          "@media (max-width:1599px)": {
+            fontSize: "0.62rem"
+          },
+
+          "@media (max-width:599px)": {
+            fontSize: "0.56rem"
+          }
+        }
       }}
     />
   </MenuItem>
 );
 
 const ActionMenuSection = ({ children }) => (
-  <Box sx={{ py: 0.35 }}>{children}</Box>
+  <Box
+    sx={{
+      py: 0.35,
+      "@media (max-width:1599px)": { py: 0.12 }
+    }}
+  >
+    {children}
+  </Box>
 );
 
 
@@ -709,7 +780,10 @@ const OldStudentStatementDialog = ({
 
 const ReceptionOffice = () => {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const DESKTOP_BREAKPOINT = 1600;
+  const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
+  const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
+  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [searchType, setSearchType] = useState("nationalId");
   const [searchText, setSearchText] = useState("");
@@ -728,6 +802,11 @@ const [oldStatementError, setOldStatementError] = useState("");
   const [paymentContextLoading, setPaymentContextLoading] = useState(false);
   const [paymentContext, setPaymentContext] = useState(null);
   const [paymentNeedsRefresh, setPaymentNeedsRefresh] = useState(false);
+
+  useEffect(() => {
+    if (isDesktop) setMobileSidebarOpen(false);
+  }, [isDesktop]);
+
 
   const [admissionOrderOpen, setAdmissionOrderOpen] = useState(false);
 const [admissionOrderStudent, setAdmissionOrderStudent] = useState(null);
@@ -2071,6 +2150,16 @@ const handleAcceptOrder = (row) => {
     );
   };
 
+  const getCompactStudentName = (fullName) => {
+    const parts = String(fullName || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (parts.length <= 2) return parts.join(" ");
+    return `${parts[0]} ${parts[parts.length - 1]}`;
+  };
+
   const studentColumns = useMemo(
     () => [
       {
@@ -2280,6 +2369,173 @@ const handleAcceptOrder = (row) => {
     []
   );
 
+  // أعمدة مختصرة للموبايل والتابلت:
+  // الاسم الأول + الأخير، الهوية، الدبلوم/الدورة، وإجراء واحد صغير.
+  const compactStudentColumns = [
+    {
+      field: "studentName",
+      headerName: "الطالب",
+      flex: 1,
+      minWidth: isPhone ? 92 : 140,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+      renderCell: (params) => (
+        <Tooltip title={params.value || ""} arrow>
+          <Typography
+            sx={{
+              width: "100%",
+              fontWeight: 900,
+              fontSize: isPhone ? "0.48rem" : isTablet ? "0.58rem" : "0.72rem",
+              lineHeight: 1.2,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              textAlign: "center",
+              color: textColor
+            }}
+          >
+            {getCompactStudentName(params.value) || "-"}
+          </Typography>
+        </Tooltip>
+      )
+    },
+    {
+      field: "nationalId",
+      headerName: "الهوية",
+      width: isPhone ? 82 : 110,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Typography
+          sx={{
+            fontWeight: 900,
+            fontSize: isPhone ? "0.46rem" : isTablet ? "0.56rem" : "0.7rem",
+            whiteSpace: "nowrap"
+          }}
+        >
+          {params.value || "-"}
+        </Typography>
+      )
+    },
+    {
+      field: "diplomName",
+      headerName: "الدبلوم",
+      flex: 1,
+      minWidth: isPhone ? 94 : 145,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Tooltip title={params.row?.diplomName || ""} arrow>
+          <Typography
+            sx={{
+              width: "100%",
+              fontWeight: 900,
+              fontSize: isPhone ? "0.46rem" : isTablet ? "0.56rem" : "0.68rem",
+              lineHeight: 1.2,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              textAlign: "center"
+            }}
+          >
+            {params.row?.diplomName || "-"}
+          </Typography>
+        </Tooltip>
+      )
+    },
+    {
+      field: "actions",
+      headerName: "",
+      width: isPhone ? 42 : 48,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <IconButton
+          size="small"
+          onClick={(event) => handleOpenActionMenu(event, params.row)}
+          aria-label="إجراءات الطالب"
+          sx={{
+            width: isPhone ? 26 : 30,
+            height: isPhone ? 26 : 30,
+            color: whiteColor,
+            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+            "&:hover": {
+              background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`
+            }
+          }}
+        >
+          <MoreVertIcon sx={{ fontSize: isPhone ? 15 : 17 }} />
+        </IconButton>
+      )
+    }
+  ];
+
+  const compactOldStudentColumns = [
+    {
+      field: "studentName",
+      headerName: "الطالب",
+      flex: 1,
+      minWidth: isPhone ? 100 : 150,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Typography
+          title={params.value || ""}
+          sx={{
+            width: "100%",
+            fontWeight: 900,
+            fontSize: isPhone ? "0.48rem" : "0.58rem",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            textAlign: "center"
+          }}
+        >
+          {getCompactStudentName(params.value) || "-"}
+        </Typography>
+      )
+    },
+    {
+      field: "nationalId",
+      headerName: "الهوية",
+      width: isPhone ? 84 : 112,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "oldActions",
+      headerName: "",
+      width: isPhone ? 64 : 82,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.25} justifyContent="center">
+          <ActionButton
+            title="قبول طالب من الأرشيف"
+            icon={<PersonAddAlt1Icon />}
+            color="#2e7d32"
+            bg="#e8f5e9"
+            onClick={() => handleAcceptOldStudent(params.row)}
+          />
+          <ActionButton
+            title="كشف حساب قديم"
+            icon={<VisibilityIcon />}
+            color="#1565c0"
+            bg="#e3f2fd"
+            onClick={() => handleOldStatement(params.row)}
+          />
+        </Stack>
+      )
+    }
+  ];
+
   return (
     <Box
       sx={{
@@ -2293,61 +2549,80 @@ const handleAcceptOrder = (row) => {
         direction: "ltr",
         textAlign: "left",
         overflowX: "hidden",
-        '& .MuiTypography-h3': { fontSize: { xs: '1.35rem', sm: '1.7rem', md: '2.3rem' } },
-        '& .MuiTypography-h4': { fontSize: { xs: '1.15rem', sm: '1.45rem', md: '2rem' } },
-        '& .MuiTypography-h5': { fontSize: { xs: '0.98rem', sm: '1.15rem', md: '1.45rem' } },
-        '& .MuiTypography-h6': { fontSize: { xs: '0.84rem', sm: '0.95rem', md: '1.1rem' } },
-        '& .MuiTypography-body1': { fontSize: { xs: '0.74rem', sm: '0.84rem', md: '1rem' } },
-        '& .MuiTypography-body2': { fontSize: { xs: '0.66rem', sm: '0.75rem', md: '0.875rem' } },
-        '& .MuiButton-root': { fontSize: { xs: '0.72rem', sm: '0.8rem' } },
-        '& .MuiChip-root': { fontSize: { xs: '0.62rem', sm: '0.72rem' } }
+        '& .MuiTypography-h3': { fontSize: isDesktop ? undefined : { xs: '0.86rem', sm: '1rem', md: '1.15rem' } },
+        '& .MuiTypography-h4': { fontSize: isDesktop ? undefined : { xs: '0.78rem', sm: '0.9rem', md: '1.05rem' } },
+        '& .MuiTypography-h5': { fontSize: isDesktop ? undefined : { xs: '0.68rem', sm: '0.8rem', md: '0.94rem' } },
+        '& .MuiTypography-h6': { fontSize: isDesktop ? undefined : { xs: '0.58rem', sm: '0.68rem', md: '0.8rem' } },
+        '& .MuiTypography-body1': { fontSize: isDesktop ? undefined : { xs: '0.50rem', sm: '0.58rem', md: '0.68rem' } },
+        '& .MuiTypography-body2': { fontSize: isDesktop ? undefined : { xs: '0.46rem', sm: '0.54rem', md: '0.62rem' } },
+        '& .MuiButton-root': { fontSize: isDesktop ? undefined : { xs: '0.48rem', sm: '0.56rem', md: '0.64rem' } },
+        '& .MuiChip-root': { fontSize: isDesktop ? undefined : { xs: '0.42rem', sm: '0.5rem', md: '0.58rem' } }
       }}
     >
       {!isDesktop && (
         <AppBar
-          position="sticky"
+          position="fixed"
           elevation={0}
           sx={{
-            backgroundColor: "rgba(255,255,255,0.96)",
-            color: textColor,
-            borderBottom: `1px solid ${primaryLight}`,
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1401,
+            background: "rgba(255,255,255,0.96)",
             backdropFilter: "blur(14px)",
-            zIndex: (muiTheme) => muiTheme.zIndex.drawer + 1
+            color: "#17372b",
+            borderBottom: "1px solid rgba(5,117,70,0.12)"
           }}
         >
           <Toolbar
             sx={{
-              minHeight: { xs: 58, sm: 64 },
-              px: { xs: 1.2, sm: 2 },
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important",
+                md: "60px !important"
+              },
+              px: { xs: 0.8, sm: 1.2, md: 1.6 },
+              gap: 0.8,
               direction: "ltr"
             }}
           >
             <IconButton
-              onClick={() => setMobileSidebarOpen(true)}
-              aria-label="فتح القائمة"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              aria-label={mobileSidebarOpen ? "إغلاق القائمة" : "فتح القائمة"}
+              aria-expanded={mobileSidebarOpen}
               sx={{
-                width: 38,
-                height: 38,
-                color: primaryColor,
-                backgroundColor: primaryLight,
-                border: `1px solid rgba(5,117,70,0.18)`,
-                "&:hover": { backgroundColor: "#d9eee4" }
+                width: { xs: 36, sm: 40, md: 42 },
+                height: { xs: 36, sm: 40, md: 42 },
+                flexShrink: 0,
+                color: "#fff",
+                background: "linear-gradient(135deg, #057546, #034d31)",
+                boxShadow: "0 6px 16px rgba(5,117,70,0.22)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #034d31, #057546)"
+                }
               }}
             >
-              <MenuRoundedIcon />
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
             </IconButton>
 
-            <Box sx={{ minWidth: 0, textAlign: "left" }}>
-              <Typography sx={{ fontWeight: 950, fontSize: { xs: "0.94rem", sm: "1rem" } }}>
-                مكتب الاستقبال
-              </Typography>
-              <Typography sx={{ color: "#6f8a81", fontSize: "0.72rem", fontWeight: 700 }}>
-                إدارة بيانات وعمليات الطلاب
-              </Typography>
-            </Box>
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: { xs: "0.72rem", sm: "0.8rem", md: "0.88rem" },
+                color: "#17372b",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                minWidth: 0,
+                textOverflow: "ellipsis"
+              }}
+            >
+              مكتب الاستقبال
+            </Typography>
           </Toolbar>
         </AppBar>
       )}
@@ -2364,20 +2639,23 @@ const handleAcceptOrder = (row) => {
 
       <Box
         sx={{
-          ml: { xs: 0, lg: `${SIDEBAR_WIDTH}px` },
-          width: { xs: "100%", lg: `calc(100% - ${SIDEBAR_WIDTH}px)` },
-          p: { xs: 1, sm: 1.5, md: 2, lg: 2.5 },
+          ml: isDesktop ? `${SIDEBAR_WIDTH}px` : 0,
+          mr: 0,
+          width: isDesktop ? `calc(100% - ${SIDEBAR_WIDTH}px)` : "100%",
+          maxWidth: "100%",
+          p: isDesktop ? 2.5 : { xs: 0.35, sm: 0.6, md: 0.9 },
+          pt: isDesktop ? 2.5 : { xs: "54px", sm: "62px", md: "66px" },
           boxSizing: "border-box",
           overflowX: "hidden",
           minWidth: 0
         }}
       >
-        <Box sx={{ width: "100%", maxWidth: 1720, mx: "auto", minWidth: 0 }}>
+        <Box sx={{ width: "100%", maxWidth: isDesktop ? 1720 : "100%", mx: "auto", minWidth: 0 }}>
         <Paper
           elevation={0}
           sx={{
-            mb: 1.8,
-            borderRadius: 5,
+            mb: isDesktop ? 1.8 : { xs: 0.45, sm: 0.7, md: 0.9 },
+            borderRadius: isDesktop ? 5 : { xs: 1.6, sm: 2, md: 2.4 },
             border: `1px solid rgba(5,117,70,0.16)`,
             overflow: "hidden",
             backgroundColor: whiteColor,
@@ -2393,9 +2671,9 @@ const handleAcceptOrder = (row) => {
               flexWrap: { xs: "wrap", md: "nowrap" },
               alignItems: "center",
               justifyContent: "space-between",
-              px: { xs: 0.8, sm: 1.2, md: 2 },
-              py: { xs: 0.9, sm: 1.1, md: 1.4 },
-              gap: { xs: 0.8, sm: 1.2, md: 2 },
+              px: isDesktop ? 2 : { xs: 0.45, sm: 0.7, md: 1 },
+              py: isDesktop ? 1.4 : { xs: 0.45, sm: 0.6, md: 0.8 },
+              gap: isDesktop ? 2 : { xs: 0.35, sm: 0.55, md: 0.75 },
               background: `
                 radial-gradient(circle at 12% 0%, rgba(174,30,33,0.10), transparent 30%),
                 radial-gradient(circle at 88% 0%, rgba(5,117,70,0.16), transparent 34%),
@@ -2415,10 +2693,10 @@ const handleAcceptOrder = (row) => {
           >
             <Box
               sx={{
-                width: { xs: "100%", sm: 154 },
-                maxWidth: { xs: 280, sm: 154 },
-                height: { xs: 72, sm: 94 },
-                display: "flex",
+                display: isDesktop ? "flex" : "none",
+                width: 154,
+                maxWidth: 154,
+                height: 94,
                 alignItems: "center",
                 justifyContent: "center",
                 borderRadius: 4,
@@ -2448,13 +2726,56 @@ const handleAcceptOrder = (row) => {
             </Box>
 
             <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={1.2}
+              direction="row"
+              spacing={isDesktop ? 1.2 : 0}
               alignItems="center"
               sx={{
                 direction: "ltr",
-                width: { xs: "100%", sm: "auto" },
-                "& > *": { width: { xs: "100%", sm: "auto" } }
+
+                // الديسكتوب يرجع Flex عادي زي الشكل القديم.
+                // الموبايل والتابلت فقط يستخدموا Grid من 3 أزرار.
+                display: isDesktop ? "flex" : "grid",
+                gridTemplateColumns: isDesktop
+                  ? "none"
+                  : "repeat(3, minmax(0, 1fr))",
+
+                width: isDesktop ? "auto" : "100%",
+                gap: isDesktop
+                  ? 0
+                  : { xs: 0.35, sm: 0.55, md: 0.7 },
+
+                "& > *": {
+                  width: isDesktop ? "auto" : "100%"
+                },
+
+                "& .MuiButton-root": {
+                  minWidth: isDesktop ? 125 : 0,
+                  width: isDesktop ? "auto" : "100%",
+                  height: isDesktop
+                    ? 46
+                    : { xs: 30, sm: 33, md: 36 },
+
+                  px: isDesktop
+                    ? 1.5
+                    : { xs: 0.35, sm: 0.55, md: 0.75 },
+
+                  fontSize: isDesktop
+                    ? "0.82rem"
+                    : { xs: "0.47rem", sm: "0.55rem", md: "0.63rem" },
+
+                  whiteSpace: "nowrap"
+                },
+
+                "& .MuiButton-startIcon": {
+                  mr: isDesktop ? 0.5 : 0.2,
+                  ml: 0
+                },
+
+                "& .MuiSvgIcon-root": {
+                  fontSize: isDesktop
+                    ? 18
+                    : { xs: 14, sm: 16, md: 18 }
+                }
               }}
             >
               <HeaderButton
@@ -2484,8 +2805,8 @@ const handleAcceptOrder = (row) => {
 
           <Box
             sx={{
-              px: { xs: 1.5, md: 2 },
-              py: 1.5,
+              px: isDesktop ? 2 : { xs: 0.45, sm: 0.7, md: 1 },
+              py: isDesktop ? 1.5 : { xs: 0.45, sm: 0.6, md: 0.8 },
               background: `linear-gradient(180deg, ${whiteColor} 0%, #fbfffd 100%)`
             }}
           >
@@ -2497,7 +2818,7 @@ const handleAcceptOrder = (row) => {
                 direction: "ltr"
               }}
             >
-              <Grid item xs={12} md={3.8}>
+              <Grid item xs={12} md={3.8} sx={{ width: "100%" }}>
                 <RadioGroup
                   row
                   value={searchType}
@@ -2505,8 +2826,19 @@ const handleAcceptOrder = (row) => {
                   sx={{
                     justifyContent: "flex-start",
                     direction: "ltr",
-                    gap: 1,
-                    flexWrap: { xs: "wrap", sm: "nowrap" }
+                    gap: isDesktop ? 1 : { xs: 0.25, sm: 0.45, md: 0.65 },
+                    flexWrap: "nowrap",
+                    width: "100%",
+                    justifyContent: isDesktop ? "flex-start" : "space-between",
+                    "& .MuiRadio-root": {
+                      p: isDesktop ? undefined : { xs: 0.25, sm: 0.35 }
+                    },
+                    "& .MuiSvgIcon-root": {
+                      fontSize: isDesktop ? undefined : { xs: 16, sm: 18, md: 20 }
+                    },
+                    "& .MuiFormControlLabel-label": {
+                      fontSize: isDesktop ? undefined : { xs: "0.49rem", sm: "0.57rem", md: "0.65rem" }
+                    }
                   }}
                 >
                   <FormControlLabel
@@ -2539,7 +2871,7 @@ const handleAcceptOrder = (row) => {
                 </RadioGroup>
               </Grid>
 
-              <Grid item xs={12} md={4.2}>
+              <Grid item xs={12} md={4.2} sx={{ width: "100%" }}>
                 <TextField
                   fullWidth
                   size="small"
@@ -2559,21 +2891,31 @@ const handleAcceptOrder = (row) => {
                   }}
                   label={searchLabel}
                   placeholder={`اكتب ${searchLabel}`}
-                  InputLabelProps={{
-                    sx: {
-                      fontWeight: 900,
-                      right: 22,
-                      right: "auto",
-                      transformOrigin: "top left"
-                    }
-                  }}
+                 InputLabelProps={{
+  sx: {
+    fontWeight: 900,
+    right: "auto",
+    transformOrigin: "top left",
+
+    fontSize: isPhone
+      ? "0.55rem"
+      : isTablet
+        ? "0.65rem"
+        : undefined,
+  }
+}}
                   inputProps={{
-                    style: {
-                      textAlign: "right",
-                      fontWeight: 900,
-                      direction: searchType === "name" ? "ltr" : "ltr"
-                    }
-                  }}
+  style: {
+    textAlign: "right",
+    fontWeight: 900,
+    direction: "ltr",
+    fontSize: isPhone
+      ? "0.72rem"
+      : isTablet
+        ? "0.82rem"
+        : "1rem",
+  }
+}}
                   sx={{
                     backgroundColor: whiteColor,
                     borderRadius: 3,
@@ -2581,7 +2923,8 @@ const handleAcceptOrder = (row) => {
                     boxShadow: "0 8px 22px rgba(5,117,70,0.07)",
                     "& .MuiOutlinedInput-root": {
                       fontWeight: 900,
-                      borderRadius: 3,
+                      minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 40 },
+                      borderRadius: isDesktop ? 3 : 1.5,
                       "& fieldset": { borderColor: primaryLight },
                       "&:hover fieldset": { borderColor: primaryColor },
                       "&.Mui-focused fieldset": { borderColor: primaryColor, borderWidth: 2 }
@@ -2593,18 +2936,34 @@ const handleAcceptOrder = (row) => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={1}
-                  alignItems="center"
-                  justifyContent="flex-start"
+              <Grid item xs={12} md={4} sx={{ width: "100%" }}>
+                <Box
                   sx={{
                     direction: "ltr",
-                    flexWrap: { xs: "wrap", sm: "nowrap" },
                     width: "100%",
+
+                    // Desktop: كل العناصر في صف واحد.
+                    display: isDesktop ? "flex" : "grid",
+                    alignItems: "center",
+                    justifyContent: isDesktop ? "center" : "stretch",
+
+                    // Mobile / Tablet: العداد + العنوان + الزرين في صف مرتب.
+                    gridTemplateColumns: isDesktop
+                      ? "none"
+                      : "auto auto minmax(0, 1fr) minmax(0, 1fr)",
+
+                    gap: isDesktop
+                      ? 1
+                      : { xs: 0.35, sm: 0.55, md: 0.7 },
+
                     "& .MuiButton-root": {
-                      width: { xs: "100%", sm: "auto" }
+                      width: isDesktop ? "auto" : "100%",
+                      minWidth: isDesktop ? 95 : 0,
+                      height: isDesktop ? 40 : { xs: 30, sm: 33, md: 36 },
+                      fontSize: isDesktop
+                        ? "0.82rem"
+                        : { xs: "0.47rem", sm: "0.55rem", md: "0.63rem" },
+                      whiteSpace: "nowrap"
                     }
                   }}
                 >
@@ -2613,20 +2972,25 @@ const handleAcceptOrder = (row) => {
                       fontWeight: 900,
                       color: textColor,
                       lineHeight: 1.2,
-                      whiteSpace: "normal",
-                      minWidth: 88,
+                      whiteSpace: "nowrap",
+                      minWidth: isDesktop ? 120 : "auto",
+                      fontSize: isDesktop
+                        ? "0.9rem"
+                        : { xs: "0.48rem", sm: "0.56rem", md: "0.64rem" },
                       textAlign: "center"
                     }}
                   >
-                      نــتــائــج الــــبــحـــث
+                    نتائج البحث
                   </Typography>
 
                   <Typography
                     sx={{
                       color: accentColor,
                       fontWeight: 900,
-                      fontSize: "1.45rem",
-                      minWidth: 40,
+                      fontSize: isDesktop
+                        ? "1.25rem"
+                        : { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+                      minWidth: isDesktop ? 34 : 22,
                       textAlign: "center"
                     }}
                   >
@@ -2645,8 +3009,7 @@ const handleAcceptOrder = (row) => {
                     disabled={loading}
                     onClick={handleSearch}
                     sx={{
-                      height: 40,
-                      minWidth: 95,
+                      minWidth: isDesktop ? 110 : 0,
                       borderRadius: 2,
                       fontWeight: 900,
                       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
@@ -2669,8 +3032,7 @@ const handleAcceptOrder = (row) => {
                     variant="outlined"
                     onClick={handleRefresh}
                     sx={{
-                      height: 40,
-                      minWidth: 80,
+                      minWidth: isDesktop ? 95 : 0,
                       borderRadius: 2,
                       fontWeight: 900,
                       color: accentColor,
@@ -2684,7 +3046,7 @@ const handleAcceptOrder = (row) => {
                   >
                     مسح
                   </Button>
-                </Stack>
+                </Box>
               </Grid>
             </Grid>
           </Box>
@@ -2693,13 +3055,25 @@ const handleAcceptOrder = (row) => {
         {!showOldGrid && students.length === 0 && !loading && (
           <Alert
             severity="info"
-            sx={{
-              mb: 1.5,
-              borderRadius: 2,
-              fontWeight: 800,
-              direction: "ltr",
-              textAlign: "left"
-            }}
+           sx={{
+  mb: 1.5,
+  borderRadius: 2,
+  fontWeight: 800,
+  direction: "ltr",
+  textAlign: "left",
+
+  fontSize: isPhone
+    ? "0.52rem"
+    : isTablet
+      ? "0.62rem"
+      : undefined,
+
+  py: isPhone ? 0.25 : isTablet ? 0.4 : undefined,
+
+  "& .MuiAlert-icon": {
+    fontSize: isPhone ? 17 : isTablet ? 19 : undefined,
+  },
+}}
           >
             ابدأ بالبحث عن الطالب برقم الهوية أو رقم الجوال أو الاسم.
           </Alert>
@@ -2723,7 +3097,7 @@ const handleAcceptOrder = (row) => {
         <Paper
           elevation={0}
           sx={{
-            minHeight: { xs: 360, md: 430 },
+            minHeight: isDesktop ? 430 : { xs: "68dvh", sm: "72dvh", md: "74dvh" },
             width: "100%",
             overflow: "hidden",
             maxWidth: "100%",
@@ -2737,26 +3111,33 @@ const handleAcceptOrder = (row) => {
           <Box
             sx={{
               width: "100%",
-              overflowX: "auto",
-              WebkitOverflowScrolling: "touch"
+              overflowX: isDesktop ? "auto" : "hidden",
+              WebkitOverflowScrolling: "touch",
+              minWidth: 0
             }}
           >
           <DataGrid
             rows={showOldGrid ? oldStudents : students}
-            columns={showOldGrid ? oldStudentColumns : studentColumns}
+            columns={
+              isDesktop
+                ? (showOldGrid ? oldStudentColumns : studentColumns)
+                : (showOldGrid ? compactOldStudentColumns : compactStudentColumns)
+            }
             loading={loading}
             disableRowSelectionOnClick
-            rowHeight={60}
-            columnHeaderHeight={48}
-            pageSizeOptions={[10, 25, 50, 100]}
+            rowHeight={isDesktop ? 60 : isPhone ? 38 : 44}
+            columnHeaderHeight={isDesktop ? 48 : isPhone ? 34 : 40}
+            pageSizeOptions={[30, 60, 100]}
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 25,
+                  pageSize: 30,
                   page: 0
                 }
               }
             }}
+            disableColumnMenu={!isDesktop}
+            disableColumnFilter={!isDesktop}
             localeText={{
               noRowsLabel: "لا توجد بيانات",
               footerRowSelected: (count) => `${count} صف محدد`,
@@ -2768,8 +3149,9 @@ const handleAcceptOrder = (row) => {
               border: "none",
               width: "100%",
               maxWidth: "100%",
-              minWidth: { xs: 900, md: "100%" },
+              minWidth: 0,
               direction: "ltr",
+              height: isDesktop ? 520 : { xs: "68dvh", sm: "72dvh", md: "74dvh" },
 
               "& .MuiDataGrid-main": {
                 overflow: "hidden"
@@ -2788,7 +3170,7 @@ const handleAcceptOrder = (row) => {
 
               "& .MuiDataGrid-columnHeaderTitle": {
                 fontWeight: 950,
-                fontSize: "0.82rem",
+                fontSize: isDesktop ? "0.82rem" : { xs: "0.43rem", sm: "0.52rem", md: "0.60rem" },
                 whiteSpace: "normal",
                 lineHeight: 1.2,
                 textAlign: "center",
@@ -2799,7 +3181,8 @@ const handleAcceptOrder = (row) => {
                 borderBottom: "1px solid #edf4f1",
                 fontWeight: 800,
                 outline: "none !important",
-                px: 0.5,
+                px: isDesktop ? 0.5 : { xs: 0.15, sm: 0.35, md: 0.45 },
+                fontSize: isDesktop ? undefined : { xs: "0.44rem", sm: "0.53rem", md: "0.61rem" },
                 overflow: "hidden"
               },
 
@@ -2828,42 +3211,74 @@ const handleAcceptOrder = (row) => {
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
           sx: {
-              width: 310,
-              maxHeight: "76vh",
-              mt: 0.8,
-              borderRadius: 3.2,
+              width: isDesktop ? 310 : { xs: 205, sm: 230, md: 245 },
+              maxWidth: isDesktop ? 310 : "72vw",
+              maxHeight: isDesktop ? "76vh" : { xs: "67dvh", sm: "70dvh", md: "72dvh" },
+              mt: isDesktop ? 0.8 : 0.35,
+              borderRadius: isDesktop ? 3.2 : 1.8,
               direction: "rtl",
               textAlign: "right",
               border: "1px solid rgba(5,117,70,0.15)",
               background: "linear-gradient(180deg, #ffffff 0%, #fbfefc 100%)",
-              boxShadow: "0 24px 60px rgba(31,45,61,0.22)",
+              boxShadow: isDesktop
+                ? "0 24px 60px rgba(31,45,61,0.22)"
+                : "0 12px 28px rgba(31,45,61,0.18)",
               overflowY: "auto",
-              "&::-webkit-scrollbar": { width: 7 },
+              overflowX: "hidden",
+              "&::-webkit-scrollbar": { width: isDesktop ? 7 : 4 },
               "&::-webkit-scrollbar-thumb": {
                 backgroundColor: "rgba(5,117,70,0.25)",
                 borderRadius: 10
               }
             }
         }}
-        MenuListProps={{ sx: { py: 0.8 } }}
+        MenuListProps={{
+          sx: {
+            py: isDesktop ? 0.8 : 0.3
+          }
+        }}
       >
         <Box
           sx={{
-            mx: 1,
-            mb: 0.55,
-            px: 1.4,
-            py: 1.15,
-            borderRadius: 2.4,
+            mx: isDesktop ? 1 : 0.4,
+            mb: isDesktop ? 0.55 : 0.22,
+            px: isDesktop ? 1.4 : { xs: 0.65, sm: 0.8, md: 0.9 },
+            py: isDesktop ? 1.15 : { xs: 0.5, sm: 0.6, md: 0.7 },
+            borderRadius: isDesktop ? 2.4 : 1.35,
             color: "#fff",
             background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-            boxShadow: "0 9px 22px rgba(5,117,70,0.22)"
+            boxShadow: isDesktop
+              ? "0 9px 22px rgba(5,117,70,0.22)"
+              : "0 5px 12px rgba(5,117,70,0.18)"
           }}
         >
-          <Typography sx={{ fontWeight: 950, fontSize: "0.92rem",textAlign:"left"}}>
+          <Typography
+            sx={{
+              fontWeight: 950,
+              fontSize: isDesktop ? "0.92rem" : { xs: "0.62rem", sm: "0.68rem", md: "0.74rem" },
+              lineHeight: 1.2,
+              textAlign: "left"
+            }}
+          >
             إجراءات الطالب
           </Typography>
-          <Typography sx={{ mt: 0.2, opacity: 0.88, fontSize: "0.72rem", fontWeight: 700,textAlign:"left"}}>
-            {actionRow?.studentName || "اختر الإجراء المطلوب"}
+
+          <Typography
+            sx={{
+              mt: isDesktop ? 0.2 : 0.1,
+              opacity: 0.9,
+              fontSize: isDesktop ? "0.72rem" : { xs: "0.48rem", sm: "0.54rem", md: "0.6rem" },
+              fontWeight: 800,
+              lineHeight: 1.25,
+              textAlign: "left",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            {actionRow?.studentName
+              ? getCompactStudentName(actionRow.studentName)
+              : "اختر الإجراء المطلوب"}
           </Typography>
         </Box>
 
@@ -2876,7 +3291,7 @@ const handleAcceptOrder = (row) => {
           <ActionMenuItem icon={<MenuBookIcon />} label="الملف التدريبي" color="#3949ab" onClick={() => runAction(handleStudyFile, "جاري فتح الملف التدريبي...")} />
         </ActionMenuSection>
 
-        <Divider sx={{ mx: 1.2 }} />
+        <Divider sx={{ mx: isDesktop ? 1.2 : 0.55 }} />
 
         <ActionMenuSection>
           <ActionMenuItem icon={<UndoIcon />} label="مرتجع استمارة" color="#8e24aa" onClick={() => runAction(handleReRegister, "جاري تجهيز مرتجع الاستمارة...")} />
@@ -2885,7 +3300,7 @@ const handleAcceptOrder = (row) => {
           <ActionMenuItem icon={<LockOpenIcon />} label="إعادة فتح ملف طالب" color={primaryColor} onClick={() => runAction((row) => handleToggleProfileLock(row, false), "", false)} />
         </ActionMenuSection>
 
-        <Divider sx={{ mx: 1.2 }} />
+        <Divider sx={{ mx: isDesktop ? 1.2 : 0.55 }} />
 
         <ActionMenuSection>
           <ActionMenuItem icon={<PublishedWithChangesIcon />} label="تغيير حالة الطالب" color="#00897b" onClick={() => runAction(handleChangeStudentStatus, "جاري تحميل حالات الطالب...")} />

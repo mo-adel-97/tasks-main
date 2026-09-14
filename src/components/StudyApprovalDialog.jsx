@@ -19,7 +19,9 @@ import {
   Select,
   Stack,
   TextField,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import SaveIcon from "@mui/icons-material/Save";
@@ -69,6 +71,38 @@ const StudyApprovalDialog = ({
   onClose,
   onSaved
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
+  const compactMenuProps = {
+    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+    transformOrigin: { vertical: "top", horizontal: "right" },
+    MenuListProps: {
+      dense: true,
+      sx: { p: isCompact ? 0.25 : 0.75 }
+    },
+    PaperProps: {
+      sx: {
+        maxHeight: isPhone ? 190 : isTablet ? 230 : 340,
+        mt: 0.3,
+        borderRadius: isCompact ? 1.2 : 2,
+        boxShadow: "0 10px 26px rgba(31,45,61,0.16)",
+        "& .MuiMenuItem-root": {
+          minHeight: isPhone ? 30 : isTablet ? 34 : 40,
+          py: isPhone ? 0.35 : isTablet ? 0.48 : 0.75,
+          pr: isPhone ? 0.65 : isTablet ? 0.85 : 1.5,
+          pl: isPhone ? 2.1 : isTablet ? 2.6 : 1.5,
+          fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : "0.875rem",
+          fontWeight: 850,
+          lineHeight: 1.15,
+          whiteSpace: "normal"
+        }
+      }
+    }
+  };
+
   const currentUser = useMemo(() => getCurrentUser(), []);
   const userGuid = useMemo(() => getUserGuid(currentUser), [currentUser]);
 
@@ -1289,7 +1323,11 @@ const StudyApprovalDialog = ({
               flex-direction: row;
               align-items: center;
               justify-content: flex-start;
-              gap: 10px;
+              gap: isCompact ? 0.35 : 1,
+          py: isPhone ? 0.42 : isTablet ? 0.6 : 1.5,
+          px: isPhone ? 0.7 : isTablet ? 0.95 : 2,
+          fontSize: isPhone ? "0.58rem" : isTablet ? "0.7rem" : undefined,
+          flexShrink: 00px;
               width: 100%;
               text-align: right;
             }
@@ -1490,13 +1528,36 @@ const StudyApprovalDialog = ({
       onClose={saving ? undefined : onClose}
       maxWidth="xl"
       fullWidth
+      fullScreen={isPhone}
       dir="rtl"
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
       PaperProps={{
         sx: {
-          width: "95vw",
-          maxWidth: 1500,
-          minHeight: "88vh",
-          borderRadius: 3
+          width: isPhone ? "100vw" : isTablet ? "96vw" : "95vw",
+          maxWidth: isPhone ? "100vw" : isTablet ? "1100px" : 1500,
+          height: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "90vh",
+          maxHeight: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "90vh",
+          minHeight: 0,
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
         }
       }}
     >
@@ -1509,7 +1570,7 @@ const StudyApprovalDialog = ({
           gap: 1
         }}
       >
-        <SchoolIcon />
+        <SchoolIcon sx={{ fontSize: isPhone ? 14 : isTablet ? 17 : undefined }} />
         {editMode
           ? `تعديل موافقة دراسية رقم ${
               currentOrderCode ||
@@ -1519,17 +1580,71 @@ const StudyApprovalDialog = ({
           : "طلب موافقة دراسية"}
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 3 }}>
-        {error ? <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert> : null}
+      <DialogContent
+        dividers
+        sx={{
+          px: isPhone ? 1.2 : isTablet ? 1.5 : 3,
+py: isPhone ? 0.8 : isTablet ? 1 : 3,
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0,
+          "& .MuiInputLabel-root": {
+            fontSize: isPhone ? "0.46rem" : isTablet ? "0.55rem" : undefined
+          },
+          "& .MuiInputBase-input, & .MuiSelect-select": {
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
+          },
+          "& .MuiOutlinedInput-root": {
+            minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+            borderRadius: isCompact ? 1.2 : undefined
+          },
+          "& .MuiFormLabel-root": {
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+            fontWeight: 900,
+            mb: isPhone ? 0.35 : isTablet ? 0.45 : undefined
+          },
+          "& .MuiFormControlLabel-label": {
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            fontWeight: 800
+          },
+          "& .MuiRadio-root": {
+            p: isPhone ? 0.35 : isTablet ? 0.5 : undefined
+          },
+          "& .MuiRadio-root svg": {
+            fontSize: isPhone ? 17 : isTablet ? 19 : undefined
+          },
+
+          "& .MuiFormControl-root": {
+            mb: isPhone ? 0.25 : isTablet ? 0.35 : undefined
+          },
+
+          "& .MuiTextField-root": {
+            mt: isPhone ? 0.05 : isTablet ? 0.08 : undefined
+          }
+        }}
+      >
+        {error ? (
+          <Alert
+            severity="error"
+            sx={{
+              mb: isCompact ? 0.4 : 2,
+              py: isCompact ? 0.15 : undefined,
+              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+            }}
+          >
+            {error}
+          </Alert>
+        ) : null}
 
         {loadingLookups || loadingOrder ? (
           <Box sx={{ py: 8, textAlign: "center" }}>
             <CircularProgress />
           </Box>
         ) : (
-          <Stack spacing={2}>
-            <Grid container spacing={1.5}>
-              <Grid item xs={12} md={4}>
+          <Stack spacing={isPhone ? 0.9 : isTablet ? 1.1 : 2}>
+            <Grid container spacing={isPhone ? 0.75 : isTablet ? 0.95 : 1.5}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   fullWidth
                   label="اسم الطالب"
@@ -1538,7 +1653,7 @@ const StudyApprovalDialog = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={6} sm={3} md={4}>
                 <TextField
                   fullWidth
                   label="رقم الهوية"
@@ -1547,7 +1662,7 @@ const StudyApprovalDialog = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={6} sm={3} md={4}>
                 <TextField
                   fullWidth
                   label="رقم الجوال"
@@ -1557,44 +1672,64 @@ const StudyApprovalDialog = ({
               </Grid>
             </Grid>
 
-            <FormControl>
-              <FormLabel>نوع البرنامج</FormLabel>
-              <RadioGroup
-                row
-                value={programType}
-                onChange={(e) => setProgramType(Number(e.target.value))}
-              >
-                {approvalTypes.map((item) => (
-                  <FormControlLabel
-                    key={item.value}
-                    value={item.value}
-                    control={<Radio />}
-                    label={item.label}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
+            <FormControl
+  sx={{
+    pl: isPhone ? 1.2 : isTablet ? 1.5 : 0
+  }}
+>
+  <FormLabel>نوع البرنامج</FormLabel>
 
-            <FormControl>
-              <FormLabel>نوع الدراسة</FormLabel>
-              <RadioGroup
-                row
-                value={studyType}
-                onChange={(e) => setStudyType(Number(e.target.value))}
-              >
-                <FormControlLabel value={0} control={<Radio />} label="حضوري" />
-                <FormControlLabel value={1} control={<Radio />} label="عن بعد" />
-              </RadioGroup>
-            </FormControl>
+  <RadioGroup
+    row
+    value={programType}
+    onChange={(e) => setProgramType(Number(e.target.value))}
+  >
+    {approvalTypes.map((item) => (
+      <FormControlLabel
+        key={item.value}
+        value={item.value}
+        control={<Radio />}
+        label={item.label}
+      />
+    ))}
+  </RadioGroup>
+</FormControl>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+          <FormControl
+  sx={{
+    pl: isPhone ? 1.2 : isTablet ? 1.5 : 0
+  }}
+>
+  <FormLabel>نوع الدراسة</FormLabel>
+
+  <RadioGroup
+    row
+    value={studyType}
+    onChange={(e) => setStudyType(Number(e.target.value))}
+  >
+    <FormControlLabel
+      value={0}
+      control={<Radio />}
+      label="حضوري"
+    />
+
+    <FormControlLabel
+      value={1}
+      control={<Radio />}
+      label="عن بعد"
+    />
+  </RadioGroup>
+</FormControl>
+
+            <Grid container spacing={isPhone ? 0.8 : isTablet ? 1 : 2}>
+              <Grid item xs={12} sm={6} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>فرع الدراسة</InputLabel>
                   <Select
                     value={branchGuid}
                     label="فرع الدراسة"
                     onChange={(e) => setBranchGuid(e.target.value)}
+                    MenuProps={compactMenuProps}
                   >
                     {branches.map((item) => (
                       <MenuItem key={item.guid} value={item.guid}>
@@ -1605,13 +1740,14 @@ const StudyApprovalDialog = ({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>القطاع التابع له المتدرب</InputLabel>
                   <Select
                     value={sectorGuid}
                     label="القطاع التابع له المتدرب"
                     onChange={(e) => setSectorGuid(e.target.value)}
+                    MenuProps={compactMenuProps}
                   >
                     {sectors.map((item) => (
                       <MenuItem key={item.guid} value={item.guid}>
@@ -1624,13 +1760,14 @@ const StudyApprovalDialog = ({
 
               {programType === 0 ? (
                 <>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>البرنامج المراد التسجيل به</InputLabel>
                       <Select
                         value={diplomGuid}
                         label="البرنامج المراد التسجيل به"
                         onChange={(e) => setDiplomGuid(e.target.value)}
+                        MenuProps={compactMenuProps}
                         disabled={!branchGuid}
                       >
                         {programs.map((item) => (
@@ -1642,13 +1779,14 @@ const StudyApprovalDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>الدفعة</InputLabel>
                       <Select
                         value={batchGuid}
                         label="الدفعة"
                         onChange={(e) => setBatchGuid(e.target.value)}
+                        MenuProps={compactMenuProps}
                         disabled={!branchGuid}
                       >
                         {batches.map((item) => {
@@ -1674,13 +1812,14 @@ const StudyApprovalDialog = ({
                 </>
               ) : programType === 1 ? (
                 <>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>الدفعة</InputLabel>
                       <Select
                         value={batchGuid}
                         label="الدفعة"
                         onChange={(e) => setBatchGuid(e.target.value)}
+                        MenuProps={compactMenuProps}
                         disabled={!branchGuid}
                       >
                         {batches.map((item) => {
@@ -1704,13 +1843,14 @@ const StudyApprovalDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6} md={6}>
                     <FormControl fullWidth>
                       <InputLabel>البرنامج المراد التسجيل به</InputLabel>
                       <Select
                         value={diplomGuid}
                         label="البرنامج المراد التسجيل به"
                         onChange={(e) => setDiplomGuid(e.target.value)}
+                        MenuProps={compactMenuProps}
                         disabled={!branchGuid || !batchGuid}
                       >
                         {programs.map((item) => (
@@ -1723,13 +1863,14 @@ const StudyApprovalDialog = ({
                   </Grid>
                 </>
               ) : (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>البرنامج المراد التسجيل به</InputLabel>
                     <Select
                       value={diplomGuid}
                       label="البرنامج المراد التسجيل به"
                       onChange={(e) => setDiplomGuid(e.target.value)}
+                      MenuProps={compactMenuProps}
                       disabled={!branchGuid}
                     >
                       {programs.map((item) => (
@@ -1755,7 +1896,7 @@ const StudyApprovalDialog = ({
                 </Grid>
               ) : null}
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6} md={6}>
                 <TextField
                   fullWidth
                   label="القائم بالتسجيل"
@@ -1764,7 +1905,7 @@ const StudyApprovalDialog = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={6} sm={3} md={3}>
                 <TextField
                   fullWidth
                   label="تاريخ بدء الدراسة هـ"
@@ -1776,7 +1917,7 @@ const StudyApprovalDialog = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={6} sm={3} md={3}>
                 <TextField
                   fullWidth
                   label="تاريخ نهاية الدراسة هـ"
@@ -1788,7 +1929,7 @@ const StudyApprovalDialog = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={6} sm={3} md={3}>
                 <TextField
                   fullWidth
                   type="number"
@@ -1798,23 +1939,35 @@ const StudyApprovalDialog = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
-                <FormControlLabel
-                  control={
-                    <Radio
-                      checked={showGregorian}
-                      onClick={() => setShowGregorian((v) => !v)}
-                    />
-                  }
-                  label="إظهار الميلادي في الموافقة"
-                />
-              </Grid>
+              <Grid
+  item
+  xs={6}
+  sm={3}
+  md={3}
+  sx={{
+   pl: {
+  xs: "20px !important",
+  sm: "24px !important",
+  md: "24px !important"
+}
+  }}
+>
+  <FormControlLabel
+    control={
+      <Radio
+        checked={showGregorian}
+        onClick={() => setShowGregorian((v) => !v)}
+      />
+    }
+    label="إظهار الميلادي في الموافقة"
+  />
+</Grid>
             </Grid>
 
             <TextField
               fullWidth
               multiline
-              minRows={5}
+              minRows={isPhone ? 2 : isTablet ? 3 : 5}
               label="ملاحظات"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -1829,7 +1982,14 @@ const StudyApprovalDialog = ({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions
+        sx={{
+          px: isPhone ? 0.35 : isTablet ? 0.55 : 3,
+          py: isPhone ? 0.28 : isTablet ? 0.42 : 2,
+          gap: isCompact ? 0.35 : 1,
+          flexShrink: 0
+        }}
+      >
         <Button
           variant="contained"
           onClick={save}
@@ -1843,7 +2003,10 @@ const StudyApprovalDialog = ({
           }
           sx={{
             backgroundColor: primaryColor,
-            minWidth: 140
+            minWidth: isPhone ? 90 : isTablet ? 108 : 140,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.7 : isTablet ? 1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
           }}
         >
           {editMode ? "تعديل" : "حفظ"}
@@ -1857,7 +2020,10 @@ const StudyApprovalDialog = ({
           sx={{
             color: primaryColor,
             borderColor: primaryColor,
-            minWidth: 130
+            minWidth: isPhone ? 78 : isTablet ? 95 : 130,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.7 : isTablet ? 1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
           }}
         >
           طباعة
@@ -1868,7 +2034,10 @@ const StudyApprovalDialog = ({
           disabled={saving}
           sx={{
             color: accentColor,
-            fontWeight: 900
+            fontWeight: 900,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.7 : isTablet ? 1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
           }}
         >
           إغلاق

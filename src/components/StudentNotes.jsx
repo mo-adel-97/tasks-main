@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  AppBar,
   Box,
   Paper,
   Typography,
@@ -10,16 +11,22 @@ import {
   Chip,
   Stack,
   IconButton,
-  Tooltip
+  Tooltip,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+  GlobalStyles
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DownloadIcon from "@mui/icons-material/Download";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SaveIcon from "@mui/icons-material/Save";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Sidebar from "./Sidebar";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 // API
 const API_BASE = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
@@ -55,6 +62,32 @@ function joinUrl(base, path) {
 }
 
 export default function StudentNotes() {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(() => {
     try { return JSON.parse(localStorage.getItem("user") || "{}"); }
     catch { return {}; }
@@ -148,30 +181,183 @@ export default function StudentNotes() {
   };
 
   return (
-    <Box sx={{ display: "flex", background: bg, minHeight: "100vh" }}>
-      {/* Sidebar */}
-      <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
-        <Sidebar />
-      </Box>
+    <Box
+      sx={{
+        display: "flex",
+        background: bg,
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        direction: "ltr"
+      }}
+    >
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: text,
+            borderBottom:
+              "1px solid rgba(128,180,158,0.25)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: { xs: 0.75, sm: 1 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: { xs: 20, sm: 22 }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.68rem",
+                  sm: "0.8rem"
+                },
+                color: text,
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              ملاحظات المتدربين
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       {/* Content */}
-      <Box sx={{ flex: 1, p: { xs: 1.5, md: 2.5 } }}>
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          width: "100%",
+          maxWidth: "100%",
+          ml: 0,
+          p: {
+            xs: 0.5,
+            sm: 0.8,
+            md: 1
+          },
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          boxSizing: "border-box",
+          overflowX: "hidden",
+
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            p: 2.5,
+            mt: 0
+          }
+        }}
+      >
         {/* Header */}
         <Paper
           elevation={0}
           sx={{
-            p: 2.2,
-            borderRadius: 3,
+            p: isPhone ? 0.7 : isTablet ? 0.95 : 2.2,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(128,180,158,0.25)",
             background: "linear-gradient(135deg, rgba(128,180,158,0.12) 0%, rgba(248,251,250,1) 60%)"
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: text }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 800,
+                  color: text,
+                  fontSize: isPhone
+                    ? "0.7rem"
+                    : isTablet
+                      ? "0.84rem"
+                      : undefined
+                }}
+              >
                 ملاحظات المتدربين
               </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.75, mt: 0.3 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  opacity: 0.75,
+                  mt: 0.3,
+                  fontSize: isPhone
+                    ? "0.42rem"
+                    : isTablet
+                      ? "0.5rem"
+                      : undefined,
+                  display: isPhone ? "none" : "block"
+                }}
+              >
                 ارفع ملف Excel + اكتب ملاحظة عليه. الملفات تظهر فقط لصاحب الرفع.
               </Typography>
             </Box>
@@ -179,10 +365,13 @@ export default function StudentNotes() {
             <Chip
               label={`Branch: ${branchGuid ? branchGuid.slice(0, 8) + "..." : "-"}`}
               sx={{
+                display: isPhone ? "none" : "inline-flex",
                 fontWeight: 700,
                 background: "rgba(128,180,158,0.15)",
                 color: primaryDark,
-                border: "1px solid rgba(128,180,158,0.25)"
+                border: "1px solid rgba(128,180,158,0.25)",
+                height: isTablet ? 26 : undefined,
+                fontSize: isTablet ? "0.5rem" : undefined
               }}
             />
           </Stack>
@@ -192,9 +381,9 @@ export default function StudentNotes() {
         <Paper
           elevation={0}
           sx={{
-            mt: 2,
-            p: 2,
-            borderRadius: 3,
+            mt: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+            p: isPhone ? 0.7 : isTablet ? 0.95 : 2,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(128,180,158,0.25)"
           }}
         >
@@ -203,7 +392,16 @@ export default function StudentNotes() {
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
-          <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ md: "center" }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isCompact
+                ? "repeat(2,minmax(0,1fr))"
+                : "auto minmax(160px,1fr) minmax(280px,360px) auto",
+              gap: isPhone ? 0.6 : isTablet ? 0.8 : 2,
+              alignItems: "center"
+            }}
+          >
             <Button
               variant="contained"
               component="label"
@@ -229,7 +427,12 @@ export default function StudentNotes() {
               />
             </Button>
 
-            <Box sx={{ flex: 1 }}>
+            <Box
+              sx={{
+                minWidth: 0,
+                gridColumn: isPhone ? "1 / -1" : undefined
+              }}
+            >
               <Typography variant="body2" sx={{ fontWeight: 700, color: text }}>
                 {file ? file.name : "لم يتم اختيار ملف"}
               </Typography>
@@ -242,7 +445,16 @@ export default function StudentNotes() {
               label="ملاحظة على الملف (اختياري)"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              sx={{ minWidth: { xs: "100%", md: 360 } }}
+              sx={{
+                minWidth: 0,
+                gridColumn: isCompact ? "1 / -1" : undefined,
+                "& .MuiInputBase-input": {
+                  fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+                },
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone ? 31 : isTablet ? 34 : undefined
+                }
+              }}
             />
 
             <Button
@@ -260,16 +472,16 @@ export default function StudentNotes() {
             >
               {loading ? "جاري الرفع..." : "رفع"}
             </Button>
-          </Stack>
+          </Box>
         </Paper>
 
         {/* List */}
         <Paper
           elevation={0}
           sx={{
-            mt: 2,
-            p: 2,
-            borderRadius: 3,
+            mt: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+            p: isPhone ? 0.7 : isTablet ? 0.95 : 2,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(128,180,158,0.25)"
           }}
         >
@@ -292,7 +504,13 @@ export default function StudentNotes() {
             </Typography>
           )}
 
-          <Box sx={{ display: "grid", gap: 1.5, mt: 2 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gap: isPhone ? 0.65 : isTablet ? 0.85 : 1.5,
+              mt: isPhone ? 0.65 : isTablet ? 0.85 : 2
+            }}
+          >
             {rows.map((r) => {
               const fileUrl = joinUrl(FILE_BASE, r.file_path); // ✅ هنا الحل
               const noteVal = editingNotes[r.id] ?? "";
@@ -302,15 +520,28 @@ export default function StudentNotes() {
                   key={r.id}
                   elevation={0}
                   sx={{
-                    p: 2,
-                    borderRadius: 3,
+                    p: isPhone ? 0.65 : isTablet ? 0.85 : 2,
+                    borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
                     border: "1px solid rgba(128,180,158,0.2)",
                     background: "linear-gradient(180deg, rgba(128,180,158,0.05) 0%, #fff 45%)"
                   }}
                 >
-                  <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" gap={2}>
+                  <Stack
+                    direction={isCompact ? "column" : "row"}
+                    justifyContent="space-between"
+                    gap={isPhone ? 0.55 : isTablet ? 0.75 : 2}
+                  >
                     <Box sx={{ flex: 1 }}>
-                      <Typography sx={{ fontWeight: 900, color: text }}>
+                      <Typography
+                        sx={{
+                          fontWeight: 900,
+                          color: text,
+                          fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis"
+                        }}
+                      >
                         {r.original_filename}
                       </Typography>
                       <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -359,7 +590,17 @@ export default function StudentNotes() {
                       </Stack>
                     </Box>
 
-                    <Stack direction="row" spacing={1} alignItems="flex-start">
+                    <Stack
+                      direction="row"
+                      spacing={0.6}
+                      alignItems="flex-start"
+                      sx={{
+                        "& .MuiButton-root": {
+                          minHeight: isPhone ? 28 : isTablet ? 31 : undefined,
+                          fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                        }
+                      }}
+                    >
                       <Button
                         color="error"
                         variant="outlined"
@@ -379,11 +620,16 @@ export default function StudentNotes() {
                     value={noteVal}
                     onChange={(e) => setEditingNotes(prev => ({ ...prev, [r.id]: e.target.value }))}
                     multiline
-                    minRows={2}
+                    minRows={isPhone ? 1 : isTablet ? 1 : 2}
+                    maxRows={isPhone ? 2 : isTablet ? 2 : undefined}
                     fullWidth
                   />
 
-                  <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1.2 }}>
+                  <Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    sx={{ mt: isPhone ? 0.55 : isTablet ? 0.75 : 1.2 }}
+                  >
                     <Button
                       onClick={() => updateNote(r.id)}
                       disabled={savingId === r.id}

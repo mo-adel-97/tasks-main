@@ -86,7 +86,7 @@ const TechnicalSupport = () => {
   const fullName = user?.fullName || user?.name || '';
   const userJop = user?.userJop || 0;
   
-  const isSupportStaff = ['محمد عادل', 'sa','emadn','admin','خالد مجدي'].includes(userName);
+  const isSupportStaff = ['محمد عادل', 'sa','emadn','admin','خالد مجدي','حسام تغيان'].includes(userName);
   const isSupervisor = userJop === 9;
   
   const [subject, setSubject] = useState('');

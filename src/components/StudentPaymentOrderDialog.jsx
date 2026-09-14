@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import {
   Alert,
   Box,
@@ -17,7 +19,9 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import CloseIcon from "@mui/icons-material/Close";
@@ -28,6 +32,7 @@ import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import logoImage from "../images/logo.jpg";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -43,6 +48,230 @@ const dangerColor = accentColor;
 const warningColor = accentColor;
 
 const noGuid = "00000000-0000-0000-0000-000000000000";
+
+
+const exportHtmlDocumentToPdf = async ({
+  html,
+  fileName = "document.pdf",
+  selector = ".sheet, .page, main, body",
+  scale = 2
+}) => {
+  let iframe = null;
+
+  try {
+    iframe = document.createElement("iframe");
+
+    Object.assign(iframe.style, {
+      position: "fixed",
+      left: "-10000px",
+      top: "0",
+      width: "820px",
+      height: "1180px",
+      border: "0",
+      opacity: "0",
+      pointerEvents: "none"
+    });
+
+    iframe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iframe);
+
+    const safeHtml = String(html || "")
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(
+        /<button[^>]*class=["'][^"']*(?:print-btn|no-print)[^"']*["'][^>]*>[\s\S]*?<\/button>/gi,
+        ""
+      );
+
+    const loaded = new Promise((resolve) => {
+      iframe.onload = () => resolve();
+    });
+
+    iframe.srcdoc = safeHtml;
+    await loaded;
+
+    const doc = iframe.contentDocument;
+
+    if (!doc) {
+      throw new Error("تعذر تجهيز محتوى ملف PDF");
+    }
+
+    if (doc.fonts?.ready) {
+      try {
+        await doc.fonts.ready;
+      } catch {}
+    }
+
+    const images = Array.from(doc.images || []);
+
+    await Promise.all(
+      images.map(
+        (image) =>
+          new Promise((resolve) => {
+            if (
+              image.complete &&
+              image.naturalWidth > 0
+            ) {
+              resolve();
+              return;
+            }
+
+            const finish = () => resolve();
+
+            image.addEventListener(
+              "load",
+              finish,
+              { once: true }
+            );
+
+            image.addEventListener(
+              "error",
+              finish,
+              { once: true }
+            );
+
+            window.setTimeout(finish, 5000);
+          })
+      )
+    );
+
+    const target =
+      doc.querySelector(selector) ||
+      doc.body;
+
+    if (!target) {
+      throw new Error("تعذر العثور على نموذج التصدير");
+    }
+
+    target.style.boxShadow = "none";
+    target.style.margin = "0 auto";
+
+    const canvas = await html2canvas(target, {
+      scale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: "#ffffff",
+      logging: false,
+      imageTimeout: 7000,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: Math.max(
+        target.scrollWidth,
+        794
+      ),
+      windowHeight: Math.max(
+        target.scrollHeight,
+        1123
+      )
+    });
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    const canvasRatio =
+      canvas.height / canvas.width;
+
+    const renderedHeight =
+      pageWidth * canvasRatio;
+
+    if (renderedHeight <= pageHeight) {
+      pdf.addImage(
+        canvas.toDataURL("image/jpeg", 0.96),
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        renderedHeight,
+        undefined,
+        "FAST"
+      );
+    } else {
+      const pagePixelHeight =
+        Math.floor(
+          canvas.width *
+            (pageHeight / pageWidth)
+        );
+
+      let offsetY = 0;
+      let pageIndex = 0;
+
+      while (offsetY < canvas.height) {
+        const sliceHeight = Math.min(
+          pagePixelHeight,
+          canvas.height - offsetY
+        );
+
+        const pageCanvas =
+          document.createElement("canvas");
+
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+
+        const context =
+          pageCanvas.getContext("2d");
+
+        context.drawImage(
+          canvas,
+          0,
+          offsetY,
+          canvas.width,
+          sliceHeight,
+          0,
+          0,
+          canvas.width,
+          sliceHeight
+        );
+
+        if (pageIndex > 0) {
+          pdf.addPage("a4", "portrait");
+        }
+
+        const sliceRenderedHeight =
+          pageWidth *
+          (sliceHeight / canvas.width);
+
+        pdf.addImage(
+          pageCanvas.toDataURL(
+            "image/jpeg",
+            0.96
+          ),
+          "JPEG",
+          0,
+          0,
+          pageWidth,
+          sliceRenderedHeight,
+          undefined,
+          "FAST"
+        );
+
+        offsetY += sliceHeight;
+        pageIndex += 1;
+      }
+    }
+
+    pdf.save(
+      fileName.toLowerCase().endsWith(".pdf")
+        ? fileName
+        : `${fileName}.pdf`
+    );
+  } finally {
+    if (
+      iframe &&
+      iframe.parentNode
+    ) {
+      iframe.parentNode.removeChild(
+        iframe
+      );
+    }
+  }
+};
+
 
 const money = (value) => {
   const number = Number(value || 0);
@@ -87,8 +316,41 @@ const getBranchForWork = (user) => {
   return user?.branchForWork || user?.BranchForWork || user?.branchForWorkGuid || "";
 };
 
+const getResponsiveSwalOptions = () => {
+  const width = typeof window !== "undefined" ? window.innerWidth : 1600;
+  const isPhoneView = width < 600;
+  const isTabletView = width >= 600 && width < 1600;
+
+  if (!isPhoneView && !isTabletView) {
+    return {
+      customClass: {
+        popup: "sstli-swal-popup",
+        title: "sstli-swal-title",
+        htmlContainer: "sstli-swal-text",
+        confirmButton: "sstli-swal-confirm",
+        cancelButton: "sstli-swal-cancel"
+      }
+    };
+  }
+
+  return {
+    width: isPhoneView ? "82vw" : "420px",
+    padding: isPhoneView ? "0.65rem" : "0.85rem",
+    customClass: {
+      popup: "sstli-swal-popup sstli-swal-compact",
+      icon: "sstli-swal-icon",
+      title: "sstli-swal-title",
+      htmlContainer: "sstli-swal-text",
+      actions: "sstli-swal-actions",
+      confirmButton: "sstli-swal-confirm",
+      cancelButton: "sstli-swal-cancel"
+    }
+  };
+};
+
 const showWarning = (message) =>
   Swal.fire({
+    ...getResponsiveSwalOptions(),
     icon: "warning",
     title: "تنبيه",
     text: message,
@@ -98,6 +360,7 @@ const showWarning = (message) =>
 
 const showError = (message) =>
   Swal.fire({
+    ...getResponsiveSwalOptions(),
     icon: "error",
     title: "خطأ",
     text: message,
@@ -107,6 +370,7 @@ const showError = (message) =>
 
 const showSuccess = (message) =>
   Swal.fire({
+    ...getResponsiveSwalOptions(),
     icon: "success",
     title: "تم بنجاح",
     text: message,
@@ -117,6 +381,7 @@ const showSuccess = (message) =>
 
 const askPrintAfterSave = () =>
   Swal.fire({
+    ...getResponsiveSwalOptions(),
     icon: "question",
     title: "طباعة طلب السداد",
     text: "تم الحفظ بنجاح. هل تريد طباعة طلب السداد الآن؟",
@@ -659,6 +924,8 @@ const infoCell = ({ value }) => (
         width: "100%",
         fontWeight: 900,
         fontSize: "0.82rem",
+        "@media (max-width:1599px)": { fontSize: "0.54rem" },
+        "@media (max-width:599px)": { fontSize: "0.46rem" },
         textAlign: "center",
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -678,7 +945,16 @@ const SectionTitle = ({ children, color = dangerColor }) => (
       color,
       fontSize: "1rem",
       mb: 1,
-      textAlign: "left"
+      textAlign: "left",
+      lineHeight: 1.15,
+      "@media (max-width:1599px)": {
+        fontSize: "0.6rem",
+        mb: 0.3
+      },
+      "@media (max-width:599px)": {
+        fontSize: "0.52rem",
+        mb: 0.22
+      }
     }}
   >
     {children}
@@ -693,7 +969,16 @@ const DetailBox = ({ label, value, color = textColor }) => (
       borderRadius: 2,
       border: "1px solid #e6f3ee",
       backgroundColor: whiteColor,
-      height: "100%"
+      height: "100%",
+      "@media (max-width:1599px)": {
+        p: 0.48,
+        borderRadius: 1.3,
+        minHeight: 48
+      },
+      "@media (max-width:599px)": {
+        p: 0.34,
+        minHeight: 44
+      }
     }}
   >
     <Typography
@@ -702,7 +987,15 @@ const DetailBox = ({ label, value, color = textColor }) => (
         fontWeight: 900,
         fontSize: "0.76rem",
         mb: 0.4,
-        textAlign: "left"
+        textAlign: "left",
+        lineHeight: 1.15,
+        "@media (max-width:1599px)": {
+          fontSize: "0.5rem",
+          mb: 0.12
+        },
+        "@media (max-width:599px)": {
+          fontSize: "0.43rem"
+        }
       }}
     >
       {label}
@@ -713,6 +1006,13 @@ const DetailBox = ({ label, value, color = textColor }) => (
         fontWeight: 950,
         lineHeight: 1.6,
         wordBreak: "break-word",
+        "@media (max-width:1599px)": {
+          fontSize: "0.6rem",
+          lineHeight: 1.25
+        },
+        "@media (max-width:599px)": {
+          fontSize: "0.52rem"
+        },
         textAlign: "left"
       }}
     >
@@ -731,6 +1031,17 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
       minHeight: 62,
       borderRadius: 3,
       justifyContent: "flex-start",
+      "@media (max-width:1599px)": {
+        minHeight: 42,
+        borderRadius: 1.5,
+        px: 0.65,
+        py: 0.35
+      },
+      "@media (max-width:599px)": {
+        minHeight: 38,
+        px: 0.5,
+        py: 0.28
+      },
       textAlign: "left",
       direction: "ltr",
       fontWeight: 950,
@@ -739,7 +1050,15 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
       color: active ? "#fff" : color,
       "& .MuiButton-startIcon": {
         ml: 1,
-        mr: 0
+        mr: 0,
+        "@media (max-width:1599px)": {
+          ml: 0.45,
+          "& svg": { fontSize: "0.9rem" }
+        },
+        "@media (max-width:599px)": {
+          ml: 0.35,
+          "& svg": { fontSize: "0.8rem" }
+        }
       },
       "&:hover": {
         borderColor: color,
@@ -748,8 +1067,29 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
     }}
   >
     <Box sx={{ width: "100%", direction: "ltr" }}>
-      <Typography sx={{ fontWeight: 950, lineHeight: 1.2 }}>{title}</Typography>
-      <Typography sx={{ fontWeight: 800, fontSize: "0.75rem", opacity: 0.85 }}>
+      <Typography
+        sx={{
+          fontWeight: 950,
+          lineHeight: 1.15,
+          "@media (max-width:1599px)": { fontSize: "0.56rem" },
+          "@media (max-width:599px)": { fontSize: "0.49rem" }
+        }}
+      >
+        {title}
+      </Typography>
+      <Typography
+        sx={{
+          fontWeight: 800,
+          fontSize: "0.75rem",
+          opacity: 0.85,
+          lineHeight: 1.15,
+          "@media (max-width:1599px)": { fontSize: "0.44rem" },
+          "@media (max-width:599px)": {
+            fontSize: "0.38rem",
+            display: "none"
+          }
+        }}
+      >
         {subtitle}
       </Typography>
     </Box>
@@ -765,6 +1105,11 @@ const StudentPaymentOrderDialog = ({
   apiBaseUrl,
   onSaved
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
   const [paymentKind, setPaymentKind] = useState("diplom");
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [itemsLoading, setItemsLoading] = useState(false);
@@ -1037,6 +1382,63 @@ const StudentPaymentOrderDialog = ({
     ],
     []
   );
+
+  const compactOrderColumns = isPhone
+    ? orderColumns.filter((c) => ["Code", "DocName", "OrderSubTotal"].includes(c.field))
+    : isTablet
+      ? orderColumns.filter((c) => ["Code", "OrderDate", "DocName", "ORDERSTAUT", "OrderSubTotal"].includes(c.field))
+      : orderColumns;
+
+  const compactBillColumns = isPhone
+    ? billColumns.filter((c) => ["Code", "DocName", "BillSubTotal"].includes(c.field))
+    : isTablet
+      ? billColumns.filter((c) => ["Code", "BillDate", "DocName", "BillSubTotal"].includes(c.field))
+      : billColumns;
+
+  const compactItemColumns = isPhone
+    ? itemColumns.filter((c) => ["name", "qty", "subTotal"].includes(c.field))
+    : isTablet
+      ? itemColumns.filter((c) => ["name", "qty", "cost", "taxPercent", "subTotal"].includes(c.field))
+      : itemColumns;
+
+  const fitCompactColumn = (column) => {
+    if (!isCompact) return column;
+
+    const widthMap = isPhone
+      ? {
+          Code: 60,
+          OrderSubTotal: 65,
+          BillSubTotal: 65,
+          qty: 50,
+          subTotal: 68
+        }
+      : {
+          Code: 72,
+          OrderDate: 82,
+          BillDate: 82,
+          ORDERSTAUT: 76,
+          OrderSubTotal: 80,
+          BillSubTotal: 80,
+          qty: 55,
+          cost: 70,
+          taxPercent: 66,
+          subTotal: 80
+        };
+
+    if (column.field === "DocName" || column.field === "name") {
+      return {
+        ...column,
+        flex: 1,
+        minWidth: isPhone ? 110 : 145,
+        width: undefined
+      };
+    }
+
+    const width = widthMap[column.field];
+    return width
+      ? { ...column, flex: undefined, minWidth: width, width, maxWidth: width }
+      : column;
+  };
 
   const rowsWithIds = (rows) =>
     rows.map((row, index) => ({
@@ -1507,10 +1909,40 @@ const StudentPaymentOrderDialog = ({
       totals: snapshot.totals || totals
     });
 
-    const printWindow = window.open("", "_blank", "width=1100,height=850");
+    if (isCompact) {
+      try {
+        const orderCode =
+          saved?.orderCode ||
+          saved?.code ||
+          saved?.Code ||
+          "طلب";
+
+        await exportHtmlDocumentToPdf({
+          html,
+          fileName: `طلب-سداد-${orderCode}.pdf`,
+          selector: ".sheet, .preview, body",
+          scale: isPhone ? 2 : 2.25
+        });
+      } catch (pdfError) {
+        showError(
+          pdfError?.message ||
+            "تعذر تصدير طلب السداد PDF"
+        );
+      }
+
+      return;
+    }
+
+    const printWindow = window.open(
+      "",
+      "_blank",
+      "width=1100,height=850"
+    );
 
     if (!printWindow) {
-      showWarning("المتصفح منع فتح نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى.");
+      showWarning(
+        "المتصفح منع فتح نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى."
+      );
       return;
     }
 
@@ -1524,6 +1956,7 @@ const StudentPaymentOrderDialog = ({
     if (!validateBeforeSave()) return;
 
     const confirm = await Swal.fire({
+      ...getResponsiveSwalOptions(),
       icon: "question",
       title: "حفظ طلب السداد",
       text: `هل تريد حفظ طلب ${paymentKind === "fees" ? "سداد رسوم" : "سداد قسط شهري"} بقيمة ${money(totals.subTotal)} ر.س؟`,
@@ -1675,7 +2108,113 @@ const StudentPaymentOrderDialog = ({
   const disabled = loading || itemsLoading || saving || feeCatalogLoading;
 
   return (
-    <Dialog
+    <>
+      <style>
+        {`
+          .sstli-swal-popup {
+            font-family: Cairo, Arial, sans-serif !important;
+            border-radius: 18px !important;
+          }
+
+          .sstli-swal-title {
+            font-weight: 950 !important;
+          }
+
+          .sstli-swal-text {
+            font-weight: 800 !important;
+            line-height: 1.55 !important;
+          }
+
+          .sstli-swal-confirm,
+          .sstli-swal-cancel {
+            font-weight: 900 !important;
+            border-radius: 9px !important;
+          }
+
+          @media (max-width: 1599px) {
+            .sstli-swal-popup.sstli-swal-compact {
+              max-width: 420px !important;
+              border-radius: 14px !important;
+            }
+
+            .sstli-swal-icon {
+              width: 3.5em !important;
+              height: 3.5em !important;
+              margin: 0.65em auto 0.3em !important;
+            }
+
+            .sstli-swal-icon .swal2-icon-content {
+              font-size: 2.4em !important;
+            }
+
+            .sstli-swal-title {
+              padding: 0.25em 0.5em 0 !important;
+              font-size: 1rem !important;
+              line-height: 1.25 !important;
+            }
+
+            .sstli-swal-text {
+              margin: 0.45em 0 0 !important;
+              padding: 0 0.8em !important;
+              font-size: 0.72rem !important;
+              line-height: 1.45 !important;
+            }
+
+            .sstli-swal-actions {
+              margin: 0.7em auto 0 !important;
+              gap: 0.35rem !important;
+            }
+
+            .sstli-swal-confirm,
+            .sstli-swal-cancel {
+              min-width: 78px !important;
+              min-height: 32px !important;
+              padding: 0.4rem 0.8rem !important;
+              margin: 0 !important;
+              font-size: 0.68rem !important;
+            }
+          }
+
+          @media (max-width: 599px) {
+            .sstli-swal-popup.sstli-swal-compact {
+              width: 82vw !important;
+              max-width: 300px !important;
+              border-radius: 12px !important;
+            }
+
+            .sstli-swal-icon {
+              width: 3em !important;
+              height: 3em !important;
+              margin: 0.55em auto 0.25em !important;
+            }
+
+            .sstli-swal-icon .swal2-icon-content {
+              font-size: 2em !important;
+            }
+
+            .sstli-swal-title {
+              font-size: 0.82rem !important;
+            }
+
+            .sstli-swal-text {
+              font-size: 0.58rem !important;
+              line-height: 1.4 !important;
+              padding: 0 0.55em !important;
+            }
+
+            .sstli-swal-confirm,
+            .sstli-swal-cancel {
+              min-width: 66px !important;
+              min-height: 29px !important;
+              padding: 0.34rem 0.6rem !important;
+              font-size: 0.58rem !important;
+              border-radius: 8px !important;
+            }
+          }
+        `}
+      </style>
+
+      <Dialog
       open={open || keepDialogOpenAfterSave}
       onClose={() => {
         if (!disabled) {
@@ -1687,12 +2226,36 @@ const StudentPaymentOrderDialog = ({
       }}
       fullWidth
       maxWidth="xl"
+      fullScreen={isPhone}
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
       PaperProps={{
         sx: {
-          borderRadius: 4,
+          width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "1180px" : undefined,
+          height: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "92vh",
+          maxHeight: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "92vh",
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
           direction: "ltr",
           textAlign: "left",
-          overflow: "hidden"
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
         }
       }}
     >
@@ -1707,9 +2270,13 @@ const StudentPaymentOrderDialog = ({
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{ px: 2.5, py: 1.5 }}
+          sx={{
+            px: isPhone ? 0.5 : isTablet ? 0.8 : 2.5,
+            py: isPhone ? 0.38 : isTablet ? 0.55 : 1.5,
+            gap: isCompact ? 0.35 : 1
+          }}
         >
-          <Stack direction="row" spacing={1.2} alignItems="center">
+          <Stack direction="row" spacing={isCompact ? 0.35 : 1.2} alignItems="center" sx={{ minWidth: 0 }}>
             <IconButton
               onClick={() => {
                 setKeepDialogOpenAfterSave(false);
@@ -1721,6 +2288,10 @@ const StudentPaymentOrderDialog = ({
               sx={{
                 color: dangerColor,
                 backgroundColor: "#ffebee",
+                width: isPhone ? 26 : isTablet ? 30 : undefined,
+                height: isPhone ? 26 : isTablet ? 30 : undefined,
+                p: isCompact ? 0.25 : undefined,
+                "& svg": { fontSize: isPhone ? 15 : isTablet ? 17 : undefined },
                 "&:hover": { backgroundColor: "#ffcdd2" }
               }}
             >
@@ -1728,10 +2299,25 @@ const StudentPaymentOrderDialog = ({
             </IconButton>
 
             <Box>
-              <Typography sx={{ fontWeight: 950, color: textColor, fontSize: "1.15rem" }}>
+              <Typography
+                sx={{
+                  fontWeight: 950,
+                  color: textColor,
+                  fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : "1.15rem",
+                  lineHeight: 1.1
+                }}
+              >
                 طلب سداد
               </Typography>
-              <Typography sx={{ fontWeight: 800, color: "#6f8a81", fontSize: "0.82rem" }}>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  color: "#6f8a81",
+                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : "0.82rem",
+                  lineHeight: 1.1,
+                  display: isPhone ? "none" : "block"
+                }}
+              >
                 عرض آخر طلب وآخر فاتورة + إنشاء طلب سداد جديد
               </Typography>
             </Box>
@@ -1744,7 +2330,15 @@ const StudentPaymentOrderDialog = ({
               fontWeight: 950,
               color: "#fff",
               backgroundColor: paymentKind === "fees" ? warningColor : "#2e7d32",
-              px: 1
+              px: isPhone ? 0.4 : isTablet ? 0.6 : 1,
+              height: isPhone ? 22 : isTablet ? 25 : undefined,
+              "& .MuiChip-label": {
+                px: isPhone ? 0.5 : isTablet ? 0.65 : undefined,
+                fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+              },
+              "& .MuiChip-icon": {
+                fontSize: isPhone ? 13 : isTablet ? 15 : undefined
+              }
             }}
           />
         </Stack>
@@ -1753,8 +2347,32 @@ const StudentPaymentOrderDialog = ({
       <DialogContent
         dividers
         sx={{
-          p: { xs: 1.2, md: 2 },
-          backgroundColor: whiteColor
+          p: isPhone ? 0.28 : isTablet ? 0.5 : 2,
+          backgroundColor: whiteColor,
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0,
+
+          "& .MuiInputLabel-root": {
+            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+          },
+          "& .MuiInputBase-input, & .MuiSelect-select": {
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
+          },
+          "& .MuiOutlinedInput-root": {
+            minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+            borderRadius: isCompact ? 1.25 : undefined
+          },
+          "& .MuiFormHelperText-root": {
+            fontSize: isPhone ? "0.39rem" : isTablet ? "0.47rem" : undefined,
+            mt: isCompact ? 0.12 : undefined,
+            lineHeight: 1.15
+          },
+          "& .MuiChip-root": {
+            height: isPhone ? 20 : isTablet ? 23 : undefined,
+            fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+          }
         }}
       >
         {loading ? (
@@ -1769,52 +2387,56 @@ const StudentPaymentOrderDialog = ({
             لا توجد بيانات جاهزة لطلب السداد.
           </Alert>
         ) : (
-          <Stack spacing={1.6}>
+          <Stack spacing={isPhone ? 0.42 : isTablet ? 0.62 : 1.6}>
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
+                borderRadius: isCompact ? 1.45 : 3,
                 border: "1px solid #d7eee4",
                 backgroundColor: whiteColor
               }}
             >
-              <Grid container spacing={1.2}>
-                <Grid item xs={12} md={3}>
+              <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
+                <Grid item xs={6} sm={6} md={3}>
                   <DetailBox
                     label="اسم الطالب"
                     value={context.studentName || selectedStudent?.studentName}
                   />
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid item xs={6} sm={6} md={2}>
                   <DetailBox
                     label="رقم الهوية"
                     value={context.nationalId || selectedStudent?.nationalId}
                     color={dangerColor}
                   />
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid item xs={6} sm={6} md={2}>
                   <DetailBox
                     label="رقم الجوال"
                     value={context.tel || selectedStudent?.studentTel || selectedStudent?.tel}
                   />
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid item xs={6} sm={6} md={3}>
                   <DetailBox label="الدبلوم / الدورة" value={context.diplomName} />
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid item xs={6} sm={6} md={2}>
                   <DetailBox label="الفرع" value={context.branchName} />
                 </Grid>
               </Grid>
             </Paper>
 
-            <Grid container spacing={1.5}>
-              <Grid item xs={12} md={6}>
+            <Grid
+              container
+              spacing={isTablet ? 0.55 : 1.5}
+              sx={{ display: isPhone ? "none" : "flex" }}
+            >
+              <Grid item xs={6} sm={6} md={6}>
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 1.4,
-                    borderRadius: 3,
+                    p: isTablet ? 0.5 : 1.4,
+                    borderRadius: isTablet ? 1.4 : 3,
                     border: "1px solid #d7eee4",
                     backgroundColor: whiteColor
                   }}
@@ -1823,11 +2445,11 @@ const StudentPaymentOrderDialog = ({
                   <Box sx={{ height: 170 }}>
                     <DataGrid
                       rows={rowsWithIds(lastOrders)}
-                      columns={orderColumns}
+                      columns={compactOrderColumns.map(fitCompactColumn)}
                       disableRowSelectionOnClick
                       hideFooter
-                      rowHeight={42}
-                      columnHeaderHeight={38}
+                      rowHeight={isTablet ? 34 : 42}
+                      columnHeaderHeight={isTablet ? 32 : 38}
                       localeText={{ noRowsLabel: "لا توجد طلبات سداد سابقة" }}
                       sx={gridStyle}
                     />
@@ -1835,12 +2457,12 @@ const StudentPaymentOrderDialog = ({
                 </Paper>
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={6} sm={6} md={6}>
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 1.4,
-                    borderRadius: 3,
+                    p: isTablet ? 0.5 : 1.4,
+                    borderRadius: isTablet ? 1.4 : 3,
                     border: "1px solid #d7eee4",
                     backgroundColor: whiteColor
                   }}
@@ -1849,11 +2471,11 @@ const StudentPaymentOrderDialog = ({
                   <Box sx={{ height: 170 }}>
                     <DataGrid
                       rows={rowsWithIds(lastBills)}
-                      columns={billColumns}
+                      columns={compactBillColumns.map(fitCompactColumn)}
                       disableRowSelectionOnClick
                       hideFooter
-                      rowHeight={42}
-                      columnHeaderHeight={38}
+                      rowHeight={isTablet ? 34 : 42}
+                      columnHeaderHeight={isTablet ? 32 : 38}
                       localeText={{ noRowsLabel: "لا توجد فواتير سداد سابقة" }}
                       sx={gridStyle}
                     />
@@ -1865,13 +2487,13 @@ const StudentPaymentOrderDialog = ({
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
+                borderRadius: isCompact ? 1.45 : 3,
                 border: "1px solid #d7eee4",
                 backgroundColor: whiteColor
               }}
             >
-              <Grid container spacing={1.2}>
+              <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
                 <Grid item xs={12} md={6}>
                   <ActionChoiceButton
                     active={paymentKind === "diplom"}
@@ -1894,10 +2516,10 @@ const StudentPaymentOrderDialog = ({
                 </Grid>
               </Grid>
 
-              <Divider sx={{ my: 1.5 }} />
+              <Divider sx={{ my: isCompact ? 0.45 : 1.5 }} />
 
-              <Grid container spacing={1.2}>
-                <Grid item xs={12} md={4}>
+              <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
+                <Grid item xs={4} sm={4} md={4}>
                   <ActionChoiceButton
                     active={paymentMethod === "cash"}
                     icon={<PaymentsIcon />}
@@ -1907,7 +2529,7 @@ const StudentPaymentOrderDialog = ({
                     onClick={() => handleChangeMethod("cash")}
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={4} sm={4} md={4}>
                   <ActionChoiceButton
                     active={paymentMethod === "network"}
                     icon={<PointOfSaleIcon />}
@@ -1917,7 +2539,7 @@ const StudentPaymentOrderDialog = ({
                     onClick={() => handleChangeMethod("network")}
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={4} sm={4} md={4}>
                   <ActionChoiceButton
                     active={paymentMethod === "bank"}
                     icon={<AccountBalanceIcon />}
@@ -1933,8 +2555,8 @@ const StudentPaymentOrderDialog = ({
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
+                borderRadius: isCompact ? 1.45 : 3,
                 border: "1px solid #d7eee4",
                 backgroundColor: whiteColor
               }}
@@ -1942,7 +2564,7 @@ const StudentPaymentOrderDialog = ({
               <SectionTitle color={primaryDark}>بيانات التنفيذ</SectionTitle>
 
               <Grid container spacing={1.2}>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={6} md={4}>
                   {paymentMethod === "bank" ? (
                     <TextField
                       select
@@ -1986,7 +2608,7 @@ const StudentPaymentOrderDialog = ({
                   )}
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={6} md={4}>
                   <TextField
                     fullWidth
                     size="small"
@@ -1998,7 +2620,7 @@ const StudentPaymentOrderDialog = ({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={6} md={4}>
                   <TextField
                     fullWidth
                     size="small"
@@ -2024,7 +2646,7 @@ const StudentPaymentOrderDialog = ({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={6} md={4}>
                   <Button
                     component="label"
                     fullWidth
@@ -2032,9 +2654,10 @@ const StudentPaymentOrderDialog = ({
                     disabled={disabled || paymentMethod !== "bank"}
                     startIcon={<AttachFileIcon />}
                     sx={{
-                      height: 40,
-                      borderRadius: 2,
+                      height: isPhone ? 31 : isTablet ? 35 : 40,
+                      borderRadius: isCompact ? 1.25 : 2,
                       fontWeight: 950,
+                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
                       direction: "ltr",
                       borderColor: "#d7eee4",
                       color: paymentMethod === "bank" ? "#6a1b9a" : "#888"
@@ -2059,22 +2682,29 @@ const StudentPaymentOrderDialog = ({
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
+                borderRadius: isCompact ? 1.45 : 3,
                 border: "1px solid #d7eee4",
                 backgroundColor: whiteColor
               }}
             >
               <Stack
-                direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "stretch", md: "center" }}
+                direction="row"
+                alignItems="center"
                 justifyContent="space-between"
-                spacing={1.2}
-                sx={{ mb: 1.2 }}
+                spacing={isCompact ? 0.3 : 1.2}
+                sx={{ mb: isCompact ? 0.35 : 1.2, minWidth: 0 }}
               >
                 <SectionTitle color={primaryDark}>بنود طلب السداد</SectionTitle>
 
-                <Stack direction="row" spacing={1} justifyContent="flex-start" flexWrap="wrap" useFlexGap>
+                <Stack
+                  direction="row"
+                  spacing={isCompact ? 0.22 : 1}
+                  justifyContent="flex-start"
+                  flexWrap="nowrap"
+                  useFlexGap
+                  sx={{ minWidth: 0 }}
+                >
                   {paymentKind === "fees" && (
                     <Button
                       variant="contained"
@@ -2083,8 +2713,11 @@ const StudentPaymentOrderDialog = ({
                       onClick={loadFeeCatalog}
                       disabled={disabled || feeCatalogLoading}
                       sx={{
-                        borderRadius: 2,
+                        borderRadius: isCompact ? 1.2 : 2,
                         fontWeight: 950,
+                        minWidth: isPhone ? 52 : isTablet ? 62 : undefined,
+                        px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
+                        fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined,
                         backgroundColor: warningColor,
                         direction: "ltr",
                         "&:hover": { backgroundColor: "#b45309" }
@@ -2093,28 +2726,50 @@ const StudentPaymentOrderDialog = ({
                       إضافة رسوم
                     </Button>
                   )}
-                  <Chip label={`الإجمالي: ${money(totals.total)}`} sx={chipStyle} />
-                  <Chip label={`الضريبة: ${money(totals.tax)}`} sx={chipStyle} />
+                  {!isPhone && (
+                    <Chip
+                      label={`الإجمالي: ${money(totals.total)}`}
+                      sx={{
+                        ...chipStyle,
+                        fontSize: isTablet ? "0.48rem" : undefined,
+                        height: isTablet ? 22 : undefined
+                      }}
+                    />
+                  )}
+                  {!isPhone && (
+                    <Chip
+                      label={`الضريبة: ${money(totals.tax)}`}
+                      sx={{
+                        ...chipStyle,
+                        fontSize: isTablet ? "0.48rem" : undefined,
+                        height: isTablet ? 22 : undefined
+                      }}
+                    />
+                  )}
                   <Chip
                     label={`الصافي: ${money(totals.subTotal)}`}
                     sx={{
                       ...chipStyle,
                       backgroundColor: "#ffebee",
-                      color: dangerColor
+                      color: dangerColor,
+                      fontSize: isPhone ? "0.44rem" : isTablet ? "0.48rem" : undefined,
+                      height: isPhone ? 20 : isTablet ? 22 : undefined
                     }}
                   />
                 </Stack>
               </Stack>
 
-              <Box sx={{ height: 230 }}>
+              <Box sx={{ height: isPhone ? 205 : isTablet ? 235 : 230, minWidth: 0 }}>
                 <DataGrid
                   rows={items}
-                  columns={itemColumns}
+                  columns={compactItemColumns.map(fitCompactColumn)}
                   loading={itemsLoading}
                   disableRowSelectionOnClick
                   hideFooter
-                  rowHeight={42}
-                  columnHeaderHeight={38}
+                  rowHeight={isPhone ? 32 : isTablet ? 36 : 42}
+                  columnHeaderHeight={isPhone ? 30 : isTablet ? 34 : 38}
+                  disableColumnMenu={isCompact}
+                  disableColumnFilter={isCompact}
                   processRowUpdate={handleItemRowUpdate}
                   onProcessRowUpdateError={(error) =>
                     showError(error?.message || "حدث خطأ أثناء تعديل بند السداد")
@@ -2138,16 +2793,206 @@ const StudentPaymentOrderDialog = ({
               onClose={() => setFeeCatalogOpen(false)}
               fullWidth
               maxWidth="md"
-              PaperProps={{ sx: { borderRadius: 3, direction: "ltr" } }}
+              fullScreen={isPhone}
+              sx={{
+                "& .MuiDialog-container": {
+                  pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+                  px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+                  pb: isPhone ? 0 : isTablet ? 0.5 : 1.5
+                }
+              }}
+              PaperProps={{
+                sx: {
+                  width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,
+                  height: isPhone ? "calc(100dvh - 58px)" : isTablet ? "72dvh" : undefined,
+                  maxHeight: isPhone ? "calc(100dvh - 58px)" : isTablet ? "72dvh" : undefined,
+                  m: 0,
+                  borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+                  direction: "ltr",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column"
+                }
+              }}
             >
-              <DialogTitle sx={{ fontWeight: 950, color: textColor }}>
+              <DialogTitle
+                sx={{
+                  fontWeight: 950,
+                  color: textColor,
+                  py: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+                  fontSize: isPhone ? "0.64rem" : isTablet ? "0.74rem" : undefined,
+                  flexShrink: 0
+                }}
+              >
                 قائمة الرسوم الأخرى
               </DialogTitle>
-              <DialogContent dividers sx={{ backgroundColor: "#fffaf3" }}>
-                <Box sx={{ height: 360 }}>
+              <DialogContent
+                dividers
+                sx={{
+                  backgroundColor: "#fffaf3",
+                  p: isPhone ? 0.3 : isTablet ? 0.5 : 2,
+                  flex: 1,
+                  minHeight: 0,
+                  overflow: "hidden"
+                }}
+              >
+                <Box sx={{ height: "100%", minHeight: 0 }}>
                   <DataGrid
                     rows={feeCatalog.map((row, index) => ({ ...row, id: row.id || index + 1 }))}
-                    columns={[
+                    columns={
+                      isPhone
+                        ? [
+                            {
+                              field: "name",
+                              headerName: "البيان",
+                              flex: 1,
+                              minWidth: 0,
+                              align: "center",
+                              headerAlign: "center",
+                              renderCell: (p) => (
+                                <Tooltip title={safeText(p.row?.name)} arrow>
+                                  <Typography
+                                    sx={{
+                                      width: "100%",
+                                      fontWeight: 900,
+                                      fontSize: "0.43rem",
+                                      textAlign: "center",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      direction: "rtl"
+                                    }}
+                                  >
+                                    {safeText(p.row?.name)}
+                                  </Typography>
+                                </Tooltip>
+                              )
+                            },
+                            {
+                              field: "subTotal",
+                              headerName: "القيمة",
+                              width: 58,
+                              minWidth: 58,
+                              maxWidth: 58,
+                              align: "center",
+                              headerAlign: "center",
+                              renderCell: (p) => infoCell({ value: money(p.row?.subTotal || p.row?.cost) })
+                            },
+                            {
+                              field: "action",
+                              headerName: "",
+                              width: 48,
+                              minWidth: 48,
+                              maxWidth: 48,
+                              sortable: false,
+                              filterable: false,
+                              disableColumnMenu: true,
+                              align: "center",
+                              headerAlign: "center",
+                              renderCell: (p) => (
+                                <Button
+                                  size="small"
+                                  variant="contained"
+                                  onClick={() => handleAddFeeItem(p.row)}
+                                  sx={{
+                                    minWidth: 40,
+                                    width: 40,
+                                    px: 0.25,
+                                    py: 0.2,
+                                    borderRadius: 1,
+                                    fontWeight: 950,
+                                    fontSize: "0.4rem",
+                                    lineHeight: 1,
+                                    backgroundColor: warningColor
+                                  }}
+                                >
+                                  إضافة
+                                </Button>
+                              )
+                            }
+                          ]
+                        : isTablet
+                          ? [
+                              {
+                                field: "name",
+                                headerName: "البيان",
+                                flex: 1,
+                                minWidth: 0,
+                                align: "center",
+                                headerAlign: "center",
+                                renderCell: (p) => (
+                                  <Tooltip title={safeText(p.row?.name)} arrow>
+                                    <Typography
+                                      sx={{
+                                        width: "100%",
+                                        fontWeight: 900,
+                                        fontSize: "0.52rem",
+                                        textAlign: "center",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        direction: "rtl"
+                                      }}
+                                    >
+                                      {safeText(p.row?.name)}
+                                    </Typography>
+                                  </Tooltip>
+                                )
+                              },
+                              {
+                                field: "cost",
+                                headerName: "القيمة",
+                                width: 72,
+                                minWidth: 72,
+                                maxWidth: 72,
+                                align: "center",
+                                headerAlign: "center",
+                                renderCell: (p) => infoCell({ value: money(p.row?.cost) })
+                              },
+                              {
+                                field: "subTotal",
+                                headerName: "الصافي",
+                                width: 76,
+                                minWidth: 76,
+                                maxWidth: 76,
+                                align: "center",
+                                headerAlign: "center",
+                                renderCell: (p) => infoCell({ value: money(p.row?.subTotal) })
+                              },
+                              {
+                                field: "action",
+                                headerName: "",
+                                width: 54,
+                                minWidth: 54,
+                                maxWidth: 54,
+                                sortable: false,
+                                filterable: false,
+                                disableColumnMenu: true,
+                                align: "center",
+                                headerAlign: "center",
+                                renderCell: (p) => (
+                                  <Button
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => handleAddFeeItem(p.row)}
+                                    sx={{
+                                      minWidth: 46,
+                                      width: 46,
+                                      px: 0.3,
+                                      py: 0.25,
+                                      borderRadius: 1.1,
+                                      fontWeight: 950,
+                                      fontSize: "0.46rem",
+                                      backgroundColor: warningColor
+                                    }}
+                                  >
+                                    إضافة
+                                  </Button>
+                                )
+                              }
+                            ]
+                          : [
                       {
                         field: "name",
                         headerName: "البيان",
@@ -2185,19 +3030,29 @@ const StudentPaymentOrderDialog = ({
                           </Button>
                         )
                       }
-                    ]}
+                    ]
+                    }
                     loading={feeCatalogLoading}
                     disableRowSelectionOnClick
                     hideFooter
-                    rowHeight={42}
-                    columnHeaderHeight={40}
+                    rowHeight={isPhone ? 32 : isTablet ? 36 : 42}
+                    columnHeaderHeight={isPhone ? 30 : isTablet ? 34 : 40}
+                    disableColumnMenu={isCompact}
+                    disableColumnFilter={isCompact}
                     localeText={{ noRowsLabel: "لا توجد رسوم في قائمة السعر" }}
                     sx={gridStyle}
                   />
                 </Box>
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setFeeCatalogOpen(false)} sx={{ fontWeight: 950, color: dangerColor }}>
+              <DialogActions sx={{ p: isPhone ? 0.3 : isTablet ? 0.45 : 1, flexShrink: 0 }}>
+                <Button
+                  onClick={() => setFeeCatalogOpen(false)}
+                  sx={{
+                    fontWeight: 950,
+                    color: dangerColor,
+                    fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+                  }}
+                >
                   إغلاق
                 </Button>
               </DialogActions>
@@ -2205,8 +3060,10 @@ const StudentPaymentOrderDialog = ({
 
       <DialogActions
         sx={{
-          px: 2,
-          py: 1.4,
+          px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
+          py: isPhone ? 0.28 : isTablet ? 0.42 : 1.4,
+          gap: isCompact ? 0.35 : 1,
+          flexShrink: 0,
           borderTop: `1px solid ${primaryLight}`,
           backgroundColor: whiteColor,
           justifyContent: "space-between"
@@ -2224,22 +3081,34 @@ const StudentPaymentOrderDialog = ({
           sx={{
             fontWeight: 950,
             color: dangerColor,
-            direction: "ltr"
+            direction: "ltr",
+            minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
+            px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
           }}
         >
           خروج
         </Button>
 
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={isCompact ? 0.3 : 1} alignItems="center">
           {savedPrintResult && (
             <Button
               variant="outlined"
               disabled={disabled}
-              startIcon={<PrintIcon />}
+              startIcon={
+                isCompact ? (
+                  <PictureAsPdfIcon />
+                ) : (
+                  <PrintIcon />
+                )
+              }
               onClick={() => openPrintPreview(savedPrintResult)}
               sx={{
-                minWidth: 150,
-                borderRadius: 2,
+                minWidth: isPhone ? 90 : isTablet ? 110 : 150,
+                minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
+                px: isPhone ? 0.65 : isTablet ? 0.9 : undefined,
+                fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                borderRadius: isCompact ? 1.2 : 2,
                 fontWeight: 950,
                 direction: "ltr",
                 borderColor: "#1565c0",
@@ -2251,7 +3120,7 @@ const StudentPaymentOrderDialog = ({
                 }
               }}
             >
-              طباعة الطلب
+              {isCompact ? "تصدير PDF" : "طباعة الطلب"}
             </Button>
           )}
 
@@ -2261,8 +3130,11 @@ const StudentPaymentOrderDialog = ({
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
             onClick={savePaymentOrder}
             sx={{
-              minWidth: 170,
-              borderRadius: 2,
+              minWidth: isPhone ? 105 : isTablet ? 130 : 170,
+              minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+              px: isPhone ? 0.75 : isTablet ? 1 : undefined,
+              fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+              borderRadius: isCompact ? 1.2 : 2,
               fontWeight: 950,
               direction: "ltr",
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
@@ -2278,6 +3150,7 @@ const StudentPaymentOrderDialog = ({
         </Stack>
       </DialogActions>
     </Dialog>
+    </>
   );
 };
 
@@ -2294,12 +3167,16 @@ const gridStyle = {
     fontWeight: 950,
     fontSize: "0.78rem",
     textAlign: "center",
-    color: whiteColor
+    color: whiteColor,
+    "@media (max-width:1599px)": { fontSize: "0.5rem", lineHeight: 1.05 },
+    "@media (max-width:599px)": { fontSize: "0.42rem" }
   },
   "& .MuiDataGrid-cell": {
     borderBottom: "1px solid #edf4f1",
     fontWeight: 900,
-    outline: "none !important"
+    outline: "none !important",
+    "@media (max-width:1599px)": { fontSize: "0.5rem", px: 0.28 },
+    "@media (max-width:599px)": { fontSize: "0.42rem", px: 0.1 }
   },
   "& .MuiDataGrid-row:hover": {
     backgroundColor: "#f0faf5"
@@ -2314,7 +3191,15 @@ const chipStyle = {
   borderRadius: 2,
   backgroundColor: primaryLight,
   color: primaryColor,
-  border: `1px solid ${primaryLight}`
+  border: `1px solid ${primaryLight}`,
+  "@media (max-width:1599px)": {
+    height: 22,
+    fontSize: "0.48rem"
+  },
+  "@media (max-width:599px)": {
+    height: 20,
+    fontSize: "0.42rem"
+  }
 };
 
 export default StudentPaymentOrderDialog;

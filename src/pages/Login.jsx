@@ -127,6 +127,12 @@ export default function Login() {
       }
 
       const foundUser = await loginResponse.json();
+      const { token, ...verifiedUser } = foundUser || {};
+
+      if (!verifiedUser?.guid) {
+        setErrorMsg('تعذر قراءة بيانات المستخدم. برجاء المحاولة مرة أخرى');
+        return;
+      }
 
       const branchesResponse = await fetch(
         'https://api1.sstli.com/api/branches/all',
@@ -142,13 +148,19 @@ export default function Login() {
 
       const branches = await branchesResponse.json();
       const userBranch = branches.find(
-        (branch) => branch.guid === foundUser.branchForWork
+        (branch) => branch.guid === verifiedUser.branchForWork
       );
 
-      localStorage.setItem('user', JSON.stringify(foundUser));
+      if (token) {
+        localStorage.setItem('token', token);
+      } else {
+        // توافق مؤقت عند نشر الفرونت قبل الباك الجديد.
+        localStorage.removeItem('token');
+      }
+      localStorage.setItem('user', JSON.stringify(verifiedUser));
       localStorage.setItem('user_branch', JSON.stringify(userBranch || null));
 
-      const normalizedUsername = (foundUser.userName || '')
+      const normalizedUsername = (verifiedUser.userName || '')
         .trim()
         .toLowerCase();
 

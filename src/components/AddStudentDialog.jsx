@@ -14,7 +14,9 @@ import {
   Select,
   Stack,
   TextField,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -116,7 +118,18 @@ const FieldLabel = ({ children }) => (
       color: primaryColor,
       fontSize: "0.85rem",
       mb: 0.5,
-      textAlign: "left"
+      textAlign: "left",
+
+      "@media (max-width:1599px)": {
+        fontSize: "0.62rem",
+        mb: 0.22,
+        lineHeight: 1.2
+      },
+
+      "@media (max-width:599px)": {
+        fontSize: "0.54rem",
+        mb: 0.16
+      }
     }}
   >
     {children}
@@ -129,6 +142,17 @@ const inputSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 2,
     fontWeight: 900,
+
+    "@media (max-width:1599px)": {
+      minHeight: 34,
+      borderRadius: 1.35,
+      fontSize: "0.62rem"
+    },
+
+    "@media (max-width:599px)": {
+      minHeight: 31,
+      fontSize: "0.55rem"
+    },
     "& fieldset": {
       borderColor: primaryLight
     },
@@ -144,7 +168,19 @@ const inputSx = {
     }
   },
   "& .MuiInputBase-input": {
-    fontWeight: 900
+    fontWeight: 900,
+
+    "@media (max-width:1599px)": {
+      py: 0.7,
+      px: 0.8,
+      fontSize: "0.62rem"
+    },
+
+    "@media (max-width:599px)": {
+      py: 0.55,
+      px: 0.65,
+      fontSize: "0.55rem"
+    }
   },
   "& .MuiInputBase-input.Mui-disabled": {
     WebkitTextFillColor: textColor
@@ -157,6 +193,28 @@ const selectSx = {
   textAlign: "left",
   "& .MuiSelect-select": {
     fontWeight: 900
+  }
+};
+
+const selectMenuProps = {
+  disablePortal: false,
+  PaperProps: {
+    sx: {
+      maxHeight: 300,
+      direction: "rtl",
+      borderRadius: 2,
+      "& .MuiMenuItem-root": {
+        fontWeight: 800,
+        textAlign: "right",
+        justifyContent: "flex-start"
+      }
+    }
+  },
+  MenuListProps: {
+    sx: {
+      direction: "rtl",
+      py: 0.5
+    }
   }
 };
 
@@ -182,6 +240,10 @@ const AddStudentDialog = ({
   initialData = null,
   permissionMode = "addStudent"
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+
   const [form, setForm] = useState(emptyForm);
   const [context, setContext] = useState(null);
 
@@ -580,13 +642,28 @@ const AddStudentDialog = ({
         onClose={() => !saving && onClose?.()}
         fullWidth
         maxWidth="lg"
+        fullScreen={isPhone}
+        sx={{
+          "& .MuiDialog-container": {
+            alignItems: isPhone ? "stretch" : "center",
+            justifyContent: "center",
+            p: isPhone ? 0 : isTablet ? 0.7 : 1.5
+          }
+        }}
         PaperProps={{
           sx: {
-            borderRadius: 4,
+            width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
+            maxWidth: isPhone ? "100vw" : isTablet ? "1100px" : undefined,
+            height: isPhone ? "100dvh" : "auto",
+            maxHeight: isPhone ? "100dvh" : isTablet ? "94dvh" : "90vh",
+            m: isPhone ? 0 : isTablet ? 0.7 : 2,
+            borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
             direction: "ltr",
             overflow: "hidden",
             border: `1px solid ${primaryLight}`,
-            boxShadow: "0 18px 50px rgba(5,117,70,0.18)"
+            boxShadow: "0 18px 50px rgba(5,117,70,0.18)",
+            display: "flex",
+            flexDirection: "column"
           }
         }}
       >
@@ -599,9 +676,12 @@ const AddStudentDialog = ({
             alignItems: "center",
             justifyContent: "space-between",
             background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-            py: 1.7,
-            px: 2.5,
-            letterSpacing: "0.2px"
+            py: isPhone ? 0.6 : isTablet ? 0.8 : 1.7,
+            px: isPhone ? 0.8 : isTablet ? 1.2 : 2.5,
+            fontSize: isPhone ? "0.78rem" : isTablet ? "0.9rem" : undefined,
+            lineHeight: 1.25,
+            letterSpacing: "0.2px",
+            flexShrink: 0
           }}
         >
           {initialData?.fromArchive
@@ -612,13 +692,36 @@ const AddStudentDialog = ({
         <DialogContent
           dividers
           sx={{
-            background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`
+            background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+            p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
+            overflowY: "auto",
+            flex: 1,
+            minHeight: 0,
+
+            "& .MuiTypography-root": {
+              overflowWrap: "anywhere"
+            },
+
+            "& .MuiSelect-select": {
+              fontSize: isPhone ? "0.55rem" : isTablet ? "0.62rem" : undefined,
+              py: isPhone ? 0.55 : isTablet ? 0.7 : undefined
+            }
           }}
         >
           {loadingContext ? (
-            <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              sx={{ py: isPhone ? 4 : isTablet ? 5 : 8 }}
+            >
               <CircularProgress sx={{ color: primaryColor }} />
-              <Typography sx={{ mt: 2, fontWeight: 900 }}>
+              <Typography
+                sx={{
+                  mt: isPhone ? 0.8 : 2,
+                  fontWeight: 900,
+                  fontSize: isPhone ? "0.58rem" : isTablet ? "0.66rem" : undefined
+                }}
+              >
                 جاري تجهيز شاشة إضافة الطالب...
               </Typography>
             </Stack>
@@ -628,9 +731,9 @@ const AddStudentDialog = ({
                 <Paper
                   elevation={0}
                   sx={{
-                    mb: 2,
-                    p: 1.6,
-                    borderRadius: 3,
+                    mb: isPhone ? 0.5 : isTablet ? 0.7 : 2,
+                    p: isPhone ? 0.55 : isTablet ? 0.8 : 1.6,
+                    borderRadius: isPhone ? 1.2 : isTablet ? 1.6 : 3,
                     border: "1px solid #ffcc80",
                     backgroundColor: "#fff8e1"
                   }}
@@ -650,15 +753,18 @@ const AddStudentDialog = ({
               <Paper
                 elevation={0}
                 sx={{
-                  p: 2,
-                  borderRadius: 3,
+                  p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
+                  borderRadius: isPhone ? 1.2 : isTablet ? 1.6 : 3,
                   border: `1px solid ${primaryLight}`,
                   backgroundColor: whiteColor,
                   boxShadow: "0 10px 30px rgba(5,117,70,0.08)"
                 }}
               >
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={3}>
+                <Grid
+                  container
+                  spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}
+                >
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>كود</FieldLabel>
                     <TextField
                       fullWidth
@@ -677,7 +783,7 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={6} sm={6} md={6}>
                     <FieldLabel>اسم الطالب</FieldLabel>
                     <TextField
                       fullWidth
@@ -688,7 +794,7 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>رقم الجوال</FieldLabel>
                     <TextField
                       fullWidth
@@ -703,7 +809,7 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={6} sm={6} md={6}>
                     <FieldLabel>الاسم بالإنجليزية</FieldLabel>
                     <TextField
                       fullWidth
@@ -718,7 +824,7 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>رقم جوال آخر</FieldLabel>
                     <TextField
                       fullWidth
@@ -733,7 +839,7 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>رقم الهوية</FieldLabel>
                     <TextField
                       fullWidth
@@ -748,11 +854,12 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>الجنسية</FieldLabel>
                     <FormControl fullWidth size="small">
                       <Select
                         value={form.studentNational}
+                        MenuProps={selectMenuProps}
                         sx={selectSx}
                         onChange={(e) => {
                           setValue("studentNational", e.target.value);
@@ -765,11 +872,12 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>نوع العميل</FieldLabel>
                     <FormControl fullWidth size="small">
                       <Select
                         value={form.customerType}
+                        MenuProps={selectMenuProps}
                         sx={selectSx}
                         onChange={(e) => {
                           setValue("customerType", e.target.value);
@@ -782,11 +890,12 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>النوع</FieldLabel>
                     <FormControl fullWidth size="small">
                       <Select
                         value={form.studentType}
+                        MenuProps={selectMenuProps}
                         sx={selectSx}
                         onChange={(e) => setValue("studentType", e.target.value)}
                       >
@@ -796,7 +905,7 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>تاريخ الميلاد ميلادي</FieldLabel>
                     <DatePicker
                       value={birthDatePickerValue}
@@ -819,6 +928,9 @@ const AddStudentDialog = ({
                           placeholder: "YYYY-MM-DD",
                           sx: {
                             ...inputSx,
+                            "& .MuiInputBase-root": {
+                              minHeight: isPhone ? 31 : isTablet ? 34 : undefined
+                            },
                             "& input": {
                               direction: "ltr",
                               textAlign: "left",
@@ -836,15 +948,14 @@ const AddStudentDialog = ({
                         },
                         popper: {
                           sx: {
-                            direction: "ltr",
-                            zIndex: 99999
+                            direction: "ltr"
                           }
                         }
                       }}
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={6} sm={6} md={6}>
                     <FieldLabel>الإيميل</FieldLabel>
                     <TextField
                       fullWidth
@@ -856,11 +967,12 @@ const AddStudentDialog = ({
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>نوع الدراسة</FieldLabel>
                     <FormControl fullWidth size="small">
                       <Select
                         value={form.studyType}
+                        MenuProps={selectMenuProps}
                         sx={selectSx}
                         onChange={(e) => setValue("studyType", e.target.value)}
                       >
@@ -870,11 +982,12 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>القطاع</FieldLabel>
                     <FormControl fullWidth size="small" error={!form.companyGuid}>
                       <Select
                         value={form.companyGuid}
+                        MenuProps={selectMenuProps}
                         displayEmpty
                         onChange={(e) => {
                           const selectedGuid = e.target.value;
@@ -903,8 +1016,8 @@ const AddStudentDialog = ({
                         <Typography
                           sx={{
                             color: accentColor,
-                            fontSize: "0.75rem",
-                            mt: 0.5,
+                            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.75rem",
+                            mt: isPhone ? 0.15 : isTablet ? 0.25 : 0.5,
                             textAlign: "left"
                           }}
                         >
@@ -914,11 +1027,12 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>مندوب البيع</FieldLabel>
                     <FormControl fullWidth size="small" error={!form.sellerGuid}>
                       <Select
                         value={form.sellerGuid}
+                        MenuProps={selectMenuProps}
                         displayEmpty
                         onChange={(e) => {
                           const selectedGuid = e.target.value;
@@ -947,8 +1061,8 @@ const AddStudentDialog = ({
                         <Typography
                           sx={{
                             color: accentColor,
-                            fontSize: "0.75rem",
-                            mt: 0.5,
+                            fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : "0.75rem",
+                            mt: isPhone ? 0.15 : isTablet ? 0.25 : 0.5,
                             textAlign: "left"
                           }}
                         >
@@ -958,7 +1072,7 @@ const AddStudentDialog = ({
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <FieldLabel>الحساب الرئيسي</FieldLabel>
                     <TextField
                       fullWidth
@@ -981,7 +1095,7 @@ const AddStudentDialog = ({
                     <TextField
                       fullWidth
                       multiline
-                      minRows={4}
+                      minRows={isPhone ? 2 : isTablet ? 3 : 4}
                       value={form.notes}
                       onChange={(e) => setValue("notes", e.target.value)}
                       sx={inputSx}
@@ -995,10 +1109,17 @@ const AddStudentDialog = ({
 
         <DialogActions
           sx={{
-            p: 2,
-            gap: 1,
+            p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
+            gap: isPhone ? 0.45 : isTablet ? 0.65 : 1,
             backgroundColor: whiteColor,
-            borderTop: `1px solid ${primaryLight}`
+            borderTop: `1px solid ${primaryLight}`,
+            flexShrink: 0,
+
+            "& .MuiButton-root": {
+              minHeight: isPhone ? 30 : isTablet ? 33 : undefined,
+              px: isPhone ? 1 : isTablet ? 1.3 : undefined,
+              fontSize: isPhone ? "0.55rem" : isTablet ? "0.64rem" : undefined
+            }
           }}
         >
           <Button

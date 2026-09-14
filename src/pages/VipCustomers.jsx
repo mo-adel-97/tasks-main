@@ -4,9 +4,11 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Box,
   Button,
   CircularProgress,
+  GlobalStyles,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -14,8 +16,11 @@ import {
   Stack,
   TablePagination,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -23,10 +28,12 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ClearIcon from "@mui/icons-material/Clear";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Sidebar from "../components/Sidebar";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -82,6 +89,19 @@ const escapeCsvValue = (value) => {
     .replaceAll('"', '""')}"`;
 };
 
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) {
+    return parts.join(" ");
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 const showError = async (message) => {
   await Swal.fire({
     icon: "error",
@@ -103,6 +123,32 @@ const showSuccess = async (message) => {
 };
 
 const VipCustomers = () => {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(() => {
     return JSON.parse(
       localStorage.getItem("user") || "{}"
@@ -136,7 +182,7 @@ const VipCustomers = () => {
   const [rowsPerPage, setRowsPerPage] =
     useState(25);
 
-  const columns = useMemo(() => [
+  const exportColumns = useMemo(() => [
     {
       key: "id",
       title: "م",
@@ -212,6 +258,147 @@ const VipCustomers = () => {
     }
   ], []);
 
+  const columns = useMemo(() => {
+    if (isPhone) {
+      return [
+        {
+          key: "studentName",
+          title: "العميل",
+          render: (row) =>
+            shortStudentName(
+              row.studentName
+            ) || "-"
+        },
+        {
+          key: "nationalId",
+          title: "الهوية",
+          render: (row) =>
+            row.nationalId || "-"
+        },
+        {
+          key: "registerUserName",
+          title: "المندوب",
+          render: (row) =>
+            row.registerUserName || "-"
+        },
+        {
+          key: "orderStatus",
+          title: "الحالة",
+          render: (row) =>
+            row.orderStatus || "غير مؤكد"
+        }
+      ];
+    }
+
+    if (isTablet) {
+      return [
+        {
+          key: "studentName",
+          title: "العميل",
+          render: (row) =>
+            shortStudentName(
+              row.studentName
+            ) || "-"
+        },
+        {
+          key: "studentTel",
+          title: "الجوال",
+          render: (row) =>
+            row.studentTel || "-"
+        },
+        {
+          key: "nationalId",
+          title: "الهوية",
+          render: (row) =>
+            row.nationalId || "-"
+        },
+        {
+          key: "diplomName",
+          title: "الدبلوم / الدورة",
+          render: (row) =>
+            row.diplomName || "-"
+        },
+        {
+          key: "registerUserName",
+          title: "مسئول التسجيل",
+          render: (row) =>
+            row.registerUserName || "-"
+        },
+        {
+          key: "orderStatus",
+          title: "الحالة",
+          render: (row) =>
+            row.orderStatus || "غير مؤكد"
+        }
+      ];
+    }
+
+    return [
+      {
+        key: "studentName",
+        title: "اسم العميل",
+        render: (row) =>
+          row.studentName || "-"
+      },
+      {
+        key: "studentTel",
+        title: "رقم الجوال",
+        render: (row) =>
+          row.studentTel || "-"
+      },
+      {
+        key: "nationalId",
+        title: "رقم الهوية",
+        render: (row) =>
+          row.nationalId || "-"
+      },
+      {
+        key: "branchName",
+        title: "الفرع",
+        render: (row) =>
+          row.branchName || "-"
+      },
+      {
+        key: "batchName",
+        title: "الدفعة",
+        render: (row) =>
+          row.batchName || "-"
+      },
+      {
+        key: "diplomName",
+        title: "الدبلوم / الدورة",
+        render: (row) =>
+          row.diplomName || "-"
+      },
+      {
+        key: "registerUserName",
+        title: "مسئول التسجيل",
+        render: (row) =>
+          row.registerUserName || "-"
+      },
+      {
+        key: "orderStatus",
+        title: "حالة الطلب",
+        render: (row) =>
+          row.orderStatus || "غير مؤكد"
+      },
+      {
+        key: "vipNotes",
+        title: "ملاحظات VIP",
+        render: (row) =>
+          row.vipNotes || "-"
+      },
+      {
+        key: "createdAt",
+        title: "تاريخ الإضافة",
+        render: (row) =>
+          formatGregorianDate(
+            row.createdAt
+          )
+      }
+    ];
+  }, [isPhone, isTablet]);
+
   const filteredRows = useMemo(() => {
     const filter =
       normalizeText(searchText);
@@ -221,7 +408,7 @@ const VipCustomers = () => {
     }
 
     return rows.filter((row) =>
-      columns.some((column) =>
+      exportColumns.some((column) =>
         normalizeText(
           column.render(row)
         ).includes(filter)
@@ -230,7 +417,7 @@ const VipCustomers = () => {
   }, [
     rows,
     searchText,
-    columns
+    exportColumns
   ]);
 
   const paginatedRows = useMemo(() => {
@@ -481,7 +668,7 @@ const VipCustomers = () => {
 
     try {
       const headers =
-        columns.map(
+        exportColumns.map(
           (column) => column.title
         );
 
@@ -491,7 +678,7 @@ const VipCustomers = () => {
           .join(","),
 
         ...filteredRows.map((row) =>
-          columns
+          exportColumns
             .map((column) =>
               column.render(row)
             )
@@ -541,41 +728,198 @@ const VipCustomers = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         background: "#f5f8f7",
         direction: "ltr"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            },
+
+            ".swal2-popup": {
+              width: isPhone
+                ? "88vw !important"
+                : isTablet
+                  ? "520px !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.75rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-title": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.82rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-html-container": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.56rem !important"
+                : isTablet
+                  ? "0.68rem !important"
+                  : undefined
+            },
+
+            ".swal2-confirm, .swal2-cancel": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.5rem !important"
+                : isTablet
+                  ? "0.6rem !important"
+                  : undefined
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background:
+              "rgba(255,255,255,.97)",
+            backdropFilter:
+              "blur(14px)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: { xs: 0.75, sm: 1 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 22
+                  }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.67rem",
+                  sm: "0.79rem"
+                },
+                color: "#17372b",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              قائمة عملاء VIP
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
         component="main"
         sx={{
-          marginLeft: {
-            xs: 0,
-            md: `${SIDEBAR_WIDTH}px`
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
           },
-
-          width: {
-            xs: "100%",
-            md:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
+          px: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
           },
-
-          minHeight: "100vh",
-
-          p: {
-            xs: 1.5,
-            md: 3
+          py: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
           },
+          direction: "ltr",
+          boxSizing: "border-box",
+          overflowX: "hidden",
 
-          direction: "ltr"
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width:
+              `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 2.5
+          }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.9 : 4,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -584,10 +928,11 @@ const VipCustomers = () => {
         >
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              },
+              p: isPhone
+                ? 0.7
+                : isTablet
+                  ? 1
+                  : 2.5,
 
               background:
                 "linear-gradient(135deg, #ffffff 0%, #edf8f3 100%)",
@@ -601,7 +946,12 @@ const VipCustomers = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#057546"
+                color: "#057546",
+                fontSize: isPhone
+                  ? "0.72rem"
+                  : isTablet
+                    ? "0.88rem"
+                    : undefined
               }}
             >
               قائمة عملاء VIP
@@ -610,23 +960,95 @@ const VipCustomers = () => {
 
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              }
+              p: isPhone
+                ? 0.6
+                : isTablet
+                  ? 0.9
+                  : 2.5
             }}
           >
-            <Stack
-              direction={{
-                xs: "column",
-                md: "row"
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : isTablet
+                    ? "repeat(4,minmax(0,1fr))"
+                    : "auto auto minmax(260px,1fr) auto auto auto",
+                gap: isPhone
+                  ? 0.5
+                  : isTablet
+                    ? 0.7
+                    : 1,
+                mb: isPhone
+                  ? 0.7
+                  : isTablet
+                    ? 0.9
+                    : 2,
+                alignItems: "center",
+
+                "& .MuiInputLabel-root": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+
+                "& .MuiInputBase-input": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.44rem"
+                    : isTablet
+                      ? "0.52rem"
+                      : undefined,
+                  py: isPhone
+                    ? 0.45
+                    : isTablet
+                      ? 0.55
+                      : undefined
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone
+                    ? 31
+                    : isTablet
+                      ? 34
+                      : undefined,
+                  borderRadius: isCompact
+                    ? 1.1
+                    : undefined
+                },
+
+                "& .MuiButton-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 33
+                      : undefined,
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  fontSize: isPhone
+                    ? "0.43rem"
+                    : isTablet
+                      ? "0.51rem"
+                      : undefined,
+                  px: isPhone
+                    ? 0.55
+                    : isTablet
+                      ? 0.8
+                      : undefined
+                },
+
+                "& .MuiSvgIcon-root": {
+                  fontSize: isPhone
+                    ? 14
+                    : isTablet
+                      ? 16
+                      : undefined
+                }
               }}
-              spacing={1.5}
-              alignItems={{
-                xs: "stretch",
-                md: "center"
-              }}
-              sx={{ mb: 2 }}
             >
               <TextField
                 type="date"
@@ -641,6 +1063,7 @@ const VipCustomers = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -656,6 +1079,7 @@ const VipCustomers = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -668,10 +1092,11 @@ const VipCustomers = () => {
                     event.target.value
                   )
                 }
+                fullWidth
                 sx={{
-                  minWidth: {
-                    md: 330
-                  }
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
                 InputProps={{
                   startAdornment: (
@@ -679,16 +1104,13 @@ const VipCustomers = () => {
                       <SearchIcon />
                     </InputAdornment>
                   ),
-
                   endAdornment:
                     searchText ? (
                       <InputAdornment position="end">
                         <IconButton
                           size="small"
                           onClick={() =>
-                            setSearchText(
-                              ""
-                            )
+                            setSearchText("")
                           }
                         >
                           <ClearIcon />
@@ -704,8 +1126,6 @@ const VipCustomers = () => {
                 onClick={loadData}
                 disabled={loading}
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
                   background: "#057546"
                 }}
               >
@@ -717,55 +1137,53 @@ const VipCustomers = () => {
                 startIcon={<RefreshIcon />}
                 onClick={refreshData}
                 disabled={loading}
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800
-                }}
               >
                 تحديث
               </Button>
 
               <Button
                 variant="outlined"
-                startIcon={
-                  <FileDownloadIcon />
-                }
+                startIcon={<FileDownloadIcon />}
                 onClick={exportToExcel}
                 disabled={
                   loading ||
                   filteredRows.length === 0
                 }
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
                   color: "#ae1e21",
-                  borderColor: "#ae1e21"
+                  borderColor: "#ae1e21",
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               >
                 تصدير Excel
               </Button>
-            </Stack>
+            </Box>
 
             <Stack
-              direction={{
-                xs: "column",
-                md: "row"
-              }}
-              spacing={2}
+              direction="row"
+              spacing={isPhone ? 0.4 : isTablet ? 0.6 : 2}
               sx={{
-                mb: 2.5
+                mb: isPhone ? 0.7 : isTablet ? 0.9 : 2.5
               }}
             >
               <Box
                 sx={{
                   flex: 1,
-                  p: 1.5,
+                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
                   border:
                     "1px solid rgba(5,117,70,0.22)",
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  color: "#057546"
+                  color: "#057546",
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined,
+                  lineHeight: 1.5
                 }}
               >
                 إجمالي عملاء VIP
@@ -776,13 +1194,19 @@ const VipCustomers = () => {
               <Box
                 sx={{
                   flex: 1,
-                  p: 1.5,
+                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
                   border:
                     "1px solid rgba(212,160,23,0.35)",
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  color: "#d4a017"
+                  color: "#d4a017",
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined,
+                  lineHeight: 1.5
                 }}
               >
                 المضافين اليوم
@@ -793,13 +1217,19 @@ const VipCustomers = () => {
               <Box
                 sx={{
                   flex: 1,
-                  p: 1.5,
+                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
                   border:
                     "1px solid rgba(174,30,33,0.25)",
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  color: "#ae1e21"
+                  color: "#ae1e21",
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined,
+                  lineHeight: 1.5
                 }}
               >
                 لديهم ملاحظات
@@ -812,9 +1242,13 @@ const VipCustomers = () => {
               sx={{
                 border:
                   "1px solid rgba(5,117,70,0.14)",
-                borderRadius: 3,
-                overflow: "auto",
-                minHeight: 400
+                borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
+                overflow: "hidden",
+                minHeight: isPhone
+                  ? 360
+                  : isTablet
+                    ? 420
+                    : 400
               }}
             >
               {loading ? (
@@ -828,6 +1262,315 @@ const VipCustomers = () => {
                   }}
                 >
                   <CircularProgress />
+                </Box>
+              ) : isCompact ? (
+                <Box
+                  sx={{
+                    display: "grid",
+                    gap: isPhone ? 0.4 : 0.6,
+                    p: isPhone ? 0.4 : 0.6
+                  }}
+                >
+                  {paginatedRows.length === 0 ? (
+                    <Box
+                      sx={{
+                        minHeight: 300,
+                        display: "grid",
+                        placeItems: "center",
+                        fontFamily: "Cairo",
+                        fontWeight: 800,
+                        color: "#789",
+                        fontSize: isPhone
+                          ? "0.48rem"
+                          : "0.56rem"
+                      }}
+                    >
+                      لا توجد بيانات
+                    </Box>
+                  ) : (
+                    paginatedRows.map((row) => {
+                      const confirmed =
+                        normalizeText(
+                          row.orderStatus
+                        ).includes("مؤكد") &&
+                        !normalizeText(
+                          row.orderStatus
+                        ).includes("غير");
+
+                      return (
+                        <Paper
+                          key={row.id}
+                          variant="outlined"
+                          sx={{
+                            p: isPhone ? 0.55 : 0.75,
+                            borderRadius: isPhone ? 1.1 : 1.4,
+                            borderColor:
+                              "rgba(5,117,70,.12)",
+                            background: "#fff"
+                          }}
+                        >
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="flex-start"
+                            spacing={0.5}
+                          >
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontWeight: 950,
+                                  fontSize: isPhone
+                                    ? "0.5rem"
+                                    : "0.58rem",
+                                  color: "#1f2d3d",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                {shortStudentName(row.studentName) || "-"}
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  mt: 0.1,
+                                  fontFamily: "Cairo",
+                                  fontSize: isPhone
+                                    ? "0.36rem"
+                                    : "0.43rem",
+                                  color: "#789"
+                                }}
+                              >
+                                {row.nationalId || "-"} • {row.studentTel || "-"}
+                              </Typography>
+                            </Box>
+
+                            <Box
+                              sx={{
+                                px: isPhone ? 0.55 : 0.7,
+                                py: isPhone ? 0.15 : 0.2,
+                                borderRadius: 999,
+                                fontFamily: "Cairo",
+                                fontWeight: 900,
+                                fontSize: isPhone
+                                  ? "0.34rem"
+                                  : "0.41rem",
+                                whiteSpace: "nowrap",
+                                color: confirmed
+                                  ? "#1b5e20"
+                                  : "#b71c1c",
+                                backgroundColor: confirmed
+                                  ? "#e8f5e9"
+                                  : "#ffebee"
+                              }}
+                            >
+                              {row.orderStatus || "غير مؤكد"}
+                            </Box>
+                          </Stack>
+
+                          <Box
+                            sx={{
+                              mt: 0.5,
+                              display: "grid",
+                              gridTemplateColumns:
+                                "repeat(2,minmax(0,1fr))",
+                              gap: isPhone ? 0.4 : 0.55
+                            }}
+                          >
+                            <Box>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontSize: isPhone
+                                    ? "0.31rem"
+                                    : "0.38rem",
+                                  color: "#8a9993"
+                                }}
+                              >
+                                مسئول التسجيل
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontWeight: 850,
+                                  fontSize: isPhone
+                                    ? "0.42rem"
+                                    : "0.49rem"
+                                }}
+                              >
+                                {row.registerUserName || "-"}
+                              </Typography>
+                            </Box>
+
+                            <Box>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontSize: isPhone
+                                    ? "0.31rem"
+                                    : "0.38rem",
+                                  color: "#8a9993"
+                                }}
+                              >
+                                الدبلوم / الدورة
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontWeight: 850,
+                                  fontSize: isPhone
+                                    ? "0.42rem"
+                                    : "0.49rem"
+                                }}
+                              >
+                                {row.diplomName || "-"}
+                              </Typography>
+                            </Box>
+
+                            {!isPhone && (
+                              <>
+                                <Box>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontSize: "0.38rem",
+                                      color: "#8a9993"
+                                    }}
+                                  >
+                                    الفرع
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 850,
+                                      fontSize: "0.49rem"
+                                    }}
+                                  >
+                                    {row.branchName || "-"}
+                                  </Typography>
+                                </Box>
+
+                                <Box>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontSize: "0.38rem",
+                                      color: "#8a9993"
+                                    }}
+                                  >
+                                    الدفعة
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 850,
+                                      fontSize: "0.49rem"
+                                    }}
+                                  >
+                                    {row.batchName || "-"}
+                                  </Typography>
+                                </Box>
+                              </>
+                            )}
+                          </Box>
+
+                          {row.vipNotes ? (
+                            <Typography
+                              sx={{
+                                mt: 0.5,
+                                p: 0.4,
+                                borderRadius: 1,
+                                background: "#fff8e1",
+                                color: "#785500",
+                                fontFamily: "Cairo",
+                                fontWeight: 800,
+                                fontSize: isPhone
+                                  ? "0.36rem"
+                                  : "0.43rem",
+                                lineHeight: 1.4
+                              }}
+                            >
+                              {row.vipNotes}
+                            </Typography>
+                          ) : null}
+
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            spacing={0.4}
+                            sx={{ mt: 0.5 }}
+                          >
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontSize: isPhone
+                                  ? "0.31rem"
+                                  : "0.38rem",
+                                color: "#789"
+                              }}
+                            >
+                              {formatGregorianDate(row.createdAt)}
+                            </Typography>
+
+                            <Stack
+                              direction="row"
+                              spacing={0.25}
+                            >
+                              <Tooltip title="تغيير الحالة إلى مؤكد">
+                                <IconButton
+                                  onClick={() =>
+                                    changeStatus(
+                                      row,
+                                      "مؤكد"
+                                    )
+                                  }
+                                  sx={{
+                                    width: isPhone ? 25 : 29,
+                                    height: isPhone ? 25 : 29,
+                                    p: 0,
+                                    color: "#057546",
+                                    background: "#eef8f3"
+                                  }}
+                                >
+                                  <CheckCircleIcon
+                                    sx={{
+                                      fontSize: isPhone ? 15 : 17
+                                    }}
+                                  />
+                                </IconButton>
+                              </Tooltip>
+
+                              <Tooltip title="تغيير الحالة إلى غير مؤكد">
+                                <IconButton
+                                  onClick={() =>
+                                    changeStatus(
+                                      row,
+                                      "غير مؤكد"
+                                    )
+                                  }
+                                  sx={{
+                                    width: isPhone ? 25 : 29,
+                                    height: isPhone ? 25 : 29,
+                                    p: 0,
+                                    color: "#ae1e21",
+                                    background: "#fff0f0"
+                                  }}
+                                >
+                                  <CancelIcon
+                                    sx={{
+                                      fontSize: isPhone ? 15 : 17
+                                    }}
+                                  />
+                                </IconButton>
+                              </Tooltip>
+                            </Stack>
+                          </Stack>
+                        </Paper>
+                      );
+                    })
+                  )}
                 </Box>
               ) : (
                 <Box
@@ -1031,10 +1774,31 @@ const VipCustomers = () => {
               }
               sx={{
                 direction: "ltr",
-
+                minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+                "& .MuiTablePagination-toolbar": {
+                  minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+                  px: isPhone ? 0.4 : isTablet ? 0.6 : undefined
+                },
                 "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                  fontFamily: "Cairo"
-                }
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined
+                },
+                "& .MuiTablePagination-select": {
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+                "& .MuiIconButton-root": {
+                  width: isPhone ? 28 : isTablet ? 31 : undefined,
+                  height: isPhone ? 28 : isTablet ? 31 : undefined
+                },
+
               }}
             />
           </Box>

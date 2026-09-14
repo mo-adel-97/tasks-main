@@ -1,4 +1,22 @@
-import { Box, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip, Typography, Collapse, Drawer, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+  Tooltip,
+  Typography,
+  Collapse,
+  Drawer,
+  useMediaQuery,
+  Badge,
+  IconButton,
+  Popover,
+  Stack,
+  CircularProgress,
+  Divider
+} from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -18,7 +36,6 @@ import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import BlockIcon from '@mui/icons-material/Block';
 
 import HomeIcon from '@mui/icons-material/Home';
-import TaskIcon from '@mui/icons-material/Task';
 import PaymentIcon from '@mui/icons-material/Payment';
 import MessageIcon from '@mui/icons-material/Message';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -55,9 +72,146 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import DescriptionIcon from '@mui/icons-material/Description';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
+import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
+import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded';
+import TuneIcon from '@mui/icons-material/Tune';
+import SecurityIcon from '@mui/icons-material/Security';
 const SIDEBAR_WIDTH = 280;
 const DESKTOP_BREAKPOINT = 1600;
+const HR_API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5258";
 const user = JSON.parse(localStorage.getItem('user') || '{}');
+const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v6';
+const SIDEBAR_CACHE_TTL_MS = 5 * 60 * 1000;
+
+let sidebarMemoryCache = null;
+let sidebarRequestPromise = null;
+let sidebarRequestUserKey = '';
+
+const getAuthorizedHeaders = (extraHeaders = {}) => {
+  const token = String(localStorage.getItem('token') || '').trim();
+
+  return {
+    Accept: 'application/json',
+    ...extraHeaders,
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
+  };
+};
+
+const getSidebarUserKey = () => {
+  // Cache namespace only; authorization never depends on localStorage.
+  // Prefer the current token fingerprint so changing user.guid manually
+  // cannot switch the cached menu to another local user record.
+  const token = String(localStorage.getItem('token') || '');
+  if (token) {
+    let hash = 2166136261;
+    for (let index = 0; index < token.length; index += 1) {
+      hash ^= token.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `token:${(hash >>> 0).toString(16)}`;
+  }
+
+  try {
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    return `user:${String(currentUser?.guid || currentUser?.Guid || '')
+      .trim()
+      .toLowerCase()}`;
+  } catch {
+    return 'anonymous';
+  }
+};
+
+const readSidebarCache = () => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(SIDEBAR_CACHE_KEY) || 'null');
+    const currentUserKey = getSidebarUserKey();
+
+    if (
+      cached &&
+      cached.userKey === currentUserKey &&
+      Array.isArray(cached.groups) &&
+      Array.isArray(cached.items)
+    ) {
+      return cached;
+    }
+  } catch {
+    // Ignore invalid cache.
+  }
+
+  return null;
+};
+
+const writeSidebarCache = (config) => {
+  const nextCache = {
+    userKey: getSidebarUserKey(),
+    loadedAt: Date.now(),
+    groups: Array.isArray(config?.groups) ? config.groups : [],
+    items: Array.isArray(config?.items) ? config.items : []
+  };
+
+  sidebarMemoryCache = nextCache;
+  localStorage.setItem(SIDEBAR_CACHE_KEY, JSON.stringify(nextCache));
+  return nextCache;
+};
+
+const fetchSidebarConfigShared = async (force = false) => {
+  const currentUserKey = getSidebarUserKey();
+  const now = Date.now();
+  const cached = sidebarMemoryCache || readSidebarCache();
+
+  if (
+    !force &&
+    cached &&
+    cached.userKey === currentUserKey &&
+    Number(cached.loadedAt || 0) > 0 &&
+    now - Number(cached.loadedAt) < SIDEBAR_CACHE_TTL_MS
+  ) {
+    sidebarMemoryCache = cached;
+    return cached;
+  }
+
+  if (sidebarRequestPromise && sidebarRequestUserKey === currentUserKey) {
+    return sidebarRequestPromise;
+  }
+
+  sidebarRequestUserKey = currentUserKey;
+  sidebarRequestPromise = (async () => {
+    const headers = getAuthorizedHeaders();
+
+    const response = await fetch(
+      `${HR_API_BASE_URL}/api/sidebar-navigation/me`,
+      {
+        method: 'GET',
+        headers,
+        cache: 'no-store'
+      }
+    );
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || result?.configured !== true) {
+      throw new Error(result?.message || 'تعذر تحميل القائمة الجانبية');
+    }
+
+    return writeSidebarCache({
+      groups: Array.isArray(result?.groups) ? result.groups : [],
+      items: Array.isArray(result?.items) ? result.items : []
+    });
+  })();
+
+  try {
+    return await sidebarRequestPromise;
+  } finally {
+    sidebarRequestPromise = null;
+    sidebarRequestUserKey = '';
+  }
+};
 
 const primaryColor = '#057546';
 const primaryDark = '#034d31';
@@ -68,6 +222,83 @@ const backgroundColor = '#fefefe';
 const textColor = '#1f2d3d';
 const mutedTextColor = '#6f8a81';
 const softShadow = '0 14px 35px rgba(5,117,70,0.12)';
+
+
+/*
+ * Database-driven sidebar renderer.
+ * The API returns only the items authorized by Form_Name/User_Premision/
+ * User_Menu. Form_Name/Main_Menu are the only screen/menu metadata sources.
+ * React only resolves icon components and renders the returned metadata.
+ */
+const SIDEBAR_ICON_COMPONENTS = {
+  home: HomeIcon,
+  payment: PaymentIcon,
+  message: MessageIcon,
+  accountbalance: AccountBalanceIcon,
+  report: ReportIcon,
+  support: SupportAgentIcon,
+  analytics: AnalyticsIcon,
+  groups: GroupsIcon,
+  school: SchoolIcon,
+  livehelp: LiveHelpIcon,
+  list: FormatListBulletedIcon,
+  history: HistoryIcon,
+  today: TodayIcon,
+  contactsupport: ContactSupportIcon,
+  emojievents: EmojiEventsIcon,
+  handshake: HandshakeIcon,
+  star: StarIcon,
+  campaign: CampaignIcon,
+  librarybooks: LibraryBooksIcon,
+  dashboard: DashboardCustomizeIcon,
+  assessment: AssessmentIcon,
+  campaignoutline: CampaignOutlinedIcon,
+  paid: PaidIcon,
+  emojioutline: EmojiEventsOutlinedIcon,
+  querystats: QueryStatsIcon,
+  payments: PaymentsOutlinedIcon,
+  workspacepremium: WorkspacePremiumIcon,
+  percent: PercentIcon,
+  playlistremove: PlaylistRemoveIcon,
+  currencyexchange: CurrencyExchangeIcon,
+  swaphoriz: SwapHorizIcon,
+  businesscenter: BusinessCenterIcon,
+  localatm: LocalAtmIcon,
+  receipt: ReceiptLongIcon,
+  description: DescriptionIcon,
+  menubook: MenuBookIcon,
+  personadd: PersonAddAlt1Icon,
+  services: MiscellaneousServicesIcon,
+  lockreset: LockResetIcon,
+  historymanage: ManageHistoryIcon,
+  admin: AdminPanelSettingsIcon,
+  folder: FolderSharedIcon,
+  storefront: StorefrontIcon,
+  howtoreg: HowToRegIcon,
+  upload: UploadFileIcon,
+  ratereview: RateReviewIcon,
+  systemupdate: SystemUpdateAltIcon,
+  block: BlockIcon,
+  poll: PollIcon,
+  add: AddIcon,
+  logout: ExitToAppIcon,
+  tune: TuneIcon,
+  security: SecurityIcon,
+};
+
+const normalizeSidebarKey = (value) =>
+  String(value || '').trim().toLowerCase();
+
+const resolveSidebarIcon = (iconKey, fallback = null) => {
+  const IconComponent =
+    SIDEBAR_ICON_COMPONENTS[normalizeSidebarKey(iconKey)];
+
+  if (IconComponent) {
+    return <IconComponent />;
+  }
+
+  return fallback || <DashboardCustomizeIcon />;
+};
 
 const Sidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const location = useLocation();
@@ -88,1078 +319,335 @@ const Sidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, isDesktop]);
 
-  const [permissionsLoading, setPermissionsLoading] =
-  useState(true);
+  const [notificationAnchor, setNotificationAnchor] = useState(null);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
 
-const [permissionData, setPermissionData] =
-  useState({
-    menus: [],
-    forms: [],
-    sales: {
-      canView: false,
-      screens: {}
-    },
-    reports: {
-      canView: false,
-      screens: {}
-    },
-    studentAffairs: {
-      canView: false,
-      screens: {}
-    },
-    branchManagement: {
-      canView: false,
-      screens: {}
+  const [sidebarConfig, setSidebarConfig] = useState(() => {
+    const cached = sidebarMemoryCache || readSidebarCache();
+
+    if (cached) {
+      sidebarMemoryCache = cached;
+      return {
+        loading: false,
+        configured: true,
+        groups: cached.groups,
+        items: cached.items,
+        error: ''
+      };
     }
+
+    return {
+      loading: true,
+      configured: false,
+      groups: [],
+      items: [],
+      error: ''
+    };
   });
 
-  useEffect(() => {
-  let isMounted = true;
+  // touched=false: افتح تلقائياً مجموعة الصفحة الحالية في أول ظهور فقط.
+  // بعد أول ضغطة يصبح التحكم يدويًا: يمكن غلق نفس المجموعة أو فتح أخرى حصريًا.
+  const [dbGroupUi, setDbGroupUi] = useState({
+    touched: false,
+    openKey: null
+  });
 
-  const loadPermissions = async () => {
-    const userGuid =
-      String(
-        user?.guid ||
-        user?.Guid ||
-        ""
-      ).trim();
+  /*
+   * القائمة الجانبية لا تختفي أثناء التنقل.
+   * نعرض آخر نسخة ناجحة فوراً من الذاكرة/الكاش، ثم نعيد التحقق من السيرفر
+   * مرة واحدة كل عدة دقائق فقط. إعادة تركيب Sidebar داخل صفحات المشروع
+   * لن تعيد شاشة "جاري تحميل القائمة" في كل انتقال.
+   */
+  useEffect(() => {
+    let isMounted = true;
+
+    const cached = sidebarMemoryCache || readSidebarCache();
+    if (cached) {
+      sidebarMemoryCache = cached;
+      setSidebarConfig({
+        loading: false,
+        configured: true,
+        groups: cached.groups,
+        items: cached.items,
+        error: ''
+      });
+    }
+
+    fetchSidebarConfigShared()
+      .then((nextConfig) => {
+        if (!isMounted) return;
+
+        setSidebarConfig({
+          loading: false,
+          configured: true,
+          groups: nextConfig.groups,
+          items: nextConfig.items,
+          error: ''
+        });
+      })
+      .catch((sidebarError) => {
+        if (!isMounted) return;
+
+        const fallback = sidebarMemoryCache || readSidebarCache();
+        if (fallback) {
+          setSidebarConfig({
+            loading: false,
+            configured: true,
+            groups: fallback.groups,
+            items: fallback.items,
+            error: ''
+          });
+          return;
+        }
+
+        console.warn('Sidebar loading error:', sidebarError);
+        setSidebarConfig({
+          loading: false,
+          configured: false,
+          groups: [],
+          items: [],
+          error: sidebarError?.message || 'تعذر تحميل القائمة الجانبية'
+        });
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Admin page can refresh sidebar metadata immediately after saving changes.
+  useEffect(() => {
+    const handleSidebarRefresh = async () => {
+      sidebarMemoryCache = null;
+      sidebarRequestPromise = null;
+      sidebarRequestUserKey = '';
+      localStorage.removeItem(SIDEBAR_CACHE_KEY);
+
+      try {
+        const nextConfig = await fetchSidebarConfigShared(true);
+        setSidebarConfig({
+          loading: false,
+          configured: true,
+          groups: nextConfig.groups,
+          items: nextConfig.items,
+          error: ''
+        });
+      } catch (sidebarError) {
+        console.warn('Sidebar refresh error:', sidebarError);
+      }
+    };
+
+    window.addEventListener('sstli:sidebar-refresh', handleSidebarRefresh);
+    return () => window.removeEventListener('sstli:sidebar-refresh', handleSidebarRefresh);
+  }, []);
+
+  const loadHrNotifications = async () => {
+    const userGuid = String(
+      user?.guid || user?.Guid || ""
+    ).trim();
 
     if (!userGuid) {
-      if (isMounted) {
-        setPermissionData({
-          menus: [],
-          forms: [],
-          sales: {
-            canView: false,
-            screens: {}
-          },
-          reports: {
-            canView: false,
-            screens: {}
-          },
-          branchManagement: {
-            canView: false,
-            screens: {}
-          }
-        });
-
-        setPermissionsLoading(false);
-      }
-
+      setNotifications([]);
+      setNotificationUnreadCount(0);
       return;
     }
 
     try {
-      setPermissionsLoading(true);
+      setNotificationsLoading(true);
 
       const response = await fetch(
-        `http://localhost:5258/api/user-permissions/${encodeURIComponent(userGuid)}`,
+        `${HR_API_BASE_URL}/api/hr/notifications?userGuid=${encodeURIComponent(userGuid)}&take=30`,
         {
-          method: "GET",
-          headers: {
-            Accept: "application/json"
-          }
+          cache: "no-store",
+          headers: getAuthorizedHeaders()
         }
       );
 
-      const result = await response.json();
+      const result = await response.json().catch(() => null);
 
       if (!response.ok) {
         throw new Error(
-          result?.message ||
-          "تعذر تحميل صلاحيات المستخدم"
+          result?.message || "تعذر تحميل الإشعارات"
         );
       }
 
-      if (isMounted) {
-        setPermissionData(
-          result?.data || {
-            menus: [],
-            forms: [],
-            sales: {
-              canView: false,
-              screens: {}
-            },
-            reports: {
-              canView: false,
-              screens: {}
-            },
-            branchManagement: {
-              canView: false,
-              screens: {}
-            }
-          }
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Permission loading error:",
-        error
+      setNotifications(
+        Array.isArray(result?.data)
+          ? result.data
+          : []
+      );
+      setNotificationUnreadCount(
+        Number(result?.unreadCount || 0)
+      );
+    } catch (notificationError) {
+      console.warn(
+        "HR notifications error:",
+        notificationError
+      );
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHrNotifications();
+
+    const timer = window.setInterval(
+      loadHrNotifications,
+      60000
+    );
+
+    return () => window.clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const markNotificationRead = async (item) => {
+    const userGuid = String(
+      user?.guid || user?.Guid || ""
+    ).trim();
+
+    if (!userGuid || !item?.notificationKey) return;
+
+    try {
+      await fetch(
+        `${HR_API_BASE_URL}/api/hr/notifications/read`,
+        {
+          method: "POST",
+          headers: getAuthorizedHeaders({ "Content-Type": "application/json" }),
+          body: JSON.stringify({
+            userGuid,
+            notificationKey: item.notificationKey
+          })
+        }
+      );
+    } catch {
+      // التنقل لا يتوقف بسبب فشل تحديث حالة القراءة.
+    }
+
+    setNotificationAnchor(null);
+
+    if (item?.targetPath) {
+      navigate(item.targetPath);
+    }
+
+    loadHrNotifications();
+  };
+
+  const markAllNotificationsRead = async () => {
+    const userGuid = String(
+      user?.guid || user?.Guid || ""
+    ).trim();
+
+    if (!userGuid) return;
+
+    try {
+      await fetch(
+        `${HR_API_BASE_URL}/api/hr/notifications/read-all`,
+        {
+          method: "POST",
+          headers: getAuthorizedHeaders({ "Content-Type": "application/json" }),
+          body: JSON.stringify({ userGuid })
+        }
       );
 
-      if (isMounted) {
-        /*
-         * Fail Closed:
-         * عند فشل تحميل الصلاحيات لا نظهر المبيعات.
-         */
-        setPermissionData({
-          menus: [],
-          forms: [],
-          sales: {
-            canView: false,
-            screens: {}
-          },
-          reports: {
-            canView: false,
-            screens: {}
-          },
-          branchManagement: {
-            canView: false,
-            screens: {}
-          }
-        });
-      }
-    } finally {
-      if (isMounted) {
-        setPermissionsLoading(false);
-      }
+      await loadHrNotifications();
+    } catch (notificationError) {
+      console.warn(
+        "Mark all notifications error:",
+        notificationError
+      );
     }
   };
 
-  loadPermissions();
-
-  return () => {
-    isMounted = false;
-  };
-}, []);
-
-const canShowSalesTab =
-  !permissionsLoading &&
-  permissionData?.sales?.canView === true;
-
-const salesScreens =
-  permissionData?.sales?.screens || {};
-
-const canShowReportsTab =
-  !permissionsLoading &&
-  permissionData?.reports?.canView === true;
-
-const reportScreens =
-  permissionData?.reports?.screens || {};
-
-const canShowStudentAffairsTab =
-  !permissionsLoading &&
-  permissionData?.studentAffairs?.canView === true;
-
-const studentAffairsScreens =
-  permissionData?.studentAffairs?.screens || {};
-
-const canShowBranchManagementTab =
-  !permissionsLoading &&
-  permissionData?.branchManagement?.canView === true;
-
-const branchManagementScreens =
-  permissionData?.branchManagement?.screens || {};
-
-  const [surveysOpen, setSurveysOpen] = useState(false);
-
-  // على الموبايل/التابلت: كل مرة الـ Drawer يفتح يبدأ جروب
-  // الاستبيانات مقفول، فلا يفتح بسبب click-through أو حالة قديمة.
-  useEffect(() => {
-    if (!isDesktop && mobileOpen) {
-      setSurveysOpen(false);
-    }
-  }, [mobileOpen, isDesktop]);
-  const [salesOpen, setSalesOpen] = useState(
-    location.pathname.startsWith("/dashboard/admission-requests") ||
-    location.pathname.startsWith("/dashboard/online-registration") ||
-    location.pathname.startsWith("/dashboard/offline-registration") ||
-    location.pathname.startsWith("/dashboard/other-institute") ||
-    location.pathname.startsWith("/dashboard/vip-customers") ||
-    location.pathname.startsWith("/dashboard/after-sales-follow") ||
-    location.pathname.startsWith("/dashboard/after-sales-report") ||
-    location.pathname.startsWith("/dashboard/training-agreements-follow") ||
-    location.pathname.startsWith("/dashboard/registration-request-report")
-  );
-  const [studentFileOpen, setStudentFileOpen] = useState(
-    location.pathname === '/dashboard/receptionoffice' ||
-    location.pathname === '/dashboard/my-requests' ||
-    location.pathname === '/dashboard/batch-seats-counter'
-  );
-
-  const [reportsOpen, setReportsOpen] = useState(
-    location.pathname.startsWith(
-      "/dashboard/marketers-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/collection-commissions-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/rewards-list"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/batch-statistics"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/payment-follow-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/graduates-follow-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/discount-requests-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/deregistration-requests-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/refund-requests-report"
-    ) ||
-    location.pathname.startsWith(
-      "/dashboard/transfer-requests-report"
-    )
-  );
-
-  const [branchManagementOpen, setBranchManagementOpen] =
-    useState(
-      location.pathname.startsWith(
-        "/dashboard/cash-payment-order"
-      ) ||
-      location.pathname.startsWith(
-        "/dashboard/cash-receipt-acknowledgment"
-      ) ||
-      location.pathname.startsWith(
-        "/dashboard/branch-daily"
-      )
-    );
-
-  const [studentAffairsOpen, setStudentAffairsOpen] =
-    useState(
-      location.pathname.startsWith(
-        "/dashboard/new-students"
-      ) ||
-      location.pathname.startsWith(
-        "/dashboard/diploma-students"
-      ) ||
-      location.pathname.startsWith(
-        "/dashboard/course-students"
-      )
-    );
-
-
-  const allowedReceptionOfficeGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "35efb423-5491-4775-a5cc-98625fb66fa5",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-  "39a98dc1-f13e-4c07-91a1-39653a1bde2c",
-  "5d13046c-ccf1-4893-abce-03bf298e05ee",
-  "979f71d0-ddc5-48b7-8a47-eb5ca393d34e",
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113",
-   "4fd23f8d-5f04-4d1c-9201-3e1ae01e6e73",
-  "5212a8b8-0bdc-46dc-a1c2-86f295399390"
-];
-
-const allowedDesktopDevicesAdminGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-];
-
-const allowedCircularUploaderGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-  "35efb423-5491-4775-a5cc-98625fb66fa5",
-];
-
-const currentUserGuid = String(
-  user?.guid ||
-  user?.Guid ||
-  ""
-).trim().toLowerCase();
-
-/*
- * شاشة متابعة السداد:
- * تظهر فقط لمشرفي الفروع المحددين أدناه
- * بالإضافة إلى المستخدمين الإضافيين المحددين.
- *
- * لا تعتمد الشاشة على صلاحية paymentFollowReport
- * القادمة من الباك إند، لكنها تظل داخل قائمة التقارير،
- * لذلك يلزم أن يكون للمستخدم صلاحية عرض قائمة التقارير.
- */
-const allowedPaymentFollowGuids = [
-  "3bfd29bc-b727-4456-9117-90b00392d654",
-  "ed7fcacb-a5b8-49a1-8f2f-a601e0a9a2ee",
-  "4a776c59-a5d6-43ff-963e-bdd63a5b2c5c",
-  "515fcc7f-c8c5-4bc4-b1bd-1d664e3e72b0",
-  "f81ec6b9-e1a7-4e43-baf4-6651dd80d9c1",
-  "f09b8d0f-9625-43aa-8f16-4c38d9023453",
-  "c05bc1b6-c0ad-4b8c-80c1-9f21ab676a7d",
-  "98962d07-1bfc-4bf0-953a-87388da7426a",
-  "b7f71c74-bcd6-42ff-8e13-4e2b6b26ce0e",
-  "311f4e09-7045-4a61-ae74-efed22fc90eb",
-  "5ec48dc1-d2a0-476c-9733-86110eec0026",
-  "0e1d8c32-f20b-4c7a-b36f-1bc533537afc",
-  "66026998-18eb-4f7d-9a47-85e07c5f7781",
-  "bb5ac3bd-7898-48bf-865b-7bf3dcf55830",
-  "fc1b86fd-0297-436a-9d72-76e4bbb81868",
-  "e3116c64-48bd-407f-8d5f-35909b3fb410",
-  "65a0d8d1-2d90-4ce8-a0d4-60ec011b32e7",
-
-  // المستخدمون الإضافيون
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113",
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-  "35efb423-5491-4775-a5cc-98625fb66fa5"
-];
-
-const canShowPaymentFollowForUser =
-  allowedPaymentFollowGuids.includes(
-    currentUserGuid
-  );
-
-/*
- * متابعة الخريجين تستخدم نفس قائمة مستخدمي متابعة السداد.
- * وتظل داخل قائمة التقارير؛ لذلك لا تظهر التابة أصلًا
- * إلا إذا كانت صلاحية قائمة التقارير متاحة للمستخدم.
- */
-const canShowGraduatesFollowForUser =
-  allowedPaymentFollowGuids.includes(
-    currentUserGuid
-  );
-
-/*
- * طلبات الخصم:
- * تظهر فقط للمستخدمين المحددين أدناه،
- * مع ضرورة وجود صلاحية قائمة التقارير.
- */
-const allowedDiscountRequestsGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "35efb423-5491-4775-a5cc-98625fb66fa5",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113"
-];
-
-const canShowDiscountRequestsForUser =
-  allowedDiscountRequestsGuids.includes(
-    currentUserGuid
-  );
-
-/*
- * طلبات طي القيد تستخدم نفس مستخدمي طلبات الخصم.
- */
-const canShowDeregistrationRequestsForUser =
-  allowedDiscountRequestsGuids.includes(
-    currentUserGuid
-  );
-
-/*
- * طلبات الاسترداد تستخدم نفس مستخدمي طلبات الخصم وطلبات طي القيد.
- */
-const canShowRefundRequestsForUser =
-  allowedDiscountRequestsGuids.includes(
-    currentUserGuid
-  );
-
-/*
- * طلبات النقل / التحويل تستخدم نفس مستخدمي طلبات الاسترداد.
- */
-const canShowTransferRequestsForUser =
-  allowedDiscountRequestsGuids.includes(
-    currentUserGuid
-  );
-
-/*
- * شاشات مبيعات خاصة:
- * - تقرير طلب التسجيل
- * - عملاء VIP
- * - المسجلين في معاهد أخرى
- *
- * تظهر فقط للمستخدمين الموجودين في هذه القائمة،
- * بغض النظر عن قيمة الشاشة القادمة من الباك إند.
- */
-const restrictedSalesScreensAllowedGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113",
-  "35efb423-5491-4775-a5cc-98625fb66fa5",
-  "fd11b515-8054-4d0b-83bb-471f3c57b9e7",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e"
-];
-
-const canShowRestrictedSalesScreens =
-  restrictedSalesScreensAllowedGuids.includes(
-    currentUserGuid
-  );
-
-const restrictedSalesPermissions = [
-  "otherInstituteRegistrations",
-  "vipCustomers",
-  "registrationRequestReport"
-];
-
-const canUploadCirculars = allowedCircularUploaderGuids.includes(currentUserGuid);
-
-const canShowDesktopDevicesAdmin = allowedDesktopDevicesAdminGuids.includes(
-  String(user?.guid || user?.Guid || "").toLowerCase()
-);
-
-const canShowReceptionOffice = allowedReceptionOfficeGuids.includes(
-  String(user?.guid || user?.Guid || "").toLowerCase()
-);
-
-
-  const handleSurveysToggle = (event) => {
-    // امنع أي click جاي من زر فتح/قفل السايدبار من الوصول للجروب بالغلط.
-    event?.preventDefault?.();
-    event?.stopPropagation?.();
-
-    setSurveysOpen((current) => !current);
-  };
-
-  const handleSalesToggle = () => {
-    setSalesOpen(!salesOpen);
-  };
-
-  const handleReportsToggle = () => {
-    setReportsOpen((current) => !current);
-  };
-
-  const handleBranchManagementToggle = () => {
-    setBranchManagementOpen(
-      (current) => !current
-    );
-  };
-
-  const handleStudentFileToggle = () => {
-    setStudentFileOpen((current) => !current);
+  const handleDbGroupToggle = (groupKey, currentlyOpen) => {
+    setDbGroupUi({
+      touched: true,
+      openKey: currentlyOpen ? null : groupKey
+    });
   };
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem(SIDEBAR_CACHE_KEY);
+    sidebarMemoryCache = null;
+    sidebarRequestPromise = null;
+    sidebarRequestUserKey = '';
     navigate('/login');
   };
 
-  const menu = [
-    { text: 'الرئيسية', icon: <HomeIcon />, path: '/dashboard' },
+  const configuredSidebarItems = useMemo(() => {
+    return (sidebarConfig?.items || [])
+      .filter((item) => item?.isActive !== false)
+      .filter((item) => !(item?.desktopOnly === true && !isDesktop))
+      .map((item) => ({
+        itemKey: String(item?.itemKey || '').trim(),
+        text: String(item?.title || '').trim(),
+        description: String(item?.description || '').trim() || undefined,
+        icon: resolveSidebarIcon(item?.iconKey),
+        path: String(item?.route || '').trim(),
+        isNew: item?.isNew === true,
+        badgeText: item?.badgeText || undefined,
+        customBadge: item?.customBadge || undefined,
+        placement: normalizeSidebarKey(item?.placement || 'grouped'),
+        __groupKey: String(item?.groupKey || '').trim(),
+        __sortOrder: Number(item?.sortOrder || 0)
+      }))
+      .filter((item) => item.path && item.text);
+  }, [sidebarConfig, isDesktop]);
 
-    { text: 'المهام', icon: <TaskIcon />, path: '/dashboard/assigned-tasks' },
+  const configuredSidebarGroups = useMemo(() => {
+    return (sidebarConfig?.groups || [])
+      .filter((group) => group?.isActive !== false)
+      .map((group) => {
+        const groupKey = String(group?.groupKey || '').trim();
+        const items = configuredSidebarItems
+          .filter((item) =>
+            item.placement !== 'standalone' &&
+            item.__groupKey === groupKey
+          )
+          .sort((a, b) => a.__sortOrder - b.__sortOrder);
 
-    {
-      text: 'السداد والتحصيل',
-      icon: <PaymentIcon />,
-      path: '/dashboard/payments',
-      isNew: true
-    },
+        const activeByRoute = items.some(
+          (item) => item.path === location.pathname
+        );
 
-    { text: 'المحادثات', icon: <MessageIcon />, path: '/chats' },
+        const open = dbGroupUi.touched
+          ? dbGroupUi.openKey === groupKey
+          : activeByRoute;
 
-    { text: 'عمولات التسجيل', icon: <AccountBalanceIcon />, path: '/dashboard/registration-commissions' },
-
-    ...(((user?.userName === "هشام يس") || [0, 1, 2, 3].includes(Number(user?.userJop)))
-      ? [{ text: 'التقارير اليومية', icon: <ReportIcon />, path: '/dashboard/reportsfrobranches' }]
-      : []),
-
-
-
-    { text: 'الشكاوي', icon: <SupportAgentIcon />, path: '/dashboard/complaints' },
-
-    {
-  text: 'التعميمات',
-  icon: <LibraryBooksIcon />,
-  path: '/dashboard/circulars',
-  isNew: true,
-  badgeText: 'جديد'
-},
-
-...(canUploadCirculars
-  ? [{
-      text: 'رفع التعميمات',
-      icon: <CampaignIcon />,
-      path: '/dashboard/circulars-upload',
-      isNew: true,
-      customBadge: "خاص"
-    }]
-  : []),
-
-    ...([17].includes(user?.userJop) || user?.userName === 'emadn'
-      ? [{ text: 'خـدمـة العـــملاء', icon: <SupportAgentIcon />, path: '/dashboard/cleints' }]
-      : []),
-
-    ...((user?.userName === "محمد عادل")
-      ? [{
-          text: 'رفع تحديث',
-          icon: <SystemUpdateAltIcon />,
-          path: '/dashboard/upload-update',
-          isNew: true,
-          customBadge: "خاص"
-        }]
-      : []),
-
-    ...([0, 1, 2, 3, 5].includes(user?.userJop)
-      ? [{ text: 'تقرير خدمة العملاء', icon: <AnalyticsIcon />, path: '/dashboard/report' }]
-      : []),
-
-    { text: 'حضور الطلاب', icon: <GroupsIcon />, path: '/attendance' },
-
-    {
-      text: 'الاختبارات',
-      icon: <SchoolIcon />,
-      path: '/dashboard/tests',
-      isNew: true
-    },
-
-    {
-      text: 'الدعم الفني',
-      icon: <ContactSupportIcon />,
-      path: '/dashboard/technical-support',
-      isNew: true
-    },
-
-    {
-      text: 'الإنتاجية الأسبوعية',
-      icon: <EmojiEventsIcon />,
-      path: '/dashboard/achievements',
-      isNew: true,
-      badgeText: 'جديد'
-    },
-
-    ...([0, 1, 2, 3, 9].includes(Number(user?.userJop))
-      ? [{
-          text: 'ملاحظات المتدربين',
-          icon: <AssignmentIcon />,
-          path: '/dashboard/student-notes',
-          isNew: true
-        }]
-      : []),
-
-    ...((user?.departGuid === "675dad50-232f-407d-91a6-4f42dd145584")
-      ? [{
-          text: 'تقييم الموظفين',
-          icon: <RateReviewIcon />,
-          path: '/dashboard/employee-evaluation',
-          isNew: true,
-          customBadge: "خاص"
-        }]
-      : []),
-
-    ...(((user?.userName === "محمد عادل") || [0, 1, 2, 3].includes(Number(user?.userJop)))
-      ? [{
-          text: 'P2P',
-          icon: <HandshakeIcon />,
-          path: '/dashboard/p2p-marketing',
-          isNew: true,
-          customBadge: "خاص"
-        }]
-      : []),
-
-      ...(canShowDesktopDevicesAdmin
-  ? [{
-      text: 'إدارة أجهزة الديسكتوب',
-      icon: <AdminPanelSettingsIcon />,
-      path: '/dashboard/desktop-devices',
-      isNew: true,
-      customBadge: "خاص"
-    }]
-  : []),
-
-    ...([9, 18].includes(user?.userJop)
-      ? [{ text: 'الاستفسارات', icon: <LiveHelpIcon />, path: '/dashboard/inquiries' }]
-      : []),
-
-    ...([9].includes(user?.userJop) || user?.userName === "هشام يس"
-      ? [{
-          text: 'نماذج الاختبارات',
-          icon: <FormatListBulletedIcon />,
-          path: '/exploer',
-          isNew: true,
-          customBadge: "خاص"
-        }]
-      : []),
-
-    ...([9].includes(user?.userJop)
-      ? [{ text: 'المتابعة اليومية', icon: <TodayIcon />, path: '/dashboard/dailyreport' }]
-      : []),
-
-    ...([9].includes(user?.userJop)
-      ? [{ text: 'التقارير السابقة', icon: <HistoryIcon />, path: '/dashboard/pastreports' }]
-      : []),
-
-    ...([9].includes(user?.userJop)
-      ? [{ text: 'قوائم الاستثناءات', icon: <BlockIcon />, path: '/dashboard/exceptions' }]
-      : []),
-
-    ...([9, 0, 1, 2].includes(Number(user?.userJop))
-      ? [{
-          text: 'رفع الدرجات',
-          icon: <UploadFileIcon />,
-          path: '/dashboard/upload-grades',
-          isNew: true
-        }]
-      : []),
-
-    ...((([0, 1, 2, 3].includes(user?.userJop)) || (user?.userName === "emadn") || (user?.userName === "محمد عادل"))
-      ? [{ text: 'قوائم الاستثناءات', icon: <BlockIcon />, path: '/dashboard/exceptionsadmin' }]
-      : []),
-  ];
-
-  const surveysMenu = [
-    ...(
-      ([0, 1, 2, 3, 9, 14].includes(Number(user?.userJop)) ||
-        user?.userName === "رنا الاحمري" ||
-        user?.userName === "بشري الزهراني")
-        ? [{
-            text: 'إنشاء استبيان | اختبار',
-            icon: <AddIcon />,
-            path: '/dashboard/create-survey',
-            isNew: true
-          }]
-        : []
-    ),
-
-    {
-      text: 'الاستبيانات',
-      icon: <PollIcon />,
-      path: '/dashboard/surveys',
-    },
-  ].filter(Boolean);
-
-const salesMenu = useMemo(() => {
-  const items = [
-    {
-      permission: "onlineRegistration",
-      text: "طلبات دراسة عن بعد",
-      icon: <HowToRegIcon />,
-      path: "/dashboard/online-registration-requests",
-      isNew: true,
-    },
-
-    {
-      permission: "offlineRegistration",
-      text: "طلبات الدراسة الحضوري",
-      icon: <SchoolIcon />,
-      path: "/dashboard/offline-registration-requests",
-      isNew: true,
-    },
-
-    {
-      permission: "otherInstituteRegistrations",
-      text: "المسجلين في معاهد أخرى",
-      icon: <SchoolIcon />,
-      path: "/dashboard/other-institute-registrations",
-      isNew: true,
-    },
-
-    {
-      permission: "contractFollow",
-      text: "متابعة اتفاقيات التدريب",
-      icon: <HandshakeIcon />,
-      path: "/dashboard/training-agreements-follow",
-      isNew: true,
-    },
-
-    {
-      permission: "afterSalesFollow",
-      text: "متابعة ما بعد البيع",
-      icon: <SupportAgentIcon />,
-      path: "/dashboard/after-sales-follow",
-      isNew: true,
-    },
-
-    {
-      permission: "afterSalesReport",
-      text: "تقرير متابعة العملاء",
-      icon: <AnalyticsIcon />,
-      path: "/dashboard/after-sales-report",
-      isNew: true,
-    },
-
-    {
-      permission: "admissionRequests",
-      text: "طلبات الالتحاق",
-      icon: <HowToRegIcon />,
-      path: "/dashboard/admission-requests",
-      isNew: true,
-    },
-
-    {
-      permission: "admissionRequestsReport",
-      text: "تقرير طلبات الالتحاق",
-      icon: <ReportIcon />,
-      path: "/dashboard/admission-requests-report",
-      isNew: true,
-    },
-
-    {
-      permission: "vipCustomers",
-      text: "عملاء VIP",
-      icon: <StarIcon />,
-      path: "/dashboard/vip-customers",
-      isNew: true,
-    },
-
-    {
-      permission: "registrationRequestReport",
-      text: "تقرير طلب التسجيل",
-      icon: <AssignmentIcon />,
-      path: "/dashboard/registration-request-report",
-      isNew: true,
-    }
-  ];
-
-  return items.filter((item) => {
-    /*
-     * أولًا: الشاشة لازم تكون متاحة أصلًا
-     * حسب الصلاحية القادمة من API.
-     */
-    const allowedByPermission =
-      salesScreens[item.permission] === true;
-
-    if (!allowedByPermission) {
-      return false;
-    }
-
-    /*
-     * ثانيًا: الشاشات الثلاث الخاصة
-     * لا تظهر إلا للـ GUIDs المحددة في الفرونت إند.
-     */
-    if (
-      restrictedSalesPermissions.includes(
-        item.permission
+        return {
+          groupKey,
+          title: String(group?.title || '').trim(),
+          icon: resolveSidebarIcon(group?.iconKey),
+          items,
+          open,
+          onToggle: () => handleDbGroupToggle(groupKey, open),
+          visible: true,
+          showWhenEmpty: group?.showWhenEmpty === true,
+          sortOrder: Number(group?.sortOrder || 0)
+        };
+      })
+      .filter((group) =>
+        group.groupKey &&
+        group.title &&
+        (group.showWhenEmpty || group.items.length > 0)
       )
-    ) {
-      return canShowRestrictedSalesScreens;
-    }
-
-    /*
-     * باقي شاشات المبيعات تظل تعمل
-     * حسب صلاحيات الباك إند فقط.
-     */
-    return true;
-  });
-}, [
-  salesScreens,
-  canShowRestrictedSalesScreens
-]);
-
-
-const handleStudentAffairsToggle = () => {
-  setStudentAffairsOpen((value) => !value);
-};
-
-const studentAffairsMenu = [
-  studentAffairsScreens?.newStudents
-    ? {
-        text: 'قائمة الطلاب الجدد',
-        icon: <PersonAddAlt1Icon />,
-        path: '/dashboard/new-students',
-        isNew: true,
-      }
-    : null,
-
-  studentAffairsScreens?.diplomaStudents
-    ? {
-        text: 'قائمة طلاب الدبلومات',
-        icon: <SchoolIcon />,
-        path: '/dashboard/diploma-students',
-        isNew: true,
-      }
-    : null,
-
-  studentAffairsScreens?.courseStudents
-    ? {
-        text: 'قائمة طلاب الدورات',
-        icon: <MenuBookIcon />,
-        path: '/dashboard/course-students',
-        isNew: true,
-      }
-    : null
-].filter(Boolean);
-
-const branchManagementMenu = useMemo(() => {
-  const items = [
-    {
-      permission: "cashPaymentOrder",
-      text: "أمر صرف نقدية",
-      icon: <LocalAtmIcon />,
-      path: "/dashboard/cash-payment-order",
-      isNew: true,
-    },
-    {
-      permission: "cashReceiptAcknowledgment",
-      text: "إقرار استلام نقدية",
-      icon: <ReceiptLongIcon />,
-      path: "/dashboard/cash-receipt-acknowledgment",
-      isNew: true,
-    },
-    {
-      permission: "branchDaily",
-      text: "يومية الفرع",
-      icon: <MenuBookIcon />,
-      path: "/dashboard/branch-daily",
-      isNew: true,
-    }
-  ];
-
-  return items.filter(
-    (item) =>
-      branchManagementScreens[
-        item.permission
-      ] === true
-  );
-}, [branchManagementScreens]);
-
-
-const reportsMenu = useMemo(() => {
-  const items = [
-    {
-      permission: "marketersReport",
-      text: "تقرير المسوقين",
-      icon: <CampaignOutlinedIcon />,
-      path: "/dashboard/marketers-report",
-      isNew: true
-    },
-    {
-      permission: "collectionCommissionsReport",
-      text: "تقرير عمولات التحصيل",
-      icon: <PaidIcon />,
-      path: "/dashboard/collection-commissions-report",
-      isNew: true
-    },
-    {
-      permission: "rewardsList",
-      text: "قائمة المكافآت",
-      icon: <EmojiEventsOutlinedIcon />,
-      path: "/dashboard/rewards-list",
-      isNew: true
-    },
-    {
-      permission: "batchStatistics",
-      text: "إحصائيات الدفعات",
-      icon: <QueryStatsIcon />,
-      path: "/dashboard/batch-statistics",
-      isNew: true
-    },
-    {
-      permission: "paymentFollowReport",
-      text: "متابعة السداد",
-      icon: <PaymentsOutlinedIcon />,
-      path: "/dashboard/payment-follow-report",
-      isNew: true
-    },
-    {
-      permission: "graduatesFollowReport",
-      text: "متابعة الخريجين",
-      icon: <WorkspacePremiumIcon />,
-      path: "/dashboard/graduates-follow-report",
-      isNew: true
-    },
-    {
-      permission: "discountRequestsReport",
-      text: "طلبات الخصم",
-      icon: <PercentIcon />,
-      path: "/dashboard/discount-requests-report",
-      isNew: true
-    },
-    {
-      permission: "deregistrationRequestsReport",
-      text: "طلبات طي القيد",
-      icon: <PlaylistRemoveIcon />,
-      path: "/dashboard/deregistration-requests-report",
-      isNew: true
-    },
-    {
-      permission: "refundRequestsReport",
-      text: "طلبات الاسترداد",
-      icon: <CurrencyExchangeIcon />,
-      path: "/dashboard/refund-requests-report",
-      isNew: true
-    },
-    {
-      permission: "transferRequestsReport",
-      text: "طلبات النقل / التحويل",
-      icon: <SwapHorizIcon />,
-      path: "/dashboard/transfer-requests-report",
-      isNew: true
-    }
-  ];
-
-  return items.filter((item) => {
-    /*
-     * متابعة السداد لا تعتمد على صلاحية الشاشة
-     * القادمة من الباك إند، وتظهر فقط للقائمة المحددة.
-     */
-    if (
-      item.permission ===
-      "paymentFollowReport"
-    ) {
-      return canShowPaymentFollowForUser;
-    }
-
-    if (
-      item.permission ===
-      "graduatesFollowReport"
-    ) {
-      return canShowGraduatesFollowForUser;
-    }
-
-    if (
-      item.permission ===
-      "discountRequestsReport"
-    ) {
-      return canShowDiscountRequestsForUser;
-    }
-
-    if (
-      item.permission ===
-      "deregistrationRequestsReport"
-    ) {
-      return canShowDeregistrationRequestsForUser;
-    }
-
-    if (
-      item.permission ===
-      "refundRequestsReport"
-    ) {
-      return canShowRefundRequestsForUser;
-    }
-
-    if (
-      item.permission ===
-      "transferRequestsReport"
-    ) {
-      return canShowTransferRequestsForUser;
-    }
-
-    /*
-     * باقي شاشات التقارير تظل مرتبطة
-     * بصلاحيات الباك إند كالمعتاد.
-     */
-    return (
-      reportScreens[
-        item.permission
-      ] === true
-    );
-  });
-}, [
-  reportScreens,
-  canShowPaymentFollowForUser,
-  canShowGraduatesFollowForUser,
-  canShowDiscountRequestsForUser,
-  canShowDeregistrationRequestsForUser,
-  canShowRefundRequestsForUser,
-  canShowTransferRequestsForUser
-]);
-
-const studentFileMenu = [
-  {
-    text: 'مكتب الاستقبال',
-    icon: <HomeIcon />,
-    path: '/dashboard/receptionoffice'
-  },
-  {
-    text: 'قائمة طلباتي',
-    icon: <AssignmentIcon />,
-    path: '/dashboard/my-requests',
-    isNew: true
-  },
-  {
-    text: 'عداد الدفعات',
-    icon: <DashboardCustomizeIcon />,
-    path: '/dashboard/batch-seats-counter',
-    isNew: true
-  },
-  {
-    text: 'نماذج الجودة',
-    icon: <DescriptionIcon />,
-    path: '/dashboard/quality-forms',
-    isNew: true,
-  }
-];
-
-  const [generalGroupsOpen, setGeneralGroupsOpen] = useState(() => ({
-    daily: [
-      '/dashboard',
-      '/dashboard/assigned-tasks',
-      '/dashboard/payments',
-      '/chats'
-    ].includes(location.pathname),
-    students: [
-      '/dashboard/registration-commissions',
-      '/attendance',
-      '/dashboard/student-notes',
-      '/dashboard/inquiries'
-    ].includes(location.pathname),
-    communication: [
-      '/dashboard/complaints',
-      '/dashboard/circulars',
-      '/dashboard/cleints'
-    ].includes(location.pathname),
-    performance:
-      location.pathname.startsWith('/dashboard/tests') ||
-      location.pathname.startsWith('/dashboard/achievements') ||
-      location.pathname.startsWith('/exploer') ||
-      location.pathname.startsWith('/dashboard/dailyreport') ||
-      location.pathname.startsWith('/dashboard/pastreports') ||
-      location.pathname.startsWith('/dashboard/upload-grades'),
-    administration: false
-  }));
-
-  const toggleGeneralGroup = (groupKey) => {
-    setGeneralGroupsOpen((current) => ({
-      ...current,
-      [groupKey]: !current[groupKey]
-    }));
-  };
-
-  const supportItem = menu.find(
-    (item) => item.path === '/dashboard/technical-support'
-  );
-
-  const mainMenuWithoutSupport = menu.filter(
-    (item) => item.path !== '/dashboard/technical-support'
-  );
-
-  const pickMainItems = (texts) =>
-    mainMenuWithoutSupport.filter((item) => texts.includes(item.text));
-
-  const dailyItems = pickMainItems([
-    'الرئيسية',
-    'المهام',
-    'السداد والتحصيل',
-    'المحادثات'
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+  }, [
+    sidebarConfig,
+    configuredSidebarItems,
+    location.pathname,
+    dbGroupUi
   ]);
 
-  const studentItems = pickMainItems([
-    'عمولات التسجيل',
-    'حضور الطلاب',
-    'ملاحظات المتدربين',
-    'الاستفسارات'
-  ]);
-
-  const communicationItems = pickMainItems([
-    'الشكاوي',
-    'التعميمات',
-    'خـدمـة العـــملاء'
-  ]);
-
-  const performanceItems = pickMainItems([
-    'الاختبارات',
-    'الإنتاجية الأسبوعية',
-    'نماذج الاختبارات',
-    'المتابعة اليومية',
-    'التقارير السابقة',
-    'رفع الدرجات'
-  ]);
-
-  const groupedPaths = new Set([
-    ...dailyItems,
-    ...studentItems,
-    ...communicationItems,
-    ...performanceItems
-  ].map((item) => item.path));
-
-  const administrationItems = mainMenuWithoutSupport.filter(
-    (item) => !groupedPaths.has(item.path)
-  );
+  const configuredStandaloneItems = useMemo(() => {
+    return configuredSidebarItems
+      .filter((item) => item.placement === 'standalone')
+      .sort((a, b) => a.__sortOrder - b.__sortOrder);
+  }, [configuredSidebarItems]);
 
 const childItemSx = (selected) => ({
   mb: isDesktop ? 0.25 : 0.18,
@@ -1272,15 +760,154 @@ const childItemSx = (selected) => ({
               }}
             />
 
-            <ListItemIcon
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              {(item.customBadge || item.badgeText) && (
+                <Box
+                  sx={{
+                    px: 0.65,
+                    py: 0.18,
+                    borderRadius: 999,
+                    fontFamily: 'Cairo',
+                    fontSize: isDesktop ? '0.54rem' : '0.48rem',
+                    fontWeight: 900,
+                    whiteSpace: 'nowrap',
+                    color: selected ? accentColor : whiteColor,
+                    background: selected
+                      ? whiteColor
+                      : item.customBadge
+                        ? `linear-gradient(135deg, ${accentColor}, #7f1518)`
+                        : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
+                  }}
+                >
+                  {item.customBadge || item.badgeText}
+                </Box>
+              )}
+
+              <ListItemIcon
+                sx={{
+                  minWidth: isDesktop ? 26 : 22,
+                  color: selected ? whiteColor : primaryColor,
+                  '& svg': { fontSize: isDesktop ? '1.08rem' : '0.95rem' }
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+            </Box>
+          </Box>
+        </ListItem>
+      </Tooltip>
+    );
+  };
+
+  const renderStandaloneItem = (item) => {
+    const selected = location.pathname === item.path;
+
+    return (
+      <Tooltip
+        key={item.path || item.text}
+        title={item.text}
+        placement="left"
+        arrow
+      >
+        <ListItem
+          button
+          component={Link}
+          to={item.path}
+          selected={selected}
+          sx={{
+            mb: isDesktop ? 0.6 : 0.3,
+            mx: isDesktop ? 1 : 0.45,
+            minHeight: isDesktop ? 48 : 38,
+            px: isDesktop ? 1.15 : 0.72,
+            py: isDesktop ? 0.75 : 0.38,
+            borderRadius: isDesktop ? 3 : 2,
+            color: selected ? whiteColor : textColor,
+            background: selected
+              ? 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
+              : 'linear-gradient(135deg, #f5fbff 0%, #ffffff 100%)',
+            border: selected
+              ? '1px solid transparent'
+              : '1px solid rgba(25,118,210,0.18)',
+            boxShadow: selected
+              ? '0 8px 18px rgba(25,118,210,0.24)'
+              : '0 3px 10px rgba(25,118,210,0.07)',
+            '&.Mui-selected': {
+              color: whiteColor,
+              background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
+            },
+            '&:hover': {
+              color: whiteColor,
+              background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
+              transform: 'translateX(-4px)'
+            },
+            transition: 'all 0.22s ease'
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <ListItemText
+              primary={item.text}
+              secondary={item.description}
               sx={{
-                minWidth: isDesktop ? 26 : 22,
-                color: selected ? whiteColor : primaryColor,
-                '& svg': { fontSize: isDesktop ? '1.08rem' : '0.95rem' }
+                m: 0,
+                minWidth: 0,
+                '& .MuiListItemText-primary': {
+                  fontFamily: 'Cairo',
+                  fontWeight: 800,
+                  fontSize: isDesktop ? '0.9rem' : '0.69rem',
+                  textAlign: 'left',
+                  marginRight: isDesktop ? '8px' : '5px'
+                },
+                '& .MuiListItemText-secondary': {
+                  fontFamily: 'Cairo',
+                  fontSize: isDesktop ? '0.66rem' : '0.58rem',
+                  textAlign: 'left',
+                  marginRight: isDesktop ? '8px' : '5px',
+                  color: selected ? 'rgba(255,255,255,.78)' : mutedTextColor
+                }
               }}
-            >
-              {item.icon}
-            </ListItemIcon>
+            />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+              {(item.customBadge || item.badgeText) && (
+                <Box
+                  sx={{
+                    px: isDesktop ? 0.8 : 0.55,
+                    height: isDesktop ? 20 : 17,
+                    borderRadius: 999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'Cairo',
+                    fontSize: isDesktop ? '0.58rem' : '0.5rem',
+                    fontWeight: 900,
+                    color: selected ? '#1976d2' : whiteColor,
+                    background: selected
+                      ? whiteColor
+                      : 'linear-gradient(135deg, #2196f3, #0d6fc2)',
+                    boxShadow: '0 3px 8px rgba(33,150,243,0.24)'
+                  }}
+                >
+                  {item.customBadge || item.badgeText}
+                </Box>
+              )}
+
+              <ListItemIcon
+                sx={{
+                  minWidth: isDesktop ? 26 : 22,
+                  color: selected ? whiteColor : '#1976d2',
+                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+            </Box>
           </Box>
         </ListItem>
       </Tooltip>
@@ -1411,109 +1038,6 @@ const childItemSx = (selected) => ({
     );
   };
 
-  const renderSupportItem = () => {
-    if (!supportItem) {
-      return null;
-    }
-
-    const selected = location.pathname === supportItem.path;
-
-    return (
-      <Tooltip title={supportItem.text} placement="left" arrow>
-        <ListItem
-          button
-          component={Link}
-          to={supportItem.path}
-          selected={selected}
-          sx={{
-            mb: isDesktop ? 0.6 : 0.3,
-            mx: isDesktop ? 1 : 0.45,
-            minHeight: isDesktop ? 48 : 38,
-            px: isDesktop ? 1.15 : 0.72,
-            py: isDesktop ? 0.75 : 0.38,
-            borderRadius: isDesktop ? 3 : 2,
-            color: selected ? whiteColor : textColor,
-            background: selected
-              ? 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
-              : 'linear-gradient(135deg, #f5fbff 0%, #ffffff 100%)',
-            border: selected
-              ? '1px solid transparent'
-              : '1px solid rgba(25,118,210,0.18)',
-            boxShadow: selected
-              ? '0 8px 18px rgba(25,118,210,0.24)'
-              : '0 3px 10px rgba(25,118,210,0.07)',
-            '&.Mui-selected': {
-              color: whiteColor,
-              background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
-            },
-            '&:hover': {
-              color: whiteColor,
-              background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
-              transform: 'translateX(-4px)'
-            },
-            transition: 'all 0.22s ease'
-          }}
-        >
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
-          >
-            <ListItemText
-              primary={supportItem.text}
-              sx={{
-                m: 0,
-                '.MuiTypography-root': {
-                  fontFamily: 'Cairo',
-                  fontWeight: 800,
-                  fontSize: isDesktop ? '0.9rem' : '0.69rem',
-                  textAlign: 'left',
-                  marginRight: isDesktop ? '8px' : '5px'
-                }
-              }}
-            />
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
-              <Box
-                sx={{
-                  px: isDesktop ? 0.8 : 0.55,
-                  height: isDesktop ? 20 : 17,
-                  borderRadius: 999,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontFamily: 'Cairo',
-                  fontSize: isDesktop ? '0.58rem' : '0.5rem',
-                  fontWeight: 900,
-                  color: selected ? '#1976d2' : whiteColor,
-                  background: selected
-                    ? whiteColor
-                    : 'linear-gradient(135deg, #2196f3, #0d6fc2)',
-                  boxShadow: '0 3px 8px rgba(33,150,243,0.24)'
-                }}
-              >
-                دعم
-              </Box>
-
-              <ListItemIcon
-                sx={{
-                  minWidth: isDesktop ? 26 : 22,
-                  color: selected ? whiteColor : '#1976d2',
-                  '& svg': { fontSize: isDesktop ? '1.18rem' : '0.98rem' }
-                }}
-              >
-                {supportItem.icon}
-              </ListItemIcon>
-            </Box>
-          </Box>
-        </ListItem>
-      </Tooltip>
-    );
-  };
-
   const sidebarContent = (
     <Box
       onClick={(event) => event.stopPropagation()}
@@ -1599,16 +1123,78 @@ const childItemSx = (selected) => ({
             />
           </Box>
 
-          <Typography
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            spacing={0.55}
             sx={{
-              fontFamily: 'Cairo',
-              fontWeight: 900,
-              fontSize: '1.05rem',
-              lineHeight: 1.5
+              width: '100%',
+              minHeight: 30
             }}
           >
-            نظام الإدارة
-          </Typography>
+            <Typography
+              sx={{
+                fontFamily: 'Cairo',
+                fontWeight: 900,
+                fontSize: '1.05rem',
+                lineHeight: 1.5
+              }}
+            >
+              نظام الإدارة
+            </Typography>
+
+            <Tooltip
+              title={
+                notificationUnreadCount > 0
+                  ? `الإشعارات (${notificationUnreadCount})`
+                  : "الإشعارات"
+              }
+              placement="top"
+            >
+              <IconButton
+                aria-label="الإشعارات"
+                onClick={(event) =>
+                  setNotificationAnchor(event.currentTarget)
+                }
+                size="small"
+                sx={{
+                  width: 27,
+                  height: 27,
+                  p: 0,
+                  color: whiteColor,
+                  bgcolor: "rgba(255,255,255,.13)",
+                  border: "1px solid rgba(255,255,255,.25)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,.10)",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,.22)"
+                  },
+                  "& svg": {
+                    fontSize: 17
+                  }
+                }}
+              >
+                <Badge
+                  badgeContent={notificationUnreadCount}
+                  color="error"
+                  max={99}
+                  overlap="circular"
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      minWidth: 14,
+                      height: 14,
+                      px: .25,
+                      fontSize: 7,
+                      fontWeight: 950,
+                      border: "1.5px solid #fff"
+                    }
+                  }}
+                >
+                  <NotificationsNoneRoundedIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+          </Stack>
 
           <Typography
             sx={{
@@ -1621,6 +1207,93 @@ const childItemSx = (selected) => ({
             المستخدم
           </Typography>
         </Box>
+
+        {/* على الموبايل/التابلت فقط: جرس ثابت بجوار زر القائمة */}
+        {!isDesktop && (
+<Tooltip
+          title={
+            notificationUnreadCount > 0
+              ? `الإشعارات (${notificationUnreadCount})`
+              : "الإشعارات"
+          }
+          placement={isDesktop ? "left" : "bottom"}
+        >
+          <IconButton
+            aria-label="الإشعارات"
+            onClick={(event) =>
+              setNotificationAnchor(event.currentTarget)
+            }
+            sx={{
+              position: "fixed",
+
+              top: {
+                xs: 7,
+                sm: 9,
+                md: 10
+              },
+
+              right: {
+                xs: 50,
+                sm: 56,
+                md: 60
+              },
+
+              width: {
+                xs: 34,
+                sm: 36,
+                md: 38
+              },
+
+              height: {
+                xs: 34,
+                sm: 36,
+                md: 38
+              },
+
+              zIndex: 1455,
+              color: whiteColor,
+              bgcolor: primaryColor,
+              border: "1px solid rgba(255,255,255,.38)",
+              boxShadow: "0 5px 14px rgba(3,77,49,.24)",
+              backdropFilter: "blur(8px)",
+              transition: "transform .18s ease, box-shadow .18s ease",
+
+              "&:hover": {
+                bgcolor: primaryDark,
+                transform: "translateY(-1px)",
+                boxShadow: "0 8px 20px rgba(3,77,49,.24)"
+              },
+
+              "& svg": {
+                fontSize: {
+                  xs: 18,
+                  sm: 19,
+                  md: 20
+                }
+              }
+            }}
+          >
+            <Badge
+              badgeContent={notificationUnreadCount}
+              color="error"
+              max={99}
+              overlap="circular"
+              sx={{
+                "& .MuiBadge-badge": {
+                  minWidth: 16,
+                  height: 16,
+                  px: .35,
+                  fontSize: 8,
+                  fontWeight: 950,
+                  border: "2px solid #fff"
+                }
+              }}
+            >
+              <NotificationsNoneRoundedIcon />
+            </Badge>
+          </IconButton>
+        </Tooltip>
+        )}
 
         <List
           sx={{
@@ -1644,101 +1317,196 @@ const childItemSx = (selected) => ({
             overflowX: 'hidden'
           }}
         >
-          {renderGroup({
-            title: 'العمل اليومي',
-            icon: <TodayIcon />,
-            items: dailyItems,
-            open: generalGroupsOpen.daily,
-            onToggle: () => toggleGeneralGroup('daily')
-          })}
+          <Popover
+            open={Boolean(notificationAnchor)}
+            anchorEl={notificationAnchor}
+            onClose={() => setNotificationAnchor(null)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: isDesktop ? "left" : "center"
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: isDesktop ? "right" : "center"
+            }}
+            marginThreshold={8}
+            PaperProps={{
+              sx: {
+                width: {
+                  xs: "calc(100vw - 16px)",
+                  sm: 390
+                },
+                maxWidth: 420,
+                maxHeight: {
+                  xs: "72dvh",
+                  sm: "70vh"
+                },
+                mt: { xs: .45, sm: .7 },
+                borderRadius: { xs: 2.2, sm: 2.5 },
+                overflow: "hidden",
+                boxShadow: "0 18px 45px rgba(3,77,49,.20)"
+              }
+            }}
+          >
+            <Box sx={{
+              p: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
+              <Box>
+                <Typography sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 950,
+                  fontSize: 14
+                }}>
+                  إشعاراتي
+                </Typography>
+                <Typography color="text.secondary" sx={{
+                  fontFamily: "Cairo",
+                  fontSize: 9
+                }}>
+                  موافقات الإجازات وتحديثات طلباتك
+                </Typography>
+              </Box>
 
-          {renderGroup({
-            title: 'ملف',
-            icon: <FolderSharedIcon />,
-            items: studentFileMenu,
-            open: studentFileOpen,
-            onToggle: handleStudentFileToggle
-          })}
+              <Tooltip title="تعليم الكل كمقروء">
+                <IconButton size="small" onClick={markAllNotificationsRead}>
+                  <DoneAllRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
-          {renderGroup({
-            title: 'التسجيل والمتدربون',
-            icon: <GroupsIcon />,
-            items: studentItems,
-            open: generalGroupsOpen.students,
-            onToggle: () => toggleGeneralGroup('students')
-          })}
+            <Divider />
 
-          {renderGroup({
-            title: 'المبيعات',
-            icon: <StorefrontIcon />,
-            items: salesMenu,
-            open: salesOpen,
-            onToggle: handleSalesToggle,
-            visible: canShowSalesTab,
-            showWhenEmpty: true
-          })}
+            <Box sx={{ maxHeight: "58vh", overflowY: "auto" }}>
+              {notificationsLoading && (
+                <Box sx={{ p: 2, textAlign: "center" }}>
+                  <CircularProgress size={22} />
+                </Box>
+              )}
 
-          {renderGroup({
-            title: 'شئون الطلاب',
-            icon: <SchoolIcon />,
-            items: studentAffairsMenu,
-            open: studentAffairsOpen,
-            onToggle: handleStudentAffairsToggle,
-            visible: canShowStudentAffairsTab,
-            showWhenEmpty: true
-          })}
+              {!notificationsLoading && notifications.length === 0 && (
+                <Box sx={{ p: 2 }}>
+                  <Typography color="text.secondary" sx={{
+                    textAlign: "center",
+                    fontFamily: "Cairo",
+                    fontSize: 11
+                  }}>
+                    لا توجد إشعارات حالياً
+                  </Typography>
+                </Box>
+              )}
 
-          {renderGroup({
-            title: 'إدارة الفرع',
-            icon: <BusinessCenterIcon />,
-            items: branchManagementMenu,
-            open: branchManagementOpen,
-            onToggle: handleBranchManagementToggle,
-            visible: canShowBranchManagementTab
-          })}
+              {notifications.map((item) => (
+                <Box
+                  key={item.notificationKey}
+                  onClick={() => markNotificationRead(item)}
+                  sx={{
+                    p: 1,
+                    cursor: "pointer",
+                    borderBottom: "1px solid rgba(5,117,70,.10)",
+                    bgcolor: item.isRead ? "#fff" : "#f0fbf5",
+                    "&:hover": { bgcolor: "#e9f7f0" }
+                  }}
+                >
+                  <Typography sx={{
+                    fontFamily: "Cairo",
+                    fontWeight: item.isRead ? 800 : 950,
+                    fontSize: 11.5,
+                    color: textColor
+                  }}>
+                    {item.title}
+                  </Typography>
 
-          {renderGroup({
-            title: 'التقارير',
-            icon: <AssessmentIcon />,
-            items: reportsMenu,
-            open: reportsOpen,
-            onToggle: handleReportsToggle,
-            visible: canShowReportsTab
-          })}
+                  <Typography color="text.secondary" sx={{
+                    mt: .2,
+                    fontFamily: "Cairo",
+                    fontSize: 9.5,
+                    lineHeight: 1.6
+                  }}>
+                    {item.message}
+                  </Typography>
 
-          {renderGroup({
-            title: 'التواصل والخدمات',
-            icon: <MessageIcon />,
-            items: communicationItems,
-            open: generalGroupsOpen.communication,
-            onToggle: () => toggleGeneralGroup('communication')
-          })}
+                  {item.eventAt && (
+                    <Typography color="text.secondary" sx={{
+                      mt: .35,
+                      fontFamily: "Cairo",
+                      fontSize: 8
+                    }}>
+                      {new Date(item.eventAt).toLocaleString("ar-SA")}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </Popover>
 
-          {renderGroup({
-            title: 'الاختبارات والاستبيانات',
-            icon: <PollIcon />,
-            items: surveysMenu,
-            open: surveysOpen,
-            onToggle: handleSurveysToggle
-          })}
+          {sidebarConfig.loading ? (
+            <Box
+              sx={{
+                px: 2,
+                py: 2.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                color: mutedTextColor,
+                fontFamily: 'Cairo'
+              }}
+            >
+              <CircularProgress size={18} />
+              <Typography sx={{ fontFamily: 'Cairo', fontSize: '0.75rem' }}>
+                جاري تحميل القائمة...
+              </Typography>
+            </Box>
+          ) : sidebarConfig.error && configuredSidebarGroups.length === 0 ? (
+            <Box
+              sx={{
+                mx: 1,
+                my: 1.5,
+                p: 1.5,
+                borderRadius: 2,
+                textAlign: 'center',
+                fontFamily: 'Cairo',
+                fontSize: '0.72rem',
+                color: accentColor,
+                background: '#fff7f7',
+                border: '1px solid rgba(174,30,33,.16)'
+              }}
+            >
+              {sidebarConfig.error}
+            </Box>
+          ) : (
+            <>
+              {configuredSidebarGroups.map((group) => (
+                <Box key={group.groupKey}>
+                  {renderGroup({
+                    title: group.title,
+                    icon: group.icon,
+                    items: group.items,
+                    open: group.open,
+                    onToggle: group.onToggle,
+                    visible: group.visible,
+                    showWhenEmpty: group.showWhenEmpty
+                  })}
+                </Box>
+              ))}
 
-          {renderGroup({
-            title: 'الأداء والمتابعة',
-            icon: <EmojiEventsIcon />,
-            items: performanceItems,
-            open: generalGroupsOpen.performance,
-            onToggle: () => toggleGeneralGroup('performance')
-          })}
+              {configuredStandaloneItems.length > 0 && (
+                <Box
+                  sx={{
+                    mt: 0.8,
+                    pt: 0.8,
+                    borderTop: '1px solid rgba(5,117,70,0.10)'
+                  }}
+                >
+                  {configuredStandaloneItems.map(renderStandaloneItem)}
+                </Box>
+              )}
+            </>
+          )}
 
-          {renderGroup({
-            title: 'الإدارة والأدوات',
-            icon: <AdminPanelSettingsIcon />,
-            items: administrationItems,
-            open: generalGroupsOpen.administration,
-            onToggle: () => toggleGeneralGroup('administration')
-          })}
-
-          {renderSupportItem()}
         </List>
       </Box>
 

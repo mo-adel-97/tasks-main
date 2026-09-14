@@ -34,6 +34,11 @@ import {
   Badge as BadgeIcon
 } from '@mui/icons-material';
 
+const HR_API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5258";
+
 const EmployeeDataDialog = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -55,26 +60,10 @@ const EmployeeDataDialog = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const jobTitles = [
-    "رئيس الشركة",
-    "المدير التنفيذي",
-    "المشرف العام",
-    "مدير إدارة الدعم الفني",
-    "مدير ادارة الحسابات",
-    "مدير ادارة المبيعات",
-    "مدير ادارة الموارد البشرية",
-    "مدير اداري",
-    "مساعد اداري",
-    "مشرف فرع",
-    "مراجع حسابات",
-    "اخصائي موارد بشرية",
-    "مساعد مشرف",
-    "مدرب",
-    "مسئول تحصيل",
-    "استقبال",
-    "موظف خدمة عملاء",
-    "موظف مبيعات"
-  ];
+  // الوظائف تأتي من HR_JobTitle مع الحفاظ على LegacyJobCode القديم.
+  // الوظيفة LegacyJobCode = 12 محفوظة في قاعدة البيانات ولكن لا تظهر للاختيار.
+  const [jobTitles, setJobTitles] = useState([]);
+  const [jobTitlesLoading, setJobTitlesLoading] = useState(false);
 
   // دالة للتحقق من صحة رقم الجوال السعودي
   const validateSaudiPhoneNumber = (phoneNumber) => {
@@ -101,6 +90,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
     }
 
     fetchBranches();
+    fetchJobTitles();
   }, []);
 
   const fetchBranches = async () => {
@@ -119,6 +109,52 @@ const EmployeeDataDialog = ({ onSuccess }) => {
     } catch (error) {
       console.error('Error fetching branches:', error);
       setError('حدث خطأ في جلب بيانات الفروع');
+    }
+  };
+
+  const fetchJobTitles = async () => {
+    setJobTitlesLoading(true);
+
+    try {
+      const response = await fetch(
+        `${HR_API_BASE_URL}/api/hr/job-titles/lookups`,
+        { cache: 'no-store' }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message || 'حدث خطأ في جلب الوظائف والمسميات الوظيفية'
+        );
+      }
+
+      const rows = Array.isArray(result?.data) ? result.data : [];
+
+      // هذه الشاشة ترسل اسم الوظيفة للنظام القديم،
+      // لذلك نحتفظ بنفس الـ payload القديم ونغير مصدر القائمة فقط.
+      setJobTitles(
+        rows
+          .filter(
+            (job) =>
+              job?.isActive === true &&
+              job?.showInUserSelection === true &&
+              Number.isInteger(Number(job?.legacyJobCode))
+          )
+          .sort(
+            (a, b) =>
+              Number(a.legacyJobCode) - Number(b.legacyJobCode)
+          )
+      );
+    } catch (fetchError) {
+      console.error('Error fetching HR job titles:', fetchError);
+      setError(
+        fetchError?.message ||
+          'حدث خطأ في جلب الوظائف والمسميات الوظيفية'
+      );
+      setJobTitles([]);
+    } finally {
+      setJobTitlesLoading(false);
     }
   };
 
@@ -421,11 +457,21 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                       <MenuItem value="">
                         <em style={{ color: '#64748b' }}>اختر الوظيفة</em>
                       </MenuItem>
-                      {jobTitles.map((title, index) => (
-                        <MenuItem key={index} value={title}>
-                          {title}
+                      {jobTitlesLoading && (
+                        <MenuItem value="" disabled>
+                          جاري تحميل الوظائف...
                         </MenuItem>
-                      ))}
+                      )}
+
+                      {!jobTitlesLoading &&
+                        jobTitles.map((job) => (
+                          <MenuItem
+                            key={job.jobTitleGuid || job.legacyJobCode}
+                            value={job.jobTitleName}
+                          >
+                            {job.jobTitleName}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid>

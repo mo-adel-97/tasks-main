@@ -5,13 +5,19 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Box,
   Button,
+  GlobalStyles,
+  IconButton,
   MenuItem,
   Paper,
   Stack,
   TextField,
-  Typography
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   DataGrid,
@@ -21,10 +27,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Sidebar from "../components/Sidebar";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -170,6 +178,19 @@ const normalize = (value) =>
     .replaceAll("ة", "ه")
     .replace(/\s+/g, " ");
 
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) {
+    return parts.join(" ");
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 const escapeCsvValue = (
   value
 ) => {
@@ -191,6 +212,32 @@ const showError = async (
 };
 
 const TrainingAgreementsFollow = () => {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(
     () =>
       JSON.parse(
@@ -326,8 +373,86 @@ const TrainingAgreementsFollow = () => {
     );
   }, [filteredRows]);
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    if (isPhone) {
+      return [
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          flex: 1.15,
+          minWidth: 105,
+          renderCell: (params) =>
+            shortStudentName(
+              params.row.studentName
+            )
+        },
+        {
+          field: "nationalId",
+          headerName: "الهوية",
+          flex: 0.9,
+          minWidth: 90
+        },
+        {
+          field: "registeredDays",
+          headerName: "منذ",
+          type: "number",
+          flex: 0.55,
+          minWidth: 55,
+          renderCell: (params) =>
+            `${params.row.registeredDays || 0} يوم`
+        },
+        {
+          field: "salesmanName",
+          headerName: "المندوب",
+          flex: 0.9,
+          minWidth: 85
+        }
+      ];
+    }
+
+    if (isTablet) {
+      return [
+        {
+          field: "studentName",
+          headerName: "اسم الطالب",
+          flex: 1.2,
+          minWidth: 125,
+          renderCell: (params) =>
+            shortStudentName(
+              params.row.studentName
+            )
+        },
+        {
+          field: "nationalId",
+          headerName: "رقم الهوية",
+          flex: 0.9,
+          minWidth: 100
+        },
+        {
+          field: "branchName",
+          headerName: "الفرع",
+          flex: 1.1,
+          minWidth: 120
+        },
+        {
+          field: "registeredDays",
+          headerName: "تسجيل منذ",
+          type: "number",
+          flex: 0.65,
+          minWidth: 75,
+          renderCell: (params) =>
+            `${params.row.registeredDays || 0} يوم`
+        },
+        {
+          field: "salesmanName",
+          headerName: "مندوب البيع",
+          flex: 0.9,
+          minWidth: 100
+        }
+      ];
+    }
+
+    return [
       {
         field: "regDocCode",
         headerName: "رقم الاستمارة",
@@ -350,54 +475,55 @@ const TrainingAgreementsFollow = () => {
         field: "branchName",
         headerName: "الفرع",
         type: "string",
-        flex: 1.65,
-        minWidth: 170
+        flex: 1.45,
+        minWidth: 160
       },
       {
         field: "studentName",
         headerName: "اسم الطالب",
         type: "string",
-        flex: 1.35,
-        minWidth: 150
+        flex: 1.3,
+        minWidth: 145
       },
       {
         field: "studentTel",
         headerName: "رقم الجوال",
         type: "string",
-        flex: 1,
-        minWidth: 125
+        flex: 0.95,
+        minWidth: 115
       },
       {
         field: "nationalId",
         headerName: "رقم الهوية",
         type: "string",
-        flex: 1,
-        minWidth: 125
+        flex: 0.95,
+        minWidth: 115
       },
       {
         field: "registeredDays",
         headerName: "تسجيل منذ",
         type: "number",
-        flex: 0.75,
-        minWidth: 100
+        flex: 0.7,
+        minWidth: 90,
+        renderCell: (params) =>
+          `${params.row.registeredDays || 0} يوم`
       },
       {
         field: "batchName",
         headerName: "الدفعة",
         type: "string",
-        flex: 0.95,
-        minWidth: 120
+        flex: 0.9,
+        minWidth: 110
       },
       {
         field: "salesmanName",
         headerName: "مندوب البيع",
         type: "string",
-        flex: 1,
-        minWidth: 130
+        flex: 0.95,
+        minWidth: 120
       }
-    ],
-    []
-  );
+    ];
+  }, [isPhone, isTablet]);
 
 
   const loadData = async () => {
@@ -639,42 +765,158 @@ const TrainingAgreementsFollow = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         background: "#f5f8f7",
         direction: "ltr"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: {
+                xs: 0.75,
+                sm: 1
+              },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: {
+                  xs: 36,
+                  sm: 40
+                },
+                height: {
+                  xs: 36,
+                  sm: 40
+                },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 22
+                  }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.67rem",
+                  sm: "0.79rem"
+                },
+                color: "#17372b",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              متابعة اتفاقيات التدريب
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
         component="main"
         sx={{
-          marginLeft: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
           },
-
-          width: {
-            xs: "100%",
-            md:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`
-          },
-
-          minHeight: "100vh",
-
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
           p: {
-            xs: 1.5,
-            md: 3
+            xs: 0.5,
+            sm: 0.75,
+            md: 1
           },
+          direction: "ltr",
+          boxSizing: "border-box",
+          overflowX: "hidden",
 
-          direction: "ltr"
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 2.5
+          }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -683,10 +925,11 @@ const TrainingAgreementsFollow = () => {
         >
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              },
+              p: isPhone
+                ? 0.7
+                : isTablet
+                  ? 1
+                  : 2.5,
 
               background:
                 "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
@@ -700,7 +943,12 @@ const TrainingAgreementsFollow = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#034d31"
+                color: "#034d31",
+                fontSize: isPhone
+                  ? "0.72rem"
+                  : isTablet
+                    ? "0.88rem"
+                    : undefined
               }}
             >
               متابعة اتفاقيات التدريب
@@ -708,9 +956,17 @@ const TrainingAgreementsFollow = () => {
 
             <Typography
               sx={{
-                mt: 0.5,
+                mt: isPhone ? 0.15 : 0.5,
                 fontFamily: "Cairo",
-                color: "#61756d"
+                color: "#61756d",
+                fontSize: isPhone
+                  ? "0.4rem"
+                  : isTablet
+                    ? "0.5rem"
+                    : undefined,
+                display: isPhone
+                  ? "none"
+                  : "block"
               }}
             >
               متابعة حالة توقيع الاتفاقيات بدون كشف الحساب أو فتح ملفات الاتفاقيات
@@ -719,19 +975,95 @@ const TrainingAgreementsFollow = () => {
 
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              }
+              p: isPhone
+                ? 0.6
+                : isTablet
+                  ? 0.9
+                  : 2.5
             }}
           >
-            <Stack
-              direction={{
-                xs: "column",
-                md: "row"
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : isTablet
+                    ? "repeat(4,minmax(0,1fr))"
+                    : "repeat(5,minmax(120px,1fr)) auto auto auto auto auto",
+                gap: isPhone
+                  ? 0.5
+                  : isTablet
+                    ? 0.7
+                    : 1,
+                mb: isPhone
+                  ? 0.7
+                  : isTablet
+                    ? 0.9
+                    : 2,
+                alignItems: "center",
+
+                "& .MuiInputLabel-root": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+
+                "& .MuiInputBase-input": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.44rem"
+                    : isTablet
+                      ? "0.52rem"
+                      : undefined,
+                  py: isPhone
+                    ? 0.45
+                    : isTablet
+                      ? 0.55
+                      : undefined
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone
+                    ? 31
+                    : isTablet
+                      ? 34
+                      : undefined,
+                  borderRadius: isCompact
+                    ? 1.1
+                    : undefined
+                },
+
+                "& .MuiButton-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 33
+                      : undefined,
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  fontSize: isPhone
+                    ? "0.43rem"
+                    : isTablet
+                      ? "0.51rem"
+                      : undefined,
+                  px: isPhone
+                    ? 0.55
+                    : isTablet
+                      ? 0.8
+                      : undefined
+                },
+
+                "& .MuiSvgIcon-root": {
+                  fontSize: isPhone
+                    ? 14
+                    : isTablet
+                      ? 16
+                      : undefined
+                }
               }}
-              spacing={1.5}
-              sx={{ mb: 2 }}
             >
               <TextField
                 type="date"
@@ -746,6 +1078,7 @@ const TrainingAgreementsFollow = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -761,6 +1094,7 @@ const TrainingAgreementsFollow = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -773,18 +1107,35 @@ const TrainingAgreementsFollow = () => {
                     event.target.value
                   )
                 }
-                sx={{
-                  minWidth: 190
+                fullWidth
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone
+                            ? 28
+                            : isTablet
+                              ? 31
+                              : 40,
+                          fontFamily: "Cairo",
+                          fontSize: isPhone
+                            ? "0.43rem"
+                            : isTablet
+                              ? "0.51rem"
+                              : undefined
+                        }
+                      }
+                    }
+                  }
                 }}
               >
                 <MenuItem value="الكل">
                   الكل
                 </MenuItem>
-
                 <MenuItem value="تم التوقيع">
                   تم التوقيع
                 </MenuItem>
-
                 <MenuItem value="لم يتم التوقيع">
                   لم يتم التوقيع
                 </MenuItem>
@@ -800,24 +1151,41 @@ const TrainingAgreementsFollow = () => {
                     event.target.value
                   )
                 }
-                sx={{
-                  minWidth: 190
+                fullWidth
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone
+                            ? 28
+                            : isTablet
+                              ? 31
+                              : 40,
+                          fontFamily: "Cairo",
+                          fontSize: isPhone
+                            ? "0.43rem"
+                            : isTablet
+                              ? "0.51rem"
+                              : undefined
+                        }
+                      }
+                    }
+                  }
                 }}
               >
                 <MenuItem value="الكل">
                   الكل
                 </MenuItem>
 
-                {salesmen.map(
-                  (value) => (
-                    <MenuItem
-                      key={value}
-                      value={value}
-                    >
-                      {value}
-                    </MenuItem>
-                  )
-                )}
+                {salesmen.map((value) => (
+                  <MenuItem
+                    key={value}
+                    value={value}
+                  >
+                    {value}
+                  </MenuItem>
+                ))}
               </TextField>
 
               <TextField
@@ -829,23 +1197,20 @@ const TrainingAgreementsFollow = () => {
                     event.target.value
                   )
                 }
+                fullWidth
                 sx={{
-                  minWidth: {
-                    md: 260
-                  }
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               />
 
               <Button
                 variant="contained"
-                startIcon={
-                  <SearchIcon />
-                }
+                startIcon={<SearchIcon />}
                 onClick={loadData}
                 disabled={loading}
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
                   background: "#057546"
                 }}
               >
@@ -854,37 +1219,27 @@ const TrainingAgreementsFollow = () => {
 
               <Button
                 variant="outlined"
-                startIcon={
-                  <RefreshIcon />
-                }
+                startIcon={<RefreshIcon />}
                 onClick={loadData}
                 disabled={loading}
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800
-                }}
               >
                 تحديث
               </Button>
 
               <Button
                 variant="outlined"
-                startIcon={
-                  <FileDownloadIcon />
-                }
-                onClick={
-                  exportToExcel
-                }
+                startIcon={<FileDownloadIcon />}
+                onClick={exportToExcel}
                 disabled={
                   loading ||
-                  filteredRows.length ===
-                    0
+                  filteredRows.length === 0
                 }
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
                   color: "#ae1e21",
-                  borderColor: "#ae1e21"
+                  borderColor: "#ae1e21",
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               >
                 تصدير Excel
@@ -892,42 +1247,65 @@ const TrainingAgreementsFollow = () => {
 
               <Button
                 variant="outlined"
-                startIcon={
-                  <ClearAllIcon />
-                }
-                onClick={
-                  clearFilters
-                }
+                startIcon={<ClearAllIcon />}
+                onClick={clearFilters}
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               >
                 مسح الفلاتر
               </Button>
 
-              <Box sx={{ flexGrow: 1 }} />
-
               <Box
                 sx={{
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
+                  px: isPhone
+                    ? 0.6
+                    : isTablet
+                      ? 0.8
+                      : 1.2,
+                  py: isPhone
+                    ? 0.5
+                    : isTablet
+                      ? 0.6
+                      : 0.8,
+                  borderRadius: isCompact
+                    ? 1.1
+                    : 2,
                   background: "#fff9c4",
                   color: "#ae1e21",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  whiteSpace: "nowrap"
+                  fontSize: isPhone
+                    ? "0.44rem"
+                    : isTablet
+                      ? "0.52rem"
+                      : undefined,
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               >
                 العدد: {filteredRows.length}
               </Box>
-            </Stack>
+            </Box>
 
             <Box
               sx={{
                 width: "100%",
-                height: 740,
+                height: isPhone
+                  ? "calc(100dvh - 365px)"
+                  : isTablet
+                    ? "calc(100dvh - 330px)"
+                    : 700,
+                minHeight: isPhone
+                  ? 360
+                  : isTablet
+                    ? 430
+                    : 520,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
@@ -939,7 +1317,23 @@ const TrainingAgreementsFollow = () => {
                 columns={columns}
                 loading={loading}
                 disableRowSelectionOnClick
-                showToolbar
+                showToolbar={!isPhone}
+                disableColumnMenu={isPhone}
+                disableColumnFilter={isPhone}
+                rowHeight={
+                  isPhone
+                    ? 34
+                    : isTablet
+                      ? 40
+                      : undefined
+                }
+                columnHeaderHeight={
+                  isPhone
+                    ? 32
+                    : isTablet
+                      ? 38
+                      : undefined
+                }
                 slots={{
                   toolbar: GridToolbar
                 }}
@@ -1052,6 +1446,24 @@ const TrainingAgreementsFollow = () => {
                   direction: "ltr",
                   fontFamily: "Cairo",
 
+                  "& .MuiDataGrid-main": {
+                    overflowX: isCompact
+                      ? "hidden"
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-virtualScroller": {
+                    overflowX: isCompact
+                      ? "hidden !important"
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-scrollbar--horizontal": {
+                    display: isCompact
+                      ? "none"
+                      : undefined
+                  },
+
                   "& .MuiDataGrid-columnHeaders": {
                     backgroundColor:
                       "#057546",
@@ -1070,7 +1482,13 @@ const TrainingAgreementsFollow = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     textAlign: "center",
-                    width: "100%"
+                    width: "100%",
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : isTablet
+                        ? "0.47rem"
+                        : undefined,
+                    lineHeight: 1.25
                   },
 
                   "& .MuiDataGrid-columnSeparator": {
@@ -1084,8 +1502,18 @@ const TrainingAgreementsFollow = () => {
                     textAlign: "center",
                     justifyContent: "center",
                     whiteSpace: "normal",
-                    lineHeight: 1.45,
-                    borderColor: "#e6ece9"
+                    lineHeight: 1.35,
+                    borderColor: "#e6ece9",
+                    px: isPhone
+                      ? 0.35
+                      : isTablet
+                        ? 0.55
+                        : undefined,
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : isTablet
+                        ? "0.47rem"
+                        : undefined
                   },
 
                   "& .MuiDataGrid-row:nth-of-type(even)": {
@@ -1099,8 +1527,9 @@ const TrainingAgreementsFollow = () => {
                   },
 
                   "& .MuiDataGrid-toolbarContainer": {
-                    p: 1,
-                    gap: 1,
+                    display: isPhone ? "none" : "flex",
+                    p: isTablet ? 0.45 : 1,
+                    gap: isTablet ? 0.45 : 1,
                     borderBottom:
                       "1px solid #e6ece9",
                     backgroundColor:
@@ -1111,17 +1540,51 @@ const TrainingAgreementsFollow = () => {
                   "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
                     fontFamily: "Cairo",
                     fontWeight: 800,
-                    color: "#057546"
+                    color: "#057546",
+                    fontSize: isTablet
+                      ? "0.46rem"
+                      : undefined,
+                    minWidth: isTablet
+                      ? 0
+                      : undefined,
+                    px: isTablet
+                      ? 0.5
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-toolbarContainer .MuiInputBase-input": {
+                    fontSize: isTablet
+                      ? "0.46rem"
+                      : undefined
                   },
 
                   "& .MuiDataGrid-filterForm": {
                     direction: "rtl",
-                    fontFamily: "Cairo"
+                    fontFamily: "Cairo",
+                    fontSize: isTablet
+                      ? "0.48rem"
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-panel": {
+                    maxWidth: isCompact
+                      ? "calc(100vw - 20px)"
+                      : undefined
                   },
 
                   "& .MuiDataGrid-footerContainer": {
                     direction: "ltr",
-                    fontFamily: "Cairo"
+                    fontFamily: "Cairo",
+                    minHeight: isPhone
+                      ? 34
+                      : isTablet
+                        ? 38
+                        : undefined,
+                    fontSize: isPhone
+                      ? "0.4rem"
+                      : isTablet
+                        ? "0.48rem"
+                        : undefined
                   },
 
                   "& .MuiTablePagination-root": {

@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import * as XLSX from "xlsx";
 import {
+  AppBar,
   Autocomplete,
   Box,
   Button,
@@ -18,6 +19,7 @@ import {
   DialogTitle,
   Divider,
   FormControlLabel,
+  GlobalStyles,
   IconButton,
   LinearProgress,
   Menu,
@@ -26,8 +28,11 @@ import {
   Select,
   Stack,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   DataGrid,
@@ -54,12 +59,16 @@ import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 import Sidebar from "../components/Sidebar";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -249,6 +258,19 @@ const money = (value) =>
     }
   ).format(toNumber(value));
 
+const firstAndLastName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return parts[0] || "-";
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 const showError = async (message) =>
   Swal.fire({
     icon: "error",
@@ -347,7 +369,9 @@ const TextCell = ({
         textAlign: align,
         fontFamily: "Cairo",
         fontSize: "0.76rem",
-        fontWeight: 700
+        fontWeight: 700,
+        "@media (max-width: 599px)": { fontSize: "0.34rem", lineHeight: 1.15, fontWeight: 800 },
+        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.48rem", lineHeight: 1.25 }
       }}
     >
       {value || "-"}
@@ -362,7 +386,9 @@ const MoneyCell = ({ value }) => (
       textAlign: "center",
       fontFamily: "Cairo",
       fontSize: "0.74rem",
-      fontWeight: 800
+      fontWeight: 800,
+      "@media (max-width: 599px)": { fontSize: "0.34rem", lineHeight: 1.1, fontWeight: 900 },
+      "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.47rem", lineHeight: 1.2 }
     }}
   >
     {money(value)}
@@ -380,6 +406,8 @@ const TotalItem = ({
       px: 1.25,
       py: 1.1,
       borderRadius: 2.5,
+      "@media (max-width: 599px)": { px: 0.55, py: 0.48, borderRadius: 1.5, minHeight: 43 },
+      "@media (min-width: 600px) and (max-width: 1599px)": { px: 0.75, py: 0.65, borderRadius: 2 },
       border:
         "1px solid rgba(5,117,70,0.12)",
       background:
@@ -407,6 +435,8 @@ const TotalItem = ({
         fontFamily: "Cairo",
         fontSize: "0.68rem",
         fontWeight: 800,
+        "@media (max-width: 599px)": { fontSize: "0.38rem", lineHeight: 1.1 },
+        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.5rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -422,6 +452,8 @@ const TotalItem = ({
         fontFamily: "Cairo",
         fontSize: "0.9rem",
         fontWeight: 900,
+        "@media (max-width: 599px)": { fontSize: "0.48rem", lineHeight: 1.15 },
+        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.62rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -483,6 +515,8 @@ const PaymentTotalsSection = ({
             fontFamily: "Cairo",
             fontSize: "0.76rem",
             fontWeight: 800,
+            "@media (max-width: 599px)": { fontSize: "0.42rem" },
+            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.54rem" },
             opacity: 0.88
           }}
         >
@@ -494,7 +528,9 @@ const PaymentTotalsSection = ({
             mt: 0.25,
             fontFamily: "Cairo",
             fontSize: "0.88rem",
-            fontWeight: 900
+            fontWeight: 900,
+            "@media (max-width: 599px)": { fontSize: "0.50rem", lineHeight: 1.3 },
+            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.64rem" }
           }}
         >
           العدد {rowCount} — المسددين {totals.paid} — لم يسدد {totals.unpaid}
@@ -776,6 +812,46 @@ const MultiValueFilter = ({
 };
 
 const PaymentFollowReport = () => {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  const [mobileDetailsOpen, setMobileDetailsOpen] =
+    useState(false);
+
+  const [mobileDetailsRow, setMobileDetailsRow] =
+    useState(null);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
+  const openMobileDetails = (row) => {
+    setMobileDetailsRow(row);
+    setMobileDetailsOpen(true);
+  };
+
+  const closeMobileDetails = () => {
+    setMobileDetailsOpen(false);
+    setMobileDetailsRow(null);
+  };
+
   const currentUser = useMemo(
     () => {
       try {
@@ -893,6 +969,14 @@ const PaymentFollowReport = () => {
   const [confirmDistributionOpen, setConfirmDistributionOpen] = useState(false);
   const [executingDistribution, setExecutingDistribution] = useState(false);
   const [distributionProgressIndex, setDistributionProgressIndex] = useState(0);
+
+  // توزيع مخصص: طلاب غير موزعين يتم اختيارهم يدويًا
+  const [customDistributionOpen, setCustomDistributionOpen] = useState(false);
+  const [customDistributionStep, setCustomDistributionStep] = useState(1);
+  const [customStudentSelections, setCustomStudentSelections] = useState({});
+  const [customTrainerSelections, setCustomTrainerSelections] = useState({});
+  const [customDistributionPreview, setCustomDistributionPreview] = useState(null);
+  const [executingCustomDistribution, setExecutingCustomDistribution] = useState(false);
 
   const fixedCompanyTrainer =
     useMemo(
@@ -1509,6 +1593,48 @@ const PaymentFollowReport = () => {
     [gridRows, columnFilters]
   );
 
+  // الطلاب المتاحون للطريقة الجديدة: غير موزعين فقط.
+  // نعتمد على TrainerGuid أولاً، ولو الـBackend لا يرجعه نعتمد على الاسم.
+  const unassignedDistributionRows = useMemo(
+    () =>
+      gridRows.filter((row) =>
+        !String(row.trainerGuid || "").trim() &&
+        !String(row.trainerName || "").trim()
+      ),
+    [gridRows]
+  );
+
+  // غير الموزعين الظاهرون حاليًا في الجريد بعد تطبيق فلاتر الصفحة.
+  // دول فقط اللي زر "تحديد الظاهر" يتعامل معاهم.
+  const visibleUnassignedDistributionRows = useMemo(
+    () =>
+      filteredGridRows.filter((row) =>
+        !String(row.trainerGuid || "").trim() &&
+        !String(row.trainerName || "").trim()
+      ),
+    [filteredGridRows]
+  );
+
+  const selectedCustomStudents = useMemo(
+    () =>
+      unassignedDistributionRows.filter(
+        (row) => customStudentSelections[row.studentLevelGuid || row.id]
+      ),
+    [unassignedDistributionRows, customStudentSelections]
+  );
+
+  const selectedCustomTrainers = useMemo(
+    () =>
+      selectableTrainers
+        .filter((item) => customTrainerSelections[item.guid]?.selected)
+        .map((item) => ({
+          guid: item.guid,
+          name: item.name,
+          role: customTrainerSelections[item.guid]?.role || "primary"
+        })),
+    [selectableTrainers, customTrainerSelections]
+  );
+
   const activeFilterCount = useMemo(
     () =>
       Object.values(columnFilters)
@@ -1809,6 +1935,220 @@ const PaymentFollowReport = () => {
       }
     ],
     []
+  );
+
+  const compactColumns = useMemo(() => {
+    const byField = (field) =>
+      columns.find(
+        (column) => column.field === field
+      );
+
+    const phoneFields = [
+      "studentName",
+      "nationalId",
+      "monthPay",
+      "balance"
+    ];
+
+    const tabletFields = [
+      "studentName",
+      "nationalId",
+      "diplomName",
+      "monthPay",
+      "balance",
+      "trainerName"
+    ];
+
+    const fields = isPhone
+      ? phoneFields
+      : tabletFields;
+
+    const selected = fields
+      .map(byField)
+      .filter(Boolean)
+      .map((column) => ({
+        ...column,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        headerAlign: "center",
+        align: "center",
+
+        ...(column.field === "studentName"
+          ? {
+              renderCell: (params) => (
+                <Typography
+                  sx={{
+                    width: "100%",
+                    px: isPhone ? 0.1 : 0.25,
+                    textAlign: "center",
+                    fontFamily: "Cairo",
+                    fontWeight: 800,
+                    fontSize: isPhone
+                      ? "0.34rem"
+                      : "0.48rem",
+                    lineHeight: 1.2,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  {isPhone
+                    ? firstAndLastName(params.value)
+                    : params.value || "-"}
+                </Typography>
+              )
+            }
+          : {}),
+
+        ...(isPhone
+          ? {
+              flex:
+                column.field === "studentName"
+                  ? 1.45
+                  : 1,
+              minWidth: 0,
+              maxWidth: undefined,
+              width: undefined
+            }
+          : {
+              flex:
+                column.field === "studentName"
+                  ? 1.35
+                  : column.field === "diplomName"
+                    ? 1.35
+                    : 1,
+              minWidth:
+                column.field === "studentName"
+                  ? 120
+                  : column.field === "diplomName"
+                    ? 130
+                    : 82,
+              maxWidth: undefined,
+              width: undefined
+            })
+      }));
+
+    return [
+      ...selected,
+      {
+        field: "__details",
+        headerName: "",
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        width: isPhone ? 34 : 44,
+        minWidth: isPhone ? 34 : 44,
+        maxWidth: isPhone ? 34 : 44,
+        align: "center",
+        headerAlign: "center",
+
+        renderCell: (params) => (
+          <IconButton
+            size="small"
+            title="عرض التفاصيل"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              openMobileDetails(params.row);
+            }}
+            sx={{
+              width: isPhone ? 24 : 30,
+              height: isPhone ? 24 : 30,
+              p: 0,
+              color: "#057546",
+              border:
+                "1px solid rgba(5,117,70,.28)",
+              backgroundColor: "#eef8f3"
+            }}
+          >
+            <VisibilityOutlinedIcon
+              sx={{
+                fontSize: isPhone ? 14 : 18
+              }}
+            />
+          </IconButton>
+        )
+      }
+    ];
+  }, [
+    columns,
+    isPhone,
+    isTablet
+  ]);
+
+  // عمود اختيار الطلاب للتوزيع المخصص داخل الجريد الرئيسي نفسه.
+  // يظهر Checkbox فقط للطالب غير الموزع، أما الطالب الذي لديه مسؤول اتصال
+  // فيظهر له Checkbox معطل حتى لا تتم إعادة توزيعه بالخطأ.
+  const customDistributionSelectionColumn = useMemo(
+    () => ({
+      field: "__customDistributionSelect",
+      headerName: "توزيع",
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      resizable: false,
+      width: isPhone ? 42 : 62,
+      minWidth: isPhone ? 42 : 62,
+      maxWidth: isPhone ? 42 : 62,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        const row = params.row;
+        const key = row.studentLevelGuid || row.id;
+        const isUnassigned =
+          !String(row.trainerGuid || "").trim() &&
+          !String(row.trainerName || "").trim();
+        const checked = Boolean(customStudentSelections[key]);
+
+        return (
+          <Tooltip
+            title={
+              isUnassigned
+                ? checked
+                  ? "إلغاء اختيار الطالب من التوزيع"
+                  : "اختيار الطالب للتوزيع"
+                : "الطالب لديه مسؤول اتصال بالفعل"
+            }
+            arrow
+          >
+            <span>
+              <Checkbox
+                size="small"
+                checked={isUnassigned && checked}
+                disabled={!isUnassigned}
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => {
+                  event.stopPropagation();
+                  if (!isUnassigned || !key) return;
+                  setCustomStudentSelections((current) => ({
+                    ...current,
+                    [key]: event.target.checked
+                  }));
+                }}
+                sx={{
+                  p: 0.35,
+                  color: "#8f79b7",
+                  "&.Mui-checked": { color: "#6f42c1" },
+                  "&.Mui-disabled": { opacity: 0.2 }
+                }}
+              />
+            </span>
+          </Tooltip>
+        );
+      }
+    }),
+    [customStudentSelections, isPhone]
+  );
+
+  const mainGridColumns = useMemo(
+    () => [
+      customDistributionSelectionColumn,
+      ...(isDesktop ? columns : compactColumns)
+    ],
+    [customDistributionSelectionColumn, isDesktop, columns, compactColumns]
   );
 
   const totals = useMemo(
@@ -2213,6 +2553,220 @@ const PaymentFollowReport = () => {
       setExecutingDistribution(false);
       setLoadingDistribution(false);
       setDistributionProgressIndex(0);
+    }
+  };
+
+  const openCustomDistributionDialog = async () => {
+    if (!branch?.guid) {
+      await showError("برجاء اختيار الفرع أولًا");
+      return;
+    }
+
+    if (!gridRows.length) {
+      await showError("اعرض بيانات الفرع أولًا حتى نحدد الطلاب غير الموزعين");
+      return;
+    }
+
+    if (!unassignedDistributionRows.length) {
+      await showSuccess("لا يوجد طلاب غير موزعين", "كل الطلاب الظاهرين لديهم مسؤول اتصال حاليًا");
+      return;
+    }
+
+    if (!selectedCustomStudents.length) {
+      await showError("حدد الطلاب من الجريد أولًا عن طريق علامة الاختيار في عمود توزيع");
+      return;
+    }
+
+    // اختيار الطلاب يتم من الجريد الرئيسي، لذلك لا نمسح التحديد عند فتح الـDialog.
+    setCustomTrainerSelections({});
+    setCustomDistributionPreview(null);
+    setCustomDistributionStep(1);
+    setCustomDistributionOpen(true);
+  };
+
+  const closeCustomDistributionDialog = () => {
+    if (executingCustomDistribution) return;
+    setCustomDistributionOpen(false);
+    setCustomDistributionPreview(null);
+    setCustomDistributionStep(1);
+  };
+
+  const toggleCustomStudent = (row) => {
+    const key = row.studentLevelGuid || row.id;
+    if (!key) return;
+
+    setCustomStudentSelections((current) => ({
+      ...current,
+      [key]: !current[key]
+    }));
+  };
+
+  const setAllVisibleCustomStudents = (checked) => {
+    setCustomStudentSelections((current) => {
+      const next = { ...current };
+      visibleUnassignedDistributionRows.forEach((row) => {
+        const key = row.studentLevelGuid || row.id;
+        if (key) next[key] = checked;
+      });
+      return next;
+    });
+  };
+
+  const toggleCustomTrainer = (trainerItem) => {
+    setCustomTrainerSelections((current) => {
+      const previous = current[trainerItem.guid];
+      return {
+        ...current,
+        [trainerItem.guid]: previous?.selected
+          ? { selected: false, role: previous.role || "primary" }
+          : { selected: true, role: previous?.role || "primary" }
+      };
+    });
+  };
+
+  const changeCustomTrainerRole = (trainerGuid, role) => {
+    setCustomTrainerSelections((current) => ({
+      ...current,
+      [trainerGuid]: { selected: true, role }
+    }));
+  };
+
+  const buildCustomDistributionPreview = async () => {
+    if (!selectedCustomStudents.length) {
+      await showError("حدد طالبًا واحدًا على الأقل من الطلاب غير الموزعين");
+      return;
+    }
+
+    if (!selectedCustomTrainers.length) {
+      await showError("حدد مدربًا واحدًا على الأقل");
+      return;
+    }
+
+    // نفس فكرة التوزيع الحالي: الأساسي وزنه 2، والمتعاون وزنه 1.
+    // نختار في كل مرة أقل مدرب في (عدد الطلاب / الوزن) للحصول على توزيع متوازن.
+    const buckets = selectedCustomTrainers.map((trainer) => ({
+      ...trainer,
+      roleLabel: trainer.role === "primary" ? "أساسي" : "متعاون",
+      weight: trainer.role === "primary" ? 2 : 1,
+      students: []
+    }));
+
+    const orderedStudents = [...selectedCustomStudents].sort((a, b) =>
+      String(a.diplomName || "").localeCompare(String(b.diplomName || ""), "ar") ||
+      String(a.studentName || "").localeCompare(String(b.studentName || ""), "ar")
+    );
+
+    orderedStudents.forEach((student) => {
+      const target = [...buckets].sort((a, b) => {
+        const aRatio = a.students.length / a.weight;
+        const bRatio = b.students.length / b.weight;
+        if (aRatio !== bRatio) return aRatio - bRatio;
+        return a.students.length - b.students.length;
+      })[0];
+      target.students.push(student);
+    });
+
+    const assignments = buckets.flatMap((trainer) =>
+      trainer.students.map((student) => ({
+        studentLevelGuid: student.studentLevelGuid,
+        studentName: student.studentName,
+        nationalId: student.nationalId,
+        diplomName: student.diplomName,
+        trainerGuid: trainer.guid,
+        trainerName: trainer.name,
+        role: trainer.role
+      }))
+    );
+
+    setCustomDistributionPreview({
+      totalStudents: selectedCustomStudents.length,
+      trainerCount: selectedCustomTrainers.length,
+      trainers: buckets.map((trainer) => ({
+        guid: trainer.guid,
+        name: trainer.name,
+        role: trainer.role,
+        roleLabel: trainer.roleLabel,
+        studentCount: trainer.students.length,
+        students: trainer.students
+      })),
+      assignments
+    });
+    setCustomDistributionStep(2);
+  };
+
+  const executeCustomDistribution = async () => {
+    if (!customDistributionPreview?.assignments?.length) return;
+
+    const missingGuids = customDistributionPreview.assignments.filter(
+      (item) => !isValidGuid(item.studentLevelGuid) || !isValidGuid(item.trainerGuid)
+    );
+
+    if (missingGuids.length) {
+      await showError("يوجد طالب أو مدرب بياناته غير مكتملة، لا يمكن تنفيذ التوزيع بأمان");
+      return;
+    }
+
+    const confirmation = await Swal.fire({
+      icon: "question",
+      title: "تأكيد التوزيع المخصص",
+      html: `سيتم توزيع <strong>${customDistributionPreview.totalStudents}</strong> طالب غير موزع فقط على <strong>${customDistributionPreview.trainerCount}</strong> مدرب.`,
+      showCancelButton: true,
+      confirmButtonText: "تأكيد وبدء التوزيع",
+      cancelButtonText: "رجوع",
+      confirmButtonColor: "#057546",
+      cancelButtonColor: "#6c757d",
+      reverseButtons: true
+    });
+
+    if (!confirmation.isConfirmed) return;
+
+    setExecutingCustomDistribution(true);
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/payment-follow/custom-distribution/execute`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userGuid,
+            branchGuid: branch.guid,
+            branchName: branch.name || "",
+            mode: "selected-unassigned-only",
+            studentLevelGuids: customDistributionPreview.assignments.map(
+              (item) => item.studentLevelGuid
+            ),
+            trainers: selectedCustomTrainers,
+            assignments: customDistributionPreview.assignments.map((item) => ({
+              studentLevelGuid: item.studentLevelGuid,
+              trainerGuid: item.trainerGuid,
+              role: item.role
+            }))
+          })
+        }
+      );
+
+      const result = await readJson(response);
+
+      setCustomDistributionOpen(false);
+      setCustomDistributionPreview(null);
+      setCustomDistributionStep(1);
+      setCustomStudentSelections({});
+      setCustomTrainerSelections({});
+
+      await showSuccess(
+        "تم التوزيع المخصص بنجاح",
+        `تم توزيع ${result?.data?.totalStudents ?? customDistributionPreview.totalStudents} طالب غير موزع فقط`
+      );
+
+      await loadData();
+    } catch (error) {
+      await showError(
+        error?.message ||
+        "تعذر تنفيذ التوزيع المخصص. تأكد أن Endpoint custom-distribution/execute مضاف في الـBackend"
+      );
+    } finally {
+      setExecutingCustomDistribution(false);
     }
   };
 
@@ -2650,29 +3204,132 @@ const exportExcel = () => {
       sx={{
         minHeight: "100vh",
         background: "#f4f8f6",
-        direction: "ltr"
+        direction: "ltr",
+        overflowX: "hidden"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <>
+          <GlobalStyles
+            styles={{
+              ".MuiDrawer-root": {
+                zIndex: "2100 !important"
+              },
+              ".MuiDrawer-root .MuiBackdrop-root": {
+                zIndex: "2099 !important"
+              },
+              ".MuiDrawer-root .MuiDrawer-paper": {
+                zIndex: "2101 !important"
+              }
+            }}
+          />
+
+          <AppBar
+            position="fixed"
+            elevation={0}
+            sx={{
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1400,
+              background:
+                "rgba(255,255,255,.97)",
+              backdropFilter: "blur(14px)",
+              color: "#173b2b",
+              borderBottom:
+                "1px solid rgba(5,117,70,.12)",
+              direction: "ltr"
+            }}
+          >
+            <Toolbar
+              sx={{
+                minHeight: {
+                  xs: "50px !important",
+                  sm: "56px !important"
+                },
+                px: { xs: 0.75, sm: 1 },
+                gap: 0.8
+              }}
+            >
+              <IconButton
+                onClick={() =>
+                  setMobileSidebarOpen(
+                    (current) => !current
+                  )
+                }
+                sx={{
+                  width: { xs: 36, sm: 40 },
+                  height: { xs: 36, sm: 40 },
+                  color: "#fff",
+                  background:
+                    "linear-gradient(135deg,#057546,#034d31)",
+                  boxShadow:
+                    "0 5px 14px rgba(5,117,70,.20)"
+                }}
+              >
+                <MenuRoundedIcon
+                  sx={{
+                    fontSize: {
+                      xs: 20,
+                      sm: 22
+                    }
+                  }}
+                />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  flex: 1,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: {
+                    xs: "0.66rem",
+                    sm: "0.78rem"
+                  },
+                  color: "#173b2b",
+                  textAlign: "left"
+                }}
+              >
+                متابعة السداد
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </>
+      )}
+
+      {isDesktop ? (
+        <Sidebar />
+      ) : (
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }
+        />
+      )}
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
-          },
-          width: {
-            xs: "100%",
-            md:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`
-          },
-          p: {
-            xs: 1.5,
-            md: 2.5
-          },
-          direction: "ltr"
+          ml: isDesktop
+            ? `${SIDEBAR_WIDTH}px`
+            : 0,
+          width: isDesktop
+            ? `calc(100% - ${SIDEBAR_WIDTH}px)`
+            : "100%",
+          mt: isDesktop
+            ? 0
+            : isPhone
+              ? "50px"
+              : "56px",
+          p: isDesktop
+            ? 2.5
+            : isPhone
+              ? 0.45
+              : 0.75,
+          direction: "ltr",
+          boxSizing: "border-box",
+          overflowX: "hidden"
         }}
       >
         <Paper
@@ -2686,7 +3343,11 @@ const exportExcel = () => {
         >
           <Box
             sx={{
-              p: 2.5,
+              p: isDesktop
+                ? 2.5
+                : isPhone
+                  ? 0.75
+                  : 1,
               background:
                 "linear-gradient(135deg,#fff,#eaf7f1)",
               borderBottom:
@@ -2700,8 +3361,8 @@ const exportExcel = () => {
             >
               <Box
                 sx={{
-                  width: 52,
-                  height: 52,
+                  width: isDesktop ? 52 : isPhone ? 34 : 40,
+                  height: isDesktop ? 52 : isPhone ? 34 : 40,
                   borderRadius: 3,
                   display: "grid",
                   placeItems: "center",
@@ -2715,24 +3376,41 @@ const exportExcel = () => {
 
               <Box>
                 <Typography
-                  variant="h5"
+                  variant={isDesktop ? "h5" : "body1"}
                   fontWeight={900}
                   fontFamily="Cairo"
+                  sx={{
+                    fontSize: isDesktop
+                      ? undefined
+                      : isPhone
+                        ? "0.68rem"
+                        : "0.82rem"
+                  }}
                 >
                   متابعة السداد
                 </Typography>
 
-                <Typography
-                  fontFamily="Cairo"
-                  color="text.secondary"
-                >
-                  متابعة أرصدة الطلاب والتحصيل ومسؤولي الاتصال وتنفيذ إجراءات الطالب
-                </Typography>
+                {isDesktop && (
+                  <Typography
+                    fontFamily="Cairo"
+                    color="text.secondary"
+                  >
+                    متابعة أرصدة الطلاب والتحصيل ومسؤولي الاتصال وتنفيذ إجراءات الطالب
+                  </Typography>
+                )}
               </Box>
             </Stack>
           </Box>
 
-          <Box sx={{ p: 2 }}>
+          <Box
+            sx={{
+              p: isDesktop
+                ? 2
+                : isPhone
+                  ? 0.6
+                  : 0.85
+            }}
+          >
             <Paper
               elevation={0}
               sx={{
@@ -2745,11 +3423,45 @@ const exportExcel = () => {
               }}
             >
               <Stack
-                direction={{
-                  xs: "column",
-                  xl: "row"
+                direction={isDesktop ? "row" : "row"}
+                spacing={isDesktop ? 1.2 : 0.5}
+                useFlexGap
+                flexWrap={isDesktop ? "nowrap" : "wrap"}
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "Cairo",
+                    fontSize: !isDesktop
+                      ? isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                      : undefined
+                  },
+                  "& .MuiInputBase-root": {
+                    minHeight: !isDesktop
+                      ? isPhone
+                        ? 32
+                        : 36
+                      : undefined,
+                    fontFamily: "Cairo",
+                    fontSize: !isDesktop
+                      ? isPhone
+                        ? "0.46rem"
+                        : "0.56rem"
+                      : undefined
+                  },
+                  "& .MuiButton-root": {
+                    minHeight: !isDesktop
+                      ? isPhone
+                        ? 31
+                        : 35
+                      : undefined,
+                    fontSize: !isDesktop
+                      ? isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                      : undefined
+                  }
                 }}
-                spacing={1.2}
               >
                 <TextField
                   type="date"
@@ -2763,6 +3475,11 @@ const exportExcel = () => {
                   }
                   InputLabelProps={{
                     shrink: true
+                  }}
+                  sx={{
+                    width: !isDesktop
+                      ? "calc(50% - 4px)"
+                      : "auto"
                   }}
                 />
 
@@ -2778,6 +3495,11 @@ const exportExcel = () => {
                   }
                   InputLabelProps={{
                     shrink: true
+                  }}
+                  sx={{
+                    width: !isDesktop
+                      ? "calc(50% - 4px)"
+                      : "auto"
                   }}
                 />
 
@@ -2804,8 +3526,9 @@ const exportExcel = () => {
                     second.guid
                   }
                   sx={{
-                    minWidth: 250,
-                    flex: 1
+                    minWidth: isDesktop ? 250 : 0,
+                    flex: isDesktop ? 1 : "none",
+                    width: !isDesktop ? "100%" : "auto"
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -2836,8 +3559,9 @@ const exportExcel = () => {
                     second.guid
                   }
                   sx={{
-                    minWidth: 190,
-                    flex: 0.8
+                    minWidth: isDesktop ? 190 : 0,
+                    flex: isDesktop ? 0.8 : "none",
+                    width: !isDesktop ? "100%" : "auto"
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -2900,7 +3624,35 @@ const exportExcel = () => {
               spacing={1}
               useFlexGap
               flexWrap="wrap"
-              sx={{ mb: 1.5 }}
+              sx={{
+                mb: isDesktop ? 1.5 : 0.7,
+                gap: !isDesktop ? 0.35 : undefined,
+                "& .MuiChip-root": {
+                  height: !isDesktop
+                    ? isPhone
+                      ? 24
+                      : 28
+                    : undefined,
+                  fontFamily: "Cairo",
+                  fontSize: !isDesktop
+                    ? isPhone
+                      ? "0.33rem"
+                      : "0.43rem"
+                    : undefined
+                },
+                "& .MuiButton-root": {
+                  minHeight: !isDesktop
+                    ? isPhone
+                      ? 28
+                      : 32
+                    : undefined,
+                  fontSize: !isDesktop
+                    ? isPhone
+                      ? "0.36rem"
+                      : "0.46rem"
+                    : undefined
+                }
+              }}
             >
               <Chip
                 label={`العدد: ${filteredGridRows.length} من ${gridRows.length}`}
@@ -2986,6 +3738,56 @@ const exportExcel = () => {
                 تعيين مسؤولي الاتصال للشهر الحالي
               </Button>
 
+              <Chip
+                size="small"
+                label={`المحدد للتوزيع: ${selectedCustomStudents.length}`}
+                color={selectedCustomStudents.length ? "secondary" : "default"}
+                variant={selectedCustomStudents.length ? "filled" : "outlined"}
+                sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+              />
+
+              <Button
+                size="small"
+                variant="text"
+                onClick={() => setAllVisibleCustomStudents(true)}
+                disabled={!visibleUnassignedDistributionRows.length}
+                sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#6f42c1" }}
+              >
+                تحديد غير الموزعين الظاهرين
+              </Button>
+
+              <Button
+                size="small"
+                variant="text"
+                color="error"
+                onClick={() => setCustomStudentSelections({})}
+                disabled={!selectedCustomStudents.length}
+                sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+              >
+                إلغاء تحديد الطلاب
+              </Button>
+
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<PersonAddAlt1Icon />}
+                onClick={openCustomDistributionDialog}
+                disabled={!branch?.guid || !gridRows.length || !selectedCustomStudents.length}
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  color: "#6f42c1",
+                  borderColor: "rgba(111,66,193,.45)",
+                  background: "#faf8ff",
+                  "&:hover": {
+                    borderColor: "#6f42c1",
+                    background: "#f3edff"
+                  }
+                }}
+              >
+                توزيع الطلاب المحددين ({selectedCustomStudents.length})
+              </Button>
+
               {distributionStatus?.message && (
                 <Chip
                   label={distributionStatus.message}
@@ -2998,7 +3800,16 @@ const exportExcel = () => {
 
             <Box
               sx={{
-                height: 720,
+                height: isDesktop
+                  ? 720
+                  : isPhone
+                    ? "calc(100dvh - 360px)"
+                    : "calc(100dvh - 330px)",
+                minHeight: isDesktop
+                  ? undefined
+                  : isPhone
+                    ? 360
+                    : 500,
                 width: "100%",
                 border:
                   "1px solid #dcebe4",
@@ -3008,14 +3819,27 @@ const exportExcel = () => {
             >
               <DataGrid
                 rows={filteredGridRows}
-                columns={columns}
+                columns={mainGridColumns}
                 loading={loading}
-                rowHeight={50}
-                columnHeaderHeight={60}
+                rowHeight={
+                  isDesktop
+                    ? 50
+                    : isPhone
+                      ? 38
+                      : 44
+                }
+                columnHeaderHeight={
+                  isDesktop
+                    ? 60
+                    : isPhone
+                      ? 32
+                      : 42
+                }
                 disableRowSelectionOnClick
                 disableColumnFilter
-                showToolbar
-                disableColumnVirtualization
+                disableColumnMenu={!isDesktop}
+                showToolbar={isDesktop}
+                disableColumnVirtualization={isDesktop}
                 slots={{
                   toolbar: GridToolbar
                 }}
@@ -3043,14 +3867,16 @@ const exportExcel = () => {
                     }
                   }
                 }}
-                getRowClassName={(
-                  params
-                ) =>
-                  params.row.monthPay !==
-                  0
+                getRowClassName={(params) => {
+                  const key = params.row.studentLevelGuid || params.row.id;
+                  const paymentClass = params.row.monthPay !== 0
                     ? "paid-row"
-                    : "unpaid-row"
-                }
+                    : "unpaid-row";
+                  const selectedClass = customStudentSelections[key]
+                    ? "custom-distribution-selected-row"
+                    : "";
+                  return `${paymentClass} ${selectedClass}`.trim();
+                }}
                 sx={{
                   direction: "ltr",
                   fontFamily: "Cairo",
@@ -3090,12 +3916,28 @@ const exportExcel = () => {
                     whiteSpace: "normal",
                     lineHeight: 1.25,
                     textAlign: "center",
-                    fontSize: "0.72rem",
-                    fontWeight: 900
+                    fontSize: isDesktop
+                      ? "0.72rem"
+                      : isPhone
+                        ? "0.29rem"
+                        : "0.44rem",
+                    fontWeight: 900,
+                    whiteSpace: isDesktop
+                      ? "normal"
+                      : "nowrap"
                   },
 
                   "& .MuiDataGrid-cell": {
-                    px: 0.25,
+                    px: isDesktop
+                      ? 0.25
+                      : isPhone
+                        ? 0.04
+                        : 0.2,
+                    fontSize: !isDesktop
+                      ? isPhone
+                        ? "0.32rem"
+                        : "0.44rem"
+                      : undefined,
                     display: "flex",
                     alignItems: "center",
                     justifyContent:
@@ -3115,21 +3957,268 @@ const exportExcel = () => {
                       "#fff1f1"
                   },
 
+                  "& .custom-distribution-selected-row": {
+                    backgroundColor: "#f2ebff !important",
+                    boxShadow: "inset 4px 0 0 #6f42c1"
+                  },
+
                   "& .MuiDataGrid-row:hover": {
                     backgroundColor:
                       "#fff3d6"
-                  }
+                  },
+
+                  ...(!isDesktop
+                    ? {
+                        "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
+                          display: "none"
+                        },
+                        "& .MuiDataGrid-columnSeparator": {
+                          display: "none"
+                        },
+                        "& .MuiDataGrid-columnHeaderTitleContainer": {
+                          justifyContent: "center",
+                          minWidth: 0,
+                          overflow: "hidden"
+                        },
+                        "& .MuiDataGrid-toolbarContainer": {
+                          display: "none"
+                        }
+                      }
+                    : {})
                 }}
               />
             </Box>
 
-            <PaymentTotalsSection
-              totals={totals}
-              rowCount={filteredGridRows.length}
-            />
+            <Box
+              sx={{
+                "& > .MuiPaper-root": {
+                  mt: !isDesktop ? 0.7 : undefined,
+                  p: !isDesktop
+                    ? isPhone
+                      ? 0.65
+                      : 0.9
+                    : undefined
+                }
+              }}
+            >
+              <PaymentTotalsSection
+                totals={totals}
+                rowCount={filteredGridRows.length}
+              />
+            </Box>
           </Box>
         </Paper>
 
+
+        <Dialog
+          open={mobileDetailsOpen}
+          onClose={closeMobileDetails}
+          fullWidth
+          maxWidth="lg"
+          dir="rtl"
+          PaperProps={{
+            sx: {
+              width: isPhone
+                ? "94vw"
+                : "90vw",
+              maxWidth: isPhone
+                ? "94vw"
+                : "980px",
+              maxHeight: isPhone
+                ? "86dvh"
+                : "84dvh",
+              m: 1,
+              borderRadius: 2.5,
+              overflow: "hidden"
+            }
+          }}
+        >
+          <DialogTitle
+            sx={{
+              px: isPhone ? 1 : 1.5,
+              py: isPhone ? 0.8 : 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 0.6,
+              fontFamily: "Cairo",
+              fontWeight: 950,
+              color: "#057546",
+              fontSize: isPhone
+                ? "0.76rem"
+                : "0.94rem"
+            }}
+          >
+            <span>تفاصيل متابعة السداد</span>
+
+            <IconButton
+              onClick={closeMobileDetails}
+              sx={{
+                width: isPhone ? 30 : 34,
+                height: isPhone ? 30 : 34,
+                color: "#ae1e21"
+              }}
+            >
+              <CloseIcon
+                sx={{
+                  fontSize: isPhone ? 18 : 20
+                }}
+              />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent
+            dividers
+            sx={{
+              p: isPhone ? 0.8 : 1.1,
+              overflowY: "auto"
+            }}
+          >
+            {mobileDetailsRow ? (
+              <>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: isPhone
+                      ? "repeat(2,minmax(0,1fr))"
+                      : "repeat(3,minmax(0,1fr))",
+                    gap: isPhone ? 0.45 : 0.65
+                  }}
+                >
+                  {[
+                    ["اسم الطالب", mobileDetailsRow.studentName],
+                    ["رقم الهوية", mobileDetailsRow.nationalId],
+                    ["رقم الجوال", mobileDetailsRow.studentTel],
+                    ["نوع التسجيل", mobileDetailsRow.regTypeName],
+                    ["الدبلوم / الدورة", mobileDetailsRow.diplomName],
+                    ["الدفعة", mobileDetailsRow.batchName],
+                    ["مسؤول الاتصال", mobileDetailsRow.trainerName],
+                    ["نوع الطالب", mobileDetailsRow.studentType],
+                    ["الرصيد السابق", money(mobileDetailsRow.preBalance)],
+                    ["مدين", money(mobileDetailsRow.debit)],
+                    ["دفعة مقدمة", money(mobileDetailsRow.startPay)],
+                    ["قسط شهري", money(mobileDetailsRow.monthPay)],
+                    ["سداد رسوم", money(mobileDetailsRow.feesPay)],
+                    ["قيد مدين", money(mobileDetailsRow.mDaily)],
+                    ["قيد دائن", money(mobileDetailsRow.dDaily)],
+                    ["الرصيد الحالي", money(mobileDetailsRow.balance)]
+                  ].map(([label, value]) => (
+                    <Box
+                      key={label}
+                      sx={{
+                        minWidth: 0,
+                        p: isPhone ? 0.55 : 0.72,
+                        border:
+                          "1px solid rgba(5,117,70,.14)",
+                        borderRadius: 1.3,
+                        backgroundColor: "#fbfdfc"
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          mb: 0.2,
+                          fontFamily: "Cairo",
+                          fontWeight: 900,
+                          color: "#60756d",
+                          fontSize: isPhone
+                            ? "0.39rem"
+                            : "0.49rem"
+                        }}
+                      >
+                        {label}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          fontFamily: "Cairo",
+                          fontWeight: 800,
+                          color: "#1f2d3d",
+                          fontSize: isPhone
+                            ? "0.5rem"
+                            : "0.62rem",
+                          wordBreak: "break-word"
+                        }}
+                      >
+                        {value || "-"}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+
+                <Stack
+                  direction="row"
+                  spacing={0.6}
+                  useFlexGap
+                  flexWrap="wrap"
+                  sx={{ mt: 1 }}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<PreviewIcon />}
+                    onClick={() => {
+                      setStatementStudent(
+                        mobileDetailsRow
+                      );
+                      setStatementOpen(true);
+                    }}
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.42rem"
+                        : "0.52rem"
+                    }}
+                  >
+                    كشف الحساب
+                  </Button>
+
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() =>
+                      openActionDialog(
+                        "defer",
+                        mobileDetailsRow
+                      )
+                    }
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.42rem"
+                        : "0.52rem"
+                    }}
+                  >
+                    إجراءات الطالب
+                  </Button>
+                </Stack>
+              </>
+            ) : null}
+          </DialogContent>
+
+          <DialogActions
+            sx={{
+              px: isPhone ? 1 : 1.5,
+              py: isPhone ? 0.7 : 1
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={closeMobileDetails}
+              sx={{
+                backgroundColor: "#057546",
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: isPhone
+                  ? "0.47rem"
+                  : "0.58rem"
+              }}
+            >
+              إغلاق
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Dialog
           open={filterDialogOpen}
@@ -3140,7 +4229,15 @@ const exportExcel = () => {
           fullWidth
           PaperProps={{
             sx: {
-              borderRadius: 4,
+              borderRadius: isPhone ? 2.5 : 4,
+              width: !isDesktop
+                ? isPhone
+                  ? "94vw"
+                  : "88vw"
+                : undefined,
+              maxHeight: !isDesktop
+                ? "86dvh"
+                : undefined,
               direction: "ltr",
               overflow: "hidden"
             }
@@ -3451,6 +4548,255 @@ const exportExcel = () => {
           }
           apiBaseUrl={API_BASE_URL}
         />
+
+        <Dialog
+          open={customDistributionOpen}
+          onClose={closeCustomDistributionDialog}
+          maxWidth="lg"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 5,
+              direction: "ltr",
+              overflow: "hidden",
+              boxShadow: "0 24px 70px rgba(62,38,104,0.22)"
+            }
+          }}
+        >
+          <DialogTitle
+            sx={{
+              p: 2.2,
+              color: "#fff",
+              background: "linear-gradient(135deg,#6f42c1 0%,#452780 100%)",
+              borderBottom: "4px solid #d7a51f",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}
+          >
+            <Stack direction="row" spacing={1.2} alignItems="center">
+              <PersonAddAlt1Icon sx={{ fontSize: 34 }} />
+              <Box>
+                <Typography sx={{ fontFamily: "Cairo", fontWeight: 900 }}>
+                  توزيع جديد — الطلاب غير الموزعين فقط
+                </Typography>
+                <Typography sx={{ fontFamily: "Cairo", fontSize: "0.78rem", color: "rgba(255,255,255,.82)" }}>
+                  {branch?.name || ""} — تم اختيار {selectedCustomStudents.length} طالب من الجريد الرئيسي
+                </Typography>
+              </Box>
+            </Stack>
+            <IconButton onClick={closeCustomDistributionDialog} disabled={executingCustomDistribution} sx={{ color: "#fff" }}>
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent
+            dividers
+            sx={{
+              p: 2.2,
+              background: "linear-gradient(180deg,#faf8ff 0%,#ffffff 100%)",
+              maxHeight: "74vh"
+            }}
+          >
+            {customDistributionStep === 1 ? (
+              <>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    mb: 1.5,
+                    p: 1.5,
+                    borderRadius: 3,
+                    border: "1px solid #ded4f1",
+                    background: "#f7f3ff"
+                  }}
+                >
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    alignItems={{ xs: "stretch", sm: "center" }}
+                    justifyContent="space-between"
+                  >
+                    <Box>
+                      <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#452780" }}>
+                        الطلاب تم اختيارهم من الجريد الرئيسي
+                      </Typography>
+                      <Typography sx={{ mt: 0.25, fontFamily: "Cairo", fontSize: "0.76rem", color: "text.secondary" }}>
+                        تم تحديد {selectedCustomStudents.length} طالب غير موزع. أغلق النافذة إذا أردت تعديل اختيار الطلاب من الجريد.
+                      </Typography>
+                    </Box>
+                    <Chip
+                      label={`${selectedCustomStudents.length} طالب محدد`}
+                      color="secondary"
+                      sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+                    />
+                  </Stack>
+                </Paper>
+
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 1.6,
+                    borderRadius: 3.5,
+                    border: "1px solid #dce8e2",
+                    background: "#fff"
+                  }}
+                >
+                  <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#034d31" }}>
+                    اختر المدربين وحدد النوع
+                  </Typography>
+                  <Typography sx={{ mt: 0.35, mb: 1.2, fontFamily: "Cairo", fontSize: "0.76rem", color: "text.secondary", lineHeight: 1.8 }}>
+                    الأساسي وزنه حصتان، والمتعاون حصة واحدة — وبعدها اضغط معاينة التوزيع.
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: {
+                        xs: "1fr",
+                        sm: "repeat(2,minmax(0,1fr))",
+                        lg: "repeat(3,minmax(0,1fr))"
+                      },
+                      gap: 1,
+                      maxHeight: 455,
+                      overflowY: "auto",
+                      pr: 0.4
+                    }}
+                  >
+                    {selectableTrainers.map((trainerItem) => {
+                      const selection = customTrainerSelections[trainerItem.guid];
+                      const checked = Boolean(selection?.selected);
+                      const role = selection?.role || "primary";
+                      return (
+                        <Paper
+                          key={trainerItem.guid}
+                          elevation={0}
+                          sx={{
+                            p: 1,
+                            borderRadius: 2.5,
+                            border: checked ? "1px solid #057546" : "1px solid #e1ebe6",
+                            background: checked ? "#f3fbf7" : "#fff"
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={0.8}>
+                            <Checkbox
+                              checked={checked}
+                              onChange={() => toggleCustomTrainer(trainerItem)}
+                              sx={{ color: "#6f8b7d", "&.Mui-checked": { color: "#057546" } }}
+                            />
+                            <Typography
+                              sx={{
+                                flex: 1,
+                                minWidth: 0,
+                                fontFamily: "Cairo",
+                                fontWeight: 900,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap"
+                              }}
+                            >
+                              {trainerItem.name}
+                            </Typography>
+                            <Select
+                              size="small"
+                              value={role}
+                              disabled={!checked}
+                              onChange={(event) => changeCustomTrainerRole(trainerItem.guid, event.target.value)}
+                              sx={{ minWidth: 112, fontFamily: "Cairo", fontWeight: 800 }}
+                            >
+                              <MenuItem value="primary" sx={{ fontFamily: "Cairo" }}>أساسي</MenuItem>
+                              <MenuItem value="collaborator" sx={{ fontFamily: "Cairo" }}>متعاون</MenuItem>
+                            </Select>
+                          </Stack>
+                        </Paper>
+                      );
+                    })}
+                  </Box>
+                </Paper>
+              </>
+            ) : (
+              <>
+                <Paper elevation={0} sx={{ mb: 1.5, p: 1.5, borderRadius: 3, border: "1px solid #ded4f1", background: "#f7f3ff" }}>
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1} useFlexGap flexWrap="wrap">
+                    <Chip label={`الطلاب المحددون: ${customDistributionPreview?.totalStudents || 0}`} sx={{ fontFamily: "Cairo", fontWeight: 900 }} />
+                    <Chip label={`المدربون: ${customDistributionPreview?.trainerCount || 0}`} color="success" sx={{ fontFamily: "Cairo", fontWeight: 900 }} />
+                    <Chip label="غير الموزعين فقط" color="secondary" variant="outlined" sx={{ fontFamily: "Cairo", fontWeight: 900 }} />
+                  </Stack>
+                </Paper>
+
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2,minmax(0,1fr))", lg: "repeat(3,minmax(0,1fr))" }, gap: 1.2 }}>
+                  {(customDistributionPreview?.trainers || []).map((trainer) => (
+                    <Paper key={trainer.guid} elevation={0} sx={{ p: 1.3, borderRadius: 3, border: "1px solid #dce7e1", background: "#fff" }}>
+                      <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography title={trainer.name} sx={{ fontFamily: "Cairo", fontWeight: 900, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {trainer.name}
+                          </Typography>
+                          <Typography sx={{ fontFamily: "Cairo", fontSize: "0.74rem", color: "text.secondary" }}>
+                            {trainer.roleLabel}
+                          </Typography>
+                        </Box>
+                        <Chip label={`${trainer.studentCount} طالب`} color={trainer.role === "primary" ? "success" : "warning"} size="small" />
+                      </Stack>
+
+                      <Box sx={{ mt: 1, maxHeight: 175, overflowY: "auto" }}>
+                        {trainer.students.map((student) => (
+                          <Box key={student.studentLevelGuid || student.id} sx={{ py: 0.55, borderTop: "1px dashed #edf1ef" }}>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", fontWeight: 800 }}>
+                              {student.studentName}
+                            </Typography>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: "0.67rem", color: "text.secondary" }}>
+                              {student.nationalId} — {student.diplomName}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Paper>
+                  ))}
+                </Box>
+
+                <Paper elevation={0} sx={{ mt: 1.5, p: 1.4, borderRadius: 3, border: "1px solid #f0d58b", background: "#fff9e8" }}>
+                  <Typography sx={{ fontFamily: "Cairo", fontSize: "0.8rem", fontWeight: 800, color: "#775100", lineHeight: 1.9 }}>
+                    هذه الطريقة لن تلمس أي طالب لديه مسؤول اتصال بالفعل. التنفيذ يرسل فقط StudentLevelGuid للطلاب الذين حددتهم ومع كل طالب TrainerGuid المقترح له.
+                  </Typography>
+                </Paper>
+              </>
+            )}
+          </DialogContent>
+
+          <DialogActions sx={{ p: 2, gap: 1 }}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={customDistributionStep === 2 ? () => setCustomDistributionStep(1) : closeCustomDistributionDialog}
+              disabled={executingCustomDistribution}
+              sx={{ fontFamily: "Cairo", fontWeight: 900 }}
+            >
+              {customDistributionStep === 2 ? "رجوع للمدربين" : "إلغاء"}
+            </Button>
+
+            {customDistributionStep === 1 ? (
+              <Button
+                variant="contained"
+                startIcon={<PreviewIcon />}
+                onClick={buildCustomDistributionPreview}
+                disabled={!selectedCustomStudents.length || !selectedCustomTrainers.length}
+                sx={{ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#6f42c1,#452780)" }}
+              >
+                معاينة توزيع المحددين
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                startIcon={executingCustomDistribution ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
+                onClick={executeCustomDistribution}
+                disabled={executingCustomDistribution}
+                sx={{ fontFamily: "Cairo", fontWeight: 900, background: "linear-gradient(135deg,#057546,#034d31)" }}
+              >
+                {executingCustomDistribution ? "جارٍ التوزيع..." : "تأكيد وتنفيذ التوزيع"}
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
 
         <Dialog
           open={distributionDialogOpen}

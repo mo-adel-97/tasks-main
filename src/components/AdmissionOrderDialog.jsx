@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import sstliLogo from "../images/logo.jpg";
 import {
   Alert,
@@ -24,7 +26,9 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -32,6 +36,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
@@ -128,6 +133,230 @@ const toNumber = (value) => {
   const number = Number(value || 0);
   return Number.isFinite(number) ? number : 0;
 };
+
+
+const exportHtmlDocumentToPdf = async ({
+  html,
+  fileName = "document.pdf",
+  selector = ".sheet, .page, main, body",
+  scale = 2
+}) => {
+  let iframe = null;
+
+  try {
+    iframe = document.createElement("iframe");
+
+    Object.assign(iframe.style, {
+      position: "fixed",
+      left: "-10000px",
+      top: "0",
+      width: "820px",
+      height: "1180px",
+      border: "0",
+      opacity: "0",
+      pointerEvents: "none"
+    });
+
+    iframe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iframe);
+
+    const safeHtml = String(html || "")
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(
+        /<button[^>]*class=["'][^"']*(?:print-btn|no-print)[^"']*["'][^>]*>[\s\S]*?<\/button>/gi,
+        ""
+      );
+
+    const loaded = new Promise((resolve) => {
+      iframe.onload = () => resolve();
+    });
+
+    iframe.srcdoc = safeHtml;
+    await loaded;
+
+    const doc = iframe.contentDocument;
+
+    if (!doc) {
+      throw new Error("تعذر تجهيز محتوى ملف PDF");
+    }
+
+    if (doc.fonts?.ready) {
+      try {
+        await doc.fonts.ready;
+      } catch {}
+    }
+
+    const images = Array.from(doc.images || []);
+
+    await Promise.all(
+      images.map(
+        (image) =>
+          new Promise((resolve) => {
+            if (
+              image.complete &&
+              image.naturalWidth > 0
+            ) {
+              resolve();
+              return;
+            }
+
+            const finish = () => resolve();
+
+            image.addEventListener(
+              "load",
+              finish,
+              { once: true }
+            );
+
+            image.addEventListener(
+              "error",
+              finish,
+              { once: true }
+            );
+
+            window.setTimeout(finish, 5000);
+          })
+      )
+    );
+
+    const target =
+      doc.querySelector(selector) ||
+      doc.body;
+
+    if (!target) {
+      throw new Error("تعذر العثور على نموذج التصدير");
+    }
+
+    target.style.boxShadow = "none";
+    target.style.margin = "0 auto";
+
+    const canvas = await html2canvas(target, {
+      scale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: "#ffffff",
+      logging: false,
+      imageTimeout: 7000,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: Math.max(
+        target.scrollWidth,
+        794
+      ),
+      windowHeight: Math.max(
+        target.scrollHeight,
+        1123
+      )
+    });
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    const canvasRatio =
+      canvas.height / canvas.width;
+
+    const renderedHeight =
+      pageWidth * canvasRatio;
+
+    if (renderedHeight <= pageHeight) {
+      pdf.addImage(
+        canvas.toDataURL("image/jpeg", 0.96),
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        renderedHeight,
+        undefined,
+        "FAST"
+      );
+    } else {
+      const pagePixelHeight =
+        Math.floor(
+          canvas.width *
+            (pageHeight / pageWidth)
+        );
+
+      let offsetY = 0;
+      let pageIndex = 0;
+
+      while (offsetY < canvas.height) {
+        const sliceHeight = Math.min(
+          pagePixelHeight,
+          canvas.height - offsetY
+        );
+
+        const pageCanvas =
+          document.createElement("canvas");
+
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+
+        const context =
+          pageCanvas.getContext("2d");
+
+        context.drawImage(
+          canvas,
+          0,
+          offsetY,
+          canvas.width,
+          sliceHeight,
+          0,
+          0,
+          canvas.width,
+          sliceHeight
+        );
+
+        if (pageIndex > 0) {
+          pdf.addPage("a4", "portrait");
+        }
+
+        const sliceRenderedHeight =
+          pageWidth *
+          (sliceHeight / canvas.width);
+
+        pdf.addImage(
+          pageCanvas.toDataURL(
+            "image/jpeg",
+            0.96
+          ),
+          "JPEG",
+          0,
+          0,
+          pageWidth,
+          sliceRenderedHeight,
+          undefined,
+          "FAST"
+        );
+
+        offsetY += sliceHeight;
+        pageIndex += 1;
+      }
+    }
+
+    pdf.save(
+      fileName.toLowerCase().endsWith(".pdf")
+        ? fileName
+        : `${fileName}.pdf`
+    );
+  } finally {
+    if (
+      iframe &&
+      iframe.parentNode
+    ) {
+      iframe.parentNode.removeChild(
+        iframe
+      );
+    }
+  }
+};
+
 
 const money = (value) =>
   toNumber(value).toLocaleString("en-US", {
@@ -233,10 +462,28 @@ const TextInfo = ({ label, value, strong = false }) => (
       borderRadius: 2,
       border: `1px solid ${primaryLight}`,
       backgroundColor: whiteColor,
-      height: "100%"
+      height: "100%",
+      "@media (max-width:1599px)": {
+        p: 0.5,
+        borderRadius: 1.3,
+        minHeight: 48
+      },
+      "@media (max-width:599px)": {
+        p: 0.38,
+        minHeight: 44
+      }
     }}
   >
-    <Typography sx={{ fontSize: "0.76rem", color: primaryColor, fontWeight: 900 }}>
+    <Typography
+      sx={{
+        fontSize: "0.76rem",
+        color: primaryColor,
+        fontWeight: 900,
+        lineHeight: 1.15,
+        "@media (max-width:1599px)": { fontSize: "0.52rem" },
+        "@media (max-width:599px)": { fontSize: "0.45rem" }
+      }}
+    >
       {label}
     </Typography>
 
@@ -245,6 +492,14 @@ const TextInfo = ({ label, value, strong = false }) => (
         mt: 0.3,
         fontSize: "0.9rem",
         color: strong ? accentColor : textColor,
+        "@media (max-width:1599px)": {
+          mt: 0.12,
+          fontSize: "0.62rem",
+          lineHeight: 1.2
+        },
+        "@media (max-width:599px)": {
+          fontSize: "0.54rem"
+        },
         fontWeight: 1000,
         wordBreak: "break-word",
         direction: "ltr",
@@ -266,14 +521,44 @@ const SummaryCard = ({ label, value, color = textColor }) => (
       border: `1px solid ${primaryLight}`,
       backgroundColor: whiteColor,
       minWidth: 145,
-      textAlign: "center"
+      textAlign: "center",
+      "@media (max-width:1599px)": {
+        minWidth: 0,
+        px: 0.45,
+        py: 0.4,
+        borderRadius: 1.35,
+        minHeight: 54
+      },
+      "@media (max-width:599px)": {
+        px: 0.3,
+        py: 0.3,
+        minHeight: 50
+      }
     }}
   >
-    <Typography sx={{ fontSize: "0.76rem", color: primaryColor, fontWeight: 900 }}>
+    <Typography
+      sx={{
+        fontSize: "0.76rem",
+        color: primaryColor,
+        fontWeight: 900,
+        lineHeight: 1.15,
+        "@media (max-width:1599px)": { fontSize: "0.5rem" },
+        "@media (max-width:599px)": { fontSize: "0.43rem" }
+      }}
+    >
       {label}
     </Typography>
 
-    <Typography sx={{ fontSize: "1.15rem", color, fontWeight: 1000 }}>
+    <Typography
+      sx={{
+        fontSize: "1.15rem",
+        color,
+        fontWeight: 1000,
+        lineHeight: 1.15,
+        "@media (max-width:1599px)": { fontSize: "0.72rem" },
+        "@media (max-width:599px)": { fontSize: "0.64rem" }
+      }}
+    >
       {money(value)}
     </Typography>
   </Paper>
@@ -286,7 +571,9 @@ const MoneyCell = ({ value, color = textColor }) => (
       textAlign: "center",
       fontWeight: 1000,
       color,
-      fontSize: "0.84rem"
+      fontSize: "0.84rem",
+      "@media (max-width:1599px)": { fontSize: "0.55rem" },
+      "@media (max-width:599px)": { fontSize: "0.47rem" }
     }}
   >
     {money(value)}
@@ -302,6 +589,8 @@ const EllipsisCell = ({ value, align = "left" }) => (
         direction: "ltr",
         fontWeight: 900,
         fontSize: "0.8rem",
+        "@media (max-width:1599px)": { fontSize: "0.54rem" },
+        "@media (max-width:599px)": { fontSize: "0.46rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -317,6 +606,14 @@ const EmptyBox = ({ text }) => (
   <Box
     sx={{
       height: 220,
+      "@media (max-width:1599px)": {
+        height: 115,
+        fontSize: "0.58rem"
+      },
+      "@media (max-width:599px)": {
+        height: 96,
+        fontSize: "0.5rem"
+      },
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -340,6 +637,16 @@ const StepPointer = ({ show }) => {
         justifyContent: "center",
         width: 36,
         height: 36,
+        "@media (max-width:1599px)": {
+          width: 22,
+          height: 22,
+          fontSize: "0.85rem"
+        },
+        "@media (max-width:599px)": {
+          width: 19,
+          height: 19,
+          fontSize: "0.72rem"
+        },
         borderRadius: "50%",
         background: "linear-gradient(135deg, #fff7e6, #fff)",
         border: "1px solid #ffd28a",
@@ -365,6 +672,15 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
       p: 1.25,
       borderRadius: 3,
       height: "100%",
+      "@media (max-width:1599px)": {
+        p: 0.5,
+        borderRadius: 1.5,
+        minHeight: 88
+      },
+      "@media (max-width:599px)": {
+        p: 0.38,
+        minHeight: 82
+      },
       position: "relative",
       overflow: "hidden",
       border: active
@@ -383,13 +699,35 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
       transition: "0.25s ease"
     }}
   >
-    <Stack spacing={1}>
+    <Stack
+      spacing={1}
+      sx={{
+        "@media (max-width:1599px)": { gap: "4px !important" }
+      }}
+    >
       <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={{
+            "@media (max-width:1599px)": { gap: "4px !important" }
+          }}
+        >
           <Box
             sx={{
               width: 30,
               height: 30,
+              "@media (max-width:1599px)": {
+                width: 20,
+                height: 20,
+                fontSize: "0.58rem"
+              },
+              "@media (max-width:599px)": {
+                width: 18,
+                height: 18,
+                fontSize: "0.5rem"
+              },
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
@@ -407,10 +745,28 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
           </Box>
 
           <Box>
-            <Typography sx={{ fontWeight: 1000, color: active ? accentColor : textColor, fontSize: "0.95rem" }}>
+            <Typography
+              sx={{
+                fontWeight: 1000,
+                color: active ? accentColor : textColor,
+                fontSize: "0.95rem",
+                lineHeight: 1.1,
+                "@media (max-width:1599px)": { fontSize: "0.58rem" },
+                "@media (max-width:599px)": { fontSize: "0.5rem" }
+              }}
+            >
               {title}
             </Typography>
-            <Typography sx={{ fontWeight: 800, color: "#667085", fontSize: "0.74rem" }}>
+            <Typography
+              sx={{
+                fontWeight: 800,
+                color: "#667085",
+                fontSize: "0.74rem",
+                lineHeight: 1.1,
+                "@media (max-width:1599px)": { fontSize: "0.46rem" },
+                "@media (max-width:599px)": { fontSize: "0.4rem" }
+              }}
+            >
               {hint}
             </Typography>
           </Box>
@@ -431,7 +787,16 @@ const InlineHint = ({ children, color = primaryColor }) => (
       fontSize: "0.76rem",
       fontWeight: 900,
       color,
-      lineHeight: 1.7
+      lineHeight: 1.7,
+      "@media (max-width:1599px)": {
+        mt: 0.28,
+        fontSize: "0.48rem",
+        lineHeight: 1.35
+      },
+      "@media (max-width:599px)": {
+        mt: 0.2,
+        fontSize: "0.42rem"
+      }
     }}
   >
     {children}
@@ -444,6 +809,13 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
     sx={{
       p: 1.2,
       borderRadius: 3,
+      "@media (max-width:1599px)": {
+        p: 0.5,
+        borderRadius: 1.4
+      },
+      "@media (max-width:599px)": {
+        p: 0.38
+      },
       border: required && !file ? "1px solid #ffcdd2" : "1px solid #dfeae5",
       backgroundColor: required && !file ? "#fff7f7" : "#fff"
     }}
@@ -453,7 +825,9 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
         sx={{
           fontWeight: 1000,
           color: required && !file ? accentColor : textColor,
-          fontSize: "0.86rem"
+          fontSize: "0.86rem",
+          "@media (max-width:1599px)": { fontSize: "0.55rem" },
+          "@media (max-width:599px)": { fontSize: "0.48rem" }
         }}
       >
         {label} {required ? "*" : ""}
@@ -468,6 +842,16 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
           sx={{
             borderRadius: 2,
             fontWeight: 900,
+            "@media (max-width:1599px)": {
+              minHeight: 29,
+              px: 0.55,
+              fontSize: "0.52rem"
+            },
+            "@media (max-width:599px)": {
+              minHeight: 27,
+              px: 0.4,
+              fontSize: "0.46rem"
+            },
             "& .MuiButton-startIcon": { ml: 1, mr: 0 }
           }}
         >
@@ -491,6 +875,8 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
         sx={{
           fontSize: "0.76rem",
           fontWeight: 800,
+          "@media (max-width:1599px)": { fontSize: "0.48rem" },
+          "@media (max-width:599px)": { fontSize: "0.42rem" },
           color: file ? primaryDark : "#8795a1",
           direction: "ltr",
           textAlign: "left",
@@ -512,6 +898,11 @@ const AdmissionOrderDialog = ({
   apiBaseUrl = DEFAULT_API_BASE_URL,
   onSaved
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
   const [branches, setBranches] = useState([]);
   const [platforms, setPlatforms] = useState([]);
   const [batches, setBatches] = useState([]);
@@ -1522,7 +1913,7 @@ if (
     };
   };
 
-const openAdmissionPrint = (printData) => {
+const openAdmissionPrint = async (printData) => {
   const data = printData || lastPrintData;
 
   if (!data) {
@@ -1539,9 +1930,15 @@ const openAdmissionPrint = (printData) => {
     refundPolicyUrl
   )}`;
 
-  const printWindow = window.open("", "_blank", "width=980,height=950");
+  const printWindow = isCompact
+    ? null
+    : window.open(
+        "",
+        "_blank",
+        "width=980,height=950"
+      );
 
-  if (!printWindow) {
+  if (!isCompact && !printWindow) {
     showSweetWarning(
       "المتصفح منع فتح نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى."
     );
@@ -2164,6 +2561,24 @@ const openAdmissionPrint = (printData) => {
 </html>
 `;
 
+  if (isCompact) {
+    try {
+      await exportHtmlDocumentToPdf({
+        html,
+        fileName: `طلب-التحاق-${data.code || "طلب"}.pdf`,
+        selector: ".page, main, body",
+        scale: isPhone ? 2 : 2.25
+      });
+    } catch (pdfError) {
+      await showSweetError(
+        pdfError?.message ||
+          "تعذر تصدير طلب الالتحاق PDF"
+      );
+    }
+
+    return;
+  }
+
   printWindow.document.open();
   printWindow.document.write(html);
   printWindow.document.close();
@@ -2271,7 +2686,7 @@ const openAdmissionPrint = (printData) => {
         title: "تم حفظ طلب الالتحاق بنجاح",
         text: `رقم الطلب: ${result?.code || ""}`,
         showCancelButton: true,
-        confirmButtonText: "طباعة الآن",
+        confirmButtonText: isCompact ? "تصدير PDF" : "طباعة الآن",
         cancelButtonText: "إغلاق",
         confirmButtonColor: primaryColor,
         cancelButtonColor: "#6b7280",
@@ -2296,27 +2711,49 @@ const openAdmissionPrint = (printData) => {
   const availableDiplomaColumns = [
     {
       field: "actions",
-      headerName: "إضافة",
-      width: 90,
+      headerName: isCompact ? "+" : "إضافة",
+      width: isPhone ? 38 : isTablet ? 46 : 90,
+      minWidth: isPhone ? 38 : isTablet ? 46 : 90,
+      maxWidth: isPhone ? 38 : isTablet ? 46 : 90,
       align: "center",
       headerAlign: "center",
       sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
       renderCell: (params) => (
-        <Button
-          size="small"
-          variant="contained"
-          onClick={() => addDiploma(params.row)}
-          disabled={!canChooseDiploma}
-          sx={{
-            minWidth: 62,
-            borderRadius: 2,
-            fontWeight: 900,
-            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-            "&:hover": { background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})` }
-          }}
-        >
-          إضافة
-        </Button>
+        <Tooltip title={isCompact ? "إضافة" : ""} arrow>
+          <span>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => addDiploma(params.row)}
+              disabled={!canChooseDiploma}
+              sx={{
+                minWidth: isPhone ? 26 : isTablet ? 30 : 62,
+                width: isPhone ? 26 : isTablet ? 30 : "auto",
+                height: isPhone ? 26 : isTablet ? 30 : "auto",
+                p: isCompact ? 0 : undefined,
+                borderRadius: isPhone ? "50%" : isTablet ? 1.5 : 2,
+                fontWeight: 1000,
+                fontSize: isPhone
+                  ? "0.92rem"
+                  : isTablet
+                    ? "0.78rem"
+                    : undefined,
+                lineHeight: 1,
+                background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+                boxShadow: isCompact
+                  ? "0 2px 6px rgba(5,117,70,0.18)"
+                  : undefined,
+                "&:hover": {
+                  background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`
+                }
+              }}
+            >
+              {isCompact ? "+" : "إضافة"}
+            </Button>
+          </span>
+        </Tooltip>
       )
     },
     { field: "code", headerName: "الكود", width: 90, align: "center", headerAlign: "center" },
@@ -2407,26 +2844,48 @@ const openAdmissionPrint = (printData) => {
   const availableFeeColumns = [
     {
       field: "actions",
-      headerName: "إضافة",
-      width: 90,
+      headerName: isCompact ? "+" : "إضافة",
+      width: isPhone ? 38 : isTablet ? 46 : 90,
+      minWidth: isPhone ? 38 : isTablet ? 46 : 90,
+      maxWidth: isPhone ? 38 : isTablet ? 46 : 90,
       align: "center",
       headerAlign: "center",
       sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
       renderCell: (params) => (
-        <Button
-          size="small"
-          variant="contained"
-          onClick={() => addFee(params.row)}
-          sx={{
-            minWidth: 62,
-            borderRadius: 2,
-            fontWeight: 900,
-            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-            "&:hover": { background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})` }
-          }}
-        >
-          إضافة
-        </Button>
+        <Tooltip title={isCompact ? "إضافة" : ""} arrow>
+          <span>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => addFee(params.row)}
+              sx={{
+                minWidth: isPhone ? 26 : isTablet ? 30 : 62,
+                width: isPhone ? 26 : isTablet ? 30 : "auto",
+                height: isPhone ? 26 : isTablet ? 30 : "auto",
+                p: isCompact ? 0 : undefined,
+                borderRadius: isPhone ? "50%" : isTablet ? 1.5 : 2,
+                fontWeight: 1000,
+                fontSize: isPhone
+                  ? "0.92rem"
+                  : isTablet
+                    ? "0.78rem"
+                    : undefined,
+                lineHeight: 1,
+                background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+                boxShadow: isCompact
+                  ? "0 2px 6px rgba(5,117,70,0.18)"
+                  : undefined,
+                "&:hover": {
+                  background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`
+                }
+              }}
+            >
+              {isCompact ? "+" : "إضافة"}
+            </Button>
+          </span>
+        </Tooltip>
       )
     },
     { field: "code", headerName: "الكود", width: 90, align: "center", headerAlign: "center" },
@@ -2563,6 +3022,8 @@ const openAdmissionPrint = (printData) => {
     backgroundColor: whiteColor,
     direction: "ltr",
     overflow: "hidden",
+    width: "100%",
+    minWidth: 0,
     "& .MuiDataGrid-columnHeaders": {
       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
       color: whiteColor,
@@ -2571,11 +3032,17 @@ const openAdmissionPrint = (printData) => {
     },
     "& .MuiDataGrid-columnHeaderTitle": {
       fontWeight: 1000,
-      color: whiteColor
+      color: whiteColor,
+      fontSize: isPhone ? "0.4rem" : isTablet ? "0.5rem" : undefined,
+      lineHeight: 1.1,
+      whiteSpace: "normal",
+      textAlign: "center"
     },
     "& .MuiDataGrid-cell": {
       fontWeight: 800,
-      borderColor: "#edf3f0"
+      borderColor: "#edf3f0",
+      fontSize: isPhone ? "0.41rem" : isTablet ? "0.51rem" : undefined,
+      px: isPhone ? 0.1 : isTablet ? 0.3 : undefined
     },
     "& .MuiDataGrid-row:nth-of-type(even)": {
       backgroundColor: "#fbfdfc"
@@ -2584,7 +3051,11 @@ const openAdmissionPrint = (printData) => {
       backgroundColor: "#f0faf5"
     },
     "& .MuiDataGrid-footerContainer": {
-      direction: "ltr"
+      direction: "ltr",
+      minHeight: isPhone ? 36 : isTablet ? 40 : undefined
+    },
+    "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+      fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
     }
   };
 
@@ -2614,18 +3085,67 @@ const openAdmissionPrint = (printData) => {
           font-weight: 800 !important;
           color: #475467 !important;
         }
+
+        @media (max-width: 1599px) {
+          .sstli-swal-popup {
+            width: min(92vw, 420px) !important;
+            padding: 0.75rem !important;
+          }
+          .sstli-swal-title {
+            font-size: 0.88rem !important;
+          }
+          .sstli-swal-text {
+            font-size: 0.66rem !important;
+          }
+        }
+
+        @media (max-width: 599px) {
+          .sstli-swal-popup {
+            width: 88vw !important;
+            padding: 0.55rem !important;
+          }
+          .sstli-swal-title {
+            font-size: 0.76rem !important;
+          }
+          .sstli-swal-text {
+            font-size: 0.58rem !important;
+          }
+        }
       `}</style>
       <Dialog
         open={open}
         onClose={onClose}
         fullWidth
         maxWidth="xl"
+        fullScreen={isPhone}
+        sx={{
+          "& .MuiDialog-container": {
+            pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+            px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+            pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+            alignItems: isPhone ? "stretch" : "center"
+          }
+        }}
         PaperProps={{
           sx: {
-            borderRadius: 4,
+            width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
+            maxWidth: isPhone ? "100vw" : isTablet ? "1180px" : undefined,
+            borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
             overflow: "hidden",
             direction: "ltr",
-            height: "94vh",
+            height: isPhone
+              ? "calc(100dvh - 58px)"
+              : isTablet
+                ? "calc(100dvh - 72px)"
+                : "94vh",
+            maxHeight: isPhone
+              ? "calc(100dvh - 58px)"
+              : isTablet
+                ? "calc(100dvh - 72px)"
+                : "94vh",
+            m: 0,
+            display: "flex",
+            flexDirection: "column",
             border: `1px solid ${primaryLight}`,
             boxShadow: "0 18px 50px rgba(5,117,70,0.18)"
           }
@@ -2635,49 +3155,138 @@ const openAdmissionPrint = (printData) => {
           sx={{
             background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
             borderBottom: `1px solid ${primaryDark}`,
-            py: 1.4
+            py: isPhone ? 0.38 : isTablet ? 0.55 : 1.4,
+            px: isPhone ? 0.5 : isTablet ? 0.8 : 2,
+            flexShrink: 0
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Box>
-              <Typography sx={{ fontWeight: 1000, color: whiteColor, fontSize: "1.2rem" }}>
+              <Typography
+                sx={{
+                  fontWeight: 1000,
+                  color: whiteColor,
+                  fontSize: isPhone ? "0.72rem" : isTablet ? "0.84rem" : "1.2rem",
+                  lineHeight: 1.15
+                }}
+              >
                 طلب الالتحاق
               </Typography>
 
-              <Stack direction="row" spacing={1} sx={{ mt: 0.8 }}>
-                <Chip label={studentName} sx={{ fontWeight: 900, backgroundColor: whiteColor, color: primaryColor }} />
-                <Chip label={nationalId} sx={{ fontWeight: 900, backgroundColor: whiteColor, color: primaryColor }} />
-                <Chip label={studentTel} sx={{ fontWeight: 900, backgroundColor: whiteColor, color: primaryColor }} />
+              <Stack
+                direction="row"
+                spacing={isCompact ? 0.25 : 1}
+                sx={{ mt: isCompact ? 0.25 : 0.8, minWidth: 0 }}
+              >
+                <Chip
+                  label={isCompact ? studentName.split(/\s+/).filter(Boolean).slice(0, 2).join(" ") : studentName}
+                  sx={{
+                    fontWeight: 900,
+                    backgroundColor: whiteColor,
+                    color: primaryColor,
+                    height: isPhone ? 22 : isTablet ? 25 : undefined,
+                    maxWidth: isPhone ? 145 : isTablet ? 210 : undefined,
+                    "& .MuiChip-label": {
+                      px: isPhone ? 0.55 : isTablet ? 0.75 : undefined,
+                      fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }
+                  }}
+                />
+                <Chip
+                  label={nationalId}
+                  sx={{
+                    fontWeight: 900,
+                    backgroundColor: whiteColor,
+                    color: primaryColor,
+                    height: isPhone ? 22 : isTablet ? 25 : undefined,
+                    "& .MuiChip-label": {
+                      px: isPhone ? 0.5 : isTablet ? 0.7 : undefined,
+                      fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined
+                    }
+                  }}
+                />
+                {!isPhone && (
+                  <Chip
+                    label={studentTel}
+                    sx={{
+                      fontWeight: 900,
+                      backgroundColor: whiteColor,
+                      color: primaryColor,
+                      height: isTablet ? 25 : undefined,
+                      "& .MuiChip-label": {
+                        fontSize: isTablet ? "0.53rem" : undefined
+                      }
+                    }}
+                  />
+                )}
               </Stack>
             </Box>
 
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={isCompact ? 0.08 : 1} sx={{ flexShrink: 0 }}>
               <Tooltip title="حفظ">
-                <IconButton onClick={handleSave} disabled={saving} sx={{ color: whiteColor }}>
+                <IconButton onClick={handleSave} disabled={saving} sx={{
+                    color: whiteColor,
+                    width: isPhone ? 24 : isTablet ? 28 : undefined,
+                    height: isPhone ? 24 : isTablet ? 28 : undefined,
+                    p: isCompact ? 0.25 : undefined,
+                    "& svg": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined }
+                  }}>
                   <SaveIcon />
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title={lastPrintData ? "طباعة طلب الالتحاق" : "احفظ الطلب أولاً ثم اطبع"}>
+              <Tooltip
+                title={
+                  lastPrintData
+                    ? isCompact
+                      ? "تصدير طلب الالتحاق PDF"
+                      : "طباعة طلب الالتحاق"
+                    : "احفظ الطلب أولاً"
+                }
+              >
                 <span>
                   <IconButton
                     onClick={() => openAdmissionPrint(lastPrintData)}
                     disabled={!lastPrintData || saving}
-                    sx={{ color: whiteColor }}
+                    sx={{
+                    color: whiteColor,
+                    width: isPhone ? 24 : isTablet ? 28 : undefined,
+                    height: isPhone ? 24 : isTablet ? 28 : undefined,
+                    p: isCompact ? 0.25 : undefined,
+                    "& svg": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined }
+                  }}
                   >
-                    <PrintIcon />
+                    {isCompact ? (
+                      <PictureAsPdfIcon />
+                    ) : (
+                      <PrintIcon />
+                    )}
                   </IconButton>
                 </span>
               </Tooltip>
 
               <Tooltip title="تحديث">
-                <IconButton onClick={loadContext} disabled={loadingAny} sx={{ color: whiteColor }}>
+                <IconButton onClick={loadContext} disabled={loadingAny} sx={{
+                    color: whiteColor,
+                    width: isPhone ? 24 : isTablet ? 28 : undefined,
+                    height: isPhone ? 24 : isTablet ? 28 : undefined,
+                    p: isCompact ? 0.25 : undefined,
+                    "& svg": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined }
+                  }}>
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
 
               <Tooltip title="إغلاق">
-                <IconButton onClick={onClose} sx={{ color: whiteColor }}>
+                <IconButton onClick={onClose} sx={{
+                    color: whiteColor,
+                    width: isPhone ? 24 : isTablet ? 28 : undefined,
+                    height: isPhone ? 24 : isTablet ? 28 : undefined,
+                    p: isCompact ? 0.25 : undefined,
+                    "& svg": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined }
+                  }}>
                   <CloseIcon />
                 </IconButton>
               </Tooltip>
@@ -2685,27 +3294,65 @@ const openAdmissionPrint = (printData) => {
           </Stack>
         </DialogTitle>
 
-        <DialogContent sx={{ p: 2, background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)` }}>
+        <DialogContent
+          sx={{
+            p: isPhone ? 0.3 : isTablet ? 0.55 : 2,
+            background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+            overflowY: "auto",
+            flex: 1,
+            minHeight: 0,
+
+            "& .MuiInputLabel-root": {
+              fontSize: isPhone ? "0.48rem" : isTablet ? "0.57rem" : undefined
+            },
+            "& .MuiSelect-select, & .MuiInputBase-input": {
+              fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+              py: isPhone ? 0.55 : isTablet ? 0.7 : undefined
+            },
+            "& .MuiOutlinedInput-root": {
+              minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+              borderRadius: isCompact ? 1.3 : undefined
+            },
+            "& .MuiFormHelperText-root": {
+              fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined,
+              mt: isCompact ? 0.15 : undefined
+            },
+            "& .MuiRadio-root": {
+              p: isCompact ? 0.25 : undefined
+            },
+            "& .MuiFormControlLabel-label": {
+              fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+            }
+          }}
+        >
           {error && (
-            <Alert severity="error" sx={{ mb: 1.5, fontWeight: 900 }}>
+            <Alert
+              severity="error"
+              sx={{
+                mb: isCompact ? 0.35 : 1.5,
+                py: isCompact ? 0.15 : undefined,
+                fontWeight: 900,
+                fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+              }}
+            >
               {error}
             </Alert>
           )}
 
-          <Grid container spacing={1.4} sx={{ mb: 1.6 }}>
-            <Grid item xs={12} md={3}>
+          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 1.6 }}>
+            <Grid item xs={6} sm={6} md={3}>
               <TextInfo label="اسم الطالب" value={studentName} />
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={6} sm={6} md={2}>
               <TextInfo label="رقم الهوية" value={nationalId} />
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={6} sm={6} md={2}>
               <TextInfo label="الجوال" value={studentTel} />
             </Grid>
-            <Grid item xs={12} md={2.5}>
+            <Grid item xs={6} sm={6} md={2.5} sx={{ display: isPhone ? "none" : "block" }}>
               <TextInfo label="دفتر التسجيل" value={contextData?.regDocName || "-"} />
             </Grid>
-            <Grid item xs={12} md={2.5}>
+            <Grid item xs={6} sm={6} md={2.5} sx={{ display: isPhone ? "none" : "block" }}>
               <TextInfo
                 label="قائمة السعر"
                 value={contextData?.priceSaleNotes || contextData?.priceSource || "-"}
@@ -2717,34 +3364,40 @@ const openAdmissionPrint = (printData) => {
           <Paper
             elevation={0}
             sx={{
-              p: 1.5,
-              mb: 1.5,
-              borderRadius: 3,
+              p: isPhone ? 0.35 : isTablet ? 0.55 : 1.5,
+              mb: isCompact ? 0.45 : 1.5,
+              borderRadius: isCompact ? 1.5 : 3,
               border: `1px solid ${primaryLight}`,
               backgroundColor: whiteColor,
               boxShadow: "0 10px 30px rgba(5,117,70,0.08)"
             }}
           >
-            <Stack spacing={1.4}>
+            <Stack spacing={isCompact ? 0.4 : 1.4}>
               <Stack
-                direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "stretch", md: "center" }}
+                direction="row"
+                alignItems="center"
                 justifyContent="space-between"
-                spacing={1}
+                spacing={isCompact ? 0.35 : 1}
               >
 
                 {loadingAny && (
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    <CircularProgress size={22} sx={{ color: primaryColor }} />
-                    <Typography sx={{ fontWeight: 900, color: primaryColor }}>
+                  <Stack direction="row" alignItems="center" spacing={isCompact ? 0.35 : 1}>
+                    <CircularProgress size={isPhone ? 15 : isTablet ? 18 : 22} sx={{ color: primaryColor }} />
+                    <Typography
+                      sx={{
+                        fontWeight: 900,
+                        color: primaryColor,
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+                      }}
+                    >
                       جاري تحميل البيانات...
                     </Typography>
                   </Stack>
                 )}
               </Stack>
 
-              <Grid container spacing={1.2} alignItems="stretch">
-                <Grid item xs={12} md={3.2} ref={branchStepRef}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.2} alignItems="stretch">
+                <Grid item xs={6} sm={6} md={3.2} ref={branchStepRef}>
                   <StepGuideCard
                     number={1}
                     title="اختار الفرع"
@@ -2776,7 +3429,7 @@ const openAdmissionPrint = (printData) => {
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={12} md={2.1} ref={regTypeStepRef}>
+                <Grid item xs={6} sm={6} md={2.1} ref={regTypeStepRef}>
                   <StepGuideCard
                     number={2}
                     title="نوع التسجيل"
@@ -2803,7 +3456,7 @@ const openAdmissionPrint = (printData) => {
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={12} md={2.1} ref={studyTypeStepRef}>
+                <Grid item xs={6} sm={6} md={2.1} ref={studyTypeStepRef}>
                   <StepGuideCard
                     number={3}
                     title="نوع الدراسة"
@@ -2833,7 +3486,7 @@ const openAdmissionPrint = (printData) => {
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={12} md={2.6} ref={batchStepRef}>
+                <Grid item xs={6} sm={6} md={2.6} ref={batchStepRef}>
                   <StepGuideCard
                     number={4}
                     title="اختار الدفعة"
@@ -2882,7 +3535,7 @@ const openAdmissionPrint = (printData) => {
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={12} md={1.9} ref={diplomaStepRef}>
+                <Grid item xs={6} sm={6} md={1.9} ref={diplomaStepRef}>
                   <StepGuideCard
                     number={5}
                     title="اختار التخصص"
@@ -2892,14 +3545,21 @@ const openAdmissionPrint = (printData) => {
                   >
                     <Box
                       sx={{
-                        p: 1.1,
-                        borderRadius: 2,
+                        p: isPhone ? 0.4 : isTablet ? 0.55 : 1.1,
+                        borderRadius: isCompact ? 1.2 : 2,
                         backgroundColor: currentStep === 5 ? "#fff7f7" : primaryLight,
                         border: currentStep === 5 ? `1px dashed ${accentColor}` : `1px dashed ${primaryColor}`,
                         textAlign: "center"
                       }}
                     >
-                      <Typography sx={{ fontWeight: 1000, color: currentStep === 5 ? accentColor : primaryColor }}>
+                      <Typography
+                        sx={{
+                          fontWeight: 1000,
+                          color: currentStep === 5 ? accentColor : primaryColor,
+                          fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
+                          lineHeight: 1.2
+                        }}
+                      >
                         {selectedDiplomas.length ? "تم اختيار التخصص" : "انزل لقائمة التخصصات"}
                       </Typography>
                     </Box>
@@ -2909,34 +3569,36 @@ const openAdmissionPrint = (printData) => {
             </Stack>
           </Paper>
 
-          <Grid container spacing={1.4} sx={{ mb: 1.5 }}>
-            <Grid item xs={12} md={1.6}>
+          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 1.5 }}>
+            <Grid item xs={6} sm={6} md={1.6}>
               <SummaryCard label="الإجمالي" value={totals.total} />
             </Grid>
-            <Grid item xs={12} md={1.6}>
+            <Grid item xs={6} sm={6} md={1.6}>
               <SummaryCard label="الضريبة" value={totals.tax} />
             </Grid>
-            <Grid item xs={12} md={1.6}>
+            <Grid item xs={6} sm={6} md={1.6}>
               <SummaryCard label="الصافي" value={totals.subTotal} color={primaryDark} />
             </Grid>
-            <Grid item xs={12} md={1.8}>
+            <Grid item xs={6} sm={6} md={1.8}>
               <Paper
   elevation={0}
   sx={{
-    px: 2,
-    py: 1.25,
-    borderRadius: 3,
+    px: isPhone ? 0.35 : isTablet ? 0.5 : 2,
+    py: isPhone ? 0.3 : isTablet ? 0.4 : 1.25,
+    borderRadius: isCompact ? 1.3 : 3,
     border: `1px solid ${primaryLight}`,
     backgroundColor: whiteColor,
-    minWidth: 145,
+    minWidth: 0,
+    minHeight: isPhone ? 50 : isTablet ? 54 : 0,
     textAlign: "center"
   }}
 >
   <Typography
     sx={{
-      fontSize: "0.76rem",
+      fontSize: isPhone ? "0.43rem" : isTablet ? "0.5rem" : "0.76rem",
       color: primaryColor,
-      fontWeight: 900
+      fontWeight: 900,
+      lineHeight: 1.15
     }}
   >
     الحد الأدنى للدفعة المطلوبة
@@ -2944,7 +3606,8 @@ const openAdmissionPrint = (printData) => {
 
   <Typography
     sx={{
-      fontSize: "1.15rem",
+      fontSize: isPhone ? "0.64rem" : isTablet ? "0.72rem" : "1.15rem",
+      lineHeight: 1.15,
       color:
         Number(regType) === 0 && contextData?.ramadanOfferEnabled
           ? accentColor
@@ -2956,7 +3619,7 @@ const openAdmissionPrint = (printData) => {
   </Typography>
 </Paper>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={6} sm={6} md={2}>
               <TextInfo label="نوع السداد الحالي" value={currentPaymentName} />
             </Grid>
             <Grid item xs={12} md={3.4}>
@@ -2978,63 +3641,99 @@ const openAdmissionPrint = (printData) => {
                   setNotes(e.target.value);
                 }}
                 multiline
-                minRows={2}
+                minRows={isPhone ? 1 : isTablet ? 1 : 2}
                 inputProps={{ style: { direction: "ltr", textAlign: "left", fontWeight: 800 } }}
               />
             </Grid>
           </Grid>
 
-          <Stack spacing={1.5}>
+          <Stack spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.5}>
             <Paper
               elevation={0}
               sx={{
-                p: 1.4,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: `1px solid ${primaryLight}`,
                 backgroundColor: whiteColor,
                 boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
               <Stack
-                direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "stretch", md: "center" }}
+                direction="row"
+                alignItems="center"
                 justifyContent="space-between"
-                spacing={1}
-                sx={{ mb: 1 }}
+                spacing={isCompact ? 0.35 : 1}
+                sx={{ mb: isCompact ? 0.35 : 1 }}
               >
                 <Box>
-                  <Typography sx={{ fontWeight: 1000, color: textColor, fontSize: "1rem" }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 1000,
+                      color: textColor,
+                      fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem",
+                      lineHeight: 1.2
+                    }}
+                  >
                     2) اختيار التخصص والرسوم
                   </Typography>
                 </Box>
 
                 <Chip
                   label={`المتاح: ${availableDiplomas.length} تخصص / ${availableFees.length} رسوم`}
-                  sx={{ fontWeight: 1000, color: primaryColor, backgroundColor: primaryLight }}
+                  sx={{
+                    fontWeight: 1000,
+                    color: primaryColor,
+                    backgroundColor: primaryLight,
+                    height: isPhone ? 20 : isTablet ? 23 : undefined,
+                    "& .MuiChip-label": {
+                      px: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
+                      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                    }
+                  }}
                 />
               </Stack>
 
               {!canChooseDiploma && (
-                <Alert severity="warning" sx={{ mb: 1.2, fontWeight: 900, borderRadius: 2 }}>
+                <Alert
+                  severity="warning"
+                  sx={{
+                    mb: isCompact ? 0.35 : 1.2,
+                    py: isCompact ? 0.12 : undefined,
+                    fontWeight: 900,
+                    borderRadius: isCompact ? 1.2 : 2,
+                    fontSize: isPhone ? "0.44rem" : isTablet ? "0.52rem" : undefined
+                  }}
+                >
                   {branchGuid
                     ? "اختار الدفعة أولاً حتى يتم السماح باختيار التخصص."
                     : "اختار الفرع أولاً، وبعدها هتظهر الدفعات والتخصصات."}
                 </Alert>
               )}
 
-              <Grid container spacing={1.2} sx={{ opacity: canChooseDiploma ? 1 : 0.62 }}>
+              <Grid container spacing={isCompact ? 0.45 : 1.2} sx={{ opacity: canChooseDiploma ? 1 : 0.62 }}>
                 <Grid item xs={12} lg={contextData?.chkOtherFees ? 7 : 12}>
-                  <Typography sx={{ mb: 0.8, fontWeight: 1000, color: primaryColor }}>
+                  <Typography
+                    sx={{
+                      mb: isCompact ? 0.3 : 0.8,
+                      fontWeight: 1000,
+                      color: primaryColor,
+                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                    }}
+                  >
                     الدبلومات / الدورات المتاحة
                   </Typography>
 
-                  <Box sx={{ height: 330 }}>
+                  <Box sx={{ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }}>
                     {availableDiplomas.length ? (
                       <DataGrid
                         rows={availableDiplomas}
                         columns={availableDiplomaColumns}
                         density="compact"
                         disableRowSelectionOnClick
+                        disableColumnMenu={isCompact}
+                        disableColumnFilter={isCompact}
+                        rowHeight={isPhone ? 34 : isTablet ? 40 : undefined}
+                        columnHeaderHeight={isPhone ? 32 : isTablet ? 38 : undefined}
                         pageSizeOptions={[10, 25, 50]}
                         initialState={{
                           pagination: {
@@ -3051,11 +3750,18 @@ const openAdmissionPrint = (printData) => {
 
                 {contextData?.chkOtherFees && (
                   <Grid item xs={12} lg={5}>
-                    <Typography sx={{ mb: 0.8, fontWeight: 1000, color: primaryColor }}>
+                    <Typography
+                    sx={{
+                      mb: isCompact ? 0.3 : 0.8,
+                      fontWeight: 1000,
+                      color: primaryColor,
+                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                    }}
+                  >
                       الرسوم المتاحة
                     </Typography>
 
-                    <Box sx={{ height: 330 }}>
+                    <Box sx={{ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }}>
                       {availableFees.length ? (
                         <DataGrid
                           rows={availableFees}
@@ -3082,45 +3788,72 @@ const openAdmissionPrint = (printData) => {
             <Paper
               elevation={0}
               sx={{
-                p: 1.4,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: `1px solid ${primaryLight}`,
                 backgroundColor: whiteColor,
                 boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
               <Stack
-                direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "stretch", md: "center" }}
+                direction="row"
+                alignItems="center"
                 justifyContent="space-between"
-                spacing={1}
-                sx={{ mb: 1 }}
+                spacing={isCompact ? 0.35 : 1}
+                sx={{ mb: isCompact ? 0.35 : 1 }}
               >
                 <Box>
-                  <Typography sx={{ fontWeight: 1000, color: textColor, fontSize: "1rem" }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 1000,
+                      color: textColor,
+                      fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem",
+                      lineHeight: 1.2
+                    }}
+                  >
                     3) مراجعة الاختيارات
                   </Typography>
                 </Box>
 
                 <Chip
                   label={`المختار: ${selectedDiplomas.length} تخصص / ${selectedFees.length} رسوم`}
-                  sx={{ fontWeight: 1000, color: accentColor, backgroundColor: "#fff4f4" }}
+                  sx={{
+                    fontWeight: 1000,
+                    color: accentColor,
+                    backgroundColor: "#fff4f4",
+                    height: isPhone ? 20 : isTablet ? 23 : undefined,
+                    "& .MuiChip-label": {
+                      px: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
+                      fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+                    }
+                  }}
                 />
               </Stack>
 
               <Grid container spacing={1.2}>
                 <Grid item xs={12} lg={contextData?.chkOtherFees ? 7 : 12}>
-                  <Typography sx={{ mb: 0.8, fontWeight: 1000, color: primaryColor }}>
+                  <Typography
+                    sx={{
+                      mb: isCompact ? 0.3 : 0.8,
+                      fontWeight: 1000,
+                      color: primaryColor,
+                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                    }}
+                  >
                     الدبلوم / الدورة المختارة
                   </Typography>
 
-                  <Box sx={{ height: selectedDiplomas.length ? 210 : 180 }}>
+                  <Box sx={{ height: isPhone ? 125 : isTablet ? 155 : (selectedDiplomas.length ? 210 : 180), minWidth: 0 }}>
                     {selectedDiplomas.length ? (
                       <DataGrid
                         rows={selectedDiplomas}
                         columns={selectedDiplomaColumns}
                         density="compact"
                         disableRowSelectionOnClick
+                        disableColumnMenu={isCompact}
+                        disableColumnFilter={isCompact}
+                        rowHeight={isPhone ? 34 : isTablet ? 40 : undefined}
+                        columnHeaderHeight={isPhone ? 32 : isTablet ? 38 : undefined}
                         hideFooter
                         sx={gridSx}
                       />
@@ -3132,11 +3865,18 @@ const openAdmissionPrint = (printData) => {
 
                 {contextData?.chkOtherFees && (
                   <Grid item xs={12} lg={5}>
-                    <Typography sx={{ mb: 0.8, fontWeight: 1000, color: primaryColor }}>
+                    <Typography
+                    sx={{
+                      mb: isCompact ? 0.3 : 0.8,
+                      fontWeight: 1000,
+                      color: primaryColor,
+                      fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+                    }}
+                  >
                       الرسوم المختارة
                     </Typography>
 
-                    <Box sx={{ height: selectedFees.length ? 210 : 180 }}>
+                    <Box sx={{ height: isPhone ? 125 : isTablet ? 155 : (selectedFees.length ? 210 : 180), minWidth: 0 }}>
                       {selectedFees.length ? (
                         <DataGrid
                           rows={selectedFees}
@@ -3163,19 +3903,26 @@ const openAdmissionPrint = (printData) => {
             <Paper
               elevation={0}
               sx={{
-                p: 1.4,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: `1px solid ${primaryLight}`,
                 backgroundColor: whiteColor,
                 boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
-              <Typography sx={{ mb: 1, fontWeight: 1000, color: textColor, fontSize: "1rem" }}>
+              <Typography
+                sx={{
+                  mb: isCompact ? 0.4 : 1,
+                  fontWeight: 1000,
+                  color: textColor,
+                  fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem"
+                }}
+              >
                 4) السداد وبيانات التعارف
               </Typography>
 
-              <Grid container spacing={1.5} alignItems="center">
-                <Grid item xs={12} md={2.2}>
+              <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5} alignItems="center">
+                <Grid item xs={6} sm={6} md={2.2}>
                    <TextField
   fullWidth
   size="small"
@@ -3210,14 +3957,29 @@ const openAdmissionPrint = (printData) => {
 />
                 </Grid>
 
-                <Grid item xs={12} md={3.5}>
+                <Grid item xs={6} sm={6} md={3.5}>
                   <FormControl>
-                    <Typography sx={{ fontWeight: 1000, color: textColor, mb: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontWeight: 1000,
+                        color: textColor,
+                        mb: isCompact ? 0.2 : 0.5,
+                        fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined,
+                      }}
+                    >
                       نوع السداد
                     </Typography>
                     <RadioGroup
                       row
                       value={payType}
+                      sx={{
+                        flexWrap: "nowrap",
+                        gap: isCompact ? 0.15 : undefined,
+                        "& .MuiFormControlLabel-root": {
+                          mr: isCompact ? 0.2 : undefined,
+                          ml: isCompact ? 0.2 : undefined
+                        }
+                      }}
                       onChange={(e) => handlePayTypeChange(e.target.value)}
                     >
                       <FormControlLabel value={0} control={<Radio />} label="نقدي" />
@@ -3227,7 +3989,7 @@ const openAdmissionPrint = (printData) => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={2.2}>
+                <Grid item xs={6} sm={6} md={2.2}>
                   <TextField
                     fullWidth
                     size="small"
@@ -3238,7 +4000,7 @@ const openAdmissionPrint = (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={2.2}>
+                <Grid item xs={6} sm={6} md={2.2}>
                   <TextField
                     fullWidth
                     size="small"
@@ -3249,7 +4011,7 @@ const openAdmissionPrint = (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={1.9}>
+                <Grid item xs={6} sm={6} md={1.9}>
                   <TextField
                     fullWidth
                     size="small"
@@ -3262,7 +4024,7 @@ const openAdmissionPrint = (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={6} sm={6} md={3}>
                   <FormControl fullWidth size="small">
                     <InputLabel>منصة التعارف</InputLabel>
                     <Select
@@ -3279,14 +4041,14 @@ const openAdmissionPrint = (printData) => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={6} sm={6} md={3}>
                   <TextInfo
                     label={payType === 0 ? "الخزينة" : payType === 1 ? "بنك الشبكة" : "البنك"}
                     value={currentPaymentName}
                   />
                 </Grid>
 
-                <Grid item xs={12} md={2}>
+                <Grid item xs={6} sm={6} md={2}>
                   <Button
                     fullWidth
                     variant="outlined"
@@ -3297,8 +4059,9 @@ const openAdmissionPrint = (printData) => {
                       setBankDialogOpen(true);
                     }}
                     sx={{
-                      height: 40,
-                      borderRadius: 2,
+                      height: isPhone ? 31 : isTablet ? 35 : 40,
+                      borderRadius: isCompact ? 1.3 : 2,
+                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
                       fontWeight: 1000,
                       "& .MuiButton-startIcon": { ml: 1, mr: 0 }
                     }}
@@ -3312,19 +4075,26 @@ const openAdmissionPrint = (printData) => {
             <Paper
               elevation={0}
               sx={{
-                p: 1.4,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: `1px solid ${primaryLight}`,
                 backgroundColor: whiteColor,
                 boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
-              <Typography sx={{ mb: 1, fontWeight: 1000, color: textColor, fontSize: "1rem" }}>
-                4) المرفقات المطلوبة
+              <Typography
+                sx={{
+                  mb: isCompact ? 0.4 : 1,
+                  fontWeight: 1000,
+                  color: textColor,
+                  fontSize: isPhone ? "0.56rem" : isTablet ? "0.66rem" : "1rem"
+                }}
+              >
+                5) المرفقات المطلوبة
               </Typography>
 
-              <Grid container spacing={1.5}>
-                <Grid item xs={12} md={4}>
+              <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5}>
+                <Grid item xs={6} sm={6} md={4}>
                   <FileButton
                     label="الهوية"
                     required={attachIdRequired}
@@ -3334,7 +4104,7 @@ const openAdmissionPrint = (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={6} md={4}>
                   <FileButton
                     label="الحوالة"
                     required={attachTransferRequired}
@@ -3345,7 +4115,7 @@ const openAdmissionPrint = (printData) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={6} md={4}>
                   <FileButton
                     label="شهادة الثانوية"
                     required={attachCertificateRequired}
@@ -3361,10 +4131,17 @@ const openAdmissionPrint = (printData) => {
 
         <DialogActions
           sx={{
-            px: 2,
-            py: 1.5,
+            px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
+            py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
+            gap: isCompact ? 0.4 : 1,
             borderTop: `1px solid ${primaryLight}`,
-            backgroundColor: whiteColor
+            backgroundColor: whiteColor,
+            flexShrink: 0,
+
+            "& .MuiButton-root": {
+              minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+              fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+            }
           }}
         >
           <Button
@@ -3375,7 +4152,7 @@ const openAdmissionPrint = (printData) => {
             sx={{
               borderRadius: 2,
               fontWeight: 1000,
-              px: 4,
+              px: isPhone ? 1.2 : isTablet ? 1.6 : 4,
               backgroundColor: primaryColor,
               "&:hover": { backgroundColor: primaryDark },
               "& .MuiButton-startIcon": {
@@ -3393,7 +4170,7 @@ const openAdmissionPrint = (printData) => {
             sx={{
               borderRadius: 2,
               fontWeight: 1000,
-              px: 4
+              px: isPhone ? 1 : isTablet ? 1.4 : 4
             }}
           >
             إغلاق
@@ -3406,17 +4183,30 @@ const openAdmissionPrint = (printData) => {
         onClose={() => setBankDialogOpen(false)}
         fullWidth
         maxWidth="sm"
+        fullScreen={isPhone}
+        sx={{ zIndex: 1850 }}
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,
+            height: isPhone ? "100dvh" : isTablet ? "78dvh" : 620,
+            borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
             direction: "ltr",
-            height: 620
+            overflow: "hidden"
           }
         }}
       >
-        <DialogTitle sx={{ fontWeight: 1000 }}>قائمة البنوك</DialogTitle>
+        <DialogTitle
+          sx={{
+            fontWeight: 1000,
+            py: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
+            px: isPhone ? 0.7 : isTablet ? 1 : 2,
+            fontSize: isPhone ? "0.66rem" : isTablet ? "0.78rem" : undefined
+          }}
+        >
+          قائمة البنوك
+        </DialogTitle>
 
-        <DialogContent>
+        <DialogContent sx={{ p: isPhone ? 0.4 : isTablet ? 0.65 : 2 }}>
           <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
             <TextField
               fullWidth
@@ -3448,7 +4238,7 @@ const openAdmissionPrint = (printData) => {
               <CircularProgress />
             </Box>
           ) : (
-            <Box sx={{ height: 450 }}>
+            <Box sx={{ height: isPhone ? "72dvh" : isTablet ? "62dvh" : 450 }}>
               <DataGrid
                 rows={banks}
                 columns={bankColumns}

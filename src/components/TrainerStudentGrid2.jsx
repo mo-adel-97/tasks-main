@@ -4,7 +4,7 @@ import {
   Box, Typography, Button, MenuItem, Select, FormControl,
   InputLabel, Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, Card, CardContent, Chip, IconButton, List, ListItem, ListItemText, Divider,
-  Tabs, Tab, Grid, Stack, Alert, AlertTitle
+  Tabs, Tab, Grid, Stack, Alert, AlertTitle, AppBar, Toolbar, useMediaQuery
 } from '@mui/material';
 import { CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -32,6 +32,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import WarningIcon from '@mui/icons-material/Warning';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import SpecialComponent from './SpecialComponent';
 import axios from 'axios';
 import Sidebar from './Sidebar';
@@ -48,6 +49,23 @@ const PRIMARY_COLOR_LIGHT = '#9ac8b5';
 const MINIMUM_MONTHPAY_THRESHOLD = 250;
 
 const TrainerStudentGrid2 = () => {
+  const DESKTOP_BREAKPOINT = 1600;
+  const SIDEBAR_WIDTH = 280;
+  const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
+  const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
+  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // عدد الصفوف في كل صفحة - على جميع الشاشات
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 30,
+  });
+
+  useEffect(() => {
+    if (isDesktop) setMobileSidebarOpen(false);
+  }, [isDesktop]);
+
   const [rows, setRows] = useState([]);
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
@@ -190,10 +208,10 @@ const isStudentPaid = (row) => {
       commissionRate = 2;
     } else if (percentage >= 76 && percentage <= 85) {
       commissionRate = 2;
-      bonus = 500;
+      bonus = 250;
     } else if (percentage >= 86 && percentage <= 100) {
       commissionRate = 2;
-      bonus = 1000;
+      bonus = 500;
     }
 
     const commission = (totalPaidAmount * commissionRate) / 100;
@@ -212,7 +230,7 @@ const isStudentPaid = (row) => {
   // ✅ حساب إجمالي المبالغ المدفوعة والطلاب (معدل)
   const getCommissionData = () => {
     const filteredStudents = rows.filter((row) => {
-      const status = rowStatuses[row.id] || '';
+      const status = isStudentPaid(row) ? 'paid' : (rowStatuses[row.id] || '');
       if (!filterStatus) return true;
       if (filterStatus === 'none') return status === '';
       return status === filterStatus;
@@ -231,6 +249,13 @@ const isStudentPaid = (row) => {
   };
 
   const commissionData = getCommissionData();
+
+  // الحالة الفعلية المستخدمة في العرض والفلاتر:
+  // أي طالب قسطه الشهري 250 ريال أو أكثر يعتبر مسدد.
+  const getEffectiveRowStatus = (row) => {
+    if (isStudentPaid(row)) return 'paid';
+    return rowStatuses[row.id] || '';
+  };
 
   // Helper: استنتاج accountGuid من الصف (لو متوفر مباشرة)
   const resolveAccountGuidLocal = (row) => {
@@ -2057,10 +2082,10 @@ const getStatusDisplayText = (status) => {
     // eslint-disable-next-line
   }, [fromDate, toDate]);
 
-  // في قسم filteredRows، أضف شرط تصفية الرصيد
+  // فلترة الحالة باستخدام نفس الحالة الفعلية الظاهرة للمستخدم
   const filteredRows = rows.filter((row) => {
-    const status = rowStatuses[row.id] || '';
-    
+    const status = getEffectiveRowStatus(row);
+
     if (!filterStatus) return true;
     if (filterStatus === 'none') return status === '';
     return status === filterStatus;
@@ -2072,6 +2097,16 @@ const getStatusDisplayText = (status) => {
   const notedStudents = filteredRows.filter((row) => rowStatuses[row.id] === 'note' && !isStudentPaid(row)).length;
   const lateStudents = filteredRows.filter((row) => rowStatuses[row.id] === 'late' && !isStudentPaid(row)).length;
 
+  const getCompactStudentName = (fullName) => {
+    const parts = String(fullName || '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (parts.length <= 2) return parts.join(' ');
+    return `${parts[0]} ${parts[parts.length - 1]}`;
+  };
+
   const columns = [
     {
       field: 'studentName',
@@ -2079,9 +2114,26 @@ const getStatusDisplayText = (status) => {
       flex: 1.5,
       renderCell: (params) => (
         <Box display="flex" alignItems="center" gap={1}>
-          <PersonIcon sx={{ color: PRIMARY_COLOR }} fontSize="small" />
-          <Typography variant="body2" fontWeight="500">
-            {params.value || '-'}
+          <PersonIcon sx={{ color: PRIMARY_COLOR, display: isPhone ? 'none' : 'inline-flex', fontSize: 18 }} />
+          <Typography
+            variant="body2"
+            fontWeight="600"
+            title={params.value || ''}
+            sx={{
+              fontSize: isDesktop
+                ? undefined
+                : isPhone
+                  ? '0.48rem'
+                  : { sm: '0.58rem', md: '0.66rem' },
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
+            }}
+          >
+            {isPhone
+              ? (getCompactStudentName(params.value) || '-')
+              : (params.value || '-')}
           </Typography>
           {/* أيقونة تحذير إذا كان القسط أقل من 250 */}
           {!isValidMonthpay(params.row.monthpay) && rowStatuses[params.id] === 'paid' && (
@@ -2131,7 +2183,7 @@ const getStatusDisplayText = (status) => {
       flex: 1,
       renderCell: (params) => (
         <Box display="flex" alignItems="center" gap={1}>
-          <AttachMoneyIcon fontSize="small" sx={{ color: isValidMonthpay(params.value) ? '#2196f3' : '#ff9800' }} />
+          <AttachMoneyIcon sx={{ color: isValidMonthpay(params.value) ? '#2196f3' : '#ff9800', display: isPhone ? 'none' : 'inline-flex', fontSize: 18 }} />
           <Typography variant="body2" fontWeight="600" color={isValidMonthpay(params.value) ? 'info.main' : 'warning.main'}>
             {Number(params.value || 0).toLocaleString('ar-EG')} ر.س
           </Typography>
@@ -2211,11 +2263,59 @@ const getStatusDisplayText = (status) => {
             }
           }}
         >
-          <MoreVertIcon fontSize="small" />
+          <MoreVertIcon sx={{ fontSize: isDesktop ? 20 : { xs: 15, sm: 17, md: 18 } }} />
         </IconButton>
       ),
     },
   ];
+
+  // ============================================================
+  // أعمدة مختصرة للموبايل والتابلت فقط.
+  // الديسكتوب يستمر باستخدام جميع الأعمدة الأصلية بدون أي تغيير.
+  // ============================================================
+  const compactColumnFields = isPhone
+    ? ['studentName', 'studentTel', 'monthpay', 'status', 'actions']
+    : ['studentName', 'studentTel', 'balance', 'monthpay', 'status', 'actions'];
+
+  const responsiveColumns = isDesktop
+    ? columns
+    : columns
+        .filter((column) => compactColumnFields.includes(column.field))
+        .map((column) => {
+          if (isPhone) {
+            const phoneWidths = {
+              studentName: 104,
+              studentTel: 88,
+              monthpay: 64,
+              status: 62,
+              actions: 38,
+            };
+
+            return {
+              ...column,
+              flex: undefined,
+              minWidth: undefined,
+              width: phoneWidths[column.field] || 70,
+              headerClassName: 'mobile-grid-header',
+            };
+          }
+
+          const tabletWidths = {
+            studentName: 150,
+            studentTel: 125,
+            balance: 105,
+            monthpay: 105,
+            status: 100,
+            actions: 58,
+          };
+
+          return {
+            ...column,
+            flex: column.field === 'studentName' ? 1 : undefined,
+            minWidth: column.field === 'studentName' ? 140 : undefined,
+            width: column.field === 'studentName' ? undefined : (tabletWidths[column.field] || 100),
+          };
+        });
 
   // تابع لتغيير التبويبات
   const handleTabChange = (event, newValue) => {
@@ -2237,39 +2337,176 @@ const getStatusDisplayText = (status) => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
         {/* Sidebar */}
-        <Sidebar />
+        {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1401,
+            background: 'rgba(255,255,255,0.96)',
+            backdropFilter: 'blur(14px)',
+            color: '#17372b',
+            borderBottom: '1px solid rgba(5,117,70,0.12)',
+          }}
+        >
+          <Toolbar
+            sx={{
+              minHeight: {
+                xs: '50px !important',
+                sm: '56px !important',
+                md: '60px !important',
+              },
+              px: { xs: 0.8, sm: 1.2, md: 1.6 },
+              gap: 0.8,
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              aria-label={mobileSidebarOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+              aria-expanded={mobileSidebarOpen}
+              sx={{
+                width: { xs: 36, sm: 40, md: 42 },
+                height: { xs: 36, sm: 40, md: 42 },
+                flexShrink: 0,
+                color: '#fff',
+                background: 'linear-gradient(135deg, #057546, #034d31)',
+                boxShadow: '0 6px 16px rgba(5,117,70,0.22)',
+              }}
+            >
+              <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontWeight: 900,
+                fontSize: { xs: '0.72rem', sm: '0.8rem', md: '0.88rem' },
+                color: '#17372b',
+              }}
+            >
+              نظام الإدارة
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
         
         {/* Main Content */}
-        <Box 
-          component="main" 
-          sx={{ 
-            flexGrow: 1, 
-            p: 3, 
-            marginLeft: '280px',
-            width: 'calc(100% - 280px)',
-            transition: 'all 0.3s ease'
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+
+            // الديسكتوب كما هو، والتغيير الحقيقي للموبايل/التابلت فقط.
+            p: isDesktop ? 3 : { xs: 0.35, sm: 0.65, md: 0.9 },
+            pt: isDesktop ? 3 : { xs: '54px', sm: '62px', md: '66px' },
+
+            marginLeft: isDesktop ? '280px' : 0,
+            marginRight: 0,
+
+            width: isDesktop ? 'calc(100% - 280px)' : '100%',
+            maxWidth: '100%',
+            minWidth: 0,
+            boxSizing: 'border-box',
+            overflowX: 'hidden',
+            transition: 'all 0.3s ease',
+
+            // Typography compact للموبايل والتابلت فقط
+            '& .MuiTypography-h4': {
+              fontSize: isDesktop ? undefined : { xs: '0.9rem', sm: '1.05rem', md: '1.2rem' },
+              lineHeight: 1.25,
+            },
+            '& .MuiTypography-h5': {
+              fontSize: isDesktop ? undefined : { xs: '0.78rem', sm: '0.92rem', md: '1.05rem' },
+              lineHeight: 1.3,
+            },
+            '& .MuiTypography-h6': {
+              fontSize: isDesktop ? undefined : { xs: '0.64rem', sm: '0.74rem', md: '0.84rem' },
+              lineHeight: 1.35,
+            },
+            '& .MuiTypography-body1, & .MuiTypography-body2': {
+              fontSize: isDesktop ? undefined : { xs: '0.54rem', sm: '0.62rem', md: '0.7rem' },
+              lineHeight: 1.45,
+            },
+            '& .MuiButton-root': {
+              fontSize: isDesktop ? undefined : { xs: '0.46rem', sm: '0.53rem', md: '0.61rem' },
+              minHeight: isDesktop ? undefined : { xs: 25, sm: 28, md: 31 },
+            },
+            '& .MuiChip-root': {
+              fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.54rem', md: '0.62rem' },
+              height: isDesktop ? undefined : { xs: 19, sm: 22, md: 24 },
+            },
+            '& .MuiInputBase-root, & .MuiInputLabel-root': {
+              fontSize: isDesktop ? undefined : { xs: '0.49rem', sm: '0.56rem', md: '0.64rem' },
+            },
           }}
         >
           {/* Header Section */}
-          <Card sx={{ mb: 3, boxShadow: 3, borderRadius: 2 }}>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Card sx={{ mb: isDesktop ? 3 : { xs: 0.6, sm: 0.9, md: 1.2 }, boxShadow: 3, borderRadius: isDesktop ? 2 : 1.5 }}>
+            <CardContent sx={{ p: isDesktop ? 2 : { xs: 0.7, sm: 1, md: 1.4 } }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems={isDesktop ? "center" : "flex-start"}
+                flexDirection={isDesktop ? "row" : { xs: "column", sm: "row" }}
+                gap={isDesktop ? 0 : { xs: 0.65, sm: 1 }}
+                mb={isDesktop ? 2 : { xs: 0.7, sm: 1 }}
+              >
                 <Box>
                   <Typography 
                     variant="h5" 
                     fontWeight="bold" 
                     gutterBottom
-                    sx={{ color: PRIMARY_COLOR }}
+                    sx={{
+                      color: PRIMARY_COLOR,
+                      mb: isDesktop ? undefined : 0.15,
+                      fontSize: isDesktop ? undefined : { xs: '0.74rem', sm: '0.86rem', md: '0.98rem' },
+                    }}
                   >
                     قائمة الطلاب
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    إدارة ومتابعة طلاب المدرب - تطبيق القرار الإداري رقم 7 لسنة 2025
-                  </Typography>
+                  {!isPhone && (
+                    <Typography variant="body2" color="text.secondary">
+                      إدارة ومتابعة طلاب المدرب - تطبيق القرار الإداري رقم 7 لسنة 2025
+                    </Typography>
+                  )}
                 </Box>
                 
                 {/* ✅ زر تصدير التقرير */}
-                <Box display="flex" gap={2}>
+                <Box
+                  sx={{
+                    display: isDesktop ? 'flex' : 'grid',
+                    gridTemplateColumns: isDesktop ? undefined : 'repeat(3, minmax(0, 1fr))',
+                    gap: isDesktop ? 2 : { xs: 0.35, sm: 0.55, md: 0.7 },
+                    width: isDesktop ? 'auto' : { xs: '100%', sm: '100%', md: 'auto' },
+
+                    '& .MuiButton-root': {
+                      minWidth: 0,
+                      px: isDesktop ? undefined : { xs: 0.35, sm: 0.7, md: 1 },
+                      py: isDesktop ? undefined : { xs: 0.45, sm: 0.55, md: 0.7 },
+                      fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.64rem' },
+                      whiteSpace: 'nowrap',
+                    },
+                    '& .MuiButton-startIcon': {
+                      mr: isDesktop ? undefined : { xs: 0.25, sm: 0.4 },
+                      ml: isDesktop ? undefined : 0,
+                    },
+                    '& .MuiButton-startIcon .MuiSvgIcon-root': {
+                      fontSize: isDesktop ? undefined : { xs: 14, sm: 16, md: 18 },
+                    },
+                  }}
+                >
                   <Tooltip title="عرض التقرير في نافذة جديدة">
                     <Button
                       variant="outlined"
@@ -2323,43 +2560,75 @@ const getStatusDisplayText = (status) => {
               </Box>
 
               {/* Statistics Cards */}
-              <Box display="flex" gap={2} flexWrap="wrap" sx={{ mb: 3 }}>
-                <Card sx={{ flex: 1, minWidth: 150, bgcolor: PRIMARY_COLOR, color: 'white' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: isDesktop
+                    ? 'repeat(6, minmax(150px, 1fr))'
+                    : 'repeat(2, minmax(0, 1fr))',
+                  gap: isDesktop ? 2 : { xs: 0.3, sm: 0.5, md: 0.7 },
+                  mb: isDesktop ? 3 : { xs: 0.5, sm: 0.75, md: 1 },
+                  '& > .MuiCard-root': {
+                    minHeight: isDesktop ? undefined : { xs: 82, sm: 92, md: 100 },
+                    borderRadius: isDesktop ? undefined : { xs: 1.4, sm: 1.7 },
+                    boxShadow: isDesktop ? undefined : '0 4px 12px rgba(15,23,42,0.12)',
+                  },
+                  '& .MuiCardContent-root': {
+                    display: isDesktop ? undefined : 'flex',
+                    flexDirection: isDesktop ? undefined : 'column',
+                    alignItems: isDesktop ? undefined : 'center',
+                    justifyContent: isDesktop ? undefined : 'center',
+                  },
+                  '& .MuiTypography-h4': {
+                    fontSize: isDesktop ? undefined : { xs: '0.92rem', sm: '1.05rem', md: '1.16rem' },
+                    lineHeight: 1.05,
+                  },
+                  '& .MuiTypography-body2': {
+                    fontSize: isDesktop ? undefined : { xs: '0.47rem', sm: '0.55rem', md: '0.62rem' },
+                    lineHeight: 1.25,
+                  },
+                }}
+              >
+                <Card sx={{ flex: 1, minWidth: isDesktop ? 150 : 0, bgcolor: PRIMARY_COLOR, color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.48, sm: 0.68, md: 0.9 } }}>
                     <Typography variant="h4" fontWeight="bold">{totalStudents}</Typography>
                     <Typography variant="body2">إجمالي الطلاب</Typography>
                   </CardContent>
                 </Card>
-                <Card sx={{ flex: 1, minWidth: 150, bgcolor: '#4caf50', color: 'white' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                <Card sx={{ flex: 1, minWidth: isDesktop ? 150 : 0, bgcolor: '#4caf50', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.48, sm: 0.68, md: 0.9 } }}>
                     <Typography variant="h4" fontWeight="bold">{paidStudents}</Typography>
                     <Typography variant="body2">مسددين (مستوفين للشروط)</Typography>
                   </CardContent>
                 </Card>
-                <Card sx={{ flex: 1, minWidth: 150, bgcolor: '#ff9800', color: 'white' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                    <Typography variant="h4" fontWeight="bold">{notedStudents}</Typography>
-                    <Typography variant="body2">متابعة</Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ flex: 1, minWidth: 150, bgcolor: '#f44336', color: 'white' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                    <Typography variant="h4" fontWeight="bold">{lateStudents}</Typography>
-                    <Typography variant="body2">متأخرين</Typography>
-                  </CardContent>
-                </Card>
+                {isDesktop && (
+                  <Card sx={{ flex: 1, minWidth: 150, bgcolor: '#ff9800', color: 'white' }}>
+                    <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                      <Typography variant="h4" fontWeight="bold">{notedStudents}</Typography>
+                      <Typography variant="body2">متابعة</Typography>
+                    </CardContent>
+                  </Card>
+                )}
+                {isDesktop && (
+                  <Card sx={{ flex: 1, minWidth: 150, bgcolor: '#f44336', color: 'white' }}>
+                    <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                      <Typography variant="h4" fontWeight="bold">{lateStudents}</Typography>
+                      <Typography variant="body2">متأخرين</Typography>
+                    </CardContent>
+                  </Card>
+                )}
                 
                 {/* ✅ كارد النسبة والعمولة */}
                 <Card sx={{ 
-                  flex: 1, 
-                  minWidth: 200, 
+                  flex: 1,
+                  minWidth: isDesktop ? 200 : 0, 
                   bgcolor: getPercentageColor(commissionData.percentage),
                   color: 'white',
                   position: 'relative',
                   overflow: 'hidden',
                   background: `linear-gradient(135deg, ${getPercentageColor(commissionData.percentage)} 0%, ${getPercentageColor(commissionData.percentage)}99 100%)`
                 }}>
-                  <CardContent sx={{ textAlign: 'center', py: 2, position: 'relative', zIndex: 1 }}>
+                  <CardContent sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.48, sm: 0.68, md: 0.9 }, position: 'relative', zIndex: 1 }}>
                     <Box display="flex" alignItems="center" justifyContent="center" gap={1} mb={1}>
                       <TrendingUpIcon />
                       <Typography variant="h4" fontWeight="bold">
@@ -2369,32 +2638,36 @@ const getStatusDisplayText = (status) => {
                     <Typography variant="body2" sx={{ opacity: 0.9 }}>
                       نسبة السداد الفعلية
                     </Typography>
-                    <Typography variant="body2" sx={{ mt: 1, fontSize: '0.75rem', opacity: 0.8 }}>
-                      {getCommissionDescription()}
-                    </Typography>
+                    {isDesktop && (
+                      <Typography variant="body2" sx={{ mt: 1, fontSize: '0.75rem', opacity: 0.8 }}>
+                        {getCommissionDescription()}
+                      </Typography>
+                    )}
                   </CardContent>
-                  <Box 
-                    sx={{ 
-                      position: 'absolute',
-                      top: -10,
-                      right: -10,
-                      opacity: 0.1,
-                      transform: 'rotate(45deg)'
-                    }}
-                  >
-                    <EmojiEventsIcon sx={{ fontSize: 80 }} />
-                  </Box>
+                  {isDesktop && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -10,
+                        right: -10,
+                        opacity: 0.1,
+                        transform: 'rotate(45deg)'
+                      }}
+                    >
+                      <EmojiEventsIcon sx={{ fontSize: 80 }} />
+                    </Box>
+                  )}
                 </Card>
 
                 {/* ✅ كارد العمولة الإجمالية */}
                 <Card sx={{ 
-                  flex: 1, 
-                  minWidth: 200, 
+                  flex: 1,
+                  minWidth: isDesktop ? 200 : 0, 
                   bgcolor: '#9c27b0', 
                   color: 'white',
                   background: 'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)'
                 }}>
-                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                  <CardContent sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.48, sm: 0.68, md: 0.9 } }}>
                     <Box display="flex" alignItems="center" justifyContent="center" gap={1} mb={1}>
                       <AttachMoneyIcon />
                       <Typography variant="h4" fontWeight="bold">
@@ -2420,7 +2693,8 @@ const getStatusDisplayText = (status) => {
                 </Card>
               </Box>
 
-              {/* ✅ كارد توضيح شروط السداد */}
+              {/* ✅ شرح مختصر على الموبايل/التابلت، والكارد الكامل للديسكتوب */}
+              {isDesktop ? (
               <Card sx={{ 
                 mb: 2, 
                 bgcolor: '#e3f2fd', 
@@ -2447,27 +2721,83 @@ const getStatusDisplayText = (status) => {
                 </CardContent>
               </Card>
 
+              ) : (
+                <Alert
+                  severity="info"
+                  sx={{
+                    mb: { xs: 0.6, sm: 0.8 },
+                    py: 0.15,
+                    px: { xs: 0.45, sm: 0.7 },
+                    borderRadius: 1.5,
+                    '& .MuiAlert-icon': { fontSize: { xs: 16, sm: 18 }, py: 0.3 },
+                    '& .MuiAlert-message': { py: 0.35, minWidth: 0 },
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: { xs: '0.49rem', sm: '0.57rem', md: '0.65rem' },
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    المسدد: قسط {MINIMUM_MONTHPAY_THRESHOLD} ريال أو أكثر
+                  </Typography>
+                </Alert>
+              )}
+
               {/* Filters Section */}
-              <Box display="flex" gap={2} flexWrap="wrap" alignItems="center">
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: isDesktop
+                    ? 'repeat(4, max-content)'
+                    : isPhone
+                      ? 'repeat(2, minmax(0, 1fr))'
+                      : 'repeat(4, minmax(0, 1fr))',
+                  gap: isDesktop ? 2 : { xs: 0.35, sm: 0.55, md: 0.75 },
+                  alignItems: 'center',
+                  width: '100%',
+
+                  '& .MuiTextField-root, & .MuiFormControl-root': {
+                    width: '100%',
+                  },
+                  '& .MuiInputBase-root': {
+                    minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 40 },
+                  },
+                  '& .MuiButton-root': {
+                    width: isDesktop ? 'auto' : '100%',
+                    minHeight: isDesktop ? undefined : { xs: 32, sm: 36, md: 38 },
+                  },
+                }}
+              >
                 <DatePicker
                   label="من تاريخ"
                   value={fromDate}
                   onChange={setFromDate}
-                  sx={{ minWidth: 150 }}
+                  sx={{ minWidth: isDesktop ? 150 : 0, width: '100%' }}
                 />
                 <DatePicker
                   label="إلى تاريخ"
                   value={toDate}
                   onChange={setToDate}
-                  sx={{ minWidth: 150 }}
+                  sx={{ minWidth: isDesktop ? 150 : 0, width: '100%' }}
                 />
-                <FormControl sx={{ minWidth: 180 }}>
+                <FormControl
+                  sx={{
+                    minWidth: isDesktop ? 180 : 0,
+                    width: '100%',
+                    gridColumn: isPhone ? '1 / -1' : 'auto',
+                  }}
+                >
                   <InputLabel id="filter-status-label">فلترة حسب الحالة</InputLabel>
                     <Select
   labelId="filter-status-label"
   value={filterStatus}
   label="فلترة حسب الحالة"
-  onChange={(e) => setFilterStatus(e.target.value)}
+  onChange={(e) => {
+    setFilterStatus(e.target.value);
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+  }}
 >
   <MenuItem value="">الكل</MenuItem>
   <MenuItem value="paid">تم السداد</MenuItem>
@@ -2480,8 +2810,9 @@ const getStatusDisplayText = (status) => {
                 <Button 
                   variant="contained" 
                   onClick={fetchData} 
-                  sx={{ 
-                    px: 3,
+                  sx={{
+                    px: isDesktop ? 3 : { xs: 0.8, sm: 1.2 },
+                    gridColumn: isPhone ? '1 / -1' : 'auto',
                     backgroundColor: PRIMARY_COLOR,
                     '&:hover': {
                       backgroundColor: PRIMARY_COLOR_DARK,
@@ -2494,7 +2825,8 @@ const getStatusDisplayText = (status) => {
             </CardContent>
           </Card>
 
-          {/* ✅ كارد الملاحظة الإرشادية */}
+          {/* ✅ الملاحظة: كاملة للديسكتوب، مختصرة للموبايل/التابلت */}
+          {isDesktop ? (
           <Card sx={{ 
             mb: 2, 
             bgcolor: '#fff3e0', 
@@ -2516,15 +2848,55 @@ const getStatusDisplayText = (status) => {
             </CardContent>
           </Card>
 
+          ) : (
+            <Alert
+              severity="warning"
+              sx={{
+                mb: { xs: 0.55, sm: 0.8 },
+                py: 0.1,
+                px: { xs: 0.4, sm: 0.65 },
+                borderRadius: 1.5,
+                '& .MuiAlert-icon': { fontSize: { xs: 16, sm: 18 }, py: 0.3 },
+                '& .MuiAlert-message': { py: 0.35 },
+              }}
+            >
+              <Typography sx={{ fontSize: { xs: '0.51rem', sm: '0.59rem', md: '0.67rem' }, fontWeight: 700 }}>
+                راجع «آخر طلب سداد» قبل التواصل مع الطالب.
+              </Typography>
+            </Alert>
+          )}
+
           {/* Data Grid Section */}
-          <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+          <Card
+            sx={{
+              boxShadow: isDesktop ? 3 : 1,
+              borderRadius: isDesktop ? 2 : 1.2,
+              width: '100%',
+              maxWidth: '100%',
+              overflow: 'hidden',
+            }}
+          >
             <CardContent sx={{ p: 0 }}>
-              <div style={{ height: 500, width: '100%' }}>
+              <Box sx={{ height: isDesktop ? 720 : { xs: '68dvh', sm: '72dvh', md: '74dvh' }, width: '100%', minWidth: 0 }}>
                 <DataGrid
                   rows={gridLoading ? [] : filteredRows}
-                  columns={columns}
+                  columns={responsiveColumns}
                   loading={gridLoading}
                   disableRowSelectionOnClick
+                  disableColumnMenu={!isDesktop}
+                  disableColumnFilter={!isDesktop}
+                  rowHeight={isDesktop ? 52 : isPhone ? 38 : 44}
+                  columnHeaderHeight={isDesktop ? 56 : isPhone ? 36 : 42}
+                  density={isDesktop ? 'standard' : 'compact'}
+                  hideFooterSelectedRowCount
+                  paginationModel={paginationModel}
+                  onPaginationModelChange={setPaginationModel}
+                  pageSizeOptions={[30, 60, 100]}
+                  localeText={{
+                    MuiTablePagination: {
+                      labelRowsPerPage: 'عدد الصفوف:',
+                    },
+                  }}
                  getRowClassName={(params) => {
   const row = params.row;
   const id = params.id;
@@ -2542,6 +2914,16 @@ const getStatusDisplayText = (status) => {
                     loadingOverlay: () => (
                       <Box
                         sx={{
+                    width: '100%',
+                    minWidth: 0,
+                    maxWidth: '100%',
+                    '& .MuiDataGrid-main': {
+                      minWidth: 0,
+                    },
+                    '& .MuiDataGrid-virtualScroller': {
+                      overflowX: isDesktop ? 'auto' : 'hidden',
+                    },
+
                           height: '100%',
                           display: 'flex',
                           alignItems: 'center',
@@ -2573,6 +2955,40 @@ const getStatusDisplayText = (status) => {
                     '& .MuiDataGrid-cell': {
                       borderBottom: '1px solid #e0e0e0',
                       fontWeight: 500,
+                      fontSize: isDesktop ? undefined : { xs: '0.46rem', sm: '0.55rem', md: '0.63rem' },
+                      px: isDesktop ? undefined : { xs: 0.18, sm: 0.45 },
+                      lineHeight: 1.25,
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                      fontSize: isDesktop ? undefined : { xs: '0.44rem', sm: '0.53rem', md: '0.61rem' },
+                      fontWeight: 800,
+                      whiteSpace: 'normal',
+                      lineHeight: 1.2,
+                      textAlign: 'center',
+                    },
+                    '& .MuiDataGrid-columnHeader': {
+                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
+                    },
+                    '& .MuiDataGrid-footerContainer': {
+                      minHeight: isDesktop ? undefined : { xs: 42, sm: 44 },
+                      fontSize: isDesktop ? undefined : { xs: '0.45rem', sm: '0.53rem' },
+                      px: isDesktop ? undefined : { xs: 0.3, sm: 0.6 },
+                    },
+                    '& .MuiTablePagination-root': {
+                      fontSize: isDesktop ? undefined : { xs: '0.45rem', sm: '0.53rem' },
+                      overflow: 'visible',
+                    },
+                    '& .MuiTablePagination-toolbar': {
+                      minHeight: isDesktop ? undefined : { xs: 40, sm: 42 },
+                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.5 },
+                      gap: isDesktop ? undefined : { xs: 0.2, sm: 0.4 },
+                    },
+                    '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                      fontSize: isDesktop ? undefined : { xs: '0.43rem', sm: '0.5rem' },
+                      m: 0,
+                    },
+                    '& .MuiTablePagination-select': {
+                      fontSize: isDesktop ? undefined : { xs: '0.45rem', sm: '0.52rem' },
                     },
                     '& .MuiDataGrid-columnHeaders': {
                       backgroundColor: PRIMARY_COLOR_LIGHT,
@@ -2595,7 +3011,7 @@ const getStatusDisplayText = (status) => {
                     },
                   }}
                 />
-              </div>
+              </Box>
             </CardContent>
           </Card>
 
@@ -2605,48 +3021,167 @@ const getStatusDisplayText = (status) => {
             onClose={() => setActionDialogOpen(false)}
             maxWidth="lg"
             fullWidth
-            sx={{ 
-              '& .MuiDialog-paper': { 
-                borderRadius: 3,
-              } 
+            fullScreen={isPhone}
+            sx={{
+
+              '& .MuiDialog-container': {
+                alignItems: isPhone ? 'stretch' : 'center',
+                justifyContent: 'center',
+                p: isPhone ? 0 : { sm: 1, md: 1.5 },
+              },
+
+              '& .MuiDialog-paper': {
+                width: isDesktop
+                  ? undefined
+                  : isPhone
+                    ? '100vw'
+                    : { sm: '94vw', md: '92vw' },
+
+                maxWidth: isDesktop
+                  ? undefined
+                  : isPhone
+                    ? '100vw'
+                    : { sm: '760px', md: '1050px' },
+
+                height: isPhone ? '100dvh' : 'auto',
+                maxHeight: isDesktop ? '90vh' : isPhone ? '100dvh' : '92dvh',
+
+                m: isPhone ? 0 : { sm: 1, md: 1.5 },
+
+                borderRadius: isDesktop
+                  ? 3
+                  : isPhone
+                    ? 0
+                    : { sm: 2, md: 2.5 },
+
+                overflow: 'hidden',
+                direction: 'ltr',
+                boxSizing: 'border-box',
+              },
             }}
           >
             <DialogTitle
               sx={{
                 bgcolor: PRIMARY_COLOR,
                 color: 'white',
-                py: 3,
+                py: isDesktop ? 3 : { xs: 0.55, sm: 0.75, md: 0.95 },
+                px: isDesktop ? 3 : { xs: 0.75, sm: 1.05, md: 1.5 },
                 textAlign: 'center',
-                fontSize: '1.5rem',
+                fontSize: isDesktop ? '1.5rem' : { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' },
+                lineHeight: 1.35,
                 fontWeight: 'bold',
+                flexShrink: 0,
               }}
             >
-              <Box display="flex" alignItems="center" justifyContent="center" gap={2}>
-                <PersonIcon fontSize="large" />
-                إجراءات الطالب - {currentActionRow?.studentName}
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                gap={isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.7 }}
+                sx={{ minWidth: 0 }}
+              >
+                <PersonIcon
+                  sx={{
+                    fontSize: isDesktop ? 34 : { xs: 15, sm: 18, md: 20 },
+                    flexShrink: 0,
+                  }}
+                />
+
+                <Box
+                  component="span"
+                  sx={{
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: isPhone ? 'normal' : 'nowrap',
+                  }}
+                >
+                  إجراءات الطالب - {currentActionRow?.studentName}
+                </Box>
               </Box>
             </DialogTitle>
 
-            <DialogContent sx={{ p: 0 }}>
+            <DialogContent
+              sx={{
+                p: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                minHeight: 0,
+                overflow: 'hidden',
+              }}
+            >
               {/* التبويبات */}
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs 
-                  value={currentTab} 
+              <Box
+                sx={{
+                  borderBottom: 1,
+                  borderColor: 'divider',
+                  flexShrink: 0,
+                  overflowX: 'hidden',
+                }}
+              >
+                <Tabs
+                  value={currentTab}
                   onChange={handleTabChange}
-                  variant="fullWidth"
+                  variant={isDesktop ? 'fullWidth' : 'scrollable'}
+                  scrollButtons={false}
+                  allowScrollButtonsMobile
                   sx={{
-                    '& .MuiTab-root': {
-                      fontSize: '1rem',
-                      fontWeight: 'bold',
-                      py: 2,
-                      color: PRIMARY_COLOR,
+                    minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 42 },
+
+                    '& .MuiTabs-flexContainer': {
+                      justifyContent: isDesktop ? 'initial' : 'flex-start',
                     },
+
+                    '& .MuiTab-root': {
+                      fontSize: isDesktop
+                        ? '1rem'
+                        : { xs: '0.41rem', sm: '0.48rem', md: '0.56rem' },
+
+                      fontWeight: 'bold',
+
+                      py: isDesktop
+                        ? 2
+                        : { xs: 0.22, sm: 0.3, md: 0.4 },
+
+                      px: isDesktop
+                        ? undefined
+                        : { xs: 0.35, sm: 0.5, md: 0.65 },
+
+                      minWidth: isDesktop
+                        ? undefined
+                        : { xs: 62, sm: 74, md: 84 },
+
+                      minHeight: isDesktop
+                        ? undefined
+                        : { xs: 34, sm: 38, md: 42 },
+
+                      color: PRIMARY_COLOR,
+                      whiteSpace: 'nowrap',
+                      lineHeight: 1.15,
+                      letterSpacing: 0,
+
+                      '& .MuiTab-iconWrapper': {
+                        mr: isDesktop ? 1 : 0.2,
+                        mb: 0,
+                      },
+
+                      '& .MuiSvgIcon-root': {
+                        fontSize: isDesktop
+                          ? undefined
+                          : { xs: 12, sm: 14, md: 16 },
+                      },
+                    },
+
                     '& .Mui-selected': {
                       color: PRIMARY_COLOR,
+                      bgcolor: isDesktop ? 'transparent' : 'rgba(128,180,158,0.10)',
                     },
+
                     '& .MuiTabs-indicator': {
                       backgroundColor: PRIMARY_COLOR,
-                    }
+                      height: isDesktop ? 2 : 2.5,
+                    },
                   }}
                 >
                   {tabs.map((tab, index) => (
@@ -2661,12 +3196,159 @@ const getStatusDisplayText = (status) => {
               </Box>
 
               {/* محتوى التبويبات */}
-              <Box sx={{ p: 3 }}>
+              <Box
+                sx={{
+                  width: '100%',
+                  maxWidth: '100%',
+                  minWidth: 0,
+                  boxSizing: 'border-box',
+
+                  // مهم جدًا: محتوى الديالوج لا يحجز مساحة للسايدبار.
+                  // ده كان سبب انزياح الديالوج ناحية واحدة.
+                  ml: 0,
+                  mr: 0,
+
+                  p: isDesktop
+                    ? 3
+                    : { xs: 0.35, sm: 0.55, md: 0.8 },
+
+                  pt: isDesktop
+                    ? 3
+                    : { xs: 0.35, sm: 0.5, md: 0.75 },
+
+                  overflowX: 'hidden',
+                  overflowY: 'auto',
+                  flex: 1,
+                  minHeight: 0,
+
+                  '& .MuiCard-root': {
+                    borderRadius: isDesktop ? undefined : { xs: 1.5, sm: 1.8, md: 2 },
+                    boxShadow: isDesktop ? undefined : '0 2px 8px rgba(15,23,42,0.08)',
+                  },
+
+                  '& .MuiCardContent-root': {
+                    p: isDesktop
+                      ? undefined
+                      : {
+                          xs: '5px !important',
+                          sm: '7px !important',
+                          md: '9px !important',
+                        },
+                  },
+
+                  '& .MuiTypography-h4': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.68rem', sm: '0.78rem', md: '0.9rem' },
+                  },
+
+                  '& .MuiTypography-h5': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.62rem', sm: '0.71rem', md: '0.82rem' },
+                  },
+
+                  '& .MuiTypography-h6': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.53rem', sm: '0.6rem', md: '0.7rem' },
+                    lineHeight: 1.35,
+                  },
+
+                  '& .MuiTypography-subtitle1, & .MuiTypography-subtitle2': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.49rem', sm: '0.56rem', md: '0.64rem' },
+                  },
+
+                  '& .MuiTypography-body1, & .MuiTypography-body2': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.46rem', sm: '0.52rem', md: '0.6rem' },
+                    lineHeight: 1.45,
+                  },
+
+                  '& .MuiTypography-caption': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.4rem', sm: '0.46rem', md: '0.53rem' },
+                  },
+
+                  '& .MuiButton-root': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
+
+                    minHeight: isDesktop
+                      ? undefined
+                      : { xs: 25, sm: 28, md: 31 },
+
+                    py: isDesktop
+                      ? undefined
+                      : { xs: 0.35, sm: 0.45, md: 0.6 },
+                  },
+
+                  '& .MuiChip-root': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.41rem', sm: '0.47rem', md: '0.54rem' },
+
+                    height: isDesktop
+                      ? undefined
+                      : { xs: 19, sm: 22, md: 24 },
+                  },
+
+                  '& .MuiInputBase-root, & .MuiInputLabel-root': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.46rem', sm: '0.53rem', md: '0.61rem' },
+                  },
+
+                  '& .MuiInputBase-input': {
+                    py: isDesktop
+                      ? undefined
+                      : { xs: 0.75, sm: 0.9, md: 1 },
+                  },
+
+                  '& .MuiSvgIcon-root': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: 16, sm: 18, md: 20 },
+                  },
+
+                  // الجداول داخل التابات تبقى مضغوطة على الموبايل/التابلت.
+                  '& table': {
+                    width: '100%',
+                    tableLayout: isDesktop ? 'auto' : 'fixed',
+                  },
+
+                  '& th, & td': {
+                    fontSize: isDesktop
+                      ? undefined
+                      : { xs: '0.46rem', sm: '0.54rem', md: '0.62rem' },
+
+                    p: isDesktop ? undefined : 0.5,
+                    wordBreak: 'break-word',
+                  },
+                }}
+              >
                 {/* التبويب 1: المعلومات الرئيسية */}
                 {currentTab === 0 && (
-                  <Box display="grid" gridTemplateColumns="1fr 1fr" gap={4}>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: isDesktop
+                        ? '1fr 1fr'
+                        : { xs: '1fr', md: '1fr 1fr' },
+                      gap: isDesktop ? 4 : { xs: 0.4, sm: 0.6, md: 0.85 },
+                    }}
+                  >
                     {/* Left Column - Student Info and Actions */}
-                    <Box display="flex" flexDirection="column" gap={3}>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      gap={isDesktop ? 3 : { xs: 0.4, sm: 0.6, md: 0.85 }}
+                    >
                       {/* Student Info Card */}
                       <Card
                         sx={{
@@ -2691,17 +3373,23 @@ const getStatusDisplayText = (status) => {
                             <PersonIcon /> معلومات الطالب
                           </Typography>
 
-                          <Box display="grid" gridTemplateColumns="1fr 1fr" gap={3}>
+                          <Box
+                            sx={{
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                              gap: isDesktop ? 3 : { xs: 0.28, sm: 0.45, md: 0.65 },
+                            }}
+                          >
                             <Box
                               sx={{
                                 textAlign: 'center',
-                                p: 2,
+                                p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
                                 boxShadow: 1,
                               }}
                             >
-                              <PaymentIcon sx={{ color: PRIMARY_COLOR, fontSize: 32, mb: 1 }} />
+                              <PaymentIcon sx={{ color: PRIMARY_COLOR, fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 الرصيد الحالي
                               </Typography>
@@ -2713,13 +3401,13 @@ const getStatusDisplayText = (status) => {
                             <Box
                               sx={{
                                 textAlign: 'center',
-                                p: 2,
+                                p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
                                 boxShadow: 1,
                               }}
                             >
-                              <PaymentIcon sx={{ color: isValidMonthpay(currentActionRow?.monthpay) ? '#2196f3' : '#ff9800', fontSize: 32, mb: 1 }} />
+                              <PaymentIcon sx={{ color: isValidMonthpay(currentActionRow?.monthpay) ? '#2196f3' : '#ff9800', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 القسط الشهري
                               </Typography>
@@ -2736,13 +3424,13 @@ const getStatusDisplayText = (status) => {
                             <Box
                               sx={{
                                 textAlign: 'center',
-                                p: 2,
+                                p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
                                 boxShadow: 1,
                               }}
                             >
-                              <PaymentIcon sx={{ color: '#ff9800', fontSize: 32, mb: 1 }} />
+                              <PaymentIcon sx={{ color: '#ff9800', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 الرصيد السابق
                               </Typography>
@@ -2754,13 +3442,13 @@ const getStatusDisplayText = (status) => {
                             <Box
                               sx={{
                                 textAlign: 'center',
-                                p: 2,
+                                p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
                                 boxShadow: 1,
                               }}
                             >
-                              <SchoolIcon sx={{ color: PRIMARY_COLOR, fontSize: 32, mb: 1 }} />
+                              <SchoolIcon sx={{ color: PRIMARY_COLOR, fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 البرنامج
                               </Typography>
@@ -2792,7 +3480,7 @@ const getStatusDisplayText = (status) => {
 
                           <Box
                             sx={{
-                              p: 3,
+                              p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.9 },
                              bgcolor:
   rowStatuses[currentActionRow?.id] === 'paid'
     ? '#dcfce7'
@@ -2831,10 +3519,10 @@ borderColor:
     ? '#f44336'
     : 'default',
                                 color: 'white',
-                                fontSize: '1.1rem',
-                                py: 1.25,
-                                px: 1.5,
-                                mb: 2
+                                fontSize: isDesktop ? '1.1rem' : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
+                                py: isDesktop ? 1.25 : 0,
+                                px: isDesktop ? 1.5 : { xs: 0.6, sm: 0.8, md: 1 },
+                                mb: isDesktop ? 2 : { xs: 0.5, sm: 0.7, md: 0.9 }
                               }}
                             />
                             <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
@@ -2889,8 +3577,8 @@ borderColor:
                               onClick={() => handleWhatsAppClick(currentActionRow?.studentTel)}
                               sx={{
                                 backgroundColor: '#25D366',
-                                py: 1.5,
-                                fontSize: '1rem',
+                                py: isDesktop ? 1.5 : { xs: 0.45, sm: 0.55, md: 0.7 },
+                                fontSize: isDesktop ? '1rem' : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
                                 fontWeight: 'bold',
                                 borderRadius: 2,
                                 '&:hover': {
@@ -2909,7 +3597,11 @@ borderColor:
                     </Box>
 
                     {/* Right Column - Notes */}
-                    <Box display="flex" flexDirection="column" gap={3}>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      gap={isDesktop ? 3 : { xs: 0.4, sm: 0.6, md: 0.85 }}
+                    >
                       {/* Add Note Card */}
                       <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
                         <CardContent sx={{ p: 3 }}>
@@ -2931,7 +3623,7 @@ borderColor:
                           <TextField
                             fullWidth
                             multiline
-                            minRows={4}
+                            minRows={isDesktop ? 4 : isPhone ? 1 : 2}
                             value={noteInput}
                             onChange={(e) => setNoteInput(e.target.value)}
                             placeholder="اكتب المتابعة الجديدة هنا..."
@@ -2944,8 +3636,8 @@ borderColor:
                             onClick={handleNoteSave}
                             disabled={!noteInput.trim()}
                             sx={{
-                              py: 1.5,
-                              fontSize: '1rem',
+                              py: isDesktop ? 1.5 : { xs: 0.45, sm: 0.55, md: 0.7 },
+                              fontSize: isDesktop ? '1rem' : { xs: '0.45rem', sm: '0.52rem', md: '0.6rem' },
                               fontWeight: 'bold',
                               borderRadius: 2,
                               backgroundColor: PRIMARY_COLOR,
@@ -3133,7 +3825,7 @@ borderColor:
                           </Typography>
                         </Box>
                       ) : (
-                        <Box sx={{ maxWidth: 600, mx: 'auto' }}>
+                        <Box sx={{ maxWidth: isDesktop ? 600 : '100%', mx: 'auto' }}>
                           <Card sx={{ 
                             bgcolor: lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0 ? '#fff3e0' : '#e8f5e8',
                             border: `2px solid ${lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0 ? '#ff9800' : '#4caf50'}`,
@@ -3161,7 +3853,13 @@ borderColor:
                                 )}
                               </Box>
 
-                              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+                              <Box
+                                sx={{
+                                  display: 'grid',
+                                  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                                  gap: isDesktop ? 2 : { xs: 0.45, sm: 0.65, md: 0.9 },
+                                }}
+                              >
                                 <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     رقم الطلب
@@ -3284,7 +3982,7 @@ borderColor:
 
                       <List
                         sx={{
-                          height: 400,
+                          height: isDesktop ? 400 : { xs: 280, sm: 340, md: 380 },
                           overflow: 'auto',
                           '&::-webkit-scrollbar': { width: 8 },
                           '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: 4 },
@@ -3300,8 +3998,8 @@ borderColor:
                                 <ListItem
                                   alignItems="flex-start"
                                   sx={{
-                                    p: 2,
-                                    mb: 2,
+                                    p: isDesktop ? 2 : { xs: 0.55, sm: 0.75, md: 1 },
+                                    mb: isDesktop ? 2 : { xs: 0.45, sm: 0.6, md: 0.8 },
                                     bgcolor: index === 0 ? '#f0f9ff' : 'transparent',
                                     borderRadius: 2,
                                     border: index === 0 ? '2px solid' : '1px solid',
@@ -3389,23 +4087,28 @@ borderColor:
               </Box>
             </DialogContent>
 
-            <DialogActions sx={{ p: 3, bgcolor: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+            <DialogActions
+              sx={{
+                p: isDesktop ? 3 : { xs: 0.35, sm: 0.5, md: 0.7 },
+                bgcolor: '#f8fafc',
+                borderTop: '1px solid #e2e8f0',
+                flexShrink: 0,
+              }}
+            >
               <Button
                 onClick={() => setActionDialogOpen(false)}
                 variant="contained"
+                fullWidth={isPhone}
                 sx={{
-                  px: 4,
-                  py: 1,
-                  fontSize: '1rem',
+                  px: isDesktop ? 4 : { xs: 0.8, sm: 1.1, md: 1.4 },
+                  py: isDesktop ? 1 : { xs: 0.3, sm: 0.4, md: 0.5 },
+                  fontSize: isDesktop ? '1rem' : { xs: '0.46rem', sm: '0.53rem', md: '0.61rem' },
                   fontWeight: 'bold',
-                  borderRadius: 2,
+                  borderRadius: isDesktop ? 2 : 1.5,
                   backgroundColor: PRIMARY_COLOR,
                   '&:hover': {
                     backgroundColor: PRIMARY_COLOR_DARK,
-                    transform: 'translateY(-2px)',
-                    boxShadow: 3,
                   },
-                  transition: 'all 0.3s ease',
                 }}
               >
                 إغلاق النافذة

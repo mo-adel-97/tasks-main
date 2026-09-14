@@ -1,37 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Box,
-  Typography,
-  TextField,
   Button,
-  Paper,
-  CircularProgress,
-  Divider,
-  Stack,
   Chip,
-  Card,
-  CardContent,
+  CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
+  InputAdornment,
+  Paper,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
 
-import CampaignIcon from "@mui/icons-material/Campaign";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import SaveIcon from "@mui/icons-material/Save";
-import DescriptionIcon from "@mui/icons-material/Description";
-import SecurityIcon from "@mui/icons-material/Security";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import CloseIcon from "@mui/icons-material/Close";
-import DownloadIcon from "@mui/icons-material/Download";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import ImageIcon from "@mui/icons-material/Image";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
+import FolderOpenRoundedIcon from "@mui/icons-material/FolderOpenRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
+import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
+import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
+import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
+import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
 
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -39,817 +46,600 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import Sidebar from "../components/Sidebar";
 
 const SIDEBAR_WIDTH = 280;
-const API_BASE_URL = "https://sstli.com/api";
 
-const UPLOAD_CIRCULAR_API = `${API_BASE_URL}/upload_circular.php`;
-const GET_MY_CIRCULARS_API = `${API_BASE_URL}/get_my_circulars.php`;
-const UPDATE_CIRCULAR_API = `${API_BASE_URL}/update_circular.php`;
-const DELETE_CIRCULAR_API = `${API_BASE_URL}/delete_circular.php`;
-const DELETE_CIRCULAR_FILE_API = `${API_BASE_URL}/delete_circular_file.php`;
-const ADD_CIRCULAR_FILES_API = `${API_BASE_URL}/add_circular_files.php`;
+const API_BASE_URL = (
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5258"
+).replace(/\/+$/, "");
 
 const PRIMARY = "#057445";
+const PRIMARY_DARK = "#034f31";
 const DANGER = "#8f171a";
+const PAGE_BG = "#f4f7f5";
+const BORDER = "#dbe7e1";
+const TEXT = "#183128";
+const MUTED = "#6d8178";
 const WHITE = "#ffffff";
-const PAGE_BG = "#f7faf8";
-const BORDER = "#dfeae4";
 
-const allowedCircularUploaderGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-  "35efb423-5491-4775-a5cc-98625fb66fa5",
-];
+const ACCEPTED_FILES =
+  ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.txt";
 
-const swalMain = {
+const getUserGuid = () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    return String(user?.guid || user?.Guid || "").trim();
+  } catch {
+    return "";
+  }
+};
+
+const formatBytes = (bytes) => {
+  const value = Number(bytes || 0);
+  if (!Number.isFinite(value) || value <= 0) return "0 KB";
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const getFileIcon = (file, size = 34) => {
+  const extension = String(file?.extension || "").toLowerCase();
+  const contentType = String(file?.contentType || "").toLowerCase();
+
+  if (extension === ".pdf" || contentType.includes("pdf")) {
+    return <PictureAsPdfRoundedIcon sx={{ color: DANGER, fontSize: size }} />;
+  }
+
+  if (
+    [".jpg", ".jpeg", ".png", ".webp"].includes(extension) ||
+    contentType.startsWith("image/")
+  ) {
+    return <ImageRoundedIcon sx={{ color: "#3276b1", fontSize: size }} />;
+  }
+
+  if ([".doc", ".docx", ".txt"].includes(extension)) {
+    return <DescriptionRoundedIcon sx={{ color: PRIMARY, fontSize: size }} />;
+  }
+
+  return <InsertDriveFileRoundedIcon sx={{ color: "#667b72", fontSize: size }} />;
+};
+
+const swalOptions = {
   confirmButtonColor: PRIMARY,
   cancelButtonColor: DANGER,
+  reverseButtons: true,
   customClass: {
-    popup: "swal-rtl-popup",
-    title: "swal-rtl-title",
-    htmlContainer: "swal-rtl-text",
+    popup: "swal-cairo-popup",
+    title: "swal-cairo-title",
+    htmlContainer: "swal-cairo-text",
+    confirmButton: "swal-cairo-button",
+    cancelButton: "swal-cairo-button",
   },
 };
 
-const textFieldSx = {
-  "& .MuiInputBase-root": {
-    borderRadius: 3,
-    background: "#fbfdfc",
-    fontFamily: "Cairo",
-  },
-  "& .MuiInputBase-input": {
-    fontFamily: "Cairo",
-    textAlign: "left",
-    direction: "ltr",
-  },
-  "& textarea": {
-    fontFamily: "Cairo",
-    textAlign: "left !important",
-    direction: "ltr !important",
-    unicodeBidi: "plaintext",
-  },
-  "& textarea::placeholder": {
-    textAlign: "left",
-    direction: "ltr",
-  },
-  "& .MuiInputLabel-root": {
-    fontFamily: "Cairo",
-  },
+const showToast = (icon, title) =>
+  Swal.fire({
+    toast: true,
+    position: "top",
+    icon,
+    title,
+    showConfirmButton: false,
+    timer: 2200,
+    timerProgressBar: true,
+    ...swalOptions,
+  });
+
+const showConfirm = async ({
+  title,
+  text,
+  confirmText = "نعم، حذف",
+}) => {
+  const result = await Swal.fire({
+    icon: "warning",
+    title,
+    text,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: "إلغاء",
+    focusCancel: true,
+    ...swalOptions,
+  });
+
+  return result.isConfirmed;
 };
+
+const showErrorAlert = (message) =>
+  Swal.fire({
+    icon: "error",
+    title: "حدث خطأ",
+    text: message || "تعذر تنفيذ العملية.",
+    confirmButtonText: "حسنًا",
+    ...swalOptions,
+  });
 
 const CircularsUpload = () => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const currentUserGuid = String(user?.guid || user?.Guid || "").toLowerCase();
+  const userGuid = getUserGuid();
 
-  const canUpload = allowedCircularUploaderGuids.includes(currentUserGuid);
+  const [tree, setTree] = useState([]);
+  const [activeTabGuid, setActiveTabGuid] = useState("");
+  const [activeFolderGuid, setActiveFolderGuid] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [forbidden, setForbidden] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [files, setFiles] = useState([]);
+  const [dialog, setDialog] = useState({
+    open: false,
+    mode: "",
+    target: null,
+    name: "",
+    description: "",
+  });
 
-  const [myCirculars, setMyCirculars] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [listLoading, setListLoading] = useState(false);
+  const activeTab = useMemo(
+    () => tree.find((tab) => String(tab.guid) === String(activeTabGuid)) || null,
+    [tree, activeTabGuid]
+  );
 
-  const [editOpen, setEditOpen] = useState(false);
-  const [editItem, setEditItem] = useState(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-  const [editFiles, setEditFiles] = useState([]);
-  const [editLoading, setEditLoading] = useState(false);
+  const folders = useMemo(
+    () => (Array.isArray(activeTab?.folders) ? activeTab.folders : []),
+    [activeTab]
+  );
 
-  const showToast = (icon, titleText) => {
-    Swal.fire({
-      toast: true,
-      position: "top",
-      icon,
-      title: titleText,
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      ...swalMain,
-    });
-  };
+  const activeFolder = useMemo(
+    () =>
+      folders.find(
+        (folder) => String(folder.guid) === String(activeFolderGuid)
+      ) || null,
+    [folders, activeFolderGuid]
+  );
 
-  const showLoading = (titleText) => {
-    Swal.fire({
-      title: titleText,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      ...swalMain,
-    });
-  };
+  const visibleFolders = useMemo(() => {
+    const search = searchText.trim().toLowerCase();
+    if (!search) return folders;
 
-  const getCreatedByName = () => {
-    return (
-      user?.name ||
-      user?.fullName ||
-      user?.FullName ||
-      user?.userName ||
-      user?.UserName ||
-      "غير محدد"
+    return folders.filter((folder) =>
+      [folder?.name, folder?.description]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(search))
     );
+  }, [folders, searchText]);
+
+  const visibleFiles = useMemo(() => {
+    const files = Array.isArray(activeFolder?.files) ? activeFolder.files : [];
+    const search = searchText.trim().toLowerCase();
+    if (!search) return files;
+
+    return files.filter((file) =>
+      [file?.displayName, file?.originalFileName, file?.extension]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(search))
+    );
+  }, [activeFolder, searchText]);
+
+  const showSuccess = (message) => {
+    setSuccessMessage("");
+    showToast("success", message || "تمت العملية بنجاح.");
   };
 
-  const normalizeFileUrl = (filePath = "") => {
-    const rawPath = String(filePath || "").trim();
-
-    if (!rawPath) return "";
-
-    if (rawPath.startsWith("http://") || rawPath.startsWith("https://")) {
-      return encodeURI(rawPath);
-    }
-
-    const cleanPath = rawPath.replace(/\\/g, "/").replace(/^\/+/, "");
-    const cleanBase = API_BASE_URL.replace(/\/+$/, "");
-
-    return encodeURI(`${cleanBase}/${cleanPath}`);
-  };
-
-  const getFileIcon = (fileType = "", fileName = "") => {
-    const type = String(fileType || "").toLowerCase();
-    const name = String(fileName || "").toLowerCase();
-
-    if (type.includes("pdf") || name.endsWith(".pdf")) {
-      return <PictureAsPdfIcon sx={{ color: DANGER }} />;
-    }
-
-    if (
-      type.includes("image") ||
-      name.endsWith(".jpg") ||
-      name.endsWith(".jpeg") ||
-      name.endsWith(".png") ||
-      name.endsWith(".webp") ||
-      name.endsWith(".gif")
-    ) {
-      return <ImageIcon sx={{ color: PRIMARY }} />;
-    }
-
-    if (
-      name.endsWith(".doc") ||
-      name.endsWith(".docx") ||
-      type.includes("word") ||
-      type.includes("document")
-    ) {
-      return <DescriptionIcon sx={{ color: PRIMARY }} />;
-    }
-
-    return <InsertDriveFileIcon sx={{ color: PRIMARY }} />;
-  };
-
-  const getCircularFiles = (item) => {
-    if (!item) return [];
-
-    if (Array.isArray(item.Files)) return item.Files;
-    if (Array.isArray(item.files)) return item.files;
-
-    if (typeof item.Files === "string" && item.Files.trim()) {
-      try {
-        const parsed = JSON.parse(item.Files);
-        if (Array.isArray(parsed)) return parsed;
-      } catch {
-        return [];
-      }
-    }
-
-    const singlePath = item.FilePath || item.filePath || "";
-    const singleName = item.FileName || item.fileName || "";
-    const singleType = item.FileType || item.fileType || "";
-
-    if (singlePath) {
-      return [
-        {
-          Id: item.FileId || item.fileId || null,
-          CircularId: item.Id || item.id,
-          FileName: singleName || "ملف مرفق",
-          FilePath: singlePath,
-          FileType: singleType,
-        },
-      ];
-    }
-
-    return [];
-  };
-
-  const getFileName = (fileItem) => {
-    return fileItem?.FileName || fileItem?.fileName || fileItem?.name || "ملف مرفق";
-  };
-
-  const getFilePath = (fileItem) => {
-    return fileItem?.FilePath || fileItem?.filePath || "";
-  };
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setFiles([]);
-
-    const fileInput = document.getElementById("circular-file-input");
-    if (fileInput) fileInput.value = "";
-  };
-
-  const resetEditFileInput = () => {
-    setEditFiles([]);
-
-    const editFileInput = document.getElementById("edit-circular-file-input");
-    if (editFileInput) editFileInput.value = "";
-  };
-
-  const formatDate = (dateValue) => {
-    if (!dateValue) return "";
-
-    try {
-      return new Date(dateValue).toLocaleString("ar-SA", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return dateValue;
-    }
-  };
-
-  const fetchMyCirculars = async (withAlert = false) => {
-    if (!canUpload) return;
-
-    try {
-      setListLoading(true);
-
-      if (withAlert) {
-        showLoading("جاري تحديث التعميمات...");
-      }
-
-      const res = await fetch(
-        `${GET_MY_CIRCULARS_API}?createdByGuid=${encodeURIComponent(currentUserGuid)}`
-      );
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "حدث خطأ أثناء تحميل تعميماتك");
-      }
-
-      setMyCirculars(Array.isArray(data.data) ? data.data : []);
-
-      if (withAlert) {
-        Swal.close();
-        showToast("success", "تم تحديث التعميمات");
-      }
-    } catch (error) {
-      if (withAlert) Swal.close();
-
-      Swal.fire({
-        icon: "error",
-        title: "خطأ",
-        text: error.message || "حدث خطأ أثناء تحميل تعميماتك",
-        ...swalMain,
-      });
-    } finally {
-      setListLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMyCirculars(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canUpload, currentUserGuid]);
-
-  const handleFilesChange = (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    setFiles(selectedFiles);
-
-    if (selectedFiles.length > 0) {
-      showToast("success", `تم اختيار ${selectedFiles.length} ملف`);
-    }
-  };
-
-  const handleEditFilesChange = (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    setEditFiles(selectedFiles);
-
-    if (selectedFiles.length > 0) {
-      showToast("success", `تم اختيار ${selectedFiles.length} ملف جديد`);
-    }
-  };
-
-  const removeSelectedFile = (index) => {
-    const nextFiles = files.filter((_, i) => i !== index);
-    setFiles(nextFiles);
-
-    const fileInput = document.getElementById("circular-file-input");
-    if (fileInput && nextFiles.length === 0) fileInput.value = "";
-  };
-
-  const removeEditSelectedFile = (index) => {
-    const nextFiles = editFiles.filter((_, i) => i !== index);
-    setEditFiles(nextFiles);
-
-    const fileInput = document.getElementById("edit-circular-file-input");
-    if (fileInput && nextFiles.length === 0) fileInput.value = "";
-  };
-
-  const openFile = (fileItem) => {
-    const url = normalizeFileUrl(getFilePath(fileItem));
-
-    if (!url) {
-      Swal.fire({
-        icon: "warning",
-        title: "لا يوجد ملف",
-        text: "لا يوجد رابط للملف.",
-        ...swalMain,
-      });
-      return;
-    }
-
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!canUpload) {
-      Swal.fire({
-        icon: "error",
-        title: "غير مصرح",
-        text: "ليس لديك صلاحية رفع التعميمات.",
-        ...swalMain,
-      });
-      return;
-    }
-
-    if (!title.trim()) {
-      Swal.fire({
-        icon: "warning",
-        title: "اسم التعميم مطلوب",
-        text: "من فضلك اكتب اسم التعميم.",
-        ...swalMain,
-      });
+  const loadTree = async () => {
+    if (!userGuid) {
+      setTree([]);
+      setError("تعذر تحديد المستخدم الحالي.");
+      setForbidden(true);
+      setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      showLoading("جاري رفع التعميم...");
+      setError("");
+      setForbidden(false);
 
-      const formData = new FormData();
-      formData.append("title", title.trim());
-      formData.append("description", description.trim());
-      formData.append("createdByGuid", currentUserGuid);
-      formData.append("createdByName", getCreatedByName());
+      const response = await fetch(
+        `${API_BASE_URL}/api/circulars/manage-tree/${encodeURIComponent(userGuid)}`,
+        {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        }
+      );
 
-      files.forEach((selectedFile) => {
-        formData.append("files[]", selectedFile);
-      });
+      const result = await response.json().catch(() => null);
 
-      const res = await fetch(UPLOAD_CIRCULAR_API, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "حدث خطأ أثناء رفع التعميم");
+      if (!response.ok) {
+        if (response.status === 403) setForbidden(true);
+        throw new Error(
+          result?.message ||
+            (response.status === 403
+              ? "ليس لديك صلاحية إدارة مكتبة المحتوى."
+              : "تعذر تحميل إدارة مكتبة المحتوى.")
+        );
       }
 
-      Swal.close();
+      const data = Array.isArray(result?.data) ? result.data : [];
+      setTree(data);
 
-      await Swal.fire({
-        icon: "success",
-        title: "تم الحفظ",
-        text: "تم رفع التعميم بنجاح.",
-        ...swalMain,
+      setActiveTabGuid((current) => {
+        if (current && data.some((tab) => String(tab.guid) === String(current))) {
+          return current;
+        }
+        return data[0]?.guid || "";
       });
-
-      resetForm();
-      fetchMyCirculars(false);
-    } catch (error) {
-      Swal.close();
-
-      Swal.fire({
-        icon: "error",
-        title: "خطأ أثناء الحفظ",
-        text: error.message || "حدث خطأ غير متوقع",
-        ...swalMain,
-      });
+    } catch (err) {
+      console.error("Content management load error:", err);
+      setTree([]);
+      const message = err?.message || "تعذر تحميل إدارة مكتبة المحتوى.";
+      setError(message);
+      if (!forbidden) {
+        showErrorAlert(message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const openEdit = (item) => {
-    setEditItem(item);
-    setEditTitle(item.Title || "");
-    setEditDescription(item.Description || "");
-    setEditFiles([]);
-    setEditOpen(true);
-  };
+  useEffect(() => {
+    loadTree();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const closeEdit = () => {
-    if (editLoading) return;
+  useEffect(() => {
+    if (
+      activeFolderGuid &&
+      !folders.some((folder) => String(folder.guid) === String(activeFolderGuid))
+    ) {
+      setActiveFolderGuid("");
+    }
+  }, [folders, activeFolderGuid]);
 
-    setEditOpen(false);
-    setEditItem(null);
-    setEditTitle("");
-    setEditDescription("");
-    resetEditFileInput();
-  };
-
-const handleUpdate = async () => {
-  if (!editItem) return;
-
-  if (!editTitle.trim()) {
-    Swal.fire({
-      icon: "warning",
-      title: "اسم التعميم مطلوب",
-      text: "من فضلك اكتب اسم التعميم.",
-      ...swalMain,
-    });
-    return;
-  }
-
-  try {
-    setEditLoading(true);
-    showLoading("جاري تعديل التعميم...");
-
-    // 1) تعديل بيانات التعميم الأساسية
-    const updateFormData = new FormData();
-    updateFormData.append("id", editItem.Id);
-    updateFormData.append("guid", editItem.Guid || "");
-    updateFormData.append("title", editTitle.trim());
-    updateFormData.append("description", editDescription.trim());
-    updateFormData.append("createdByGuid", currentUserGuid);
-
-    const updateRes = await fetch(UPDATE_CIRCULAR_API, {
-      method: "POST",
-      body: updateFormData,
+  const requestJson = async (url, options = {}) => {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {}),
+      },
     });
 
-    const updateData = await updateRes.json();
+    const result = await response.json().catch(() => null);
 
-    if (!updateRes.ok || !updateData.success) {
-      throw new Error(updateData.message || "حدث خطأ أثناء تعديل التعميم");
+    if (!response.ok) {
+      if (response.status === 403) setForbidden(true);
+      throw new Error(result?.message || "حدث خطأ أثناء تنفيذ العملية.");
     }
 
-    // 2) إضافة ملفات جديدة لو الراجل اختار ملفات
-    if (editFiles.length > 0) {
-      const filesFormData = new FormData();
-      filesFormData.append("circularId", editItem.Id);
-      filesFormData.append("createdByGuid", currentUserGuid);
+    return result;
+  };
 
-      editFiles.forEach((selectedFile) => {
-        filesFormData.append("files[]", selectedFile);
-      });
+  const changeTab = (_, value) => {
+    setActiveTabGuid(value);
+    setActiveFolderGuid("");
+    setSearchText("");
+  };
 
-      const filesRes = await fetch(ADD_CIRCULAR_FILES_API, {
-        method: "POST",
-        body: filesFormData,
-      });
+  const enterFolder = (folder) => {
+    setActiveFolderGuid(folder.guid);
+    setSearchText("");
+  };
 
-      const filesData = await filesRes.json();
+  const leaveFolder = () => {
+    setActiveFolderGuid("");
+    setSearchText("");
+  };
 
-      if (!filesRes.ok || !filesData.success) {
-        throw new Error(filesData.message || "تم تعديل التعميم لكن حدث خطأ أثناء إضافة الملفات");
-      }
-    }
+  const openDialog = (mode, target = null) => {
+    setError("");
 
-    Swal.close();
-
-    await Swal.fire({
-      icon: "success",
-      title: "تم التعديل",
-      text:
-        editFiles.length > 0
-          ? "تم تعديل التعميم وإضافة الملفات الجديدة بنجاح."
-          : "تم تعديل التعميم بنجاح.",
-      ...swalMain,
+    const isFile = mode === "editFile";
+    setDialog({
+      open: true,
+      mode,
+      target,
+      name: isFile
+        ? target?.displayName || target?.originalFileName || ""
+        : target?.name || "",
+      description: isFile ? "" : target?.description || "",
     });
+  };
 
-    closeEdit();
-    fetchMyCirculars(false);
-  } catch (error) {
-    Swal.close();
-
-    Swal.fire({
-      icon: "error",
-      title: "خطأ أثناء التعديل",
-      text: error.message || "حدث خطأ أثناء تعديل التعميم",
-      ...swalMain,
+  const closeDialog = () => {
+    if (busy) return;
+    setDialog({
+      open: false,
+      mode: "",
+      target: null,
+      name: "",
+      description: "",
     });
-  } finally {
-    setEditLoading(false);
-  }
-};
+  };
 
-  const handleDeleteFile = async (fileItem) => {
-    const fileId = fileItem?.Id || fileItem?.id;
+  const saveDialog = async () => {
+    const name = dialog.name.trim();
 
-    if (!fileId) {
-      Swal.fire({
-        icon: "warning",
-        title: "تنبيه",
-        text: "لا يمكن حذف هذا الملف لأنه لا يحتوي على رقم ملف. تأكد أن API يرجع Id من جدول CircularFiles.",
-        ...swalMain,
-      });
+    if (!name) {
+      setError(dialog.mode === "editFile" ? "اسم الملف مطلوب." : "الاسم مطلوب.");
       return;
     }
 
-    const result = await Swal.fire({
-      icon: "warning",
-      title: "حذف الملف",
-      text: `هل تريد حذف الملف: ${getFileName(fileItem)} ؟`,
-      showCancelButton: true,
-      confirmButtonText: "نعم، احذف",
-      cancelButtonText: "إلغاء",
-      reverseButtons: true,
-      ...swalMain,
-    });
-
-    if (!result.isConfirmed) return;
-
     try {
-      showLoading("جاري حذف الملف...");
+      setBusy(true);
+      setError("");
 
-      const formData = new FormData();
-      formData.append("fileId", fileId);
-      formData.append("createdByGuid", currentUserGuid);
+      let result = null;
 
-      const res = await fetch(DELETE_CIRCULAR_FILE_API, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "حدث خطأ أثناء حذف الملف");
+      if (dialog.mode === "createTab") {
+        result = await requestJson(`${API_BASE_URL}/api/circulars/tabs`, {
+          method: "POST",
+          body: JSON.stringify({
+            userGuid,
+            name,
+            description: dialog.description.trim() || null,
+          }),
+        });
       }
 
-      Swal.close();
+      if (dialog.mode === "editTab" && activeTab) {
+        result = await requestJson(
+          `${API_BASE_URL}/api/circulars/tabs/${encodeURIComponent(activeTab.guid)}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              userGuid,
+              name,
+              description: dialog.description.trim() || null,
+            }),
+          }
+        );
+      }
 
-      showToast("success", "تم حذف الملف بنجاح");
-      fetchMyCirculars(false);
-    } catch (error) {
-      Swal.close();
+      if (dialog.mode === "createFolder" && activeTab) {
+        result = await requestJson(`${API_BASE_URL}/api/circulars/folders`, {
+          method: "POST",
+          body: JSON.stringify({
+            userGuid,
+            tabGuid: activeTab.guid,
+            name,
+            description: dialog.description.trim() || null,
+          }),
+        });
+      }
 
-      Swal.fire({
-        icon: "error",
-        title: "خطأ أثناء حذف الملف",
-        text: error.message || "حدث خطأ أثناء حذف الملف",
-        ...swalMain,
+      if (dialog.mode === "editFolder" && dialog.target) {
+        result = await requestJson(
+          `${API_BASE_URL}/api/circulars/folders/${encodeURIComponent(
+            dialog.target.guid
+          )}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              userGuid,
+              name,
+              description: dialog.description.trim() || null,
+            }),
+          }
+        );
+      }
+
+      if (dialog.mode === "editFile" && dialog.target) {
+        result = await requestJson(
+          `${API_BASE_URL}/api/circulars/files/${encodeURIComponent(
+            dialog.target.guid
+          )}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              userGuid,
+              displayName: name,
+            }),
+          }
+        );
+      }
+
+      setDialog({
+        open: false,
+        mode: "",
+        target: null,
+        name: "",
+        description: "",
       });
+
+      await loadTree();
+      showSuccess(result?.message || "تم الحفظ بنجاح.");
+    } catch (err) {
+      console.error("Content save error:", err);
+      const message = err?.message || "تعذر حفظ البيانات.";
+      setError(message);
+      showErrorAlert(message);
+    } finally {
+      setBusy(false);
     }
   };
 
-  const handleDelete = async (item) => {
-    const result = await Swal.fire({
-      icon: "warning",
-      title: "تأكيد الحذف",
-      text: `هل تريد حذف التعميم: ${item.Title} ؟`,
-      showCancelButton: true,
-      confirmButtonText: "نعم، احذف",
-      cancelButtonText: "إلغاء",
-      reverseButtons: true,
-      ...swalMain,
+  const deleteTab = async () => {
+    if (!activeTab) return;
+
+    const confirmed = await showConfirm({
+      title: "حذف القسم؟",
+      text: `سيتم حذف القسم "${activeTab.name}" نهائيًا مع جميع المجلدات والملفات الموجودة بداخله.`,
+      confirmText: "نعم، حذف القسم",
     });
 
-    if (!result.isConfirmed) return;
+    if (!confirmed) return;
 
     try {
-      showLoading("جاري حذف التعميم...");
+      setBusy(true);
+      setError("");
 
-      const formData = new FormData();
-      formData.append("id", item.Id);
-      formData.append("guid", item.Guid || "");
-      formData.append("createdByGuid", currentUserGuid);
-
-      const res = await fetch(DELETE_CIRCULAR_API, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "حدث خطأ أثناء حذف التعميم");
-      }
-
-      Swal.close();
-
-      await Swal.fire({
-        icon: "success",
-        title: "تم الحذف",
-        text: "تم حذف التعميم بنجاح.",
-        ...swalMain,
-      });
-
-      fetchMyCirculars(false);
-    } catch (error) {
-      Swal.close();
-
-      Swal.fire({
-        icon: "error",
-        title: "خطأ أثناء الحذف",
-        text: error.message || "حدث خطأ أثناء حذف التعميم",
-        ...swalMain,
-      });
-    }
-  };
-
-  const FilesPreview = ({ selectedFiles, onRemove }) => {
-    if (!selectedFiles || selectedFiles.length === 0) return null;
-
-    return (
-      <Box
-        sx={{
-          mt: 2,
-          mx: "auto",
-          maxWidth: 680,
-          p: 1.5,
-          borderRadius: 3,
-          background: "#eef7f3",
-          border: `1px solid ${BORDER}`,
-          textAlign: "left",
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{
-            fontFamily: "Cairo",
-            color: PRIMARY,
-            fontWeight: 950,
-            mb: 1,
-          }}
-        >
-          الملفات المختارة: {selectedFiles.length}
-        </Typography>
-
-        <Stack spacing={0.8}>
-          {selectedFiles.map((selectedFile, index) => (
-            <Box
-              key={`${selectedFile.name}-${index}`}
-              sx={{
-                p: 1,
-                borderRadius: 2,
-                background: WHITE,
-                border: `1px solid ${BORDER}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 1,
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  fontFamily: "Cairo",
-                  color: "#17251f",
-                  fontWeight: 800,
-                  wordBreak: "break-word",
-                }}
-              >
-                {index + 1} - {selectedFile.name}
-              </Typography>
-
-              <IconButton
-                size="small"
-                onClick={() => onRemove(index)}
-                sx={{
-                  color: DANGER,
-                  background: "#fff4f4",
-                  "&:hover": { background: "#ffe3e3" },
-                }}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          ))}
-        </Stack>
-      </Box>
-    );
-  };
-
-  const ExistingFilesList = ({ item, allowDelete = false }) => {
-    const itemFiles = getCircularFiles(item);
-
-    if (itemFiles.length === 0) {
-      return (
-        <Typography
-          variant="body2"
-          sx={{
-            fontFamily: "Cairo",
-            color: DANGER,
-            fontWeight: 800,
-            mt: 1,
-          }}
-        >
-          لا توجد ملفات مرفقة.
-        </Typography>
+      const result = await requestJson(
+        `${API_BASE_URL}/api/circulars/tabs/${encodeURIComponent(
+          activeTab.guid
+        )}?userGuid=${encodeURIComponent(userGuid)}`,
+        { method: "DELETE" }
       );
+
+      setActiveFolderGuid("");
+      setActiveTabGuid("");
+      await loadTree();
+      showSuccess(result?.message || "تم حذف القسم.");
+    } catch (err) {
+      const message = err?.message || "تعذر حذف القسم.";
+      setError(message);
+      showErrorAlert(message);
+    } finally {
+      setBusy(false);
     }
+  };
 
-    return (
-      <Stack spacing={1} sx={{ mt: 1.2 }}>
-        {itemFiles.map((fileItem, index) => {
-          const fileName = getFileName(fileItem);
-          const fileUrl = normalizeFileUrl(getFilePath(fileItem));
+  const deleteFolder = async (folder) => {
+    const confirmed = await showConfirm({
+      title: "حذف المجلد؟",
+      text: `سيتم حذف المجلد "${folder.name}" وجميع الملفات الموجودة بداخله.`,
+      confirmText: "نعم، حذف المجلد",
+    });
 
-          return (
-            <Box
-              key={fileItem.Id || fileItem.id || `${fileName}-${index}`}
-              sx={{
-                p: 1.1,
-                borderRadius: 2.5,
-                background: WHITE,
-                border: `1px solid ${BORDER}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 1.5,
-              }}
-            >
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                <Box
-                  sx={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 2,
-                    border: `1px solid ${BORDER}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    background: "#fbfdfc",
-                  }}
-                >
-                  {getFileIcon(fileItem.FileType || fileItem.fileType, fileName)}
-                </Box>
+    if (!confirmed) return;
 
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontFamily: "Cairo",
-                    color: "#17251f",
-                    fontWeight: 850,
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {fileName}
-                </Typography>
-              </Stack>
+    try {
+      setBusy(true);
+      setError("");
 
-              <Stack direction="row" spacing={0.7} alignItems="center" sx={{ flexShrink: 0 }}>
-                <Tooltip title={fileUrl ? "فتح الملف" : "لا يوجد رابط"}>
-                  <span>
-                    <IconButton
-                      size="small"
-                      disabled={!fileUrl}
-                      onClick={() => openFile(fileItem)}
-                      sx={{
-                        color: PRIMARY,
-                        background: "#eef7f3",
-                        "&:hover": { background: "#dff1e9" },
-                      }}
-                    >
-                      <DownloadIcon fontSize="small" />
-                    </IconButton>
-                  </span>
-                </Tooltip>
+      const result = await requestJson(
+        `${API_BASE_URL}/api/circulars/folders/${encodeURIComponent(
+          folder.guid
+        )}?userGuid=${encodeURIComponent(userGuid)}`,
+        { method: "DELETE" }
+      );
 
-                {allowDelete && (
-                  <Tooltip title="حذف الملف">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDeleteFile(fileItem)}
-                      sx={{
-                        color: DANGER,
-                        background: "#fff4f4",
-                        "&:hover": { background: "#ffe3e3" },
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Stack>
-            </Box>
-          );
-        })}
-      </Stack>
+      if (String(activeFolderGuid) === String(folder.guid)) {
+        setActiveFolderGuid("");
+      }
+
+      await loadTree();
+      showSuccess(result?.message || "تم حذف المجلد.");
+    } catch (err) {
+      const message = err?.message || "تعذر حذف المجلد.";
+      setError(message);
+      showErrorAlert(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const deleteFile = async (file) => {
+    const fileName = file.displayName || file.originalFileName;
+
+    const confirmed = await showConfirm({
+      title: "حذف الملف؟",
+      text: `سيتم حذف الملف "${fileName}" نهائيًا.`,
+      confirmText: "نعم، حذف الملف",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setBusy(true);
+      setError("");
+
+      const result = await requestJson(
+        `${API_BASE_URL}/api/circulars/files/${encodeURIComponent(
+          file.guid
+        )}?userGuid=${encodeURIComponent(userGuid)}`,
+        { method: "DELETE" }
+      );
+
+      await loadTree();
+      showSuccess(result?.message || "تم حذف الملف.");
+    } catch (err) {
+      const message = err?.message || "تعذر حذف الملف.";
+      setError(message);
+      showErrorAlert(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const uploadFiles = async (fileList) => {
+    if (!activeFolder) return;
+
+    const selected = Array.from(fileList || []);
+    if (selected.length === 0) return;
+
+    try {
+      setBusy(true);
+      setError("");
+
+      const formData = new FormData();
+      formData.append("userGuid", userGuid);
+      selected.forEach((file) => formData.append("files", file));
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/circulars/folders/${encodeURIComponent(
+          activeFolder.guid
+        )}/files`,
+        {
+          method: "POST",
+          body: formData,
+          headers: { Accept: "application/json" },
+        }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        if (response.status === 403) setForbidden(true);
+        throw new Error(result?.message || "تعذر رفع الملفات.");
+      }
+
+      await loadTree();
+      showSuccess(result?.message || "تم رفع الملفات بنجاح.");
+    } catch (err) {
+      console.error("Content files upload error:", err);
+      const message = err?.message || "تعذر رفع الملفات.";
+      setError(message);
+      showErrorAlert(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openFile = (fileGuid) => {
+    window.open(
+      `${API_BASE_URL}/api/circulars/files/${encodeURIComponent(
+        fileGuid
+      )}/open?userGuid=${encodeURIComponent(userGuid)}`,
+      "_blank",
+      "noopener,noreferrer"
     );
   };
+
+  const downloadFile = (fileGuid) => {
+    window.open(
+      `${API_BASE_URL}/api/circulars/files/${encodeURIComponent(
+        fileGuid
+      )}/download?userGuid=${encodeURIComponent(userGuid)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  const dialogTitle = {
+    createTab: "إضافة قسم جديد",
+    editTab: "تعديل القسم",
+    createFolder: "إضافة مجلد جديد",
+    editFolder: "تعديل المجلد",
+    editFile: "تعديل اسم الملف",
+  }[dialog.mode];
 
   return (
     <Box
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        background: PAGE_BG,
+        bgcolor: PAGE_BG,
         fontFamily: "Cairo, Arial, sans-serif",
       }}
     >
@@ -859,720 +649,988 @@ const handleUpdate = async () => {
         component="main"
         sx={{
           minHeight: "100vh",
-          ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
-          p: "20px",
+          width: "100%",
           boxSizing: "border-box",
+          p: { xs: 1, sm: 1.25, md: 1.5 },
+          "@media (min-width:1600px)": {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+          },
         }}
       >
-        {!canUpload ? (
+        <Stack spacing={1.25} sx={{ width: "100%" }}>
           <Paper
             elevation={0}
             sx={{
-              p: 4,
-              borderRadius: 4,
-              border: `1px solid ${DANGER}`,
-              background: WHITE,
-              boxShadow: "0 12px 28px rgba(143,23,26,0.08)",
+              px: { xs: 1.5, md: 2 },
+              py: 1.4,
+              borderRadius: 3,
+              border: `1px solid ${BORDER}`,
+              bgcolor: WHITE,
             }}
           >
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-              <SecurityIcon sx={{ color: DANGER, fontSize: 34 }} />
-
-              <Box>
-                <Typography
-                  variant="h6"
-                  sx={{ fontFamily: "Cairo", fontWeight: 900, color: DANGER }}
-                >
-                  غير مصرح
-                </Typography>
-
-                <Typography variant="body2" sx={{ fontFamily: "Cairo", color: "#6f5555" }}>
-                  هذه الصفحة مخصصة للمستخدمين المصرح لهم برفع التعميمات فقط.
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        ) : (
-          <Box sx={{ width: "100%" }}>
-            <Box
-              sx={{
-                mb: 2.5,
-                p: { xs: 2.5, md: 3 },
-                borderRadius: 4,
-                background: `linear-gradient(135deg, ${PRIMARY} 0%, ${DANGER} 120%)`,
-                color: WHITE,
-                boxShadow: "0 16px 38px rgba(5,116,69,0.18)",
-              }}
+            <Stack
+              direction={{ xs: "column", lg: "row" }}
+              alignItems={{ xs: "stretch", lg: "center" }}
+              justifyContent="space-between"
+              spacing={1.25}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 2,
-                  flexWrap: "wrap",
-                }}
-              >
-                <Stack direction="row" spacing={1.5} alignItems="center">
-                  <Box
-                    sx={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 4,
-                      background: "rgba(255,255,255,0.16)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid rgba(255,255,255,0.25)",
-                    }}
-                  >
-                    <CampaignIcon sx={{ fontSize: 34 }} />
-                  </Box>
-
-                  <Box>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 950,
-                        fontFamily: "Cairo",
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      رفع التعميمات
-                    </Typography>
-
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        opacity: 0.92,
-                        mt: 0.3,
-                        fontFamily: "Cairo",
-                        lineHeight: 1.9,
-                      }}
-                    >
-                      أضف اسم التعميم والوصف وارفع ملف أو أكثر، وسيظهر لكل المستخدمين.
-                    </Typography>
-                  </Box>
-                </Stack>
-
-                <Chip
-                  label="خاص بالإدارة"
+              <Stack direction="row" spacing={1.2} alignItems="center">
+                <Box
                   sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 900,
-                    background: WHITE,
-                    color: PRIMARY,
-                    px: 1,
+                    width: 44,
+                    height: 44,
+                    borderRadius: 2.5,
+                    bgcolor: "#e9f5ef",
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
                   }}
-                />
-              </Box>
-            </Box>
+                >
+                  <DashboardCustomizeRoundedIcon
+                    sx={{ color: PRIMARY, fontSize: 27 }}
+                  />
+                </Box>
 
-            <Paper
-              elevation={0}
-              sx={{
-                p: "20px",
-                borderRadius: 4,
-                border: `1px solid ${BORDER}`,
-                boxShadow: "0 10px 28px rgba(5,116,69,0.08)",
-                background: WHITE,
-                mb: 2.5,
-              }}
-            >
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={2.2}>
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 900,
-                        mb: 1,
-                        color: PRIMARY,
-                        textAlign: "left",
-                      }}
-                    >
-                      اسم التعميم
-                    </Typography>
-
-                    <TextField
-                      fullWidth
-                      placeholder="مثال: تعميم بخصوص مواعيد العمل"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      inputProps={{ dir: "rtl" }}
-                      sx={textFieldSx}
-                    />
-                  </Box>
-
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 900,
-                        mb: 1,
-                        color: PRIMARY,
-                        textAlign: "left",
-                      }}
-                    >
-                      وصف التعميم
-                    </Typography>
-
-                    <TextField
-                      fullWidth
-                      multiline
-                      minRows={5}
-                      placeholder="اكتب تفاصيل التعميم هنا..."
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      inputProps={{ dir: "rtl" }}
-                      sx={textFieldSx}
-                    />
-                  </Box>
-
-                  <Divider />
-
-                  <Box
-                    sx={{
-                      border: `2px dashed ${PRIMARY}`,
-                      background: "#fbfdfc",
-                      borderRadius: 4,
-                      p: "20px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: 72,
-                        height: 72,
-                        borderRadius: "50%",
-                        mx: "auto",
-                        mb: 1.5,
-                        background: "#eef7f3",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <CloudUploadIcon sx={{ fontSize: 42, color: PRIMARY }} />
-                    </Box>
-
-                    <Typography
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 950,
-                        mb: 0.8,
-                        color: DANGER,
-                      }}
-                    >
-                      اختر ملفات التعميم
-                    </Typography>
-
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontFamily: "Cairo",
-                        color: "#60736b",
-                        mb: 2,
-                        lineHeight: 1.9,
-                      }}
-                    >
-                      يمكنك اختيار أكثر من صورة أو ملف في نفس التعميم
-                    </Typography>
-
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      startIcon={<DescriptionIcon />}
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 900,
-                        borderRadius: 3,
-                        px: 3,
-                        py: 1,
-                        borderColor: PRIMARY,
-                        color: PRIMARY,
-                        "&:hover": {
-                          borderColor: DANGER,
-                          color: DANGER,
-                          background: "#fff7f7",
-                        },
-                        "& .MuiButton-startIcon": {
-                          ml: 1,
-                          mr: 0,
-                        },
-                      }}
-                    >
-                      اختيار ملفات
-                      <input
-                        id="circular-file-input"
-                        type="file"
-                        hidden
-                        multiple
-                        accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.txt,.zip,.rar"
-                        onChange={handleFilesChange}
-                      />
-                    </Button>
-
-                    <FilesPreview selectedFiles={files} onRemove={removeSelectedFile} />
-                  </Box>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "flex-start",
-                      gap: 1.5,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      disabled={loading}
-                      startIcon={
-                        loading ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />
-                      }
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 950,
-                        borderRadius: 3,
-                        px: 4,
-                        py: 1.25,
-                        minWidth: 170,
-                        background: PRIMARY,
-                        boxShadow: "0 8px 18px rgba(5,116,69,0.22)",
-                        "&:hover": { background: DANGER },
-                        "& .MuiButton-startIcon": {
-                          ml: 1,
-                          mr: 0,
-                        },
-                      }}
-                    >
-                      {loading ? "جاري الحفظ..." : "حفظ التعميم"}
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outlined"
-                      disabled={loading}
-                      onClick={resetForm}
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 900,
-                        borderRadius: 3,
-                        px: 3,
-                        py: 1.25,
-                        borderColor: DANGER,
-                        color: DANGER,
-                        "&:hover": {
-                          borderColor: PRIMARY,
-                          color: PRIMARY,
-                          background: "#eef7f3",
-                        },
-                      }}
-                    >
-                      تفريغ الحقول
-                    </Button>
-                  </Box>
-                </Stack>
-              </form>
-            </Paper>
-
-            <Paper
-              elevation={0}
-              sx={{
-                p: "20px",
-                borderRadius: 4,
-                border: `1px solid ${BORDER}`,
-                boxShadow: "0 10px 28px rgba(5,116,69,0.08)",
-                background: WHITE,
-              }}
-            >
-              <Box
-                sx={{
-                  mb: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 2,
-                  flexWrap: "wrap",
-                }}
-              >
                 <Box>
                   <Typography
                     variant="h6"
-                    sx={{ fontFamily: "Cairo", fontWeight: 950, color: DANGER }}
+                    sx={{ fontFamily: "Cairo", fontWeight: 950, color: TEXT }}
                   >
-                    التعميمات التي قمت برفعها
+                    إدارة مكتبة المحتوى
                   </Typography>
-
                   <Typography
-                    variant="body2"
-                    sx={{ fontFamily: "Cairo", color: "#60736b", mt: 0.4 }}
+                    variant="caption"
+                    sx={{ fontFamily: "Cairo", color: MUTED }}
                   >
-                    يمكنك تعديل العنوان والوصف وإضافة ملفات جديدة أو حذف ملفات مرفقة.
+                    أنشئ الأقسام ثم ادخل إلى المجلدات لإدارة ملفاتها
                   </Typography>
                 </Box>
+              </Stack>
+
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={0.8}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<AddRoundedIcon />}
+                  onClick={() => openDialog("createTab")}
+                  disabled={loading || busy || forbidden}
+                  sx={{
+                    bgcolor: PRIMARY,
+                    borderRadius: 2.5,
+                    boxShadow: "none",
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
+                    "& .MuiButton-startIcon": { ml: 0.6, mr: 0 },
+                  }}
+                >
+                  قسم جديد
+                </Button>
 
                 <Button
                   variant="outlined"
-                  startIcon={<RefreshIcon />}
-                  onClick={() => fetchMyCirculars(true)}
-                  disabled={listLoading}
+                  startIcon={<RefreshRoundedIcon />}
+                  onClick={loadTree}
+                  disabled={loading || busy}
                   sx={{
+                    borderRadius: 2.5,
+                    borderColor: BORDER,
+                    color: PRIMARY,
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    borderRadius: 3,
-                    borderColor: PRIMARY,
-                    color: PRIMARY,
-                    "&:hover": {
-                      borderColor: DANGER,
-                      color: DANGER,
-                    },
-                    "& .MuiButton-startIcon": {
-                      ml: 1,
-                      mr: 0,
-                    },
+                    "& .MuiButton-startIcon": { ml: 0.6, mr: 0 },
                   }}
                 >
                   تحديث
                 </Button>
-              </Box>
+              </Stack>
+            </Stack>
+          </Paper>
 
-              {listLoading && (
-                <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
-                  <CircularProgress sx={{ color: PRIMARY }} />
-                </Box>
-              )}
+          {successMessage && (
+            <Alert
+              severity="success"
+              sx={{ borderRadius: 3, fontFamily: "Cairo" }}
+            >
+              {successMessage}
+            </Alert>
+          )}
 
-              {!listLoading && myCirculars.length === 0 && (
-                <Paper
-                  elevation={0}
+          {error && (
+            <Alert severity="error" sx={{ borderRadius: 3, fontFamily: "Cairo" }}>
+              {error}
+            </Alert>
+          )}
+
+          {loading ? (
+            <Paper
+              elevation={0}
+              sx={{
+                minHeight: 360,
+                borderRadius: 3,
+                border: `1px solid ${BORDER}`,
+                display: "grid",
+                placeItems: "center",
+                bgcolor: WHITE,
+              }}
+            >
+              <Stack alignItems="center" spacing={1.3}>
+                <CircularProgress sx={{ color: PRIMARY }} />
+                <Typography sx={{ fontFamily: "Cairo", color: MUTED }}>
+                  جاري تحميل إدارة مكتبة المحتوى...
+                </Typography>
+              </Stack>
+            </Paper>
+          ) : forbidden ? (
+            <Paper
+              elevation={0}
+              sx={{
+                minHeight: 340,
+                borderRadius: 3,
+                border: `1px solid ${BORDER}`,
+                display: "grid",
+                placeItems: "center",
+                bgcolor: WHITE,
+                p: 3,
+              }}
+            >
+              <Stack alignItems="center" spacing={1}>
+                <SecurityRoundedIcon sx={{ fontSize: 52, color: DANGER }} />
+                <Typography
+                  variant="h6"
+                  sx={{ fontFamily: "Cairo", fontWeight: 950, color: DANGER }}
+                >
+                  غير مصرح
+                </Typography>
+                <Typography sx={{ fontFamily: "Cairo", color: MUTED }}>
+                  هذه الصفحة تحتاج صلاحية إدارة المحتوى والملفات.
+                </Typography>
+              </Stack>
+            </Paper>
+          ) : tree.length === 0 ? (
+            <Paper
+              elevation={0}
+              sx={{
+                minHeight: 360,
+                borderRadius: 3,
+                border: `1px dashed ${BORDER}`,
+                display: "grid",
+                placeItems: "center",
+                bgcolor: WHITE,
+                textAlign: "center",
+                p: 3,
+              }}
+            >
+              <Box>
+                <FolderRoundedIcon sx={{ fontSize: 62, color: "#a9bbb3" }} />
+                <Typography
+                  variant="h6"
+                  sx={{ mt: 1, fontFamily: "Cairo", fontWeight: 900, color: TEXT }}
+                >
+                  لا توجد أقسام بعد
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<AddRoundedIcon />}
+                  onClick={() => openDialog("createTab")}
                   sx={{
-                    p: 3,
-                    borderRadius: 3,
-                    background: "#eef7f3",
-                    border: `1px solid ${BORDER}`,
+                    mt: 1.5,
+                    bgcolor: PRIMARY,
+                    borderRadius: 2.5,
+                    boxShadow: "none",
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
+                    "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
                   }}
                 >
-                  <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: PRIMARY }}>
-                    لم تقم برفع أي تعميمات حتى الآن.
-                  </Typography>
-                </Paper>
-              )}
+                  إنشاء أول قسم
+                </Button>
+              </Box>
+            </Paper>
+          ) : (
+            <>
+              <Paper
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  border: `1px solid ${BORDER}`,
+                  bgcolor: WHITE,
+                  overflow: "hidden",
+                }}
+              >
+                <Tabs
+                  value={activeTabGuid || false}
+                  onChange={changeTab}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  sx={{
+                    minHeight: 52,
+                    px: 0.75,
+                    "& .MuiTab-root": {
+                      minHeight: 52,
+                      minWidth: 120,
+                      px: 2,
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      color: "#61756c",
+                    },
+                    "& .Mui-selected": {
+                      color: `${PRIMARY} !important`,
+                      bgcolor: "#eef7f2",
+                    },
+                    "& .MuiTabs-indicator": {
+                      height: 3,
+                      bgcolor: PRIMARY,
+                      borderRadius: 3,
+                    },
+                  }}
+                >
+                  {tree.map((tab) => (
+                    <Tab key={tab.guid} value={tab.guid} label={tab.name} />
+                  ))}
+                </Tabs>
+              </Paper>
 
-              {!listLoading && myCirculars.length > 0 && (
+              <Paper
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  border: `1px solid ${BORDER}`,
+                  bgcolor: WHITE,
+                  overflow: "hidden",
+                  minHeight: 520,
+                }}
+              >
                 <Box
                   sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      lg: "repeat(2, minmax(0, 1fr))",
-                    },
-                    gap: 2,
+                    px: { xs: 1.5, md: 2 },
+                    py: 1.2,
+                    borderBottom: `1px solid ${BORDER}`,
+                    bgcolor: "#fbfdfc",
                   }}
                 >
-                  {myCirculars.map((item) => (
-                    <Card
-                      key={item.Id}
-                      elevation={0}
-                      sx={{
-                        borderRadius: 3,
-                        border: `1px solid ${BORDER}`,
-                        background: "#fbfdfc",
-                        overflow: "hidden",
-                      }}
+                  <Stack
+                    direction={{ xs: "column", lg: "row" }}
+                    alignItems={{ xs: "stretch", lg: "center" }}
+                    justifyContent="space-between"
+                    spacing={1}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={0.7}
+                      sx={{ minWidth: 0 }}
                     >
-                      <CardContent sx={{ p: 2.2 }}>
-                        <Typography
+                      {activeFolder ? (
+                        <Button
+                          onClick={leaveFolder}
+                          startIcon={<ArrowBackRoundedIcon />}
                           sx={{
-                            fontFamily: "Cairo",
-                            fontWeight: 950,
+                            minWidth: "auto",
+                            px: 1,
                             color: PRIMARY,
-                            mb: 1,
-                            lineHeight: 1.7,
-                          }}
-                        >
-                          {item.Title}
-                        </Typography>
-
-                        <Typography
-                          variant="body2"
-                          sx={{
                             fontFamily: "Cairo",
-                            color: "#52645d",
-                            lineHeight: 2,
-                            whiteSpace: "pre-wrap",
-                            mb: 1.5,
-                            textAlign: "right",
-                            direction: "rtl",
+                            fontWeight: 900,
+                            "& .MuiButton-startIcon": { ml: 0.4, mr: 0 },
                           }}
                         >
-                          {item.Description || "لا يوجد وصف."}
-                        </Typography>
+                          رجوع
+                        </Button>
+                      ) : (
+                        <HomeRoundedIcon sx={{ color: PRIMARY, fontSize: 22 }} />
+                      )}
 
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontFamily: "Cairo",
-                            color: "#60736b",
-                            fontWeight: 800,
-                          }}
-                        >
-                          تاريخ الرفع: {formatDate(item.CreatedAt)}
-                        </Typography>
+                      <Typography
+                        sx={{ fontFamily: "Cairo", color: MUTED, whiteSpace: "nowrap" }}
+                      >
+                        إدارة المحتوى
+                      </Typography>
 
-                        <Divider sx={{ my: 1.5 }} />
+                      <Typography sx={{ color: "#a3b2ac" }}>/</Typography>
 
-                        <Typography
-                          sx={{
-                            fontFamily: "Cairo",
-                            fontWeight: 950,
-                            color: DANGER,
-                            mb: 0.5,
-                          }}
-                        >
-                          الملفات المرفقة
-                        </Typography>
+                      <Typography
+                        sx={{
+                          fontFamily: "Cairo",
+                          fontWeight: 900,
+                          color: activeFolder ? MUTED : TEXT,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {activeTab?.name || ""}
+                      </Typography>
 
-                        <ExistingFilesList item={item} allowDelete />
-
-                        <Divider sx={{ my: 1.5 }} />
-
-                        <Stack direction="row" spacing={1} justifyContent="flex-start" flexWrap="wrap">
-                          <Button
-                            size="small"
-                            variant="contained"
-                            startIcon={<EditIcon />}
-                            onClick={() => openEdit(item)}
+                      {activeFolder && (
+                        <>
+                          <Typography sx={{ color: "#a3b2ac" }}>/</Typography>
+                          <Typography
                             sx={{
                               fontFamily: "Cairo",
-                              fontWeight: 900,
-                              borderRadius: 2.5,
-                              background: PRIMARY,
-                              "&:hover": { background: DANGER },
-                              "& .MuiButton-startIcon": {
-                                ml: 1,
-                                mr: 0,
-                              },
+                              fontWeight: 950,
+                              color: TEXT,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
                           >
-                            تعديل
+                            {activeFolder.name}
+                          </Typography>
+                        </>
+                      )}
+                    </Stack>
+
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      spacing={0.7}
+                    >
+                      <TextField
+                        size="small"
+                        value={searchText}
+                        onChange={(event) => setSearchText(event.target.value)}
+                        placeholder={
+                          activeFolder
+                            ? "ابحث في الملفات..."
+                            : "ابحث في المجلدات..."
+                        }
+                        sx={{
+                          width: { xs: "100%", sm: 270 },
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: 2.5,
+                            bgcolor: WHITE,
+                          },
+                          "& input": { fontFamily: "Cairo" },
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SearchRoundedIcon sx={{ color: "#82968d" }} />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+
+                      {!activeFolder ? (
+                        <>
+                          <Button
+                            variant="contained"
+                            startIcon={<CreateNewFolderRoundedIcon />}
+                            onClick={() => openDialog("createFolder")}
+                            disabled={busy}
+                            sx={{
+                              bgcolor: PRIMARY,
+                              borderRadius: 2.5,
+                              boxShadow: "none",
+                              fontFamily: "Cairo",
+                              fontWeight: 900,
+                              "&:hover": {
+                                bgcolor: PRIMARY_DARK,
+                                boxShadow: "none",
+                              },
+                              "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
+                            }}
+                          >
+                            مجلد جديد
                           </Button>
 
                           <Button
-                            size="small"
                             variant="outlined"
-                            startIcon={<DeleteIcon />}
-                            onClick={() => handleDelete(item)}
+                            startIcon={<EditRoundedIcon />}
+                            onClick={() => openDialog("editTab", activeTab)}
+                            disabled={busy || !activeTab}
                             sx={{
+                              borderRadius: 2.5,
+                              borderColor: BORDER,
+                              color: PRIMARY,
                               fontFamily: "Cairo",
                               fontWeight: 900,
+                              px: 1.5,
+                              "&:hover": {
+                                borderColor: "#a9cdbb",
+                                bgcolor: "#f6fbf8",
+                              },
+                              "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
+                            }}
+                          >
+                            تعديل القسم
+                          </Button>
+
+                          <Button
+                            variant="outlined"
+                            startIcon={<DeleteOutlineRoundedIcon />}
+                            onClick={deleteTab}
+                            disabled={busy || !activeTab}
+                            sx={{
                               borderRadius: 2.5,
-                              borderColor: DANGER,
+                              borderColor: "#e6bcbc",
                               color: DANGER,
+                              fontFamily: "Cairo",
+                              fontWeight: 900,
+                              px: 1.5,
                               "&:hover": {
                                 borderColor: DANGER,
-                                background: "#fff7f7",
+                                bgcolor: "#fff6f6",
                               },
-                              "& .MuiButton-startIcon": {
-                                ml: 1,
-                                mr: 0,
+                              "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
+                            }}
+                          >
+                            حذف القسم
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            component="label"
+                            variant="contained"
+                            startIcon={<CloudUploadRoundedIcon />}
+                            disabled={busy}
+                            sx={{
+                              bgcolor: PRIMARY,
+                              borderRadius: 2.5,
+                              boxShadow: "none",
+                              fontFamily: "Cairo",
+                              fontWeight: 900,
+                              "&:hover": {
+                                bgcolor: PRIMARY_DARK,
+                                boxShadow: "none",
+                              },
+                              "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
+                            }}
+                          >
+                            رفع ملفات
+                            <input
+                              hidden
+                              type="file"
+                              multiple
+                              accept={ACCEPTED_FILES}
+                              onChange={(event) => {
+                                uploadFiles(event.target.files);
+                                event.target.value = "";
+                              }}
+                            />
+                          </Button>
+
+                          <Tooltip title="تعديل المجلد">
+                            <IconButton
+                              onClick={() =>
+                                openDialog("editFolder", activeFolder)
+                              }
+                              disabled={busy}
+                              sx={{
+                                border: `1px solid ${BORDER}`,
+                                borderRadius: 2.3,
+                                color: PRIMARY,
+                              }}
+                            >
+                              <EditRoundedIcon />
+                            </IconButton>
+                          </Tooltip>
+
+                          <Tooltip title="حذف المجلد">
+                            <IconButton
+                              onClick={() => deleteFolder(activeFolder)}
+                              disabled={busy}
+                              sx={{
+                                border: "1px solid #eed1d1",
+                                borderRadius: 2.3,
+                                color: DANGER,
+                              }}
+                            >
+                              <DeleteOutlineRoundedIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      )}
+                    </Stack>
+                  </Stack>
+                </Box>
+
+                {!activeFolder ? (
+                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+                    {activeTab?.description && (
+                      <Typography
+                        variant="body2"
+                        sx={{ mb: 1.5, fontFamily: "Cairo", color: MUTED }}
+                      >
+                        {activeTab.description}
+                      </Typography>
+                    )}
+
+                    {visibleFolders.length === 0 ? (
+                      <Box sx={{ py: 8, textAlign: "center" }}>
+                        <FolderRoundedIcon
+                          sx={{ fontSize: 58, color: "#b4c4bd" }}
+                        />
+                        <Typography
+                          sx={{
+                            mt: 1,
+                            fontFamily: "Cairo",
+                            fontWeight: 850,
+                            color: MUTED,
+                          }}
+                        >
+                          {searchText
+                            ? "لا توجد مجلدات مطابقة للبحث."
+                            : "لا توجد مجلدات داخل هذا القسم."}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "repeat(2, minmax(0, 1fr))",
+                            sm: "repeat(3, minmax(0, 1fr))",
+                            md: "repeat(4, minmax(0, 1fr))",
+                            lg: "repeat(5, minmax(0, 1fr))",
+                            xl: "repeat(6, minmax(0, 1fr))",
+                          },
+                          gap: 1.25,
+                        }}
+                      >
+                        {visibleFolders.map((folder) => {
+                          const count = Array.isArray(folder.files)
+                            ? folder.files.length
+                            : 0;
+
+                          return (
+                            <Paper
+                              key={folder.guid}
+                              elevation={0}
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => enterFolder(folder)}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter") enterFolder(folder);
+                              }}
+                              sx={{
+                                p: 1.45,
+                                minHeight: 145,
+                                borderRadius: 3,
+                                border: `1px solid ${BORDER}`,
+                                bgcolor: "#fcfefd",
+                                cursor: "pointer",
+                                transition: "all .18s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                position: "relative",
+                                "&:hover": {
+                                  transform: "translateY(-2px)",
+                                  borderColor: "#a9cdbb",
+                                  boxShadow:
+                                    "0 8px 24px rgba(5,116,69,0.09)",
+                                  bgcolor: "#ffffff",
+                                },
+                              }}
+                            >
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="flex-start"
+                              >
+                                <FolderRoundedIcon
+                                  sx={{
+                                    fontSize: 50,
+                                    color: "#d7a429",
+                                    filter:
+                                      "drop-shadow(0 3px 4px rgba(0,0,0,.08))",
+                                  }}
+                                />
+
+                                <Stack direction="row" spacing={0.25}>
+                                  <Tooltip title="تعديل">
+                                    <IconButton
+                                      size="small"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        openDialog("editFolder", folder);
+                                      }}
+                                      sx={{ color: "#63796f" }}
+                                    >
+                                      <EditRoundedIcon fontSize="small" />
+                                    </IconButton>
+                                  </Tooltip>
+
+                                  <Tooltip title="حذف">
+                                    <IconButton
+                                      size="small"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        deleteFolder(folder);
+                                      }}
+                                      sx={{ color: DANGER }}
+                                    >
+                                      <DeleteOutlineRoundedIcon fontSize="small" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Stack>
+                              </Stack>
+
+                              <Box sx={{ mt: 1 }}>
+                                <Typography
+                                  sx={{
+                                    fontFamily: "Cairo",
+                                    fontWeight: 950,
+                                    color: TEXT,
+                                    lineHeight: 1.5,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {folder.name}
+                                </Typography>
+
+                                <Stack
+                                  direction="row"
+                                  justifyContent="space-between"
+                                  alignItems="center"
+                                  sx={{ mt: 0.3 }}
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontFamily: "Cairo", color: MUTED }}
+                                  >
+                                    {count} ملف
+                                  </Typography>
+
+                                  <Chip
+                                    size="small"
+                                    label="فتح"
+                                    sx={{
+                                      height: 22,
+                                      fontFamily: "Cairo",
+                                      fontWeight: 900,
+                                      bgcolor: "#edf5f1",
+                                      color: PRIMARY,
+                                    }}
+                                  />
+                                </Stack>
+                              </Box>
+                            </Paper>
+                          );
+                        })}
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+                    <Stack
+                      direction="row"
+                      spacing={1.1}
+                      alignItems="center"
+                      sx={{ mb: 1.6 }}
+                    >
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 2.5,
+                          bgcolor: "#fff7dc",
+                          display: "grid",
+                          placeItems: "center",
+                        }}
+                      >
+                        <FolderOpenRoundedIcon
+                          sx={{ color: "#c89512", fontSize: 31 }}
+                        />
+                      </Box>
+
+                      <Box>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontFamily: "Cairo",
+                            fontWeight: 950,
+                            color: TEXT,
+                          }}
+                        >
+                          {activeFolder.name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ fontFamily: "Cairo", color: MUTED }}
+                        >
+                          {visibleFiles.length} ملف
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    {activeFolder.description && (
+                      <Typography
+                        variant="body2"
+                        sx={{ mb: 1.5, fontFamily: "Cairo", color: MUTED }}
+                      >
+                        {activeFolder.description}
+                      </Typography>
+                    )}
+
+                    {visibleFiles.length === 0 ? (
+                      <Box sx={{ py: 8, textAlign: "center" }}>
+                        <InsertDriveFileRoundedIcon
+                          sx={{ fontSize: 56, color: "#b7c5bf" }}
+                        />
+                        <Typography
+                          sx={{
+                            mt: 1,
+                            fontFamily: "Cairo",
+                            fontWeight: 850,
+                            color: MUTED,
+                          }}
+                        >
+                          {searchText
+                            ? "لا توجد ملفات مطابقة للبحث."
+                            : "هذا المجلد فارغ. استخدم زر رفع ملفات لإضافة ملفات."}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "1fr",
+                            sm: "repeat(2, minmax(0, 1fr))",
+                            lg: "repeat(3, minmax(0, 1fr))",
+                            xl: "repeat(4, minmax(0, 1fr))",
+                          },
+                          gap: 1.1,
+                        }}
+                      >
+                        {visibleFiles.map((file) => (
+                          <Paper
+                            key={file.guid}
+                            elevation={0}
+                            sx={{
+                              p: 1.3,
+                              borderRadius: 2.8,
+                              border: `1px solid ${BORDER}`,
+                              bgcolor: "#fcfefd",
+                              transition: "all .18s ease",
+                              "&:hover": {
+                                borderColor: "#b4d0c2",
+                                boxShadow: "0 7px 20px rgba(5,116,69,.07)",
                               },
                             }}
                           >
-                            حذف التعميم
-                          </Button>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </Box>
-              )}
-            </Paper>
+                            <Stack
+                              direction="row"
+                              spacing={1.1}
+                              alignItems="center"
+                            >
+                              <Box
+                                sx={{
+                                  width: 48,
+                                  height: 48,
+                                  borderRadius: 2.5,
+                                  bgcolor: WHITE,
+                                  border: `1px solid ${BORDER}`,
+                                  display: "grid",
+                                  placeItems: "center",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {getFileIcon(file)}
+                              </Box>
 
-            <Dialog
-              open={editOpen}
-              onClose={closeEdit}
+                              <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Tooltip
+                                  title={
+                                    file.displayName ||
+                                    file.originalFileName ||
+                                    ""
+                                  }
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 900,
+                                      color: TEXT,
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {file.displayName || file.originalFileName}
+                                  </Typography>
+                                </Tooltip>
+
+                                <Typography
+                                  variant="caption"
+                                  sx={{ fontFamily: "Cairo", color: MUTED }}
+                                >
+                                  {formatBytes(file.fileSize)}
+                                </Typography>
+                              </Box>
+                            </Stack>
+
+                            <Stack
+                              direction="row"
+                              spacing={0.45}
+                              justifyContent="flex-end"
+                              sx={{ mt: 1.1 }}
+                            >
+                              <Tooltip title="فتح">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => openFile(file.guid)}
+                                  sx={{ color: PRIMARY, bgcolor: "#edf7f2" }}
+                                >
+                                  <OpenInNewRoundedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+
+                              <Tooltip title="تنزيل">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => downloadFile(file.guid)}
+                                  sx={{ color: "#3276b1", bgcolor: "#edf4fa" }}
+                                >
+                                  <DownloadRoundedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+
+                              <Tooltip title="تعديل الاسم">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => openDialog("editFile", file)}
+                                  sx={{ color: "#8a6e00", bgcolor: "#fff8d9" }}
+                                >
+                                  <EditRoundedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+
+                              <Tooltip title="حذف">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => deleteFile(file)}
+                                  sx={{ color: DANGER, bgcolor: "#fff0f0" }}
+                                >
+                                  <DeleteOutlineRoundedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </Stack>
+                          </Paper>
+                        ))}
+                      </Box>
+                    )}
+                  </Box>
+                )}
+              </Paper>
+            </>
+          )}
+        </Stack>
+      </Box>
+
+      <Dialog
+        open={dialog.open}
+        onClose={closeDialog}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ fontFamily: "Cairo", fontWeight: 950 }}>
+          {dialogTitle}
+        </DialogTitle>
+
+        <DialogContent>
+          <Stack spacing={1.5} sx={{ mt: 0.5 }}>
+            <TextField
+              autoFocus
+              label={dialog.mode === "editFile" ? "اسم الملف" : "الاسم"}
+              value={dialog.name}
+              onChange={(event) =>
+                setDialog((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
+              }
               fullWidth
-              maxWidth="md"
-              dir="rtl"
-              PaperProps={{
-                sx: {
-                  borderRadius: 4,
+              inputProps={{ maxLength: dialog.mode === "editFile" ? 250 : 200 }}
+              sx={{
+                "& .MuiOutlinedInput-root": { borderRadius: 2.5 },
+                "& .MuiInputBase-input, & .MuiInputLabel-root": {
                   fontFamily: "Cairo",
                 },
               }}
-            >
-              <DialogTitle
+            />
+
+            {dialog.mode !== "editFile" && (
+              <TextField
+                label="الوصف - اختياري"
+                value={dialog.description}
+                onChange={(event) =>
+                  setDialog((current) => ({
+                    ...current,
+                    description: event.target.value,
+                  }))
+                }
+                fullWidth
+                multiline
+                minRows={3}
+                inputProps={{ maxLength: 500 }}
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 950,
-                  color: PRIMARY,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 2,
-                  pb: 1,
+                  "& .MuiOutlinedInput-root": { borderRadius: 2.5 },
+                  "& .MuiInputBase-input, & .MuiInputLabel-root": {
+                    fontFamily: "Cairo",
+                  },
                 }}
-              >
-                تعديل التعميم
+              />
+            )}
+          </Stack>
+        </DialogContent>
 
-                <IconButton onClick={closeEdit} disabled={editLoading}>
-                  <CloseIcon />
-                </IconButton>
-              </DialogTitle>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            onClick={closeDialog}
+            disabled={busy}
+            sx={{ fontFamily: "Cairo", fontWeight: 900, color: MUTED }}
+          >
+            إلغاء
+          </Button>
 
-              <DialogContent>
-                <Stack spacing={2} sx={{ pt: 1 }}>
-                  <TextField
-                    fullWidth
-                    label="اسم التعميم"
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    inputProps={{ dir: "rtl" }}
-                    sx={textFieldSx}
-                  />
-
-                  <TextField
-                    fullWidth
-                    multiline
-                    minRows={5}
-                    label="وصف التعميم"
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    inputProps={{ dir: "rtl" }}
-                    sx={textFieldSx}
-                  />
-
-                  <Box
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 3,
-                      background: "#fbfdfc",
-                      border: `1px solid ${BORDER}`,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 950,
-                        color: DANGER,
-                        mb: 1,
-                      }}
-                    >
-                      الملفات الحالية
-                    </Typography>
-
-                    <ExistingFilesList item={editItem} allowDelete />
-                  </Box>
-
-                  <Box
-                    sx={{
-                      border: `2px dashed ${PRIMARY}`,
-                      background: "#fbfdfc",
-                      borderRadius: 4,
-                      p: "18px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 950,
-                        mb: 1,
-                        color: PRIMARY,
-                      }}
-                    >
-                      إضافة ملفات جديدة لهذا التعميم
-                    </Typography>
-
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      startIcon={<CloudUploadIcon />}
-                      disabled={editLoading}
-                      sx={{
-                        fontFamily: "Cairo",
-                        fontWeight: 900,
-                        borderRadius: 3,
-                        px: 3,
-                        py: 1,
-                        borderColor: PRIMARY,
-                        color: PRIMARY,
-                        "&:hover": {
-                          borderColor: DANGER,
-                          color: DANGER,
-                          background: "#fff7f7",
-                        },
-                        "& .MuiButton-startIcon": {
-                          ml: 1,
-                          mr: 0,
-                        },
-                      }}
-                    >
-                      اختيار ملفات جديدة
-                      <input
-                        id="edit-circular-file-input"
-                        type="file"
-                        hidden
-                        multiple
-                        accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.txt,.zip,.rar"
-                        onChange={handleEditFilesChange}
-                      />
-                    </Button>
-
-                    <FilesPreview selectedFiles={editFiles} onRemove={removeEditSelectedFile} />
-                  </Box>
-                </Stack>
-              </DialogContent>
-
-              <DialogActions sx={{ px: 3, pb: 2, justifyContent: "flex-start" }}>
-                <Button
-                  variant="contained"
-                  onClick={handleUpdate}
-                  disabled={editLoading}
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 900,
-                    borderRadius: 3,
-                    background: PRIMARY,
-                    "&:hover": { background: DANGER },
-                  }}
-                >
-                  {editLoading ? "جاري الحفظ..." : "حفظ التعديل"}
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  onClick={closeEdit}
-                  disabled={editLoading}
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: 900,
-                    borderRadius: 3,
-                    borderColor: DANGER,
-                    color: DANGER,
-                  }}
-                >
-                  إلغاء
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Box>
-        )}
-      </Box>
+          <Button
+            variant="contained"
+            onClick={saveDialog}
+            disabled={busy}
+            sx={{
+              minWidth: 110,
+              bgcolor: PRIMARY,
+              borderRadius: 2.5,
+              boxShadow: "none",
+              fontFamily: "Cairo",
+              fontWeight: 900,
+              "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
+            }}
+          >
+            {busy ? (
+              <CircularProgress size={20} sx={{ color: WHITE }} />
+            ) : (
+              "حفظ"
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <style>
         {`
-          .swal-rtl-popup {
+          .swal-cairo-popup,
+          .swal-cairo-title,
+          .swal-cairo-text,
+          .swal-cairo-button {
             font-family: Cairo, Arial, sans-serif !important;
+          }
+
+          .swal-cairo-popup {
             direction: rtl !important;
           }
 
-          .swal-rtl-title,
-          .swal-rtl-text {
-            font-family: Cairo, Arial, sans-serif !important;
-            direction: rtl !important;
+          .swal-cairo-title,
+          .swal-cairo-text {
             text-align: center !important;
           }
         `}

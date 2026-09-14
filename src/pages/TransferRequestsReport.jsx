@@ -5,6 +5,7 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Autocomplete,
   Box,
   Button,
@@ -15,6 +16,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  GlobalStyles,
   IconButton,
   Menu,
   MenuItem,
@@ -23,8 +25,11 @@ import {
   Tab,
   Tabs,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   DataGrid,
@@ -55,11 +60,18 @@ import RestartAltIcon
   from "@mui/icons-material/RestartAlt";
 import DoneAllIcon
   from "@mui/icons-material/DoneAll";
+import MenuRoundedIcon
+  from "@mui/icons-material/MenuRounded";
+import VisibilityOutlinedIcon
+  from "@mui/icons-material/VisibilityOutlined";
+import CloseIcon
+  from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
 import Sidebar from "../components/Sidebar";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -214,7 +226,15 @@ const TextCell = ({
         textAlign: align,
         fontFamily: "Cairo",
         fontSize: "0.76rem",
-        fontWeight: 700
+        fontWeight: 700,
+        "@media (max-width: 599px)": {
+          fontSize: "0.28rem",
+          lineHeight: 1.05
+        },
+        "@media (min-width: 600px) and (max-width: 1599px)": {
+          fontSize: "0.42rem",
+          lineHeight: 1.15
+        }
       }}
     >
       {value || "-"}
@@ -247,7 +267,26 @@ const StatusChip = ({
         fontFamily: "Cairo",
         fontWeight: 900,
         color: "#fff",
-        backgroundColor: color
+        backgroundColor: color,
+        "@media (max-width: 599px)": {
+          height: 18,
+          minWidth: 0,
+          maxWidth: "100%",
+          fontSize: "0.24rem",
+          borderRadius: "9px",
+          "& .MuiChip-label": {
+            px: 0.35,
+            py: 0,
+            lineHeight: 1
+          }
+        },
+        "@media (min-width: 600px) and (max-width: 1599px)": {
+          height: 23,
+          fontSize: "0.38rem",
+          "& .MuiChip-label": {
+            px: 0.55
+          }
+        }
       }}
     />
   );
@@ -378,6 +417,46 @@ const MultiValueFilter = ({
 };
 
 const TransferRequestsReport = () => {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  const [detailsOpen, setDetailsOpen] =
+    useState(false);
+
+  const [detailsRow, setDetailsRow] =
+    useState(null);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
+  const openDetails = (row) => {
+    setDetailsRow(row);
+    setDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setDetailsOpen(false);
+    setDetailsRow(null);
+  };
+
   const currentUser = useMemo(
     () => {
       try {
@@ -976,6 +1055,149 @@ const TransferRequestsReport = () => {
     [activeTab]
   );
 
+  const compactColumns = useMemo(() => {
+    const byField = (field) =>
+      columns.find(
+        (column) => column.field === field
+      );
+
+    const phoneFields = [
+      "studentName",
+      "nationalId",
+      "newValue",
+      "confirmStatus"
+    ];
+
+    const tabletFields = [
+      "studentName",
+      "nationalId",
+      "oldValue",
+      "newValue",
+      "confirmStatus",
+      "actorUserName"
+    ];
+
+    const fields = isPhone
+      ? phoneFields
+      : tabletFields;
+
+    const selected = fields
+      .map(byField)
+      .filter(Boolean)
+      .map((column) => ({
+        ...column,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        headerAlign: "center",
+        align: "center",
+        width: undefined,
+        maxWidth: undefined,
+
+        ...(isPhone
+          ? {
+              flex:
+                column.field === "studentName"
+                  ? 1.35
+                  : column.field === "newValue"
+                    ? 1.25
+                    : 1,
+              minWidth: 0
+            }
+          : {
+              flex:
+                column.field === "studentName"
+                  ? 1.35
+                  : column.field === "oldValue" ||
+                    column.field === "newValue"
+                    ? 1.2
+                    : 1,
+              minWidth:
+                column.field === "studentName"
+                  ? 125
+                  : column.field === "oldValue" ||
+                    column.field === "newValue"
+                    ? 120
+                    : 90
+            }),
+
+        renderCell:
+          column.field === "studentName"
+            ? (params) => (
+                <Typography
+                  sx={{
+                    width: "100%",
+                    px: 0.1,
+                    textAlign: "center",
+                    fontFamily: "Cairo",
+                    fontWeight: 800,
+                    fontSize: isPhone
+                      ? "0.29rem"
+                      : "0.44rem",
+                    lineHeight: 1.1,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  {params.value || "-"}
+                </Typography>
+              )
+            : column.renderCell
+      }));
+
+    return [
+      ...selected,
+      {
+        field: "__details",
+        headerName: "",
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        width: isPhone ? 34 : 44,
+        minWidth: isPhone ? 34 : 44,
+        maxWidth: isPhone ? 34 : 44,
+        align: "center",
+        headerAlign: "center",
+
+        renderCell: (params) => (
+          <IconButton
+            size="small"
+            title="عرض التفاصيل"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              openDetails(params.row);
+            }}
+            sx={{
+              width: isPhone ? 24 : 30,
+              height: isPhone ? 24 : 30,
+              p: 0,
+              color: "#057546",
+              border:
+                "1px solid rgba(5,117,70,.28)",
+              backgroundColor: "#eef8f3"
+            }}
+          >
+            <VisibilityOutlinedIcon
+              sx={{
+                fontSize: isPhone
+                  ? 14
+                  : 18
+              }}
+            />
+          </IconButton>
+        )
+      }
+    ];
+  }, [
+    columns,
+    isPhone,
+    isTablet
+  ]);
+
   const closeMenu = () =>
     setMenuAnchor(null);
 
@@ -1193,52 +1415,246 @@ const TransferRequestsReport = () => {
     <Box
       sx={{
         minHeight: "100vh",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         direction: "ltr",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <>
+          <GlobalStyles
+            styles={{
+              ".MuiDrawer-root": {
+                zIndex: "2100 !important"
+              },
+              ".MuiDrawer-root .MuiBackdrop-root": {
+                zIndex: "2099 !important"
+              },
+              ".MuiDrawer-root .MuiDrawer-paper": {
+                zIndex: "2101 !important"
+              }
+            }}
+          />
+
+          <AppBar
+            position="fixed"
+            elevation={0}
+            sx={{
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1400,
+              background:
+                "rgba(255,255,255,.97)",
+              backdropFilter: "blur(14px)",
+              color: "#173b2b",
+              borderBottom:
+                "1px solid rgba(5,117,70,.12)",
+              direction: "ltr"
+            }}
+          >
+            <Toolbar
+              sx={{
+                minHeight: {
+                  xs: "50px !important",
+                  sm: "56px !important"
+                },
+                px: {
+                  xs: 0.75,
+                  sm: 1
+                },
+                gap: 0.8
+              }}
+            >
+              <IconButton
+                onClick={() =>
+                  setMobileSidebarOpen(
+                    (current) => !current
+                  )
+                }
+                sx={{
+                  width: {
+                    xs: 36,
+                    sm: 40
+                  },
+                  height: {
+                    xs: 36,
+                    sm: 40
+                  },
+                  color: "#fff",
+                  background:
+                    "linear-gradient(135deg,#057546,#034d31)",
+                  boxShadow:
+                    "0 5px 14px rgba(5,117,70,.20)"
+                }}
+              >
+                <MenuRoundedIcon
+                  sx={{
+                    fontSize: {
+                      xs: 20,
+                      sm: 22
+                    }
+                  }}
+                />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  flex: 1,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: {
+                    xs: "0.66rem",
+                    sm: "0.78rem"
+                  },
+                  color: "#173b2b",
+                  textAlign: "left"
+                }}
+              >
+                طلبات النقل / التحويل
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </>
+      )}
+
+      {isDesktop ? (
+        <Sidebar />
+      ) : (
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }
+        />
+      )}
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
-          },
-          p: {
-            xs: 1.2,
-            md: 2
-          }
+          ml: isDesktop
+            ? `${SIDEBAR_WIDTH}px`
+            : 0,
+          width: isDesktop
+            ? `calc(100% - ${SIDEBAR_WIDTH}px)`
+            : "100%",
+          mt: isDesktop
+            ? 0
+            : isPhone
+              ? "50px"
+              : "56px",
+          p: isDesktop
+            ? 2
+            : isPhone
+              ? 0.45
+              : 0.75,
+          boxSizing: "border-box",
+          overflowX: "hidden"
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 1.5,
+            p: isDesktop
+              ? 2
+              : isPhone
+                ? 0.6
+                : 0.85,
+            mb: isDesktop
+              ? 1.5
+              : 0.6,
             borderRadius: 4,
             border:
               "1px solid rgba(5,117,70,0.14)"
           }}
         >
           <Stack
-            direction={{
-              xs: "column",
-              md: "row"
-            }}
-            spacing={1.2}
-            alignItems={{
-              xs: "stretch",
-              md: "center"
+            direction={isDesktop ? "row" : "row"}
+            spacing={isDesktop ? 1.2 : 0.35}
+            useFlexGap
+            flexWrap={isDesktop ? "nowrap" : "wrap"}
+            alignItems={isDesktop ? "center" : "stretch"}
+            sx={{
+              ...(!isDesktop
+                ? {
+                    display: "grid",
+                    gridTemplateColumns: isPhone
+                      ? "repeat(2,minmax(0,1fr))"
+                      : "repeat(4,minmax(0,1fr))",
+                    gap: isPhone ? 0.35 : 0.5
+                  }
+                : {}),
+
+              "& > .MuiBox-root:first-of-type": {
+                gridColumn: !isDesktop
+                  ? "1 / -1"
+                  : "auto",
+                minWidth: 0
+              },
+
+              "& .MuiButton-root": {
+                width: !isDesktop
+                  ? "100%"
+                  : "auto",
+                minWidth: 0,
+                minHeight: !isDesktop
+                  ? isPhone
+                    ? 27
+                    : 31
+                  : undefined,
+                px: !isDesktop
+                  ? isPhone
+                    ? 0.35
+                    : 0.6
+                  : undefined,
+                py: !isDesktop
+                  ? isPhone
+                    ? 0.2
+                    : 0.35
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.32rem"
+                    : "0.43rem"
+                  : undefined,
+                lineHeight: 1.1
+              },
+
+              "& .MuiChip-root": {
+                width: !isDesktop
+                  ? "100%"
+                  : "auto",
+                height: !isDesktop
+                  ? isPhone
+                    ? 24
+                    : 28
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.31rem"
+                    : "0.42rem"
+                  : undefined
+              },
+
+              "& .MuiSvgIcon-root": {
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? 13
+                    : 15
+                  : undefined
+              }
             }}
           >
             <SwapHorizIcon
               sx={{
                 color: "#057546",
-                fontSize: 38
+                fontSize: isDesktop
+                  ? 38
+                  : isPhone
+                    ? 18
+                    : 22
               }}
             />
 
@@ -1246,7 +1662,11 @@ const TransferRequestsReport = () => {
               <Typography
                 sx={{
                   fontFamily: "Cairo",
-                  fontSize: "1.15rem",
+                  fontSize: isDesktop
+                    ? "1.15rem"
+                    : isPhone
+                      ? "0.55rem"
+                      : "0.72rem",
                   fontWeight: 900,
                   color: "#173b2b"
                 }}
@@ -1254,15 +1674,19 @@ const TransferRequestsReport = () => {
                 طلبات النقل / التحويل
               </Typography>
 
-              <Typography
-                sx={{
-                  fontFamily: "Cairo",
-                  fontSize: "0.75rem",
-                  color: "#708179"
-                }}
-              >
-                متابعة طلبات النقل بين الفروع وطلبات تغيير التخصص
-              </Typography>
+              {!isPhone && (
+                <Typography
+                  sx={{
+                    fontFamily: "Cairo",
+                    fontSize: isTablet
+                      ? "0.48rem"
+                      : "0.75rem",
+                    color: "#708179"
+                  }}
+                >
+                  متابعة طلبات النقل بين الفروع وطلبات تغيير التخصص
+                </Typography>
+              )}
             </Box>
 
             <Chip
@@ -1354,7 +1778,21 @@ const TransferRequestsReport = () => {
               "& .MuiTab-root": {
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                minHeight: 58
+                minHeight: isDesktop
+                  ? 58
+                  : isPhone
+                    ? 34
+                    : 42,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.34rem"
+                    : "0.48rem"
+                  : undefined,
+                px: !isDesktop
+                  ? isPhone
+                    ? 0.35
+                    : 0.75
+                  : undefined
               },
               "& .Mui-selected": {
                 color:
@@ -1363,7 +1801,9 @@ const TransferRequestsReport = () => {
               "& .MuiTabs-indicator": {
                 backgroundColor:
                   "#057546",
-                height: 4
+                height: isDesktop
+                  ? 4
+                  : 2
               }
             }}
           >
@@ -1380,8 +1820,14 @@ const TransferRequestsReport = () => {
         <Paper
           elevation={0}
           sx={{
-            p: 1.5,
-            mb: 1.5,
+            p: isDesktop
+              ? 1.5
+              : isPhone
+                ? 0.55
+                : 0.75,
+            mb: isDesktop
+              ? 1.5
+              : 0.6,
             borderRadius: 3.5,
             border:
               "1px solid rgba(5,117,70,0.13)"
@@ -1390,12 +1836,49 @@ const TransferRequestsReport = () => {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md:
-                  "repeat(2,minmax(0,1fr)) auto"
+              gridTemplateColumns: isDesktop
+                ? "repeat(2,minmax(0,1fr)) auto"
+                : isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : "repeat(3,minmax(0,1fr))",
+              gap: isDesktop
+                ? 1.2
+                : isPhone
+                  ? 0.3
+                  : 0.45,
+              "& .MuiInputLabel-root": {
+                fontFamily: "Cairo",
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.4rem"
+                    : "0.5rem"
+                  : undefined
               },
-              gap: 1.2
+              "& .MuiInputBase-root": {
+                minHeight: !isDesktop
+                  ? isPhone
+                    ? 28
+                    : 32
+                  : undefined,
+                fontFamily: "Cairo",
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.38rem"
+                    : "0.5rem"
+                  : undefined
+              },
+              "& .MuiButton-root": {
+                minHeight: !isDesktop
+                  ? isPhone
+                    ? 28
+                    : 32
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.34rem"
+                    : "0.44rem"
+                  : undefined
+              }
             }}
           >
             <TextField
@@ -1443,6 +1926,9 @@ const TransferRequestsReport = () => {
               onClick={loadData}
               disabled={loading}
               sx={{
+                gridColumn: isPhone
+                  ? "1 / -1"
+                  : "auto",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
@@ -1459,9 +1945,16 @@ const TransferRequestsReport = () => {
           sx={{
             width: "100%",
             minWidth: 0,
-            height:
-              "calc(100vh - 330px)",
-            minHeight: 480,
+            height: isDesktop
+              ? "calc(100vh - 330px)"
+              : isPhone
+                ? "calc(100dvh - 300px)"
+                : "calc(100dvh - 280px)",
+            minHeight: isDesktop
+              ? 480
+              : isPhone
+                ? 400
+                : 520,
             borderRadius: 3.5,
             overflow: "hidden",
             border:
@@ -1470,24 +1963,35 @@ const TransferRequestsReport = () => {
         >
           <DataGrid
             rows={filteredRows}
-            columns={columns}
+            columns={
+              isDesktop
+                ? columns
+                : compactColumns
+            }
             loading={loading}
             disableRowSelectionOnClick
-            slots={{
-              toolbar:
-                GridToolbar
-            }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: {
-                  debounceMs: 350
-                },
-                sx: {
-                  direction: "ltr"
-                }
-              }
-            }}
+            slots={
+              isDesktop
+                ? {
+                    toolbar: GridToolbar
+                  }
+                : {}
+            }
+            slotProps={
+              isDesktop
+                ? {
+                    toolbar: {
+                      showQuickFilter: true,
+                      quickFilterProps: {
+                        debounceMs: 350
+                      },
+                      sx: {
+                        direction: "ltr"
+                      }
+                    }
+                  }
+                : {}
+            }
             initialState={{
               pagination: {
                 paginationModel: {
@@ -1499,8 +2003,20 @@ const TransferRequestsReport = () => {
             pageSizeOptions={[
               25, 50, 100, 200
             ]}
-            rowHeight={54}
-            columnHeaderHeight={56}
+            rowHeight={
+              isDesktop
+                ? 54
+                : isPhone
+                  ? 32
+                  : 40
+            }
+            columnHeaderHeight={
+              isDesktop
+                ? 56
+                : isPhone
+                  ? 32
+                  : 42
+            }
             getRowClassName={(params) =>
               params.indexRelativeToCurrentPage %
                 2 === 0
@@ -1531,20 +2047,51 @@ const TransferRequestsReport = () => {
                   fontWeight: 900
                 },
 
-              "& .MuiDataGrid-columnHeaderTitleContainer":
-                {
-                  justifyContent:
-                    "center"
-                },
+              "& .MuiDataGrid-columnHeaderTitleContainer": {
+                justifyContent: "center",
+                minWidth: 0,
+                overflow: "hidden"
+              },
+
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.26rem"
+                    : "0.4rem"
+                  : undefined,
+                whiteSpace: !isDesktop
+                  ? "nowrap"
+                  : undefined,
+                overflow: !isDesktop
+                  ? "hidden"
+                  : undefined,
+                textOverflow: !isDesktop
+                  ? "ellipsis"
+                  : undefined
+              },
 
               "& .MuiDataGrid-cell": {
                 display: "flex",
                 alignItems: "center",
-                justifyContent:
-                  "center",
+                justifyContent: "center",
                 overflow: "hidden",
                 borderBottom:
-                  "1px solid #e7efeb"
+                  "1px solid #e7efeb",
+                px: !isDesktop
+                  ? isPhone
+                    ? 0.04
+                    : 0.18
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.28rem"
+                    : "0.42rem"
+                  : undefined,
+                textAlign: !isDesktop
+                  ? "center"
+                  : undefined
               },
 
               "& .even-row": {
@@ -1556,11 +2103,36 @@ const TransferRequestsReport = () => {
                   "#f8fbf9"
               },
 
-              "& .MuiDataGrid-row:hover":
-                {
-                  backgroundColor:
-                    "#eef8f3 !important"
-                }
+              "& .MuiDataGrid-row:hover": {
+                backgroundColor:
+                  "#eef8f3 !important"
+              },
+
+              ...(!isDesktop
+                ? {
+                    "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
+                      display: "none"
+                    },
+                    "& .MuiDataGrid-columnSeparator": {
+                      display: "none"
+                    },
+                    "& .MuiDataGrid-toolbarContainer": {
+                      display: "none"
+                    },
+                    "& .MuiDataGrid-main": {
+                      minWidth: 0,
+                      overflowX: "hidden"
+                    },
+                    "& .MuiDataGrid-virtualScroller": {
+                      direction: "ltr",
+                      overflowX:
+                        "hidden !important"
+                    },
+                    "& .MuiDataGrid-scrollbar--horizontal": {
+                      display: "none"
+                    }
+                  }
+                : {})
             }}
           />
         </Paper>
@@ -1620,6 +2192,273 @@ const TransferRequestsReport = () => {
         </Menu>
 
         <Dialog
+          open={detailsOpen}
+          onClose={closeDetails}
+          fullWidth
+          maxWidth="lg"
+          dir="rtl"
+          PaperProps={{
+            sx: {
+              width: isPhone
+                ? "94vw"
+                : "90vw",
+              maxWidth: isPhone
+                ? "94vw"
+                : "980px",
+              maxHeight: isPhone
+                ? "86dvh"
+                : "84dvh",
+              m: 1,
+              borderRadius: 2.5,
+              overflow: "hidden"
+            }
+          }}
+        >
+          <DialogTitle
+            sx={{
+              px: isPhone ? 1 : 1.5,
+              py: isPhone ? 0.8 : 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: 0.6,
+              fontFamily: "Cairo",
+              fontWeight: 950,
+              color: "#057546",
+              fontSize: isPhone
+                ? "0.76rem"
+                : "0.94rem"
+            }}
+          >
+            <span>
+              {detailsRow?.type === "branch"
+                ? "تفاصيل طلب النقل"
+                : "تفاصيل طلب تغيير التخصص"}
+            </span>
+
+            <IconButton
+              onClick={closeDetails}
+              sx={{
+                width: isPhone ? 30 : 34,
+                height: isPhone ? 30 : 34,
+                color: "#ae1e21"
+              }}
+            >
+              <CloseIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 18
+                    : 20
+                }}
+              />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent
+            dividers
+            sx={{
+              p: isPhone ? 0.8 : 1.1,
+              overflowY: "auto"
+            }}
+          >
+            {detailsRow ? (
+              <>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      isPhone
+                        ? "repeat(2,minmax(0,1fr))"
+                        : "repeat(3,minmax(0,1fr))",
+                    gap: isPhone
+                      ? 0.45
+                      : 0.65
+                  }}
+                >
+                  {[
+                    ["تاريخ الطلب", detailsRow.createdAt],
+                    ["اسم الطالب", detailsRow.studentName],
+                    ["رقم الهوية", detailsRow.nationalId],
+                    [
+                      detailsRow.type === "branch"
+                        ? "الفرع الحالي"
+                        : "التخصص القديم",
+                      detailsRow.oldValue
+                    ],
+                    [
+                      detailsRow.type === "branch"
+                        ? "الفرع المطلوب"
+                        : "التخصص الجديد",
+                      detailsRow.newValue
+                    ],
+                    ["مقدم الطلب", detailsRow.actorUserName],
+                    ["الحالة", detailsRow.statusName],
+                    ["الرد", detailsRow.response],
+                    ["منفذ الإجراء", detailsRow.confirmedByName],
+                    ["تاريخ التنفيذ", detailsRow.confirmedAt]
+                  ].map(([label, value]) => (
+                    <Box
+                      key={label}
+                      sx={{
+                        minWidth: 0,
+                        p: isPhone
+                          ? 0.55
+                          : 0.72,
+                        border:
+                          "1px solid rgba(5,117,70,.14)",
+                        borderRadius: 1.3,
+                        backgroundColor:
+                          "#fbfdfc"
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          mb: 0.2,
+                          fontFamily: "Cairo",
+                          fontWeight: 900,
+                          color: "#60756d",
+                          fontSize: isPhone
+                            ? "0.38rem"
+                            : "0.49rem"
+                        }}
+                      >
+                        {label}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          fontFamily: "Cairo",
+                          fontWeight: 800,
+                          color: "#1f2d3d",
+                          fontSize: isPhone
+                            ? "0.49rem"
+                            : "0.62rem",
+                          wordBreak:
+                            "break-word"
+                        }}
+                      >
+                        {value || "-"}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  useFlexGap
+                  flexWrap="wrap"
+                  sx={{ mt: 0.8 }}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<AttachFileIcon />}
+                    onClick={() => {
+                      setMenuRow(detailsRow);
+
+                      if (
+                        detailsRow?.nationalId
+                      ) {
+                        const kind =
+                          detailsRow.type === "branch"
+                            ? "transferbranch"
+                            : "transferdiplom";
+
+                        window.open(
+                          `${ATTACHMENT_URL}?nationalId=${encodeURIComponent(detailsRow.nationalId)}&kind=${kind}`,
+                          "_blank",
+                          "noopener,noreferrer"
+                        );
+                      }
+                    }}
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                    }}
+                  >
+                    المرفقات
+                  </Button>
+
+                  <Button
+                    size="small"
+                    variant="contained"
+                    startIcon={<CheckCircleIcon />}
+                    onClick={() => {
+                      setMenuRow(detailsRow);
+                      setTimeout(
+                        () => changeStatus(1),
+                        0
+                      );
+                    }}
+                    sx={{
+                      backgroundColor:
+                        "#057546",
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                    }}
+                  >
+                    تأكيد
+                  </Button>
+
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    startIcon={<CancelIcon />}
+                    onClick={() => {
+                      setMenuRow(detailsRow);
+                      setTimeout(
+                        () => changeStatus(2, true),
+                        0
+                      );
+                    }}
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                    }}
+                  >
+                    إلغاء
+                  </Button>
+                </Stack>
+              </>
+            ) : null}
+          </DialogContent>
+
+          <DialogActions
+            sx={{
+              px: isPhone ? 1 : 1.5,
+              py: isPhone ? 0.7 : 1
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={closeDetails}
+              sx={{
+                backgroundColor: "#057546",
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: isPhone
+                  ? "0.47rem"
+                  : "0.58rem"
+              }}
+            >
+              إغلاق
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
           open={filterDialogOpen}
           onClose={() =>
             setFilterDialogOpen(
@@ -1630,7 +2469,17 @@ const TransferRequestsReport = () => {
           maxWidth="md"
           PaperProps={{
             sx: {
-              borderRadius: 4,
+              borderRadius: isPhone
+                ? 2.5
+                : 4,
+              width: !isDesktop
+                ? isPhone
+                  ? "94vw"
+                  : "88vw"
+                : undefined,
+              maxHeight: !isDesktop
+                ? "86dvh"
+                : undefined,
               direction: "ltr"
             }
           }}

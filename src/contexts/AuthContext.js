@@ -2,24 +2,38 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
+const readCachedUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => readCachedUser());
 
   useEffect(() => {
-    // Initialize user from localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setCurrentUser(user);
-    }
+    const syncUser = () => setCurrentUser(readCachedUser());
+    window.addEventListener('storage', syncUser);
+    window.addEventListener('sstli-auth-refreshed', syncUser);
+
+    return () => {
+      window.removeEventListener('storage', syncUser);
+      window.removeEventListener('sstli-auth-refreshed', syncUser);
+    };
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, token) => {
+    if (token) localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
     setCurrentUser(userData);
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('user_branch');
     setCurrentUser(null);
   };
 

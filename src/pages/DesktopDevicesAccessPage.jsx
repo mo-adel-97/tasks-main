@@ -48,10 +48,8 @@ const SIDEBAR_WIDTH = 280;
 const API_URL = "https://filesregsiteration.sstli.com/erp/Desktop/device_admin.php";
 const USERS_API_URL = "https://api1.sstli.com/api/userinfo";
 
-const allowedAdminGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e",
-];
+// فتح الصفحة أصبح من Form_Name + User_Premision عبر PrivateRoute.
+
 
 const colors = {
   primary: "#057445",
@@ -687,7 +685,6 @@ const AccessResultChip = ({ row }) => {
 export default function DesktopDevicesAccessPage() {
   const user = getCurrentUser();
   const userGuid = normalizeGuid(user?.guid || user?.Guid);
-  const canOpenPage = allowedAdminGuids.includes(userGuid);
 
   const [rows, setRows] = useState([]);
   const [allRows, setAllRows] = useState([]);
@@ -811,11 +808,9 @@ export default function DesktopDevicesAccessPage() {
   };
 
   useEffect(() => {
-    if (canOpenPage) {
-      fetchRows(filters);
-    }
+    fetchRows(filters);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canOpenPage]);
+  }, []);
 
   const runDeviceAction = async (action, row, successMessage) => {
     setError("");
@@ -1193,29 +1188,6 @@ export default function DesktopDevicesAccessPage() {
     ],
     [actionLoading, allRows]
   );
-
-  if (!canOpenPage) {
-    return (
-      <>
-        <Sidebar />
-        <Box
-          sx={{
-            marginLeft: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
-            p: 4,
-            fontFamily: "Cairo",
-            direction: "ltr",
-            textAlign: "left",
-            bgcolor: colors.page,
-            minHeight: "100vh",
-          }}
-        >
-          <Alert severity="error" sx={{ fontFamily: "Cairo", borderRadius: 3 }}>
-            غير مصرح لك بفتح صفحة إدارة أجهزة الديسكتوب.
-          </Alert>
-        </Box>
-      </>
-    );
-  }
 
   return (
     <>

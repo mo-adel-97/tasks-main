@@ -16,7 +16,9 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -119,6 +121,8 @@ const MoneyCell = ({ value }) => (
       width: "100%",
       fontWeight: 900,
       fontSize: "0.9rem",
+      "@media (max-width:1599px)": { fontSize: "0.55rem" },
+      "@media (max-width:599px)": { fontSize: "0.47rem" },
       textAlign: "center",
       direction: "ltr",
       color: textColor
@@ -155,16 +159,38 @@ const InfoCard = ({ label, value }) => (
       borderRadius: 2,
       border: "1px solid #e4eeea",
       backgroundColor: "#fff",
-      height: "100%"
+      height: "100%",
+      "@media (max-width:1599px)": {
+        p: 0.48,
+        borderRadius: 1.3,
+        minHeight: 46
+      },
+      "@media (max-width:599px)": {
+        p: 0.34,
+        minHeight: 42
+      }
     }}
   >
-    <Typography sx={{ fontSize: "0.75rem", fontWeight: 900, color: "#6f8a81", mb: 0.4 }}>
+    <Typography
+      sx={{
+        fontSize: "0.75rem",
+        fontWeight: 900,
+        color: "#6f8a81",
+        mb: 0.4,
+        lineHeight: 1.15,
+        "@media (max-width:1599px)": { fontSize: "0.5rem", mb: 0.15 },
+        "@media (max-width:599px)": { fontSize: "0.43rem", mb: 0.1 }
+      }}
+    >
       {label}
     </Typography>
     <Typography
       sx={{
         fontSize: "0.9rem",
         fontWeight: 900,
+        lineHeight: 1.15,
+        "@media (max-width:1599px)": { fontSize: "0.6rem" },
+        "@media (max-width:599px)": { fontSize: "0.52rem" },
         color: textColor,
         wordBreak: "break-word"
       }}
@@ -182,13 +208,40 @@ const TotalBox = ({ label, value, color = textColor }) => (
       borderRadius: 2,
       border: "1px solid #e4eeea",
       backgroundColor: "#fff",
-      minWidth: 150
+      minWidth: 150,
+      "@media (max-width:1599px)": {
+        minWidth: 0,
+        flex: 1,
+        p: 0.45,
+        borderRadius: 1.3
+      },
+      "@media (max-width:599px)": {
+        p: 0.32
+      }
     }}
   >
-    <Typography sx={{ fontSize: "0.75rem", fontWeight: 900, color: "#6f8a81", mb: 0.4 }}>
+    <Typography
+      sx={{
+        fontSize: "0.75rem",
+        fontWeight: 900,
+        color: "#6f8a81",
+        mb: 0.4,
+        "@media (max-width:1599px)": { fontSize: "0.49rem", mb: 0.1 },
+        "@media (max-width:599px)": { fontSize: "0.42rem" }
+      }}
+    >
       {label}
     </Typography>
-    <Typography sx={{ fontSize: "1rem", fontWeight: 1000, color, direction: "ltr" }}>
+    <Typography
+      sx={{
+        fontSize: "1rem",
+        fontWeight: 1000,
+        color,
+        direction: "ltr",
+        "@media (max-width:1599px)": { fontSize: "0.68rem" },
+        "@media (max-width:599px)": { fontSize: "0.58rem" }
+      }}
+    >
       {formatMoney(value)}
     </Typography>
   </Paper>
@@ -201,6 +254,11 @@ const StudentRegFeesDialog = ({
   apiBaseUrl = "http://localhost:5258",
   onSaved
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
   const [loadingContext, setLoadingContext] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -231,6 +289,38 @@ const StudentRegFeesDialog = ({
   const nationalId = getStudentValue(student, "nationalId", "NationalId");
   const studentTel = getStudentValue(student, "studentTel", "tel", "StudentTel", "Tel");
   const accountGuid = getStudentValue(student, "accountGuid", "AccountGuid", "studentGuid");
+
+  const compactAutocompleteProps = isCompact
+    ? {
+        ListboxProps: {
+          sx: {
+            maxHeight: isPhone ? 175 : 220,
+            p: 0.25,
+            "& .MuiAutocomplete-option": {
+              minHeight: isPhone ? 29 : 33,
+              py: isPhone ? 0.35 : 0.5,
+              px: isPhone ? 0.65 : 0.85,
+              fontSize: isPhone ? "0.5rem" : "0.58rem",
+              lineHeight: 1.2
+            }
+          }
+        },
+        componentsProps: {
+          paper: {
+            sx: {
+              mt: 0.25,
+              borderRadius: 1.25,
+              boxShadow: "0 8px 24px rgba(31,45,61,0.16)",
+              "& .MuiAutocomplete-noOptions, & .MuiAutocomplete-loading": {
+                py: 0.7,
+                px: 0.8,
+                fontSize: isPhone ? "0.5rem" : "0.58rem"
+              }
+            }
+          }
+        }
+      }
+    : {};
 
   const totals = useMemo(() => {
     return selectedFees.reduce(
@@ -735,79 +825,263 @@ const StudentRegFeesDialog = ({
     }
   ];
 
+  // أعمدة مختصرة ومناسبة للموبايل/التابلت
+  const compactAvailableFeesColumns = isPhone
+    ? [
+        {
+          ...availableFeesColumns.find((c) => c.field === "actions"),
+          width: 34,
+          minWidth: 34,
+          maxWidth: 34
+        },
+        {
+          ...availableFeesColumns.find((c) => c.field === "feeName"),
+          headerName: "الرسم",
+          flex: 1,
+          minWidth: 120
+        },
+        {
+          ...availableFeesColumns.find((c) => c.field === "total"),
+          headerName: "القيمة",
+          width: 62,
+          minWidth: 62,
+          maxWidth: 62
+        }
+      ]
+    : isTablet
+      ? [
+          {
+            ...availableFeesColumns.find((c) => c.field === "actions"),
+            width: 40,
+            minWidth: 40,
+            maxWidth: 40
+          },
+          {
+            ...availableFeesColumns.find((c) => c.field === "code"),
+            width: 54,
+            minWidth: 54,
+            maxWidth: 54
+          },
+          {
+            ...availableFeesColumns.find((c) => c.field === "feeName"),
+            flex: 1,
+            minWidth: 150
+          },
+          {
+            ...availableFeesColumns.find((c) => c.field === "total"),
+            width: 76,
+            minWidth: 76,
+            maxWidth: 76
+          }
+        ]
+      : availableFeesColumns;
+
+  const compactSelectedFeesColumns = isPhone
+    ? [
+        {
+          ...selectedFeesColumns.find((c) => c.field === "actions"),
+          width: 34,
+          minWidth: 34,
+          maxWidth: 34
+        },
+        {
+          ...selectedFeesColumns.find((c) => c.field === "feeName"),
+          headerName: "الرسم",
+          flex: 1,
+          minWidth: 120
+        },
+        {
+          ...selectedFeesColumns.find((c) => c.field === "subTotal"),
+          headerName: "الإجمالي",
+          width: 66,
+          minWidth: 66,
+          maxWidth: 66
+        }
+      ]
+    : isTablet
+      ? [
+          {
+            ...selectedFeesColumns.find((c) => c.field === "actions"),
+            width: 40,
+            minWidth: 40,
+            maxWidth: 40
+          },
+          {
+            ...selectedFeesColumns.find((c) => c.field === "feeName"),
+            flex: 1,
+            minWidth: 150
+          },
+          {
+            ...selectedFeesColumns.find((c) => c.field === "cost"),
+            width: 72,
+            minWidth: 72,
+            maxWidth: 72
+          },
+          {
+            ...selectedFeesColumns.find((c) => c.field === "tax"),
+            width: 68,
+            minWidth: 68,
+            maxWidth: 68
+          },
+          {
+            ...selectedFeesColumns.find((c) => c.field === "subTotal"),
+            width: 76,
+            minWidth: 76,
+            maxWidth: 76
+          }
+        ]
+      : selectedFeesColumns;
+
   return (
     <Dialog
       open={open}
       onClose={saving ? undefined : onClose}
       fullWidth
       maxWidth="xl"
+      fullScreen={isPhone}
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
       PaperProps={{
         sx: {
-          borderRadius: 3,
+          width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "1180px" : undefined,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
           direction: "ltr",
-          height: { xs: "96vh", md: "92vh" }
+          height: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "92vh",
+          maxHeight: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "92vh",
+          m: 0,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
         }
       }}
     >
       <DialogTitle
         sx={{
-          p: 2,
+          p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
           borderBottom: "1px solid #e5efea",
+          flexShrink: 0,
           backgroundColor: softBg
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
-          <Stack direction="row" alignItems="center" gap={1}>
-            <ReceiptLongIcon sx={{ color: primaryDark }} />
+          <Stack direction="row" alignItems="center" gap={isCompact ? 0.35 : 1}>
+            <ReceiptLongIcon sx={{ color: primaryDark, fontSize: isPhone ? 16 : isTablet ? 19 : undefined }} />
             <Box>
-              <Typography sx={{ fontWeight: 1000, color: textColor }}>
+              <Typography
+                sx={{
+                  fontWeight: 1000,
+                  color: textColor,
+                  fontSize: isPhone ? "0.66rem" : isTablet ? "0.76rem" : undefined,
+                  lineHeight: 1.15
+                }}
+              >
                 استمارة رسوم
               </Typography>
-              <Typography sx={{ fontSize: "0.8rem", fontWeight: 800, color: "#6f8a81" }}>
+              <Typography
+                sx={{
+                  fontSize: isPhone ? "0.43rem" : isTablet ? "0.51rem" : "0.8rem",
+                  fontWeight: 800,
+                  color: "#6f8a81",
+                  lineHeight: 1.15
+                }}
+              >
                 اختيار نوع المستند ثم الرسوم ثم مندوب البيع
               </Typography>
             </Box>
           </Stack>
 
-          <IconButton disabled={saving} onClick={onClose}>
-            <CloseIcon />
+          <IconButton
+            disabled={saving}
+            onClick={onClose}
+            sx={{
+              width: isPhone ? 27 : isTablet ? 31 : undefined,
+              height: isPhone ? 27 : isTablet ? 31 : undefined
+            }}
+          >
+            <CloseIcon sx={{ fontSize: isPhone ? 16 : isTablet ? 18 : undefined }} />
           </IconButton>
         </Stack>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 2, backgroundColor: "#fbfdfc" }}>
+      <DialogContent
+        sx={{
+          p: isPhone ? 0.3 : isTablet ? 0.55 : 2,
+          backgroundColor: "#fbfdfc",
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0,
+
+          "& .MuiInputLabel-root": {
+            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+          },
+          "& .MuiInputBase-input, & .MuiAutocomplete-input": {
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            py: isPhone ? 0.5 : isTablet ? 0.65 : undefined
+          },
+          "& .MuiOutlinedInput-root": {
+            minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+            borderRadius: isCompact ? 1.25 : undefined
+          },
+          "& .MuiChip-root": {
+            height: isPhone ? 20 : isTablet ? 23 : undefined,
+            fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined
+          }
+        }}
+      >
         {loadingContext ? (
-          <Box sx={{ py: 8, textAlign: "center" }}>
+          <Box sx={{ py: isPhone ? 3 : isTablet ? 4 : 8, textAlign: "center" }}>
             <CircularProgress sx={{ color: primaryDark }} />
-            <Typography sx={{ mt: 2, fontWeight: 900, color: textColor }}>
+            <Typography
+              sx={{
+                mt: isCompact ? 0.7 : 2,
+                fontWeight: 900,
+                color: textColor,
+                fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined
+              }}
+            >
               جاري تجهيز استمارة الرسوم...
             </Typography>
           </Box>
         ) : (
-          <Stack gap={2}>
+          <Stack gap={isPhone ? 0.45 : isTablet ? 0.65 : 2}>
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: "1px solid #e1eee8",
                 backgroundColor: "#fff"
               }}
             >
-              <Grid container spacing={1.5}>
-                <Grid item xs={12} md={3}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
+                <Grid item xs={6} sm={6} md={3}>
                   <InfoCard label="اسم الطالب" value={studentName} />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={6} sm={6} md={3}>
                   <InfoCard label="رقم الهوية" value={nationalId} />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={6} sm={6} md={3}>
                   <InfoCard label="رقم الجوال" value={studentTel} />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={6} sm={6} md={3}>
                   <TextField
                     fullWidth
                     type="datetime-local"
@@ -830,22 +1104,25 @@ const StudentRegFeesDialog = ({
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: "1px solid #e1eee8",
                 backgroundColor: "#fff"
               }}
             >
-              <Grid container spacing={1.5} alignItems="center">
-                <Grid item xs={12} md={5}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5} alignItems="center">
+                <Grid item xs={7} sm={7} md={5}>
                   <Autocomplete
+                    {...compactAutocompleteProps}
                     options={documents}
                     value={selectedDoc}
                     loading={documentsLoading}
                     onChange={(_, value) => handleSelectDoc(value)}
-                    getOptionLabel={(option) =>
-                      option ? `${option.code || ""} - ${option.docName || ""}` : ""
-                    }
+                    getOptionLabel={(option) => {
+                      if (!option) return "";
+                      const full = `${option.code || ""} - ${option.docName || ""}`;
+                      return isCompact && full.length > 42 ? `${full.slice(0, 42)}…` : full;
+                    }}
                     isOptionEqualToValue={(option, value) =>
                       String(option?.docGuid || "") === String(value?.docGuid || "")
                     }
@@ -873,7 +1150,7 @@ const StudentRegFeesDialog = ({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={1.2}>
+                <Grid item xs={5} sm={5} md={1.2}>
                   <Button
                     fullWidth
                     variant="outlined"
@@ -881,9 +1158,10 @@ const StudentRegFeesDialog = ({
                     onClick={() => loadDocuments(docSearch)}
                     disabled={documentsLoading}
                     sx={{
-                      height: 40,
-                      borderRadius: 2,
+                      height: isPhone ? 31 : isTablet ? 35 : 40,
+                      borderRadius: isCompact ? 1.25 : 2,
                       fontWeight: 900,
+                      fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined,
                       color: primaryDark,
                       borderColor: primaryLight,
                       direction: "ltr"
@@ -893,8 +1171,9 @@ const StudentRegFeesDialog = ({
                   </Button>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={7} sm={7} md={4}>
                   <Autocomplete
+                    {...compactAutocompleteProps}
                     options={salesmen}
                     value={selectedSalesman}
                     loading={salesmenLoading}
@@ -933,7 +1212,7 @@ const StudentRegFeesDialog = ({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={1.8}>
+                <Grid item xs={5} sm={5} md={1.8}>
                   <Stack direction="row" gap={1} justifyContent="flex-start">
                     <Chip
                       label={docInfo?.chkVat ? "ضريبة مفعلة" : "بدون ضريبة"}
@@ -986,24 +1265,36 @@ const StudentRegFeesDialog = ({
               </Grid>
             </Paper>
 
-            <Grid container spacing={2}>
+            <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}>
               <Grid item xs={12} md={6}>
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 1.5,
-                    borderRadius: 3,
+                    p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
+                    borderRadius: isCompact ? 1.5 : 3,
                     border: "1px solid #e1eee8",
                     backgroundColor: "#fff",
                     height: "100%"
                   }}
                 >
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography sx={{ fontWeight: 1000, color: textColor }}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={isCompact ? 0.35 : 1}
+                    gap={isCompact ? 0.35 : 1}
+                  >
+                    <Typography
+                      sx={{
+                        fontWeight: 1000,
+                        color: textColor,
+                        fontSize: isPhone ? "0.48rem" : isTablet ? "0.57rem" : undefined
+                      }}
+                    >
                       الرسوم المتاحة
                     </Typography>
 
-                    <Stack direction="row" gap={1}>
+                    <Stack direction="row" gap={isCompact ? 0.25 : 1} sx={{ minWidth: 0 }}>
                       <TextField
                         size="small"
                         placeholder="بحث في الرسوم"
@@ -1012,7 +1303,12 @@ const StudentRegFeesDialog = ({
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleSearchFees();
                         }}
-                        sx={{ width: 210 }}
+                        sx={{
+                          width: isPhone ? 92 : isTablet ? 135 : 210,
+                          "& .MuiInputBase-input": {
+                            fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+                          }
+                        }}
                       />
 
                       <Button
@@ -1020,8 +1316,11 @@ const StudentRegFeesDialog = ({
                         onClick={handleSearchFees}
                         disabled={feesLoading || !selectedDoc?.docGuid}
                         sx={{
-                          borderRadius: 2,
+                          borderRadius: isCompact ? 1.2 : 2,
                           fontWeight: 900,
+                          minWidth: isPhone ? 44 : isTablet ? 52 : undefined,
+                          px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
+                          fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                           color: primaryDark,
                           borderColor: primaryLight
                         }}
@@ -1031,12 +1330,22 @@ const StudentRegFeesDialog = ({
                     </Stack>
                   </Stack>
 
-                  <Box sx={{ height: 355 }}>
+                  <Box
+                    sx={{
+                      height: isPhone ? 235 : isTablet ? 285 : 355,
+                      minWidth: 0,
+                      width: "100%"
+                    }}
+                  >
                     <DataGrid
                       rows={availableFees}
-                      columns={availableFeesColumns}
+                      columns={compactAvailableFeesColumns}
                       loading={feesLoading}
                       disableRowSelectionOnClick
+                      disableColumnMenu={isCompact}
+                      disableColumnFilter={isCompact}
+                      rowHeight={isPhone ? 30 : isTablet ? 36 : undefined}
+                      columnHeaderHeight={isPhone ? 30 : isTablet ? 36 : undefined}
                       hideFooterSelectedRowCount
                       pageSizeOptions={[5, 10, 25]}
                       initialState={{
@@ -1046,17 +1355,78 @@ const StudentRegFeesDialog = ({
                       }}
                       sx={{
                         border: "1px solid #e4eeea",
-                        borderRadius: 2,
+                        borderRadius: isCompact ? 1.2 : 2,
                         direction: "ltr",
+                        width: "100%",
+                        minWidth: 0,
+                        overflow: "hidden",
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.55rem" : undefined,
+
+                        "& .MuiDataGrid-main": {
+                          minWidth: 0
+                        },
+
                         "& .MuiDataGrid-columnHeaders": {
                           backgroundColor: softBg,
-                          fontWeight: 900
+                          fontWeight: 900,
+                          minHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`,
+                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`
                         },
+
+                        "& .MuiDataGrid-columnHeader": {
+                          px: isPhone ? 0.15 : isTablet ? 0.3 : undefined
+                        },
+
                         "& .MuiDataGrid-columnHeaderTitle": {
-                          fontWeight: 1000
+                          fontWeight: 1000,
+                          fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                          lineHeight: 1.05,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          textAlign: "center"
                         },
+
                         "& .MuiDataGrid-cell": {
-                          fontWeight: 800
+                          fontWeight: 800,
+                          fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
+                          px: isPhone ? 0.12 : isTablet ? 0.28 : undefined,
+                          lineHeight: 1.1,
+                          overflow: "hidden"
+                        },
+
+                        "& .MuiDataGrid-cellContent": {
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap"
+                        },
+
+                        "& .MuiDataGrid-row": {
+                          minHeight: `${isPhone ? 30 : isTablet ? 36 : 52}px !important`,
+                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 52}px !important`
+                        },
+
+                        "& .MuiIconButton-root": {
+                          width: isPhone ? 24 : isTablet ? 27 : undefined,
+                          height: isPhone ? 24 : isTablet ? 27 : undefined,
+                          p: isPhone ? 0.25 : undefined
+                        },
+
+                        "& .MuiSvgIcon-root": {
+                          fontSize: isPhone ? 14 : isTablet ? 16 : undefined
+                        },
+
+                        "& .MuiDataGrid-footerContainer": {
+                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined
+                        },
+
+                        "& .MuiTablePagination-toolbar": {
+                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined,
+                          px: isPhone ? 0.15 : isTablet ? 0.3 : undefined
+                        },
+
+                        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+                          fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
                         }
                       }}
                     />
@@ -1068,15 +1438,27 @@ const StudentRegFeesDialog = ({
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 1.5,
-                    borderRadius: 3,
+                    p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
+                    borderRadius: isCompact ? 1.5 : 3,
                     border: "1px solid #e1eee8",
                     backgroundColor: "#fff",
                     height: "100%"
                   }}
                 >
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography sx={{ fontWeight: 1000, color: textColor }}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={isCompact ? 0.35 : 1}
+                    gap={isCompact ? 0.35 : 1}
+                  >
+                    <Typography
+                      sx={{
+                        fontWeight: 1000,
+                        color: textColor,
+                        fontSize: isPhone ? "0.48rem" : isTablet ? "0.57rem" : undefined
+                      }}
+                    >
                       الرسوم المختارة
                     </Typography>
 
@@ -1086,8 +1468,11 @@ const StudentRegFeesDialog = ({
                       onClick={() => setSelectedFees([])}
                       disabled={selectedFees.length === 0}
                       sx={{
-                        borderRadius: 2,
+                        borderRadius: isCompact ? 1.2 : 2,
                         fontWeight: 900,
+                        minWidth: isPhone ? 48 : isTablet ? 58 : undefined,
+                        px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined,
                         color: "#d32f2f",
                         borderColor: "#ffcdd2",
                         direction: "ltr"
@@ -1097,11 +1482,21 @@ const StudentRegFeesDialog = ({
                     </Button>
                   </Stack>
 
-                  <Box sx={{ height: 355 }}>
+                  <Box
+                    sx={{
+                      height: isPhone ? 235 : isTablet ? 285 : 355,
+                      minWidth: 0,
+                      width: "100%"
+                    }}
+                  >
                     <DataGrid
                       rows={selectedFees}
-                      columns={selectedFeesColumns}
+                      columns={compactSelectedFeesColumns}
                       disableRowSelectionOnClick
+                      disableColumnMenu={isCompact}
+                      disableColumnFilter={isCompact}
+                      rowHeight={isPhone ? 30 : isTablet ? 36 : undefined}
+                      columnHeaderHeight={isPhone ? 30 : isTablet ? 36 : undefined}
                       hideFooterSelectedRowCount
                       pageSizeOptions={[5, 10, 25]}
                       initialState={{
@@ -1111,17 +1506,78 @@ const StudentRegFeesDialog = ({
                       }}
                       sx={{
                         border: "1px solid #e4eeea",
-                        borderRadius: 2,
+                        borderRadius: isCompact ? 1.2 : 2,
                         direction: "ltr",
+                        width: "100%",
+                        minWidth: 0,
+                        overflow: "hidden",
+                        fontSize: isPhone ? "0.46rem" : isTablet ? "0.55rem" : undefined,
+
+                        "& .MuiDataGrid-main": {
+                          minWidth: 0
+                        },
+
                         "& .MuiDataGrid-columnHeaders": {
                           backgroundColor: softBg,
-                          fontWeight: 900
+                          fontWeight: 900,
+                          minHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`,
+                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`
                         },
+
+                        "& .MuiDataGrid-columnHeader": {
+                          px: isPhone ? 0.15 : isTablet ? 0.3 : undefined
+                        },
+
                         "& .MuiDataGrid-columnHeaderTitle": {
-                          fontWeight: 1000
+                          fontWeight: 1000,
+                          fontSize: isPhone ? "0.42rem" : isTablet ? "0.51rem" : undefined,
+                          lineHeight: 1.05,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          textAlign: "center"
                         },
+
                         "& .MuiDataGrid-cell": {
-                          fontWeight: 800
+                          fontWeight: 800,
+                          fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : undefined,
+                          px: isPhone ? 0.12 : isTablet ? 0.28 : undefined,
+                          lineHeight: 1.1,
+                          overflow: "hidden"
+                        },
+
+                        "& .MuiDataGrid-cellContent": {
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap"
+                        },
+
+                        "& .MuiDataGrid-row": {
+                          minHeight: `${isPhone ? 30 : isTablet ? 36 : 52}px !important`,
+                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 52}px !important`
+                        },
+
+                        "& .MuiIconButton-root": {
+                          width: isPhone ? 24 : isTablet ? 27 : undefined,
+                          height: isPhone ? 24 : isTablet ? 27 : undefined,
+                          p: isPhone ? 0.25 : undefined
+                        },
+
+                        "& .MuiSvgIcon-root": {
+                          fontSize: isPhone ? 14 : isTablet ? 16 : undefined
+                        },
+
+                        "& .MuiDataGrid-footerContainer": {
+                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined
+                        },
+
+                        "& .MuiTablePagination-toolbar": {
+                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined,
+                          px: isPhone ? 0.15 : isTablet ? 0.3 : undefined
+                        },
+
+                        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+                          fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
                         }
                       }}
                     />
@@ -1133,18 +1589,18 @@ const StudentRegFeesDialog = ({
             <Paper
               elevation={0}
               sx={{
-                p: 1.5,
-                borderRadius: 3,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
+                borderRadius: isCompact ? 1.5 : 3,
                 border: "1px solid #e1eee8",
                 backgroundColor: "#fff"
               }}
             >
-              <Grid container spacing={1.5}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     multiline
-                    minRows={3}
+                    minRows={isPhone ? 1 : isTablet ? 2 : 3}
                     label="ملاحظات"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -1153,8 +1609,8 @@ const StudentRegFeesDialog = ({
 
                 <Grid item xs={12} md={6}>
                   <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    gap={1}
+                    direction="row"
+                    gap={isCompact ? 0.3 : 1}
                     justifyContent="flex-end"
                     alignItems="stretch"
                     sx={{ height: "100%" }}
@@ -1174,8 +1630,10 @@ const StudentRegFeesDialog = ({
 
       <DialogActions
         sx={{
-          p: 2,
+          p: isPhone ? 0.35 : isTablet ? 0.55 : 2,
+          gap: isCompact ? 0.4 : 1,
           backgroundColor: "#fff",
+          flexShrink: 0,
           justifyContent: "space-between",
           direction: "ltr"
         }}
@@ -1185,8 +1643,11 @@ const StudentRegFeesDialog = ({
           disabled={saving}
           variant="outlined"
           sx={{
-            borderRadius: 2,
+            borderRadius: isCompact ? 1.2 : 2,
             fontWeight: 900,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 1 : isTablet ? 1.3 : undefined,
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined,
             color: "#d32f2f",
             borderColor: "#ffcdd2"
           }}
@@ -1200,9 +1661,11 @@ const StudentRegFeesDialog = ({
           variant="contained"
           startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
           sx={{
-            borderRadius: 2,
+            borderRadius: isCompact ? 1.2 : 2,
             fontWeight: 1000,
-            px: 4,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 1.2 : isTablet ? 1.6 : 4,
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined,
             backgroundColor: primaryColor,
             direction: "ltr",
             "&:hover": {

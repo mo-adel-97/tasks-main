@@ -6,10 +6,12 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Backdrop,
   Box,
   Button,
   CircularProgress,
+  GlobalStyles,
   IconButton,
   Menu,
   MenuItem,
@@ -18,6 +20,7 @@ import {
   Tab,
   Tabs,
   TextField,
+  Toolbar,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -29,6 +32,8 @@ import {
 } from "@mui/x-data-grid";
 import PersonAddAlt1Icon
   from "@mui/icons-material/PersonAddAlt1";
+import MenuRoundedIcon
+  from "@mui/icons-material/MenuRounded";
 import RefreshIcon
   from "@mui/icons-material/Refresh";
 import FileDownloadIcon
@@ -49,6 +54,7 @@ import RegisterDocumentDialog
   from "../components/RegisterDocumentDialog";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -168,6 +174,19 @@ const showError = async (message) => {
     confirmButtonText: "حسنًا",
     confirmButtonColor: "#ae1e21"
   });
+};
+
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) {
+    return parts.join(" ");
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
 };
 
 
@@ -318,6 +337,21 @@ const normalizeStudentRow = (item, index) => {
 const NewStudentsPage = () => {
   const theme = useTheme();
 
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
   const isLargeScreen = useMediaQuery(
     theme.breakpoints.up("xl")
   );
@@ -325,6 +359,15 @@ const NewStudentsPage = () => {
   const isMediumScreen = useMediaQuery(
     theme.breakpoints.up("lg")
   );
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
 
   const user = useMemo(() => {
     try {
@@ -928,31 +971,136 @@ const NewStudentsPage = () => {
   };
 
   const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        field: "actions",
-        headerName: "الإجراءات",
-        width: 58,
-        minWidth: 58,
-        maxWidth: 58,
-        sortable: false,
-        filterable: false,
-        align: "center",
-        headerAlign: "center",
-        renderCell: (params) => (
-          <Tooltip title="الإجراءات">
-            <IconButton
-              size="small"
-              onClick={(event) => {
-                setAnchorEl(event.currentTarget);
-                setMenuRow(params.row);
+    const actionColumn = {
+      field: "actions",
+      headerName: isCompact ? "" : "الإجراءات",
+      width: isPhone ? 42 : isTablet ? 48 : 58,
+      minWidth: isPhone ? 42 : isTablet ? 48 : 58,
+      maxWidth: isPhone ? 42 : isTablet ? 48 : 58,
+      sortable: false,
+      filterable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Tooltip title="الإجراءات">
+          <IconButton
+            size="small"
+            onClick={(event) => {
+              setAnchorEl(event.currentTarget);
+              setMenuRow(params.row);
+            }}
+            sx={{
+              width: isPhone ? 22 : isTablet ? 28 : 34,
+              height: isPhone ? 22 : isTablet ? 28 : 34,
+              p: 0,
+              color: "#057546",
+              backgroundColor: isCompact
+                ? "#eef8f3"
+                : undefined
+            }}
+          >
+            <MoreVertIcon
+              sx={{
+                fontSize: isPhone ? 14 : isTablet ? 17 : 20
               }}
-            >
-              <MoreVertIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )
-      },
+            />
+          </IconButton>
+        </Tooltip>
+      )
+    };
+
+    if (isPhone) {
+      return [
+        {
+          ...actionColumn,
+          width: 30,
+          minWidth: 30,
+          maxWidth: 30
+        },
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          width: 76,
+          minWidth: 76,
+          maxWidth: 76,
+          renderCell: (params) =>
+            shortStudentName(params.row.studentName)
+        },
+        {
+          field: "nationalId",
+          headerName: "الهوية",
+          width: 66,
+          minWidth: 66,
+          maxWidth: 66
+        },
+        {
+          field: "diplomName",
+          headerName: "الدبلوم/الدورة",
+          width: 88,
+          minWidth: 88,
+          maxWidth: 88
+        },
+        {
+          field: "manFullName",
+          headerName: "المندوب",
+          width: 68,
+          minWidth: 68,
+          maxWidth: 68
+        }
+      ];
+    }
+
+    if (isTablet) {
+      return [
+        {
+          ...actionColumn,
+          width: 42,
+          minWidth: 42,
+          maxWidth: 42
+        },
+        {
+          field: "regDate",
+          headerName: "التاريخ",
+          flex: 0.7,
+          minWidth: 78
+        },
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          flex: 1,
+          minWidth: 100,
+          renderCell: (params) =>
+            shortStudentName(params.row.studentName)
+        },
+        {
+          field: "nationalId",
+          headerName: "الهوية",
+          flex: 0.8,
+          minWidth: 82
+        },
+        {
+          field: "diplomName",
+          headerName: "الدبلوم/الدورة",
+          flex: 1.05,
+          minWidth: 108
+        },
+        {
+          field: "batchOrDate",
+          headerName: "الدفعة",
+          flex: 0.78,
+          minWidth: 82
+        },
+        {
+          field: "manFullName",
+          headerName: "المندوب",
+          flex: 0.86,
+          minWidth: 88
+        }
+      ];
+    }
+
+    const baseColumns = [
+      actionColumn,
       {
         field: "regTypeName",
         headerName: "نوع التسجيل",
@@ -1035,63 +1183,261 @@ const NewStudentsPage = () => {
       (column) =>
         column.field !== "batchOrDate"
     );
-  }, [isLargeScreen, isMediumScreen]);
+  }, [
+    isPhone,
+    isTablet,
+    isCompact,
+    isLargeScreen,
+    isMediumScreen
+  ]);
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         direction: "ltr",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            },
+
+            ".swal2-popup": {
+              width: isPhone
+                ? "88vw !important"
+                : isTablet
+                  ? "540px !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.75rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-title": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.82rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-html-container, .swal2-input-label": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.56rem !important"
+                : isTablet
+                  ? "0.68rem !important"
+                  : undefined
+            },
+
+            ".swal2-input": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.58rem !important"
+                : isTablet
+                  ? "0.68rem !important"
+                  : undefined
+            },
+
+            ".swal2-confirm, .swal2-cancel": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.5rem !important"
+                : isTablet
+                  ? "0.6rem !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.4rem 0.7rem !important"
+                : undefined
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background:
+              "rgba(255,255,255,.97)",
+            backdropFilter:
+              "blur(14px)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: {
+                xs: 0.75,
+                sm: 1
+              },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: {
+                  xs: 36,
+                  sm: 40
+                },
+                height: {
+                  xs: 36,
+                  sm: 40
+                },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 22
+                  }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.67rem",
+                  sm: "0.79rem"
+                },
+                color: "#17372b",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              قائمة الطلاب الجدد
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md: `${SIDEBAR_WIDTH}px`
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
           },
-          p: {
-            xs: 1,
-            md: 2
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
+          px: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
+          },
+          py: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
+          },
+          boxSizing: "border-box",
+          overflowX: "hidden",
+
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 2
           }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 1.4,
-            borderRadius: 4,
+            p: isPhone ? 0.8 : isTablet ? 1.05 : 2,
+            mb: isPhone ? 0.7 : isTablet ? 0.85 : 1.4,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
             direction: "ltr"
           }}
         >
           <Stack
-            direction={{
-              xs: "column",
-              lg: "row"
-            }}
-            spacing={1.2}
-            alignItems={{
-              xs: "stretch",
-              lg: "center"
+            direction="row"
+            spacing={isPhone ? 0.65 : isTablet ? 0.8 : 1.2}
+            alignItems="center"
+            sx={{
+              flexWrap: isCompact ? "wrap" : "nowrap",
+              rowGap: isPhone ? 0.75 : isTablet ? 0.9 : 0,
+              columnGap: isPhone ? 0.55 : isTablet ? 0.7 : 0
             }}
           >
             <Stack
               direction="row"
               alignItems="center"
               spacing={1}
-              sx={{ flex: 1 }}
+              sx={{
+                flex: 1,
+                ...(isCompact && {
+                  flexBasis: "100%",
+                  width: "100%"
+                })
+              }}
             >
               <PersonAddAlt1Icon
                 sx={{
-                  fontSize: 38,
+                  fontSize: isPhone ? 20 : isTablet ? 24 : 38,
                   color: "#057546"
                 }}
               />
@@ -1101,7 +1447,11 @@ const NewStudentsPage = () => {
                   sx={{
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    fontSize: "1.25rem",
+                    fontSize: isPhone
+                      ? "0.7rem"
+                      : isTablet
+                        ? "0.86rem"
+                        : "1.25rem",
                     color: "#173b2b"
                   }}
                 >
@@ -1112,7 +1462,12 @@ const NewStudentsPage = () => {
                   sx={{
                     fontFamily: "Cairo",
                     color: "#708179",
-                    fontSize: ".78rem"
+                    fontSize: isPhone
+                      ? "0.38rem"
+                      : isTablet
+                        ? "0.48rem"
+                        : ".78rem",
+                    display: isPhone ? "none" : "block"
                   }}
                 >
                   عرض وقبول التسجيلات الجديدة حسب الفرع ونوع البرنامج
@@ -1128,10 +1483,72 @@ const NewStudentsPage = () => {
               onChange={(event) =>
                 setBranchGuid(event.target.value)
               }
+              size={isCompact ? "small" : "medium"}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      maxHeight: isPhone
+                        ? 280
+                        : isTablet
+                          ? 360
+                          : 520,
+                      mt: 0.4,
+
+                      "& .MuiMenuItem-root": {
+                        minHeight: isPhone
+                          ? 30
+                          : isTablet
+                            ? 34
+                            : 44,
+                        py: isPhone
+                          ? 0.35
+                          : isTablet
+                            ? 0.45
+                            : 0.8,
+                        px: isPhone
+                          ? 1
+                          : isTablet
+                            ? 1.2
+                            : 1.8,
+                        fontFamily: "Cairo",
+                        fontWeight: 700,
+                        fontSize: isPhone
+                          ? "0.55rem"
+                          : isTablet
+                            ? "0.65rem"
+                            : "0.9rem",
+                        lineHeight: 1.35,
+                        whiteSpace: "normal"
+                      }
+                    }
+                  }
+                }
+              }}
               sx={{
-                minWidth: {
-                  xs: "100%",
-                  lg: 360
+                minWidth: 0,
+                flex: isCompact ? "1 1 100%" : "0 0 360px",
+
+                "& .MuiInputLabel-root": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+
+                "& .MuiInputBase-input": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.52rem"
+                    : isTablet
+                      ? "0.62rem"
+                      : undefined
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone ? 31 : isTablet ? 34 : undefined
                 }
               }}
             >
@@ -1147,17 +1564,43 @@ const NewStudentsPage = () => {
 
             <Button
               variant="outlined"
+              size={isCompact ? "small" : "medium"}
               startIcon={<RefreshIcon />}
               onClick={loadStudents}
               disabled={loading}
+              sx={{
+                flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
+                minWidth: 0,
+                minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isPhone
+                  ? "0.52rem"
+                  : isTablet
+                    ? "0.62rem"
+                    : undefined
+              }}
             >
               تحديث
             </Button>
 
             <Button
               variant="outlined"
+              size={isCompact ? "small" : "medium"}
               startIcon={<FileDownloadIcon />}
               onClick={exportCsv}
+              sx={{
+                flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
+                minWidth: 0,
+                minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isPhone
+                  ? "0.52rem"
+                  : isTablet
+                    ? "0.62rem"
+                    : undefined
+              }}
             >
               تصدير
             </Button>
@@ -1167,11 +1610,12 @@ const NewStudentsPage = () => {
         <Paper
           elevation={0}
           sx={{
-            minHeight: {
-              xs: 560,
-              md: "calc(100vh - 145px)"
-            },
-            borderRadius: 4,
+            minHeight: isPhone
+              ? "calc(100dvh - 165px)"
+              : isTablet
+                ? "calc(100dvh - 180px)"
+                : "calc(100vh - 145px)",
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 4,
             border:
               "1px solid rgba(5,117,70,.14)",
             overflow: "hidden",
@@ -1194,7 +1638,15 @@ const NewStudentsPage = () => {
               "& .MuiTab-root": {
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                minHeight: 58
+                minHeight: isPhone ? 38 : isTablet ? 44 : 58,
+                minWidth: 0,
+                px: isPhone ? 0.25 : isTablet ? 0.5 : 1,
+                fontSize: isPhone
+                  ? "0.36rem"
+                  : isTablet
+                    ? "0.46rem"
+                    : undefined,
+                lineHeight: 1.25
               }
             }}
           >
@@ -1211,11 +1663,11 @@ const NewStudentsPage = () => {
           <Box
             sx={{
               width: "100%",
-              minHeight: {
-                xs: 430,
-                md: 520,
-                xl: 590
-              },
+              minHeight: isPhone
+                ? 360
+                : isTablet
+                  ? 430
+                  : 520,
               overflow: "hidden"
             }}
           >
@@ -1226,8 +1678,20 @@ const NewStudentsPage = () => {
               columns={columns}
               loading={loading}
               disableRowSelectionOnClick
-              rowHeight={54}
-              columnHeaderHeight={54}
+              rowHeight={
+                isPhone
+                  ? 31
+                  : isTablet
+                    ? 38
+                    : 54
+              }
+              columnHeaderHeight={
+                isPhone
+                  ? 30
+                  : isTablet
+                    ? 36
+                    : 54
+              }
               density="compact"
               pageSizeOptions={[25, 50, 100]}
               initialState={{
@@ -1239,7 +1703,9 @@ const NewStudentsPage = () => {
                 }
               }}
               slots={{
-                toolbar: GridToolbar
+                toolbar: isPhone
+                  ? undefined
+                  : GridToolbar
               }}
               slotProps={{
                 toolbar: {
@@ -1256,6 +1722,22 @@ const NewStudentsPage = () => {
 
                 "& .MuiDataGrid-main": {
                   overflow: "hidden"
+                },
+
+                "& .MuiDataGrid-toolbarContainer": {
+                  display: isPhone ? "none" : "flex",
+                  p: isTablet ? 0.4 : 1,
+                  gap: isTablet ? 0.4 : 1
+                },
+
+                "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  fontSize: isTablet
+                    ? "0.45rem"
+                    : undefined,
+                  minWidth: isTablet ? 0 : undefined,
+                  px: isTablet ? 0.45 : undefined
                 },
 
                 "& .MuiDataGrid-virtualScroller": {
@@ -1276,17 +1758,25 @@ const NewStudentsPage = () => {
                 },
 
                 "& .MuiDataGrid-columnHeader": {
-                  px: 0.7
+                  px: isPhone ? 0.08 : isTablet ? 0.3 : 0.7
+                },
+
+                "& .MuiDataGrid-columnSeparator": {
+                  display: isCompact ? "none" : undefined
+                },
+
+                "& .MuiDataGrid-columnHeaderDraggableContainer": {
+                  width: "100%"
                 },
 
                 "& .MuiDataGrid-columnHeaderTitle": {
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: {
-                    xs: "0.72rem",
-                    md: "0.78rem",
-                    xl: "0.82rem"
-                  },
+                  fontSize: isPhone
+                    ? "0.31rem"
+                    : isTablet
+                      ? "0.42rem"
+                      : "0.78rem",
                   whiteSpace: "normal",
                   lineHeight: 1.25,
                   textAlign: "center"
@@ -1295,12 +1785,12 @@ const NewStudentsPage = () => {
                 "& .MuiDataGrid-cell": {
                   fontFamily: "Cairo",
                   fontWeight: 700,
-                  fontSize: {
-                    xs: "0.72rem",
-                    md: "0.78rem",
-                    xl: "0.82rem"
-                  },
-                  px: 0.7,
+                  fontSize: isPhone
+                    ? "0.31rem"
+                    : isTablet
+                      ? "0.42rem"
+                      : "0.78rem",
+                  px: isPhone ? 0.08 : isTablet ? 0.3 : 0.7,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap"
@@ -1312,7 +1802,12 @@ const NewStudentsPage = () => {
                 },
 
                 "& .MuiDataGrid-footerContainer": {
-                  minHeight: 54
+                  minHeight: isPhone ? 31 : isTablet ? 36 : 54,
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined
                 },
 
                 "& .MuiDataGrid-scrollbar--horizontal, & .MuiDataGrid-scrollbar--vertical": {
@@ -1334,7 +1829,21 @@ const NewStudentsPage = () => {
           PaperProps={{
             sx: {
               direction: "ltr",
-              minWidth: 210
+              minWidth: isPhone ? 138 : isTablet ? 165 : 210,
+
+              "& .MuiMenuItem-root": {
+                minHeight: isPhone ? 28 : isTablet ? 32 : 42,
+                fontFamily: "Cairo",
+                fontSize: isPhone
+                  ? "0.42rem"
+                  : isTablet
+                    ? "0.5rem"
+                    : undefined
+              },
+
+              "& .MuiSvgIcon-root": {
+                fontSize: isPhone ? 15 : isTablet ? 17 : undefined
+              }
             }
           }}
         >
@@ -1432,19 +1941,17 @@ const NewStudentsPage = () => {
           <Paper
             elevation={12}
             sx={{
-              minWidth: {
-                xs: 280,
-                sm: 390
-              },
-              px: 4,
-              py: 3.5,
-              borderRadius: 4,
+              minWidth: isPhone ? 250 : isTablet ? 340 : 390,
+              maxWidth: isPhone ? "86vw" : undefined,
+              px: isPhone ? 1.2 : isTablet ? 2 : 4,
+              py: isPhone ? 1.2 : isTablet ? 2 : 3.5,
+              borderRadius: isPhone ? 2 : isTablet ? 3 : 4,
               textAlign: "center",
               direction: "rtl"
             }}
           >
             <CircularProgress
-              size={56}
+              size={isPhone ? 34 : isTablet ? 44 : 56}
               thickness={4.5}
               sx={{
                 color: "#057546",
@@ -1456,7 +1963,11 @@ const NewStudentsPage = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: "1.08rem",
+                fontSize: isPhone
+                  ? "0.68rem"
+                  : isTablet
+                    ? "0.84rem"
+                    : "1.08rem",
                 color: "#173b2b"
               }}
             >
@@ -1478,7 +1989,11 @@ const NewStudentsPage = () => {
               sx={{
                 mt: 1.2,
                 fontFamily: "Cairo",
-                fontSize: ".78rem",
+                fontSize: isPhone
+                  ? "0.42rem"
+                  : isTablet
+                    ? "0.52rem"
+                    : ".78rem",
                 color: "#8a9690"
               }}
             >

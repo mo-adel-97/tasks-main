@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 
 import {
   Alert,
+  AppBar,
   Box,
   Button,
   Chip,
@@ -12,7 +13,9 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  GlobalStyles,
   Grid,
+  IconButton,
   MenuItem,
   Paper,
   Stack,
@@ -24,7 +27,10 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Toolbar,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -36,8 +42,10 @@ import PersonIcon from "@mui/icons-material/Person";
 import BusinessIcon from "@mui/icons-material/Business";
 import InfoIcon from "@mui/icons-material/Info";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const primaryColor = "#80b49e";
 const primaryDark = "#6a9a87";
@@ -49,16 +57,25 @@ const warningColor = "#ed6c02";
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5258/api";
 
-const allowedGuids = [
-  "f426653a-b389-4036-95f0-907920e7f205",
-  "1e0c626f-c66b-4ec8-812f-0d53e1887113",
-  "35efb423-5491-4775-a5cc-98625fb66fa5",
-  "3f69ccb6-e2cf-4d6d-b801-7d727c977d8e"
-];
+// صلاحية الصفحة أصبحت من Form_Name + User_Premision.
+
 
 const safeText = (value) => {
   if (value === null || value === undefined) return "";
   return String(value);
+};
+
+const shortStudentName = (value) => {
+  const parts = safeText(value)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) {
+    return parts.join(" ");
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
 };
 
 const formatDate = (value) => {
@@ -97,7 +114,27 @@ const getStatusChip = (isStillRegistered) => {
           maxWidth: "100%",
           "& .MuiChip-label": {
             textAlign: "left",
-            whiteSpace: "normal"
+            whiteSpace: "normal",
+            "@media (max-width:599px)": {
+              px: 0.5,
+              fontSize: "0.32rem"
+            },
+            "@media (min-width:600px) and (max-width:1599px)": {
+              px: 0.7,
+              fontSize: "0.38rem"
+            }
+          },
+          "@media (max-width:599px)": {
+            height: 20,
+            "& .MuiSvgIcon-root": {
+              fontSize: 13
+            }
+          },
+          "@media (min-width:600px) and (max-width:1599px)": {
+            height: 23,
+            "& .MuiSvgIcon-root": {
+              fontSize: 14
+            }
           }
         }}
       />
@@ -125,10 +162,34 @@ const getStatusChip = (isStillRegistered) => {
 };
 
 export default function OtherInstituteRegistrationsPage() {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const userGuid = String(user?.guid || "").toLowerCase();
-
-  const canAccess = allowedGuids.includes(userGuid);
 
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -144,8 +205,6 @@ export default function OtherInstituteRegistrationsPage() {
   const [updateNote, setUpdateNote] = useState("");
 
   const loadData = async () => {
-    if (!canAccess) return;
-
     setLoading(true);
     setError("");
     setSuccessMessage("");
@@ -300,75 +359,184 @@ export default function OtherInstituteRegistrationsPage() {
     fontFamily: "Cairo",
     fontWeight: 700,
     textAlign: "left",
-    verticalAlign: "top",
+    verticalAlign: "middle",
     whiteSpace: "normal",
     wordBreak: "break-word",
     overflowWrap: "anywhere",
-    lineHeight: 1.7,
-    px: 1.2,
-    py: 1.4
+    lineHeight: 1.55,
+    px: isPhone ? 0.5 : isTablet ? 0.7 : 1.15,
+    py: isPhone ? 0.55 : isTablet ? 0.75 : 1.05,
+    fontSize: isPhone
+      ? "0.42rem"
+      : isTablet
+        ? "0.5rem"
+        : "0.82rem"
   };
 
   const headerCellSx = {
     fontFamily: "Cairo",
-    fontWeight: 900,
-    backgroundColor: primaryLight,
-    color: textColor,
+    fontWeight: 950,
+    backgroundColor: "#057546",
+    color: "#fff",
     textAlign: "left",
     whiteSpace: "normal",
     wordBreak: "break-word",
-    lineHeight: 1.6,
-    px: 1.2,
-    py: 1.4
+    lineHeight: 1.35,
+    px: isPhone ? 0.45 : isTablet ? 0.65 : 1.05,
+    py: isPhone ? 0.55 : isTablet ? 0.7 : 1,
+    fontSize: isPhone
+      ? "0.4rem"
+      : isTablet
+        ? "0.48rem"
+        : "0.76rem",
+    borderBottom: "1px solid rgba(255,255,255,.14)"
   };
 
-  if (!canAccess) {
-    return (
-      <Box sx={{ display: "flex", direction: "ltr" }}>
-        <Sidebar />
+  return (
+    <Box
+      sx={{
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        backgroundColor: "#f7faf9",
+        direction: "ltr"
+      }}
+    >
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            }
+          }}
+        />
+      )}
 
-        <Box
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
           sx={{
-            marginLeft: `${SIDEBAR_WIDTH}px`,
-            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
-            minHeight: "100vh",
-            p: 3,
-            backgroundColor: "#f7faf9",
-            direction: "ltr",
-            textAlign: "left"
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: textColor,
+            borderBottom: "1px solid #e4eeea",
+            direction: "ltr"
           }}
         >
-          <Alert severity="error" sx={{ fontFamily: "Cairo", textAlign: "left" }}>
-            ليس لديك صلاحية الوصول إلى صفحة المسجلين في معاهد أخرى
-          </Alert>
-        </Box>
-      </Box>
-    );
-  }
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: { xs: 0.75, sm: 1 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((v) => !v);
+              }}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: { xs: 20, sm: 22 }
+                }}
+              />
+            </IconButton>
 
-  return (
-    <Box sx={{ display: "flex", direction: "ltr" }}>
-      <Sidebar />
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.68rem",
+                  sm: "0.8rem"
+                },
+                color: textColor,
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              المسجلين في معاهد أخرى
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
+        component="main"
         sx={{
-          marginLeft: `${SIDEBAR_WIDTH}px`,
-          width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
-          minHeight: "100vh",
-          p: 3,
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          minHeight: "100dvh",
+          p: {
+            xs: 0.55,
+            sm: 0.8,
+            md: 1
+          },
           backgroundColor: "#f7faf9",
           direction: "ltr",
           textAlign: "left",
           fontFamily: "Cairo, Arial",
-          overflowX: "hidden"
+          overflowX: "hidden",
+          boxSizing: "border-box",
+
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 2.5
+          }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: 4,
+            p: isPhone ? 0.5 : isTablet ? 0.75 : 2.3,
+            mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.6,
+            borderRadius: isPhone ? 1.25 : isTablet ? 1.6 : 3.2,
             border: "1px solid #e4eeea",
             background: "linear-gradient(135deg, #ffffff 0%, #f4fbf8 100%)",
             direction: "ltr",
@@ -376,21 +544,35 @@ export default function OtherInstituteRegistrationsPage() {
           }}
         >
           <Stack
-            direction={{ xs: "column", md: "row" }}
+            direction="row"
             justifyContent="space-between"
-            alignItems={{ xs: "flex-start", md: "center" }}
-            spacing={2}
+            alignItems="center"
+            spacing={isPhone ? 0.55 : isTablet ? 0.8 : 1.5}
           >
             <Box sx={{ textAlign: "left" }}>
               <Stack direction="row" spacing={1.5} alignItems="center">
-                <SchoolIcon sx={{ color: primaryDark, fontSize: 34 }} />
+                <SchoolIcon
+                  sx={{
+                    color: primaryDark,
+                    fontSize: isPhone
+                      ? 20
+                      : isTablet
+                        ? 24
+                        : 30
+                  }}
+                />
                 <Typography
                   variant="h5"
                   sx={{
                     fontWeight: 900,
                     color: textColor,
                     textAlign: "left",
-                    fontFamily: "Cairo"
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.62rem"
+                      : isTablet
+                        ? "0.76rem"
+                        : "1.3rem"
                   }}
                 >
                   المسجلين في معاهد أخرى
@@ -399,9 +581,15 @@ export default function OtherInstituteRegistrationsPage() {
 
               <Typography
                 sx={{
-                  mt: 1,
+                  mt: isPhone ? 0.15 : 0.45,
                   color: "#607d70",
                   fontWeight: 600,
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.5rem"
+                      : "0.82rem",
+                  display: isPhone ? "none" : "block",
                   textAlign: "left",
                   fontFamily: "Cairo"
                 }}
@@ -420,7 +608,14 @@ export default function OtherInstituteRegistrationsPage() {
                 fontWeight: 900,
                 background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
                 fontFamily: "Cairo",
-                minWidth: 130
+                minWidth: isPhone ? 0 : isTablet ? 90 : 110,
+                minHeight: isPhone ? 30 : isTablet ? 33 : 38,
+                px: isPhone ? 0.8 : isTablet ? 1.1 : 1.6,
+                fontSize: isPhone
+                  ? "0.44rem"
+                  : isTablet
+                    ? "0.52rem"
+                    : "0.75rem"
               }}
             >
               تحديث
@@ -428,25 +623,50 @@ export default function OtherInstituteRegistrationsPage() {
           </Stack>
         </Paper>
 
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} md={4}>
+        <Grid
+          container
+          spacing={isPhone ? 0.35 : isTablet ? 0.5 : 1.2}
+          sx={{ mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.5 }}
+        >
+          <Grid item xs={4} md={4}>
             <Paper
               elevation={0}
               sx={{
-                p: 2,
-                borderRadius: 3,
+                p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
+                borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
                 border: "1px solid #e4eeea",
                 textAlign: "left",
-                minHeight: 95
+                minHeight: isPhone ? 50 : isTablet ? 58 : 82
               }}
             >
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <InfoIcon sx={{ color: primaryDark }} />
                 <Box>
-                  <Typography sx={{ fontWeight: 900, textAlign: "left" }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 900,
+                      textAlign: "left",
+                      fontSize: isPhone
+                        ? "0.32rem"
+                        : isTablet
+                          ? "0.4rem"
+                          : "0.72rem"
+                    }}
+                  >
                     إجمالي السجلات
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 900, color: primaryDark }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 900,
+                      color: primaryDark,
+                      fontSize: isPhone
+                        ? "0.62rem"
+                        : isTablet
+                          ? "0.74rem"
+                          : "1.25rem"
+                    }}
+                  >
                     {totalCount}
                   </Typography>
                 </Box>
@@ -454,24 +674,45 @@ export default function OtherInstituteRegistrationsPage() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid item xs={4} md={4}>
             <Paper
               elevation={0}
               sx={{
-                p: 2,
-                borderRadius: 3,
+                p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
+                borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
                 border: "1px solid #e4eeea",
                 textAlign: "left",
-                minHeight: 95
+                minHeight: isPhone ? 50 : isTablet ? 58 : 82
               }}
             >
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <CheckCircleIcon sx={{ color: primaryDark }} />
                 <Box>
-                  <Typography sx={{ fontWeight: 900, textAlign: "left" }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 900,
+                      textAlign: "left",
+                      fontSize: isPhone
+                        ? "0.32rem"
+                        : isTablet
+                          ? "0.4rem"
+                          : "0.72rem"
+                    }}
+                  >
                     مازالوا مسجلين
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 900, color: primaryDark }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 900,
+                      color: primaryDark,
+                      fontSize: isPhone
+                        ? "0.62rem"
+                        : isTablet
+                          ? "0.74rem"
+                          : "1.25rem"
+                    }}
+                  >
                     {activeCount}
                   </Typography>
                 </Box>
@@ -479,24 +720,45 @@ export default function OtherInstituteRegistrationsPage() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid item xs={4} md={4}>
             <Paper
               elevation={0}
               sx={{
-                p: 2,
-                borderRadius: 3,
+                p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
+                borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
                 border: "1px solid #e4eeea",
                 textAlign: "left",
-                minHeight: 95
+                minHeight: isPhone ? 50 : isTablet ? 58 : 82
               }}
             >
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <CancelIcon sx={{ color: dangerColor }} />
                 <Box>
-                  <Typography sx={{ fontWeight: 900, textAlign: "left" }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 900,
+                      textAlign: "left",
+                      fontSize: isPhone
+                        ? "0.32rem"
+                        : isTablet
+                          ? "0.4rem"
+                          : "0.72rem"
+                    }}
+                  >
                     لم يعودوا مسجلين
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 900, color: dangerColor }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 900,
+                      color: dangerColor,
+                      fontSize: isPhone
+                        ? "0.62rem"
+                        : isTablet
+                          ? "0.74rem"
+                          : "1.25rem"
+                    }}
+                  >
                     {inactiveCount}
                   </Typography>
                 </Box>
@@ -508,16 +770,20 @@ export default function OtherInstituteRegistrationsPage() {
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 3,
-            borderRadius: 4,
+            p: isPhone ? 0.45 : isTablet ? 0.65 : 1.4,
+            mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+            borderRadius: isPhone ? 1.15 : isTablet ? 1.5 : 2.8,
             border: "1px solid #e4eeea",
             direction: "ltr",
             textAlign: "left"
           }}
         >
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={8}>
+          <Grid
+            container
+            spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.2}
+            alignItems="center"
+          >
+            <Grid item xs={12} sm={8} md={8}>
               <TextField
                 fullWidth
                 value={search}
@@ -526,35 +792,82 @@ export default function OtherInstituteRegistrationsPage() {
                 InputProps={{
                   startAdornment: <SearchIcon sx={{ color: "#8aa99c", mr: 1 }} />
                 }}
+                size={isCompact ? "small" : "medium"}
                 sx={{
                   direction: "ltr",
+                  "& .MuiOutlinedInput-root": {
+                    minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                    borderRadius: isCompact ? 1.1 : undefined
+                  },
                   "& input": {
                     textAlign: "left",
                     fontFamily: "Cairo",
-                    fontWeight: 700
+                    fontWeight: 700,
+                    fontSize: isPhone
+                      ? "0.44rem"
+                      : isTablet
+                        ? "0.52rem"
+                        : undefined,
+                    py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
+                  },
+                  "& .MuiSvgIcon-root": {
+                    fontSize: isPhone ? 14 : isTablet ? 16 : undefined
                   }
                 }}
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} sm={4} md={4}>
               <TextField
                 select
                 fullWidth
                 label="الحالة"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
+                size={isCompact ? "small" : "medium"}
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone ? 28 : isTablet ? 31 : 40,
+                          fontSize: isPhone
+                            ? "0.44rem"
+                            : isTablet
+                              ? "0.52rem"
+                              : undefined,
+                          fontFamily: "Cairo"
+                        }
+                      }
+                    }
+                  }
+                }}
                 sx={{
                   direction: "ltr",
+                  "& .MuiOutlinedInput-root": {
+                    minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                    borderRadius: isCompact ? 1.1 : undefined
+                  },
                   "& .MuiInputBase-input": {
                     textAlign: "left",
                     fontFamily: "Cairo",
-                    fontWeight: 700
+                    fontWeight: 700,
+                    fontSize: isPhone
+                      ? "0.44rem"
+                      : isTablet
+                        ? "0.52rem"
+                        : undefined,
+                    py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
                   },
                   "& .MuiInputLabel-root": {
                     left: 0,
                     right: "auto",
-                    transformOrigin: "left"
+                    transformOrigin: "left",
+                    fontSize: isPhone
+                      ? "0.4rem"
+                      : isTablet
+                        ? "0.48rem"
+                        : undefined
                   }
                 }}
               >
@@ -581,7 +894,7 @@ export default function OtherInstituteRegistrationsPage() {
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid #e4eeea",
             overflow: "hidden",
             direction: "ltr",
@@ -596,10 +909,244 @@ export default function OtherInstituteRegistrationsPage() {
                 جاري تحميل البيانات...
               </Typography>
             </Box>
+          ) : isCompact ? (
+            <Box
+              sx={{
+                display: "grid",
+                gap: isPhone ? 0.35 : 0.5,
+                p: isPhone ? 0.35 : 0.5
+              }}
+            >
+              {filteredRows.length === 0 ? (
+                <Box
+                  sx={{
+                    minHeight: 240,
+                    display: "grid",
+                    placeItems: "center",
+                    fontFamily: "Cairo",
+                    fontWeight: 800,
+                    color: "#789",
+                    fontSize: isPhone
+                      ? "0.48rem"
+                      : "0.56rem"
+                  }}
+                >
+                  لا توجد بيانات للعرض
+                </Box>
+              ) : (
+                filteredRows.map((row) => {
+                  const id = row.id || row.ID;
+                  const isStill = isActiveRegistered(
+                    row.isStillRegistered
+                  );
+
+                  return (
+                    <Paper
+                      key={id}
+                      variant="outlined"
+                      sx={{
+                        p: isPhone ? 0.45 : 0.65,
+                        borderRadius: isPhone ? 1 : 1.3,
+                        borderColor: "#e4eeea",
+                        background: "#fff"
+                      }}
+                    >
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="flex-start"
+                        spacing={0.6}
+                      >
+                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontWeight: 950,
+                              fontSize: isPhone
+                                ? "0.41rem"
+                                : "0.48rem",
+                              color: textColor,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
+                            }}
+                          >
+                            {shortStudentName(row.studentName) || "-"}
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              mt: 0.15,
+                              fontFamily: "Cairo",
+                              fontSize: isPhone
+                                ? "0.34rem"
+                                : "0.42rem",
+                              color: "#789"
+                            }}
+                          >
+                            {safeText(row.nationalId) || "-"} • {safeText(row.studentTel) || "-"}
+                          </Typography>
+                        </Box>
+
+                        {getStatusChip(row.isStillRegistered)}
+                      </Stack>
+
+                      <Box
+                        sx={{
+                          mt: 0.55,
+                          display: "grid",
+                          gridTemplateColumns:
+                            "repeat(2,minmax(0,1fr))",
+                          gap: isPhone ? 0.45 : 0.6
+                        }}
+                      >
+                        <Box>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontSize: isPhone
+                                ? "0.31rem"
+                                : "0.38rem",
+                              color: "#8a9993"
+                            }}
+                          >
+                            المعهد الآخر
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontWeight: 800,
+                              fontSize: isPhone
+                                ? "0.41rem"
+                                : "0.48rem",
+                              color: textColor
+                            }}
+                          >
+                            {safeText(row.otherInstituteName) || "-"}
+                          </Typography>
+                        </Box>
+
+                        <Box>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontSize: isPhone
+                                ? "0.31rem"
+                                : "0.38rem",
+                              color: "#8a9993"
+                            }}
+                          >
+                            مسئول التسجيل
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontWeight: 800,
+                              fontSize: isPhone
+                                ? "0.46rem"
+                                : "0.54rem"
+                            }}
+                          >
+                            {safeText(row.sellerName) || "-"}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {(row.traineeStatusNote || row.notes) && (
+                        <Typography
+                          sx={{
+                            mt: 0.55,
+                            p: 0.45,
+                            borderRadius: 1,
+                            background: "#f7faf9",
+                            fontFamily: "Cairo",
+                            fontSize: isPhone
+                              ? "0.35rem"
+                              : "0.42rem",
+                            lineHeight: 1.45,
+                            color: "#5e6f68"
+                          }}
+                        >
+                          {safeText(
+                            row.traineeStatusNote ||
+                              row.notes
+                          )}
+                        </Typography>
+                      )}
+
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        alignItems="center"
+                        spacing={0.45}
+                        sx={{
+                          mt: isPhone ? 0.4 : 0.5,
+                          flexWrap: "nowrap"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            flex: 1,
+                            minWidth: 0,
+                            fontFamily: "Cairo",
+                            fontSize: isPhone
+                              ? "0.31rem"
+                              : "0.38rem",
+                            color: "#789"
+                          }}
+                        >
+                          طلب {safeText(row.orderCode) || "-"} • استمارة {safeText(row.regDocCode) || "-"}
+                        </Typography>
+
+                        {isStill ? (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            onClick={() => openConfirm(row)}
+                            disabled={savingId === id}
+                            sx={{
+                              minHeight: isPhone ? 24 : 27,
+                              minWidth: isPhone ? 52 : 62,
+                              px: isPhone ? 0.45 : 0.65,
+                              py: 0,
+                              fontFamily: "Cairo",
+                              fontWeight: 900,
+                              fontSize: isPhone
+                                ? "0.34rem"
+                                : "0.4rem",
+                              borderRadius: isPhone ? 1 : 1.2,
+                              boxShadow: "none",
+                              backgroundColor: warningColor
+                            }}
+                          >
+                            طي القيد
+                          </Button>
+                        ) : (
+                          <Chip
+                            label="تم طي القيد"
+                            size="small"
+                            sx={{
+                              height: isPhone ? 20 : 23,
+                              fontSize: isPhone
+                                ? "0.31rem"
+                                : "0.37rem",
+                              fontWeight: 900,
+                              "& .MuiChip-label": {
+                                px: isPhone ? 0.55 : 0.7
+                              }
+                            }}
+                          />
+                        )}
+                      </Stack>
+                    </Paper>
+                  );
+                })
+              )}
+            </Box>
           ) : (
             <TableContainer
               sx={{
-                maxHeight: "calc(100vh - 360px)",
+                maxHeight: "calc(100vh - 300px)",
                 overflowX: "hidden",
                 width: "100%"
               }}
@@ -848,11 +1395,25 @@ export default function OtherInstituteRegistrationsPage() {
           onClose={closeConfirm}
           maxWidth="sm"
           fullWidth
+          fullScreen={isPhone}
+          sx={{
+            "& .MuiDialog-container": {
+              pt: isPhone ? "50px" : isTablet ? "58px" : 0,
+              alignItems: isPhone ? "stretch" : "center"
+            }
+          }}
           PaperProps={{
             sx: {
               direction: "ltr",
               textAlign: "left",
-              borderRadius: 4
+              borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
+              m: isPhone ? 0 : undefined,
+              width: isPhone ? "100vw" : undefined,
+              maxHeight: isPhone
+                ? "calc(100dvh - 50px)"
+                : isTablet
+                  ? "90dvh"
+                  : undefined
             }
           }}
         >
@@ -861,13 +1422,24 @@ export default function OtherInstituteRegistrationsPage() {
               fontFamily: "Cairo",
               fontWeight: 900,
               textAlign: "left",
-              color: textColor
+              color: textColor,
+              fontSize: isPhone
+                ? "0.68rem"
+                : isTablet
+                  ? "0.8rem"
+                  : undefined,
+              py: isPhone ? 0.7 : isTablet ? 1 : 2
             }}
           >
             تأكيد طي القيد من المعهد الآخر
           </DialogTitle>
 
-          <DialogContent sx={{ textAlign: "left" }}>
+          <DialogContent
+            sx={{
+              textAlign: "left",
+              p: isPhone ? 0.7 : isTablet ? 1 : 2
+            }}
+          >
             <Typography sx={{ fontFamily: "Cairo", fontWeight: 700, mb: 2 }}>
               هل أنت متأكد أن الطالب لم يعد مسجلاً في المعهد الآخر؟
             </Typography>
@@ -922,9 +1494,16 @@ export default function OtherInstituteRegistrationsPage() {
 
           <Divider />
 
-          <DialogActions sx={{ justifyContent: "flex-start", p: 2 }}>
+          <DialogActions
+            sx={{
+              justifyContent: "flex-start",
+              p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
+              gap: isPhone ? 0.35 : 0.55
+            }}
+          >
             <Button
               onClick={closeConfirm}
+              size={isCompact ? "small" : "medium"}
               disabled={!!savingId}
               sx={{ fontFamily: "Cairo", fontWeight: 900 }}
             >
@@ -933,6 +1512,7 @@ export default function OtherInstituteRegistrationsPage() {
 
             <Button
               variant="contained"
+              size={isCompact ? "small" : "medium"}
               onClick={markAsNotRegistered}
               disabled={!!savingId}
               startIcon={savingId ? <CircularProgress size={16} /> : <DoneAllIcon />}

@@ -5,15 +5,25 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Autocomplete,
   Box,
   Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  GlobalStyles,
+  IconButton,
   Paper,
   Stack,
   TextField,
-  Typography
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   DataGrid,
@@ -24,10 +34,14 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import PaidIcon from "@mui/icons-material/Paid";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import Sidebar from "../components/Sidebar";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -161,6 +175,46 @@ const showError = async (message) => {
 };
 
 const CollectionCommissionsReport = () => {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  const [detailsOpen, setDetailsOpen] =
+    useState(false);
+
+  const [detailsRow, setDetailsRow] =
+    useState(null);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
+  const openDetails = (row) => {
+    setDetailsRow(row);
+    setDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setDetailsOpen(false);
+    setDetailsRow(null);
+  };
+
   const user = useMemo(
     () =>
       JSON.parse(
@@ -402,6 +456,8 @@ const CollectionCommissionsReport = () => {
         return {
           field,
           headerName: field,
+          headerAlign: "center",
+  align: "center",
           type:
             numeric
               ? "number"
@@ -440,6 +496,217 @@ const CollectionCommissionsReport = () => {
       rows
     ]
   );
+
+  const compactColumns = useMemo(() => {
+    const findField = (...names) =>
+      visibleFields.find((field) =>
+        names.some(
+          (name) =>
+            normalizeKey(field) ===
+            normalizeKey(name)
+        )
+      );
+
+    const employeeField =
+      findField(
+        "مسؤول الاتصال",
+        "اسم الموظف",
+        "الموظف"
+      ) || visibleFields[0];
+
+    const studentsField =
+      findField(
+        "عدد الطلاب",
+        "إجمالي الطلاب",
+        "اجمالي الطلاب"
+      );
+
+    const collectionField =
+      findField(
+        "إجمالي التحصيل",
+        "اجمالي التحصيل",
+        "التحصيل"
+      );
+
+    const commissionField =
+      findField(
+        "العمولة",
+        "إجمالي العمولة",
+        "اجمالي العمولة"
+      );
+
+    const percentField =
+      findField(
+        "نسبة التحصيل",
+        "نسبة",
+        "نسبة التحصيل %"
+      );
+
+    const preferredFields = [
+      employeeField,
+      studentsField,
+      collectionField,
+      commissionField,
+      percentField
+    ];
+
+    const fallbackFields =
+      visibleFields.filter(
+        (field) =>
+          !preferredFields.includes(field)
+      );
+
+    const desiredCount =
+      isPhone ? 4 : 5;
+
+    const chosenFields = [
+      ...preferredFields.filter(Boolean),
+      ...fallbackFields
+    ]
+      .filter(
+        (field, index, array) =>
+          field &&
+          array.indexOf(field) === index
+      )
+      .slice(0, desiredCount);
+
+    const shortHeader = (field) => {
+      if (field === employeeField) {
+        return "الموظف";
+      }
+
+      if (field === studentsField) {
+        return isPhone
+          ? "الطلاب"
+          : "عدد الطلاب";
+      }
+
+      if (field === collectionField) {
+        return isPhone
+          ? "التحصيل"
+          : "إجمالي التحصيل";
+      }
+
+      if (field === commissionField) {
+        return isPhone
+          ? "العمولة"
+          : "إجمالي العمولة";
+      }
+
+      if (field === percentField) {
+        return "النسبة";
+      }
+
+      return field;
+    };
+
+    const dataColumns =
+      chosenFields.map((field) => {
+        const sample =
+          rows.find(
+            (row) =>
+              row?.[field] !== null &&
+              row?.[field] !== undefined &&
+              row?.[field] !== ""
+          )?.[field];
+
+        const numeric =
+          numberValue(sample) !== null;
+
+        const isEmployee =
+          field === employeeField;
+
+        return {
+          field,
+          headerName: shortHeader(field),
+          type: numeric
+            ? "number"
+            : "string",
+          sortable: false,
+          disableColumnMenu: true,
+          resizable: false,
+
+          ...(isPhone
+            ? {
+                flex: isEmployee
+                  ? 1.45
+                  : 1,
+                minWidth: 0
+              }
+            : {
+                flex: isEmployee
+                  ? 1.45
+                  : 0.95,
+                minWidth: isEmployee
+                  ? 135
+                  : 90
+              }),
+
+          renderCell: (params) => {
+            const value =
+              params?.row?.[field] ??
+              params?.value;
+
+            return numeric
+              ? formatNumber(value)
+              : String(
+                  unwrapValue(value) ?? ""
+                );
+          }
+        };
+      });
+
+    return [
+      ...dataColumns,
+      {
+        field: "__details",
+        headerName: "",
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        width: isPhone ? 34 : 44,
+        minWidth: isPhone ? 34 : 44,
+        maxWidth: isPhone ? 34 : 44,
+        align: "center",
+        headerAlign: "center",
+
+        renderCell: (params) => (
+          <IconButton
+            size="small"
+            title="عرض التفاصيل"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              openDetails(params.row);
+            }}
+            sx={{
+              width: isPhone ? 24 : 29,
+              height: isPhone ? 24 : 29,
+              p: 0,
+              color: "#057546",
+              border:
+                "1px solid rgba(5,117,70,.28)",
+              backgroundColor: "#eef8f3"
+            }}
+          >
+            <VisibilityOutlinedIcon
+              sx={{
+                fontSize: isPhone
+                  ? 14
+                  : 17
+              }}
+            />
+          </IconButton>
+        )
+      }
+    ];
+  }, [
+    visibleFields,
+    rows,
+    isPhone,
+    isTablet
+  ]);
 
   const dataGridRows = useMemo(
     () =>
@@ -667,6 +934,7 @@ const CollectionCommissionsReport = () => {
   };
 
   return (
+    isDesktop ? (
     <Box
       sx={{
         minHeight: "100vh",
@@ -1069,6 +1337,7 @@ const CollectionCommissionsReport = () => {
                 sx={{
                   border: 0,
                   direction: "ltr",
+                  textAlign:"center",
                   fontFamily: "Cairo",
 
                   "& .MuiDataGrid-columnHeaders": {
@@ -1135,6 +1404,846 @@ const CollectionCommissionsReport = () => {
         </Paper>
       </Box>
     </Box>
+    ) : (
+    <Box
+      sx={{
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        background: "#f5f8f7",
+        direction: "ltr"
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          ".MuiDrawer-root": {
+            zIndex: "2100 !important"
+          },
+          ".MuiDrawer-root .MuiBackdrop-root": {
+            zIndex: "2099 !important"
+          },
+          ".MuiDrawer-root .MuiDrawer-paper": {
+            zIndex: "2101 !important"
+          },
+          ".swal2-popup": {
+            width: isPhone
+              ? "88vw !important"
+              : "540px !important",
+            fontFamily:
+              "Cairo !important"
+          }
+        }}
+      />
+
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          top: 0,
+          left: 0,
+          right: 0,
+          width: "100%",
+          zIndex: 1400,
+          background:
+            "rgba(255,255,255,.97)",
+          backdropFilter: "blur(14px)",
+          color: "#17372b",
+          borderBottom:
+            "1px solid rgba(5,117,70,.12)",
+          direction: "ltr"
+        }}
+      >
+        <Toolbar
+          sx={{
+            minHeight: {
+              xs: "50px !important",
+              sm: "56px !important"
+            },
+            px: {
+              xs: 0.75,
+              sm: 1
+            },
+            gap: 0.8
+          }}
+        >
+          <IconButton
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              setMobileSidebarOpen(
+                (current) => !current
+              );
+            }}
+            sx={{
+              width: {
+                xs: 36,
+                sm: 40
+              },
+              height: {
+                xs: 36,
+                sm: 40
+              },
+              color: "#fff",
+              background:
+                "linear-gradient(135deg,#057546,#034d31)",
+              boxShadow:
+                "0 5px 14px rgba(5,117,70,.20)"
+            }}
+          >
+            <MenuRoundedIcon
+              sx={{
+                fontSize: {
+                  xs: 20,
+                  sm: 22
+                }
+              }}
+            />
+          </IconButton>
+
+          <Typography
+            sx={{
+              flex: 1,
+              fontFamily: "Cairo",
+              fontWeight: 900,
+              fontSize: {
+                xs: "0.64rem",
+                sm: "0.76rem"
+              },
+              color: "#17372b",
+              textAlign: "left"
+            }}
+          >
+            تقرير عمولات التحصيل
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
+
+      <Box
+        component="main"
+        sx={{
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          width: "100%",
+          maxWidth: "100%",
+          px: {
+            xs: 0.45,
+            sm: 0.7
+          },
+          py: {
+            xs: 0.45,
+            sm: 0.7
+          },
+          boxSizing: "border-box",
+          overflowX: "hidden"
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            width: "100%",
+            borderRadius: isPhone
+              ? 1.4
+              : 1.8,
+            overflow: "hidden",
+            border:
+              "1px solid rgba(5,117,70,.14)",
+            background: "#fff"
+          }}
+        >
+          <Box
+            sx={{
+              px: isPhone ? 0.75 : 1,
+              py: isPhone ? 0.65 : 0.85,
+              background:
+                "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
+              borderBottom:
+                "1px solid rgba(5,117,70,.12)"
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={0.6}
+              alignItems="center"
+            >
+              <PaidIcon
+                sx={{
+                  color: "#057546",
+                  fontSize: isPhone
+                    ? 20
+                    : 24
+                }}
+              />
+
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  sx={{
+                    fontFamily: "Cairo",
+                    fontWeight: 950,
+                    color: "#034d31",
+                    fontSize: isPhone
+                      ? "0.66rem"
+                      : "0.82rem"
+                  }}
+                >
+                  تقرير عمولات التحصيل
+                </Typography>
+
+                {!isPhone && (
+                  <Typography
+                    sx={{
+                      mt: 0.15,
+                      fontFamily: "Cairo",
+                      color: "#61756d",
+                      fontSize: "0.44rem"
+                    }}
+                  >
+                    متابعة تحصيل الموظفين ونسب التحصيل وترحيل العمولات لشيت المكافآت
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+          </Box>
+
+          <Box
+            sx={{
+              p: isPhone
+                ? 0.6
+                : 0.85
+            }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                mb: isPhone
+                  ? 0.6
+                  : 0.8,
+                p: isPhone
+                  ? 0.55
+                  : 0.75,
+                borderRadius: 1.4,
+                border:
+                  "1px solid rgba(5,117,70,.13)",
+                background: "#fbfdfc"
+              }}
+            >
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: isPhone
+                    ? "repeat(2,minmax(0,1fr))"
+                    : "repeat(4,minmax(0,1fr))",
+                  gap: isPhone
+                    ? 0.45
+                    : 0.6,
+
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.38rem"
+                      : "0.46rem"
+                  },
+
+                  "& .MuiInputBase-root": {
+                    minHeight: isPhone
+                      ? 31
+                      : 34,
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.45rem"
+                      : "0.54rem"
+                  },
+
+                  "& .MuiButton-root": {
+                    minHeight: isPhone
+                      ? 30
+                      : 33,
+                    minWidth: 0,
+                    px: isPhone
+                      ? 0.35
+                      : 0.6,
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : "0.5rem"
+                  },
+
+                  "& .MuiSvgIcon-root": {
+                    fontSize: isPhone
+                      ? 14
+                      : 16
+                  }
+                }}
+              >
+                <TextField
+                  type="date"
+                  size="small"
+                  label="من"
+                  value={fromDate}
+                  onChange={(event) =>
+                    setFromDate(
+                      event.target.value
+                    )
+                  }
+                  InputLabelProps={{
+                    shrink: true
+                  }}
+                  fullWidth
+                />
+
+                <TextField
+                  type="date"
+                  size="small"
+                  label="إلى"
+                  value={toDate}
+                  onChange={(event) =>
+                    setToDate(
+                      event.target.value
+                    )
+                  }
+                  InputLabelProps={{
+                    shrink: true
+                  }}
+                  fullWidth
+                />
+
+                <Autocomplete
+                  options={branches}
+                  value={selectedBranch}
+                  loading={loadingBranches}
+                  onChange={(
+                    event,
+                    value
+                  ) =>
+                    setSelectedBranch(value)
+                  }
+                  isOptionEqualToValue={(
+                    option,
+                    value
+                  ) =>
+                    option.guid ===
+                    value.guid
+                  }
+                  getOptionLabel={(option) =>
+                    option?.name || ""
+                  }
+                  sx={{
+                    gridColumn: isPhone
+                      ? "1 / -1"
+                      : "span 2"
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      label="الفرع"
+                      placeholder="كل الفروع"
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loadingBranches ? (
+                              <CircularProgress
+                                size={16}
+                              />
+                            ) : null}
+
+                            {
+                              params
+                                .InputProps
+                                .endAdornment
+                            }
+                          </>
+                        )
+                      }}
+                    />
+                  )}
+                />
+
+                <Button
+                  variant="contained"
+                  startIcon={<SearchIcon />}
+                  onClick={loadReport}
+                  disabled={loading}
+                  sx={{
+                    background: "#057546"
+                  }}
+                >
+                  عرض
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshIcon />}
+                  onClick={loadReport}
+                  disabled={loading}
+                >
+                  تحديث
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<FileDownloadIcon />}
+                  onClick={exportCsv}
+                  disabled={
+                    loading ||
+                    rows.length === 0
+                  }
+                  sx={{
+                    color: "#ae1e21",
+                    borderColor: "#ae1e21"
+                  }}
+                >
+                  تصدير
+                </Button>
+
+                <Button
+                  variant="contained"
+                  startIcon={<MoveToInboxIcon />}
+                  onClick={migrateToRewards}
+                  disabled={
+                    loading ||
+                    migrating ||
+                    rows.length === 0
+                  }
+                  sx={{
+                    background: "#184f90"
+                  }}
+                >
+                  {migrating
+                    ? "جارٍ الترحيل..."
+                    : "ترحيل للمكافآت"}
+                </Button>
+              </Box>
+            </Paper>
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(4,minmax(0,1fr))",
+                gap: isPhone
+                  ? 0.3
+                  : 0.45,
+                mb: isPhone
+                  ? 0.6
+                  : 0.8
+              }}
+            >
+              {[
+                [
+                  "الصفوف",
+                  rows.length,
+                  "#edf8f3",
+                  "#034d31"
+                ],
+                [
+                  "الطلاب",
+                  totalStudents,
+                  "#fff7cc",
+                  "#735c00"
+                ],
+                [
+                  "التحصيل",
+                  totalCollection,
+                  "#eef4ff",
+                  "#184f90"
+                ],
+                [
+                  "العمولة",
+                  totalCommission,
+                  "#fdecec",
+                  "#ae1e21"
+                ]
+              ].map(
+                ([
+                  label,
+                  value,
+                  background,
+                  color
+                ]) => (
+                  <Chip
+                    key={label}
+                    label={`${label}: ${formatNumber(value)}`}
+                    sx={{
+                      height: isPhone
+                        ? 25
+                        : 29,
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.32rem"
+                        : "0.42rem",
+                      background,
+                      color,
+
+                      "& .MuiChip-label": {
+                        px: isPhone
+                          ? 0.25
+                          : 0.45
+                      }
+                    }}
+                  />
+                )
+              )}
+            </Box>
+
+            <Box
+              sx={{
+                width: "100%",
+                height: isPhone
+                  ? "calc(100dvh - 325px)"
+                  : "calc(100dvh - 285px)",
+                minHeight: isPhone
+                  ? 390
+                  : 520,
+                border:
+                  "1px solid rgba(5,117,70,.14)",
+                borderRadius: 1.4,
+                overflow: "hidden"
+              }}
+            >
+              <DataGrid
+                rows={dataGridRows}
+                columns={compactColumns}
+                loading={loading}
+                disableRowSelectionOnClick
+                disableColumnMenu
+                rowHeight={
+                  isPhone ? 36 : 44
+                }
+                columnHeaderHeight={
+                  isPhone ? 36 : 50
+                }
+                pageSizeOptions={[
+                  10,
+                  25,
+                  50
+                ]}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      page: 0,
+                      pageSize: 25
+                    }
+                  }
+                }}
+                localeText={{
+                  noRowsLabel:
+                    "لا توجد بيانات",
+                  noResultsOverlayLabel:
+                    "لا توجد نتائج مطابقة"
+                }}
+                sx={{
+                  border: 0,
+                  direction: "ltr",
+                  fontFamily: "Cairo",
+
+                  "& .MuiDataGrid-columnHeaders": {
+                    backgroundColor:
+                      "#057546",
+                    color: "#fff",
+                    fontWeight: 900
+                  },
+
+                  "& .MuiDataGrid-columnHeader": {
+                    backgroundColor:
+                      "#057546",
+                    px: isPhone
+                      ? 0.06
+                      : 0.25
+                  },
+
+                  "& .MuiDataGrid-columnHeaderTitle": {
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.34rem"
+                      : "0.52rem",
+                    textAlign: "center",
+                    lineHeight: 1,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  },
+
+                  "& .MuiDataGrid-columnHeaderTitleContainer": {
+                    justifyContent: "center",
+                    minWidth: 0,
+                    overflow: "hidden"
+                  },
+
+                  "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
+                    display: "none"
+                  },
+
+                  "& .MuiDataGrid-columnSeparator": {
+                    display: "none"
+                  },
+
+                  "& .MuiDataGrid-cell": {
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : "0.52rem",
+                    textAlign: "center",
+                    justifyContent: "center",
+                    px: isPhone
+                      ? 0.04
+                      : 0.3,
+                    borderColor: "#e6ece9"
+                  },
+
+                  "& .MuiDataGrid-row:nth-of-type(even)": {
+                    backgroundColor: "#fbfdfc"
+                  },
+
+                  "& .MuiDataGrid-main": {
+                    overflowX: "hidden"
+                  },
+
+                  "& .MuiDataGrid-virtualScroller": {
+                    overflowX:
+                      "hidden !important"
+                  },
+
+                  "& .MuiDataGrid-scrollbar--horizontal": {
+                    display: "none"
+                  },
+
+                  "& .MuiDataGrid-footerContainer": {
+                    minHeight: isPhone
+                      ? 36
+                      : 42
+                  },
+
+                  "& .MuiTablePagination-toolbar": {
+                    minHeight: isPhone
+                      ? 36
+                      : 42,
+                    px: isPhone
+                      ? 0.2
+                      : 0.5
+                  },
+
+                  "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.38rem"
+                      : "0.5rem"
+                  }
+                }}
+              />
+            </Box>
+
+            <Dialog
+              open={detailsOpen}
+              onClose={closeDetails}
+              fullWidth
+              maxWidth="lg"
+              dir="rtl"
+              PaperProps={{
+                sx: {
+                  width: isPhone
+                    ? "94vw"
+                    : "90vw",
+                  maxWidth: isPhone
+                    ? "94vw"
+                    : "980px",
+                  maxHeight: isPhone
+                    ? "86dvh"
+                    : "84dvh",
+                  m: 1,
+                  borderRadius: 2.5,
+                  overflow: "hidden"
+                }
+              }}
+            >
+              <DialogTitle
+                sx={{
+                  px: isPhone
+                    ? 1
+                    : 1.5,
+                  py: isPhone
+                    ? 0.8
+                    : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent:
+                    "space-between",
+                  gap: 0.6,
+                  fontFamily: "Cairo",
+                  fontWeight: 950,
+                  color: "#057546",
+                  fontSize: isPhone
+                    ? "0.76rem"
+                    : "0.94rem"
+                }}
+              >
+                <span>
+                  تفاصيل عمولة التحصيل
+                </span>
+
+                <IconButton
+                  onClick={closeDetails}
+                  sx={{
+                    width: isPhone
+                      ? 30
+                      : 34,
+                    height: isPhone
+                      ? 30
+                      : 34,
+                    color: "#ae1e21"
+                  }}
+                >
+                  <CloseIcon
+                    sx={{
+                      fontSize: isPhone
+                        ? 18
+                        : 20
+                    }}
+                  />
+                </IconButton>
+              </DialogTitle>
+
+              <DialogContent
+                dividers
+                sx={{
+                  p: isPhone
+                    ? 0.8
+                    : 1.1,
+                  overflowY: "auto"
+                }}
+              >
+                {detailsRow ? (
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        isPhone
+                          ? "repeat(2,minmax(0,1fr))"
+                          : "repeat(3,minmax(0,1fr))",
+                      gap: isPhone
+                        ? 0.45
+                        : 0.65
+                    }}
+                  >
+                    {visibleFields.map(
+                      (field) => {
+                        const rawValue =
+                          detailsRow?.[field];
+
+                        const numeric =
+                          numberValue(
+                            rawValue
+                          ) !== null;
+
+                        return (
+                          <Box
+                            key={field}
+                            sx={{
+                              minWidth: 0,
+                              p: isPhone
+                                ? 0.55
+                                : 0.72,
+                              border:
+                                "1px solid rgba(5,117,70,.14)",
+                              borderRadius: 1.3,
+                              backgroundColor:
+                                "#fbfdfc"
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                mb: 0.2,
+                                fontFamily:
+                                  "Cairo",
+                                fontWeight: 900,
+                                color: "#60756d",
+                                fontSize:
+                                  isPhone
+                                    ? "0.39rem"
+                                    : "0.49rem"
+                              }}
+                            >
+                              {field}
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                fontFamily:
+                                  "Cairo",
+                                fontWeight: 800,
+                                color: "#1f2d3d",
+                                fontSize:
+                                  isPhone
+                                    ? "0.5rem"
+                                    : "0.62rem",
+                                wordBreak:
+                                  "break-word"
+                              }}
+                            >
+                              {numeric
+                                ? formatNumber(
+                                    rawValue
+                                  )
+                                : String(
+                                    unwrapValue(
+                                      rawValue
+                                    ) ?? "-"
+                                  )}
+                            </Typography>
+                          </Box>
+                        );
+                      }
+                    )}
+                  </Box>
+                ) : null}
+              </DialogContent>
+
+              <DialogActions
+                sx={{
+                  px: isPhone
+                    ? 1
+                    : 1.5,
+                  py: isPhone
+                    ? 0.7
+                    : 1
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={closeDetails}
+                  sx={{
+                    backgroundColor:
+                      "#057546",
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.47rem"
+                      : "0.58rem"
+                  }}
+                >
+                  إغلاق
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Paper>
+      </Box>
+    </Box>
+    )
   );
 };
 

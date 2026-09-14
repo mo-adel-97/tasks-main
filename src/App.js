@@ -1,10 +1,35 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import AdmissionRequestsReport from "./pages/AdmissionRequestsReport";
+import HrEmployeesPage from "./pages/HrEmployeesPage.jsx";
+import HrAttendancePage from "./pages/HrAttendancePage.js";
+import HrLeavesPage from "./pages/HrLeavesPage";
+import HrPermissionsPage from "./pages/HrPermissionsPage.jsx";
 import VipCustomers from "./pages/VipCustomers";
 import Login from './pages/Login';
-import OnlineRegistrationRequests
-  from "./pages/OnlineRegistrationRequests";
+import HrDepartmentsPage from "./pages/HrDepartmentsPage.jsx";
+import HrContractsPage from "./pages/HrContractsPage.jsx";
+import HrJobTitlesPage from "./pages/HrJobTitlesPage.jsx";
+import OnlineRegistrationRequests from "./pages/OnlineRegistrationRequests";
+import BalanceReviewPage from "./pages/BalanceReviewPage";
+import GeneralAccountStatement from "./pages/GeneralAccountStatement.jsx";
+import GeneralDaily from "./pages/GeneralDaily.jsx";
+import JournalEntry from "./pages/JournalEntry.jsx";
+import CashDisbursement from "./pages/CashDisbursement.jsx";
+import TrialBalance from "./pages/TrialBalance.jsx";
+import ClosingEntry from "./pages/ClosingEntry.jsx";
+import ConsolidatedIncomeStatement from "./pages/ConsolidatedIncomeStatement.jsx";
+import UserManagement from "./pages/UserManagement.jsx";
+import SidebarSettings from "./pages/SidebarSettings.jsx";
+import SalesManManagement from "./pages/SalesManManagement.jsx";
+import TrainerManagement from "./pages/TrainerManagement.jsx";
+import DiscountTypeManagement from "./pages/DiscountTypeManagement.jsx";
+import ServiceManagement from "./pages/ServiceManagement.jsx";
+import ChangeUserPassword from "./pages/ChangeUserPassword.jsx";
+import UserActionReport from "./pages/UserActionReport.jsx";
+import QualityFormsAudit from "./pages/QualityFormsAudit.jsx";
+import BatchManagement from "./pages/BatchManagement.jsx";
+import BatchCountManagement from "./pages/BatchCountManagement.jsx";
 
 import OfflineRegistrationRequests
   from "./pages/OfflineRegistrationRequests";
@@ -15,14 +40,11 @@ import CircularsUpload from "./pages/CircularsUpload";
 import PrivateRoute from './components/PrivateRoute';
 import AdminDashboard from './components/AdminDashboard';
 import AdminStats from "./components/AdminStats";
-import AllTasksList from './components/AllTasksList';
 import AdmissionRequests from "./pages/AdmissionRequests";
 import UploadUpdate from './components/UploadUpdate';
 import TrainerStudentGrid from './components/TrainerStudentGrid';
 import RegistrationCommissions from './components/RegistrationCommissions';
 import MyRequests from "./MyRequests";
-import NewTaskForm from './components/NewTaskForm';
-import AssignedTasks from './components/AssignedTasks';
 import StudentSearch from './components/StudentSearch';
 import InquiriesPage from './components/InquiriesPage';
 import ReportClients from './components/RportForClinets';
@@ -33,7 +55,6 @@ import ChatSystem from './pages/ChatMian';
 import ExplorerNetwork from './pages/ExploerNetwork';
 import BranchReportsPage from './pages/BranchReportsPage';
 import Complaints from './pages/Complaiments';
-import AdminViewTasks from './pages/AdminViewTasks';
 import AttendancePage from './pages/AttendancePage';
 import DailyAttendanceReport from './pages/DailyAttendanceReport';
 import MonthlyAttendanceReport from './pages/MonthlyAttendanceReport';
@@ -78,6 +99,10 @@ import CollectionCommissionsReport from './pages/CollectionCommissionsReport';
 import RewardsList from './pages/RewardsList';
 import BatchStatistics from './pages/BatchStatistics';
 import PaymentFollowReport from './pages/PaymentFollowReport';
+import PaymentRequestsReport from './pages/PaymentRequestsReport.jsx';
+import SalesReport from './pages/SalesReport.jsx';
+import TaxSalesReport from './pages/TaxSalesReport.jsx';
+import TaxReturnsReport from './pages/TaxReturnsReport.jsx';
 import GraduatesFollowReport from './pages/GraduatesFollowReport';
 import MarketersReport from './pages/MarketersReport';
 import DiscountRequestsReport from './pages/DiscountRequestsReport';
@@ -92,119 +117,83 @@ import NewStudentsPage from './pages/NewStudentsPage';
 import DiplomaStudentsPage from './pages/DiplomaStudentsPage';
 import CourseStudentsPage from './pages/CourseStudentsPage';
 
-const isAdminForAchievements = () => {
-  try {
-    const u = JSON.parse(localStorage.getItem('user') || 'null');
-    const job = Number(u?.userJop);
-    return [0, 1, 2, 3].includes(job);
-  } catch {
-    return false;
+const PERMISSION_API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.REACT_APP_API_URL ||
+  'http://localhost:5258';
+
+const permissionFlagCache = new Map();
+const permissionFlagPromises = new Map();
+
+const permissionCacheKey = (key, permission) => `${String(key)}|${String(permission)}`;
+
+const loadPermissionFlagShared = async (key, permission) => {
+  const cacheKey = permissionCacheKey(key, permission);
+  if (permissionFlagCache.has(cacheKey)) {
+    return permissionFlagCache.get(cacheKey);
   }
-};
 
-const AchievementsRoute = () => {
-  return isAdminForAchievements()
-    ? <AdminAchievementsPage />
-    : <AchievementsPage />;
-};
-
-const isTopManagement = () => {
-  try {
-    const user = JSON.parse(localStorage.getItem('user'));
-    return user && [0, 1, 2, 3].includes(Number(user.userJop));
-  } catch (error) {
-    console.error('Error checking user permissions:', error);
-    return false;
+  if (permissionFlagPromises.has(cacheKey)) {
+    return permissionFlagPromises.get(cacheKey);
   }
-};
 
-const isP2PAdmin = () => {
-  try {
-    const u = JSON.parse(localStorage.getItem('user') || 'null');
-    const job = Number(u?.userJop);
-    return [0, 1, 2, 3].includes(job);
-  } catch {
-    return false;
-  }
-};
-
-const P2PRoute = () => {
-  const [authorized, setAuthorized] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const uRaw = localStorage.getItem('user');
-    const u = uRaw ? JSON.parse(uRaw) : null;
-
-    const ok = !!u?.guid;
-    setAuthorized(ok);
-
-    const admin = isP2PAdmin();
-    setIsAdmin(admin);
-
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontFamily: '"Cairo", sans-serif'
-      }}>
-        جاري التحقق من الصلاحيات...
-      </div>
+  const promise = (async () => {
+    const params = new URLSearchParams({ key, permission });
+    const response = await fetch(
+      `${PERMISSION_API_BASE_URL}/api/screen-access/me?${params.toString()}`,
+      { cache: 'no-store' }
     );
-  }
+    const result = await response.json().catch(() => null);
+    const allowed = response.ok && result?.allowed === true;
+    permissionFlagCache.set(cacheKey, allowed);
+    return allowed;
+  })();
 
-  if (!authorized) return <Navigate to="/login" />;
-
-  return isAdmin ? <P2PMarketingAdmin /> : <P2PMarketing />;
-};
-
-const isStudentNotesAdmin = () => {
+  permissionFlagPromises.set(cacheKey, promise);
   try {
-    const u = JSON.parse(localStorage.getItem('user') || 'null');
-    const job = Number(u?.userJop);
-    return [0, 1, 2, 3].includes(job);
-  } catch {
-    return false;
+    return await promise;
+  } finally {
+    permissionFlagPromises.delete(cacheKey);
   }
 };
 
-const isStudentNotesUser = () => {
-  try {
-    const u = JSON.parse(localStorage.getItem('user') || 'null');
-    const job = Number(u?.userJop);
-    return job === 9;
-  } catch {
-    return false;
-  }
-};
-
-const StudentNotesRoute = () => {
-  const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState("deny");
+const usePermissionFlag = (key, permission = 'view') => {
+  const cacheKey = permissionCacheKey(key, permission);
+  const cached = permissionFlagCache.get(cacheKey);
+  const [state, setState] = useState({
+    loading: cached === undefined,
+    allowed: cached === true
+  });
 
   useEffect(() => {
-    const uRaw = localStorage.getItem('user');
-    const u = uRaw ? JSON.parse(uRaw) : null;
+    let alive = true;
+    const immediate = permissionFlagCache.get(cacheKey);
 
-    if (!u?.guid) {
-      setMode("deny");
-      setLoading(false);
-      return;
+    if (immediate !== undefined) {
+      setState({ loading: false, allowed: immediate === true });
+      return () => {
+        alive = false;
+      };
     }
 
-    if (isStudentNotesAdmin()) setMode("admin");
-    else if (isStudentNotesUser()) setMode("user");
-    else setMode("deny");
+    loadPermissionFlagShared(key, permission)
+      .then((allowed) => {
+        if (alive) setState({ loading: false, allowed });
+      })
+      .catch(() => {
+        if (alive) setState({ loading: false, allowed: false });
+      });
 
-    setLoading(false);
-  }, []);
+    return () => {
+      alive = false;
+    };
+  }, [cacheKey, key, permission]);
+
+  return state;
+};
+
+const PermissionModeRoute = ({ permissionKey, adminComponent, defaultComponent }) => {
+  const { loading, allowed } = usePermissionFlag(permissionKey, 'view');
 
   if (loading) {
     return (
@@ -220,123 +209,169 @@ const StudentNotesRoute = () => {
     );
   }
 
-  if (mode === "deny") return <Navigate to="/dashboard" />;
-
-  return mode === "admin" ? <AdminStudentNotes /> : <StudentNotes />;
+  return allowed ? adminComponent : defaultComponent;
 };
 
-const ConditionalAttendancePage = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+const AchievementsRoute = () => (
+  <PermissionModeRoute
+    permissionKey="achievements-admin-mode"
+    adminComponent={<AdminAchievementsPage />}
+    defaultComponent={<AchievementsPage />}
+  />
+);
+
+const P2PRoute = () => (
+  <PermissionModeRoute
+    permissionKey="p2p-admin-mode"
+    adminComponent={<P2PMarketingAdmin />}
+    defaultComponent={<P2PMarketing />}
+  />
+);
+
+const StudentNotesRoute = () => (
+  <PermissionModeRoute
+    permissionKey="student-notes-admin-mode"
+    adminComponent={<AdminStudentNotes />}
+    defaultComponent={<StudentNotes />}
+  />
+);
+
+const ConditionalAttendancePage = () => (
+  <PermissionModeRoute
+    permissionKey="attendance-admin-mode"
+    adminComponent={<AdminBranchesReports />}
+    defaultComponent={<AttendancePage />}
+  />
+);
+
+const BRANCH_CACHE_TTL_MS = 10 * 60 * 1000;
+let branchesMemoryCache = null;
+let branchesLoadedAt = 0;
+let branchesRequestPromise = null;
+
+const readStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    return null;
+  }
+};
+
+const getFallbackBranch = (userData) => {
+  if (!userData) return null;
+
+  try {
+    const cached = JSON.parse(localStorage.getItem('user_branch') || 'null');
+    if (
+      cached &&
+      (!userData.branchForWork || !cached.guid || cached.guid === userData.branchForWork)
+    ) {
+      return cached;
+    }
+  } catch {
+    // Ignore invalid local branch cache.
+  }
+
+  return {
+    branchName: userData.branchForWork || 'الفرع الرئيسي',
+    guid: userData.branchForWork
+  };
+};
+
+const loadBranchesShared = async () => {
+  const now = Date.now();
+  if (
+    Array.isArray(branchesMemoryCache) &&
+    now - branchesLoadedAt < BRANCH_CACHE_TTL_MS
+  ) {
+    return branchesMemoryCache;
+  }
+
+  if (branchesRequestPromise) return branchesRequestPromise;
+
+  branchesRequestPromise = (async () => {
+    const response = await fetch('https://api1.sstli.com/api/branches/all', {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to load branches: ${response.status}`);
+    }
+
+    const rows = await response.json();
+    branchesMemoryCache = Array.isArray(rows) ? rows : [];
+    branchesLoadedAt = Date.now();
+    return branchesMemoryCache;
+  })();
+
+  try {
+    return await branchesRequestPromise;
+  } finally {
+    branchesRequestPromise = null;
+  }
+};
+
+const useCurrentUserAndBranch = () => {
+  const initialUser = readStoredUser();
+  const [user, setUser] = useState(initialUser);
+  const [branch, setBranch] = useState(() => getFallbackBranch(initialUser));
 
   useEffect(() => {
-    const checkPermissions = () => {
-      setIsAdmin(isTopManagement());
-      setLoading(false);
+    let alive = true;
+
+    const syncFromStorage = () => {
+      const nextUser = readStoredUser();
+      if (!alive) return;
+      setUser(nextUser);
+      setBranch((current) => current || getFallbackBranch(nextUser));
     };
 
-    checkPermissions();
-  }, []);
+    window.addEventListener('sstli-auth-refreshed', syncFromStorage);
 
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontFamily: '"Cairo", sans-serif'
-      }}>
-        جاري التحقق من الصلاحيات...
-      </div>
-    );
-  }
+    const userData = readStoredUser();
+    if (userData) {
+      // لا نوقف رسم الصفحة أثناء تحديث اسم الفرع؛ الكاش يظهر فوراً.
+      loadBranchesShared()
+        .then((branches) => {
+          if (!alive) return;
 
-  return isAdmin ? <AdminBranchesReports /> : <AttendancePage />;
-};
-
-const MainLayoutWithHeader = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [branch, setBranch] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUserAndBranch = async () => {
-      try {
-        const savedUser = localStorage.getItem('user');
-
-        if (!savedUser) {
-          setLoading(false);
-          return;
-        }
-
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-
-        const branchesResponse = await fetch('https://api1.sstli.com/api/branches/all', {
-          headers: {
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (branchesResponse.ok) {
-          const branchesJson = await branchesResponse.json();
-          const userBranch = branchesJson.find(
-            b => b.guid === userData.branchForWork
+          const userBranch = branches.find(
+            (item) => item?.guid === userData.branchForWork
           );
 
           if (userBranch) {
             setBranch(userBranch);
             localStorage.setItem('user_branch', JSON.stringify(userBranch));
-          } else {
-            setBranch({
-              branchName: userData.branchForWork || 'الفرع الرئيسي',
-              guid: userData.branchForWork
-            });
           }
-        } else {
-          setBranch({
-            branchName: userData.branchForWork || 'الفرع الرئيسي',
-            guid: userData.branchForWork
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching branch data:', error);
+        })
+        .catch((error) => {
+          console.warn('Background branch refresh failed:', error);
+        });
+    }
 
-        const savedUser = localStorage.getItem('user');
-
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          setUser(userData);
-          setBranch({
-            branchName: userData.branchForWork || 'الفرع الرئيسي',
-            guid: userData.branchForWork
-          });
-        }
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      alive = false;
+      window.removeEventListener('sstli-auth-refreshed', syncFromStorage);
     };
-
-    fetchUserAndBranch();
   }, []);
+
+  return { user, branch };
+};
+
+const MainLayoutWithHeader = ({ children }) => {
+  const { user, branch } = useCurrentUserAndBranch();
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('user_branch');
     localStorage.removeItem('token');
+    sessionStorage.removeItem('sstli_auth_verified_v2');
+    sessionStorage.removeItem('sstli_screen_access_v2');
     window.location.href = '/login';
   };
-
-  if (loading) {
-    return (
-      <div style={loadingStyles}>
-        <div style={spinnerStyles}></div>
-        <p style={loadingTextStyles}>جاري التحميل...</p>
-      </div>
-    );
-  }
 
   if (!user) return children;
 
@@ -351,80 +386,7 @@ const MainLayoutWithHeader = ({ children }) => {
 };
 
 const LayoutWithoutHeader = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [branch, setBranch] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUserAndBranch = async () => {
-      try {
-        const savedUser = localStorage.getItem('user');
-
-        if (!savedUser) {
-          setLoading(false);
-          return;
-        }
-
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-
-        const branchesResponse = await fetch('https://api1.sstli.com/api/branches/all', {
-          headers: {
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (branchesResponse.ok) {
-          const branchesJson = await branchesResponse.json();
-          const userBranch = branchesJson.find(
-            b => b.guid === userData.branchForWork
-          );
-
-          if (userBranch) {
-            setBranch(userBranch);
-            localStorage.setItem('user_branch', JSON.stringify(userBranch));
-          } else {
-            setBranch({
-              branchName: userData.branchForWork || 'الفرع الرئيسي',
-              guid: userData.branchForWork
-            });
-          }
-        } else {
-          setBranch({
-            branchName: userData.branchForWork || 'الفرع الرئيسي',
-            guid: userData.branchForWork
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching branch data:', error);
-
-        const savedUser = localStorage.getItem('user');
-
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          setUser(userData);
-          setBranch({
-            branchName: userData.branchForWork || 'الفرع الرئيسي',
-            guid: userData.branchForWork
-          });
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserAndBranch();
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={loadingStyles}>
-        <div style={spinnerStyles}></div>
-        <p style={loadingTextStyles}>جاري التحميل...</p>
-      </div>
-    );
-  }
+  const { user, branch } = useCurrentUserAndBranch();
 
   return React.isValidElement(children)
     ? React.cloneElement(children, { user, userBranch: branch })
@@ -456,6 +418,28 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          <Route
+  path="/dashboard/hr-employees"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrEmployeesPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/dashboard/hr-contracts"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrContractsPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
 
           <Route
             path="/dashboard/upload-update"
@@ -514,8 +498,19 @@ function App() {
             }
           />
 
+          <Route
+  path="/dashboard/hr-departments"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrDepartmentsPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
 
-          
+
+
           <Route
             path="/dashboard/course-students"
             element={
@@ -594,6 +589,72 @@ function App() {
             }
           />
 
+            <Route
+            path="/dashboard/hr-job-titles"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <HrJobTitlesPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/payment-requests-report"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <PaymentRequestsReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/sales-report"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <SalesReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tax-sales-report"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TaxSalesReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tax-returns-report"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TaxReturnsReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+  path="/dashboard/hr-attendance"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrAttendancePage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
+
           <Route
             path="/dashboard/graduates-follow-report"
             element={
@@ -644,6 +705,50 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <TransferRequestsReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+            <Route
+            path="/dashboard/hr-permissions"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <HrPermissionsPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/hr-employee-permissions"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <HrPermissionsPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/employee-permissions"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <HrPermissionsPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/hr-leaves"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <HrLeavesPage />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -912,6 +1017,94 @@ function App() {
           />
 
           <Route
+            path="/dashboard/general-account-statement"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <GeneralAccountStatement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/general-daily"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <GeneralDaily />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/journal-entry"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <JournalEntry />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/cash-disbursement"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <CashDisbursement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/trial-balance"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TrialBalance />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/closing-entry"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <ClosingEntry />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/consolidated-income-statement"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <ConsolidatedIncomeStatement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/balance-review"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <BalanceReviewPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
             path="/tra"
             element={
               <PrivateRoute>
@@ -950,17 +1143,6 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <MonthlyAttendanceReport />
-                </LayoutWithoutHeader>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/admin-dashboard"
-            element={
-              <PrivateRoute>
-                <LayoutWithoutHeader>
-                  <AdminViewTasks />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1038,28 +1220,6 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <PeriodicReports />
-                </LayoutWithoutHeader>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/admin-view-tasks"
-            element={
-              <PrivateRoute>
-                <LayoutWithoutHeader>
-                  <AdminViewTasks />
-                </LayoutWithoutHeader>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/admin-add-task"
-            element={
-              <PrivateRoute>
-                <LayoutWithoutHeader>
-                  <NewTaskForm />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1208,17 +1368,6 @@ function App() {
           />
 
           <Route
-            path="/admin-all-tasks"
-            element={
-              <PrivateRoute>
-                <LayoutWithoutHeader>
-                  <AllTasksList />
-                </LayoutWithoutHeader>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
             path="/chats"
             element={
               <PrivateRoute>
@@ -1230,11 +1379,100 @@ function App() {
           />
 
           <Route
-            path="/dashboard/assigned-tasks"
+            path="/dashboard/user-management"
             element={
               <PrivateRoute>
                 <LayoutWithoutHeader>
-                  <AssignedTasks />
+                  <UserManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/sidebar-settings"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <SidebarSettings />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/salesman-management"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <SalesManManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/trainer-management"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TrainerManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/discount-type-management"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <DiscountTypeManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/service-management"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <ServiceManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/change-password"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <ChangeUserPassword />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/user-action-report"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <UserActionReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+
+          <Route
+            path="/dashboard/quality-forms-audit"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <QualityFormsAudit />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1253,7 +1491,29 @@ function App() {
                 path="/dashboard/training-agreements-follow"
                 element={<TrainingAgreementsFollow />}
               />
-              <Route
+
+          <Route
+            path="/dashboard/batch-management"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <BatchManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/batch-count-management"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <BatchCountManagement />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+<Route
                 path="/dashboard/registration-request-report"
                 element={<RegistrationRequestReport />}
               />

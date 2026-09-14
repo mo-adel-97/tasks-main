@@ -5,21 +5,31 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Autocomplete,
   Avatar,
   Box,
   Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  GlobalStyles,
+  IconButton,
   InputAdornment,
   Paper,
   Stack,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   DataGrid,
@@ -34,10 +44,14 @@ import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined
 import Groups2OutlinedIcon from "@mui/icons-material/Groups2Outlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import Sidebar from "../components/Sidebar";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -236,6 +250,46 @@ const StatCard = ({
 );
 
 const BatchStatistics = () => {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  const [detailsOpen, setDetailsOpen] =
+    useState(false);
+
+  const [detailsRow, setDetailsRow] =
+    useState(null);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
+  const openDetails = (row) => {
+    setDetailsRow(row);
+    setDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setDetailsOpen(false);
+    setDetailsRow(null);
+  };
+
   const user = useMemo(
     () => JSON.parse(localStorage.getItem("user") || "{}"),
     []
@@ -580,6 +634,243 @@ const BatchStatistics = () => {
     [visibleFields, filteredRows, isDiplomaField]
   );
 
+  const compactColumns = useMemo(() => {
+    const diplomaField =
+      diplomaFieldName ||
+      visibleFields.find((field) =>
+        isDiplomaField(field)
+      );
+
+    const totalField =
+      visibleFields.find((field) =>
+        isTotalField(field)
+      ) ||
+      originalTotalFieldName;
+
+    const importantFields = [
+      diplomaField,
+      totalField,
+      "__maleTotal",
+      "__femaleTotal"
+    ].filter(Boolean);
+
+    const fallbackFields =
+      visibleFields.filter(
+        (field) =>
+          !importantFields.includes(field) &&
+          !isDiplomaField(field)
+      );
+
+    const desiredCount =
+      isPhone ? 4 : 5;
+
+    const chosenFields = [
+      ...importantFields,
+      ...fallbackFields
+    ]
+      .filter(
+        (field, index, array) =>
+          field &&
+          array.indexOf(field) === index
+      )
+      .slice(0, desiredCount);
+
+    const getHeaderName = (field) => {
+      if (field === diplomaField) {
+        return "الدبلوم";
+      }
+
+      if (field === "__maleTotal") {
+        return isPhone
+          ? "رجال"
+          : "إجمالي الرجال";
+      }
+
+      if (field === "__femaleTotal") {
+        return isPhone
+          ? "نساء"
+          : "إجمالي النساء";
+      }
+
+      if (
+        field === totalField ||
+        isTotalField(field)
+      ) {
+        return "الإجمالي";
+      }
+
+      return field;
+    };
+
+    const dataColumns =
+      chosenFields.map((field) => {
+        const isCalculatedMale =
+          field === "__maleTotal";
+
+        const isCalculatedFemale =
+          field === "__femaleTotal";
+
+        const isCalculated =
+          isCalculatedMale ||
+          isCalculatedFemale;
+
+        const sample =
+          filteredRows.find(
+            (row) =>
+              row?.[field] !== null &&
+              row?.[field] !== undefined &&
+              row?.[field] !== ""
+          )?.[field];
+
+        const numeric =
+          isCalculated ||
+          numberValue(sample) !== null;
+
+        const isDiploma =
+          field === diplomaField ||
+          isDiplomaField(field);
+
+        return {
+          field,
+          headerName: getHeaderName(field),
+          sortable: false,
+          filterable: false,
+          disableColumnMenu: true,
+          resizable: false,
+          align: "center",
+          headerAlign: "center",
+          type: numeric ? "number" : "string",
+
+          ...(isPhone
+            ? {
+                flex: isDiploma
+                  ? 1.7
+                  : 1,
+                minWidth: 0
+              }
+            : {
+                flex: isDiploma
+                  ? 1.7
+                  : 1,
+                minWidth: isDiploma
+                  ? 165
+                  : 95
+              }),
+
+          renderCell: (params) => {
+            const value =
+              params?.row?.[field] ??
+              params?.value;
+
+            if (isDiploma) {
+              return (
+                <Typography
+                  component="span"
+                  sx={{
+                    width: "100%",
+                    fontFamily: "Cairo",
+                    fontWeight: 800,
+                    fontSize: isPhone
+                      ? "0.38rem"
+                      : "0.52rem",
+                    lineHeight: 1.35,
+                    textAlign: "center",
+                    whiteSpace: "normal",
+                    overflow: "hidden",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical"
+                  }}
+                >
+                  {String(
+                    unwrapValue(value) ?? ""
+                  )}
+                </Typography>
+              );
+            }
+
+            return (
+              <Typography
+                component="span"
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : "0.54rem",
+                  color: isCalculated
+                    ? COLORS.danger
+                    : COLORS.primaryDark
+                }}
+              >
+                {numeric
+                  ? formatNumber(value)
+                  : String(
+                      unwrapValue(value) ?? ""
+                    )}
+              </Typography>
+            );
+          }
+        };
+      });
+
+    return [
+      ...dataColumns,
+      {
+        field: "__details",
+        headerName: "",
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        width: isPhone ? 34 : 44,
+        minWidth: isPhone ? 34 : 44,
+        maxWidth: isPhone ? 34 : 44,
+        align: "center",
+        headerAlign: "center",
+
+        renderCell: (params) => (
+          <IconButton
+            size="small"
+            title="عرض التفاصيل"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              openDetails(params.row);
+            }}
+            sx={{
+              width: isPhone ? 24 : 30,
+              height: isPhone ? 24 : 30,
+              p: 0,
+              color: COLORS.primary,
+              border:
+                "1px solid rgba(11,107,70,.28)",
+              backgroundColor:
+                COLORS.primarySoft
+            }}
+          >
+            <VisibilityOutlinedIcon
+              sx={{
+                fontSize: isPhone
+                  ? 14
+                  : 18
+              }}
+            />
+          </IconButton>
+        )
+      }
+    ];
+  }, [
+    visibleFields,
+    filteredRows,
+    diplomaFieldName,
+    originalTotalFieldName,
+    isDiplomaField,
+    isTotalField,
+    isPhone,
+    isTablet
+  ]);
+
   const dataGridRows = useMemo(
     () =>
       filteredRows.map((row, index) => ({
@@ -728,6 +1019,7 @@ const BatchStatistics = () => {
   };
 
   return (
+    isDesktop ? (
     <Box
       sx={{
         minHeight: "100vh",
@@ -1490,6 +1782,1175 @@ const BatchStatistics = () => {
         </Paper>
       </Box>
     </Box>
+    ) : (
+    <Box
+      sx={{
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        background: COLORS.background,
+        direction: "ltr"
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          ".MuiDrawer-root": {
+            zIndex: "2100 !important"
+          },
+          ".MuiDrawer-root .MuiBackdrop-root": {
+            zIndex: "2099 !important"
+          },
+          ".MuiDrawer-root .MuiDrawer-paper": {
+            zIndex: "2101 !important"
+          }
+        }}
+      />
+
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          top: 0,
+          left: 0,
+          right: 0,
+          width: "100%",
+          zIndex: 1400,
+          background:
+            "rgba(255,255,255,.97)",
+          backdropFilter: "blur(14px)",
+          color: COLORS.text,
+          borderBottom:
+            `1px solid ${COLORS.border}`,
+          direction: "ltr"
+        }}
+      >
+        <Toolbar
+          sx={{
+            minHeight: {
+              xs: "50px !important",
+              sm: "56px !important"
+            },
+            px: {
+              xs: 0.75,
+              sm: 1
+            },
+            gap: 0.8
+          }}
+        >
+          <IconButton
+            onClick={() =>
+              setMobileSidebarOpen(
+                (current) => !current
+              )
+            }
+            sx={{
+              width: {
+                xs: 36,
+                sm: 40
+              },
+              height: {
+                xs: 36,
+                sm: 40
+              },
+              color: "#fff",
+              background:
+                `linear-gradient(135deg,${COLORS.primary},${COLORS.primaryDark})`,
+              boxShadow:
+                "0 5px 14px rgba(5,117,70,.20)"
+            }}
+          >
+            <MenuRoundedIcon
+              sx={{
+                fontSize: {
+                  xs: 20,
+                  sm: 22
+                }
+              }}
+            />
+          </IconButton>
+
+          <Typography
+            sx={{
+              flex: 1,
+              fontFamily: "Cairo",
+              fontWeight: 900,
+              fontSize: {
+                xs: "0.66rem",
+                sm: "0.78rem"
+              },
+              color: COLORS.text,
+              textAlign: "left"
+            }}
+          >
+            إحصائيات الدفعات
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
+
+      <Box
+        component="main"
+        sx={{
+          mt: {
+            xs: "50px",
+            sm: "56px"
+          },
+          width: "100%",
+          maxWidth: "100%",
+          minHeight: "100dvh",
+          px: {
+            xs: 0.45,
+            sm: 0.7
+          },
+          py: {
+            xs: 0.45,
+            sm: 0.7
+          },
+          boxSizing: "border-box",
+          overflowX: "hidden"
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            width: "100%",
+            borderRadius: isPhone
+              ? 1.4
+              : 1.8,
+            overflow: "hidden",
+            border:
+              `1px solid ${COLORS.border}`,
+            background: "#fff"
+          }}
+        >
+          <Box
+            sx={{
+              px: isPhone ? 0.75 : 1,
+              py: isPhone ? 0.65 : 0.85,
+              background:
+                "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
+              borderBottom:
+                `1px solid ${COLORS.border}`
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={0.6}
+              alignItems="center"
+            >
+              <QueryStatsIcon
+                sx={{
+                  color: COLORS.primary,
+                  fontSize: isPhone
+                    ? 20
+                    : 24
+                }}
+              />
+
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  sx={{
+                    fontFamily: "Cairo",
+                    fontWeight: 950,
+                    color: COLORS.primaryDark,
+                    fontSize: isPhone
+                      ? "0.68rem"
+                      : "0.82rem"
+                  }}
+                >
+                  إحصائيات الدفعات
+                </Typography>
+
+                {!isPhone && (
+                  <Typography
+                    sx={{
+                      mt: 0.15,
+                      fontFamily: "Cairo",
+                      color: COLORS.muted,
+                      fontSize: "0.44rem"
+                    }}
+                  >
+                    عرض توزيع التسجيلات على الفروع حسب الدفعة
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+          </Box>
+
+          <Box
+            sx={{
+              p: isPhone
+                ? 0.6
+                : 0.85
+            }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                mb: isPhone
+                  ? 0.6
+                  : 0.8,
+                p: isPhone
+                  ? 0.55
+                  : 0.75,
+                borderRadius: 1.4,
+                border:
+                  `1px solid ${COLORS.border}`,
+                background: "#fbfdfc"
+              }}
+            >
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: isPhone
+                    ? "repeat(2,minmax(0,1fr))"
+                    : "repeat(4,minmax(0,1fr))",
+                  gap: isPhone
+                    ? 0.45
+                    : 0.6,
+
+                  "& .MuiInputBase-root": {
+                    minHeight: isPhone
+                      ? 31
+                      : 35,
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.45rem"
+                      : "0.54rem"
+                  },
+
+                  "& .MuiButton-root": {
+                    minHeight: isPhone
+                      ? 30
+                      : 34,
+                    minWidth: 0,
+                    px: isPhone
+                      ? 0.35
+                      : 0.6,
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : "0.5rem"
+                  },
+
+                  "& .MuiSvgIcon-root": {
+                    fontSize: isPhone
+                      ? 14
+                      : 16
+                  }
+                }}
+              >
+                <Autocomplete
+                  options={batches}
+                  value={selectedBatch}
+                  loading={loadingBatches}
+                  onChange={(_, value) =>
+                    setSelectedBatch(value)
+                  }
+                  isOptionEqualToValue={(
+                    option,
+                    value
+                  ) =>
+                    option.guid === value.guid
+                  }
+                  getOptionLabel={(option) =>
+                    option?.name || ""
+                  }
+                  popupIcon={
+                    <KeyboardArrowDownRoundedIcon />
+                  }
+                  noOptionsText="لا توجد دفعات"
+                  loadingText="جارٍ تحميل الدفعات..."
+                  sx={{
+                    gridColumn: "1 / -1"
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      placeholder="اختر الدفعة"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment
+                            position="start"
+                          >
+                            <SearchIcon
+                              sx={{
+                                color:
+                                  COLORS.muted
+                              }}
+                            />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <>
+                            {loadingBatches ? (
+                              <CircularProgress
+                                size={16}
+                              />
+                            ) : null}
+                            {
+                              params
+                                .InputProps
+                                .endAdornment
+                            }
+                          </>
+                        )
+                      }}
+                    />
+                  )}
+                />
+
+                <Button
+                  variant="contained"
+                  startIcon={<SearchIcon />}
+                  onClick={loadReport}
+                  disabled={
+                    loading ||
+                    !selectedBatch?.guid
+                  }
+                  sx={{
+                    background:
+                      COLORS.primary
+                  }}
+                >
+                  عرض
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshIcon />}
+                  onClick={async () => {
+                    await loadBatches();
+
+                    if (
+                      selectedBatch?.guid
+                    ) {
+                      await loadReport();
+                    }
+                  }}
+                  disabled={
+                    loading ||
+                    loadingBatches
+                  }
+                >
+                  تحديث
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={
+                    <FileDownloadIcon />
+                  }
+                  onClick={exportCsv}
+                  disabled={
+                    loading ||
+                    rows.length === 0
+                  }
+                  sx={{
+                    color: COLORS.danger,
+                    borderColor:
+                      "rgba(167,37,42,.28)",
+                    gridColumn: isPhone
+                      ? "1 / -1"
+                      : "span 2"
+                  }}
+                >
+                  تصدير CSV
+                </Button>
+              </Box>
+            </Paper>
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(3,minmax(0,1fr))",
+                gap: isPhone
+                  ? 0.3
+                  : 0.45,
+                mb: isPhone
+                  ? 0.6
+                  : 0.8
+              }}
+            >
+              <Chip
+                label={`الفروع: ${formatNumber(rows.length)}`}
+                sx={{
+                  height: isPhone
+                    ? 25
+                    : 29,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: isPhone
+                    ? "0.32rem"
+                    : "0.42rem",
+                  background:
+                    COLORS.primarySoft,
+                  color:
+                    COLORS.primaryDark,
+                  "& .MuiChip-label": {
+                    px: isPhone
+                      ? 0.25
+                      : 0.45
+                  }
+                }}
+              />
+
+              <Chip
+                label={`رجال: ${formatNumber(groupedBranchTotals.maleTotal)}`}
+                sx={{
+                  height: isPhone
+                    ? 25
+                    : 29,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: isPhone
+                    ? "0.32rem"
+                    : "0.42rem",
+                  background:
+                    COLORS.infoSoft,
+                  color: COLORS.info,
+                  "& .MuiChip-label": {
+                    px: isPhone
+                      ? 0.25
+                      : 0.45
+                  }
+                }}
+              />
+
+              <Chip
+                label={`نساء: ${formatNumber(groupedBranchTotals.femaleTotal)}`}
+                sx={{
+                  height: isPhone
+                    ? 25
+                    : 29,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: isPhone
+                    ? "0.32rem"
+                    : "0.42rem",
+                  background:
+                    "rgba(167,37,42,.07)",
+                  color: COLORS.danger,
+                  "& .MuiChip-label": {
+                    px: isPhone
+                      ? 0.25
+                      : 0.45
+                  }
+                }}
+              />
+            </Box>
+
+            <Paper
+              elevation={0}
+              sx={{
+                mb: isPhone
+                  ? 0.6
+                  : 0.8,
+                p: isPhone
+                  ? 0.5
+                  : 0.7,
+                borderRadius: 1.4,
+                border:
+                  `1px solid ${COLORS.border}`,
+                background: "#fbfdfc"
+              }}
+            >
+              <ToggleButtonGroup
+                exclusive
+                value={branchGenderFilter}
+                onChange={(_, value) => {
+                  if (value) {
+                    setBranchGenderFilter(
+                      value
+                    );
+                  }
+                }}
+                size="small"
+                fullWidth
+                sx={{
+                  width: "100%",
+                  direction: "ltr",
+
+                  "& .MuiToggleButtonGroup-grouped": {
+                    flex: 1,
+                    minWidth: 0,
+                    px: isPhone
+                      ? 0.25
+                      : 0.5,
+                    py: isPhone
+                      ? 0.5
+                      : 0.65,
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.36rem"
+                      : "0.48rem",
+                    borderColor:
+                      `${COLORS.border} !important`
+                  },
+
+                  "& .Mui-selected": {
+                    color:
+                      "#fff !important",
+                    backgroundColor:
+                      `${COLORS.primary} !important`
+                  }
+                }}
+              >
+                <ToggleButton value="all">
+                  الكل
+                </ToggleButton>
+
+                <ToggleButton value="male">
+                  رجال
+                </ToggleButton>
+
+                <ToggleButton value="female">
+                  نساء
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Paper>
+
+            <Box
+              sx={{
+                width: "100%",
+                height: isPhone
+                  ? "calc(100dvh - 375px)"
+                  : "calc(100dvh - 340px)",
+                minHeight: isPhone
+                  ? 330
+                  : 440,
+                border:
+                  `1px solid ${COLORS.border}`,
+                borderRadius: 1.4,
+                overflow: "hidden"
+              }}
+            >
+              <DataGrid
+                rows={dataGridRows}
+                columns={compactColumns}
+                loading={loading}
+                disableRowSelectionOnClick
+                disableColumnMenu
+                rowHeight={
+                  isPhone ? 42 : 48
+                }
+                columnHeaderHeight={
+                  isPhone ? 38 : 50
+                }
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      page: 0,
+                      pageSize: 25
+                    }
+                  }
+                }}
+                pageSizeOptions={[
+                  10,
+                  25,
+                  50
+                ]}
+                localeText={{
+                  noRowsLabel:
+                    "اختر دفعة لعرض الإحصائيات",
+                  noResultsOverlayLabel:
+                    "لا توجد نتائج مطابقة"
+                }}
+                sx={{
+                  border: 0,
+                  direction: "ltr",
+                  fontFamily: "Cairo",
+                  color: COLORS.text,
+
+                  "& .MuiDataGrid-columnHeaders": {
+                    backgroundColor:
+                      COLORS.primaryDark,
+                    color: "#fff",
+                    fontWeight: 900
+                  },
+
+                  "& .MuiDataGrid-columnHeader": {
+                    backgroundColor:
+                      COLORS.primaryDark,
+                    px: isPhone
+                      ? 0.05
+                      : 0.25
+                  },
+
+                  "& .MuiDataGrid-columnHeaderTitle": {
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.34rem"
+                      : "0.52rem",
+                    textAlign: "center",
+                    lineHeight: 1,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  },
+
+                  "& .MuiDataGrid-columnHeaderTitleContainer": {
+                    justifyContent: "center",
+                    minWidth: 0,
+                    overflow: "hidden"
+                  },
+
+                  "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
+                    display: "none"
+                  },
+
+                  "& .MuiDataGrid-columnSeparator": {
+                    display: "none"
+                  },
+
+                  "& .MuiDataGrid-cell": {
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : "0.52rem",
+                    textAlign: "center",
+                    justifyContent: "center",
+                    px: isPhone
+                      ? 0.03
+                      : 0.28,
+                    borderColor:
+                      "#edf1ef"
+                  },
+
+                  "& .MuiDataGrid-row:nth-of-type(even)": {
+                    backgroundColor:
+                      "#fafcfb"
+                  },
+
+                  "& .MuiDataGrid-main": {
+                    overflowX: "hidden"
+                  },
+
+                  "& .MuiDataGrid-virtualScroller": {
+                    overflowX:
+                      "hidden !important"
+                  },
+
+                  "& .MuiDataGrid-scrollbar--horizontal": {
+                    display: "none"
+                  }
+                }}
+              />
+            </Box>
+
+            {Object.keys(totals).length > 0 && (
+              <Paper
+                elevation={0}
+                sx={{
+                  mt: isPhone ? 0.7 : 1,
+                  p: isPhone ? 0.7 : 1,
+                  borderRadius: 1.6,
+                  border:
+                    `1px solid ${COLORS.border}`,
+                  background:
+                    "linear-gradient(180deg,#ffffff 0%,#f8fbf9 100%)",
+                  overflow: "hidden"
+                }}
+              >
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  spacing={0.6}
+                  sx={{
+                    mb: isPhone ? 0.65 : 0.9
+                  }}
+                >
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 950,
+                        color: COLORS.primaryDark,
+                        fontSize: isPhone
+                          ? "0.6rem"
+                          : "0.76rem"
+                      }}
+                    >
+                      إجماليات الدفعة
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 0.1,
+                        fontFamily: "Cairo",
+                        color: COLORS.muted,
+                        fontSize: isPhone
+                          ? "0.34rem"
+                          : "0.44rem"
+                      }}
+                    >
+                      ملخص سريع لأهم أرقام الدفعة الحالية
+                    </Typography>
+                  </Box>
+
+                  <Chip
+                    label={`الإجمالي: ${formatNumber(visibleReportTotal)}`}
+                    sx={{
+                      height: isPhone ? 27 : 31,
+                      fontFamily: "Cairo",
+                      fontWeight: 950,
+                      fontSize: isPhone
+                        ? "0.34rem"
+                        : "0.45rem",
+                      color: "#fff",
+                      background: COLORS.primary,
+                      "& .MuiChip-label": {
+                        px: isPhone ? 0.55 : 0.8
+                      }
+                    }}
+                  />
+                </Stack>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: isPhone
+                      ? "repeat(2,minmax(0,1fr))"
+                      : "repeat(3,minmax(0,1fr))",
+                    gap: isPhone ? 0.45 : 0.65
+                  }}
+                >
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: isPhone ? 0.6 : 0.8,
+                      borderRadius: 1.4,
+                      border:
+                        `1px solid ${COLORS.border}`,
+                      background: COLORS.infoSoft
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 900,
+                        color: COLORS.info,
+                        fontSize: isPhone
+                          ? "0.36rem"
+                          : "0.46rem"
+                      }}
+                    >
+                      إجمالي الرجال
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 0.2,
+                        fontFamily: "Cairo",
+                        fontWeight: 950,
+                        color: COLORS.info,
+                        fontSize: isPhone
+                          ? "0.7rem"
+                          : "0.9rem"
+                      }}
+                    >
+                      {formatNumber(
+                        groupedBranchTotals.maleTotal
+                      )}
+                    </Typography>
+                  </Paper>
+
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: isPhone ? 0.6 : 0.8,
+                      borderRadius: 1.4,
+                      border:
+                        `1px solid rgba(167,37,42,.14)`,
+                      background:
+                        "rgba(167,37,42,.06)"
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 900,
+                        color: COLORS.danger,
+                        fontSize: isPhone
+                          ? "0.36rem"
+                          : "0.46rem"
+                      }}
+                    >
+                      إجمالي النساء
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 0.2,
+                        fontFamily: "Cairo",
+                        fontWeight: 950,
+                        color: COLORS.danger,
+                        fontSize: isPhone
+                          ? "0.7rem"
+                          : "0.9rem"
+                      }}
+                    >
+                      {formatNumber(
+                        groupedBranchTotals.femaleTotal
+                      )}
+                    </Typography>
+                  </Paper>
+
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: isPhone ? 0.6 : 0.8,
+                      borderRadius: 1.4,
+                      border:
+                        `1px solid ${COLORS.border}`,
+                      background: COLORS.primarySoft,
+                      gridColumn: isPhone
+                        ? "1 / -1"
+                        : "auto"
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 900,
+                        color: COLORS.primaryDark,
+                        fontSize: isPhone
+                          ? "0.36rem"
+                          : "0.46rem"
+                      }}
+                    >
+                      عدد الفروع
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 0.2,
+                        fontFamily: "Cairo",
+                        fontWeight: 950,
+                        color: COLORS.primaryDark,
+                        fontSize: isPhone
+                          ? "0.7rem"
+                          : "0.9rem"
+                      }}
+                    >
+                      {formatNumber(
+                        branchGenderFilter === "male"
+                          ? maleBranchFields.length
+                          : branchGenderFilter === "female"
+                            ? femaleBranchFields.length
+                            : maleBranchFields.length +
+                              femaleBranchFields.length
+                      )}
+                    </Typography>
+                  </Paper>
+                </Box>
+
+                <Divider
+                  sx={{
+                    my: isPhone ? 0.65 : 0.9,
+                    borderColor: COLORS.border
+                  }}
+                />
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: isPhone
+                      ? "repeat(2,minmax(0,1fr))"
+                      : "repeat(3,minmax(0,1fr))",
+                    gap: isPhone ? 0.32 : 0.55
+                  }}
+                >
+                  {(branchGenderFilter === "female"
+                    ? groupedBranchTotals.female
+                    : branchGenderFilter === "male"
+                      ? groupedBranchTotals.male
+                      : [
+                          ...groupedBranchTotals.male,
+                          ...groupedBranchTotals.female
+                        ]
+                  )
+                    .map(({ field, value }) => (
+                      <Box
+                        key={field}
+                        sx={{
+                          minWidth: 0,
+                          px: isPhone ? 0.45 : 0.7,
+                          py: isPhone ? 0.38 : 0.6,
+                          borderRadius: 1.1,
+                          border:
+                            `1px solid ${COLORS.border}`,
+                          background: "#fff"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "Cairo",
+                            fontWeight: 800,
+                            color: COLORS.muted,
+                            fontSize: isPhone
+                              ? "0.29rem"
+                              : "0.4rem",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                          }}
+                        >
+                          {field}
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            mt: 0.12,
+                            fontFamily: "Cairo",
+                            fontWeight: 950,
+                            color: COLORS.text,
+                            fontSize: isPhone
+                              ? "0.45rem"
+                              : "0.6rem"
+                          }}
+                        >
+                          {formatNumber(value)}
+                        </Typography>
+                      </Box>
+                    ))}
+                </Box>
+
+
+              </Paper>
+            )}
+
+            <Dialog
+              open={detailsOpen}
+              onClose={closeDetails}
+              fullWidth
+              maxWidth="lg"
+              dir="rtl"
+              PaperProps={{
+                sx: {
+                  width: isPhone
+                    ? "94vw"
+                    : "90vw",
+                  maxWidth: isPhone
+                    ? "94vw"
+                    : "1050px",
+                  maxHeight: isPhone
+                    ? "86dvh"
+                    : "84dvh",
+                  m: 1,
+                  borderRadius: 2.5,
+                  overflow: "hidden"
+                }
+              }}
+            >
+              <DialogTitle
+                sx={{
+                  px: isPhone
+                    ? 1
+                    : 1.5,
+                  py: isPhone
+                    ? 0.8
+                    : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent:
+                    "space-between",
+                  gap: 0.6,
+                  fontFamily: "Cairo",
+                  fontWeight: 950,
+                  color:
+                    COLORS.primaryDark,
+                  fontSize: isPhone
+                    ? "0.76rem"
+                    : "0.94rem"
+                }}
+              >
+                <span>
+                  تفاصيل توزيع الدفعة
+                </span>
+
+                <IconButton
+                  onClick={closeDetails}
+                  sx={{
+                    width: isPhone
+                      ? 30
+                      : 34,
+                    height: isPhone
+                      ? 30
+                      : 34,
+                    color: COLORS.danger
+                  }}
+                >
+                  <CloseIcon
+                    sx={{
+                      fontSize: isPhone
+                        ? 18
+                        : 20
+                    }}
+                  />
+                </IconButton>
+              </DialogTitle>
+
+              <DialogContent
+                dividers
+                sx={{
+                  p: isPhone
+                    ? 0.8
+                    : 1.1,
+                  overflowY: "auto"
+                }}
+              >
+                {detailsRow ? (
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        isPhone
+                          ? "repeat(2,minmax(0,1fr))"
+                          : "repeat(3,minmax(0,1fr))",
+                      gap: isPhone
+                        ? 0.45
+                        : 0.65
+                    }}
+                  >
+                    {[
+                      ...allFields,
+                      "__maleTotal",
+                      "__femaleTotal"
+                    ]
+                      .filter(
+                        (field, index, array) =>
+                          field &&
+                          array.indexOf(field) === index
+                      )
+                      .map((field) => {
+                        const rawValue =
+                          detailsRow?.[field];
+
+                        const numeric =
+                          field === "__maleTotal" ||
+                          field === "__femaleTotal" ||
+                          numberValue(
+                            rawValue
+                          ) !== null;
+
+                        const label =
+                          field === "__maleTotal"
+                            ? "إجمالي الرجال"
+                            : field === "__femaleTotal"
+                              ? "إجمالي النساء"
+                              : field;
+
+                        return (
+                          <Box
+                            key={field}
+                            sx={{
+                              minWidth: 0,
+                              p: isPhone
+                                ? 0.55
+                                : 0.72,
+                              border:
+                                `1px solid ${COLORS.border}`,
+                              borderRadius: 1.3,
+                              backgroundColor:
+                                "#fbfdfc"
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                mb: 0.2,
+                                fontFamily:
+                                  "Cairo",
+                                fontWeight: 900,
+                                color:
+                                  COLORS.muted,
+                                fontSize:
+                                  isPhone
+                                    ? "0.39rem"
+                                    : "0.49rem"
+                              }}
+                            >
+                              {label}
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                fontFamily:
+                                  "Cairo",
+                                fontWeight: 800,
+                                color:
+                                  COLORS.text,
+                                fontSize:
+                                  isPhone
+                                    ? "0.5rem"
+                                    : "0.62rem",
+                                wordBreak:
+                                  "break-word"
+                              }}
+                            >
+                              {numeric
+                                ? formatNumber(
+                                    rawValue
+                                  )
+                                : String(
+                                    unwrapValue(
+                                      rawValue
+                                    ) ?? "-"
+                                  )}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                  </Box>
+                ) : null}
+              </DialogContent>
+
+              <DialogActions
+                sx={{
+                  px: isPhone
+                    ? 1
+                    : 1.5,
+                  py: isPhone
+                    ? 0.7
+                    : 1
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={closeDetails}
+                  sx={{
+                    backgroundColor:
+                      COLORS.primary,
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: isPhone
+                      ? "0.47rem"
+                      : "0.58rem"
+                  }}
+                >
+                  إغلاق
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Paper>
+      </Box>
+    </Box>
+    )
   );
 };
 

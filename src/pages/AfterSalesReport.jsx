@@ -4,15 +4,20 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Box,
   Button,
+  GlobalStyles,
   IconButton,
   MenuItem,
   Paper,
   Stack,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   DataGrid,
@@ -23,10 +28,12 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Sidebar from "../components/Sidebar";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -47,6 +54,19 @@ const normalize = (value) =>
     .replaceAll("آ", "ا")
     .replaceAll("ة", "ه")
     .replace(/\s+/g, " ");
+
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) {
+    return parts.join(" ");
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
 
 const extractDateValue = (value) => {
   if (
@@ -172,6 +192,32 @@ const showError = async (
 };
 
 const AfterSalesReport = () => {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(
     () =>
       JSON.parse(
@@ -340,8 +386,181 @@ const AfterSalesReport = () => {
     );
   }, [filteredRows]);
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const statusColumn = {
+      field: "callStatus",
+      headerName: "الحالة",
+      type: "singleSelect",
+      valueOptions: [
+        "تم الرد",
+        "لم يتم الرد",
+        "لم يتحدد الموقف"
+      ],
+      flex: 0.85,
+      minWidth: isPhone ? 76 : 96,
+      renderCell: (params) => (
+        <Box
+          component="span"
+          sx={{
+            px: isPhone ? 0.45 : 0.7,
+            py: isPhone ? 0.15 : 0.25,
+            borderRadius: 999,
+            fontWeight: 900,
+            fontSize: isPhone
+              ? "0.34rem"
+              : isTablet
+                ? "0.42rem"
+                : undefined,
+            color:
+              params.value === "تم الرد"
+                ? "#057546"
+                : params.value === "لم يتم الرد"
+                  ? "#ae1e21"
+                  : "#735c00",
+            background:
+              params.value === "تم الرد"
+                ? "#e6f3ee"
+                : params.value === "لم يتم الرد"
+                  ? "#fdecec"
+                  : "#fff7cc"
+          }}
+        >
+          {params.value || "لم يتحدد الموقف"}
+        </Box>
+      )
+    };
+
+    const actionColumn = {
+      field: "actions",
+      headerName: isCompact ? "" : "مشاهدة",
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      width: isPhone ? 42 : isTablet ? 50 : 85,
+      minWidth: isPhone ? 42 : isTablet ? 50 : 85,
+      maxWidth: isPhone ? 42 : isTablet ? 50 : 85,
+      renderCell: (params) => (
+        <Tooltip title="عرض التفاصيل">
+          <span>
+            <IconButton
+              disabled={!params.row.notes}
+              onClick={() =>
+                viewNotes(params.row)
+              }
+              sx={{
+                color: "#057546",
+                width: isPhone ? 27 : isTablet ? 30 : 36,
+                height: isPhone ? 27 : isTablet ? 30 : 36,
+                p: 0,
+                backgroundColor: isCompact
+                  ? "#eef8f3"
+                  : undefined
+              }}
+            >
+              <VisibilityIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 15
+                    : isTablet
+                      ? 17
+                      : 20
+                }}
+              />
+            </IconButton>
+          </span>
+        </Tooltip>
+      )
+    };
+
+    if (isPhone) {
+      return [
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          flex: 1.05,
+          minWidth: 92,
+          renderCell: (params) =>
+            shortStudentName(
+              params.row.studentName
+            )
+        },
+        {
+          field: "salesmanName",
+          headerName: "مندوب البيع",
+          flex: 0.85,
+          minWidth: 80
+        },
+        statusColumn,
+        {
+          field: "rating",
+          headerName: "التقييم",
+          flex: 0.55,
+          minWidth: 55,
+          renderCell: (params) =>
+            Number(params.value) > 0
+              ? `${params.value}/5`
+              : "-"
+        },
+        actionColumn
+      ];
+    }
+
+    if (isTablet) {
+      return [
+        {
+          field: "notesDate",
+          headerName: "التاريخ",
+          flex: 0.8,
+          minWidth: 90,
+          renderCell: (params) =>
+            formatGregorianDate(
+              params.row.notesDate
+            )
+        },
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          flex: 1.05,
+          minWidth: 115,
+          renderCell: (params) =>
+            shortStudentName(
+              params.row.studentName
+            )
+        },
+        {
+          field: "diplomName",
+          headerName: "الدبلوم/الدورة",
+          flex: 1.05,
+          minWidth: 115
+        },
+        {
+          field: "salesmanName",
+          headerName: "مندوب البيع",
+          flex: 0.9,
+          minWidth: 95
+        },
+        {
+          field: "followUpName",
+          headerName: "المتابع",
+          flex: 0.9,
+          minWidth: 95
+        },
+        statusColumn,
+        {
+          field: "rating",
+          headerName: "التقييم",
+          flex: 0.6,
+          minWidth: 65,
+          renderCell: (params) =>
+            Number(params.value) > 0
+              ? `${params.value}/5`
+              : "-"
+        },
+        actionColumn
+      ];
+    }
+
+    return [
       {
         field: "notesDate",
         headerName: "التاريخ",
@@ -402,44 +621,7 @@ const AfterSalesReport = () => {
         flex: 1.15,
         minWidth: 130
       },
-      {
-        field: "callStatus",
-        headerName: "حالة الاتصال",
-        type: "singleSelect",
-        valueOptions: [
-          "تم الرد",
-          "لم يتم الرد",
-          "لم يتحدد الموقف"
-        ],
-        flex: 1.05,
-        minWidth: 125,
-        renderCell: (params) => (
-          <Box
-            component="span"
-            sx={{
-              px: 1,
-              py: 0.4,
-              borderRadius: 999,
-              fontWeight: 900,
-              color:
-                params.value === "تم الرد"
-                  ? "#057546"
-                  : params.value === "لم يتم الرد"
-                  ? "#ae1e21"
-                  : "#735c00",
-              background:
-                params.value === "تم الرد"
-                  ? "#e6f3ee"
-                  : params.value === "لم يتم الرد"
-                  ? "#fdecec"
-                  : "#fff7cc"
-            }}
-          >
-            {params.value ||
-              "لم يتحدد الموقف"}
-          </Box>
-        )
-      },
+      statusColumn,
       {
         field: "rating",
         headerName: "التقييم",
@@ -465,38 +647,9 @@ const AfterSalesReport = () => {
         flex: 1.6,
         minWidth: 170
       },
-      {
-        field: "actions",
-        headerName: "مشاهدة",
-        sortable: false,
-        filterable: false,
-        disableColumnMenu: true,
-        width: 85,
-        renderCell: (params) => (
-          <Tooltip title="عرض التفاصيل">
-            <span>
-              <IconButton
-                disabled={
-                  !params.row.notes
-                }
-                onClick={() =>
-                  viewNotes(
-                    params.row
-                  )
-                }
-                sx={{
-                  color: "#057546"
-                }}
-              >
-                <VisibilityIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-        )
-      }
-    ],
-    []
-  );
+      actionColumn
+    ];
+  }, [isPhone, isTablet, isCompact]);
 
   const filteredStats = useMemo(() => {
     const rated =
@@ -949,42 +1102,193 @@ const AfterSalesReport = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         background: "#f5f8f7",
         direction: "ltr"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            },
+
+            ".swal2-popup": {
+              width: isPhone
+                ? "88vw !important"
+                : isTablet
+                  ? "560px !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.75rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-title": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.82rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-html-container": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.56rem !important"
+                : isTablet
+                  ? "0.68rem !important"
+                  : undefined
+            },
+
+            ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.5rem !important"
+                : isTablet
+                  ? "0.6rem !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.4rem 0.68rem !important"
+                : undefined
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: { xs: 0.75, sm: 1 },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 22
+                  }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.67rem",
+                  sm: "0.79rem"
+                },
+                color: "#17372b",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              تقرير متابعة العملاء
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
         component="main"
         sx={{
-          marginLeft: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
           },
-
-          width: {
-            xs: "100%",
-            md:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`
-          },
-
-          minHeight: "100vh",
-
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
           p: {
-            xs: 1.5,
-            md: 3
+            xs: 0.5,
+            sm: 0.75,
+            md: 1
           },
+          direction: "ltr",
+          boxSizing: "border-box",
+          overflowX: "hidden",
 
-          direction: "ltr"
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 2.5
+          }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -993,10 +1297,11 @@ const AfterSalesReport = () => {
         >
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              },
+              p: isPhone
+                ? 0.7
+                : isTablet
+                  ? 1
+                  : 2.5,
 
               background:
                 "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
@@ -1010,7 +1315,12 @@ const AfterSalesReport = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#034d31"
+                color: "#034d31",
+                fontSize: isPhone
+                  ? "0.72rem"
+                  : isTablet
+                    ? "0.88rem"
+                    : undefined
               }}
             >
               تقرير متابعة العملاء
@@ -1018,9 +1328,17 @@ const AfterSalesReport = () => {
 
             <Typography
               sx={{
-                mt: 0.5,
+                mt: isPhone ? 0.15 : 0.5,
                 fontFamily: "Cairo",
-                color: "#61756d"
+                color: "#61756d",
+                fontSize: isPhone
+                  ? "0.4rem"
+                  : isTablet
+                    ? "0.5rem"
+                    : undefined,
+                display: isPhone
+                  ? "none"
+                  : "block"
               }}
             >
               عرض تقارير متابعة ما بعد البيع ومتوسط التقييم
@@ -1029,19 +1347,95 @@ const AfterSalesReport = () => {
 
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              }
+              p: isPhone
+                ? 0.6
+                : isTablet
+                  ? 0.9
+                  : 2.5
             }}
           >
-            <Stack
-              direction={{
-                xs: "column",
-                md: "row"
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : isTablet
+                    ? "repeat(4,minmax(0,1fr))"
+                    : "repeat(7,minmax(120px,1fr)) auto auto auto auto",
+                gap: isPhone
+                  ? 0.5
+                  : isTablet
+                    ? 0.7
+                    : 1,
+                mb: isPhone
+                  ? 0.7
+                  : isTablet
+                    ? 0.9
+                    : 2,
+                alignItems: "center",
+
+                "& .MuiInputLabel-root": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+
+                "& .MuiInputBase-input": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.44rem"
+                    : isTablet
+                      ? "0.52rem"
+                      : undefined,
+                  py: isPhone
+                    ? 0.45
+                    : isTablet
+                      ? 0.55
+                      : undefined
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone
+                    ? 31
+                    : isTablet
+                      ? 34
+                      : undefined,
+                  borderRadius: isCompact
+                    ? 1.1
+                    : undefined
+                },
+
+                "& .MuiButton-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 33
+                      : undefined,
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  fontSize: isPhone
+                    ? "0.43rem"
+                    : isTablet
+                      ? "0.51rem"
+                      : undefined,
+                  px: isPhone
+                    ? 0.55
+                    : isTablet
+                      ? 0.8
+                      : undefined
+                },
+
+                "& .MuiSvgIcon-root": {
+                  fontSize: isPhone
+                    ? 14
+                    : isTablet
+                      ? 16
+                      : undefined
+                }
               }}
-              spacing={1.5}
-              sx={{ mb: 2 }}
             >
               <TextField
                 type="date"
@@ -1049,13 +1443,12 @@ const AfterSalesReport = () => {
                 label="من تاريخ"
                 value={fromDate}
                 onChange={(event) =>
-                  setFromDate(
-                    event.target.value
-                  )
+                  setFromDate(event.target.value)
                 }
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -1064,13 +1457,12 @@ const AfterSalesReport = () => {
                 label="إلى تاريخ"
                 value={toDate}
                 onChange={(event) =>
-                  setToDate(
-                    event.target.value
-                  )
+                  setToDate(event.target.value)
                 }
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -1078,96 +1470,16 @@ const AfterSalesReport = () => {
                 label="بحث شامل"
                 value={searchText}
                 onChange={(event) =>
-                  setSearchText(
-                    event.target.value
-                  )
+                  setSearchText(event.target.value)
                 }
+                fullWidth
                 sx={{
-                  minWidth: {
-                    md: 280
-                  }
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               />
 
-              <Button
-                variant="contained"
-                startIcon={
-                  <SearchIcon />
-                }
-                onClick={loadData}
-                disabled={loading}
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
-                  background: "#057546"
-                }}
-              >
-                عرض
-              </Button>
-
-              <Button
-                variant="outlined"
-                startIcon={
-                  <RefreshIcon />
-                }
-                onClick={loadData}
-                disabled={loading}
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800
-                }}
-              >
-                تحديث
-              </Button>
-
-              <Button
-                variant="outlined"
-                startIcon={
-                  <FileDownloadIcon />
-                }
-                onClick={
-                  exportToExcel
-                }
-                disabled={
-                  loading ||
-                  filteredRows.length ===
-                    0
-                }
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
-                  color: "#ae1e21",
-                  borderColor: "#ae1e21"
-                }}
-              >
-                تصدير Excel
-              </Button>
-
-              <Button
-                variant="outlined"
-                startIcon={
-                  <ClearAllIcon />
-                }
-                onClick={
-                  clearFilters
-                }
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800
-                }}
-              >
-                مسح الفلاتر
-              </Button>
-            </Stack>
-
-            <Stack
-              direction={{
-                xs: "column",
-                lg: "row"
-              }}
-              spacing={1.5}
-              sx={{ mb: 2 }}
-            >
               <TextField
                 select
                 fullWidth
@@ -1175,9 +1487,7 @@ const AfterSalesReport = () => {
                 label="الدفعة"
                 value={batchFilter}
                 onChange={(event) =>
-                  setBatchFilter(
-                    event.target.value
-                  )
+                  setBatchFilter(event.target.value)
                 }
               >
                 {optionsWithAll(
@@ -1197,9 +1507,7 @@ const AfterSalesReport = () => {
                 fullWidth
                 size="small"
                 label="القائم بالمتابعة"
-                value={
-                  followUserFilter
-                }
+                value={followUserFilter}
                 onChange={(event) =>
                   setFollowUserFilter(
                     event.target.value
@@ -1223,9 +1531,7 @@ const AfterSalesReport = () => {
                 fullWidth
                 size="small"
                 label="حالة الاتصال"
-                value={
-                  callStatusFilter
-                }
+                value={callStatusFilter}
                 onChange={(event) =>
                   setCallStatusFilter(
                     event.target.value
@@ -1249,9 +1555,7 @@ const AfterSalesReport = () => {
                 fullWidth
                 size="small"
                 label="مندوب البيع"
-                value={
-                  salesmanFilter
-                }
+                value={salesmanFilter}
                 onChange={(event) =>
                   setSalesmanFilter(
                     event.target.value
@@ -1269,21 +1573,79 @@ const AfterSalesReport = () => {
                   </MenuItem>
                 ))}
               </TextField>
-            </Stack>
+
+              <Button
+                variant="contained"
+                startIcon={<SearchIcon />}
+                onClick={loadData}
+                disabled={loading}
+                sx={{
+                  background: "#057546"
+                }}
+              >
+                عرض
+              </Button>
+
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={loadData}
+                disabled={loading}
+              >
+                تحديث
+              </Button>
+
+              <Button
+                variant="outlined"
+                startIcon={<FileDownloadIcon />}
+                onClick={exportToExcel}
+                disabled={
+                  loading ||
+                  filteredRows.length === 0
+                }
+                sx={{
+                  color: "#ae1e21",
+                  borderColor: "#ae1e21",
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
+                }}
+              >
+                تصدير Excel
+              </Button>
+
+              <Button
+                variant="outlined"
+                startIcon={<ClearAllIcon />}
+                onClick={clearFilters}
+                sx={{
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
+                }}
+              >
+                مسح الفلاتر
+              </Button>
+            </Box>
 
             <Stack
-              direction={{
-                xs: "column",
-                md: "row"
+              direction="row"
+              spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}
+              sx={{
+                mb: isPhone ? 0.7 : isTablet ? 0.9 : 2.5
               }}
-              spacing={2}
-              sx={{ mb: 2.5 }}
             >
               <Box
                 sx={{
                   flex: 1,
-                  p: 1.5,
-                  borderRadius: 2,
+                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  borderRadius: isPhone ? 1 : isTablet ? 1.3 : 2,
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined,
+                  lineHeight: 1.5,
                   textAlign: "center",
                   background: "#fff9c4",
                   color: "#ae1e21",
@@ -1299,8 +1661,14 @@ const AfterSalesReport = () => {
               <Box
                 sx={{
                   flex: 1,
-                  p: 1.5,
-                  borderRadius: 2,
+                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  borderRadius: isPhone ? 1 : isTablet ? 1.3 : 2,
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined,
+                  lineHeight: 1.5,
                   textAlign: "center",
                   background: "#edf8f3",
                   color: "#034d31",
@@ -1318,8 +1686,14 @@ const AfterSalesReport = () => {
               <Box
                 sx={{
                   flex: 1,
-                  p: 1.5,
-                  borderRadius: 2,
+                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  borderRadius: isPhone ? 1 : isTablet ? 1.3 : 2,
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined,
+                  lineHeight: 1.5,
                   textAlign: "center",
                   background: "#eef4ff",
                   color: "#184f90",
@@ -1336,7 +1710,16 @@ const AfterSalesReport = () => {
             <Box
               sx={{
                 width: "100%",
-                height: 740,
+                height: isPhone
+                  ? "calc(100dvh - 455px)"
+                  : isTablet
+                    ? "calc(100dvh - 390px)"
+                    : 700,
+                minHeight: isPhone
+                  ? 340
+                  : isTablet
+                    ? 420
+                    : 520,
                 border:
                   "1px solid rgba(5,117,70,0.14)",
                 borderRadius: 3,
@@ -1348,7 +1731,23 @@ const AfterSalesReport = () => {
                 columns={columns}
                 loading={loading}
                 disableRowSelectionOnClick
-                showToolbar
+                showToolbar={!isPhone}
+                disableColumnMenu={isPhone}
+                disableColumnFilter={isPhone}
+                rowHeight={
+                  isPhone
+                    ? 34
+                    : isTablet
+                      ? 40
+                      : undefined
+                }
+                columnHeaderHeight={
+                  isPhone
+                    ? 32
+                    : isTablet
+                      ? 38
+                      : undefined
+                }
                 slots={{
                   toolbar: GridToolbar
                 }}
@@ -1449,6 +1848,24 @@ const AfterSalesReport = () => {
                   direction: "ltr",
                   fontFamily: "Cairo",
 
+                  "& .MuiDataGrid-main": {
+                    overflowX: isCompact
+                      ? "hidden"
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-virtualScroller": {
+                    overflowX: isCompact
+                      ? "hidden !important"
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-scrollbar--horizontal": {
+                    display: isCompact
+                      ? "none"
+                      : undefined
+                  },
+
                   "& .MuiDataGrid-columnHeaders": {
                     backgroundColor:
                       "#057546",
@@ -1467,7 +1884,13 @@ const AfterSalesReport = () => {
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     textAlign: "center",
-                    width: "100%"
+                    width: "100%",
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : isTablet
+                        ? "0.47rem"
+                        : undefined,
+                    lineHeight: 1.2
                   },
 
                   "& .MuiDataGrid-columnSeparator": {
@@ -1481,8 +1904,18 @@ const AfterSalesReport = () => {
                     textAlign: "center",
                     justifyContent: "center",
                     whiteSpace: "normal",
-                    lineHeight: 1.45,
-                    borderColor: "#e6ece9"
+                    lineHeight: 1.35,
+                    borderColor: "#e6ece9",
+                    px: isPhone
+                      ? 0.35
+                      : isTablet
+                        ? 0.55
+                        : undefined,
+                    fontSize: isPhone
+                      ? "0.39rem"
+                      : isTablet
+                        ? "0.47rem"
+                        : undefined
                   },
 
                   "& .MuiDataGrid-row:nth-of-type(even)": {
@@ -1496,8 +1929,11 @@ const AfterSalesReport = () => {
                   },
 
                   "& .MuiDataGrid-toolbarContainer": {
-                    p: 1,
-                    gap: 1,
+                    display: isPhone
+                      ? "none"
+                      : "flex",
+                    p: isTablet ? 0.45 : 1,
+                    gap: isTablet ? 0.45 : 1,
                     borderBottom:
                       "1px solid #e6ece9",
                     backgroundColor:
@@ -1508,12 +1944,37 @@ const AfterSalesReport = () => {
                   "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
                     fontFamily: "Cairo",
                     fontWeight: 800,
-                    color: "#057546"
+                    color: "#057546",
+                    fontSize: isTablet
+                      ? "0.46rem"
+                      : undefined,
+                    minWidth: isTablet
+                      ? 0
+                      : undefined,
+                    px: isTablet
+                      ? 0.5
+                      : undefined
+                  },
+
+                  "& .MuiDataGrid-toolbarContainer .MuiInputBase-input": {
+                    fontSize: isTablet
+                      ? "0.46rem"
+                      : undefined
                   },
 
                   "& .MuiDataGrid-footerContainer": {
                     direction: "ltr",
-                    fontFamily: "Cairo"
+                    fontFamily: "Cairo",
+                    minHeight: isPhone
+                      ? 34
+                      : isTablet
+                        ? 38
+                        : undefined,
+                    fontSize: isPhone
+                      ? "0.4rem"
+                      : isTablet
+                        ? "0.48rem"
+                        : undefined
                   }
                 }}
               />

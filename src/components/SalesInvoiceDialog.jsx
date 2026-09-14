@@ -13,7 +13,9 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PrintIcon from "@mui/icons-material/Print";
@@ -44,7 +46,123 @@ const money = (value) =>
     maximumFractionDigits: 2
   });
 
+const hijriDateCache = new Map();
+
+const hijriToGregorian = (year, month, day) => {
+  const cacheKey = `${year}-${month}-${day}`;
+
+  if (hijriDateCache.has(cacheKey)) {
+    return hijriDateCache.get(cacheKey);
+  }
+
+  try {
+    const formatter = new Intl.DateTimeFormat(
+      "en-US-u-ca-islamic-umalqura-nu-latn",
+      {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        timeZone: "UTC"
+      }
+    );
+
+    // تقريب السنة الميلادية المقابلة ثم البحث حولها.
+    const approximateGregorianYear = Math.floor(
+      year * 0.970224 + 621.5774
+    );
+
+    const start = new Date(
+      Date.UTC(approximateGregorianYear - 1, 0, 1)
+    );
+
+    for (let i = 0; i < 950; i += 1) {
+      const current = new Date(
+        start.getTime() + i * 86400000
+      );
+
+      const parts = formatter.formatToParts(current);
+
+      const getPart = (type) =>
+        Number(
+          parts.find((part) => part.type === type)?.value || 0
+        );
+
+      if (
+        getPart("year") === year &&
+        getPart("month") === month &&
+        getPart("day") === day
+      ) {
+        const result =
+          `${String(current.getUTCDate()).padStart(2, "0")}/` +
+          `${String(current.getUTCMonth() + 1).padStart(2, "0")}/` +
+          `${current.getUTCFullYear()}`;
+
+        hijriDateCache.set(cacheKey, result);
+        return result;
+      }
+    }
+  } catch {
+    // fallback below
+  }
+
+  return "";
+};
+
 const formatDate = (value) => {
+  if (!value) return "";
+
+  const raw = String(value).trim();
+
+  // لو التاريخ الراجع من الباك بالشكل 1448-03-12
+  // فهو هجري رقمي وليس ميلادي.
+  const ymd = /^(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})/.exec(raw);
+
+  if (ymd) {
+    const year = Number(ymd[1]);
+    const month = Number(ymd[2]);
+    const day = Number(ymd[3]);
+
+    // سنة هجرية معتادة في النظام.
+    if (year >= 1300 && year <= 1600) {
+      const converted = hijriToGregorian(year, month, day);
+
+      if (converted) {
+        return converted;
+      }
+    }
+
+    // تاريخ ميلادي طبيعي.
+    if (year >= 1753) {
+      return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+    }
+  }
+
+  // دعم MM/dd/yyyy أو أي صيغة ميلادية صالحة أخرى.
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return raw;
+  }
+
+  const year = date.getFullYear();
+
+  // حماية إضافية: لا نعرض سنة هجرية كأنها ميلادية.
+  if (year >= 1300 && year <= 1600) {
+    const converted = hijriToGregorian(
+      year,
+      date.getMonth() + 1,
+      date.getDate()
+    );
+
+    if (converted) {
+      return converted;
+    }
+  }
+
+  return date.toLocaleDateString("en-GB");
+};
+
+const formatHijriDate = (value) => {
   if (!value) return "";
 
   const date = new Date(value);
@@ -53,7 +171,40 @@ const formatDate = (value) => {
     return String(value);
   }
 
-  return date.toLocaleDateString("en-GB");
+  try {
+    const parts = new Intl.DateTimeFormat(
+      "en-US-u-ca-islamic-umalqura-nu-latn",
+      {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        timeZone: "Asia/Riyadh"
+      }
+    ).formatToParts(date);
+
+    const getPart = (type) =>
+      parts.find((part) => part.type === type)?.value || "";
+
+    const day = getPart("day");
+    const month = getPart("month");
+    const year = getPart("year");
+
+    if (day && month && year) {
+      return `${day}/${month}/${year} هـ`;
+    }
+  } catch {
+    // fallback below
+  }
+
+  return new Intl.DateTimeFormat(
+    "ar-SA-u-ca-islamic-umalqura",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "Asia/Riyadh"
+    }
+  ).format(date);
 };
 
 const formatTime = (value) => {
@@ -87,6 +238,16 @@ export default function SalesInvoiceDialog({
   invoice,
   apiBaseUrl
 }) {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1199px)"
+  );
+
   const printFrameRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
@@ -730,13 +891,24 @@ export default function SalesInvoiceDialog({
       <Dialog
         open={open}
         onClose={loading || printing ? undefined : onClose}
-        maxWidth="xl"
+        maxWidth="lg"
         fullWidth
+        fullScreen={isPhone}
         dir="rtl"
         PaperProps={{
           sx: {
-            borderRadius: 3,
-            overflow: "hidden"
+            borderRadius: isPhone ? 0 : 3,
+            overflow: "hidden",
+            width: isPhone
+              ? "100%"
+              : isTablet
+                ? "calc(100vw - 28px)"
+                : "min(1180px, calc(100vw - 56px))",
+            maxWidth: "none",
+            maxHeight: isPhone
+              ? "100dvh"
+              : "calc(100dvh - 28px)",
+            m: isPhone ? 0 : 1.75
           }
         }}
       >
@@ -746,7 +918,20 @@ export default function SalesInvoiceDialog({
             fontWeight: 950,
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            gap: 1,
+            px: isPhone ? 1.2 : 2.5,
+            py: isPhone ? 1 : 1.5,
+            "& .MuiStack-root": {
+              minWidth: 0
+            },
+            "& span": {
+              fontSize: isPhone ? 14 : 18,
+              lineHeight: 1.45,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: isPhone ? "normal" : "nowrap"
+            }
           }}
         >
           <Stack direction="row" spacing={1} alignItems="center">
@@ -762,13 +947,26 @@ export default function SalesInvoiceDialog({
           </IconButton>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ p: 2.5 }}>
+        <DialogContent
+          dividers
+          sx={{
+            p: isPhone
+              ? 1
+              : isTablet
+                ? 1.5
+                : 2.5,
+            overflowY: "auto",
+            overflowX: "hidden"
+          }}
+        >
           {loading ? (
             <Stack
               alignItems="center"
               justifyContent="center"
               spacing={2}
-              sx={{ minHeight: 420 }}
+              sx={{
+                minHeight: isPhone ? 240 : 420
+              }}
             >
               <CircularProgress sx={{ color: primaryColor }} />
               <Typography sx={{ fontWeight: 900 }}>
@@ -779,7 +977,13 @@ export default function SalesInvoiceDialog({
             <Alert severity="error">{error}</Alert>
           ) : data ? (
             <Stack spacing={2}>
-              <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: isPhone ? 1 : 2,
+                  borderRadius: isPhone ? 2 : 3
+                }}
+              >
                 <Grid container spacing={1.5}>
                   {[
                     ["كود الفاتورة", header.code],
@@ -792,7 +996,13 @@ export default function SalesInvoiceDialog({
                     ["المحصل", header.fullName],
                     ["تاريخ التحويل", formatDate(header.payDate)]
                   ].map(([label, value]) => (
-                    <Grid item xs={12} md={4} key={label}>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      key={label}
+                    >
                       <TextField
                         fullWidth
                         size="small"
@@ -816,58 +1026,147 @@ export default function SalesInvoiceDialog({
                 </Grid>
               </Paper>
 
-              <Box sx={{ overflowX: "auto" }}>
+              {isPhone ? (
+                <Stack spacing={1}>
+                  {items.length ? (
+                    items.map((item, index) => (
+                      <Paper
+                        key={`${item.diplomName}-${index}`}
+                        variant="outlined"
+                        sx={{
+                          p: 1,
+                          borderRadius: 2,
+                          bgcolor: "#fffaf0"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontWeight: 950,
+                            fontSize: 13,
+                            color: primaryDark,
+                            mb: 0.8
+                          }}
+                        >
+                          {item.diplomName || "بدون بيان"}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(2,minmax(0,1fr))",
+                            gap: 0.7
+                          }}
+                        >
+                          {[
+                            ["الوحدة", item.unit || "PCS"],
+                            ["الكمية", item.qty ?? ""],
+                            ["السعر", money(item.cost)],
+                            ["الضريبة %", item.taxValue ?? ""],
+                            ["مبلغ الضريبة", money(item.tax)],
+                            ["الصافي", money(item.subTotal)]
+                          ].map(([label, value]) => (
+                            <Box
+                              key={label}
+                              sx={{
+                                p: 0.7,
+                                border: "1px solid #ececec",
+                                borderRadius: 1.5,
+                                bgcolor: "#fff"
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: 9,
+                                  color: "#777",
+                                  fontWeight: 800
+                                }}
+                              >
+                                {label}
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  fontSize: 12,
+                                  fontWeight: 950,
+                                  wordBreak: "break-word"
+                                }}
+                              >
+                                {value}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </Box>
+                      </Paper>
+                    ))
+                  ) : (
+                    <Alert severity="info">
+                      لا توجد تفاصيل للفاتورة
+                    </Alert>
+                  )}
+                </Stack>
+              ) : (
                 <Box
-                  component="table"
                   sx={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    "& th, & td": {
-                      border: "1px solid #ddd",
-                      px: 1,
-                      py: 1,
-                      textAlign: "center",
-                      whiteSpace: "nowrap"
-                    },
-                    "& th": {
-                      backgroundColor: "#f7d58b",
-                      fontWeight: 950
-                    }
+                    overflowX: "auto",
+                    width: "100%"
                   }}
                 >
-                  <thead>
-                    <tr>
-                      <th>البيان</th>
-                      <th>الوحدة</th>
-                      <th>الكمية</th>
-                      <th>التكلفة</th>
-                      <th>الضريبة %</th>
-                      <th>الضريبة</th>
-                      <th>الصافي</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {items.length ? (
-                      items.map((item, index) => (
-                        <tr key={`${item.diplomName}-${index}`}>
-                          <td>{item.diplomName || ""}</td>
-                          <td>{item.unit || "PCS"}</td>
-                          <td>{item.qty ?? ""}</td>
-                          <td>{money(item.cost)}</td>
-                          <td>{item.taxValue ?? ""}</td>
-                          <td>{money(item.tax)}</td>
-                          <td>{money(item.subTotal)}</td>
-                        </tr>
-                      ))
-                    ) : (
+                  <Box
+                    component="table"
+                    sx={{
+                      width: "100%",
+                      minWidth: isTablet ? 720 : 900,
+                      borderCollapse: "collapse",
+                      "& th, & td": {
+                        border: "1px solid #ddd",
+                        px: 1,
+                        py: 1,
+                        textAlign: "center",
+                        whiteSpace: "nowrap"
+                      },
+                      "& th": {
+                        backgroundColor: "#f7d58b",
+                        fontWeight: 950
+                      }
+                    }}
+                  >
+                    <thead>
                       <tr>
-                        <td colSpan={7}>لا توجد تفاصيل للفاتورة</td>
+                        <th>البيان</th>
+                        <th>الوحدة</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الضريبة %</th>
+                        <th>مبلغ الضريبة</th>
+                        <th>الصافي</th>
                       </tr>
-                    )}
-                  </tbody>
+                    </thead>
+
+                    <tbody>
+                      {items.length ? (
+                        items.map((item, index) => (
+                          <tr key={`${item.diplomName}-${index}`}>
+                            <td>{item.diplomName || ""}</td>
+                            <td>{item.unit || "PCS"}</td>
+                            <td>{item.qty ?? ""}</td>
+                            <td>{money(item.cost)}</td>
+                            <td>{item.taxValue ?? ""}</td>
+                            <td>{money(item.tax)}</td>
+                            <td>{money(item.subTotal)}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={7}>
+                            لا توجد تفاصيل للفاتورة
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Box>
                 </Box>
-              </Box>
+              )}
 
               <Grid container spacing={1.5}>
                 {[
@@ -875,7 +1174,7 @@ export default function SalesInvoiceDialog({
                   ["الضريبة", totals.tax],
                   ["الصافي", totals.subTotal]
                 ].map(([label, value]) => (
-                  <Grid item xs={12} md={4} key={label}>
+                  <Grid item xs={12} sm={4} key={label}>
                     <Paper
                       variant="outlined"
                       sx={{
@@ -905,7 +1204,18 @@ export default function SalesInvoiceDialog({
           ) : null}
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2 }}>
+        <DialogActions
+          sx={{
+            px: isPhone ? 1 : 3,
+            py: isPhone ? 1 : 2,
+            gap: 1,
+            flexDirection: isPhone
+              ? "column"
+              : "row",
+            alignItems: "stretch",
+            bgcolor: "#fff"
+          }}
+        >
           <Button
             variant="contained"
             onClick={printInvoice}
@@ -916,7 +1226,8 @@ export default function SalesInvoiceDialog({
                 : <PrintIcon />
             }
             sx={{
-              minWidth: 145,
+              minWidth: isPhone ? "100%" : 145,
+              minHeight: isPhone ? 44 : undefined,
               fontWeight: 950,
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
             }}
@@ -929,7 +1240,9 @@ export default function SalesInvoiceDialog({
             disabled={loading || printing}
             sx={{
               color: accentColor,
-              fontWeight: 900
+              fontWeight: 900,
+              width: isPhone ? "100%" : "auto",
+              minHeight: isPhone ? 42 : undefined
             }}
           >
             إغلاق

@@ -278,32 +278,7 @@ const PeriodicReports = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  /* ============== User Permission Check ============== */
-  const [userAllowed, setUserAllowed] = useState(true);
-  
-  useEffect(() => {
-    const checkUserPermission = () => {
-      try {
-        const userData = localStorage.getItem('user');
-        if (!userData) {
-          setUserAllowed(false);
-          return;
-        }
-
-        const user = JSON.parse(userData);
-        if (user.userJop === 9) {
-          setUserAllowed(true);
-        } else {
-          setUserAllowed(false);
-        }
-      } catch (error) {
-        console.error('Error checking user permission:', error);
-        setUserAllowed(false);
-      }
-    };
-
-    checkUserPermission();
-  }, []);
+  /* Screen access is centralized in Form_Name + User_Premision via PrivateRoute. */
 
   /* ============== Tabs ============== */
   const [selectedTab, setSelectedTab] = useState(0);
@@ -428,11 +403,6 @@ const PeriodicReports = () => {
   };
 
   useEffect(() => {
-    if (!userAllowed) {
-      setLoading(false);
-      return;
-    }
-
     const fetchAllData = async () => {
       setLoading(true);
       try {
@@ -466,7 +436,7 @@ const PeriodicReports = () => {
     };
 
     fetchAllData();
-  }, [startDate, endDate, userAllowed]);
+  }, [startDate, endDate]);
 
   const getTrainerName = (trainerGuid) => {
     if (!trainerGuid || trainerGuid === 'غير معروف') return 'غير معروف';
@@ -1550,513 +1520,345 @@ const PeriodicReports = () => {
     URL.revokeObjectURL(url);
   };
 
-  /* ============== Render Access Denied ============== */
-  if (!userAllowed) {
+  /* ============== Dialog Components ============== */
+  const AllTrainersDialog = () => {
+    const rows = analytics?.allTrainers || [];
+
     return (
-      <Box sx={{ direction: 'rtl' }}>
-        <Sidebar />
-        <Box component="main" sx={{
-          flexGrow: 1, p: 4, marginLeft: '280px', minHeight: '100vh',
-          backgroundColor: colorPalette.background, direction: 'ltr',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <Paper elevation={3} sx={{
-            p: 6,
-            textAlign: 'center',
-            maxWidth: 500,
-            width: '100%',
-            borderRadius: '16px',
-            border: `1px solid ${colorPalette.primaryLighter}`,
-            background: 'linear-gradient(135deg, #ffffff, #f8fbf9)'
-          }}>
-            <BlockIcon sx={{ fontSize: 80, color: colorPalette.error, mb: 3 }} />
-            <Typography variant="h4" component="h1" sx={{ 
-              fontFamily: '"Cairo", sans-serif', 
-              fontWeight: 700,
-              color: colorPalette.error,
-              mb: 2
-            }}>
-              غير مسموح لك بالدخول
-            </Typography>
-            <Typography variant="body1" sx={{ 
-              fontFamily: '"Cairo", sans-serif',
-              color: colorPalette.textLight,
-              mb: 3
-            }}>
-              ليست لديك الصلاحية اللازمة للوصول إلى هذه الصفحة.
-              <br />
-              يرجى التواصل مع المسؤول للنظام.
-            </Typography>
-            <StyledButton 
-              variant="contained" 
-              onClick={() => navigate('/')}
-              sx={{
-                backgroundColor: colorPalette.primary,
-                '&:hover': {
-                  backgroundColor: colorPalette.primaryDark
-                }
-              }}
-            >
-              العودة للصفحة الرئيسية
-            </StyledButton>
-          </Paper>
-        </Box>
-      </Box>
+      <Dialog
+        open={allTrainersDialog}
+        onClose={() => setAllTrainersDialog(false)}
+        fullWidth
+        maxWidth="md"
+        dir="rtl"
+      >
+        <DialogTitle sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700, color: colorPalette.textDark }}>
+          جميع المدربين
+        </DialogTitle>
+        <DialogContent dividers>
+          {!rows.length ? (
+            <Alert severity="info" sx={{ fontFamily: '"Cairo", sans-serif' }}>
+              لا توجد بيانات مدربين ضمن الفترة المحددة.
+            </Alert>
+          ) : (
+            <TableContainer component={Paper} elevation={0} sx={{ border: `1px solid ${colorPalette.primaryLighter}` }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
+                    <StyledTableCell align="right">المدرب</StyledTableCell>
+                    <StyledTableCell align="center">الطلاب</StyledTableCell>
+                    <StyledTableCell align="center">سجلات الحضور</StyledTableCell>
+                    <StyledTableCell align="center">متوسط السجلات/طالب</StyledTableCell>
+                    <StyledTableCell align="center">إجراء</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((trainer) => (
+                    <StyledTableRow key={trainer.guid || trainer.name}>
+                      <StyledTableCell align="right">{trainer.name || 'غير معروف'}</StyledTableCell>
+                      <StyledTableCell align="center">{trainer.uniqueStudentsCount || 0}</StyledTableCell>
+                      <StyledTableCell align="center">{trainer.totalRecords || 0}</StyledTableCell>
+                      <StyledTableCell align="center">{trainer.avgAttendancePerStudent || 0}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Stack direction="row" spacing={1} justifyContent="center">
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => handleFilterByTrainer(trainer.guid)}
+                            sx={{ fontFamily: '"Cairo", sans-serif' }}
+                          >
+                            تصفية
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            onClick={() => {
+                              setAllTrainersDialog(false);
+                              handleViewTrainerDetails(trainer);
+                            }}
+                            sx={{ fontFamily: '"Cairo", sans-serif', backgroundColor: colorPalette.primary }}
+                          >
+                            التفاصيل
+                          </Button>
+                        </Stack>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAllTrainersDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+            إغلاق
+          </Button>
+        </DialogActions>
+      </Dialog>
     );
-  }
+  };
 
-  /* ============== Dialogs ============== */
-  const AllTrainersDialog = () => (
-    <Dialog 
-      open={allTrainersDialog} 
-      onClose={() => setAllTrainersDialog(false)}
-      maxWidth="md"
-      fullWidth
-      sx={{
-        '& .MuiDialog-paper': {
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #ffffff, #f8fbf9)'
-        }
-      }}
-    >
-      <DialogTitle sx={{ 
-        fontFamily: '"Cairo", sans-serif', 
-        textAlign: 'center',
-        background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
-        color: 'white',
-        fontWeight: 700
-      }}>
-        <PersonIcon sx={{ mr: 1 }} />
-        جميع المدربين
-      </DialogTitle>
-      <DialogContent sx={{ p: 3 }}>
-        <List>
-          {analytics?.allTrainers.map((trainer, index) => (
-            <ListItem 
-              key={trainer.guid}
-              secondaryAction={
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Chip 
-                    label={`${trainer.totalRecords} سجل`}
-                    color="primary"
-                    size="small"
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  />
-                  <Chip 
-                    label={`${trainer.uniqueStudentsCount} طالب`}
-                    color="secondary"
-                    size="small"
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  />
-                  <Button
-                    size="small"
-                    startIcon={<ViewIcon />}
-                    onClick={() => handleViewTrainerDetails(trainer)}
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  >
-                    التفاصيل
-                  </Button>
-                  <Button
-                    size="small"
-                    startIcon={<FilterIcon />}
-                    onClick={() => handleFilterByTrainer(trainer.guid)}
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  >
-                    تصفية
-                  </Button>
-                </Box>
-              }
-              sx={{ 
-                borderBottom: `1px solid ${colorPalette.primaryLighter}`,
-                '&:hover': {
-                  backgroundColor: colorPalette.primaryLighter
-                }
-              }}
-            >
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Chip 
-                      label={index + 1}
-                      size="small"
-                      color={index < 3 ? 'primary' : 'default'}
-                      sx={{ mr: 2, fontFamily: '"Cairo", sans-serif' }}
-                    />
-                    <Typography variant="body1" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600 }}>
-                      {trainer.name}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                    متوسط الحضور لكل طالب: {trainer.avgAttendancePerStudent}
-                  </Typography>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
-      </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
-        <StyledButton 
-          onClick={() => setAllTrainersDialog(false)}
-          variant="outlined"
-          sx={{
-            borderColor: colorPalette.primary,
-            color: colorPalette.primary
-          }}
-        >
-          إغلاق
-        </StyledButton>
-      </DialogActions>
-    </Dialog>
-  );
+  const AllDiplomasDialog = () => {
+    const rows = analytics?.allDiplomas || [];
 
-  const AllDiplomasDialog = () => (
-    <Dialog 
-      open={allDiplomasDialog} 
-      onClose={() => setAllDiplomasDialog(false)}
-      maxWidth="md"
-      fullWidth
-      sx={{
-        '& .MuiDialog-paper': {
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #ffffff, #f8fbf9)'
-        }
-      }}
-    >
-      <DialogTitle sx={{ 
-        fontFamily: '"Cairo", sans-serif', 
-        textAlign: 'center',
-        background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
-        color: 'white',
-        fontWeight: 700
-      }}>
-        <SchoolIcon sx={{ mr: 1 }} />
-        جميع البرامج التدريبية
-      </DialogTitle>
-      <DialogContent sx={{ p: 3 }}>
-        <List>
-          {analytics?.allDiplomas.map((diploma, index) => (
-            <ListItem 
-              key={diploma.name}
-              secondaryAction={
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Chip 
-                    label={`${diploma.attendancePercentage}%`}
-                    color={
-                      diploma.attendancePercentage >= 80 ? 'success' :
-                      diploma.attendancePercentage >= 60 ? 'warning' : 'error'
-                    }
-                    size="small"
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  />
-                  <Button
-                    size="small"
-                    startIcon={<ViewIcon />}
-                    onClick={() => handleViewDiplomaDetails(diploma)}
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  >
-                    التفاصيل
-                  </Button>
-                  <Button
-                    size="small"
-                    startIcon={<FilterIcon />}
-                    onClick={() => handleFilterByDiploma(diploma.name)}
-                    sx={{ fontFamily: '"Cairo", sans-serif' }}
-                  >
-                    تصفية
-                  </Button>
-                </Box>
-              }
-              sx={{ 
-                borderBottom: `1px solid ${colorPalette.primaryLighter}`,
-                '&:hover': {
-                  backgroundColor: colorPalette.primaryLighter
-                }
-              }}
-            >
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Chip 
-                      label={index + 1}
-                      size="small"
-                      color={index < 3 ? 'primary' : 'default'}
-                      sx={{ mr: 2, fontFamily: '"Cairo", sans-serif' }}
-                    />
-                    <Typography variant="body1" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 600 }}>
-                      {diploma.name}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                    {diploma.attendedStudents} من {diploma.totalStudents} طالب حضر
-                  </Typography>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
-      </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
-        <StyledButton 
-          onClick={() => setAllDiplomasDialog(false)}
-          variant="outlined"
-          sx={{
-            borderColor: colorPalette.primary,
-            color: colorPalette.primary
-          }}
-        >
-          إغلاق
-        </StyledButton>
-      </DialogActions>
-    </Dialog>
-  );
-
-  const DiplomaDetailsDialog = () => (
-    <Dialog 
-      open={diplomaDetailsDialog} 
-      onClose={() => setDiplomaDetailsDialog(false)}
-      maxWidth="lg"
-      fullWidth
-      sx={{
-        '& .MuiDialog-paper': {
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #ffffff, #f8fbf9)'
-        }
-      }}
-    >
-      <DialogTitle sx={{ 
-        fontFamily: '"Cairo", sans-serif', 
-        textAlign: 'center',
-        background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
-        color: 'white',
-        fontWeight: 700
-      }}>
-        <SchoolIcon sx={{ mr: 1 }} />
-        تفاصيل البرنامج: {selectedDiploma?.name}
-      </DialogTitle>
-      <DialogContent sx={{ p: 3 }}>
-        {selectedDiploma && (
-          <Box>
-            <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} md={4}>
-                <StatCard>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <GroupsIcon sx={{ fontSize: 40, color: colorPalette.primary, mb: 2 }} />
-                    <Typography variant="h4" component="div" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
-                      {selectedDiploma.totalStudents}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                      إجمالي الطلاب
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <StatCard>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <PersonIcon sx={{ fontSize: 40, color: colorPalette.success, mb: 2 }} />
-                    <Typography variant="h4" component="div" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
-                      {selectedDiploma.attendedStudents}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                      الطلبة الحاضرين
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <StatCard>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <TrendingUpIcon sx={{ fontSize: 40, color: colorPalette.warning, mb: 2 }} />
-                    <Typography variant="h4" component="div" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
-                      {selectedDiploma.attendancePercentage}%
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                      نسبة الحضور
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-            </Grid>
-
-            <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', mb: 2, color: colorPalette.textDark }}>
-              طلاب البرنامج
-            </Typography>
-            <TableContainer component={Paper} elevation={2} sx={{ borderRadius: '12px', border: `1px solid ${colorPalette.primaryLighter}` }}>
-              <Table>
-                <TableHead sx={{ backgroundColor: colorPalette.primaryLighter }}>
-                  <TableRow>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>اسم الطالب</StyledTableCell>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>رقم الهوية</StyledTableCell>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>أيام الحضور</StyledTableCell>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>نسبة الحضور</StyledTableCell>
+    return (
+      <Dialog
+        open={allDiplomasDialog}
+        onClose={() => setAllDiplomasDialog(false)}
+        fullWidth
+        maxWidth="md"
+        dir="rtl"
+      >
+        <DialogTitle sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700, color: colorPalette.textDark }}>
+          جميع البرامج التدريبية
+        </DialogTitle>
+        <DialogContent dividers>
+          {!rows.length ? (
+            <Alert severity="info" sx={{ fontFamily: '"Cairo", sans-serif' }}>
+              لا توجد بيانات برامج ضمن الفترة المحددة.
+            </Alert>
+          ) : (
+            <TableContainer component={Paper} elevation={0} sx={{ border: `1px solid ${colorPalette.primaryLighter}` }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
+                    <StyledTableCell align="right">البرنامج</StyledTableCell>
+                    <StyledTableCell align="center">إجمالي الطلاب</StyledTableCell>
+                    <StyledTableCell align="center">طلاب لديهم حضور</StyledTableCell>
+                    <StyledTableCell align="center">نسبة الحضور</StyledTableCell>
+                    <StyledTableCell align="center">إجراء</StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {selectedDiploma.students.map((student) => (
-                    <StyledTableRow key={student.nationalId}>
-                      <StyledTableCell>{student.studentName}</StyledTableCell>
-                      <StyledTableCell>{student.nationalId}</StyledTableCell>
-                      <StyledTableCell>{student.attendedDays}</StyledTableCell>
-                      <StyledTableCell>
-                        <Chip 
-                          label={`${student.attendancePercentage}%`}
-                          color={
-                            student.attendancePercentage >= 80 ? 'success' :
-                            student.attendancePercentage >= 60 ? 'warning' : 'error'
-                          }
+                  {rows.map((diploma) => (
+                    <StyledTableRow key={diploma.name}>
+                      <StyledTableCell align="right">{diploma.name}</StyledTableCell>
+                      <StyledTableCell align="center">{diploma.totalStudents || 0}</StyledTableCell>
+                      <StyledTableCell align="center">{diploma.attendedStudents || 0}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Chip
                           size="small"
-                          sx={{ fontFamily: '"Cairo", sans-serif' }}
+                          label={`${diploma.attendancePercentage || 0}%`}
+                          color={diploma.attendancePercentage >= 80 ? 'success' : diploma.attendancePercentage >= 60 ? 'warning' : 'error'}
                         />
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Stack direction="row" spacing={1} justifyContent="center">
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => handleFilterByDiploma(diploma.name)}
+                            sx={{ fontFamily: '"Cairo", sans-serif' }}
+                          >
+                            تصفية
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            onClick={() => {
+                              setAllDiplomasDialog(false);
+                              handleViewDiplomaDetails(diploma);
+                            }}
+                            sx={{ fontFamily: '"Cairo", sans-serif', backgroundColor: colorPalette.primary }}
+                          >
+                            التفاصيل
+                          </Button>
+                        </Stack>
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
-        <StyledButton 
-          onClick={() => setDiplomaDetailsDialog(false)}
-          variant="outlined"
-          sx={{
-            borderColor: colorPalette.primary,
-            color: colorPalette.primary
-          }}
-        >
-          إغلاق
-        </StyledButton>
-      </DialogActions>
-    </Dialog>
-  );
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAllDiplomasDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+            إغلاق
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
 
-  const TrainerDetailsDialog = () => (
-    <Dialog 
-      open={trainerDetailsDialog} 
-      onClose={() => setTrainerDetailsDialog(false)}
-      maxWidth="lg"
-      fullWidth
-      sx={{
-        '& .MuiDialog-paper': {
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #ffffff, #f8fbf9)'
-        }
-      }}
-    >
-      <DialogTitle sx={{ 
-        fontFamily: '"Cairo", sans-serif', 
-        textAlign: 'center',
-        background: `linear-gradient(135deg, ${colorPalette.primary}, ${colorPalette.primaryDark})`,
-        color: 'white',
-        fontWeight: 700
-      }}>
-        <PersonIcon sx={{ mr: 1 }} />
-        تفاصيل المدرب: {selectedTrainer?.name}
-      </DialogTitle>
-      <DialogContent sx={{ p: 3 }}>
-        {selectedTrainer && (
-          <Box>
-            <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} md={4}>
-                <StatCard>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <TodayIcon sx={{ fontSize: 40, color: colorPalette.primary, mb: 2 }} />
-                    <Typography variant="h4" component="div" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
-                      {selectedTrainer.totalRecords}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                      إجمالي السجلات
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <StatCard>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <PersonIcon sx={{ fontSize: 40, color: colorPalette.success, mb: 2 }} />
-                    <Typography variant="h4" component="div" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
-                      {selectedTrainer.uniqueStudentsCount}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                      طلاب مميزين
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <StatCard>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <AnalyticsIcon sx={{ fontSize: 40, color: colorPalette.warning, mb: 2 }} />
-                    <Typography variant="h4" component="div" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700 }}>
-                      {selectedTrainer.avgAttendancePerStudent}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontFamily: '"Cairo", sans-serif', color: colorPalette.textLight }}>
-                      متوسط الحضور
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-            </Grid>
+  const DiplomaDetailsDialog = () => {
+    const diploma = selectedDiploma;
+    const diplomaStudents = diploma?.students || [];
 
-            <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', mb: 2, color: colorPalette.textDark }}>
-              الطلاب الذين سجل لهم المدرب
-            </Typography>
-            <TableContainer component={Paper} elevation={2} sx={{ borderRadius: '12px', border: `1px solid ${colorPalette.primaryLighter}` }}>
-              <Table>
-                <TableHead sx={{ backgroundColor: colorPalette.primaryLighter }}>
-                  <TableRow>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>اسم الطالب</StyledTableCell>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>رقم الهوية</StyledTableCell>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>الدبلوم</StyledTableCell>
-                    <StyledTableCell sx={{ fontWeight: 700, color: colorPalette.textDark }}>مرات الحضور</StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {selectedTrainer.studentDetails.map((student) => (
-                    <StyledTableRow key={student.nationalId}>
-                      <StyledTableCell>{student.studentName}</StyledTableCell>
-                      <StyledTableCell>{student.nationalId}</StyledTableCell>
-                      <StyledTableCell>{student.diplomName}</StyledTableCell>
-                      <StyledTableCell>
-                        <Chip 
-                          label={student.attendanceCount}
-                          color="primary"
-                          size="small"
-                          sx={{ fontFamily: '"Cairo", sans-serif' }}
-                        />
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
-        <StyledButton 
-          onClick={() => setTrainerDetailsDialog(false)}
-          variant="outlined"
-          sx={{
-            borderColor: colorPalette.primary,
-            color: colorPalette.primary
-          }}
-        >
-          إغلاق
-        </StyledButton>
-      </DialogActions>
-    </Dialog>
-  );
+    return (
+      <Dialog
+        open={diplomaDetailsDialog}
+        onClose={() => setDiplomaDetailsDialog(false)}
+        fullWidth
+        maxWidth="md"
+        dir="rtl"
+      >
+        <DialogTitle sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700, color: colorPalette.textDark }}>
+          تفاصيل البرنامج{diploma?.name ? `: ${diploma.name}` : ''}
+        </DialogTitle>
+        <DialogContent dividers>
+          {diploma && (
+            <Stack spacing={2}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="caption">إجمالي الطلاب</Typography>
+                    <Typography variant="h6">{diploma.totalStudents || 0}</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="caption">طلاب لديهم حضور</Typography>
+                    <Typography variant="h6">{diploma.attendedStudents || 0}</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="caption">نسبة الحضور</Typography>
+                    <Typography variant="h6">{diploma.attendancePercentage || 0}%</Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
 
-  /* ============== Render Main Content ============== */
+              {!diplomaStudents.length ? (
+                <Alert severity="info">لا توجد بيانات طلاب لهذا البرنامج.</Alert>
+              ) : (
+                <TableContainer component={Paper} elevation={0} variant="outlined">
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
+                        <StyledTableCell align="right">الطالب</StyledTableCell>
+                        <StyledTableCell align="center">رقم الهوية</StyledTableCell>
+                        <StyledTableCell align="center">أيام الحضور</StyledTableCell>
+                        <StyledTableCell align="center">النسبة</StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {diplomaStudents.map((student) => (
+                        <StyledTableRow key={student.nationalId || student.studentName}>
+                          <StyledTableCell align="right">{student.studentName || 'غير محدد'}</StyledTableCell>
+                          <StyledTableCell align="center">{student.nationalId || '-'}</StyledTableCell>
+                          <StyledTableCell align="center">{student.attendedDays || 0}</StyledTableCell>
+                          <StyledTableCell align="center">{student.attendancePercentage || 0}%</StyledTableCell>
+                        </StyledTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {diploma?.name && (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                handleFilterByDiploma(diploma.name);
+                setDiplomaDetailsDialog(false);
+              }}
+              sx={{ fontFamily: '"Cairo", sans-serif' }}
+            >
+              عرض طلاب البرنامج
+            </Button>
+          )}
+          <Button onClick={() => setDiplomaDetailsDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+            إغلاق
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+  const TrainerDetailsDialog = () => {
+    const trainer = selectedTrainer;
+    const trainerStudents = trainer?.studentDetails || [];
+
+    return (
+      <Dialog
+        open={trainerDetailsDialog}
+        onClose={() => setTrainerDetailsDialog(false)}
+        fullWidth
+        maxWidth="md"
+        dir="rtl"
+      >
+        <DialogTitle sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 700, color: colorPalette.textDark }}>
+          تفاصيل المدرب{trainer?.name ? `: ${trainer.name}` : ''}
+        </DialogTitle>
+        <DialogContent dividers>
+          {trainer && (
+            <Stack spacing={2}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="caption">عدد الطلاب</Typography>
+                    <Typography variant="h6">{trainer.uniqueStudentsCount || 0}</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="caption">سجلات الحضور</Typography>
+                    <Typography variant="h6">{trainer.totalRecords || 0}</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="caption">متوسط السجلات/طالب</Typography>
+                    <Typography variant="h6">{trainer.avgAttendancePerStudent || 0}</Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              {!trainerStudents.length ? (
+                <Alert severity="info">لا توجد بيانات طلاب لهذا المدرب.</Alert>
+              ) : (
+                <TableContainer component={Paper} elevation={0} variant="outlined">
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: colorPalette.primaryLighter }}>
+                        <StyledTableCell align="right">الطالب</StyledTableCell>
+                        <StyledTableCell align="center">رقم الهوية</StyledTableCell>
+                        <StyledTableCell align="right">البرنامج</StyledTableCell>
+                        <StyledTableCell align="center">عدد سجلات الحضور</StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {trainerStudents.map((student) => (
+                        <StyledTableRow key={student.nationalId || student.studentName}>
+                          <StyledTableCell align="right">{student.studentName || 'غير محدد'}</StyledTableCell>
+                          <StyledTableCell align="center">{student.nationalId || '-'}</StyledTableCell>
+                          <StyledTableCell align="right">{student.diplomName || 'غير محدد'}</StyledTableCell>
+                          <StyledTableCell align="center">{student.attendanceCount || 0}</StyledTableCell>
+                        </StyledTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {trainer?.guid && (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                handleFilterByTrainer(trainer.guid);
+                setTrainerDetailsDialog(false);
+              }}
+              sx={{ fontFamily: '"Cairo", sans-serif' }}
+            >
+              عرض طلاب المدرب
+            </Button>
+          )}
+          <Button onClick={() => setTrainerDetailsDialog(false)} sx={{ fontFamily: '"Cairo", sans-serif' }}>
+            إغلاق
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
   return (
     <Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
       <Sidebar />

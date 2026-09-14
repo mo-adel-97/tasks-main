@@ -16,7 +16,9 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
@@ -86,6 +88,15 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
     sx={{
       p: 1.4,
       borderRadius: 3,
+      "@media (max-width:1599px)": {
+        p: 0.5,
+        borderRadius: 1.35,
+        minHeight: 48
+      },
+      "@media (max-width:599px)": {
+        p: 0.35,
+        minHeight: 44
+      },
       border: `1px solid ${primaryLight}`,
       background: strong
         ? `linear-gradient(135deg, #fff6f6 0%, ${whiteColor} 100%)`
@@ -95,9 +106,26 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
       overflow: "hidden"
     }}
   >
-    <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mb: 0.7 }}>
+    <Stack
+      direction="row"
+      spacing={0.8}
+      alignItems="center"
+      sx={{
+        mb: 0.7,
+        "@media (max-width:1599px)": { mb: 0.18, gap: "4px !important" }
+      }}
+    >
       {icon}
-      <Typography sx={{ color: primaryColor, fontWeight: 950, fontSize: "0.78rem" }}>
+      <Typography
+        sx={{
+          color: primaryColor,
+          fontWeight: 950,
+          fontSize: "0.78rem",
+          lineHeight: 1.1,
+          "@media (max-width:1599px)": { fontSize: "0.5rem" },
+          "@media (max-width:599px)": { fontSize: "0.43rem" }
+        }}
+      >
         {label}
       </Typography>
     </Stack>
@@ -108,6 +136,13 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
           fontWeight: strong ? 1000 : 950,
           fontSize: strong ? "1rem" : "0.92rem",
           lineHeight: 1.7,
+          "@media (max-width:1599px)": {
+            fontSize: strong ? "0.63rem" : "0.58rem",
+            lineHeight: 1.2
+          },
+          "@media (max-width:599px)": {
+            fontSize: strong ? "0.55rem" : "0.5rem"
+          },
           textAlign: "left",
           direction: "ltr",
           whiteSpace: "nowrap",
@@ -136,10 +171,33 @@ const statusChipSx = (value) => {
 };
 
 const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
   const [loading, setLoading] = useState(false);
   const [savingClass, setSavingClass] = useState(false);
   const [studyInfo, setStudyInfo] = useState(null);
   const [manualClassGuid, setManualClassGuid] = useState("");
+
+  const getResponsiveSwalOptions = () => {
+    if (!isCompact) return {};
+
+    return {
+      width: isPhone ? "82vw" : "420px",
+      padding: isPhone ? "0.65rem" : "0.85rem",
+      customClass: {
+        popup: "sstli-study-swal",
+        icon: "sstli-study-swal-icon",
+        title: "sstli-study-swal-title",
+        htmlContainer: "sstli-study-swal-text",
+        actions: "sstli-study-swal-actions",
+        confirmButton: "sstli-study-swal-confirm",
+        cancelButton: "sstli-study-swal-cancel"
+      }
+    };
+  };
 
   const studentGuid = useMemo(
     () => pick(student, "accountGuid", "AccountGuid", "studentGuid", "StudentGuid"),
@@ -254,6 +312,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
     }
 
     const confirm = await Swal.fire({
+      ...getResponsiveSwalOptions(),
       icon: "question",
       title: "ربط المتدرب بشعبة",
       text: "هل تريد ربط الطالب بالشعبة المحددة؟",
@@ -296,17 +355,116 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
   };
 
   return (
-    <Dialog
+    <>
+      <style>
+        {`
+          @media (max-width: 1599px) {
+            .sstli-study-swal {
+              max-width: 420px !important;
+              border-radius: 14px !important;
+              font-family: Cairo, Arial, sans-serif !important;
+            }
+            .sstli-study-swal-icon {
+              width: 3.4em !important;
+              height: 3.4em !important;
+              margin: 0.6em auto 0.25em !important;
+            }
+            .sstli-study-swal-icon .swal2-icon-content {
+              font-size: 2.3em !important;
+            }
+            .sstli-study-swal-title {
+              font-size: 0.95rem !important;
+              line-height: 1.2 !important;
+              padding-top: 0.2em !important;
+            }
+            .sstli-study-swal-text {
+              font-size: 0.68rem !important;
+              line-height: 1.4 !important;
+              padding: 0 0.75em !important;
+            }
+            .sstli-study-swal-actions {
+              margin-top: 0.65em !important;
+              gap: 0.35rem !important;
+            }
+            .sstli-study-swal-confirm,
+            .sstli-study-swal-cancel {
+              min-width: 76px !important;
+              min-height: 31px !important;
+              padding: 0.38rem 0.75rem !important;
+              margin: 0 !important;
+              font-size: 0.66rem !important;
+              border-radius: 8px !important;
+              font-weight: 900 !important;
+            }
+          }
+
+          @media (max-width: 599px) {
+            .sstli-study-swal {
+              width: 82vw !important;
+              max-width: 300px !important;
+              border-radius: 12px !important;
+            }
+            .sstli-study-swal-icon {
+              width: 3em !important;
+              height: 3em !important;
+              margin: 0.5em auto 0.2em !important;
+            }
+            .sstli-study-swal-icon .swal2-icon-content {
+              font-size: 2em !important;
+            }
+            .sstli-study-swal-title {
+              font-size: 0.8rem !important;
+            }
+            .sstli-study-swal-text {
+              font-size: 0.57rem !important;
+              padding: 0 0.5em !important;
+            }
+            .sstli-study-swal-confirm,
+            .sstli-study-swal-cancel {
+              min-width: 64px !important;
+              min-height: 28px !important;
+              padding: 0.32rem 0.55rem !important;
+              font-size: 0.56rem !important;
+            }
+          }
+        `}
+      </style>
+
+      <Dialog
       open={open}
       onClose={() => !loading && !savingClass && onClose?.()}
       fullWidth
       maxWidth="md"
+      fullScreen={isPhone}
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
       PaperProps={{
         sx: {
-          borderRadius: 4,
+          width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "980px" : undefined,
+          height: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "88vh",
+          maxHeight: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "88vh",
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
           direction: "ltr",
           textAlign: "left",
           overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
           border: `1px solid ${primaryLight}`,
           boxShadow: "0 18px 50px rgba(5,117,70,0.16)"
         }
@@ -319,30 +477,74 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 1.4 }}>
-          <Stack direction="row" spacing={1.2} alignItems="center">
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            px: isPhone ? 0.45 : isTablet ? 0.7 : 2,
+            py: isPhone ? 0.35 : isTablet ? 0.5 : 1.4,
+            gap: isCompact ? 0.3 : 1
+          }}
+        >
+          <Stack direction="row" spacing={isCompact ? 0.3 : 1.2} alignItems="center" sx={{ minWidth: 0 }}>
             <IconButton
               onClick={onClose}
               disabled={loading || savingClass}
-              sx={{ color: accentColor, backgroundColor: whiteColor, "&:hover": { backgroundColor: "#fff4f4" } }}
+              sx={{
+                color: accentColor,
+                backgroundColor: whiteColor,
+                width: isPhone ? 25 : isTablet ? 29 : undefined,
+                height: isPhone ? 25 : isTablet ? 29 : undefined,
+                p: isCompact ? 0.2 : undefined,
+                "& svg": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined },
+                "&:hover": { backgroundColor: "#fff4f4" }
+              }}
             >
               <CloseIcon />
             </IconButton>
             <Box>
-              <Typography sx={{ fontWeight: 1000, color: whiteColor, fontSize: "1.15rem" }}>
+              <Typography
+                sx={{
+                  fontWeight: 1000,
+                  color: whiteColor,
+                  fontSize: isPhone ? "0.66rem" : isTablet ? "0.78rem" : "1.15rem",
+                  lineHeight: 1.1
+                }}
+              >
                 الملف التدريبي
               </Typography>
-              <Typography sx={{ fontWeight: 800, color: "#e6f3ee", fontSize: "0.82rem" }}>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  color: "#e6f3ee",
+                  fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : "0.82rem",
+                  lineHeight: 1.1,
+                  display: isPhone ? "none" : "block"
+                }}
+              >
                 بيانات الدراسة + عرض مرفقات الطالب
               </Typography>
             </Box>
           </Stack>
 
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={isCompact ? 0.22 : 1} alignItems="center">
             <Chip
               icon={<SchoolIcon />}
               label={safeText(studyInfo?.stautName || pick(student, "statusName", "stautName"))}
-              sx={{ fontWeight: 950, borderRadius: 2, ...statusChipSx(studyInfo?.stautName) }}
+              sx={{
+                fontWeight: 950,
+                borderRadius: isCompact ? 1.1 : 2,
+                height: isPhone ? 21 : isTablet ? 24 : undefined,
+                fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                "& .MuiChip-label": {
+                  px: isPhone ? 0.45 : isTablet ? 0.6 : undefined
+                },
+                "& .MuiChip-icon": {
+                  fontSize: isPhone ? 13 : isTablet ? 15 : undefined
+                },
+                ...statusChipSx(studyInfo?.stautName)
+              }}
             />
             <Button
               size="small"
@@ -351,8 +553,12 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               onClick={loadStudyInfo}
               disabled={loading || savingClass}
               sx={{
-                borderRadius: 2,
+                borderRadius: isCompact ? 1.1 : 2,
                 fontWeight: 950,
+                minWidth: isPhone ? 48 : isTablet ? 58 : undefined,
+                height: isPhone ? 25 : isTablet ? 29 : undefined,
+                px: isPhone ? 0.4 : isTablet ? 0.6 : undefined,
+                fontSize: isPhone ? "0.43rem" : isTablet ? "0.51rem" : undefined,
                 direction: "ltr",
                 color: whiteColor,
                 borderColor: "#e6f3ee",
@@ -365,27 +571,59 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
         </Stack>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`, p: 2 }}>
+      <DialogContent
+        dividers
+        sx={{
+          background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+          p: isPhone ? 0.3 : isTablet ? 0.5 : 2,
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0
+        }}
+      >
         {loading ? (
-          <Stack alignItems="center" justifyContent="center" sx={{ py: 7 }}>
+          <Stack alignItems="center" justifyContent="center" sx={{ py: isPhone ? 3 : isTablet ? 4 : 7 }}>
             <CircularProgress />
-            <Typography sx={{ mt: 2, fontWeight: 950 }}>جاري تحميل الملف التدريبي...</Typography>
+            <Typography
+              sx={{
+                mt: isCompact ? 0.6 : 2,
+                fontWeight: 950,
+                fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : undefined
+              }}
+            >جاري تحميل الملف التدريبي...</Typography>
           </Stack>
         ) : !student ? (
-          <Alert severity="warning" sx={{ borderRadius: 2, fontWeight: 900 }}>
+          <Alert
+            severity="warning"
+            sx={{
+              borderRadius: isCompact ? 1.2 : 2,
+              py: isCompact ? 0.15 : undefined,
+              fontWeight: 900,
+              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+            }}
+          >
             لا يوجد طالب محدد.
           </Alert>
         ) : (
-          <Stack spacing={1.5}>
-            <Paper elevation={0} sx={{ p: 1.5, borderRadius: 3, border: `1px solid ${primaryLight}`, backgroundColor: whiteColor }}>
+          <Stack spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
+                borderRadius: isCompact ? 1.4 : 3,
+                border: `1px solid ${primaryLight}`,
+                backgroundColor: whiteColor
+              }}
+            >
               <Typography
                 sx={{
                   fontWeight: 1000,
                   color: textColor,
-                  mb: 1.2,
-                  px: 1.5,
-                  py: 0.8,
-                  borderRadius: 2,
+                  mb: isCompact ? 0.35 : 1.2,
+                  px: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
+                  py: isPhone ? 0.3 : isTablet ? 0.4 : 0.8,
+                  borderRadius: isCompact ? 1.1 : 2,
+                  fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
                   textAlign: "left",
                   background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                   color: whiteColor
@@ -394,28 +632,37 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 بيانات الطالب
               </Typography>
 
-              <Grid container spacing={1.2}>
-                <Grid item xs={12} md={5}>
+              <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
+                <Grid item xs={12} sm={6} md={5}>
                   <FieldBox label="اسم الطالب" value={pick(student, "studentName", "StudentName")} strong color="#0d47a1" />
                 </Grid>
-                <Grid item xs={12} md={3.5}>
+                <Grid item xs={6} sm={3} md={3.5}>
                   <FieldBox label="رقم الهوية" value={nationalId} strong />
                 </Grid>
-                <Grid item xs={12} md={3.5}>
+                <Grid item xs={6} sm={3} md={3.5}>
                   <FieldBox label="رقم الجوال" value={pick(student, "studentTel", "StudentTel", "tel", "Tel")} strong />
                 </Grid>
               </Grid>
             </Paper>
 
-            <Paper elevation={0} sx={{ p: 1.5, borderRadius: 3, border: `1px solid ${primaryLight}`, backgroundColor: whiteColor }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
+                borderRadius: isCompact ? 1.4 : 3,
+                border: `1px solid ${primaryLight}`,
+                backgroundColor: whiteColor
+              }}
+            >
               <Typography
                 sx={{
                   fontWeight: 1000,
                   color: textColor,
-                  mb: 1.2,
-                  px: 1.5,
-                  py: 0.8,
-                  borderRadius: 2,
+                  mb: isCompact ? 0.35 : 1.2,
+                  px: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
+                  py: isPhone ? 0.3 : isTablet ? 0.4 : 0.8,
+                  borderRadius: isCompact ? 1.1 : 2,
+                  fontSize: isPhone ? "0.52rem" : isTablet ? "0.62rem" : undefined,
                   textAlign: "left",
                   background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                   color: whiteColor
@@ -425,29 +672,29 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               </Typography>
 
               {studyInfo ? (
-                <Grid container spacing={1.2}>
-                  <Grid item xs={12} md={6}>
+                <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
+                  <Grid item xs={6} sm={6} md={6}>
                     <FieldBox label="فرع الدراسة" value={pick(student, "branchName", "studyBranchName", "BranchName")} strong />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={6} sm={6} md={6}>
                     <FieldBox label="الدبلوم / الدورة" value={pick(student, "diplomName", "DiplomName")} strong />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={6} sm={4} md={4}>
                     <FieldBox label="الدفعة" value={studyInfo.batchName} icon={<EventIcon fontSize="small" />} />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={6} sm={4} md={4}>
                     <FieldBox label="المستوى" value={studyInfo.levelName} icon={<SchoolIcon fontSize="small" />} />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={6} sm={4} md={4}>
                     <FieldBox label="حالة التسجيل" value={studyInfo.stautName} strong color={statusChipSx(studyInfo.stautName).color} />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={6} sm={4} md={4}>
                     <FieldBox label="تاريخ البداية" value={studyInfo.start} icon={<EventIcon fontSize="small" />} />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={6} sm={4} md={4}>
                     <FieldBox label="تاريخ النهاية" value={studyInfo.end} icon={<EventIcon fontSize="small" />} />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={6} sm={4} md={4}>
                     <FieldBox label="الشعبة" value={studyInfo.className || "غير مربوط"} icon={<GroupsIcon fontSize="small" />} />
                   </Grid>
                   <Grid item xs={12}>
@@ -455,7 +702,15 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                   </Grid>
                 </Grid>
               ) : (
-                <Alert severity="info" sx={{ borderRadius: 2, fontWeight: 900 }}>
+                <Alert
+                  severity="info"
+                  sx={{
+                    borderRadius: isCompact ? 1.2 : 2,
+                    py: isCompact ? 0.15 : undefined,
+                    fontWeight: 900,
+                    fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+                  }}
+                >
                   لم يتم العثور على بيانات ملف تدريبي لهذا الطالب بنفس الفرع والدبلوم.
                 </Alert>
               )}
@@ -507,18 +762,27 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
 
       <DialogActions
         sx={{
-          px: 2,
-          py: 1.4,
+          px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
+          py: isPhone ? 0.28 : isTablet ? 0.42 : 1.4,
+          gap: isCompact ? 0.35 : 1,
           borderTop: `1px solid ${primaryLight}`,
           backgroundColor: whiteColor,
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          flexShrink: 0
         }}
       >
         <Button
           onClick={openAttachments}
           startIcon={<AttachFileIcon />}
           disabled={!student || loading || savingClass}
-          sx={{ fontWeight: 950, color: primaryColor, direction: "ltr" }}
+          sx={{
+            fontWeight: 950,
+            color: primaryColor,
+            direction: "ltr",
+            minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
+            px: isPhone ? 0.7 : isTablet ? 1 : undefined,
+            fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+          }}
         >
           عرض المرفقات
         </Button>
@@ -527,12 +791,20 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           onClick={onClose}
           disabled={loading || savingClass}
           startIcon={<CloseIcon />}
-          sx={{ fontWeight: 950, color: dangerColor, direction: "ltr" }}
+          sx={{
+            fontWeight: 950,
+            color: dangerColor,
+            direction: "ltr",
+            minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
+            px: isPhone ? 0.7 : isTablet ? 1 : undefined,
+            fontSize: isPhone ? "0.47rem" : isTablet ? "0.55rem" : undefined
+          }}
         >
           خروج
         </Button>
       </DialogActions>
     </Dialog>
+    </>
   );
 };
 

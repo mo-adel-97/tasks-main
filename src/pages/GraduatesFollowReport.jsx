@@ -5,6 +5,7 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Autocomplete,
   Box,
   Button,
@@ -15,14 +16,18 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  GlobalStyles,
   IconButton,
   Menu,
   MenuItem,
   Paper,
   Stack,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
@@ -41,6 +46,9 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
 import Sidebar from "../components/Sidebar";
@@ -49,6 +57,7 @@ import StudentRegFeesDialog from "../components/StudentRegFeesDialog";
 import StudentPaymentOrderDialog from "../components/StudentPaymentOrderDialog";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
@@ -175,7 +184,15 @@ const TextCell = ({
         textAlign: align,
         fontFamily: "Cairo",
         fontSize: "0.76rem",
-        fontWeight: 700
+        fontWeight: 700,
+        "@media (max-width: 599px)": {
+          fontSize: "0.27rem",
+          lineHeight: 1.05
+        },
+        "@media (min-width: 600px) and (max-width: 1599px)": {
+          fontSize: "0.40rem",
+          lineHeight: 1.15
+        }
       }}
     >
       {value || "-"}
@@ -190,7 +207,15 @@ const MoneyCell = ({ value }) => (
       textAlign: "center",
       fontFamily: "Cairo",
       fontSize: "0.75rem",
-      fontWeight: 800
+      fontWeight: 800,
+      "@media (max-width: 599px)": {
+        fontSize: "0.27rem",
+        lineHeight: 1.05
+      },
+      "@media (min-width: 600px) and (max-width: 1599px)": {
+        fontSize: "0.40rem",
+        lineHeight: 1.15
+      }
     }}
   >
     {money(value)}
@@ -387,6 +412,46 @@ const MultiValueFilter = ({
 };
 
 const GraduatesFollowReport = () => {
+  const theme = useTheme();
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  const [detailsOpen, setDetailsOpen] =
+    useState(false);
+
+  const [detailsRow, setDetailsRow] =
+    useState(null);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
+  const openDetails = (row) => {
+    setDetailsRow(row);
+    setDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setDetailsOpen(false);
+    setDetailsRow(null);
+  };
+
   const currentUser = useMemo(() => {
     try {
       return JSON.parse(
@@ -1081,6 +1146,147 @@ const GraduatesFollowReport = () => {
     []
   );
 
+  const compactColumns = useMemo(() => {
+    const byField = (field) =>
+      columns.find(
+        (column) => column.field === field
+      );
+
+    const phoneFields = [
+      "studentName",
+      "nationalId",
+      "diplomName",
+      "trainerName"
+    ];
+
+    const tabletFields = [
+      "studentName",
+      "nationalId",
+      "diplomName",
+      "trainerName",
+      "balance",
+      "studentType"
+    ];
+
+    const fields = isPhone
+      ? phoneFields
+      : tabletFields;
+
+    const selected = fields
+      .map(byField)
+      .filter(Boolean)
+      .map((column) => ({
+        ...column,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        headerAlign: "center",
+        align: "center",
+        maxWidth: undefined,
+        width: undefined,
+
+        ...(isPhone
+          ? {
+              flex:
+                column.field === "studentName"
+                  ? 1.35
+                  : column.field === "diplomName"
+                    ? 1.2
+                    : 1,
+              minWidth: 0
+            }
+          : {
+              flex:
+                column.field === "studentName"
+                  ? 1.35
+                  : column.field === "diplomName"
+                    ? 1.25
+                    : 1,
+              minWidth:
+                column.field === "studentName"
+                  ? 125
+                  : column.field === "diplomName"
+                    ? 135
+                    : 90
+            }),
+
+        renderCell:
+          column.field === "studentName"
+            ? (params) => (
+                <Typography
+                  sx={{
+                    width: "100%",
+                    px: 0.1,
+                    textAlign: "center",
+                    fontFamily: "Cairo",
+                    fontWeight: 800,
+                    fontSize: isPhone
+                      ? "0.27rem"
+                      : "0.42rem",
+                    lineHeight: 1.15,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  {params.value || "-"}
+                </Typography>
+              )
+            : column.renderCell
+      }));
+
+    return [
+      ...selected,
+      {
+        field: "__details",
+        headerName: "",
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        resizable: false,
+        width: isPhone ? 34 : 44,
+        minWidth: isPhone ? 34 : 44,
+        maxWidth: isPhone ? 34 : 44,
+        align: "center",
+        headerAlign: "center",
+
+        renderCell: (params) => (
+          <IconButton
+            size="small"
+            title="عرض التفاصيل"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              openDetails(params.row);
+            }}
+            sx={{
+              width: isPhone ? 24 : 30,
+              height: isPhone ? 24 : 30,
+              p: 0,
+              color: "#057546",
+              border:
+                "1px solid rgba(5,117,70,.28)",
+              backgroundColor: "#eef8f3"
+            }}
+          >
+            <VisibilityOutlinedIcon
+              sx={{
+                fontSize: isPhone
+                  ? 14
+                  : 18
+              }}
+            />
+          </IconButton>
+        )
+      }
+    ];
+  }, [
+    columns,
+    isPhone,
+    isTablet
+  ]);
+
   const closeMenu = () => {
     setMenuAnchor(null);
   };
@@ -1736,31 +1942,156 @@ const GraduatesFollowReport = () => {
     <Box
       sx={{
         minHeight: "100vh",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
         direction: "ltr"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <>
+          <GlobalStyles
+            styles={{
+              ".MuiDrawer-root": {
+                zIndex: "2100 !important"
+              },
+              ".MuiDrawer-root .MuiBackdrop-root": {
+                zIndex: "2099 !important"
+              },
+              ".MuiDrawer-root .MuiDrawer-paper": {
+                zIndex: "2101 !important"
+              }
+            }}
+          />
+
+          <AppBar
+            position="fixed"
+            elevation={0}
+            sx={{
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1400,
+              background:
+                "rgba(255,255,255,.97)",
+              backdropFilter: "blur(14px)",
+              color: "#173b2b",
+              borderBottom:
+                "1px solid rgba(5,117,70,.12)",
+              direction: "ltr"
+            }}
+          >
+            <Toolbar
+              sx={{
+                minHeight: {
+                  xs: "50px !important",
+                  sm: "56px !important"
+                },
+                px: {
+                  xs: 0.75,
+                  sm: 1
+                },
+                gap: 0.8
+              }}
+            >
+              <IconButton
+                onClick={() =>
+                  setMobileSidebarOpen(
+                    (current) => !current
+                  )
+                }
+                sx={{
+                  width: {
+                    xs: 36,
+                    sm: 40
+                  },
+                  height: {
+                    xs: 36,
+                    sm: 40
+                  },
+                  color: "#fff",
+                  background:
+                    "linear-gradient(135deg,#057546,#034d31)",
+                  boxShadow:
+                    "0 5px 14px rgba(5,117,70,.20)"
+                }}
+              >
+                <MenuRoundedIcon
+                  sx={{
+                    fontSize: {
+                      xs: 20,
+                      sm: 22
+                    }
+                  }}
+                />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  flex: 1,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: {
+                    xs: "0.66rem",
+                    sm: "0.78rem"
+                  },
+                  color: "#173b2b",
+                  textAlign: "left"
+                }}
+              >
+                متابعة الخريجين
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </>
+      )}
+
+      {isDesktop ? (
+        <Sidebar />
+      ) : (
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() =>
+            setMobileSidebarOpen(false)
+          }
+        />
+      )}
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md: `${SIDEBAR_WIDTH}px`
-          },
-          p: {
-            xs: 1.2,
-            md: 2
-          }
+          ml: isDesktop
+            ? `${SIDEBAR_WIDTH}px`
+            : 0,
+          width: isDesktop
+            ? `calc(100% - ${SIDEBAR_WIDTH}px)`
+            : "100%",
+          mt: isDesktop
+            ? 0
+            : isPhone
+              ? "50px"
+              : "56px",
+          p: isDesktop
+            ? 2
+            : isPhone
+              ? 0.45
+              : 0.75,
+          boxSizing: "border-box",
+          overflowX: "hidden"
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 1.5,
+            p: isDesktop
+              ? 2
+              : isPhone
+                ? 0.6
+                : 0.85,
+            mb: isDesktop
+              ? 1.5
+              : 0.6,
             borderRadius: 4,
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -1778,6 +2109,37 @@ const GraduatesFollowReport = () => {
               xs: "stretch",
               lg: "center"
             }}
+            sx={{
+              "& .MuiButton-root": {
+                minHeight: !isDesktop
+                  ? isPhone
+                    ? 29
+                    : 33
+                  : undefined,
+                px: !isDesktop
+                  ? isPhone
+                    ? 0.55
+                    : 0.8
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.38rem"
+                    : "0.48rem"
+                  : undefined
+              },
+              "& .MuiChip-root": {
+                height: !isDesktop
+                  ? isPhone
+                    ? 25
+                    : 29
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.35rem"
+                    : "0.45rem"
+                  : undefined
+              }
+            }}
           >
             <Box sx={{ flex: 1 }}>
               <Stack
@@ -1788,7 +2150,11 @@ const GraduatesFollowReport = () => {
                 <GroupsIcon
                   sx={{
                     color: "#057546",
-                    fontSize: 34
+                    fontSize: isDesktop
+                      ? 34
+                      : isPhone
+                        ? 17
+                        : 21
                   }}
                 />
 
@@ -1796,7 +2162,11 @@ const GraduatesFollowReport = () => {
                   <Typography
                     sx={{
                       fontFamily: "Cairo",
-                      fontSize: "1.15rem",
+                      fontSize: isDesktop
+                        ? "1.15rem"
+                        : isPhone
+                          ? "0.54rem"
+                          : "0.72rem",
                       fontWeight: 900,
                       color: "#173b2b"
                     }}
@@ -1943,8 +2313,14 @@ const GraduatesFollowReport = () => {
         <Paper
           elevation={0}
           sx={{
-            p: 1.5,
-            mb: 1.5,
+            p: isDesktop
+              ? 1.5
+              : isPhone
+                ? 0.55
+                : 0.75,
+            mb: isDesktop
+              ? 1.5
+              : 0.6,
             borderRadius: 3.5,
             border:
               "1px solid rgba(5,117,70,0.13)"
@@ -1953,13 +2329,38 @@ const GraduatesFollowReport = () => {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md:
-                  "repeat(3,minmax(0,1fr)) auto"
+              gridTemplateColumns: isDesktop
+                ? "repeat(3,minmax(0,1fr)) auto"
+                : isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : "repeat(4,minmax(0,1fr))",
+              gap: isDesktop
+                ? 1.2
+                : isPhone
+                  ? 0.3
+                  : 0.45,
+              alignItems: "center",
+              "& .MuiInputLabel-root": {
+                fontFamily: "Cairo",
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.4rem"
+                    : "0.5rem"
+                  : undefined
               },
-              gap: 1.2,
-              alignItems: "center"
+              "& .MuiInputBase-root": {
+                minHeight: !isDesktop
+                  ? isPhone
+                    ? 31
+                    : 35
+                  : undefined,
+                fontFamily: "Cairo",
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.46rem"
+                    : "0.56rem"
+                  : undefined
+              }
             }}
           >
             <TextField
@@ -1985,6 +2386,9 @@ const GraduatesFollowReport = () => {
             />
 
             <Autocomplete
+              sx={{
+                gridColumn: "auto"
+              }}
               options={branches}
               value={branch}
               onChange={(_, value) => {
@@ -2025,7 +2429,17 @@ const GraduatesFollowReport = () => {
               onClick={loadData}
               disabled={loading}
               sx={{
-                minHeight: 40,
+                gridColumn: "auto",
+                minHeight: isDesktop
+                  ? 40
+                  : isPhone
+                    ? 31
+                    : 35,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.4rem"
+                    : "0.5rem"
+                  : undefined,
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 background:
@@ -2042,9 +2456,16 @@ const GraduatesFollowReport = () => {
           sx={{
             width: "100%",
             minWidth: 0,
-            height:
-              "calc(100vh - 245px)",
-            minHeight: 500,
+            height: isDesktop
+              ? "calc(100vh - 245px)"
+              : isPhone
+                ? "calc(100dvh - 285px)"
+                : "calc(100dvh - 260px)",
+            minHeight: isDesktop
+              ? 500
+              : isPhone
+                ? 420
+                : 540,
             borderRadius: 3.5,
             overflow: "hidden",
             border:
@@ -2053,7 +2474,11 @@ const GraduatesFollowReport = () => {
         >
           <DataGrid
             rows={filteredGridRows}
-            columns={columns}
+            columns={
+              isDesktop
+                ? columns
+                : compactColumns
+            }
             loading={loading}
             checkboxSelection
             disableRowSelectionOnClick
@@ -2074,17 +2499,25 @@ const GraduatesFollowReport = () => {
               )
             }
             keepNonExistentRowsSelected
-            slots={{
-              toolbar: GridToolbar
-            }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: {
-                  debounceMs: 350
-                }
-              }
-            }}
+            slots={
+              isDesktop
+                ? {
+                    toolbar: GridToolbar
+                  }
+                : {}
+            }
+            slotProps={
+              isDesktop
+                ? {
+                    toolbar: {
+                      showQuickFilter: true,
+                      quickFilterProps: {
+                        debounceMs: 350
+                      }
+                    }
+                  }
+                : {}
+            }
             initialState={{
               pagination: {
                 paginationModel: {
@@ -2096,8 +2529,20 @@ const GraduatesFollowReport = () => {
             pageSizeOptions={[
               25, 50, 100, 200
             ]}
-            rowHeight={52}
-            columnHeaderHeight={54}
+            rowHeight={
+              isDesktop
+                ? 52
+                : isPhone
+                  ? 30
+                  : 38
+            }
+            columnHeaderHeight={
+              isDesktop
+                ? 54
+                : isPhone
+                  ? 30
+                  : 40
+            }
             sx={{
               border: 0,
               direction: "ltr",
@@ -2122,16 +2567,76 @@ const GraduatesFollowReport = () => {
                 fontWeight: 900
               },
 
-              "& .MuiDataGrid-columnHeaderTitleContainer":
-                {
-                  justifyContent:
-                    "center"
-                },
+              "& .MuiDataGrid-columnHeaderTitleContainer": {
+                justifyContent: "center",
+                minWidth: 0,
+                overflow: "hidden"
+              },
+
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.25rem"
+                    : "0.39rem"
+                  : undefined,
+                whiteSpace: !isDesktop
+                  ? "nowrap"
+                  : undefined,
+                overflow: !isDesktop
+                  ? "hidden"
+                  : undefined,
+                textOverflow: !isDesktop
+                  ? "ellipsis"
+                  : undefined
+              },
 
               "& .MuiDataGrid-cell": {
                 borderColor:
-                  "rgba(5,117,70,0.08)"
+                  "rgba(5,117,70,0.08)",
+                px: !isDesktop
+                  ? isPhone
+                    ? 0.04
+                    : 0.2
+                  : undefined,
+                fontSize: !isDesktop
+                  ? isPhone
+                    ? "0.27rem"
+                    : "0.40rem"
+                  : undefined,
+                justifyContent: !isDesktop
+                  ? "center"
+                  : undefined,
+                textAlign: !isDesktop
+                  ? "center"
+                  : undefined
               },
+
+              ...(!isDesktop
+                ? {
+                    "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
+                      display: "none"
+                    },
+                    "& .MuiDataGrid-columnSeparator": {
+                      display: "none"
+                    },
+                    "& .MuiDataGrid-toolbarContainer": {
+                      display: "none"
+                    },
+                    "& .MuiDataGrid-main": {
+                      minWidth: 0,
+                      overflowX: "hidden"
+                    },
+                    "& .MuiDataGrid-virtualScroller": {
+                      direction: "ltr",
+                      overflowX: "hidden !important"
+                    },
+                    "& .MuiDataGrid-scrollbar--horizontal": {
+                      display: "none"
+                    }
+                  }
+                : {}),
 
               "& .MuiCheckbox-root.Mui-checked":
                 {
@@ -2153,6 +2658,225 @@ const GraduatesFollowReport = () => {
 
 
         <Dialog
+          open={detailsOpen}
+          onClose={closeDetails}
+          fullWidth
+          maxWidth="lg"
+          dir="rtl"
+          PaperProps={{
+            sx: {
+              width: isPhone
+                ? "94vw"
+                : "90vw",
+              maxWidth: isPhone
+                ? "94vw"
+                : "980px",
+              maxHeight: isPhone
+                ? "86dvh"
+                : "84dvh",
+              m: 1,
+              borderRadius: 2.5,
+              overflow: "hidden"
+            }
+          }}
+        >
+          <DialogTitle
+            sx={{
+              px: isPhone ? 1 : 1.5,
+              py: isPhone ? 0.8 : 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: 0.6,
+              fontFamily: "Cairo",
+              fontWeight: 950,
+              color: "#057546",
+              fontSize: isPhone
+                ? "0.76rem"
+                : "0.94rem"
+            }}
+          >
+            <span>تفاصيل الخريج</span>
+
+            <IconButton
+              onClick={closeDetails}
+              sx={{
+                width: isPhone ? 30 : 34,
+                height: isPhone ? 30 : 34,
+                color: "#ae1e21"
+              }}
+            >
+              <CloseIcon
+                sx={{
+                  fontSize: isPhone
+                    ? 18
+                    : 20
+                }}
+              />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent
+            dividers
+            sx={{
+              p: isPhone ? 0.8 : 1.1,
+              overflowY: "auto"
+            }}
+          >
+            {detailsRow ? (
+              <>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      isPhone
+                        ? "repeat(2,minmax(0,1fr))"
+                        : "repeat(3,minmax(0,1fr))",
+                    gap: isPhone
+                      ? 0.45
+                      : 0.65
+                  }}
+                >
+                  {[
+                    ["اسم الطالب", detailsRow.studentName],
+                    ["رقم الهوية", detailsRow.nationalId],
+                    ["رقم الجوال", detailsRow.studentTel],
+                    ["نوع التسجيل", detailsRow.regTypeName],
+                    ["الدبلوم / الدورة", detailsRow.diplomName],
+                    ["مسؤول الاتصال", detailsRow.trainerName],
+                    ["نوع الطالب", detailsRow.studentType],
+                    ["الفرع", detailsRow.branchName],
+                    ["الرصيد السابق", money(detailsRow.preBalance)],
+                    ["مدين", money(detailsRow.debit)],
+                    ["دفعة مقدمة", money(detailsRow.startPay)],
+                    ["قسط شهري", money(detailsRow.monthPay)],
+                    ["سداد رسوم", money(detailsRow.feesPay)],
+                    ["قيد مدين", money(detailsRow.mDaily)],
+                    ["قيد دائن", money(detailsRow.dDaily)],
+                    ["الرصيد الحالي", money(detailsRow.balance)]
+                  ].map(([label, value]) => (
+                    <Box
+                      key={label}
+                      sx={{
+                        minWidth: 0,
+                        p: isPhone
+                          ? 0.55
+                          : 0.72,
+                        border:
+                          "1px solid rgba(5,117,70,.14)",
+                        borderRadius: 1.3,
+                        backgroundColor:
+                          "#fbfdfc"
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          mb: 0.2,
+                          fontFamily: "Cairo",
+                          fontWeight: 900,
+                          color: "#60756d",
+                          fontSize: isPhone
+                            ? "0.38rem"
+                            : "0.49rem"
+                        }}
+                      >
+                        {label}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          fontFamily: "Cairo",
+                          fontWeight: 800,
+                          color: "#1f2d3d",
+                          fontSize: isPhone
+                            ? "0.49rem"
+                            : "0.62rem",
+                          wordBreak:
+                            "break-word"
+                        }}
+                      >
+                        {value || "-"}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  useFlexGap
+                  flexWrap="wrap"
+                  sx={{ mt: 0.8 }}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<ReceiptLongIcon />}
+                    onClick={() => {
+                      setMenuRow(detailsRow);
+                      setStatementOpen(true);
+                    }}
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                    }}
+                  >
+                    كشف الحساب
+                  </Button>
+
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<PaymentIcon />}
+                    onClick={async () => {
+                      setMenuRow(detailsRow);
+                      await openPaymentOrder(
+                        detailsRow
+                      );
+                    }}
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      fontSize: isPhone
+                        ? "0.4rem"
+                        : "0.5rem"
+                    }}
+                  >
+                    طلب سداد
+                  </Button>
+                </Stack>
+              </>
+            ) : null}
+          </DialogContent>
+
+          <DialogActions
+            sx={{
+              px: isPhone ? 1 : 1.5,
+              py: isPhone ? 0.7 : 1
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={closeDetails}
+              sx={{
+                backgroundColor: "#057546",
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: isPhone
+                  ? "0.47rem"
+                  : "0.58rem"
+              }}
+            >
+              إغلاق
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
           open={filterDialogOpen}
           onClose={() =>
             setFilterDialogOpen(
@@ -2163,7 +2887,17 @@ const GraduatesFollowReport = () => {
           maxWidth="md"
           PaperProps={{
             sx: {
-              borderRadius: 4,
+              borderRadius: isPhone
+                ? 2.5
+                : 4,
+              width: !isDesktop
+                ? isPhone
+                  ? "94vw"
+                  : "88vw"
+                : undefined,
+              maxHeight: !isDesktop
+                ? "86dvh"
+                : undefined,
               direction: "ltr"
             }
           }}

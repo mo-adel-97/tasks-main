@@ -22,7 +22,9 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import ReplayIcon from "@mui/icons-material/Replay";
 import SaveIcon from "@mui/icons-material/Save";
@@ -68,6 +70,29 @@ export default function RegistrationReturnDialog({
   onClose,
   onSaved
 }) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isCompact = isPhone || isTablet;
+
+  const getResponsiveSwalOptions = () => {
+    if (!isCompact) return {};
+
+    return {
+      width: isPhone ? "82vw" : "420px",
+      padding: isPhone ? "0.65rem" : "0.85rem",
+      customClass: {
+        popup: "sstli-return-swal",
+        icon: "sstli-return-swal-icon",
+        title: "sstli-return-swal-title",
+        htmlContainer: "sstli-return-swal-text",
+        actions: "sstli-return-swal-actions",
+        confirmButton: "sstli-return-swal-confirm",
+        cancelButton: "sstli-return-swal-cancel"
+      }
+    };
+  };
+
   const currentUser = useMemo(() => getCurrentUser(), []);
   const userGuid = useMemo(() => getUserGuid(currentUser), [currentUser]);
 
@@ -223,6 +248,7 @@ export default function RegistrationReturnDialog({
   const save = async () => {
     if (!selectedDocGuid) {
       return Swal.fire({
+        ...getResponsiveSwalOptions(),
         icon: "warning",
         title: "تنبيه",
         text: "برجاء اختيار نوع المستند",
@@ -232,6 +258,7 @@ export default function RegistrationReturnDialog({
 
     if (!context?.salesManGuid) {
       return Swal.fire({
+        ...getResponsiveSwalOptions(),
         icon: "warning",
         title: "تنبيه",
         text: "لا يمكن قراءة مندوب البيع الخاص باستمارة التسجيل",
@@ -241,6 +268,7 @@ export default function RegistrationReturnDialog({
 
     if (!notes.trim()) {
       return Swal.fire({
+        ...getResponsiveSwalOptions(),
         icon: "warning",
         title: "تنبيه",
         text: "لا يمكن حفظ مرتجع التسجيل بدون ملاحظات",
@@ -250,6 +278,7 @@ export default function RegistrationReturnDialog({
 
     if (!documentInfo?.branchGuid) {
       return Swal.fire({
+        ...getResponsiveSwalOptions(),
         icon: "warning",
         title: "تنبيه",
         text: "إعدادات دفتر المرتجع غير مكتملة",
@@ -308,6 +337,7 @@ export default function RegistrationReturnDialog({
       }
 
       await Swal.fire({
+        ...getResponsiveSwalOptions(),
         icon: "success",
         title: "تم الحفظ",
         text: result?.message || "تم حفظ مرتجع التسجيل بنجاح",
@@ -323,50 +353,199 @@ export default function RegistrationReturnDialog({
   };
 
   return (
-    <Dialog
+    <>
+      <style>
+        {`
+          @media (max-width: 1599px) {
+            .sstli-return-swal {
+              max-width: 420px !important;
+              border-radius: 14px !important;
+              font-family: Cairo, Arial, sans-serif !important;
+            }
+            .sstli-return-swal-icon {
+              width: 3.4em !important;
+              height: 3.4em !important;
+              margin: 0.6em auto 0.25em !important;
+            }
+            .sstli-return-swal-icon .swal2-icon-content {
+              font-size: 2.3em !important;
+            }
+            .sstli-return-swal-title {
+              font-size: 0.95rem !important;
+              line-height: 1.2 !important;
+              padding-top: 0.2em !important;
+            }
+            .sstli-return-swal-text {
+              font-size: 0.68rem !important;
+              line-height: 1.4 !important;
+              padding: 0 0.75em !important;
+            }
+            .sstli-return-swal-actions {
+              margin-top: 0.65em !important;
+            }
+            .sstli-return-swal-confirm,
+            .sstli-return-swal-cancel {
+              min-width: 76px !important;
+              min-height: 31px !important;
+              padding: 0.38rem 0.75rem !important;
+              margin: 0 !important;
+              font-size: 0.66rem !important;
+              border-radius: 8px !important;
+              font-weight: 900 !important;
+            }
+          }
+
+          @media (max-width: 599px) {
+            .sstli-return-swal {
+              width: 82vw !important;
+              max-width: 300px !important;
+              border-radius: 12px !important;
+            }
+            .sstli-return-swal-icon {
+              width: 3em !important;
+              height: 3em !important;
+              margin: 0.5em auto 0.2em !important;
+            }
+            .sstli-return-swal-icon .swal2-icon-content {
+              font-size: 2em !important;
+            }
+            .sstli-return-swal-title {
+              font-size: 0.8rem !important;
+            }
+            .sstli-return-swal-text {
+              font-size: 0.57rem !important;
+              padding: 0 0.5em !important;
+            }
+            .sstli-return-swal-confirm,
+            .sstli-return-swal-cancel {
+              min-width: 64px !important;
+              min-height: 28px !important;
+              padding: 0.32rem 0.55rem !important;
+              font-size: 0.56rem !important;
+            }
+          }
+        `}
+      </style>
+
+      <Dialog
       open={open}
       onClose={saving ? undefined : onClose}
       maxWidth="lg"
       fullWidth
+      fullScreen={isPhone}
       dir="rtl"
-      PaperProps={{ sx: { borderRadius: 3, minHeight: "78vh" } }}
+      sx={{
+        "& .MuiDialog-container": {
+          pt: isPhone ? "58px" : isTablet ? "64px" : 1.5,
+          px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
+          alignItems: isPhone ? "stretch" : "center"
+        }
+      }}
+      PaperProps={{
+        sx: {
+          width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
+          maxWidth: isPhone ? "100vw" : isTablet ? "980px" : undefined,
+          height: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "86vh",
+          maxHeight: isPhone
+            ? "calc(100dvh - 58px)"
+            : isTablet
+              ? "calc(100dvh - 72px)"
+              : "86vh",
+          minHeight: 0,
+          m: 0,
+          borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column"
+        }
+      }}
     >
       <DialogTitle
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: 1,
+          gap: isCompact ? 0.35 : 1,
           color: primaryColor,
-          fontWeight: 950
+          fontWeight: 950,
+          py: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
+          px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
+          fontSize: isPhone ? "0.68rem" : isTablet ? "0.8rem" : undefined,
+          flexShrink: 0
         }}
       >
-        <ReplayIcon />
+        <ReplayIcon sx={{ fontSize: isPhone ? 16 : isTablet ? 19 : undefined }} />
         مرتجع استمارة تسجيل
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 3 }}>
-        {error ? <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert> : null}
+      <DialogContent
+        dividers
+        sx={{
+          p: isPhone ? 0.3 : isTablet ? 0.55 : 3,
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0,
+
+          "& .MuiInputLabel-root": {
+            fontSize: isPhone ? "0.47rem" : isTablet ? "0.56rem" : undefined
+          },
+          "& .MuiInputBase-input, & .MuiSelect-select": {
+            fontSize: isPhone ? "0.5rem" : isTablet ? "0.59rem" : undefined,
+            py: isPhone ? 0.52 : isTablet ? 0.67 : undefined
+          },
+          "& .MuiOutlinedInput-root": {
+            minHeight: isPhone ? 31 : isTablet ? 35 : undefined,
+            borderRadius: isCompact ? 1.25 : undefined
+          },
+          "& .MuiFormHelperText-root": {
+            fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
+          }
+        }}
+      >
+        {error ? (
+          <Alert
+            severity="error"
+            sx={{
+              mb: isCompact ? 0.35 : 2,
+              py: isCompact ? 0.15 : undefined,
+              fontSize: isPhone ? "0.46rem" : isTablet ? "0.54rem" : undefined
+            }}
+          >
+            {error}
+          </Alert>
+        ) : null}
 
         {loading ? (
-          <Box sx={{ py: 10, textAlign: "center" }}>
+          <Box sx={{ py: isPhone ? 3 : isTablet ? 4 : 10, textAlign: "center" }}>
             <CircularProgress />
           </Box>
         ) : (
-          <Stack spacing={2}>
-            <Paper variant="outlined" sx={{ p: 2 }}>
+          <Stack spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
+                borderRadius: isCompact ? 1.4 : undefined
+              }}
+            >
               <Typography
                 sx={{
-                  mb: 1.5,
+                  mb: isCompact ? 0.35 : 1.5,
                   color: primaryColor,
                   fontWeight: 950,
-                  textAlign: "center"
+                  textAlign: "center",
+                  fontSize: isPhone ? "0.54rem" : isTablet ? "0.64rem" : undefined
                 }}
               >
                 بيانات الطالب
               </Typography>
 
-              <Grid container spacing={1.5}>
-                <Grid item xs={12} md={4}>
+              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
+                <Grid item xs={12} sm={6} md={4}>
                   <TextField
                     fullWidth
                     label="اسم الطالب"
@@ -375,7 +554,7 @@ export default function RegistrationReturnDialog({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={3} md={4}>
                   <TextField
                     fullWidth
                     label="رقم الهوية"
@@ -384,7 +563,7 @@ export default function RegistrationReturnDialog({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} sm={3} md={4}>
                   <TextField
                     fullWidth
                     label="رقم الجوال"
@@ -395,8 +574,8 @@ export default function RegistrationReturnDialog({
               </Grid>
             </Paper>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
+            <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
+              <Grid item xs={6} sm={6} md={4}>
                 <TextField
                   fullWidth
                   type="datetime-local"
@@ -407,13 +586,29 @@ export default function RegistrationReturnDialog({
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={6} sm={6} md={4}>
                 <FormControl fullWidth disabled={loadingDocs}>
                   <InputLabel>نوع المستند</InputLabel>
                   <Select
                     value={selectedDocGuid}
                     label="نوع المستند"
                     onChange={(e) => setSelectedDocGuid(e.target.value)}
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          maxHeight: isPhone ? 180 : isTablet ? 220 : 320,
+                          mt: 0.25,
+                          borderRadius: isCompact ? 1.2 : 2,
+                          "& .MuiMenuItem-root": {
+                            minHeight: isPhone ? 29 : isTablet ? 33 : 40,
+                            py: isPhone ? 0.35 : isTablet ? 0.5 : 0.75,
+                            px: isPhone ? 0.65 : isTablet ? 0.85 : 1.5,
+                            fontSize: isPhone ? "0.5rem" : isTablet ? "0.58rem" : "0.875rem",
+                            lineHeight: 1.2
+                          }
+                        }
+                      }
+                    }}
                   >
                     {documents.map((item) => (
                       <MenuItem key={item.guid} value={item.guid}>
@@ -424,7 +619,7 @@ export default function RegistrationReturnDialog({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} sm={12} md={4}>
                 <TextField
                   fullWidth
                   label="مندوب البيع"
@@ -437,20 +632,43 @@ export default function RegistrationReturnDialog({
             <TextField
               fullWidth
               multiline
-              minRows={3}
+              minRows={isPhone ? 2 : isTablet ? 2 : 3}
               label="ملاحظات"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
 
-            <TableContainer component={Paper} variant="outlined">
+            <TableContainer
+              component={Paper}
+              variant="outlined"
+              sx={{
+                borderRadius: isCompact ? 1.3 : undefined,
+                overflowX: "auto",
+                "& .MuiTableCell-root": {
+                  py: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
+                  px: isPhone ? 0.35 : isTablet ? 0.55 : undefined,
+                  fontSize: isPhone ? "0.43rem" : isTablet ? "0.52rem" : undefined,
+                  whiteSpace: "nowrap"
+                },
+                "& .MuiTableHead-root .MuiTableCell-root": {
+                  fontSize: isPhone ? "0.42rem" : isTablet ? "0.5rem" : undefined,
+                  lineHeight: 1.1
+                }
+              }}
+            >
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: "#f7d38a" }}>
                     <TableCell align="right" sx={{ fontWeight: 950 }}>
                       الدبلوم - الدورة
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 950 }}>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontWeight: 950,
+                        display: isPhone ? "none" : "table-cell"
+                      }}
+                    >
                       الوحدة
                     </TableCell>
                     <TableCell align="center" sx={{ fontWeight: 950 }}>
@@ -459,7 +677,13 @@ export default function RegistrationReturnDialog({
                     <TableCell align="center" sx={{ fontWeight: 950 }}>
                       التكلفة
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 950 }}>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontWeight: 950,
+                        display: isPhone ? "none" : "table-cell"
+                      }}
+                    >
                       الضريبة
                     </TableCell>
                     <TableCell align="center" sx={{ fontWeight: 950 }}>
@@ -474,14 +698,22 @@ export default function RegistrationReturnDialog({
                       <TableCell align="right" sx={{ fontWeight: 800 }}>
                         {item.name}
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell
+                        align="center"
+                        sx={{ display: isPhone ? "none" : "table-cell" }}
+                      >
                         {item.unit || item.unit_ || "-"}
                       </TableCell>
                       <TableCell align="center">
                         {Number(item.qty || 0)}
                       </TableCell>
                       <TableCell align="center">{money(item.cost)}</TableCell>
-                      <TableCell align="center">{money(item.tax)}</TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ display: isPhone ? "none" : "table-cell" }}
+                      >
+                        {money(item.tax)}
+                      </TableCell>
                       <TableCell align="center">{money(item.subTotal)}</TableCell>
                     </TableRow>
                   ))}
@@ -497,29 +729,53 @@ export default function RegistrationReturnDialog({
               </Table>
             </TableContainer>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
-                  <Typography sx={{ fontWeight: 900 }}>الإجمالي</Typography>
-                  <Typography sx={{ color: "#d71920", fontSize: 25, fontWeight: 950 }}>
+            <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 2}>
+              <Grid item xs={4} sm={4} md={4}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                    minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
+                    borderRadius: isCompact ? 1.3 : undefined,
+                    textAlign: "center"
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>الإجمالي</Typography>
+                  <Typography sx={{ color: "#d71920", fontSize: isPhone ? 14 : isTablet ? 17 : 25, fontWeight: 950 }}>
                     {money(totals.total)}
                   </Typography>
                 </Paper>
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
-                  <Typography sx={{ fontWeight: 900 }}>الضريبة</Typography>
-                  <Typography sx={{ color: "#d71920", fontSize: 25, fontWeight: 950 }}>
+              <Grid item xs={4} sm={4} md={4}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                    minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
+                    borderRadius: isCompact ? 1.3 : undefined,
+                    textAlign: "center"
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>الضريبة</Typography>
+                  <Typography sx={{ color: "#d71920", fontSize: isPhone ? 14 : isTablet ? 17 : 25, fontWeight: 950 }}>
                     {money(totals.tax)}
                   </Typography>
                 </Paper>
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
-                  <Typography sx={{ fontWeight: 900 }}>الصافي</Typography>
-                  <Typography sx={{ color: "#d71920", fontSize: 25, fontWeight: 950 }}>
+              <Grid item xs={4} sm={4} md={4}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
+                    minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
+                    borderRadius: isCompact ? 1.3 : undefined,
+                    textAlign: "center"
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.45rem" : isTablet ? "0.53rem" : undefined }}>الصافي</Typography>
+                  <Typography sx={{ color: "#d71920", fontSize: isPhone ? 14 : isTablet ? 17 : 25, fontWeight: 950 }}>
                     {money(totals.subTotal)}
                   </Typography>
                 </Paper>
@@ -529,7 +785,14 @@ export default function RegistrationReturnDialog({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions
+        sx={{
+          px: isPhone ? 0.35 : isTablet ? 0.55 : 3,
+          py: isPhone ? 0.28 : isTablet ? 0.42 : 2,
+          gap: isCompact ? 0.35 : 1,
+          flexShrink: 0
+        }}
+      >
         <Button
           variant="contained"
           onClick={save}
@@ -541,7 +804,13 @@ export default function RegistrationReturnDialog({
               <SaveIcon />
             )
           }
-          sx={{ backgroundColor: primaryColor, minWidth: 140 }}
+          sx={{
+            backgroundColor: primaryColor,
+            minWidth: isPhone ? 92 : isTablet ? 110 : 140,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+          }}
         >
           حفظ
         </Button>
@@ -549,11 +818,18 @@ export default function RegistrationReturnDialog({
         <Button
           onClick={onClose}
           disabled={saving}
-          sx={{ color: accentColor, fontWeight: 900 }}
+          sx={{
+            color: accentColor,
+            fontWeight: 900,
+            minHeight: isPhone ? 30 : isTablet ? 34 : undefined,
+            px: isPhone ? 0.8 : isTablet ? 1.1 : undefined,
+            fontSize: isPhone ? "0.48rem" : isTablet ? "0.56rem" : undefined
+          }}
         >
           إغلاق
         </Button>
       </DialogActions>
     </Dialog>
+    </>
   );
 }

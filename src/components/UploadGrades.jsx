@@ -33,8 +33,7 @@ const UploadGrades = () => {
     }
   }, []);
 
-  // ✅ يظهر بس للي userJop = 9
-  const isAllowed = Number(user?.userJop) === 9 || 0 || 1 || 2 ;
+  // صلاحية فتح الصفحة أصبحت من Form_Name + User_Premision عبر PrivateRoute.
 
   const [file, setFile] = useState(null);
 
@@ -184,20 +183,63 @@ const UploadGrades = () => {
   };
 
   const postOneStudent = async ({ national_id, grades }) => {
-    const res = await fetch(UPLOAD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ national_id, grades }),
-    });
+    console.log("📡 POST:", UPLOAD_URL);
+    console.log("📦 Payload:", { national_id, grades });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || data?.success === false) {
-      throw new Error(data?.message || "فشل رفع سجل طالب.");
+    let res;
+
+    try {
+      res = await fetch(UPLOAD_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          national_id,
+          grades,
+        }),
+      });
+    } catch (networkError) {
+      console.error("Network/CORS Error:", networkError);
+      throw new Error(
+        "تعذر الاتصال بسيرفر رفع الدرجات. افحص CORS أو اتصال الـ API."
+      );
     }
+
+    const responseText = await res.text();
+
+    console.log("HTTP Status:", res.status);
+    console.log("Raw API Response:", responseText);
+
+    let data = {};
+
+    try {
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      throw new Error(
+        `السيرفر لم يرجع JSON صحيح. HTTP ${res.status}: ${responseText.substring(0, 300)}`
+      );
+    }
+
+    if (!res.ok) {
+      throw new Error(
+        data?.message || `خطأ من السيرفر HTTP ${res.status}`
+      );
+    }
+
+    if (data?.success === false) {
+      throw new Error(
+        data?.message || "السيرفر رفض رفع درجات الطالب."
+      );
+    }
+
     return data;
   };
 
   const handleUpload = async () => {
+    console.log("🔥 handleUpload CLICKED");
+
     setSuccessMsg("");
     setErrorMsg("");
 
@@ -205,123 +247,150 @@ const UploadGrades = () => {
       setErrorMsg("من فضلك ارفع ملف الإكسل.");
       return;
     }
+
     if (!structureOk) {
       setErrorMsg("هيكل الملف غير صحيح. عدّل الملف قبل الرفع.");
       return;
     }
 
     try {
+      console.log("1️⃣ بدء قراءة الملف:", file.name);
+
       setLoading(true);
       setProgress({ total: 0, done: 0, failed: 0 });
 
       const { headers, dataRows } = await readExcelRows(file);
 
-      // validate again (strong)
+      console.log("2️⃣ Headers:", headers);
+      console.log("3️⃣ Rows:", dataRows);
+
       validateStructure(headers);
 
       const subjects = headers.slice(1);
       const rowsToSend = [];
 
-      // build payload per row
       for (let i = 0; i < dataRows.length; i++) {
         const row = dataRows[i] || [];
         const nationalIdRaw = row[0];
-        const national_id = String(nationalIdRaw ?? "").trim();
 
-        // skip empty row
+        // لو Excel رجّع الهوية كرقم بصيغة 1234567890.0
+        const national_id = String(nationalIdRaw ?? "")
+          .trim()
+          .replace(/\.0$/, "");
+
         const isRowEmpty =
           national_id === "" &&
           row.slice(1).every((x) => String(x ?? "").trim() === "");
+
         if (isRowEmpty) continue;
 
         if (!isValidNationalIdValue(national_id)) {
           throw new Error(
-            `صف رقم ${i + 2}: رقم الهوية غير صحيح أو فارغ (قيمة: "${national_id}").`
+            `صف رقم ${i + 2}: رقم الهوية غير صحيح أو فارغ (القيمة: "${national_id}")`
           );
         }
 
         const grades = {};
+
         for (let s = 0; s < subjects.length; s++) {
           const subjectName = subjects[s];
           const cell = row[s + 1];
           const grade = parseGradeValue(cell);
 
-          // نخزن فقط القيم الرقمية (لو فاضي نتجاهل)
           if (grade !== null) {
             grades[subjectName] = grade;
           }
         }
 
-        // لازم يكون فيه درجة واحدة على الأقل
         if (Object.keys(grades).length === 0) {
-          throw new Error(`صف رقم ${i + 2}: لا توجد أي درجات للطالب.`);
+          throw new Error(
+            `صف رقم ${i + 2}: لا توجد أي درجات صالحة للطالب ${national_id}`
+          );
         }
 
-        rowsToSend.push({ national_id, grades });
+        rowsToSend.push({
+          national_id,
+          grades,
+        });
       }
+
+      console.log("4️⃣ البيانات الجاهزة للإرسال:", rowsToSend);
 
       if (rowsToSend.length === 0) {
         throw new Error("لا يوجد صفوف صالحة للإرسال.");
       }
 
-      setProgress({ total: rowsToSend.length, done: 0, failed: 0 });
+      setProgress({
+        total: rowsToSend.length,
+        done: 0,
+        failed: 0,
+      });
 
-      // upload sequential (أكثر أمانًا للـ API)
       let done = 0;
       let failed = 0;
+      const failedStudents = [];
 
       for (let i = 0; i < rowsToSend.length; i++) {
+        const student = rowsToSend[i];
+
         try {
-          await postOneStudent(rowsToSend[i]);
+          console.log(
+            `⬆️ رفع الطالب ${i + 1}/${rowsToSend.length}`,
+            student
+          );
+
+          const result = await postOneStudent(student);
+
+          console.log("✅ API Result:", result);
           done += 1;
         } catch (e) {
+          console.error(
+            "❌ فشل الطالب:",
+            student.national_id,
+            e
+          );
+
           failed += 1;
-        } finally {
-          setProgress((p) => ({ ...p, done, failed }));
+
+          failedStudents.push({
+            national_id: student.national_id,
+            error: e?.message || "Unknown error",
+          });
         }
+
+        setProgress({
+          total: rowsToSend.length,
+          done,
+          failed,
+        });
       }
 
       if (failed === 0) {
-        setSuccessMsg(`✅ تم رفع الدرجات بنجاح لكل الطلاب (${done}).`);
-      } else {
         setSuccessMsg(
-          `⚠️ تم رفع (${done}) طالب، وفشل (${failed}) طالب. راجع الملف أو السيرفر.`
+          `✅ تم رفع الدرجات بنجاح لكل الطلاب (${done}).`
+        );
+      } else {
+        console.error("Failed students:", failedStudents);
+
+        setErrorMsg(
+          `تم رفع ${done} طالب، وفشل ${failed} طالب. ` +
+            `أول خطأ: ${failedStudents[0]?.national_id || ""} - ${
+              failedStudents[0]?.error || ""
+            }`
         );
       }
-
-      // reset file (اختياري)
-      // setFile(null);
-      // setStructureOk(false);
-      // setStructureInfo(null);
-
     } catch (err) {
-      setErrorMsg(err?.message || "حصل خطأ غير متوقع.");
+      console.error("🔥 UPLOAD ERROR:", err);
+
+      setErrorMsg(
+        err?.message ||
+          "حصل خطأ غير متوقع أثناء رفع الدرجات."
+      );
     } finally {
+      console.log("🏁 Upload finished");
       setLoading(false);
     }
   };
-
-  if (!isAllowed) {
-    return (
-      <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fbfa" }}>
-        <Sidebar />
-        <Box
-          sx={{
-            flex: 1,
-            ml: `${SIDEBAR_WIDTH}px`,
-            p: { xs: 2, md: 4 },
-            direction: "ltr",
-          }}
-        >
-          <Paper sx={{ p: 3, borderRadius: 3 }}>
-            <Alert severity="error" sx={{ fontFamily: "Cairo" }}>
-              غير مسموح لك بالدخول إلى صفحة رفع الدرجات.
-            </Alert>
-          </Paper>
-        </Box>
-      </Box>
-    );
-  }
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fbfa" }}>
@@ -460,12 +529,6 @@ const UploadGrades = () => {
                 </Alert>
               )}
 
-              {file && !structureOk && errorMsg && (
-                <Alert severity="error" sx={{ fontFamily: "Cairo" }}>
-                  ❌ الاستراكتشر غير صحيح: {errorMsg}
-                </Alert>
-              )}
-
               <Divider />
 
               <Typography sx={{ fontFamily: "Cairo", fontWeight: 800 }}>
@@ -508,9 +571,9 @@ const UploadGrades = () => {
                     </Alert>
                   )}
 
-                  {!file && errorMsg && (
+                  {errorMsg && (
                     <Alert severity="error" sx={{ fontFamily: "Cairo" }}>
-                      {errorMsg}
+                      ❌ {errorMsg}
                     </Alert>
                   )}
                 </Box>

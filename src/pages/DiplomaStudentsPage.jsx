@@ -6,11 +6,13 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Backdrop,
   Box,
   Button,
   Checkbox,
   CircularProgress,
+  GlobalStyles,
   FormControlLabel,
   Dialog,
   DialogActions,
@@ -22,6 +24,7 @@ import {
   Paper,
   Stack,
   TextField,
+  Toolbar,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -49,6 +52,9 @@ import DeselectIcon from "@mui/icons-material/Deselect";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DescriptionIcon from "@mui/icons-material/Description";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import CloseIcon from "@mui/icons-material/Close";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Sidebar from "../components/Sidebar";
 import StudentStatementDialog2
@@ -59,6 +65,7 @@ import RegisterDocumentDialog
   from "../components/RegisterDocumentDialog";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5258";
@@ -399,6 +406,16 @@ const isContinuingStudent = (row) =>
     .trim()
     .replace(/\s+/g, " ") === "مستمر";
 
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) return parts.join(" ");
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 const downloadBlob = (blob, fileName) => {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -412,9 +429,28 @@ const downloadBlob = (blob, fileName) => {
 
 const DiplomaStudentsPage = () => {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(
-    theme.breakpoints.up("lg")
+
+  const isPhone = useMediaQuery(
+    theme.breakpoints.down("sm")
   );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) setMobileSidebarOpen(false);
+  }, [isDesktop]);
 
   const user = useMemo(() => {
     try {
@@ -437,6 +473,16 @@ const DiplomaStudentsPage = () => {
   const [filterBatchGuid, setFilterBatchGuid] = useState("");
   const [filterSectionGuid, setFilterSectionGuid] = useState("all");
   const [distributionStatus, setDistributionStatus] = useState("all");
+
+  // الفلاتر العالمية — Multi Select
+  const [globalSearch, setGlobalSearch] = useState("");
+  const [filterLevelGuids, setFilterLevelGuids] = useState([]);
+  const [filterDiplomaGuids, setFilterDiplomaGuids] = useState([]);
+  const [filterBatchGuids, setFilterBatchGuids] = useState([]);
+  const [filterSectionGuids, setFilterSectionGuids] = useState([]);
+  const [filterStudyStatuses, setFilterStudyStatuses] = useState([]);
+  const [filterGenders, setFilterGenders] = useState([]);
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
   const [sections, setSections] = useState([]);
   const [targetSectionGuid, setTargetSectionGuid] = useState("");
   const [rows, setRows] = useState([]);
@@ -621,64 +667,372 @@ const DiplomaStudentsPage = () => {
     );
   }, [rows, selectionModel]);
 
+  const allDiplomaOptions = useMemo(() => {
+    const map = new Map();
+
+    rows.forEach((row) => {
+      if (
+        row.diplomaGuid !== ZERO_GUID &&
+        row.diplomName
+      ) {
+        map.set(
+          row.diplomaGuid,
+          row.diplomName
+        );
+      }
+    });
+
+    return [...map.entries()]
+      .map(([guid, name]) => ({
+        guid,
+        name
+      }))
+      .sort((a, b) =>
+        String(a.name).localeCompare(
+          String(b.name),
+          "ar"
+        )
+      );
+  }, [rows]);
+
+  const allBatchOptions = useMemo(() => {
+    const map = new Map();
+
+    rows.forEach((row) => {
+      if (
+        row.batchGuid !== ZERO_GUID &&
+        row.batchName
+      ) {
+        map.set(
+          row.batchGuid,
+          row.batchName
+        );
+      }
+    });
+
+    return [...map.entries()]
+      .map(([guid, name]) => ({
+        guid,
+        name
+      }))
+      .sort((a, b) =>
+        String(a.name).localeCompare(
+          String(b.name),
+          "ar"
+        )
+      );
+  }, [rows]);
+
+  const allSectionOptions = useMemo(() => {
+    const map = new Map();
+
+    rows.forEach((row) => {
+      if (
+        row.sectionGuid !== ZERO_GUID &&
+        row.sectionName
+      ) {
+        map.set(
+          row.sectionGuid,
+          row.sectionName
+        );
+      }
+    });
+
+    return [...map.entries()]
+      .map(([guid, name]) => ({
+        guid,
+        name
+      }))
+      .sort((a, b) =>
+        String(a.name).localeCompare(
+          String(b.name),
+          "ar"
+        )
+      );
+  }, [rows]);
+
+  const studyStatusOptions = useMemo(() => {
+    return [
+      ...new Set(
+        rows
+          .map((row) =>
+            String(row.statusName || "").trim()
+          )
+          .filter(Boolean)
+      )
+    ].sort((a, b) =>
+      a.localeCompare(b, "ar")
+    );
+  }, [rows]);
+
+  const genderOptions = useMemo(() => {
+    return [
+      ...new Set(
+        rows
+          .map((row) =>
+            String(
+              genderText(row) || ""
+            ).trim()
+          )
+          .filter(Boolean)
+      )
+    ].sort((a, b) =>
+      a.localeCompare(b, "ar")
+    );
+  }, [rows]);
+
+  // ما زلنا نحتاج Options مرتبطة بالمستوى/الدبلوم
+  // في أدوات إدارة الشعب، وليس في الفلترة العالمية.
   const diplomaOptions = useMemo(() => {
     const map = new Map();
+
     rows
-      .filter((row) => !filterLevelGuid || row.levelGuid === filterLevelGuid)
+      .filter(
+        (row) =>
+          !filterLevelGuid ||
+          row.levelGuid === filterLevelGuid
+      )
       .forEach((row) => {
-        if (row.diplomaGuid !== ZERO_GUID && row.diplomName) {
-          map.set(row.diplomaGuid, row.diplomName);
+        if (
+          row.diplomaGuid !== ZERO_GUID &&
+          row.diplomName
+        ) {
+          map.set(
+            row.diplomaGuid,
+            row.diplomName
+          );
         }
       });
-    return [...map.entries()].map(([guid, name]) => ({ guid, name }));
+
+    return [...map.entries()].map(
+      ([guid, name]) => ({
+        guid,
+        name
+      })
+    );
   }, [rows, filterLevelGuid]);
 
   const batchOptions = useMemo(() => {
     const map = new Map();
+
     rows
-      .filter((row) =>
-        (!filterLevelGuid || row.levelGuid === filterLevelGuid) &&
-        (!filterDiplomaGuid || row.diplomaGuid === filterDiplomaGuid)
+      .filter(
+        (row) =>
+          (!filterLevelGuid ||
+            row.levelGuid ===
+              filterLevelGuid) &&
+          (!filterDiplomaGuid ||
+            row.diplomaGuid ===
+              filterDiplomaGuid)
       )
       .forEach((row) => {
-        if (row.batchGuid !== ZERO_GUID && row.batchName) {
-          map.set(row.batchGuid, row.batchName);
+        if (
+          row.batchGuid !== ZERO_GUID &&
+          row.batchName
+        ) {
+          map.set(
+            row.batchGuid,
+            row.batchName
+          );
         }
       });
-    return [...map.entries()].map(([guid, name]) => ({ guid, name }));
-  }, [rows, filterLevelGuid, filterDiplomaGuid]);
+
+    return [...map.entries()].map(
+      ([guid, name]) => ({
+        guid,
+        name
+      })
+    );
+  }, [
+    rows,
+    filterLevelGuid,
+    filterDiplomaGuid
+  ]);
+
+  // لو المستخدم اختار قيمة واحدة فقط من المستوى والدبلوم
+  // نخلي أدوات تقسيم الشعب تشتغل عليها تلقائيًا.
+  useEffect(() => {
+    const singleLevel =
+      filterLevelGuids.length === 1
+        ? filterLevelGuids[0]
+        : "";
+
+    const singleDiploma =
+      filterDiplomaGuids.length === 1
+        ? filterDiplomaGuids[0]
+        : "";
+
+    setFilterLevelGuid(singleLevel);
+    setFilterDiplomaGuid(
+      singleLevel ? singleDiploma : ""
+    );
+    setFilterBatchGuid("");
+    setFilterSectionGuid("all");
+    setTargetSectionGuid("");
+  }, [
+    filterLevelGuids,
+    filterDiplomaGuids
+  ]);
 
   const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
-      if (filterLevelGuid && row.levelGuid !== filterLevelGuid) return false;
-      if (filterDiplomaGuid && row.diplomaGuid !== filterDiplomaGuid) return false;
-      if (filterBatchGuid && row.batchGuid !== filterBatchGuid) return false;
+    const query = String(globalSearch || "")
+      .trim()
+      .toLowerCase();
 
-      if (distributionStatus === "assigned" && row.sectionGuid === ZERO_GUID)
+    return rows.filter((row) => {
+      if (
+        filterLevelGuids.length > 0 &&
+        !filterLevelGuids.includes(
+          row.levelGuid
+        )
+      ) {
         return false;
-      if (distributionStatus === "unassigned" && row.sectionGuid !== ZERO_GUID)
-        return false;
+      }
 
       if (
-        filterSectionGuid &&
-        filterSectionGuid !== "all" &&
-        filterSectionGuid !== "unassigned" &&
-        row.sectionGuid !== filterSectionGuid
-      ) return false;
-
-      if (filterSectionGuid === "unassigned" && row.sectionGuid !== ZERO_GUID)
+        filterDiplomaGuids.length > 0 &&
+        !filterDiplomaGuids.includes(
+          row.diplomaGuid
+        )
+      ) {
         return false;
+      }
+
+      if (
+        filterBatchGuids.length > 0 &&
+        !filterBatchGuids.includes(
+          row.batchGuid
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        filterSectionGuids.length > 0
+      ) {
+        const wantsUnassigned =
+          filterSectionGuids.includes(
+            "unassigned"
+          );
+
+        const selectedRealSections =
+          filterSectionGuids.filter(
+            (value) =>
+              value !== "unassigned"
+          );
+
+        const matchesSection =
+          selectedRealSections.includes(
+            row.sectionGuid
+          );
+
+        const matchesUnassigned =
+          wantsUnassigned &&
+          row.sectionGuid === ZERO_GUID;
+
+        if (
+          !matchesSection &&
+          !matchesUnassigned
+        ) {
+          return false;
+        }
+      }
+
+      if (
+        distributionStatus ===
+          "assigned" &&
+        row.sectionGuid === ZERO_GUID
+      ) {
+        return false;
+      }
+
+      if (
+        distributionStatus ===
+          "unassigned" &&
+        row.sectionGuid !== ZERO_GUID
+      ) {
+        return false;
+      }
+
+      if (
+        filterStudyStatuses.length > 0 &&
+        !filterStudyStatuses.includes(
+          String(
+            row.statusName || ""
+          ).trim()
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        filterGenders.length > 0 &&
+        !filterGenders.includes(
+          String(
+            genderText(row) || ""
+          ).trim()
+        )
+      ) {
+        return false;
+      }
+
+      if (query) {
+        const haystack = [
+          row.acadmyId,
+          row.code,
+          row.studentName,
+          row.studentNameEn,
+          row.nationalId,
+          row.studentTel,
+          row.email,
+          row.diplomName,
+          row.batchName,
+          row.statusName,
+          row.levelName,
+          row.sectionName,
+          row.levelNotes,
+          row.typeName,
+          row.registrationBranchName,
+          row.studyBranchName,
+          genderText(row)
+        ]
+          .map((value) =>
+            String(value ?? "")
+              .toLowerCase()
+          )
+          .join(" ");
+
+        if (!haystack.includes(query)) {
+          return false;
+        }
+      }
 
       return true;
     });
   }, [
     rows,
-    filterLevelGuid,
-    filterDiplomaGuid,
-    filterBatchGuid,
-    filterSectionGuid,
+    globalSearch,
+    filterLevelGuids,
+    filterDiplomaGuids,
+    filterBatchGuids,
+    filterSectionGuids,
+    filterStudyStatuses,
+    filterGenders,
     distributionStatus
   ]);
+
+  const clearAdvancedFilters = () => {
+    setGlobalSearch("");
+    setFilterLevelGuids([]);
+    setFilterDiplomaGuids([]);
+    setFilterBatchGuids([]);
+    setFilterSectionGuids([]);
+    setFilterStudyStatuses([]);
+    setFilterGenders([]);
+    setDistributionStatus("all");
+    setTargetSectionGuid("");
+    setSelectionModel([]);
+  };
 
   const loadSections = useCallback(async () => {
     if (!branchGuid || !filterLevelGuid) {
@@ -725,7 +1079,16 @@ const DiplomaStudentsPage = () => {
 
   useEffect(() => {
     setSelectionModel([]);
-  }, [filterLevelGuid, filterDiplomaGuid, filterBatchGuid, filterSectionGuid, distributionStatus]);
+  }, [
+    filterLevelGuids,
+    filterDiplomaGuids,
+    filterBatchGuids,
+    filterSectionGuids,
+    filterStudyStatuses,
+    filterGenders,
+    distributionStatus,
+    globalSearch
+  ]);
 
   const closeMenu = () => {
     setAnchorEl(null);
@@ -1299,12 +1662,12 @@ const DiplomaStudentsPage = () => {
       return;
     }
 
-    const inputOptions = Object.fromEntries(
-      Array.from({ length: 9 }, (_, index) => {
-        const sectionNumber = index + 1;
-        return [String(sectionNumber), `الشعبة ${sectionNumber}`];
-      })
-    );
+   const inputOptions = Object.fromEntries(
+  Array.from({ length: 20 }, (_, index) => {
+    const sectionNumber = index + 1;
+    return [String(sectionNumber), `الشعبة ${sectionNumber}`];
+  })
+);
 
     const result = await Swal.fire({
       title: "إنشاء شعبة جديدة",
@@ -1317,7 +1680,7 @@ const DiplomaStudentsPage = () => {
       cancelButtonText: "إلغاء",
       confirmButtonColor: "#057546",
       inputValidator: (value) =>
-        !value ? "اختر رقم الشعبة من 1 إلى 9" : undefined
+  !value ? "اختر رقم الشعبة من 1 إلى 20" : undefined
     });
 
     if (!result.isConfirmed) return;
@@ -2068,12 +2431,12 @@ const DiplomaStudentsPage = () => {
   };
 
   const exportAllXlsx = () => {
-    if (rows.length === 0) {
-      showError("لا توجد بيانات للتصدير");
+    if (filteredRows.length === 0) {
+      showError("لا توجد بيانات مطابقة للفلاتر الحالية للتصدير");
       return;
     }
 
-    const data = rows.map((row) => ({
+    const data = filteredRows.map((row) => ({
       "كود": row.acadmyId,
       "اسم الطالب": row.studentName,
       "الاسم بالإنجليزية": row.studentNameEn,
@@ -2103,7 +2466,7 @@ const DiplomaStudentsPage = () => {
 
     XLSX.writeFile(
       workbook,
-      `قائمة طلاب الدبلومات ${new Date()
+      `قائمة طلاب الدبلومات - حسب الفلاتر ${new Date()
         .toISOString()
         .slice(0, 10)}.xlsx`
     );
@@ -2230,166 +2593,286 @@ ${record.map((value) =>
   };
 
   const columns = useMemo(() => {
-    const items = [
-      {
-        field: "actions",
-        headerName: "الإجراءات",
-        width: 56,
-        minWidth: 56,
-        maxWidth: 56,
-        sortable: false,
-        filterable: false,
-        renderCell: (params) => (
-          <IconButton
-            size="small"
-            onClick={(event) => {
-              setAnchorEl(event.currentTarget);
-              setMenuRow(params.row);
-            }}
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-        )
-      },
-      {
-        field: "acadmyId",
-        headerName: "كود",
-        minWidth: 78,
-        flex: 0.55
-      },
-      {
-        field: "studentName",
-        headerName: "اسم الطالب",
-        minWidth: 190,
-        flex: 1.5
-      },
-      {
-        field: "nationalId",
-        headerName: "رقم الهوية",
-        minWidth: 105,
-        flex: 0.8
-      },
-      {
-        field: "studentTel",
-        headerName: "رقم الجوال",
-        minWidth: 105,
-        flex: 0.8
-      },
-      {
-        field: "batchName",
-        headerName: "الدفعة/اليوم",
-        minWidth: 105,
-        flex: 0.85
-      },
-      {
-        field: "diplomName",
-        headerName: "الدبلوم/الدورة",
-        minWidth: 170,
-        flex: 1.35
-      },
-      {
-        field: "statusName",
-        headerName: "حالة الدراسة",
-        minWidth: 95,
-        flex: 0.75
-      },
-      {
-        field: "levelName",
-        headerName: "المستوى",
-        minWidth: 85,
-        flex: 0.65
-      },
+    const actionColumn = {
+      field: "actions",
+      headerName: isCompact ? "" : "الإجراءات",
+      width: isPhone ? 30 : isTablet ? 40 : 56,
+      minWidth: isPhone ? 30 : isTablet ? 40 : 56,
+      maxWidth: isPhone ? 30 : isTablet ? 40 : 56,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <IconButton
+          size="small"
+          onClick={(event) => {
+            setAnchorEl(event.currentTarget);
+            setMenuRow(params.row);
+          }}
+          sx={{
+            width: isPhone ? 22 : isTablet ? 27 : 32,
+            height: isPhone ? 22 : isTablet ? 27 : 32,
+            p: 0,
+            color: "#057546",
+            backgroundColor: isCompact ? "#eef8f3" : undefined
+          }}
+        >
+          <MoreVertIcon sx={{ fontSize: isPhone ? 14 : isTablet ? 16 : 18 }} />
+        </IconButton>
+      )
+    };
+
+    if (isPhone) {
+      return [
+        {
+          ...actionColumn,
+          width: 26,
+          minWidth: 26,
+          maxWidth: 26
+        },
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          width: 70,
+          minWidth: 70,
+          maxWidth: 70,
+          renderCell: (params) =>
+            shortStudentName(
+              params.row.studentName
+            )
+        },
+        {
+          field: "nationalId",
+          headerName: "الهوية",
+          width: 58,
+          minWidth: 58,
+          maxWidth: 58
+        },
+        {
+          field: "diplomName",
+          headerName: "الدبلوم",
+          width: 88,
+          minWidth: 88,
+          maxWidth: 88
+        },
+        {
+          field: "sectionName",
+          headerName: "الشعبة",
+          width: 48,
+          minWidth: 48,
+          maxWidth: 48,
+          renderCell: (params) =>
+            params.row.sectionName ||
+            "غير موزع"
+        }
+      ];
+    }
+
+    if (isTablet) {
+      return [
+        actionColumn,
+        {
+          field: "studentName",
+          headerName: "الطالب",
+          flex: 1,
+          minWidth: 100,
+          renderCell: (params) => shortStudentName(params.row.studentName)
+        },
+        { field: "nationalId", headerName: "الهوية", flex: .8, minWidth: 84 },
+        { field: "studentTel", headerName: "الجوال", flex: .8, minWidth: 84 },
+        { field: "diplomName", headerName: "الدبلوم/الدورة", flex: 1.05, minWidth: 112 },
+        { field: "batchName", headerName: "الدفعة", flex: .8, minWidth: 86 },
+        { field: "statusName", headerName: "الحالة", flex: .72, minWidth: 76 },
+        { field: "levelName", headerName: "المستوى", flex: .7, minWidth: 74 },
+        {
+          field: "sectionName",
+          headerName: "الشعبة",
+          flex: .76,
+          minWidth: 82,
+          renderCell: (params) => params.row.sectionName || "غير موزع"
+        }
+      ];
+    }
+
+    return [
+      actionColumn,
+      { field: "acadmyId", headerName: "كود", minWidth: 78, flex: .55 },
+      { field: "studentName", headerName: "اسم الطالب", minWidth: 190, flex: 1.5 },
+      { field: "nationalId", headerName: "رقم الهوية", minWidth: 105, flex: .8 },
+      { field: "studentTel", headerName: "رقم الجوال", minWidth: 105, flex: .8 },
+      { field: "batchName", headerName: "الدفعة/اليوم", minWidth: 105, flex: .85 },
+      { field: "diplomName", headerName: "الدبلوم/الدورة", minWidth: 170, flex: 1.35 },
+      { field: "statusName", headerName: "حالة الدراسة", minWidth: 95, flex: .75 },
+      { field: "levelName", headerName: "المستوى", minWidth: 85, flex: .65 },
       {
         field: "sectionName",
         headerName: "الشعبة",
         minWidth: 110,
-        flex: 0.75,
+        flex: .75,
         renderCell: (params) => params.row.sectionName || "غير موزع"
       },
-      {
-        field: "email",
-        headerName: "الإيميل",
-        minWidth: 155,
-        flex: 1.1
-      },
-      {
-        field: "levelNotes",
-        headerName: "ملاحظات",
-        minWidth: 140,
-        flex: 1
-      },
-      {
-        field: "typeStudent",
-        headerName: "النوع",
-        minWidth: 70,
-        flex: 0.5
-      }
+      { field: "email", headerName: "الإيميل", minWidth: 155, flex: 1.1 },
+      { field: "levelNotes", headerName: "ملاحظات", minWidth: 140, flex: 1 },
+      { field: "typeStudent", headerName: "النوع", minWidth: 70, flex: .5 }
     ];
-
-    if (!isDesktop) {
-      return items.filter(
-        (column) =>
-          !["email", "batchName"].includes(
-            column.field
-          )
-      );
-    }
-
-    return items;
-  }, [isDesktop]);
+  }, [isPhone, isTablet, isCompact]);
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         direction: "ltr",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".swal2-popup": {
+              width: isPhone ? "88vw !important" : isTablet ? "540px !important" : undefined,
+              padding: isPhone ? "0.75rem !important" : isTablet ? "1rem !important" : undefined
+            },
+            ".swal2-title": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone ? "0.82rem !important" : isTablet ? "1rem !important" : undefined
+            },
+            ".swal2-html-container, .swal2-input-label, .swal2-input, .swal2-select": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone ? "0.56rem !important" : isTablet ? "0.68rem !important" : undefined
+            },
+            ".swal2-confirm, .swal2-cancel": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone ? "0.5rem !important" : isTablet ? "0.6rem !important" : undefined
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0, left: 0, right: 0, width: "100%",
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom: "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: { xs: "50px !important", sm: "56px !important" },
+              px: { xs: .75, sm: 1 },
+              gap: .8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobileSidebarOpen((current) => !current);
+              }}
+              sx={{
+                width: { xs: 36, sm: 40 },
+                height: { xs: 36, sm: 40 },
+                color: "#fff",
+                background: "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow: "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+        
+
+
+
+
+
+      <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22 } }} />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: { xs: ".67rem", sm: ".79rem" },
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              قائمة طلاب الدبلومات
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
 
       <Box
         component="main"
         sx={{
-          ml: {
-            xs: 0,
-            md: `${SIDEBAR_WIDTH}px`
-          },
-          p: {
-            xs: 1,
-            md: 1.5
+          ml: 0,
+          mt: { xs: "50px", sm: "56px" },
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
+          px: { xs: .45, sm: .65, md: .8 },
+          py: { xs: .45, sm: .65, md: .8 },
+          boxSizing: "border-box",
+          overflowX: "hidden",
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 1.5
           }
         }}
       >
+        {isDesktop ? (
+          <>
         <Paper
           elevation={0}
           sx={{
-            p: 1.4,
-            mb: 1,
-            borderRadius: 3,
+            p: isPhone ? .7 : isTablet ? .9 : 1.4,
+            mb: isPhone ? .55 : isTablet ? .75 : 1,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border:
               "1px solid rgba(5,117,70,.14)"
           }}
         >
           <Stack
-            direction={{
-              xs: "column",
-              lg: "row"
-            }}
-            spacing={1}
+            direction="row"
+            spacing={isPhone ? .55 : isTablet ? .7 : 1}
             alignItems="center"
+            sx={{
+              flexWrap: isCompact ? "wrap" : "nowrap",
+              rowGap: isPhone ? .65 : isTablet ? .8 : 0
+            }}
           >
             <Stack
               direction="row"
               spacing={1}
               alignItems="center"
-              sx={{ flex: 1 }}
+              sx={{
+                flex: 1,
+                ...(isCompact && { flexBasis: "100%", width: "100%" })
+              }}
             >
               <SchoolIcon
                 sx={{
                   color: "#057546",
-                  fontSize: 35
+                  fontSize: isPhone ? 20 : isTablet ? 24 : 35
                 }}
               />
 
@@ -2398,7 +2881,7 @@ ${record.map((value) =>
                   sx={{
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    fontSize: "1.18rem"
+                    fontSize: isPhone ? ".68rem" : isTablet ? ".84rem" : "1.18rem"
                   }}
                 >
                   قائمة طلاب الدبلومات
@@ -2407,7 +2890,8 @@ ${record.map((value) =>
                 <Typography
                   sx={{
                     fontFamily: "Cairo",
-                    fontSize: ".74rem",
+                    fontSize: isPhone ? ".38rem" : isTablet ? ".48rem" : ".74rem",
+                    display: isPhone ? "none" : "block",
                     color: "#718078"
                   }}
                 >
@@ -2425,11 +2909,29 @@ ${record.map((value) =>
               onChange={(event) =>
                 setBranchGuid(event.target.value)
               }
-              sx={{
-                minWidth: {
-                  xs: "100%",
-                  lg: 310
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      maxHeight: isPhone ? 280 : isTablet ? 360 : 520,
+                      "& .MuiMenuItem-root": {
+                        minHeight: isPhone ? 30 : isTablet ? 34 : 42,
+                        py: isPhone ? .35 : isTablet ? .45 : .7,
+                        px: isPhone ? 1 : isTablet ? 1.2 : 1.5,
+                        fontFamily: "Cairo",
+                        fontSize: isPhone ? ".55rem" : isTablet ? ".65rem" : ".85rem",
+                        whiteSpace: "normal",
+                        lineHeight: 1.35
+                      }
+                    }
+                  }
                 }
+              }}
+              sx={{
+                minWidth: 0,
+                flex: isPhone ? "1 1 100%" : isTablet ? "1 1 58%" : "0 0 310px",
+                "& .MuiInputBase-input": { fontSize: isPhone ? ".52rem" : isTablet ? ".62rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined }
               }}
             >
               {branches.map((branch) => (
@@ -2450,11 +2952,25 @@ ${record.map((value) =>
               onChange={(event) =>
                 setNewLevelGuid(event.target.value)
               }
-              sx={{
-                minWidth: {
-                  xs: "100%",
-                  lg: 190
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      maxHeight: isPhone ? 240 : 320,
+                      "& .MuiMenuItem-root": {
+                        minHeight: isPhone ? 30 : isTablet ? 34 : 42,
+                        fontFamily: "Cairo",
+                        fontSize: isPhone ? ".55rem" : isTablet ? ".65rem" : ".85rem"
+                      }
+                    }
+                  }
                 }
+              }}
+              sx={{
+                minWidth: 0,
+                flex: isPhone ? "1 1 58%" : isTablet ? "1 1 28%" : "0 0 190px",
+                "& .MuiInputBase-input": { fontSize: isPhone ? ".52rem" : isTablet ? ".62rem" : undefined },
+                "& .MuiInputLabel-root": { fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined }
               }}
             >
               {levels.map((level) => (
@@ -2472,6 +2988,13 @@ ${record.map((value) =>
               startIcon={<RefreshIcon />}
               onClick={loadStudents}
               disabled={loading}
+              size={isCompact ? "small" : "medium"}
+              sx={{
+                flex: isPhone ? "1 1 36%" : undefined,
+                minWidth: 0,
+                fontFamily: "Cairo",
+                fontSize: isPhone ? ".5rem" : isTablet ? ".58rem" : undefined
+              }}
             >
               تحديث
             </Button>
@@ -2482,7 +3005,17 @@ ${record.map((value) =>
             spacing={0.8}
             flexWrap="wrap"
             useFlexGap
-            sx={{ mt: 1 }}
+            sx={{
+              mt: isPhone ? .65 : isTablet ? .8 : 1,
+              gap: isPhone ? .35 : isTablet ? .5 : .8,
+              "& .MuiButton-root": {
+                minHeight: isPhone ? 28 : isTablet ? 31 : undefined,
+                px: isPhone ? .5 : isTablet ? .7 : undefined,
+                fontFamily: "Cairo",
+                fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined
+              },
+              "& .MuiSvgIcon-root": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined }
+            }}
           >
             <Button
               size="small"
@@ -2542,28 +3075,443 @@ ${record.map((value) =>
                 ml: "auto",
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#ae1e21"
+                color: "#ae1e21",
+                fontSize: isPhone ? ".44rem" : isTablet ? ".52rem" : undefined
               }}
             >
               عدد الطلاب: {filteredRows.length}
             </Typography>
           </Stack>
         </Paper>
+          </>
+        ) : (
+          <>
+        <Paper
+          elevation={0}
+          sx={{
+            p: isPhone ? 0.75 : isTablet ? 1 : 1.25,
+            mb: isPhone ? 0.6 : isTablet ? 0.8 : 1,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
+            border:
+              "1px solid rgba(5,117,70,.14)"
+          }}
+        >
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isPhone
+                ? "1fr"
+                : isTablet
+                  ? "minmax(0,1fr) minmax(190px,.8fr)"
+                  : "minmax(260px,1fr) minmax(250px,340px) minmax(170px,210px) auto",
+              gap: isPhone ? 0.7 : isTablet ? 0.85 : 1,
+              alignItems: "center"
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={0.7}
+              alignItems="center"
+              sx={{
+                minWidth: 0
+              }}
+            >
+              <SchoolIcon
+                sx={{
+                  color: "#057546",
+                  fontSize: isPhone ? 20 : isTablet ? 24 : 34
+                }}
+              />
+
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  sx={{
+                    fontFamily: "Cairo",
+                    fontWeight: 950,
+                    fontSize: isPhone
+                      ? "0.68rem"
+                      : isTablet
+                        ? "0.84rem"
+                        : "1.08rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  قائمة طلاب الدبلومات
+                </Typography>
+
+                {!isPhone && (
+                  <Typography
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontSize: isTablet
+                        ? "0.46rem"
+                        : "0.68rem",
+                      color: "#718078"
+                    }}
+                  >
+                    عرض البيانات والترحيل والنقل والتصدير
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+
+            <TextField
+              select
+              size="small"
+              label="الفرع"
+              value={branchGuid}
+              disabled={branches.length <= 1}
+              onChange={(event) =>
+                setBranchGuid(
+                  event.target.value
+                )
+              }
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      maxHeight: isPhone
+                        ? 260
+                        : isTablet
+                          ? 340
+                          : 440,
+                      "& .MuiMenuItem-root": {
+                        minHeight: isPhone
+                          ? 29
+                          : isTablet
+                            ? 33
+                            : 38,
+                        py: isPhone
+                          ? 0.3
+                          : isTablet
+                            ? 0.4
+                            : 0.55,
+                        px: isPhone
+                          ? 0.8
+                          : isTablet
+                            ? 1
+                            : 1.25,
+                        fontFamily: "Cairo",
+                        fontSize: isPhone
+                          ? "0.5rem"
+                          : isTablet
+                            ? "0.6rem"
+                            : "0.78rem",
+                        whiteSpace: "normal",
+                        lineHeight: 1.3
+                      }
+                    }
+                  }
+                }
+              }}
+              sx={{
+                minWidth: 0,
+                "& .MuiInputBase-input": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.5rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.78rem"
+                },
+                "& .MuiInputLabel-root": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : "0.7rem"
+                }
+              }}
+            >
+              {branches.map((branch) => (
+                <MenuItem
+                  key={branch.guid}
+                  value={branch.guid}
+                >
+                  {branch.branchName}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              size="small"
+              label="المستوى الجديد"
+              value={newLevelGuid}
+              onChange={(event) =>
+                setNewLevelGuid(
+                  event.target.value
+                )
+              }
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      maxHeight: isPhone
+                        ? 230
+                        : 300,
+                      "& .MuiMenuItem-root": {
+                        minHeight: isPhone
+                          ? 29
+                          : isTablet
+                            ? 33
+                            : 38,
+                        fontFamily: "Cairo",
+                        fontSize: isPhone
+                          ? "0.5rem"
+                          : isTablet
+                            ? "0.6rem"
+                            : "0.78rem"
+                      }
+                    }
+                  }
+                }
+              }}
+              sx={{
+                minWidth: 0
+              }}
+            >
+              {levels.map((level) => (
+                <MenuItem
+                  key={level.guid}
+                  value={level.guid}
+                >
+                  {level.levelName}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={loadStudents}
+              disabled={loading}
+              size="small"
+              sx={{
+                minHeight: 34,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: isPhone
+                  ? "0.48rem"
+                  : isTablet
+                    ? "0.56rem"
+                    : "0.72rem"
+              }}
+            >
+              تحديث
+            </Button>
+          </Box>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isPhone
+                ? "repeat(3,minmax(0,1fr))"
+                : isTablet
+                  ? "repeat(5,minmax(0,1fr))"
+                  : "repeat(5,max-content) 1fr",
+              gap: isPhone ? 0.35 : isTablet ? 0.5 : 0.65,
+              mt: isPhone ? 0.65 : 0.8,
+              alignItems: "center",
+
+              "& .MuiButton-root": {
+                minWidth: 0,
+                minHeight: isPhone ? 28 : isTablet ? 31 : 32,
+                px: isPhone ? 0.35 : isTablet ? 0.55 : 0.7,
+                fontFamily: "Cairo",
+                fontWeight: 850,
+                fontSize: isPhone
+                  ? "0.36rem"
+                  : isTablet
+                    ? "0.46rem"
+                    : "0.68rem"
+              },
+
+              "& .MuiSvgIcon-root": {
+                fontSize: isPhone ? 13 : isTablet ? 15 : 17
+              }
+            }}
+          >
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<SelectAllIcon />}
+              onClick={() =>
+                setSelectionModel(
+                  filteredRows.map(
+                    (row) => row.id
+                  )
+                )
+              }
+            >
+              تحديد الكل
+            </Button>
+
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<DeselectIcon />}
+              onClick={() =>
+                setSelectionModel([])
+              }
+            >
+              إلغاء التحديد
+            </Button>
+
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<UpgradeIcon />}
+              onClick={moveSelected}
+              disabled={
+                selectedRows.length === 0
+              }
+              sx={{
+                bgcolor: "#057546"
+              }}
+            >
+              ترحيل ({selectedRows.length})
+            </Button>
+
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<FileDownloadIcon />}
+              onClick={exportAllXlsx}
+            >
+              Excel
+            </Button>
+
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<CorporateFareIcon />}
+              onClick={exportInstitution}
+            >
+              ملف المؤسسة
+            </Button>
+
+            <Typography
+              sx={{
+                justifySelf: isPhone
+                  ? "stretch"
+                  : "end",
+                gridColumn: isPhone
+                  ? "1 / -1"
+                  : undefined,
+                fontFamily: "Cairo",
+                fontWeight: 950,
+                color: "#ae1e21",
+                fontSize: isPhone
+                  ? "0.43rem"
+                  : isTablet
+                    ? "0.52rem"
+                    : "0.72rem",
+                textAlign: isPhone
+                  ? "center"
+                  : "right"
+              }}
+            >
+              عدد الطلاب: {filteredRows.length}
+            </Typography>
+          </Box>
+        </Paper>
+          </>
+        )}
 
         <Paper
           elevation={0}
           sx={{
-            p: 1.4,
-            mb: 1,
-            borderRadius: 3,
+            p: isPhone ? 0.65 : isTablet ? 0.85 : 1,
+            mb: isPhone ? 0.6 : isTablet ? 0.8 : 1,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(5,117,70,.14)"
           }}
         >
-          <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, mb: 1 }}>
-            الفلاتر المتقدمة وتقسيم الشعب
-          </Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            spacing={0.6}
+            sx={{ mb: isPhone ? 0.55 : 0.75 }}
+          >
+            <Typography
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 950,
+                fontSize: isPhone
+                  ? "0.56rem"
+                  : isTablet
+                    ? "0.66rem"
+                    : "0.82rem"
+              }}
+            >
+              فلاتر توزيع الشعب
+            </Typography>
 
-          <Stack direction={{ xs: "column", md: "row" }} spacing={1} flexWrap="wrap" useFlexGap>
+            <IconButton
+              type="button"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setAdvancedFiltersOpen(true);
+              }}
+              sx={{
+                width: isPhone ? 30 : isTablet ? 34 : 36,
+                height: isPhone ? 30 : isTablet ? 34 : 36,
+                border: "1px solid #9fcfb9",
+                borderRadius: 1.2,
+                color: "#057546",
+                position: "relative",
+                pointerEvents: "auto"
+              }}
+            >
+              <FilterAltIcon
+                sx={{
+                  fontSize: isPhone ? 16 : isTablet ? 18 : 19
+                }}
+              />
+            </IconButton>
+          </Stack>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isPhone
+                ? "repeat(2,minmax(0,1fr))"
+                : isTablet
+                  ? "repeat(2,minmax(0,1fr))"
+                  : "minmax(180px,220px) minmax(220px,280px) 1fr",
+              gap: isPhone ? 0.45 : isTablet ? 0.6 : 0.7,
+              alignItems: "center",
+
+              "& .MuiInputLabel-root": {
+                fontFamily: "Cairo",
+                fontSize: isPhone
+                  ? "0.38rem"
+                  : isTablet
+                    ? "0.46rem"
+                    : "0.64rem"
+              },
+
+              "& .MuiInputBase-root": {
+                minHeight: isPhone ? 31 : isTablet ? 34 : 36,
+                fontFamily: "Cairo",
+                fontSize: isPhone
+                  ? "0.44rem"
+                  : isTablet
+                    ? "0.52rem"
+                    : "0.7rem"
+              }
+            }}
+          >
             <TextField
               select
               size="small"
@@ -2574,12 +3522,19 @@ ${record.map((value) =>
                 setFilterDiplomaGuid("");
                 setFilterBatchGuid("");
                 setFilterSectionGuid("all");
+                setTargetSectionGuid("");
               }}
-              sx={{ minWidth: 180 }}
+              fullWidth
             >
               <MenuItem value="">كل المستويات</MenuItem>
+
               {levels.map((level) => (
-                <MenuItem key={level.guid} value={level.guid}>{level.levelName}</MenuItem>
+                <MenuItem
+                  key={level.guid}
+                  value={level.guid}
+                >
+                  {level.levelName}
+                </MenuItem>
               ))}
             </TextField>
 
@@ -2593,172 +3548,216 @@ ${record.map((value) =>
                 setFilterDiplomaGuid(event.target.value);
                 setFilterBatchGuid("");
                 setFilterSectionGuid("all");
+                setTargetSectionGuid("");
               }}
-              sx={{ minWidth: 210 }}
+              fullWidth
             >
               <MenuItem value="">كل الدبلومات</MenuItem>
+
               {diplomaOptions.map((item) => (
-                <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>
-              ))}
-            </TextField>
-
-            <TextField
-              select
-              size="small"
-              label="الدفعة"
-              value={filterBatchGuid}
-              disabled={!filterDiplomaGuid}
-              onChange={(event) => {
-                setFilterBatchGuid(event.target.value);
-                setFilterSectionGuid("all");
-              }}
-              sx={{ minWidth: 190 }}
-            >
-              <MenuItem value="">كل الدفعات</MenuItem>
-              {batchOptions.map((item) => (
-                <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>
-              ))}
-            </TextField>
-
-            <TextField
-              select
-              size="small"
-              label="حالة التوزيع"
-              value={distributionStatus}
-              onChange={(event) => setDistributionStatus(event.target.value)}
-              sx={{ minWidth: 155 }}
-            >
-              <MenuItem value="all">الكل</MenuItem>
-              <MenuItem value="assigned">تم توزيعهم</MenuItem>
-              <MenuItem value="unassigned">غير موزعين</MenuItem>
-            </TextField>
-
-            <TextField
-              select
-              size="small"
-              label="فلتر الشعبة"
-              value={filterSectionGuid}
-              disabled={!filterLevelGuid}
-              onChange={(event) => setFilterSectionGuid(event.target.value)}
-              sx={{ minWidth: 180 }}
-            >
-              <MenuItem value="all">كل الشعب</MenuItem>
-              <MenuItem value="unassigned">غير موزعين</MenuItem>
-              {sections.map((section) => (
-                <MenuItem key={section.guid} value={section.guid}>
-                  {section.sectionName} ({section.studentCount})
-                </MenuItem>
-              ))}
-            </TextField>
-          </Stack>
-
-          <Stack direction={{ xs: "column", md: "row" }} spacing={1} alignItems="center" sx={{ mt: 1 }}>
-            <TextField
-              select
-              size="small"
-              label="الشعبة المستهدفة"
-              value={targetSectionGuid}
-              disabled={!filterLevelGuid || !filterDiplomaGuid}
-              onChange={(event) => setTargetSectionGuid(event.target.value)}
-              sx={{ minWidth: 230 }}
-            >
-              {sections.map((section) => (
-                <MenuItem key={section.guid} value={section.guid}>
-                  {section.sectionName} - {section.studentCount} طالب
+                <MenuItem
+                  key={item.guid}
+                  value={item.guid}
+                >
+                  {item.name}
                 </MenuItem>
               ))}
             </TextField>
 
-            <Button
-              variant="contained"
-              onClick={assignSelectedToSection}
-              disabled={!targetSectionGuid || selectedRows.length === 0}
-              sx={{ bgcolor: "#057546" }}
-            >
-              إسناد المحدد للشعبة ({selectedRows.length})
-            </Button>
-
-            <Button
-              variant="outlined"
-              onClick={createSection}
-              disabled={!filterLevelGuid || !filterDiplomaGuid}
-            >
-              إنشاء شعبة جديدة
-            </Button>
-
-            <Button
-              variant="contained"
-              onClick={distributeAllRandomly}
-              disabled={
-                !filterLevelGuid ||
-                !filterDiplomaGuid
-              }
+            <Typography
               sx={{
-                bgcolor: "#7a4b00",
-                "&:hover": {
-                  bgcolor: "#5f3a00"
-                }
+                display: isCompact ? "none" : "block",
+                justifySelf: "end",
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: "0.68rem",
+                color: "#455a64"
               }}
             >
-              توزيع جماعي عشوائي متساوي
-            </Button>
-
-            <input
-              ref={sectionExcelInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              hidden
-              onChange={handleSectionExcelUpload}
-            />
-
-            <Button
-              variant="outlined"
-              startIcon={<DescriptionIcon />}
-              onClick={downloadSectionExcelTemplate}
-            >
-              تحميل نموذج Excel
-            </Button>
-
-            <Button
-              variant="contained"
-              startIcon={<UploadFileIcon />}
-              onClick={() =>
-                sectionExcelInputRef.current?.click()
-              }
-              disabled={!branchGuid}
-              sx={{
-                bgcolor: "#1565c0",
-                "&:hover": {
-                  bgcolor: "#0d47a1"
-                }
-              }}
-            >
-              توزيع الشعب من Excel
-            </Button>
-
-            <Button
-              color="error"
-              variant="outlined"
-              onClick={removeSelectedFromSection}
-              disabled={selectedRows.length === 0}
-            >
-              إزالة المحدد من الشعبة
-            </Button>
-
-            <Typography sx={{ ml: "auto", fontFamily: "Cairo", fontWeight: 900 }}>
               الظاهر: {filteredRows.length} من {rows.length}
             </Typography>
-          </Stack>
+          </Box>
+
+          {filterLevelGuid && filterDiplomaGuid ? (
+            <Box
+              sx={{
+                mt: isPhone ? 0.6 : 0.75,
+                pt: isPhone ? 0.55 : 0.7,
+                borderTop: "1px dashed rgba(5,117,70,.18)",
+                display: "grid",
+                gridTemplateColumns: isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : isTablet
+                    ? "repeat(3,minmax(0,1fr))"
+                    : "minmax(210px,1.2fr) repeat(6,max-content)",
+                gap: isPhone ? 0.4 : isTablet ? 0.5 : 0.6,
+                alignItems: "center",
+
+                "& .MuiButton-root": {
+                  minWidth: 0,
+                  minHeight: isPhone ? 29 : isTablet ? 31 : 32,
+                  px: isPhone ? 0.35 : isTablet ? 0.5 : 0.7,
+                  fontFamily: "Cairo",
+                  fontWeight: 850,
+                  fontSize: isPhone
+                    ? "0.35rem"
+                    : isTablet
+                      ? "0.44rem"
+                      : "0.62rem"
+                },
+
+                "& .MuiSvgIcon-root": {
+                  fontSize: isPhone ? 13 : isTablet ? 15 : 17
+                }
+              }}
+            >
+              <TextField
+                select
+                size="small"
+                label="الشعبة المستهدفة"
+                value={targetSectionGuid}
+                onChange={(event) =>
+                  setTargetSectionGuid(event.target.value)
+                }
+                sx={{
+                  gridColumn: isPhone ? "1 / -1" : undefined,
+
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.38rem"
+                      : isTablet
+                        ? "0.46rem"
+                        : "0.62rem"
+                  },
+
+                  "& .MuiInputBase-root": {
+                    minHeight: isPhone ? 31 : isTablet ? 34 : 36,
+                    fontFamily: "Cairo",
+                    fontSize: isPhone
+                      ? "0.44rem"
+                      : isTablet
+                        ? "0.52rem"
+                        : "0.68rem"
+                  }
+                }}
+              >
+                {sections.map((section) => (
+                  <MenuItem
+                    key={section.guid}
+                    value={section.guid}
+                  >
+                    {section.sectionName} ({section.studentCount})
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <Button
+                variant="contained"
+                onClick={assignSelectedToSection}
+                disabled={
+                  !targetSectionGuid ||
+                  selectedRows.length === 0
+                }
+                sx={{
+                  bgcolor: "#057546",
+                  "&:hover": {
+                    bgcolor: "#034d31"
+                  }
+                }}
+              >
+                إسناد ({selectedRows.length})
+              </Button>
+
+              <Button
+                variant="outlined"
+                onClick={createSection}
+              >
+                إنشاء شعبة
+              </Button>
+
+              <Button
+                variant="contained"
+                onClick={distributeAllRandomly}
+                sx={{
+                  bgcolor: "#7a4b00",
+                  "&:hover": {
+                    bgcolor: "#5f3a00"
+                  }
+                }}
+              >
+                توزيع عشوائي
+              </Button>
+
+              <input
+                ref={sectionExcelInputRef}
+                type="file"
+                accept=".xlsx,.xls"
+                hidden
+                onChange={handleSectionExcelUpload}
+              />
+
+              <Button
+                variant="outlined"
+                startIcon={<DescriptionIcon />}
+                onClick={downloadSectionExcelTemplate}
+              >
+                نموذج Excel
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<UploadFileIcon />}
+                onClick={() =>
+                  sectionExcelInputRef.current?.click()
+                }
+                disabled={!branchGuid}
+                sx={{
+                  bgcolor: "#1565c0",
+                  "&:hover": {
+                    bgcolor: "#0d47a1"
+                  }
+                }}
+              >
+                توزيع Excel
+              </Button>
+
+              <Button
+                color="error"
+                variant="outlined"
+                onClick={removeSelectedFromSection}
+                disabled={selectedRows.length === 0}
+              >
+                إزالة
+              </Button>
+            </Box>
+          ) : (
+            <Typography
+              sx={{
+                mt: 0.6,
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isPhone
+                  ? "0.36rem"
+                  : isTablet
+                    ? "0.44rem"
+                    : "0.62rem",
+                color: "#7a5500"
+              }}
+            >
+              اختر مستوى ودبلوم لإظهار أدوات إدارة الشعب.
+            </Typography>
+          )}
         </Paper>
 
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 3,
+            borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
             border:
               "1px solid rgba(5,117,70,.14)",
             overflow: "hidden",
-            minHeight: "calc(100vh - 155px)"
+            minHeight: isPhone ? 360 : isTablet ? 430 : "calc(100vh - 155px)"
           }}
         >
           <DataGrid
@@ -2772,8 +3771,8 @@ ${record.map((value) =>
             onRowSelectionModelChange={
               setSelectionModel
             }
-            rowHeight={43}
-            columnHeaderHeight={48}
+            rowHeight={isPhone ? 31 : isTablet ? 38 : 43}
+            columnHeaderHeight={isPhone ? 30 : isTablet ? 36 : 48}
             pageSizeOptions={[15, 25, 50, 100]}
             initialState={{
               pagination: {
@@ -2784,14 +3783,11 @@ ${record.map((value) =>
               }
             }}
             slots={{
-              toolbar: GridToolbar
+              toolbar: isPhone ? undefined : GridToolbar
             }}
             slotProps={{
               toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: {
-                  debounceMs: 300
-                }
+                showQuickFilter: false
               }
             }}
             sx={{
@@ -2813,13 +3809,46 @@ ${record.map((value) =>
               },
 
               "& .MuiDataGrid-columnHeader": {
-                px: 0.45
+                px: isPhone ? .08 : isTablet ? .3 : .45
+              },
+
+              "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox": {
+                width: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
+                minWidth: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
+                maxWidth: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
+                px: "0 !important"
+              },
+
+              "& .MuiCheckbox-root": {
+                p: isPhone ? "1px" : isTablet ? "2px" : undefined
+              },
+
+              "& .MuiCheckbox-root .MuiSvgIcon-root": {
+                fontSize: isPhone ? 15 : isTablet ? 17 : undefined
+              },
+
+              "& .MuiDataGrid-columnSeparator": {
+                display: isCompact ? "none" : undefined
+              },
+
+              "& .MuiDataGrid-toolbarContainer": {
+                display: isPhone ? "none" : "flex",
+                p: isTablet ? .4 : 1,
+                gap: isTablet ? .4 : 1
+              },
+
+              "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isTablet ? ".45rem" : undefined,
+                minWidth: isTablet ? 0 : undefined,
+                px: isTablet ? .45 : undefined
               },
 
               "& .MuiDataGrid-columnHeaderTitle": {
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: ".75rem",
+                fontSize: isPhone ? ".31rem" : isTablet ? ".42rem" : ".75rem",
                 whiteSpace: "normal",
                 lineHeight: 1.2,
                 textAlign: "center"
@@ -2828,8 +3857,8 @@ ${record.map((value) =>
               "& .MuiDataGrid-cell": {
                 fontFamily: "Cairo",
                 fontWeight: 700,
-                fontSize: ".75rem",
-                px: 0.45,
+                fontSize: isPhone ? ".31rem" : isTablet ? ".42rem" : ".75rem",
+                px: isPhone ? .08 : isTablet ? .3 : .45,
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -2846,11 +3875,905 @@ ${record.map((value) =>
               },
 
               "& .MuiDataGrid-footerContainer": {
-                minHeight: 48
+                minHeight: isPhone ? 31 : isTablet ? 36 : 48
               }
             }}
           />
         </Paper>
+
+    <Dialog
+  open={advancedFiltersOpen}
+  onClose={(event, reason) => {
+    if (reason === "backdropClick") {
+      setAdvancedFiltersOpen(false);
+      return;
+    }
+
+    setAdvancedFiltersOpen(false);
+  }}
+  fullWidth
+  maxWidth="xl"
+  dir="rtl"
+  disableRestoreFocus
+  slotProps={{
+    backdrop: {
+      onMouseDown: (event) => {
+        event.stopPropagation();
+      }
+    }
+  }}
+  PaperProps={{
+    onMouseDown: (event) => {
+      event.stopPropagation();
+    },
+
+    onClick: (event) => {
+      event.stopPropagation();
+    },
+
+    sx: {
+      width: isPhone
+        ? "92vw"
+        : isTablet
+          ? "82vw"
+          : "1450px",
+
+      maxWidth: isPhone
+        ? "92vw"
+        : isTablet
+          ? "760px"
+          : "96vw",
+
+      maxHeight: isPhone
+        ? "78dvh"
+        : isTablet
+          ? "76dvh"
+          : "92vh",
+
+      m: 1,
+
+      borderRadius: isPhone
+        ? 2
+        : 2.5,
+
+      overflow: "hidden"
+    }
+  }}
+>
+  <DialogTitle
+    sx={{
+      px: isPhone
+        ? 1
+        : isTablet
+          ? 1.5
+          : 3,
+
+      py: isPhone
+        ? 0.75
+        : isTablet
+          ? 1
+          : 1.8,
+
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 0.6,
+
+      fontFamily: "Cairo",
+      fontWeight: 950,
+      color: "#057546",
+
+      fontSize: isPhone
+        ? "0.72rem"
+        : isTablet
+          ? "0.84rem"
+          : "1.25rem"
+    }}
+  >
+    <span>الفلاتر المتقدمة</span>
+
+    <IconButton
+      onMouseDown={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        setAdvancedFiltersOpen(false);
+      }}
+      sx={{
+        width: isPhone
+          ? 28
+          : isTablet
+            ? 32
+            : 38,
+
+        height: isPhone
+          ? 28
+          : isTablet
+            ? 32
+            : 38,
+
+        color: "#ae1e21"
+      }}
+    >
+      <CloseIcon
+        sx={{
+          fontSize: isPhone
+            ? 17
+            : isTablet
+              ? 19
+              : 23
+        }}
+      />
+    </IconButton>
+  </DialogTitle>
+
+  <DialogContent
+    dividers
+    onMouseDown={(event) => {
+      event.stopPropagation();
+    }}
+    onClick={(event) => {
+      event.stopPropagation();
+    }}
+    sx={{
+      p: isPhone
+        ? 0.8
+        : isTablet
+          ? 1.1
+          : 2.6,
+
+      overflowY: "auto"
+    }}
+  >
+    <Box
+      sx={{
+        display: "grid",
+
+        gridTemplateColumns: isPhone
+          ? "1fr"
+          : isTablet
+            ? "repeat(2,minmax(0,1fr))"
+            : "repeat(3,minmax(0,1fr))",
+
+        gap: isPhone
+          ? 0.5
+          : isTablet
+            ? 0.65
+            : 1.15,
+
+        "& .MuiInputLabel-root": {
+          fontFamily: "Cairo",
+
+          fontSize: isPhone
+            ? "0.4rem"
+            : isTablet
+              ? "0.48rem"
+              : "0.85rem"
+        },
+
+        "& .MuiInputBase-root": {
+          minHeight: isPhone
+            ? 32
+            : isTablet
+              ? 35
+              : 50,
+
+          fontFamily: "Cairo",
+
+          fontSize: isPhone
+            ? "0.46rem"
+            : isTablet
+              ? "0.54rem"
+              : "0.92rem"
+        },
+
+        "& .MuiSelect-select": {
+          display: "flex",
+          alignItems: "center"
+        }
+      }}
+    >
+      {/* ========================= */}
+      {/* البحث العام */}
+      {/* ========================= */}
+
+      <TextField
+        size="small"
+        label="بحث عام"
+        placeholder="الاسم، الهوية، الجوال، الدبلوم، الحالة..."
+        value={globalSearch}
+        onChange={(event) =>
+          setGlobalSearch(
+            event.target.value
+          )
+        }
+        sx={{
+          gridColumn: "1 / -1"
+        }}
+      />
+
+      {/* ========================= */}
+      {/* المستويات */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="المستويات"
+        value={filterLevelGuids}
+        onChange={(event) =>
+          setFilterLevelGuids(
+            typeof event.target.value ===
+              "string"
+              ? event.target.value.split(",")
+              : event.target.value
+          )
+        }
+        SelectProps={{
+          multiple: true,
+
+          renderValue: (selected) =>
+            selected.length === 0
+              ? "كل المستويات"
+              : selected.length === 1
+                ? levels.find(
+                    (item) =>
+                      item.guid ===
+                      selected[0]
+                  )?.levelName ||
+                  "1 محدد"
+                : `${selected.length} مستويات`,
+
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                maxHeight: isPhone
+                  ? 280
+                  : isTablet
+                    ? 360
+                    : 520,
+
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  py: isPhone
+                    ? 0.25
+                    : isTablet
+                      ? 0.4
+                      : 0.75,
+
+                  px: isPhone
+                    ? 0.8
+                    : isTablet
+                      ? 1
+                      : 1.5,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                },
+
+                "& .MuiCheckbox-root": {
+                  p: isPhone
+                    ? 0.25
+                    : isTablet
+                      ? 0.4
+                      : 0.55
+                },
+
+                "& .MuiCheckbox-root .MuiSvgIcon-root": {
+                  fontSize: isPhone
+                    ? 16
+                    : isTablet
+                      ? 18
+                      : 22
+                }
+              }
+            }
+          }
+        }}
+      >
+        {levels.map((level) => (
+          <MenuItem
+            key={level.guid}
+            value={level.guid}
+          >
+            <Checkbox
+              size="small"
+              checked={filterLevelGuids.includes(
+                level.guid
+              )}
+            />
+
+            {level.levelName}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      {/* ========================= */}
+      {/* الدبلومات */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="الدبلومات"
+        value={filterDiplomaGuids}
+        onChange={(event) =>
+          setFilterDiplomaGuids(
+            typeof event.target.value ===
+              "string"
+              ? event.target.value.split(",")
+              : event.target.value
+          )
+        }
+        SelectProps={{
+          multiple: true,
+
+          renderValue: (selected) =>
+            selected.length === 0
+              ? "كل الدبلومات"
+              : selected.length === 1
+                ? allDiplomaOptions.find(
+                    (item) =>
+                      item.guid ===
+                      selected[0]
+                  )?.name ||
+                  "1 محدد"
+                : `${selected.length} دبلومات`,
+
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                maxHeight: isPhone
+                  ? 280
+                  : isTablet
+                    ? 360
+                    : 520,
+
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  py: isPhone
+                    ? 0.25
+                    : isTablet
+                      ? 0.4
+                      : 0.75,
+
+                  px: isPhone
+                    ? 0.8
+                    : isTablet
+                      ? 1
+                      : 1.5,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                },
+
+                "& .MuiCheckbox-root": {
+                  p: isPhone
+                    ? 0.25
+                    : isTablet
+                      ? 0.4
+                      : 0.55
+                },
+
+                "& .MuiCheckbox-root .MuiSvgIcon-root": {
+                  fontSize: isPhone
+                    ? 16
+                    : isTablet
+                      ? 18
+                      : 22
+                }
+              }
+            }
+          }
+        }}
+      >
+        {allDiplomaOptions.map(
+          (item) => (
+            <MenuItem
+              key={item.guid}
+              value={item.guid}
+            >
+              <Checkbox
+                size="small"
+                checked={filterDiplomaGuids.includes(
+                  item.guid
+                )}
+              />
+
+              {item.name}
+            </MenuItem>
+          )
+        )}
+      </TextField>
+
+      {/* ========================= */}
+      {/* الدفعات */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="الدفعات"
+        value={filterBatchGuids}
+        onChange={(event) =>
+          setFilterBatchGuids(
+            typeof event.target.value ===
+              "string"
+              ? event.target.value.split(",")
+              : event.target.value
+          )
+        }
+        SelectProps={{
+          multiple: true,
+
+          renderValue: (selected) =>
+            selected.length === 0
+              ? "كل الدفعات"
+              : selected.length === 1
+                ? allBatchOptions.find(
+                    (item) =>
+                      item.guid ===
+                      selected[0]
+                  )?.name ||
+                  "1 محدد"
+                : `${selected.length} دفعات`,
+
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                maxHeight: isPhone
+                  ? 280
+                  : isTablet
+                    ? 360
+                    : 520,
+
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  py: isPhone
+                    ? 0.25
+                    : isTablet
+                      ? 0.4
+                      : 0.75,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                }
+              }
+            }
+          }
+        }}
+      >
+        {allBatchOptions.map(
+          (item) => (
+            <MenuItem
+              key={item.guid}
+              value={item.guid}
+            >
+              <Checkbox
+                size="small"
+                checked={filterBatchGuids.includes(
+                  item.guid
+                )}
+              />
+
+              {item.name}
+            </MenuItem>
+          )
+        )}
+      </TextField>
+
+      {/* ========================= */}
+      {/* الشعب */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="الشعب"
+        value={filterSectionGuids}
+        onChange={(event) =>
+          setFilterSectionGuids(
+            typeof event.target.value ===
+              "string"
+              ? event.target.value.split(",")
+              : event.target.value
+          )
+        }
+        SelectProps={{
+          multiple: true,
+
+          renderValue: (selected) =>
+            selected.length === 0
+              ? "كل الشعب"
+              : `${selected.length} محدد`,
+
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                maxHeight: isPhone
+                  ? 280
+                  : isTablet
+                    ? 360
+                    : 520,
+
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                }
+              }
+            }
+          }
+        }}
+      >
+        <MenuItem value="unassigned">
+          <Checkbox
+            size="small"
+            checked={filterSectionGuids.includes(
+              "unassigned"
+            )}
+          />
+
+          غير موزعين
+        </MenuItem>
+
+        {allSectionOptions.map(
+          (item) => (
+            <MenuItem
+              key={item.guid}
+              value={item.guid}
+            >
+              <Checkbox
+                size="small"
+                checked={filterSectionGuids.includes(
+                  item.guid
+                )}
+              />
+
+              {item.name}
+            </MenuItem>
+          )
+        )}
+      </TextField>
+
+      {/* ========================= */}
+      {/* حالة الدراسة */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="حالة الدراسة"
+        value={filterStudyStatuses}
+        onChange={(event) =>
+          setFilterStudyStatuses(
+            typeof event.target.value ===
+              "string"
+              ? event.target.value.split(",")
+              : event.target.value
+          )
+        }
+        SelectProps={{
+          multiple: true,
+
+          renderValue: (selected) =>
+            selected.length === 0
+              ? "كل الحالات"
+              : selected.length === 1
+                ? selected[0]
+                : `${selected.length} حالات`,
+
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                maxHeight: isPhone
+                  ? 280
+                  : isTablet
+                    ? 360
+                    : 520,
+
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                }
+              }
+            }
+          }
+        }}
+      >
+        {studyStatusOptions.map(
+          (value) => (
+            <MenuItem
+              key={value}
+              value={value}
+            >
+              <Checkbox
+                size="small"
+                checked={filterStudyStatuses.includes(
+                  value
+                )}
+              />
+
+              {value}
+            </MenuItem>
+          )
+        )}
+      </TextField>
+
+      {/* ========================= */}
+      {/* النوع */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="النوع"
+        value={filterGenders}
+        onChange={(event) =>
+          setFilterGenders(
+            typeof event.target.value ===
+              "string"
+              ? event.target.value.split(",")
+              : event.target.value
+          )
+        }
+        SelectProps={{
+          multiple: true,
+
+          renderValue: (selected) =>
+            selected.length === 0
+              ? "الكل"
+              : selected.join("، "),
+
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                maxHeight: isPhone
+                  ? 280
+                  : isTablet
+                    ? 360
+                    : 520,
+
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                }
+              }
+            }
+          }
+        }}
+      >
+        {genderOptions.map(
+          (value) => (
+            <MenuItem
+              key={value}
+              value={value}
+            >
+              <Checkbox
+                size="small"
+                checked={filterGenders.includes(
+                  value
+                )}
+              />
+
+              {value}
+            </MenuItem>
+          )
+        )}
+      </TextField>
+
+      {/* ========================= */}
+      {/* حالة التوزيع */}
+      {/* ========================= */}
+
+      <TextField
+        select
+        size="small"
+        label="حالة التوزيع"
+        value={distributionStatus}
+        onChange={(event) =>
+          setDistributionStatus(
+            event.target.value
+          )
+        }
+        SelectProps={{
+          MenuProps: {
+            PaperProps: {
+              sx: {
+                "& .MuiMenuItem-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 34
+                      : 48,
+
+                  fontFamily: "Cairo",
+
+                  fontSize: isPhone
+                    ? "0.48rem"
+                    : isTablet
+                      ? "0.6rem"
+                      : "0.88rem"
+                }
+              }
+            }
+          }
+        }}
+      >
+        <MenuItem value="all">
+          الكل
+        </MenuItem>
+
+        <MenuItem value="assigned">
+          تم توزيعهم
+        </MenuItem>
+
+        <MenuItem value="unassigned">
+          غير موزعين
+        </MenuItem>
+      </TextField>
+    </Box>
+  </DialogContent>
+
+  <DialogActions
+    onMouseDown={(event) => {
+      event.stopPropagation();
+    }}
+    onClick={(event) => {
+      event.stopPropagation();
+    }}
+    sx={{
+      px: isPhone
+        ? 1
+        : isTablet
+          ? 1.5
+          : 2.5,
+
+      py: isPhone
+        ? 0.7
+        : isTablet
+          ? 1
+          : 1.5,
+
+      gap: isPhone
+        ? 0.6
+        : 1
+    }}
+  >
+    <Button
+      variant="outlined"
+      color="error"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        clearAdvancedFilters();
+      }}
+      sx={{
+        minHeight: isDesktop
+          ? 42
+          : undefined,
+
+        px: isDesktop
+          ? 2.2
+          : undefined,
+
+        fontFamily: "Cairo",
+        fontWeight: 900,
+
+        fontSize: isPhone
+          ? "0.46rem"
+          : isTablet
+            ? "0.62rem"
+            : "0.82rem"
+      }}
+    >
+      مسح الفلاتر
+    </Button>
+
+    <Button
+      variant="contained"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        setAdvancedFiltersOpen(false);
+      }}
+      sx={{
+        minHeight: isDesktop
+          ? 42
+          : undefined,
+
+        px: isDesktop
+          ? 2.2
+          : undefined,
+
+        backgroundColor: "#057546",
+
+        "&:hover": {
+          backgroundColor: "#034d31"
+        },
+
+        fontFamily: "Cairo",
+        fontWeight: 900,
+
+        fontSize: isPhone
+          ? "0.46rem"
+          : isTablet
+            ? "0.62rem"
+            : "0.82rem"
+      }}
+    >
+      تطبيق وإغلاق
+    </Button>
+  </DialogActions>
+</Dialog>
 
         <Menu
           anchorEl={anchorEl}
@@ -2858,8 +4781,14 @@ ${record.map((value) =>
           onClose={closeMenu}
           PaperProps={{
             sx: {
-              minWidth: 210,
-              direction: "ltr"
+              minWidth: isPhone ? 140 : isTablet ? 170 : 210,
+              direction: "ltr",
+              "& .MuiMenuItem-root": {
+                minHeight: isPhone ? 28 : isTablet ? 32 : 42,
+                fontFamily: "Cairo",
+                fontSize: isPhone ? ".42rem" : isTablet ? ".5rem" : undefined
+              },
+              "& .MuiSvgIcon-root": { fontSize: isPhone ? 15 : isTablet ? 17 : undefined }
             }
           }}
         >
@@ -3004,6 +4933,13 @@ ${record.map((value) =>
           fullWidth
           maxWidth="sm"
           dir="rtl"
+          fullScreen={isPhone}
+          PaperProps={{
+            sx: {
+              borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+              maxHeight: isPhone ? "100dvh" : isTablet ? "90dvh" : undefined
+            }
+          }}
         >
           <DialogTitle>
             إضافة ملاحظة الطالب
@@ -3052,6 +4988,13 @@ ${record.map((value) =>
           fullWidth
           maxWidth="xs"
           dir="rtl"
+          fullScreen={isPhone}
+          PaperProps={{
+            sx: {
+              borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+              maxHeight: isPhone ? "100dvh" : isTablet ? "90dvh" : undefined
+            }
+          }}
         >
           <DialogTitle>
             التحقق من كلمة المرور
@@ -3109,6 +5052,13 @@ ${record.map((value) =>
           fullWidth
           maxWidth="md"
           dir="rtl"
+          fullScreen={isPhone}
+          PaperProps={{
+            sx: {
+              borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+              maxHeight: isPhone ? "100dvh" : isTablet ? "90dvh" : undefined
+            }
+          }}
         >
           <DialogTitle>
             تحديد بيانات النقل
@@ -3363,8 +5313,6 @@ ${record.map((value) =>
         <Backdrop
           open={Boolean(workingText)}
           sx={{
-            zIndex: (currentTheme) =>
-              currentTheme.zIndex.modal + 30,
             backgroundColor:
               "rgba(9,36,25,.72)",
             backdropFilter: "blur(3px)"
@@ -3373,16 +5321,17 @@ ${record.map((value) =>
           <Paper
             elevation={12}
             sx={{
-              minWidth: 330,
-              px: 4,
-              py: 3.5,
-              borderRadius: 4,
+              minWidth: isPhone ? 245 : isTablet ? 320 : 330,
+              maxWidth: isPhone ? "86vw" : undefined,
+              px: isPhone ? 1.2 : isTablet ? 2 : 4,
+              py: isPhone ? 1.2 : isTablet ? 2 : 3.5,
+              borderRadius: isPhone ? 2 : isTablet ? 3 : 4,
               textAlign: "center",
               direction: "rtl"
             }}
           >
             <CircularProgress
-              size={55}
+              size={isPhone ? 34 : isTablet ? 44 : 55}
               sx={{
                 color: "#057546",
                 mb: 2
@@ -3402,7 +5351,7 @@ ${record.map((value) =>
               sx={{
                 mt: 1,
                 fontFamily: "Cairo",
-                fontSize: ".8rem",
+                fontSize: isPhone ? ".42rem" : isTablet ? ".52rem" : ".8rem",
                 color: "#78857f"
               }}
             >

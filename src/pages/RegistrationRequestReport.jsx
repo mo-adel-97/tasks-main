@@ -4,9 +4,11 @@ import React, {
   useState
 } from "react";
 import {
+  AppBar,
   Box,
   Button,
   CircularProgress,
+  GlobalStyles,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -14,18 +16,23 @@ import {
   Stack,
   TablePagination,
   TextField,
+  Toolbar,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import ClearIcon from "@mui/icons-material/Clear";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import Sidebar from "../components/Sidebar";
 import Swal from "sweetalert2";
 
 const SIDEBAR_WIDTH = 280;
+const DESKTOP_BREAKPOINT = 1600;
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -91,6 +98,19 @@ const escapeCsvValue = (
   ).replaceAll('"', '""')}"`;
 };
 
+const shortStudentName = (value) => {
+  const parts = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 2) {
+    return parts.join(" ");
+  }
+
+  return `${parts[0]} ${parts[parts.length - 1]}`;
+};
+
 const showError = async (
   message
 ) => {
@@ -104,6 +124,32 @@ const showError = async (
 };
 
 const RegistrationRequestReport = () => {
+  const muiTheme = useTheme();
+
+  const isPhone = useMediaQuery(
+    muiTheme.breakpoints.down("sm")
+  );
+
+  const isTablet = useMediaQuery(
+    "(min-width:600px) and (max-width:1599px)"
+  );
+
+  const isDesktop = useMediaQuery(
+    `(min-width:${DESKTOP_BREAKPOINT}px)`,
+    { noSsr: true }
+  );
+
+  const isCompact = isPhone || isTablet;
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setMobileSidebarOpen(false);
+    }
+  }, [isDesktop]);
+
   const user = useMemo(
     () =>
       JSON.parse(
@@ -609,42 +655,207 @@ const RegistrationRequestReport = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
         background: "#f5f8f7",
         direction: "ltr"
       }}
     >
-      <Sidebar />
+      {!isDesktop && (
+        <GlobalStyles
+          styles={{
+            ".MuiDrawer-root": {
+              zIndex: "2100 !important"
+            },
+            ".MuiDrawer-root .MuiBackdrop-root": {
+              zIndex: "2099 !important"
+            },
+            ".MuiDrawer-root .MuiDrawer-paper": {
+              zIndex: "2101 !important"
+            },
+
+            ".swal2-popup": {
+              width: isPhone
+                ? "88vw !important"
+                : isTablet
+                  ? "540px !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.75rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-title": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.82rem !important"
+                : isTablet
+                  ? "1rem !important"
+                  : undefined
+            },
+
+            ".swal2-html-container": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.56rem !important"
+                : isTablet
+                  ? "0.68rem !important"
+                  : undefined
+            },
+
+            ".swal2-confirm, .swal2-cancel": {
+              fontFamily: "Cairo !important",
+              fontSize: isPhone
+                ? "0.5rem !important"
+                : isTablet
+                  ? "0.6rem !important"
+                  : undefined,
+              padding: isPhone
+                ? "0.4rem 0.7rem !important"
+                : undefined
+            }
+          }}
+        />
+      )}
+
+      {!isDesktop && (
+        <AppBar
+          position="fixed"
+          elevation={0}
+          sx={{
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            zIndex: 1400,
+            background: "rgba(255,255,255,.97)",
+            backdropFilter: "blur(14px)",
+            color: "#17372b",
+            borderBottom:
+              "1px solid rgba(5,117,70,.12)",
+            direction: "ltr"
+          }}
+        >
+          <Toolbar
+            sx={{
+              direction: "ltr",
+              minHeight: {
+                xs: "50px !important",
+                sm: "56px !important"
+              },
+              px: {
+                xs: 0.75,
+                sm: 1
+              },
+              gap: 0.8
+            }}
+          >
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                setMobileSidebarOpen(
+                  (current) => !current
+                );
+              }}
+              sx={{
+                width: {
+                  xs: 36,
+                  sm: 40
+                },
+                height: {
+                  xs: 36,
+                  sm: 40
+                },
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg,#057546,#034d31)",
+                boxShadow:
+                  "0 5px 14px rgba(5,117,70,.20)"
+              }}
+            >
+              <MenuRoundedIcon
+                sx={{
+                  fontSize: {
+                    xs: 20,
+                    sm: 22
+                  }
+                }}
+              />
+            </IconButton>
+
+            <Typography
+              sx={{
+                flex: 1,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: {
+                  xs: "0.67rem",
+                  sm: "0.79rem"
+                },
+                color: "#17372b",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              تقرير طلب التسجيل
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() =>
+          setMobileSidebarOpen(false)
+        }
+      />
 
       <Box
         component="main"
         sx={{
-          marginLeft: {
-            xs: 0,
-            md:
-              `${SIDEBAR_WIDTH}px`
+          ml: 0,
+          mt: {
+            xs: "50px",
+            sm: "56px"
           },
-
-          width: {
-            xs: "100%",
-            md:
-              `calc(100% - ${SIDEBAR_WIDTH}px)`
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100dvh",
+          px: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
           },
-
-          minHeight: "100vh",
-
-          p: {
-            xs: 1.5,
-            md: 3
+          py: {
+            xs: 0.45,
+            sm: 0.65,
+            md: 0.8
           },
+          direction: "ltr",
+          boxSizing: "border-box",
+          overflowX: "hidden",
 
-          direction: "ltr"
+          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+            ml: `${SIDEBAR_WIDTH}px`,
+            width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+            mt: 0,
+            p: 2.5
+          }
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.9 : 4,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,0.14)",
@@ -653,10 +864,11 @@ const RegistrationRequestReport = () => {
         >
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              },
+              p: isPhone
+                ? 0.7
+                : isTablet
+                  ? 1
+                  : 2.5,
 
               background:
                 "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
@@ -670,7 +882,12 @@ const RegistrationRequestReport = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#034d31"
+                color: "#034d31",
+                fontSize: isPhone
+                  ? "0.72rem"
+                  : isTablet
+                    ? "0.88rem"
+                    : undefined
               }}
             >
               تقرير طلب التسجيل
@@ -678,9 +895,17 @@ const RegistrationRequestReport = () => {
 
             <Typography
               sx={{
-                mt: 0.5,
+                mt: isPhone ? 0.15 : 0.5,
                 fontFamily: "Cairo",
-                color: "#61756d"
+                color: "#61756d",
+                fontSize: isPhone
+                  ? "0.4rem"
+                  : isTablet
+                    ? "0.5rem"
+                    : undefined,
+                display: isPhone
+                  ? "none"
+                  : "block"
               }}
             >
               متابعة طلبات التسجيل وتأكيد الطلب وإنشاء الطالب
@@ -689,19 +914,95 @@ const RegistrationRequestReport = () => {
 
           <Box
             sx={{
-              p: {
-                xs: 2,
-                md: 3
-              }
+              p: isPhone
+                ? 0.6
+                : isTablet
+                  ? 0.9
+                  : 2.5
             }}
           >
-            <Stack
-              direction={{
-                xs: "column",
-                md: "row"
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: isPhone
+                  ? "repeat(2,minmax(0,1fr))"
+                  : isTablet
+                    ? "repeat(4,minmax(0,1fr))"
+                    : "auto auto minmax(180px,220px) minmax(150px,180px) minmax(220px,1fr) auto auto auto auto",
+                gap: isPhone
+                  ? 0.5
+                  : isTablet
+                    ? 0.7
+                    : 1,
+                mb: isPhone
+                  ? 0.7
+                  : isTablet
+                    ? 0.9
+                    : 2,
+                alignItems: "center",
+
+                "& .MuiInputLabel-root": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+
+                "& .MuiInputBase-input": {
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.44rem"
+                    : isTablet
+                      ? "0.52rem"
+                      : undefined,
+                  py: isPhone
+                    ? 0.45
+                    : isTablet
+                      ? 0.55
+                      : undefined
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  minHeight: isPhone
+                    ? 31
+                    : isTablet
+                      ? 34
+                      : undefined,
+                  borderRadius: isCompact
+                    ? 1.1
+                    : undefined
+                },
+
+                "& .MuiButton-root": {
+                  minHeight: isPhone
+                    ? 30
+                    : isTablet
+                      ? 33
+                      : undefined,
+                  fontFamily: "Cairo",
+                  fontWeight: 800,
+                  fontSize: isPhone
+                    ? "0.43rem"
+                    : isTablet
+                      ? "0.51rem"
+                      : undefined,
+                  px: isPhone
+                    ? 0.55
+                    : isTablet
+                      ? 0.8
+                      : undefined
+                },
+
+                "& .MuiSvgIcon-root": {
+                  fontSize: isPhone
+                    ? 14
+                    : isTablet
+                      ? 16
+                      : undefined
+                }
               }}
-              spacing={1.5}
-              sx={{ mb: 2 }}
             >
               <TextField
                 type="date"
@@ -716,6 +1017,7 @@ const RegistrationRequestReport = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
@@ -731,22 +1033,40 @@ const RegistrationRequestReport = () => {
                 InputLabelProps={{
                   shrink: true
                 }}
+                fullWidth
               />
 
               <TextField
                 select
                 size="small"
                 label="مسئول التسجيل"
-                value={
-                  registrationUserGuid
-                }
+                value={registrationUserGuid}
                 onChange={(event) =>
                   setRegistrationUserGuid(
                     event.target.value
                   )
                 }
-                sx={{
-                  minWidth: 240
+                fullWidth
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        "& .MuiMenuItem-root": {
+                          minHeight: isPhone
+                            ? 28
+                            : isTablet
+                              ? 31
+                              : 40,
+                          fontFamily: "Cairo",
+                          fontSize: isPhone
+                            ? "0.43rem"
+                            : isTablet
+                              ? "0.51rem"
+                              : undefined
+                        }
+                      }
+                    }
+                  }
                 }}
               >
                 <MenuItem value="الكل">
@@ -773,9 +1093,7 @@ const RegistrationRequestReport = () => {
                     event.target.value
                   )
                 }
-                sx={{
-                  minWidth: 180
-                }}
+                fullWidth
               >
                 <MenuItem value="الكل">
                   الكل
@@ -799,10 +1117,11 @@ const RegistrationRequestReport = () => {
                     event.target.value
                   )
                 }
+                fullWidth
                 sx={{
-                  minWidth: {
-                    md: 260
-                  }
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
                 InputProps={{
                   startAdornment: (
@@ -810,16 +1129,13 @@ const RegistrationRequestReport = () => {
                       <SearchIcon />
                     </InputAdornment>
                   ),
-
                   endAdornment:
                     searchText ? (
                       <InputAdornment position="end">
                         <IconButton
                           size="small"
                           onClick={() =>
-                            setSearchText(
-                              ""
-                            )
+                            setSearchText("")
                           }
                         >
                           <ClearIcon />
@@ -831,14 +1147,10 @@ const RegistrationRequestReport = () => {
 
               <Button
                 variant="contained"
-                startIcon={
-                  <SearchIcon />
-                }
+                startIcon={<SearchIcon />}
                 onClick={loadData}
                 disabled={loading}
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
                   background: "#057546"
                 }}
               >
@@ -847,67 +1159,82 @@ const RegistrationRequestReport = () => {
 
               <Button
                 variant="outlined"
-                startIcon={
-                  <RefreshIcon />
-                }
+                startIcon={<RefreshIcon />}
                 onClick={loadData}
                 disabled={loading}
-                sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800
-                }}
               >
                 تحديث
               </Button>
 
               <Button
                 variant="outlined"
-                startIcon={
-                  <FileDownloadIcon />
-                }
-                onClick={
-                  exportToExcel
-                }
+                startIcon={<FileDownloadIcon />}
+                onClick={exportToExcel}
                 disabled={
                   loading ||
-                  filteredRows.length ===
-                    0
+                  filteredRows.length === 0
                 }
                 sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
                   color: "#ae1e21",
-                  borderColor: "#ae1e21"
+                  borderColor: "#ae1e21",
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               >
                 تصدير Excel
               </Button>
 
-              <Box sx={{ flexGrow: 1 }} />
-
               <Box
                 sx={{
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
+                  px: isPhone
+                    ? 0.6
+                    : isTablet
+                      ? 0.8
+                      : 1.2,
+                  py: isPhone
+                    ? 0.5
+                    : isTablet
+                      ? 0.6
+                      : 0.8,
+                  borderRadius: isCompact
+                    ? 1.1
+                    : 2,
                   background: "#fff9c4",
                   color: "#ae1e21",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  whiteSpace: "nowrap"
+                  fontSize: isPhone
+                    ? "0.44rem"
+                    : isTablet
+                      ? "0.52rem"
+                      : undefined,
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
+                  gridColumn: isPhone
+                    ? "1 / -1"
+                    : undefined
                 }}
               >
                 العدد: {filteredRows.length}
               </Box>
-            </Stack>
+            </Box>
 
             <Box
               sx={{
                 border:
                   "1px solid rgba(5,117,70,0.14)",
-                borderRadius: 3,
-                overflow: "auto",
-                minHeight: 430
+                borderRadius: isPhone
+                  ? 1.3
+                  : isTablet
+                    ? 1.7
+                    : 3,
+                overflow: "hidden",
+                minHeight: isPhone
+                  ? 360
+                  : isTablet
+                    ? 420
+                    : 430
               }}
             >
               {loading ? (
@@ -921,6 +1248,276 @@ const RegistrationRequestReport = () => {
                   }}
                 >
                   <CircularProgress />
+                </Box>
+              ) : isCompact ? (
+                <Box
+                  sx={{
+                    display: "grid",
+                    gap: isPhone ? 0.4 : 0.6,
+                    p: isPhone ? 0.4 : 0.6
+                  }}
+                >
+                  {paginatedRows.length === 0 ? (
+                    <Box
+                      sx={{
+                        minHeight: 300,
+                        display: "grid",
+                        placeItems: "center",
+                        fontFamily: "Cairo",
+                        fontWeight: 800,
+                        color: "#789",
+                        fontSize: isPhone
+                          ? "0.48rem"
+                          : "0.56rem"
+                      }}
+                    >
+                      لا توجد بيانات مطابقة
+                    </Box>
+                  ) : (
+                    paginatedRows.map((row) => {
+                      const confirmed =
+                        normalize(
+                          row.requestStatus
+                        ).includes(
+                          "تم التاكيد"
+                        );
+
+                      return (
+                        <Paper
+                          key={row.id}
+                          variant="outlined"
+                          sx={{
+                            p: isPhone ? 0.55 : 0.75,
+                            borderRadius: isPhone ? 1.1 : 1.4,
+                            borderColor:
+                              "rgba(5,117,70,.12)",
+                            background: "#fff"
+                          }}
+                        >
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="flex-start"
+                            spacing={0.5}
+                          >
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontWeight: 950,
+                                  fontSize: isPhone
+                                    ? "0.5rem"
+                                    : "0.58rem",
+                                  color: "#1f2d3d",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                {shortStudentName(row.fullNameAr) || "-"}
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  mt: 0.1,
+                                  fontFamily: "Cairo",
+                                  fontSize: isPhone
+                                    ? "0.36rem"
+                                    : "0.43rem",
+                                  color: "#789"
+                                }}
+                              >
+                                {row.nationalId || "-"} • {row.mobile || "-"}
+                              </Typography>
+                            </Box>
+
+                            <Box
+                              sx={{
+                                px: isPhone ? 0.55 : 0.7,
+                                py: isPhone ? 0.15 : 0.2,
+                                borderRadius: 999,
+                                fontFamily: "Cairo",
+                                fontWeight: 900,
+                                fontSize: isPhone
+                                  ? "0.34rem"
+                                  : "0.41rem",
+                                whiteSpace: "nowrap",
+                                color: confirmed
+                                  ? "#057546"
+                                  : "#ae1e21",
+                                background: confirmed
+                                  ? "#e6f3ee"
+                                  : "#fdecec"
+                              }}
+                            >
+                              {row.requestStatus || "لم يتم التأكيد"}
+                            </Box>
+                          </Stack>
+
+                          <Box
+                            sx={{
+                              mt: 0.5,
+                              display: "grid",
+                              gridTemplateColumns:
+                                "repeat(2,minmax(0,1fr))",
+                              gap: isPhone ? 0.4 : 0.55
+                            }}
+                          >
+                            <Box>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontSize: isPhone
+                                    ? "0.31rem"
+                                    : "0.38rem",
+                                  color: "#8a9993"
+                                }}
+                              >
+                                مسئول التسجيل
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontWeight: 850,
+                                  fontSize: isPhone
+                                    ? "0.42rem"
+                                    : "0.49rem"
+                                }}
+                              >
+                                {row.registrationUserName || "-"}
+                              </Typography>
+                            </Box>
+
+                            <Box>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontSize: isPhone
+                                    ? "0.31rem"
+                                    : "0.38rem",
+                                  color: "#8a9993"
+                                }}
+                              >
+                                المنطقة
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontFamily: "Cairo",
+                                  fontWeight: 850,
+                                  fontSize: isPhone
+                                    ? "0.42rem"
+                                    : "0.49rem"
+                                }}
+                              >
+                                {row.region || "-"}
+                              </Typography>
+                            </Box>
+
+                            {!isPhone && (
+                              <>
+                                <Box>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontSize: "0.38rem",
+                                      color: "#8a9993"
+                                    }}
+                                  >
+                                    الاسم الإنجليزي
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 850,
+                                      fontSize: "0.49rem"
+                                    }}
+                                  >
+                                    {row.fullNameEn || "-"}
+                                  </Typography>
+                                </Box>
+
+                                <Box>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontSize: "0.38rem",
+                                      color: "#8a9993"
+                                    }}
+                                  >
+                                    البريد الإلكتروني
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 850,
+                                      fontSize: "0.49rem",
+                                      overflowWrap: "anywhere"
+                                    }}
+                                  >
+                                    {row.email || "-"}
+                                  </Typography>
+                                </Box>
+                              </>
+                            )}
+                          </Box>
+
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            spacing={0.4}
+                            sx={{ mt: 0.5 }}
+                          >
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontSize: isPhone
+                                  ? "0.31rem"
+                                  : "0.38rem",
+                                color: "#789"
+                              }}
+                            >
+                              طلب #{row.id} • {formatGregorianDate(row.createdAt)}
+                            </Typography>
+
+                            <Tooltip
+                              title={
+                                confirmed
+                                  ? "تم تأكيد الطلب"
+                                  : "تأكيد الطلب وإنشاء الطالب"
+                              }
+                            >
+                              <span>
+                                <IconButton
+                                  disabled={confirmed}
+                                  onClick={() =>
+                                    confirmRequest(row)
+                                  }
+                                  sx={{
+                                    width: isPhone ? 26 : 30,
+                                    height: isPhone ? 26 : 30,
+                                    p: 0,
+                                    color: confirmed
+                                      ? undefined
+                                      : "#057546",
+                                    background: confirmed
+                                      ? "#f2f3f3"
+                                      : "#eef8f3"
+                                  }}
+                                >
+                                  <CheckCircleIcon
+                                    sx={{
+                                      fontSize: isPhone ? 15 : 17
+                                    }}
+                                  />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          </Stack>
+                        </Paper>
+                      );
+                    })
+                  )}
                 </Box>
               ) : (
                 <Box
@@ -1160,11 +1757,31 @@ const RegistrationRequestReport = () => {
               }
               sx={{
                 direction: "ltr",
-
+                minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+                "& .MuiTablePagination-toolbar": {
+                  minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+                  px: isPhone ? 0.4 : isTablet ? 0.6 : undefined
+                },
                 "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                  fontFamily:
-                    "Cairo"
-                }
+                  fontFamily: "Cairo",
+                  fontSize: isPhone
+                    ? "0.38rem"
+                    : isTablet
+                      ? "0.46rem"
+                      : undefined
+                },
+                "& .MuiTablePagination-select": {
+                  fontSize: isPhone
+                    ? "0.4rem"
+                    : isTablet
+                      ? "0.48rem"
+                      : undefined
+                },
+                "& .MuiIconButton-root": {
+                  width: isPhone ? 28 : isTablet ? 31 : undefined,
+                  height: isPhone ? 28 : isTablet ? 31 : undefined
+                },
+
               }}
             />
           </Box>
