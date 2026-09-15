@@ -23,13 +23,13 @@ export const formFieldSx = {
   minWidth: 0,
   maxWidth: '100%',
   textAlign: 'start',
-  // Labels stay inside the field shell: visually compact like placeholders,
-  // but persistent after value entry for accessibility and clarity.
+  // Labels stay inside the field shell, but are physically anchored on the
+  // left side so RTL direction never mirrors them back to the right.
   '&& > .MuiInputLabel-root': {
     position: 'absolute',
     top: 0,
-    right: 12,
-    left: 'auto',
+    left: 12,
+    right: 'auto',
     width: 'auto',
     maxWidth: 'calc(100% - 24px)',
     height: 'auto',
@@ -39,11 +39,11 @@ export const formFieldSx = {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    textAlign: 'start',
+    textAlign: 'left',
     fontSize: designTokens.typography.label,
     fontWeight: 500,
     lineHeight: 1,
-    transformOrigin: 'top right',
+    transformOrigin: 'top left',
     transform: 'translateY(-50%) scale(0.82)',
     zIndex: 1,
     pointerEvents: 'auto',
