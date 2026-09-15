@@ -45,17 +45,13 @@
   text-overflow: ellipsis !important;
   pointer-events: none !important;
   background: #fff !important;
+  transition: color .15s ease, transform .15s ease, top .15s ease,
+    left .15s ease, right .15s ease !important;
 }
 
 /* Some old pages explicitly pass shrink=true even while the field is empty.
  * Restore placeholder behaviour until the user focuses the field. Date/time
  * controls stay floated because the browser renders its own value shell. */
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""])
-  :is(> .MuiInputLabel-root.MuiInputLabel-shrink) {
-  transition: color .15s ease, transform .15s ease, top .15s ease,
-    left .15s ease, right .15s ease !important;
-}
-
 .MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
   > .MuiInputLabel-root.MuiInputLabel-shrink {
   top: 50% !important;
@@ -72,10 +68,4 @@
 .MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
   .MuiOutlinedInput-notchedOutline legend {
   max-width: 0 !important;
-}
-
-/* Keep multi-field forms from visually touching each other. This only affects
- * actual grid/flex form wrappers; normal block content is unchanged. */
-.MuiDialogContent-root :is(.MuiGrid-container, [style*="display: grid"], [style*="display:grid"]) {
-  row-gap: max(10px, var(--form-row-gap, 10px));
 }
