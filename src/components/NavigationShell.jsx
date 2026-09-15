@@ -9,12 +9,28 @@ import React, {
   useState,
 } from 'react';
 import { useMediaQuery } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import MobileHeader from './MobileHeader';
 import { designTokens } from '../config/designTokens';
 import Sidebar from './Sidebar';
 import { getSidebarOffset, SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
 
 const NavigationContext = createContext(null);
+
+const HR_ROUTE_PATHS = new Set([
+  '/dashboard/hr',
+  '/dashboard/employee-permissions',
+  '/dashboard/employee-evaluation',
+  '/dashboard/employee-cvs',
+  '/dashboard/create-survey',
+  '/dashboard/surveys',
+  '/dashboard/trainer-management',
+]);
+
+const isHrRoute = (pathname = '') => {
+  const normalized = String(pathname).toLowerCase().replace(/\/+$/, '') || '/';
+  return normalized.startsWith('/dashboard/hr-') || HR_ROUTE_PATHS.has(normalized);
+};
 
 /*
  * The single navigation/layout owner for the application.
@@ -31,11 +47,13 @@ const NavigationContext = createContext(null);
  */
 export default function NavigationShell({ children, variant = 'standard', ...sidebarProps }) {
   const parent = useContext(NavigationContext);
+  const { pathname } = useLocation();
   const id = useId();
   const isDesktop = useMediaQuery(SIDEBAR_DESKTOP_QUERY, { noSsr: true });
   const [collapsed, setCollapsed] = useState(false);
   const [internalMobileOpen, setInternalMobileOpen] = useState(false);
   const [overrides, setOverrides] = useState(() => new Map());
+  const hrUiActive = isHrRoute(pathname);
 
   const register = useCallback((key, nextVariant) => {
     setOverrides((previous) => new Map(previous).set(key, nextVariant));
@@ -61,6 +79,14 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
     }
     return undefined;
   }, [parentRegister, id, variant, sidebarProps.mobileOpen, closeNested]);
+
+  // HR compatibility CSS must also reach MUI/SweetAlert portals rendered under
+  // <body>, while remaining completely inert on non-HR routes.
+  useEffect(() => {
+    if (parent || !hrUiActive) return undefined;
+    document.body.classList.add('hr-ui-active');
+    return () => document.body.classList.remove('hr-ui-active');
+  }, [parent, hrUiActive]);
 
   // A resize must never leave a stale drawer open behind a permanent sidebar.
   useEffect(() => {
@@ -99,7 +125,7 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
     <NavigationContext.Provider value={context}>
       <div
         dir="rtl"
-        className="sstli-navigation-shell"
+        className={`sstli-navigation-shell${hrUiActive ? ' hr-ui-scope' : ''}`}
         style={{
           direction: 'rtl',
           width: '100%',
