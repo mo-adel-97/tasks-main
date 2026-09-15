@@ -4,17 +4,16 @@ import { designTokens, mobileHeaderStyles } from './designTokens';
 import { DESKTOP_BREAKPOINT } from './sidebarLayout';
 
 // Field labels are part of the outlined control itself instead of consuming a
-// separate row above it. Keeping them permanently shrunk preserves the field
-// name after the user enters a value (unlike a plain placeholder), while the
-// compact top-edge placement keeps forms and filter bars dense.
+// separate row above it. Keep the compact floating label physically on the
+// left edge of the field so RTL pages do not mirror it back to the right.
 const labelPosition = ({ ownerState }) => {
   if (!ownerState.formControl) return { textAlign: 'start' };
 
   return {
     position: 'absolute',
     top: 0,
-    right: 12,
-    left: 'auto',
+    left: 12,
+    right: 'auto',
     width: 'auto',
     maxWidth: 'calc(100% - 24px)',
     minHeight: 0,
@@ -26,8 +25,8 @@ const labelPosition = ({ ownerState }) => {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    textAlign: 'start',
-    transformOrigin: 'top right',
+    textAlign: 'left',
+    transformOrigin: 'top left',
     transform: ownerState.shrink
       ? 'translateY(-50%) scale(0.82)'
       : 'translateY(11px) scale(1)',
