@@ -2881,22 +2881,40 @@ const handleAcceptOrder = (row) => {
                     }
                   }}
                   sx={uiLayout.withUiSx({
-                    backgroundColor: whiteColor,
-                    borderRadius: `${designTokens.radius}px`,
-                    direction: "rtl",
-                    boxShadow: "0 8px 22px rgba(5,117,70,0.07)",
-                    "& .MuiOutlinedInput-root": {
-                      fontWeight: 900,
-                      minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 40 },
-                      borderRadius: isDesktop ? `${designTokens.radius}px` : 1.5,
-                      "& fieldset": { borderColor: primaryLight },
-                      "&:hover fieldset": { borderColor: primaryColor },
-                      "&.Mui-focused fieldset": { borderColor: primaryColor, borderWidth: 2 }
-                    },
-                    "& legend": {
-                      textAlign: "start"
-                    }
-                  }, uiLayout.formFieldSx)}
+  backgroundColor: whiteColor,
+  borderRadius: `${designTokens.radius}px`,
+  direction: "rtl",
+  boxShadow: "0 8px 22px rgba(5,117,70,0.07)",
+
+  "& .MuiOutlinedInput-root": {
+    fontWeight: 900,
+    minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 40 },
+    borderRadius: isDesktop ? `${designTokens.radius}px` : 1.5,
+
+    "& fieldset": {
+      borderColor: primaryLight
+    },
+
+    "&:hover fieldset": {
+      borderColor: primaryColor
+    },
+
+    "&.Mui-focused fieldset": {
+      borderColor: primaryColor,
+      borderWidth: 2
+    }
+  },
+
+  // خلي فتحة الـ label ناحية الشمال فقط
+  "& .MuiOutlinedInput-notchedOutline": {
+    direction: "ltr"
+  },
+
+  "& .MuiOutlinedInput-notchedOutline legend": {
+    textAlign: "left"
+  }
+
+}, uiLayout.formFieldSx)}
                 />
               </Grid>
 
