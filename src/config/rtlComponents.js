@@ -2,13 +2,37 @@
 // element's direction; physical anchors are set deliberately, never mirrored.
 import { designTokens, mobileHeaderStyles } from './designTokens';
 import { DESKTOP_BREAKPOINT } from './sidebarLayout';
+
+// Field labels are part of the outlined control itself instead of consuming a
+// separate row above it. Keeping them permanently shrunk preserves the field
+// name after the user enters a value (unlike a plain placeholder), while the
+// compact top-edge placement keeps forms and filter bars dense.
 const labelPosition = ({ ownerState }) => {
   if (!ownerState.formControl) return { textAlign: 'start' };
+
   return {
-    position: 'static', transform: 'none', width: 'auto', maxWidth: '100%',
-    minHeight: 17, marginBottom: 3, padding: 0,
-    fontSize: designTokens.typography.label, lineHeight: '17px', fontWeight: 500,
-    whiteSpace: 'normal', overflow: 'visible', overflowWrap: 'anywhere', textAlign: 'start', pointerEvents: 'auto',
+    position: 'absolute',
+    top: 0,
+    right: 12,
+    left: 'auto',
+    width: 'auto',
+    maxWidth: 'calc(100% - 24px)',
+    minHeight: 0,
+    margin: 0,
+    paddingInline: 4,
+    fontSize: designTokens.typography.label,
+    lineHeight: 1,
+    fontWeight: 500,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textAlign: 'start',
+    transformOrigin: 'top right',
+    transform: ownerState.shrink
+      ? 'translateY(-50%) scale(0.82)'
+      : 'translateY(11px) scale(1)',
+    zIndex: 1,
+    pointerEvents: 'auto',
   };
 };
 
@@ -66,7 +90,7 @@ export const rtlComponents = {
     marginInlineStart: ownerState.position === 'end' ? 8 : 0,
     marginInlineEnd: ownerState.position === 'start' ? 8 : 0,
   }) } },
-  MuiOutlinedInput: { defaultProps: { notched: false }, styleOverrides: {
+  MuiOutlinedInput: { defaultProps: { notched: true }, styleOverrides: {
     root: ({ ownerState }) => {
       // Autocomplete manages its own control gutter, including the compact size.
       if (ownerState.className?.includes('MuiAutocomplete-inputRoot')) {

@@ -23,11 +23,29 @@ export const formFieldSx = {
   minWidth: 0,
   maxWidth: '100%',
   textAlign: 'start',
+  // Labels stay inside the field shell: visually compact like placeholders,
+  // but persistent after value entry for accessibility and clarity.
   '&& > .MuiInputLabel-root': {
-    position: 'static', transform: 'none', maxWidth: '100%', width: 'auto',
-    height: 'auto', minHeight: '17px', margin: '0 0 3px', padding: 0,
-    whiteSpace: 'normal', overflow: 'visible', overflowWrap: 'anywhere', textAlign: 'start',
-    fontSize: designTokens.typography.label, fontWeight: 500, lineHeight: '17px',
+    position: 'absolute',
+    top: 0,
+    right: 12,
+    left: 'auto',
+    width: 'auto',
+    maxWidth: 'calc(100% - 24px)',
+    height: 'auto',
+    minHeight: 0,
+    margin: 0,
+    paddingInline: '4px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textAlign: 'start',
+    fontSize: designTokens.typography.label,
+    fontWeight: 500,
+    lineHeight: 1,
+    transformOrigin: 'top right',
+    transform: 'translateY(-50%) scale(0.82)',
+    zIndex: 1,
     pointerEvents: 'auto',
   },
   '&& > .MuiInputBase-root': {
@@ -38,7 +56,8 @@ export const formFieldSx = {
     paddingBlock: { xs: '9px', lg: '4px' }, height: 'auto', lineHeight: { xs: '22px', lg: '18px' },
   },
   '&& > .MuiInputBase-root > .MuiOutlinedInput-notchedOutline > legend': {
-    display: 'none',
+    display: 'block',
+    maxWidth: '100%',
   },
   '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: { xs: '2px', lg: '0px' } },
   '&& .MuiFormHelperText-root': {
@@ -65,7 +84,7 @@ export const formGridSx = {
 export const filterBarSx = {
   direction: 'rtl', textAlign: 'start',
   display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-  alignItems: 'flex-end', alignContent: 'flex-start', gap: designTokens.layoutGap, minWidth: 0,
+  alignItems: 'center', alignContent: 'flex-start', gap: designTokens.layoutGap, minWidth: 0,
   '& > .MuiFormControl-root, & > .MuiAutocomplete-root': {
     flex: '1 1 auto', minWidth: 0, width: 'min(100%, 14rem)',
   },
@@ -86,7 +105,7 @@ export const actionBarSx = {
 export const checkboxFieldSx = {
   alignSelf: 'start', minHeight: 44, margin: 0, paddingInline: 0,
   paddingBlock: 0, border: 0, background: 'transparent',
-  marginTop: { xs: 0, sm: '24px' },
+  marginTop: 0,
   '& .MuiFormControlLabel-label': { fontSize: designTokens.typography.label, lineHeight: 1.5 },
 };
 
