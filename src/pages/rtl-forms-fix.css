@@ -69,3 +69,54 @@
   .MuiOutlinedInput-notchedOutline legend {
   max-width: 0 !important;
 }
+
+/* Search/filter controls that already provide an explicit placeholder must not
+ * render the same text again as a floating outlined label. This fixes the
+ * reception search field ("اكتب رقم الهوية" / mobile / name) without changing
+ * normal data-entry fields that rely on a visible label. */
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder^="اكتب "])
+  > .MuiInputLabel-root {
+  display: none !important;
+}
+
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder^="اكتب "])
+  .MuiOutlinedInput-notchedOutline legend {
+  max-width: 0 !important;
+  width: 0 !important;
+  padding: 0 !important;
+}
+
+/* In RTL, a startAdornment is physically rendered on the right by default.
+ * Put it after the input in the flex order so it occupies the left side and
+ * never sits on top of the Arabic placeholder/value. */
+[dir="rtl"] .MuiOutlinedInput-root > .MuiInputAdornment-positionStart {
+  order: 2;
+  margin-right: 8px !important;
+  margin-left: 0 !important;
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .MuiOutlinedInput-root > .MuiInputBase-input,
+[dir="rtl"] .MuiOutlinedInput-root > textarea.MuiInputBase-input {
+  order: 1;
+  min-width: 0;
+}
+
+/* Checkboxes are secondary form options. Keep them after the normal inputs.
+ * `order` only affects flex/grid parents, so standalone checkboxes elsewhere
+ * remain unchanged. Direct labels cover simple forms; the Box selector covers
+ * pages such as Trainer/Discount where the label is wrapped in a grid item. */
+.MuiBox-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
+.MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiCheckbox-root) {
+  order: 999 !important;
+}
+
+/* Keep multiline notes/qualification controls compact. They remain scrollable
+ * for longer content instead of expanding the whole form vertically. */
+.MuiFormControl-root textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"]) {
+  min-height: 2.7em !important;
+  height: 2.7em !important;
+  max-height: 4.2em !important;
+  overflow-y: auto !important;
+  resize: vertical;
+}
