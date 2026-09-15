@@ -191,6 +191,21 @@ body.hr-ui-active .MuiFormControl-root textarea.MuiInputBase-inputMultiline:not(
   resize: vertical !important;
 }
 
+/* HR tabs share one compact density instead of each feature carrying a 60px
+ * tab height. This is especially important on 1200-1536px desktop widths. */
+body.hr-ui-active .MuiTabs-root {
+  min-height: 44px !important;
+  max-width: 100%;
+}
+
+body.hr-ui-active .MuiTab-root {
+  min-width: 0 !important;
+  min-height: 44px !important;
+  padding: 7px 10px !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+
 /* Dialogs and portal content stay compact and Arabic-first. */
 body.hr-ui-active .MuiDialog-paper {
   direction: rtl;
@@ -204,12 +219,27 @@ body.hr-ui-active .MuiDialogActions-root {
   direction: rtl;
 }
 
+body.hr-ui-active .MuiDialogTitle-root {
+  padding: 10px 14px !important;
+  font-size: 17px !important;
+  line-height: 1.45 !important;
+}
+
 body.hr-ui-active .MuiDialogContent-root {
   overflow-x: hidden;
 }
 
 body.hr-ui-active .MuiDialogActions-root {
+  min-height: 0 !important;
+  padding: 8px 12px !important;
+  gap: 8px;
   flex-wrap: wrap;
+}
+
+body.hr-ui-active .MuiDialogActions-root .MuiButton-root {
+  min-height: 34px !important;
+  padding: 5px 11px !important;
+  font-size: 13px !important;
 }
 
 /* Tables remain compact. On desktop/laptop (>=1200) a legacy responsive sx
@@ -220,9 +250,25 @@ body.hr-ui-active .MuiDataGrid-root {
   min-width: 0;
 }
 
+body.hr-ui-active .MuiTableCell-root,
+body.hr-ui-active .MuiDataGrid-cell,
+body.hr-ui-active .MuiDataGrid-columnHeaderTitle {
+  font-size: 13px !important;
+}
+
 @media (min-width: 1200px) {
+  body.hr-ui-active .MuiTabs-root,
+  body.hr-ui-active .MuiTab-root {
+    min-height: 40px !important;
+  }
+
+  body.hr-ui-active .MuiTab-root {
+    padding: 6px 9px !important;
+  }
+
   body.hr-ui-active .MuiTableRow-root > .MuiTableCell-root {
     display: table-cell !important;
+    padding: 7px 9px !important;
   }
 
   body.hr-ui-active .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
