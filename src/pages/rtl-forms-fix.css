@@ -1,5 +1,81 @@
-/* Compatibility entry point for existing page imports.
- * Form geometry is explicitly applied in JSX with common/uiLayout.js.
- * Do not force direction, label transforms, colours or MUI internals here.
- * Explicit dir attributes and validation colours keep their native meaning.
+/* Compatibility entry point for legacy RTL forms.
+ * The shared MUI theme owns the normal label geometry. These selectors only
+ * neutralize old page-level overrides that pin labels above controls or force
+ * shrink=true, so legacy dialogs behave exactly like the rest of the app.
  */
+
+/* Normal outlined fields: empty = placeholder inside the field. */
+.MuiFormControl-root:has(> .MuiOutlinedInput-root)
+  > .MuiInputLabel-root:not(.MuiInputLabel-shrink) {
+  position: absolute !important;
+  top: 50% !important;
+  left: auto !important;
+  right: 14px !important;
+  width: auto !important;
+  max-width: calc(100% - 28px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.35 !important;
+  text-align: right !important;
+  transform-origin: top right !important;
+  transform: translateY(-50%) scale(1) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  pointer-events: none !important;
+}
+
+/* Focused / filled state: float the label on the physical left edge. */
+.MuiFormControl-root:has(> .MuiOutlinedInput-root)
+  > .MuiInputLabel-root.MuiInputLabel-shrink {
+  position: absolute !important;
+  top: 0 !important;
+  left: 12px !important;
+  right: auto !important;
+  width: auto !important;
+  max-width: calc(100% - 28px) !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+  line-height: 1 !important;
+  text-align: left !important;
+  transform-origin: top left !important;
+  transform: translateY(-50%) scale(.82) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  pointer-events: none !important;
+  background: #fff !important;
+}
+
+/* Some old pages explicitly pass shrink=true even while the field is empty.
+ * Restore placeholder behaviour until the user focuses the field. Date/time
+ * controls stay floated because the browser renders its own value shell. */
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""])
+  :is(> .MuiInputLabel-root.MuiInputLabel-shrink) {
+  transition: color .15s ease, transform .15s ease, top .15s ease,
+    left .15s ease, right .15s ease !important;
+}
+
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
+  > .MuiInputLabel-root.MuiInputLabel-shrink {
+  top: 50% !important;
+  left: auto !important;
+  right: 14px !important;
+  padding: 0 !important;
+  line-height: 1.35 !important;
+  text-align: right !important;
+  transform-origin: top right !important;
+  transform: translateY(-50%) scale(1) !important;
+  background: transparent !important;
+}
+
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
+  .MuiOutlinedInput-notchedOutline legend {
+  max-width: 0 !important;
+}
+
+/* Keep multi-field forms from visually touching each other. This only affects
+ * actual grid/flex form wrappers; normal block content is unchanged. */
+.MuiDialogContent-root :is(.MuiGrid-container, [style*="display: grid"], [style*="display:grid"]) {
+  row-gap: max(10px, var(--form-row-gap, 10px));
+}
