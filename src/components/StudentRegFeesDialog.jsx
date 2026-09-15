@@ -253,7 +253,7 @@ const StudentRegFeesDialog = ({
   open,
   onClose,
   student,
-  apiBaseUrl = "http://localhost:5258",
+  apiBaseUrl = "https://api4.sstli.com",
   onSaved
 }) => {
   const theme = useTheme();

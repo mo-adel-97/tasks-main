@@ -30,6 +30,7 @@ import {
   Collapse,
   Drawer,
   useMediaQuery,
+  useTheme,
   Badge,
   IconButton,
   Popover,
@@ -101,7 +102,7 @@ import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded';
 const HR_API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
-  "http://localhost:5258";
+  "https://api4.sstli.com";
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v6';
 const SIDEBAR_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -250,6 +251,24 @@ const softShadow = '0 14px 35px rgba(5,117,70,0.12)';
 const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+
+  // Palette واحدة للسايدبار تتبدل تلقائياً مع Light / Dark.
+  const sidebarColors = {
+    surface: isDarkMode ? '#111815' : '#f7fbf9',
+    surfaceRaised: isDarkMode ? '#171f1b' : '#ffffff',
+    surfaceHover: isDarkMode ? '#1d2823' : '#f0f7f3',
+    childSurface: isDarkMode ? 'rgba(255,255,255,.025)' : 'rgba(255,255,255,.92)',
+    childHover: isDarkMode ? 'rgba(5,117,70,.16)' : '#f0f8f4',
+    childSelected: isDarkMode ? 'rgba(5,117,70,.24)' : '#eaf7f0',
+    text: isDarkMode ? '#eef6f2' : '#24372f',
+    textMuted: isDarkMode ? '#9fb0a8' : '#6f8a81',
+    border: isDarkMode ? 'rgba(255,255,255,.075)' : 'rgba(5,117,70,.12)',
+    borderStrong: isDarkMode ? 'rgba(91,201,145,.28)' : 'rgba(5,117,70,.20)',
+    footer: isDarkMode ? '#101613' : 'rgba(255,255,255,.98)',
+    guide: isDarkMode ? 'rgba(101,211,158,.16)' : 'rgba(5,117,70,.11)'
+  };
 
   // نفس breakpoint المركزي للمشروع: ديسكتوب/Laptop دائم، وما دونه Drawer.
   // لا يوجد أي افتراض أن الشاشة يجب أن تكون 1600px أو أكبر.
@@ -604,64 +623,63 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   }, [configuredSidebarItems]);
 
 const childItemSx = (selected) => ({
-  // عناصر المستوى الداخلي أصغر وأضيق بوضوح من رأس المجموعة.
-  mb: isDesktop ? 0.22 : 0.16,
+  // Sub-list: أصغر من رأس المجموعة وبدون شكل Card ثقيل.
+  mb: isDesktop ? 0.16 : 0.12,
+  mx: isDesktop ? 1.75 : 0.9,
+  minHeight: isDesktop ? 34 : 33,
+  px: isDesktop ? 0.62 : 0.5,
+  py: 0.08,
+  borderRadius: isDesktop ? 1.7 : 1.5,
 
-  // Inset من الجانبين ليظهر العنصر كـ sub-list وليس tab رئيسي.
-  mx: isDesktop ? 2.15 : 1.15,
-
-  minHeight: isDesktop ? 38 : 35,
-
-  px: isDesktop ? 0.65 : 0.5,
-  py: isDesktop ? 0.15 : 0.12,
-
-  borderRadius: isDesktop ? 2 : 1.7,
-
-  color: selected ? whiteColor : '#263b34',
+  color: selected
+    ? (isDarkMode ? '#f4fff9' : primaryDark)
+    : sidebarColors.text,
 
   background: selected
-    ? `linear-gradient(135deg, ${accentColor} 0%, #8f171a 100%)`
-    : 'rgba(255,255,255,.88)',
+    ? sidebarColors.childSelected
+    : sidebarColors.childSurface,
 
   border: selected
-    ? '1px solid transparent'
-    : '1px solid rgba(5,117,70,0.085)',
+    ? `1px solid ${sidebarColors.borderStrong}`
+    : `1px solid ${sidebarColors.border}`,
 
-  boxShadow: selected
-    ? '0 5px 12px rgba(174,30,33,0.18)'
-    : '0 1px 4px rgba(31,45,61,0.025)',
-
+  boxShadow: 'none',
   position: 'relative',
   overflow: 'hidden',
 
-  // علامة بسيطة تبين أن العنصر تابع للمجموعة.
-  '&:before': {
+  // خط صغير فقط للعنصر النشط بدل اللون الأحمر/الكارت الكبير.
+  '&::before': {
     content: '""',
     position: 'absolute',
     insetInlineStart: 0,
-    top: 8,
-    bottom: 8,
-    width: 2.5,
+    top: 7,
+    bottom: 7,
+    width: selected ? 3 : 2,
     borderRadius: 999,
-    background: selected ? whiteColor : 'rgba(5,117,70,.72)'
+    background: selected
+      ? (isDarkMode ? '#67c99d' : primaryColor)
+      : 'transparent'
   },
 
   '&.Mui-selected': {
-    color: whiteColor,
-    background: `linear-gradient(135deg, ${accentColor} 0%, #8f171a 100%)`
+    color: isDarkMode ? '#f4fff9' : primaryDark,
+    background: sidebarColors.childSelected
+  },
+
+  '&.Mui-selected:hover': {
+    background: sidebarColors.childSelected
   },
 
   '&:hover': {
-    color: selected ? whiteColor : primaryDark,
+    color: isDarkMode ? '#ffffff' : primaryDark,
     background: selected
-      ? `linear-gradient(135deg, ${accentColor} 0%, #8f171a 100%)`
-      : '#f1f8f5',
-    boxShadow: selected
-      ? '0 5px 12px rgba(174,30,33,0.18)'
-      : '0 3px 8px rgba(5,117,70,0.08)'
+      ? sidebarColors.childSelected
+      : sidebarColors.childHover,
+    borderColor: sidebarColors.borderStrong,
+    boxShadow: 'none'
   },
 
-  transition: 'background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease'
+  transition: 'background-color .14s ease, color .14s ease, border-color .14s ease'
 });
 
   const renderChildItem = (item) => {
@@ -692,9 +710,11 @@ const childItemSx = (selected) => ({
             <ListItemIcon
                 sx={{
                   minWidth: isDesktop ? 19 : 18,
-                  color: selected ? whiteColor : primaryColor,
+                  color: selected
+                    ? (isDarkMode ? '#67c99d' : primaryColor)
+                    : (isDarkMode ? '#a9bdb4' : primaryColor),
                   '& svg': {
-                    fontSize: isDesktop ? 17 : 16
+                    fontSize: isDesktop ? 16 : 15
                   }
                 }}
               >
@@ -708,10 +728,10 @@ const childItemSx = (selected) => ({
                 minWidth: 0,
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
-                  fontWeight: selected ? 850 : 650,
-                  fontSize: isDesktop ? '0.74rem' : '0.72rem',
+                  fontWeight: selected ? 850 : 700,
+                  fontSize: isDesktop ? '0.72rem' : '0.7rem',
                   textAlign: 'start',
-                  marginInlineStart: isDesktop ? '6px' : '4px',
+                  marginInlineStart: isDesktop ? '5px' : '4px',
                   lineHeight: 1.28,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -723,8 +743,8 @@ const childItemSx = (selected) => ({
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '6px' : '4px',
                   color: selected
-                    ? 'rgba(255,255,255,.78)'
-                    : mutedTextColor
+                    ? (isDarkMode ? 'rgba(240,255,247,.72)' : '#527467')
+                    : sidebarColors.textMuted
                 }
               }}
             />
@@ -740,9 +760,11 @@ const childItemSx = (selected) => ({
                     fontSize: designTokens.typography.helper,
                     fontWeight: 600,
                     whiteSpace: 'nowrap',
-                    color: selected ? accentColor : whiteColor,
+                    color: selected
+                      ? (isDarkMode ? '#dff8ea' : primaryDark)
+                      : whiteColor,
                     background: selected
-                      ? whiteColor
+                      ? (isDarkMode ? 'rgba(103,201,157,.16)' : '#dff2e8')
                       : item.customBadge
                         ? `linear-gradient(135deg, ${accentColor}, #7f1518)`
                         : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
@@ -776,32 +798,33 @@ const childItemSx = (selected) => ({
           to={item.path}
           selected={selected}
           sx={{
-            mb: isDesktop ? 0.6 : 0.3,
+            mb: isDesktop ? 0.45 : 0.25,
             mx: isDesktop ? 1 : 0.45,
             minHeight: designTokens.sidebar.itemHeight,
             px: isDesktop ? 0.75 : 0.5,
-            py: isDesktop ? 0.5 : 0.375,
+            py: isDesktop ? 0.42 : 0.34,
             borderRadius: designTokens.sidebar.itemRadius,
-            color: selected ? whiteColor : textColor,
+            color: selected
+              ? (isDarkMode ? '#ffffff' : '#0d5f9d')
+              : sidebarColors.text,
             background: selected
-              ? 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
-              : 'linear-gradient(135deg, #f5fbff 0%, #ffffff 100%)',
+              ? (isDarkMode ? 'rgba(25,118,210,.18)' : '#eef7ff')
+              : sidebarColors.surfaceRaised,
             border: selected
-              ? '1px solid transparent'
-              : '1px solid rgba(25,118,210,0.18)',
-            boxShadow: selected
-              ? '0 8px 18px rgba(25,118,210,0.24)'
-              : '0 3px 10px rgba(25,118,210,0.07)',
+              ? '1px solid rgba(33,150,243,.34)'
+              : `1px solid ${sidebarColors.border}`,
+            boxShadow: 'none',
             '&.Mui-selected': {
-              color: whiteColor,
-              background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
+              color: isDarkMode ? '#ffffff' : '#0d5f9d',
+              background: isDarkMode ? 'rgba(25,118,210,.18)' : '#eef7ff'
             },
             '&:hover': {
-              color: whiteColor,
-              background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
-              boxShadow: '0 6px 15px rgba(25,118,210,0.14)'
+              color: isDarkMode ? '#ffffff' : '#0d5f9d',
+              background: isDarkMode ? 'rgba(25,118,210,.13)' : '#f3f9ff',
+              borderColor: 'rgba(33,150,243,.28)',
+              boxShadow: 'none'
             },
-            transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease'
+            transition: 'background-color .14s ease, color .14s ease, border-color .14s ease'
           }}
         >
           <Box
@@ -815,7 +838,9 @@ const childItemSx = (selected) => ({
             <ListItemIcon
                 sx={{
                   minWidth: isDesktop ? 26 : 22,
-                  color: selected ? whiteColor : '#1976d2',
+                  color: selected
+                    ? '#2196f3'
+                    : (isDarkMode ? '#a9bdb4' : '#1976d2'),
                   '& svg': { fontSize: designTokens.sidebar.iconSize }
                 }}
               >
@@ -829,7 +854,7 @@ const childItemSx = (selected) => ({
                 minWidth: 0,
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
-                  fontWeight: 500,
+                  fontWeight: 750,
                   fontSize: designTokens.sidebar.titleSize,
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '8px' : '5px'
@@ -899,28 +924,37 @@ const childItemSx = (selected) => ({
           button
           onClick={onToggle}
           sx={{
-            mb: isDesktop ? 0.45 : 0.25,
+            mb: isDesktop ? 0.38 : 0.22,
             mx: isDesktop ? 1 : 0.45,
             minHeight: designTokens.sidebar.itemHeight,
             px: isDesktop ? 0.75 : 0.5,
-            py: isDesktop ? 0.5 : 0.375,
+            py: isDesktop ? 0.42 : 0.34,
             borderRadius: designTokens.sidebar.itemRadius,
-            color: open || active ? whiteColor : textColor,
+            color: open || active ? whiteColor : sidebarColors.text,
             background: open || active
               ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`
-              : 'linear-gradient(135deg, #f7fcf9 0%, #ffffff 100%)',
+              : sidebarColors.surfaceRaised,
             border: open || active
-              ? '1px solid transparent'
-              : '1px solid rgba(5,117,70,0.13)',
+              ? '1px solid rgba(81,194,140,.22)'
+              : `1px solid ${sidebarColors.border}`,
             boxShadow: open || active
-              ? '0 8px 18px rgba(5,117,70,0.24)'
-              : '0 3px 10px rgba(5,117,70,0.06)',
+              ? (isDarkMode
+                  ? '0 5px 14px rgba(0,0,0,.20)'
+                  : '0 5px 14px rgba(5,117,70,.13)')
+              : 'none',
             '&:hover': {
-              color: whiteColor,
-              background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-              boxShadow: '0 6px 15px rgba(5,117,70,0.14)'
+              color: open || active
+                ? whiteColor
+                : (isDarkMode ? '#ffffff' : primaryDark),
+              background: open || active
+                ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`
+                : sidebarColors.surfaceHover,
+              borderColor: open || active
+                ? 'rgba(81,194,140,.22)'
+                : sidebarColors.borderStrong,
+              boxShadow: 'none'
             },
-            transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease'
+            transition: 'background-color .14s ease, color .14s ease, border-color .14s ease'
           }}
         >
           <Box
@@ -984,10 +1018,10 @@ const childItemSx = (selected) => ({
                 content: '""',
                 position: 'absolute',
                 insetInlineStart: isDesktop ? 13 : 8,
-                top: 3,
-                bottom: 6,
+                top: 4,
+                bottom: 5,
                 width: 1,
-                bgcolor: 'rgba(5,117,70,.10)',
+                bgcolor: sidebarColors.guide,
                 borderRadius: 999
               }
             }}
@@ -1005,9 +1039,9 @@ const childItemSx = (selected) => ({
                   textAlign: 'center',
                   fontFamily: 'Cairo',
                   fontSize: designTokens.typography.helper,
-                  color: mutedTextColor,
-                  background: '#ffffff',
-                  border: '1px solid rgba(5,117,70,0.09)'
+                  color: sidebarColors.textMuted,
+                  background: sidebarColors.surfaceRaised,
+                  border: `1px solid ${sidebarColors.border}`
                 }}
               >
                 لا توجد شاشات متاحة حسب الصلاحيات
@@ -1024,7 +1058,7 @@ const childItemSx = (selected) => ({
       dir="rtl"
       style={sidebarPositionStyle}
       onClick={(event) => event.stopPropagation()}
-      sx={uiLayout.withUiSx({
+      sx={{
         // الديسكتوب يرجع لنفس العرض والشكل القديم 100%.
         // الموبايل/التابلت Drawer صغير فقط بعرض التابات.
         width: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_WIDTH,
@@ -1046,9 +1080,9 @@ const childItemSx = (selected) => ({
           minWidth: 0,
           maxWidth: '100%'
         },
-        background: `linear-gradient(180deg, ${whiteColor} 0%, #f4fbf7 100%)`,
-        color: textColor,
-        borderInlineEnd: isDesktop ? `1px solid ${primaryLight}` : 'none',
+        background: sidebarColors.surface,
+        color: sidebarColors.text,
+        borderInlineEnd: isDesktop ? `1px solid ${sidebarColors.border}` : 'none',
         fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
         position: isDesktop ? 'fixed' : 'relative',
         top: 0,
@@ -1058,10 +1092,12 @@ const childItemSx = (selected) => ({
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         boxShadow: isDesktop
-          ? '8px 0 28px rgba(5,117,70,0.10)'
+          ? (isDarkMode
+              ? '6px 0 22px rgba(0,0,0,.22)'
+              : '6px 0 22px rgba(5,117,70,.08)')
           : 'none',
-        transition: 'all 0.3s ease'
-      }, uiLayout.sidebarSurfaceSx)}
+        transition: 'background-color .18s ease, color .18s ease, border-color .18s ease'
+      }}
     >
       <Box
         sx={{
@@ -1084,30 +1120,24 @@ const childItemSx = (selected) => ({
             justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
-            background: `linear-gradient(135deg, ${primaryDark} 0%, ${primaryColor} 58%, #0a8152 100%)`,
-            boxShadow: '0 4px 14px rgba(3,77,49,0.14)',
-            borderBottom: '1px solid rgba(255,255,255,0.22)',
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              insetInline: 0,
-              bottom: 0,
-              height: 3,
-              background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.75), rgba(255,255,255,0))'
-            }
+            background: `linear-gradient(135deg, ${primaryDark} 0%, ${primaryColor} 64%, #0a8152 100%)`,
+            boxShadow: 'none',
+            borderBottom: isDarkMode
+              ? '1px solid rgba(103,201,157,.18)'
+              : '1px solid rgba(255,255,255,.22)'
           }}
         >
           <Box
             sx={{
-              width: 52,
-              height: 52,
+              width: 50,
+              height: 50,
               borderRadius: '50%',
               display: 'grid',
               placeItems: 'center',
               overflow: 'hidden',
               background: '#fff',
-              border: '2px solid rgba(255,255,255,.95)',
-              boxShadow: '0 6px 16px rgba(0,0,0,.16)',
+              border: '1px solid rgba(255,255,255,.92)',
+              boxShadow: '0 3px 10px rgba(3,77,49,.18)',
               position: 'relative',
               zIndex: 1
             }}
@@ -1119,8 +1149,10 @@ const childItemSx = (selected) => ({
               sx={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
-                p: 0.15
+                objectFit: 'cover',
+                borderRadius: '50%',
+                bgcolor: '#fff',
+                p: 0
               }}
             />
           </Box>
@@ -1148,9 +1180,10 @@ const childItemSx = (selected) => ({
             },
 
             // على الموبايل/التابلت نسيب مساحة تحت الهيدر الثابت.
-            pt: isDesktop ? 0.9 : 1.2,
-            pb: isDesktop ? 0.9 : 0.5,
-            px: 0
+            pt: isDesktop ? 0.75 : 1,
+            pb: isDesktop ? 0.75 : 0.5,
+            px: 0,
+            bgcolor: sidebarColors.surface
           }}
         >
           <Popover
@@ -1355,9 +1388,11 @@ const childItemSx = (selected) => ({
           flex: '0 0 auto',
           p: isDesktop ? 1.15 : 0.65,
           overflowX: 'hidden',
-          background: 'rgba(255,255,255,.96)',
-          borderTop: `1px solid ${primaryLight}`,
-          boxShadow: '0 -5px 14px rgba(5,117,70,.05)'
+          background: sidebarColors.footer,
+          borderTop: `1px solid ${sidebarColors.border}`,
+          boxShadow: isDarkMode
+            ? '0 -4px 12px rgba(0,0,0,.12)'
+            : '0 -4px 12px rgba(5,117,70,.04)'
         }}
       >
         <Button
@@ -1376,10 +1411,9 @@ const childItemSx = (selected) => ({
             boxShadow: '0 4px 10px rgba(5,117,70,0.24)',
             '&:hover': {
               background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`,
-              boxShadow: '0 6px 15px rgba(5,117,70,0.30)',
-              transform: 'translateY(-2px)'
+              boxShadow: '0 5px 12px rgba(5,117,70,0.24)'
             },
-            transition: 'all 0.3s ease'
+            transition: 'background-color .15s ease, box-shadow .15s ease'
           }, uiLayout.buttonSx)}
         >
           تسجيل الخروج
@@ -1419,8 +1453,10 @@ const childItemSx = (selected) => ({
           width: SIDEBAR_MOBILE_WIDTH,
           maxWidth: SIDEBAR_MOBILE_MAX_WIDTH,
           height: '100dvh',
-          background: 'transparent',
-          boxShadow: '-14px 0 38px rgba(3,77,49,0.20)',
+          background: sidebarColors.surface,
+          boxShadow: isDarkMode
+            ? '-12px 0 34px rgba(0,0,0,.34)'
+            : '-12px 0 34px rgba(3,77,49,.16)',
           overflow: 'hidden',
           borderRadius: 0,
         },

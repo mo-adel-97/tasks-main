@@ -34,7 +34,7 @@ import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
 import Swal from "sweetalert2";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "http://localhost:5258";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
 const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";

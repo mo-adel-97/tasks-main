@@ -55,7 +55,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 const API_BASE_URL = (
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
-  "http://localhost:5258"
+  "https://api4.sstli.com"
 ).replace(/\/+$/, "");
 
 const PRIMARY = "#057445";

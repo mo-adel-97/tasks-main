@@ -289,7 +289,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:5258";
+  process.env.REACT_APP_API_BASE_URL || "https://api4.sstli.com";
 
 /* =========================================================
    DIRECTION / TEXT ALIGN
@@ -329,6 +329,59 @@ const border = "rgba(5,117,70,0.14)";
 const soft = "#f6faf8";
 const danger = "#c53030";
 const warning = "#b7791f";
+
+const permissionButtonSx = (theme) => {
+  const isDark = theme.palette.mode === "dark";
+
+  return {
+    minHeight: 35,
+    px: { xs: 0.8, sm: 1.05 },
+    borderRadius: 2,
+    fontWeight: 850,
+    whiteSpace: "nowrap",
+    boxShadow: "none",
+
+    color: isDark ? "#b9ead2" : primary,
+
+    backgroundColor: isDark
+      ? "rgba(69,168,121,.14)"
+      : "#edf7f2",
+
+    border: isDark
+      ? "1px solid rgba(128,201,167,.46)"
+      : "1px solid rgba(5,117,70,.24)",
+
+    "& .MuiSvgIcon-root": {
+      color: isDark ? "#80c9a7" : primary
+    },
+
+    "&:hover": {
+      color: isDark ? "#dcf7e9" : primaryDark,
+
+      backgroundColor: isDark
+        ? "rgba(69,168,121,.23)"
+        : "#e4f3eb",
+
+      borderColor: isDark
+        ? "rgba(128,201,167,.72)"
+        : "rgba(5,117,70,.42)",
+
+      boxShadow: isDark
+        ? "0 0 0 1px rgba(128,201,167,.08)"
+        : "0 3px 10px rgba(5,117,70,.08)",
+
+      transform: "none"
+    },
+
+    "&:active": {
+      transform: "none"
+    },
+
+    transition:
+      "background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease"
+  };
+};
+
 
 const readUser = () => {
   try {
@@ -2356,15 +2409,15 @@ const decideLeaveApproval = async (
           <Button sx={uiLayout.buttonSx} size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog} disabled={!capabilities?.canRequestLeave}>
             طلب إجازة جديد
           </Button>
-          <Button sx={uiLayout.buttonSx}
-            size="small"
-            variant="contained"
-            color="secondary"
-            startIcon={<ManageAccountsRoundedIcon />}
-            onClick={openPermissionDialog}
-          >
-            طلب إذن
-          </Button>
+          <Button
+  sx={[uiLayout.buttonSx, permissionButtonSx]}
+  size="small"
+  variant="outlined"
+  startIcon={<ManageAccountsRoundedIcon />}
+  onClick={openPermissionDialog}
+>
+  طلب إذن
+</Button>
           <Button sx={uiLayout.buttonSx} size="small" variant="outlined" startIcon={<AccessTimeRoundedIcon />} onClick={() => scrollTo(attendanceRef)}>
             حضوري
           </Button>
@@ -3028,14 +3081,15 @@ const decideLeaveApproval = async (
           title="أذوناتي"
           subtitle="طلبات التأخير والانصراف والخروج أثناء الدوام"
           action={
-            <Button sx={uiLayout.buttonSx}
-              size="small"
-              variant="contained"
-              startIcon={<ManageAccountsRoundedIcon />}
-              onClick={openPermissionDialog}
-            >
-              طلب إذن
-            </Button>
+            <Button
+  sx={[uiLayout.buttonSx, permissionButtonSx]}
+  size="small"
+  variant="outlined"
+  startIcon={<ManageAccountsRoundedIcon />}
+  onClick={openPermissionDialog}
+>
+  طلب إذن
+</Button>
           }
         >
           {myPermissionsLoading ? (

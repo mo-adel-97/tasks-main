@@ -13,7 +13,7 @@ afterEach(() => { localStorage.clear(); transport.mockClear(); });
 
 test('management requests to port 5258 carry the session token', async () => {
   localStorage.setItem('token', 'current-token');
-  await window.fetch('http://localhost:5258/api/user-management/users');
+  await window.fetch('https://api4.sstli.com/api/user-management/users');
   expect(transport.mock.calls[0][1].headers.get('Authorization')).toBe('Bearer current-token');
   expect(shouldAttachAuth('http://127.0.0.1:5258/api/user-permissions/user')).toBe(true);
 });

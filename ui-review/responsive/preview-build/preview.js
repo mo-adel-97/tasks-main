@@ -182669,7 +182669,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
 
 
-const API_BASE_URL = {"NODE_ENV":"development","REACT_APP_API_BASE_URL":"http://127.0.0.1:3101","REACT_APP_API_URL":"http://127.0.0.1:3101"}.REACT_APP_API_URL || "http://localhost:5258";
+const API_BASE_URL = {"NODE_ENV":"development","REACT_APP_API_BASE_URL":"http://127.0.0.1:3101","REACT_APP_API_URL":"http://127.0.0.1:3101"}.REACT_APP_API_URL || "https://api4.sstli.com";
 const getToday = () => {
   return new Date().toISOString().slice(0, 10);
 };
@@ -183985,7 +183985,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
     fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
   }
 };
-const API_BASE_URL = {"NODE_ENV":"development","REACT_APP_API_BASE_URL":"http://127.0.0.1:3101","REACT_APP_API_URL":"http://127.0.0.1:3101"}.REACT_APP_API_URL || "http://localhost:5258";
+const API_BASE_URL = {"NODE_ENV":"development","REACT_APP_API_BASE_URL":"http://127.0.0.1:3101","REACT_APP_API_URL":"http://127.0.0.1:3101"}.REACT_APP_API_URL || "https://api4.sstli.com";
 const EMPLOYEE_IMAGE_API = "https://filesregsiteration.sstli.com/erp/image_api.php";
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -191164,7 +191164,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
     fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
   }
 };
-const API_BASE_URL = {"NODE_ENV":"development","REACT_APP_API_BASE_URL":"http://127.0.0.1:3101","REACT_APP_API_URL":"http://127.0.0.1:3101"}.REACT_APP_API_URL || "http://localhost:5258";
+const API_BASE_URL = {"NODE_ENV":"development","REACT_APP_API_BASE_URL":"http://127.0.0.1:3101","REACT_APP_API_URL":"http://127.0.0.1:3101"}.REACT_APP_API_URL || "https://api4.sstli.com";
 const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";

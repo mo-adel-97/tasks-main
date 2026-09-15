@@ -286,7 +286,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
-  "http://localhost:5258";
+  "https://api4.sstli.com";
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -509,8 +509,116 @@ const HrDepartmentsPage = () => {
     [departments, transferTargetGuid]
   );
 
+  // تحميل جميع موظفي القسم من نفس endpoint المستخدم في شاشة ملفات الموظفين.
+  // مهم: endpoint الخاص بـ /departments/{guid}/employees يعيد 20 سجل فقط في البيئة الحالية،
+  // لذلك نعتمد على /api/hr/employees مع فلتر departmentGuid لأنه يعيد القائمة الكاملة،
+  // ثم نعمل فلترة/إزالة تكرار دفاعية على الفرونت.
+  const fetchAllDepartmentEmployees = useCallback(
+    async (departmentGuid, expectedCount = 0) => {
+      if (!departmentGuid) return [];
+
+      const normalizeEmployeesResponse = (payload) => {
+        if (Array.isArray(payload)) return payload;
+        if (Array.isArray(payload?.data)) return payload.data;
+        if (Array.isArray(payload?.data?.items)) return payload.data.items;
+        if (Array.isArray(payload?.items)) return payload.items;
+        if (Array.isArray(payload?.results)) return payload.results;
+        return [];
+      };
+
+      const normalizeGuid = (value) =>
+        String(value || "")
+          .trim()
+          .toLowerCase();
+
+      const removeDuplicates = (employees) => {
+        const seen = new Set();
+
+        return employees.filter((employee, index) => {
+          const key = normalizeGuid(
+            employee?.employeeGuid ||
+            employee?.guid ||
+            employee?.employeeId ||
+            employee?.id ||
+            employee?.employeeCode ||
+            employee?.nationalId ||
+            employee?.email ||
+            employee?.mobile ||
+            `${employee?.fullName || employee?.name || "employee"}-${index}`
+          );
+
+          if (!key || seen.has(key)) return false;
+
+          seen.add(key);
+          return true;
+        });
+      };
+
+      const wantedDepartmentGuid = normalizeGuid(departmentGuid);
+
+      // هذا هو نفس الـ endpoint المستخدم في شاشة الموظفين،
+      // والفلتر departmentGuid مدعوم بالفعل هناك.
+      const params = new URLSearchParams();
+      params.set("departmentGuid", departmentGuid);
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/hr/employees?${params.toString()}`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message || "تعذر تحميل جميع موظفي القسم"
+        );
+      }
+
+      let employees = normalizeEmployeesResponse(result);
+
+      // حماية إضافية: لو الـ API أعاد موظفين من أقسام أخرى لأي سبب،
+      // نحتفظ فقط بموظفي القسم المطلوب. ولو الحقل غير موجود في الاستجابة
+      // نثق في فلتر الـ API ولا نستبعد السجل.
+      const employeesWithDepartmentInfo = employees.filter(
+        (employee) => employee?.departmentGuid
+      );
+
+      if (employeesWithDepartmentInfo.length > 0) {
+        employees = employees.filter(
+          (employee) =>
+            normalizeGuid(employee?.departmentGuid) ===
+            wantedDepartmentGuid
+        );
+      }
+
+      employees = removeDuplicates(employees);
+
+      // expectedCount للعرض/التشخيص فقط؛ لا نقصّ النتائج ولا نحددها بـ 20.
+      if (
+        Number(expectedCount) > 0 &&
+        employees.length < Number(expectedCount)
+      ) {
+        console.warn(
+          `Department employees count mismatch: expected ${expectedCount}, received ${employees.length}`,
+          {
+            departmentGuid,
+            expectedCount: Number(expectedCount),
+            receivedCount: employees.length
+          }
+        );
+      }
+
+      return employees;
+    },
+    []
+  );
+
   const loadDepartmentManagers = useCallback(
-    async (departmentGuid, currentManagerGuid = "") => {
+    async (departmentGuid, currentManagerGuid = "", expectedCount = 0) => {
       if (!departmentGuid) {
         setDepartmentManagers([]);
         return;
@@ -520,24 +628,10 @@ const HrDepartmentsPage = () => {
         setDepartmentManagersLoading(true);
         setDepartmentManagers([]);
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/hr/departments/${encodeURIComponent(
-            departmentGuid
-          )}/employees`,
-          { headers: { Accept: "application/json" } }
+        const employees = await fetchAllDepartmentEmployees(
+          departmentGuid,
+          expectedCount
         );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            result?.message || "تعذر تحميل موظفي القسم"
-          );
-        }
-
-        const employees = Array.isArray(result?.data)
-          ? result.data
-          : [];
 
         const currentGuid = String(currentManagerGuid || "")
           .trim()
@@ -573,7 +667,7 @@ const HrDepartmentsPage = () => {
         setDepartmentManagersLoading(false);
       }
     },
-    []
+    [fetchAllDepartmentEmployees]
   );
 
   const openCreateDialog = () => {
@@ -599,7 +693,8 @@ const HrDepartmentsPage = () => {
 
     await loadDepartmentManagers(
       department?.departmentGuid,
-      department?.managerGuid
+      department?.managerGuid,
+      department?.employeeCount
     );
   };
 
@@ -674,17 +769,12 @@ const HrDepartmentsPage = () => {
       setTransferTargetGuid("");
       setTransferError("");
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/hr/departments/${encodeURIComponent(
-          department.departmentGuid
-        )}/employees`,
-        { headers: { Accept: "application/json" } }
+      const employees = await fetchAllDepartmentEmployees(
+        department?.departmentGuid,
+        department?.employeeCount
       );
 
-      const result = await response.json();
-      if (!response.ok) throw new Error(result?.message || "تعذر تحميل الموظفين");
-
-      setDepartmentEmployees(Array.isArray(result?.data) ? result.data : []);
+      setDepartmentEmployees(employees);
     } catch (err) {
       setError(err?.message || "حدث خطأ أثناء تحميل موظفي القسم");
     } finally {

@@ -53,7 +53,7 @@ import { mt } from "date-fns/locale";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
-  "http://localhost:5258";
+  "https://api4.sstli.com";
 
 const TEMPLATES = [
   {

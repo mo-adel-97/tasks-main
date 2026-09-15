@@ -5,7 +5,7 @@ const ME_URL = 'https://api1.sstli.com/api/userinfo/me';
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
-  'http://localhost:5258';
+  'https://api4.sstli.com';
 
 const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v4';
 
