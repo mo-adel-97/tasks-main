@@ -3,35 +3,42 @@
 import { designTokens, mobileHeaderStyles } from './designTokens';
 import { DESKTOP_BREAKPOINT } from './sidebarLayout';
 
-// Field labels are part of the outlined control itself instead of consuming a
-// separate row above it. Keep the compact floating label physically on the
-// left edge of the field so RTL pages do not mirror it back to the right.
-const labelPosition = ({ ownerState }) => {
+// Labels behave like placeholders while a field is empty, then float to the
+// physical left edge on focus / when the field contains a value. This keeps the
+// Arabic UI compact without losing the field name after typing.
+const labelPosition = ({ ownerState, theme }) => {
   if (!ownerState.formControl) return { textAlign: 'start' };
+
+  const shrink = Boolean(ownerState.shrink);
 
   return {
     position: 'absolute',
-    top: 0,
-    left: 12,
-    right: 'auto',
+    top: shrink ? 0 : '50%',
+    left: shrink ? 12 : 'auto',
+    right: shrink ? 'auto' : 14,
     width: 'auto',
-    maxWidth: 'calc(100% - 24px)',
+    maxWidth: 'calc(100% - 28px)',
     minHeight: 0,
     margin: 0,
-    paddingInline: 4,
+    paddingInline: shrink ? 4 : 0,
+    backgroundColor: shrink ? theme.palette.background.paper : 'transparent',
     fontSize: designTokens.typography.label,
-    lineHeight: 1,
+    lineHeight: shrink ? 1 : 1.35,
     fontWeight: 500,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    textAlign: 'left',
-    transformOrigin: 'top left',
-    transform: ownerState.shrink
+    textAlign: shrink ? 'left' : 'right',
+    transformOrigin: shrink ? 'top left' : 'top right',
+    transform: shrink
       ? 'translateY(-50%) scale(0.82)'
-      : 'translateY(11px) scale(1)',
+      : 'translateY(-50%) scale(1)',
     zIndex: 1,
-    pointerEvents: 'auto',
+    pointerEvents: 'none',
+    transition: theme.transitions.create(
+      ['color', 'transform', 'top', 'left', 'right', 'font-size'],
+      { duration: theme.transitions.duration.shorter }
+    ),
   };
 };
 
@@ -81,7 +88,7 @@ export const rtlComponents = {
     borderRadius: `${designTokens.radius}px`,
   } } },
   MuiDialogTitle: { styleOverrides: { root: { padding: '9px 14px', fontSize: designTokens.typography.sectionTitle, fontWeight: 600 } } },
-  MuiDialogContent: { styleOverrides: { root: { padding: '10px 14px' } } },
+  MuiDialogContent: { styleOverrides: { root: { padding: '10px 14px', overflowX: 'hidden' } } },
   MuiDialogActions: { styleOverrides: { root: { padding: '8px 14px', gap: 6 } } },
   MuiChip: { styleOverrides: { root: { height: 24, fontSize: designTokens.typography.helper, fontWeight: 500 }, label: { paddingInline: 7 } } },
   MuiInputAdornment: { styleOverrides: { root: ({ ownerState }) => ({
@@ -89,7 +96,7 @@ export const rtlComponents = {
     marginInlineStart: ownerState.position === 'end' ? 8 : 0,
     marginInlineEnd: ownerState.position === 'start' ? 8 : 0,
   }) } },
-  MuiOutlinedInput: { defaultProps: { notched: true }, styleOverrides: {
+  MuiOutlinedInput: { styleOverrides: {
     root: ({ ownerState }) => {
       // Autocomplete manages its own control gutter, including the compact size.
       if (ownerState.className?.includes('MuiAutocomplete-inputRoot')) {
@@ -105,7 +112,27 @@ export const rtlComponents = {
       paddingLeft: ownerState.endAdornment ? 0 : 14,
     },
   } },
-  MuiInputLabel: { defaultProps: { shrink: true }, styleOverrides: { root: labelPosition } },
+  MuiInputLabel: { styleOverrides: { root: labelPosition } },
+  // Compatibility for legacy fields that still force InputLabelProps.shrink=true.
+  // When such a field is empty and not focused, visually restore placeholder
+  // behaviour; focus or a real value returns it to the floating left position.
+  MuiFormControl: { styleOverrides: { root: ({ theme }) => ({
+    '&:has(> .MuiOutlinedInput-root .MuiInputBase-input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"])) > .MuiInputLabel-root.MuiInputLabel-shrink': {
+      top: '50%',
+      left: 'auto',
+      right: 14,
+      paddingInline: 0,
+      backgroundColor: 'transparent',
+      lineHeight: 1.35,
+      textAlign: 'right',
+      transformOrigin: 'top right',
+      transform: 'translateY(-50%) scale(1)',
+      color: theme.palette.text.secondary,
+    },
+    '&:has(> .MuiOutlinedInput-root .MuiInputBase-input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"])) .MuiOutlinedInput-notchedOutline legend': {
+      maxWidth: 0,
+    },
+  }) } },
   MuiFormHelperText: { styleOverrides: { root: { textAlign: 'start' } } },
   MuiFormControlLabel: { styleOverrides: { root: ({ ownerState }) => ({
     marginLeft: 0, marginRight: 0,
