@@ -1,0 +1,1226 @@
+[
+  {
+    "file": "src\\components\\AdminDashboard.jsx",
+    "line": 135,
+    "tag": "Box",
+    "children": [
+      "DatePicker",
+      "TextField",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n            display: 'flex',\n            flexWrap: 'wrap',\n            gap: 2,\n            justifyContent: 'space-between',\n            alignItems: 'center',\n            mb: 4\n          }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\AssignedTasks.jsx",
+    "line": 1319,
+    "tag": "Box",
+    "children": [
+      "Autocomplete",
+      "TextField",
+      "Box"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\BranchesDashboard.js",
+    "line": 263,
+    "tag": "Box",
+    "children": [
+      "DatePicker",
+      "DatePicker"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\components\\CallHistory.jsx",
+    "line": 297,
+    "tag": "Box",
+    "children": [
+      "FormControl",
+      "FormControl",
+      "FormControl",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\components\\CallHistory.jsx",
+    "line": 545,
+    "tag": "Box",
+    "children": [
+      "Typography",
+      "TextField",
+      "TableContainer",
+      "Typography",
+      "FormControl",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: 'flex', flexDirection: 'column', gap: 2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\ChangePaymentStatusDialog.jsx",
+    "line": 283,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\components\\ExceptionsLists.jsx",
+    "line": 469,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: \"flex\", gap: 1, flexWrap: \"wrap\" }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\ExceptionsListsAdmin.jsx",
+    "line": 358,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: \"flex\", gap: 1, flexWrap: \"wrap\", mb: 2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\ExportReportsDialog.jsx",
+    "line": 1028,
+    "tag": "Stack",
+    "children": [
+      "DatePicker",
+      "DatePicker"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\components\\HrOrganizationDesigner.jsx",
+    "line": 469,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ pt: 0.5 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\HrPermissionWorkflowManager.jsx",
+    "line": 211,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({display:\"grid\",gridTemplateColumns:{xs:\"1fr\",md:\"1.4fr 1fr 1.4fr 100px\"},gap:1}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\HrPermissionWorkflowManager.jsx",
+    "line": 220,
+    "tag": "Paper",
+    "children": [
+      "Box"
+    ],
+    "sx": "sx={uiLayout.withUiSx({p:1,borderRadius:2.5}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\HrPermissionWorkflowManager.jsx",
+    "line": 221,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "Stack"
+    ],
+    "sx": "sx={uiLayout.withUiSx({display:\"grid\",gridTemplateColumns:{xs:\"1fr\",md:\"70px 1.2fr 1.3fr 1fr auto\"},gap:1,alignItems:\"center\"}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\mohamed.jsx",
+    "line": 407,
+    "tag": "Stack",
+    "children": [
+      "DatePicker",
+      "DatePicker",
+      "Tooltip"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\components\\MyCallHistoryDialog.jsx",
+    "line": 359,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\components\\PaymentOrderDialog.jsx",
+    "line": 1206,
+    "tag": "Box",
+    "children": [
+      "InfoField",
+      "InfoField",
+      "InfoField",
+      "InfoField",
+      "InfoField",
+      "InfoField",
+      "InfoField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\r\n                  display: \"grid\",\r\n                  gridTemplateColumns: {\r\n                    xs: \"repeat(2, minmax(0, 1fr))\",\r\n                    sm: \"repeat(3, minmax(0, 1fr))\",\r\n                    lg: \"repeat(5, minmax(0, 1fr))\"\r\n                  },\r\n                  gap: { xs: 0.55, sm: 0.75, md: 0.9 }\r\n                }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\RegistrationCommissions.jsx",
+    "line": 936,
+    "tag": "Box",
+    "children": [
+      "DatePicker",
+      "DatePicker",
+      "Tooltip",
+      "Tooltip"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\r\n                  display: isCompact ? \"grid\" : \"flex\",\r\n                  gridTemplateColumns: isCompact\r\n                    ? \"repeat(2,minmax(0,1fr))\"\r\n                    : undefined,\r\n                  gap: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,\r\n                  alignItems: \"center\"\r\n                }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\RportForClinets.jsx",
+    "line": 1192,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "LocalizationProvider",
+      "FormControl",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: 'flex', flexWrap: 'wrap', gap: 2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\tabs\\OverviewTab.js",
+    "line": 365,
+    "tag": "Box",
+    "children": [
+      "Typography",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n            display: \"grid\",\n            gridTemplateColumns: { xs: \"1fr 1fr\", sm: \"auto 140px 140px\" },\n            alignItems: \"center\",\n            justifyContent: \"center\",\n            gap: { xs: 0.7, sm: 0.9 },\n          }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\tabs\\TasksTab.js",
+    "line": 220,
+    "tag": "Box",
+    "children": [
+      "Typography",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\r\n            display: \"flex\",\r\n            flexWrap: \"wrap\",\r\n            gap: { xs: 0.8, sm: 1.2, md: 2 },\r\n            alignItems: \"center\",\r\n            justifyContent: \"center\"\r\n          }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\components\\tabs\\VacationPermissionsTab.js",
+    "line": 1936,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "FormControlLabel",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ mt: 2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "line": 3117,
+    "tag": "Box",
+    "children": [
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\r\n                      width: \"100%\",\r\n                      display: isCompact ? \"grid\" : \"flex\",\r\n                      gridTemplateColumns: isCompact ? \"repeat(2, minmax(0, 1fr))\" : undefined,\r\n                      gap: isPhone ? 0.45 : isTablet ? 0.6 : 1.2,\r\n                      alignItems: \"center\",\r\n                      flexWrap: isCompact ? \"wrap\" : \"nowrap\",\r\n                      flex: isCompact ? \"none\" : 1,\r\n                      minWidth: 0,\r\n                      \"& > *\": { minWidth: 0 },\r\n                      \"& > .MuiFormControl-root, & > .MuiAutocomplete-root\": {\r\n                        flex: isCompact ? \"none\" : \"1 1 0\",\r\n                        width: isCompact ? \"100%\" : \"auto\"\r\n                      }\r\n                    }, uiLayout.formGridSx, {\r\n                      display: isCompact ? \"grid\" : \"flex\",\r\n                      gridTemplateColumns: isCompact ? \"repeat(2, minmax(0, 1fr))\" : undefined,\r\n                      flexWrap: isCompact ? \"wrap\" : \"nowrap\",\r\n                      flex: isCompact ? \"none\" : 1\r\n                    })}"
+  },
+  {
+    "file": "src\\pages\\BatchCountManagement.jsx",
+    "line": 837,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"repeat(2,minmax(0,1fr))\",\n                md: \"repeat(3,minmax(0,1fr))\"\n              },\n              gap: { xs: 0.4, sm: 0.7 }\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\BatchManagement.jsx",
+    "line": 1034,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControlLabel",
+      "FormControlLabel"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"repeat(2,minmax(0,1fr))\",\n                md: \"repeat(4,minmax(0,1fr))\"\n              },\n              gap: { xs: 0.4, sm: 0.7 }\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\BatchManagement.jsx",
+    "line": 1201,
+    "tag": "Box",
+    "children": [
+      "Typography",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                    display: \"grid\",\n                    gridTemplateColumns: \"minmax(120px,1fr) 84px 84px\",\n                    alignItems: \"center\",\n                    gap: 0.4,\n                    px: { xs: 0.4, sm: 0.7 },\n                    py: { xs: 0.3, sm: 0.45 },\n                    borderTop: \"1px solid #edf2ef\"\n                  }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "line": 873,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                md: \"1fr 1fr\"\n              },\n              gap: 1.2\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\CashDisbursement.jsx",
+    "line": 642,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControlLabel"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: \"grid\", gridTemplateColumns: { xs: \"1fr 1fr\", sm: \"150px 180px minmax(220px,1fr)\", lg: \"150px 190px minmax(220px,1fr) minmax(260px,1fr)\" }, gap: 1, mb: 1 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\CashPaymentOrder.jsx",
+    "line": 771,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "Autocomplete",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControlLabel"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                md:\n                  \"repeat(2,minmax(0,1fr))\"\n              },\n              gap: 1.5\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\CashReceiptAcknowledgment.jsx",
+    "line": 772,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "Autocomplete",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControlLabel"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                md:\n                  \"repeat(2,minmax(0,1fr))\"\n              },\n              gap: 1.5\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\ChangeUserPassword.jsx",
+    "line": 271,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                sm: \"1fr 1fr\"\n              },\n              gap: { xs: 0.65, sm: 1 },\n              \"& .MuiTextField-root\": fieldSx\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\CircularsUpload.jsx",
+    "line": 1543,
+    "tag": "Stack",
+    "children": [
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ mt: 0.5 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\Complaiments.jsx",
+    "line": 837,
+    "tag": "Box",
+    "children": [
+      "FormControl",
+      "FormControl",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\components\\HrOrganizationDesigner.jsx",
+    "line": 470,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ pt: 0.5 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\components\\HrPermissionWorkflowManager.jsx",
+    "line": 212,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({display:\"grid\",gridTemplateColumns:{xs:\"1fr\",md:\"1.4fr 1fr 1.4fr 100px\"},gap:1}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\components\\HrPermissionWorkflowManager.jsx",
+    "line": 221,
+    "tag": "Paper",
+    "children": [
+      "Box"
+    ],
+    "sx": "sx={uiLayout.withUiSx({p:1,borderRadius:2.5}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\components\\HrPermissionWorkflowManager.jsx",
+    "line": 222,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "Stack"
+    ],
+    "sx": "sx={uiLayout.withUiSx({display:\"grid\",gridTemplateColumns:{xs:\"1fr\",md:\"70px 1.2fr 1.3fr 1fr auto\"},gap:1,alignItems:\"center\"}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "line": 1046,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx(uiLayout.formGridSx, {\n                width: \"100%\",\n                display: \"grid\",\n                gridTemplateColumns: {\n                  xs: \"repeat(2,minmax(0,1fr))\",\n                  sm: \"repeat(3,minmax(0,1fr))\"\n                },\n                gap: {\n                  xs: 0.55,\n                  sm: 0.7\n                },\n                flexBasis: isCompact ? \"100%\" : \"auto\",\n                flexGrow: isCompact ? 1 : 0,\n                minWidth: 0\n              })}"
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "line": 1640,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "line": 1695,
+    "tag": "Stack",
+    "children": [
+      "Typography",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\CreateExam.jsx",
+    "line": 537,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: 'flex', gap: 1 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\CreateExam.jsx",
+    "line": 645,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: 'flex', gap: 2, flexWrap: 'wrap' }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\DailyAttendanceReport.jsx",
+    "line": 835,
+    "tag": "Stack",
+    "children": [
+      "Box",
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "FormControl",
+      "StyledButton"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\DiplomaStudentsPage.jsx",
+    "line": 3490,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "Typography"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: isPhone\n                ? \"repeat(2,minmax(0,1fr))\"\n                : isTablet\n                  ? \"repeat(2,minmax(0,1fr))\"\n                  : \"minmax(180px,220px) minmax(220px,280px) 1fr\",\n              gap: isPhone ? 0.45 : isTablet ? 0.6 : 0.7,\n              alignItems: \"center\",\n\n              \"& .MuiInputLabel-root\": {\n                fontFamily: \"Cairo\",\n                fontSize: isPhone\n                  ? \"0.75rem\"\n                  : isTablet\n                    ? \"0.75rem\"\n                    : \"0.75rem\"\n              },\n\n              \"& .MuiInputBase-root\": {\n                minHeight: isPhone ? 31 : isTablet ? 34 : 36,\n                fontFamily: \"Cairo\",\n                fontSize: isPhone\n                  ? \"0.75rem\"\n                  : isTablet\n                    ? \"0.75rem\"\n                    : \"0.75rem\"\n              }\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\DiplomaStudentsPage.jsx",
+    "line": 4038,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n        display: \"grid\",\n\n        gridTemplateColumns: isPhone\n          ? \"1fr\"\n          : isTablet\n            ? \"repeat(2,minmax(0,1fr))\"\n            : \"repeat(3,minmax(0,1fr))\",\n\n        gap: isPhone\n          ? 0.5\n          : isTablet\n            ? 0.65\n            : 1.15,\n\n        \"& .MuiInputLabel-root\": {\n          fontFamily: \"Cairo\",\n\n          fontSize: isPhone\n            ? \"0.75rem\"\n            : isTablet\n              ? \"0.75rem\"\n              : \"0.85rem\"\n        },\n\n        \"& .MuiInputBase-root\": {\n          minHeight: isPhone\n            ? 32\n            : isTablet\n              ? 35\n              : 50,\n\n          fontFamily: \"Cairo\",\n\n          fontSize: isPhone\n            ? \"0.75rem\"\n            : isTablet\n              ? \"0.75rem\"\n              : \"0.92rem\"\n        },\n\n        \"& .MuiSelect-select\": {\n          display: \"flex\",\n          alignItems: \"center\"\n        }\n      }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\DiscountRequestsReport.jsx",
+    "line": 2587,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField",
+      "Typography"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\DiscountTypeManagement.jsx",
+    "line": 910,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "Box",
+      "Box",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"repeat(2,minmax(0,1fr))\",\n                sm: \"repeat(4,minmax(0,1fr))\"\n              },\n              gap: { xs: 0.55, sm: 0.8 },\n              \"& .MuiTextField-root\": fieldSx\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 3476,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                md:\n                  \"180px minmax(250px,1.4fr) 180px 180px 180px 110px\"\n              },\n              gap: 1\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4276,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns:\n                  \"repeat(2,minmax(0,1fr))\",\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4478,
+    "tag": "Stack",
+    "children": [
+      "Paper",
+      "FormControl",
+      "Box",
+      "Box",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4543,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns:\n                  \"repeat(2,minmax(0,1fr))\",\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4695,
+    "tag": "Stack",
+    "children": [
+      "Alert",
+      "FormControl",
+      "Box",
+      "Box",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4742,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns:\n                  \"repeat(2,minmax(0,1fr))\",\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4893,
+    "tag": "Stack",
+    "children": [
+      "Paper",
+      "Box",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "Alert"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 4918,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns:\n                  \"repeat(2,minmax(0,1fr))\",\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 5533,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "line": 6005,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrContractsPage.jsx",
+    "line": 1455,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                sm:\n                  \"minmax(260px,1.4fr) 180px 180px 180px 110px\"\n              },\n              gap: 1\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrContractsPage.jsx",
+    "line": 2235,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                sm: \"minmax(240px,1fr) 190px\"\n              },\n              gap: 1,\n              mb: 1.2\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrContractsPage.jsx",
+    "line": 2784,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns: {\n                  xs: \"1fr\",\n                  sm: \"repeat(2,minmax(0,1fr))\"\n                },\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrDepartmentsPage.jsx",
+    "line": 1603,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "Autocomplete",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrEmployeesPage.jsx",
+    "line": 3644,
+    "tag": "Box",
+    "children": [
+      "FormControl",
+      "FormControl",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx([EMPLOYEE_PAGE_FIELD_GAP, EMPLOYEE_PAGE_FIELD_SX, {\n                display: \"grid\",\n                gridTemplateColumns: {\n                  xs: \"repeat(2, minmax(0, 1fr))\",\n                  sm: \"repeat(2, minmax(0, 1fr))\",\n                  md: \"repeat(2, minmax(0, 1fr))\",\n                  lg: \"repeat(4, minmax(0, 1fr))\"\n                },\n                mt: isDesktop ? 0 : 1.6,\n                \"& .MuiInputBase-root\": {\n                  transition: \"box-shadow .2s ease\"\n                },\n                \"& .MuiInputBase-root.Mui-focused\": {\n                  boxShadow: \"0 0 0 4px rgba(5,117,70,.06)\"\n                }\n              }], uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrEmployeesPage.jsx",
+    "line": 4941,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControl",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx([EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {\n                              display: \"grid\",\n                              gridTemplateColumns: {\n                                xs: \"1fr\",\n                                sm:\n                                  \"repeat(2,minmax(0,1fr))\"\n                              },\n                              \"& .MuiInputBase-input\": {\n                                textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN\n                              },\n                              \"& .MuiSelect-select\": {\n                                textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN\n                              }\n                            }], uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrEmployeesPage.jsx",
+    "line": 5519,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx([EMPLOYEE_DIALOG_FIELD_GAP, EMPLOYEE_DIALOG_FIELD_SX, {\n                            display: \"grid\",\n                            direction: EMPLOYEE_DIALOG_DIRECTION,\n                            gridTemplateColumns: {\n                              xs: \"1fr\",\n                              sm:\n                                \"repeat(2,minmax(0,1fr))\"\n                            },\n                            \"& .MuiInputBase-input\": {\n                              textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN\n                            },\n                            \"& .MuiSelect-select\": {\n                              textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN\n                            }\n                          }], uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrEmployeesPage.jsx",
+    "line": 9661,
+    "tag": "Stack",
+    "children": [
+      "Paper",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "line": 1639,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                sm: \"minmax(260px,1fr) 180px\"\n              },\n              gap: 1\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "line": 2011,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                md: \"repeat(2,minmax(0,1fr))\"\n              },\n              gap: 1.2,\n              textAlign:\n                DIALOG_TEXT_ALIGN\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "line": 2264,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                  display: \"grid\",\n                  gridTemplateColumns: {\n                    xs: \"1fr\",\n                    sm: \"1fr 130px\"\n                  },\n                  gap: 1,\n                  mb: 1.2\n                }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "line": 2556,
+    "tag": "Box",
+    "children": [
+      "FormControl",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns: {\n                  xs: \"1fr\",\n                  sm: \"repeat(2,minmax(0,1fr))\"\n                },\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "line": 2759,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr\",\n                sm: \"minmax(260px,1fr) 180px\"\n              },\n              gap: 1,\n              mb: 1.2\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 2168,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3357,
+    "tag": "Box",
+    "children": [
+      "FormControl",
+      "Autocomplete",
+      "FormControl"
+    ],
+    "sx": "sx={uiLayout.withUiSx({display:\"grid\",gridTemplateColumns:{xs:\"1fr\",md:\"1fr 1fr 1fr\"},gap:1.2}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3418,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControl",
+      "TextField",
+      "Stack"
+    ],
+    "sx": "sx={uiLayout.withUiSx({display:\"grid\",gridTemplateColumns:{xs:\"1fr\",md:\"70px minmax(210px,1fr) minmax(250px,1.3fr) minmax(180px,1fr) auto\"},gap:1,alignItems:\"center\"}, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3516,
+    "tag": "Stack",
+    "children": [
+      "Alert",
+      "Stack",
+      "FormControl",
+      "FormControl",
+      "Autocomplete",
+      "FormControlLabel",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3518,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3615,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3852,
+    "tag": "Stack",
+    "children": [
+      "Alert",
+      "Stack",
+      "Stack",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3863,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 3904,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 4020,
+    "tag": "Stack",
+    "children": [
+      "Stack",
+      "FormControl",
+      "Stack",
+      "Box",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 4021,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 4190,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns: {\n                  xs: \"1fr\",\n                  sm:\n                    \"repeat(4,minmax(0,1fr))\"\n                },\n                gap: 1\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "line": 4319,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControlLabel",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrPermissionsPage.jsx",
+    "line": 832,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "FormControl",
+      "FormControl",
+      "TextField",
+      "Stack"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: { xs: \"1fr\", md: \"repeat(2,1fr)\", xl: \"1fr 1fr 1fr 1fr 1.6fr auto\" },\n              gap: 1,\n              alignItems: \"center\"\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrPermissionsPage.jsx",
+    "line": 1048,
+    "tag": "Box",
+    "children": [
+      "Autocomplete",
+      "TextField",
+      "FormControl",
+      "Box",
+      "TextField",
+      "TextField",
+      "FormControlLabel"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: \"grid\", gridTemplateColumns: { xs: \"1fr\", md: \"1fr 1fr\" }, gap: 1.5, pt: 0.5 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\HrPermissionsPage.jsx",
+    "line": 1087,
+    "tag": "Box",
+    "children": [],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\HrPermissionsPage.jsx",
+    "line": 1103,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "line": 1136,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControlLabel"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"1fr 1fr\",\n                sm: \"150px 190px minmax(260px,1fr) 150px\",\n                md: \"170px 210px minmax(320px,1fr) 160px\"\n              },\n              gap: 1.2,\n              mb: 1.5\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "line": 1227,
+    "tag": "Stack",
+    "children": [
+      "Stack",
+      "TextField",
+      "TextField",
+      "Stack",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "line": 1286,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.formGridSx}"
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "line": 1553,
+    "tag": "Stack",
+    "children": [
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ mb: 1.5 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\MonthlyAttendanceReport.jsx",
+    "line": 826,
+    "tag": "Box",
+    "children": [
+      "Box",
+      "FormControl",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: 'flex', alignItems: 'center', gap: 3 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\QualityFormsPage.jsx",
+    "line": 4714,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                    display: \"grid\",\n                    gridTemplateColumns:\n                      \"repeat(2,minmax(0,1fr))\",\n                    columnGap: {\n                      xs: 0.55,\n                      sm: 0.75\n                    },\n                    rowGap: {\n                      xs: 0.75,\n                      sm: 0.95\n                    }\n                  }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\SalesManManagement.jsx",
+    "line": 999,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "FormControlLabel",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"repeat(2,minmax(0,1fr))\",\n                md: \"repeat(4,minmax(0,1fr))\"\n              },\n              gap: { xs: 0.45, sm: 0.7 }\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\ServiceManagement.jsx",
+    "line": 1004,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "Box",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n              display: \"grid\",\n              gridTemplateColumns: {\n                xs: \"repeat(2,minmax(0,1fr))\",\n                sm: \"repeat(4,minmax(0,1fr))\"\n              },\n              gap: { xs: 0.5, sm: 0.8 },\n              \"& .MuiTextField-root\": fieldSx\n            }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\SidebarSettings.jsx",
+    "line": 412,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControl",
+      "Autocomplete",
+      "Autocomplete",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: \"grid\", gridTemplateColumns: { xs: \"1fr\", md: \"repeat(2,minmax(0,1fr))\" }, gap: 1.2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\SidebarSettings.jsx",
+    "line": 504,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "Autocomplete",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({ display: \"grid\", gridTemplateColumns: { xs: \"1fr\", md: \"repeat(2,minmax(0,1fr))\" }, gap: 1.2 }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\TrainerManagement.jsx",
+    "line": 525,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "Box",
+      "Box",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n            display: \"grid\",\n            gridTemplateColumns: { xs: \"repeat(2,minmax(0,1fr))\", sm: \"repeat(4,minmax(0,1fr))\" },\n            gap: { xs: 0.55, sm: 0.8 },\n            \"& .MuiTextField-root\": fieldSx\n          }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\UserActionReport.jsx",
+    "line": 1090,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                  p: {\n                    xs: 0.55,\n                    sm: 0.8\n                  },\n                  display: \"grid\",\n                  gridTemplateColumns: {\n                    xs: \"1fr 1fr\",\n                    sm: \"repeat(3, minmax(0, 1fr))\",\n                    lg: \"repeat(6, minmax(0, 1fr))\"\n                  },\n                  gap: {\n                    xs: 0.45,\n                    sm: 0.65\n                  }\n                }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\UserManagement.jsx",
+    "line": 1396,
+    "tag": "Box",
+    "children": [
+      "TextField",
+      "TextField",
+      "TextField",
+      "TextField",
+      "FormControl",
+      "TextField",
+      "TextField",
+      "TextField"
+    ],
+    "sx": "sx={uiLayout.withUiSx({\n                display: \"grid\",\n                gridTemplateColumns: {\n                  xs: \"repeat(2,minmax(0,1fr))\",\n                  md: \"repeat(4,minmax(0,1fr))\"\n                },\n                gap: { xs: 0.45, sm: 0.7 }\n              }, uiLayout.formGridSx)}"
+  },
+  {
+    "file": "src\\pages\\UserManagement.jsx",
+    "line": 1746,
+    "tag": "Box",
+    "children": [],
+    "sx": "sx={uiLayout.withUiSx({\n                  mt: 1.5,\n                  display: \"grid\",\n                  gridTemplateColumns: {\n                    xs: \"1fr\",\n                    md: \"repeat(2,minmax(0,1fr))\"\n                  },\n                  gap: 1\n                }, uiLayout.formGridSx)}"
+  }
+]

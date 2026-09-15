@@ -193,7 +193,7 @@ export default function PaymentRequestsReport() {
   const theme = useTheme();
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
 
   const user = useMemo(() => currentUser(), []);
   const userGuid = useMemo(() => getUserGuid(user), [user]);

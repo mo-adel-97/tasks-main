@@ -1,0 +1,122 @@
+[
+  {
+    "file": "src\\components\\HrPermissionWorkflowManager.jsx",
+    "explicitRows": 2
+  },
+  {
+    "file": "src\\components\\PaymentOrderDialog.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\components\\RegistrationCommissions.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\components\\tabs\\OverviewTab.js",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\BatchCountManagement.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\BatchManagement.jsx",
+    "explicitRows": 2
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\CashDisbursement.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\CashPaymentOrder.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\CashReceiptAcknowledgment.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\ChangeUserPassword.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\components\\HrPermissionWorkflowManager.jsx",
+    "explicitRows": 2
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\DiplomaStudentsPage.jsx",
+    "explicitRows": 2
+  },
+  {
+    "file": "src\\pages\\DiscountTypeManagement.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "explicitRows": 5
+  },
+  {
+    "file": "src\\pages\\HrContractsPage.jsx",
+    "explicitRows": 3
+  },
+  {
+    "file": "src\\pages\\HrEmployeesPage.jsx",
+    "explicitRows": 3
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "explicitRows": 5
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "explicitRows": 3
+  },
+  {
+    "file": "src\\pages\\HrPermissionsPage.jsx",
+    "explicitRows": 2
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\QualityFormsPage.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\SalesManManagement.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\ServiceManagement.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\SidebarSettings.jsx",
+    "explicitRows": 2
+  },
+  {
+    "file": "src\\pages\\TrainerManagement.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\UserActionReport.jsx",
+    "explicitRows": 1
+  },
+  {
+    "file": "src\\pages\\UserManagement.jsx",
+    "explicitRows": 2
+  }
+]

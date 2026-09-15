@@ -916,7 +916,7 @@ export default function DiscountTypeManagement() {
               },
               gap: { xs: 0.55, sm: 0.8 },
               "& .MuiTextField-root": fieldSx
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود"

@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useMemo, useState } from "react";
 import {
@@ -55,15 +56,10 @@ const getResponsiveSwalOptions = () => {
   const width =
     typeof window !== "undefined"
       ? window.innerWidth
-      : 1600;
+      : DESKTOP_BREAKPOINT;
 
   const isPhoneView = width < 600;
-  const isTabletView =
-    width >= 600 && width < 1600;
 
-  if (!isPhoneView && !isTabletView) {
-    return {};
-  }
 
   return {
     width: isPhoneView ? "82vw" : "420px",
@@ -169,7 +165,7 @@ const RefundRequestDialog = ({
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isCompact = isPhone || isTablet;
@@ -304,7 +300,7 @@ const RefundRequestDialog = ({
     <>
       <style>
         {`
-          @media (max-width: 1599px) {
+          @media screen {
             .sstli-refund-swal {
               max-width: 420px !important;
               border-radius: 14px !important;

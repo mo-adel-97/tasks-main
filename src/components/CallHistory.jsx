@@ -542,7 +542,7 @@ const handleUpdateCall = async () => {
   </DialogTitle>
   <DialogContent sx={{ pt: 3, fontFamily: 'Cairo' }}>
     {editingCall && (
-      <Box component="form" sx={uiLayout.withUiSx({ display: 'flex', flexDirection: 'column', gap: 2 }, uiLayout.formGridSx)}>
+      <Box component="form" sx={uiLayout.withUiSx({ display: 'flex', flexDirection: 'column', gap: 2 }, uiLayout.formSectionSx)}>
 
 
         {/* معلومات المكالمة الأساسية */}

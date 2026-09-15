@@ -812,7 +812,7 @@ export default function SalesManManagement() {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         bgcolor: soft,
         p: { xs: 0.45, sm: 0.8, md: 1 }
@@ -1004,7 +1004,7 @@ export default function SalesManManagement() {
                 md: "repeat(4,minmax(0,1fr))"
               },
               gap: { xs: 0.45, sm: 0.7 }
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"

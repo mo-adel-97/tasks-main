@@ -1,3 +1,5 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
@@ -464,7 +466,7 @@ const TextInfo = ({ label, value, strong = false }) => (
       border: `1px solid ${primaryLight}`,
       backgroundColor: whiteColor,
       height: "100%",
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.5,
         borderRadius: 1.3,
         minHeight: 48
@@ -481,7 +483,7 @@ const TextInfo = ({ label, value, strong = false }) => (
         color: primaryColor,
         fontWeight: 900,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -493,7 +495,7 @@ const TextInfo = ({ label, value, strong = false }) => (
         mt: 0.3,
         fontSize: "0.9rem",
         color: strong ? accentColor : textColor,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           mt: 0.12,
           fontSize: "0.75rem",
           lineHeight: 1.2
@@ -523,7 +525,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
       backgroundColor: whiteColor,
       minWidth: 145,
       textAlign: "center",
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         minWidth: 0,
         px: 0.45,
         py: 0.4,
@@ -543,7 +545,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         color: primaryColor,
         fontWeight: 900,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -556,7 +558,7 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         color,
         fontWeight: 1000,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -573,7 +575,7 @@ const MoneyCell = ({ value, color = textColor }) => (
       fontWeight: 1000,
       color,
       fontSize: "0.84rem",
-      "@media (max-width:1599px)": { fontSize: "0.75rem" },
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
       "@media (max-width:599px)": { fontSize: "0.75rem" }
     }}
   >
@@ -590,7 +592,7 @@ const EllipsisCell = ({ value, align = "start" }) => (
         direction: "rtl",
         fontWeight: 900,
         fontSize: "0.8rem",
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -607,7 +609,7 @@ const EmptyBox = ({ text }) => (
   <Box
     sx={{
       height: 220,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         height: 115,
         fontSize: "0.75rem"
       },
@@ -638,7 +640,7 @@ const StepPointer = ({ show }) => {
         justifyContent: "center",
         width: 36,
         height: 36,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           width: 22,
           height: 22,
           fontSize: "0.85rem"
@@ -673,7 +675,7 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
       p: 1.25,
       borderRadius: 3,
       height: "100%",
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.5,
         borderRadius: 1.5,
         minHeight: 88
@@ -703,7 +705,7 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
     <Stack
       spacing={1}
       sx={{
-        "@media (max-width:1599px)": { gap: "4px !important" }
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { gap: "4px !important" }
       }}
     >
       <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
@@ -712,14 +714,14 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
           alignItems="center"
           spacing={1}
           sx={{
-            "@media (max-width:1599px)": { gap: "4px !important" }
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { gap: "4px !important" }
           }}
         >
           <Box
             sx={{
               width: 30,
               height: 30,
-              "@media (max-width:1599px)": {
+              [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                 width: 20,
                 height: 20,
                 fontSize: "0.75rem"
@@ -752,7 +754,7 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
                 color: active ? accentColor : textColor,
                 fontSize: "0.95rem",
                 lineHeight: 1.1,
-                "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
                 "@media (max-width:599px)": { fontSize: "0.75rem" }
               }}
             >
@@ -764,7 +766,7 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
                 color: "#667085",
                 fontSize: "0.75rem",
                 lineHeight: 1.1,
-                "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
                 "@media (max-width:599px)": { fontSize: "0.75rem" }
               }}
             >
@@ -789,7 +791,7 @@ const InlineHint = ({ children, color = primaryColor }) => (
       fontWeight: 900,
       color,
       lineHeight: 1.7,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         mt: 0.28,
         fontSize: "0.75rem",
         lineHeight: 1.35
@@ -810,7 +812,7 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
     sx={{
       p: 1.2,
       borderRadius: 3,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.5,
         borderRadius: 1.4
       },
@@ -827,7 +829,7 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
           fontWeight: 1000,
           color: required && !file ? accentColor : textColor,
           fontSize: "0.86rem",
-          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
           "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
@@ -843,7 +845,7 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
           sx={uiLayout.withUiSx({
             borderRadius: 2,
             fontWeight: 900,
-            "@media (max-width:1599px)": {
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               minHeight: 29,
               px: 0.55,
               fontSize: "0.75rem"
@@ -876,7 +878,7 @@ const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => 
         sx={{
           fontSize: "0.76rem",
           fontWeight: 800,
-          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
           "@media (max-width:599px)": { fontSize: "0.75rem" },
           color: file ? primaryDark : "#8795a1",
           direction: "ltr",
@@ -901,7 +903,7 @@ const AdmissionOrderDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const [branches, setBranches] = useState([]);
@@ -2379,7 +2381,7 @@ const openAdmissionPrint = async (printData) => {
       }
     }
   </style>
-</head>
+${PRINT_READY_SCRIPT}</head>
 
 <body>
   <main class="page">
@@ -2553,7 +2555,7 @@ const openAdmissionPrint = async (printData) => {
       ).then(function () {
         setTimeout(function () {
           window.focus();
-          window.print();
+          printWhenReady();
         }, 300);
       });
     });
@@ -3087,7 +3089,7 @@ const openAdmissionPrint = async (printData) => {
           color: #475467 !important;
         }
 
-        @media (max-width: 1599px) {
+        @media screen {
           .sstli-swal-popup {
             width: min(92vw, 420px) !important;
             padding: 0.75rem !important;

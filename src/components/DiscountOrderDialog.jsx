@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -68,11 +69,9 @@ const readValue = (object, ...keys) => {
 };
 
 const getResponsiveSwalOptions = () => {
-  const width = typeof window !== "undefined" ? window.innerWidth : 1600;
+  const width = typeof window !== "undefined" ? window.innerWidth : DESKTOP_BREAKPOINT;
   const isPhoneView = width < 600;
-  const isTabletView = width >= 600 && width < 1600;
 
-  if (!isPhoneView && !isTabletView) return {};
 
   return {
     width: isPhoneView ? "82vw" : "420px",
@@ -127,7 +126,7 @@ const StudentField = ({ label, value }) => (
     value={value || ""}
     InputProps={{ readOnly: true }}
     sx={uiLayout.withUiSx({
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         "& .MuiInputLabel-root": { fontSize: "0.75rem" },
         "& .MuiInputBase-input": {
           fontSize: "0.75rem",
@@ -162,7 +161,7 @@ const PromoStudentsDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const [nationalId, setNationalId] = useState("");
@@ -495,7 +494,7 @@ const PromoDetailsDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const [loading, setLoading] = useState(false);
@@ -712,7 +711,7 @@ const DiscountOrderDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const currentUser = useMemo(() => getCurrentUser(), []);
@@ -937,7 +936,7 @@ const DiscountOrderDialog = ({
     <>
       <style>
         {`
-          @media (max-width: 1599px) {
+          @media screen {
             .sstli-discount-swal {
               max-width: 420px !important;
               border-radius: 14px !important;

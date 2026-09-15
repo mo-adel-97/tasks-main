@@ -340,30 +340,75 @@ const apiErrorText = (result, fallback, response) => {
   return fallback;
 };
 
-const getActor = () => {
+const getStoredUser = () => {
   try {
-    const user = JSON.parse(
-      localStorage.getItem("user") || "null"
-    );
-
-    return {
-      actorUserGuid:
-        user?.guid ||
-        user?.Guid ||
-        null,
-      actorName:
-        user?.fullName ||
-        user?.FullName ||
-        user?.userName ||
-        user?.UserName ||
-        "مستخدم النظام"
-    };
+    return JSON.parse(localStorage.getItem("user") || "{}");
   } catch {
-    return {
-      actorUserGuid: null,
-      actorName: "مستخدم النظام"
-    };
+    return {};
   }
+};
+
+const getStoredUserGuid = (user) => {
+  const candidate =
+    user?.userGuid ||
+    user?.UserGuid ||
+    user?.guid ||
+    user?.Guid ||
+    user?.USER_GUID ||
+    user?.USER_GUID____ ||
+    user?.sellerGuid ||
+    user?.SellerGuid ||
+    localStorage.getItem("userGuid") ||
+    localStorage.getItem("UserGuid") ||
+    localStorage.getItem("guid") ||
+    "";
+
+  const value = String(candidate || "").trim();
+
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+    ? value
+    : "";
+};
+
+const getActor = () => {
+  const user = getStoredUser();
+
+  return {
+    actorUserGuid: getStoredUserGuid(user) || null,
+    actorName:
+      user?.fullName ||
+      user?.FullName ||
+      user?.userName ||
+      user?.UserName ||
+      user?.name ||
+      user?.Name ||
+      "مستخدم النظام"
+  };
+};
+
+const getActorHeaders = (extraHeaders = {}) => {
+  const actor = getActor();
+
+  return {
+    ...extraHeaders,
+    ...(actor.actorUserGuid
+      ? { "X-User-Guid": String(actor.actorUserGuid) }
+      : {})
+  };
+};
+
+const assertCurrentActor = () => {
+  const actor = getActor();
+
+  if (!actor.actorUserGuid) {
+    console.error(
+      "[HrLeavesPage] Current user GUID was not found in localStorage user object.",
+      getStoredUser()
+    );
+    throw new Error("تعذر تحديد المستخدم الحالي");
+  }
+
+  return actor;
 };
 
 const statusInfo = (status) => {
@@ -587,9 +632,12 @@ export default function HrLeavesPage() {
     setLoading(true);
 
     try {
+      const actor = assertCurrentActor();
+
       const params = new URLSearchParams({
         page: String(requestPage),
-        pageSize: "20"
+        pageSize: "20",
+        actorUserGuid: String(actor.actorUserGuid)
       });
 
       Object.entries(requestFilters).forEach(
@@ -602,7 +650,10 @@ export default function HrLeavesPage() {
 
       const response = await fetch(
         `${API_BASE_URL}/api/hr/leaves?${params.toString()}`,
-        { cache: "no-store" }
+        {
+          cache: "no-store",
+          headers: getActorHeaders()
+        }
       );
 
       const result = await response
@@ -784,9 +835,11 @@ export default function HrLeavesPage() {
 
 
   const loadMyApprovals = useCallback(async () => {
-    const actor = getActor();
+    let actor;
 
-    if (!actor.actorUserGuid) {
+    try {
+      actor = assertCurrentActor();
+    } catch {
       setMyApprovals([]);
       return;
     }
@@ -796,7 +849,10 @@ export default function HrLeavesPage() {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/hr/leaves/workflow/my-approvals?actorUserGuid=${encodeURIComponent(actor.actorUserGuid)}`,
-        { cache: "no-store" }
+        {
+          cache: "no-store",
+          headers: getActorHeaders()
+        }
       );
 
       const result = await response.json().catch(() => null);
@@ -910,7 +966,9 @@ export default function HrLeavesPage() {
         `${API_BASE_URL}/api/hr/leaves/${row.leaveRequestGuid}/${action}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: getActorHeaders({
+            "Content-Type": "application/json"
+          }),
           body: JSON.stringify({
             notes: String(ask.value || "").trim(),
             actorUserGuid: actor.actorUserGuid,
@@ -2165,7 +2223,7 @@ export default function HrLeavesPage() {
                 border: `1px solid ${border}`
               }}
             >
-              <Stack sx={uiLayout.formGridSx}
+              <Stack sx={uiLayout.formSectionSx}
                 direction={{
                   xs: "column",
                   lg: "row"
@@ -3261,7 +3319,7 @@ export default function HrLeavesPage() {
 
             <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.6, overflow: "hidden" }}>
               <TableContainer sx={uiLayout.withUiSx({ overflowX: "auto" }, uiLayout.tableContainerSx)}>
-                <Table size="small" sx={{minWidth:1320}}>
+                <Table size="small" sx={{ width: '100%', minWidth: 720, '& th, & td': { px: 0.75, whiteSpace: 'normal', overflowWrap: 'anywhere' } }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>نوع الإجازة</TableCell>
@@ -3354,7 +3412,7 @@ export default function HrLeavesPage() {
                 اختر <b>نوع الإجازة + المسمى الوظيفي</b>. القسم ومديره سيظهران تلقائيًا من الإعدادات الموجودة بالفعل.
               </Alert>
 
-              <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"1fr 1fr 1fr"},gap:1.2}, uiLayout.formGridSx)}>
+              <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"1fr 1fr 1fr"},gap:1.2}, uiLayout.formSectionSx)}>
                 <FormControl sx={uiLayout.formFieldSx} size="small">
                   <InputLabel>نوع الإجازة</InputLabel>
                   <Select
@@ -3415,7 +3473,7 @@ export default function HrLeavesPage() {
                 return (
                   <Paper key={index} variant="outlined" sx={{p:1.25,borderRadius:2}}>
                     <Stack spacing={1}>
-                      <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px minmax(210px,1fr) minmax(250px,1.3fr) minmax(180px,1fr) auto"},gap:1,alignItems:"center"}, uiLayout.formGridSx)}>
+                      <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px minmax(210px,1fr) minmax(250px,1.3fr) minmax(180px,1fr) auto"},gap:1,alignItems:"center"}, uiLayout.formSectionSx)}>
                         <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الخطوة" value={index+1} disabled/>
                         <FormControl sx={uiLayout.formFieldSx} size="small">
                           <InputLabel>تذهب إلى</InputLabel>
@@ -3513,9 +3571,9 @@ export default function HrLeavesPage() {
 
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)} open={initOpen} onClose={()=>!initSaving&&setInitOpen(false)} fullWidth maxWidth="sm" dir={LEAVES_PAGE_DIRECTION}>
-        <DialogTitle sx={{fontWeight:950}}>تهيئة أرصدة الموظفين</DialogTitle><DialogContent dividers><Stack sx={uiLayout.formGridSx} spacing={1}>
+        <DialogTitle sx={{fontWeight:950}}>تهيئة أرصدة الموظفين</DialogTitle><DialogContent dividers><Stack sx={uiLayout.formSectionSx} spacing={1}>
           <Alert severity="info">اختار السنة ونوع الإجازة والرصيد. بدون فرع أو موظف = كل الموظفين النشطين. الافتراضي لا يلمس أي رصيد موجود مسبقًا.</Alert>
-          <Stack sx={uiLayout.formGridSx} direction={{xs:"column",sm:"row"}} spacing={1}><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /></Stack>
+          <Stack sx={uiLayout.formSectionSx} direction={{xs:"column",sm:"row"}} spacing={1}><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth type="number" label="السنة" value={initForm.balanceYear} onChange={e=>setInitForm(x=>({...x,balanceYear:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /><TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} fullWidth type="number" label="عدد الأيام" value={initForm.days} onChange={e=>setInitForm(x=>({...x,days:e.target.value}))} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} /></Stack>
           <FormControl sx={uiLayout.formFieldSx} fullWidth><InputLabel>نوع الإجازة</InputLabel><Select
                   MenuProps={RTL_MENU_PROPS} label="نوع الإجازة" value={initForm.leaveTypeGuid} onChange={e=>setInitForm(x=>({...x,leaveTypeGuid:e.target.value}))}>{lookups.leaveTypes.filter(x=>x.requiresBalance).map(x=><MenuItem key={x.leaveTypeGuid} value={x.leaveTypeGuid}>{x.leaveTypeName}</MenuItem>)}</Select></FormControl>
           <FormControl sx={uiLayout.formFieldSx} fullWidth><InputLabel>الفرع - اختياري</InputLabel><Select
@@ -4196,7 +4254,7 @@ export default function HrLeavesPage() {
                     "repeat(4,minmax(0,1fr))"
                 },
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 type="number"

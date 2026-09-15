@@ -128,7 +128,7 @@ const ContentContainer = styled(PageContainer)(() => ({
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 16,
 
-  "@media (max-width:1599px)": {
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
     borderRadius: 11,
   },
 
@@ -163,7 +163,7 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
       <CardContent
         sx={{
           p: 3,
-          "@media (max-width:1599px)": { p: 1.1 },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { p: 1.1 },
           "@media (max-width:599px)": { p: 0.75 }
         }}
       >
@@ -174,7 +174,7 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
           mb={2}
           gap={2}
           sx={{
-            "@media (max-width:1599px)": { mb: 0.75, gap: 0.7 },
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { mb: 0.75, gap: 0.7 },
             "@media (max-width:599px)": { mb: 0.5, gap: 0.45 }
           }}
         >
@@ -183,7 +183,7 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
               sx={{
                 width: 44,
                 height: 44,
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   width: 30,
                   height: 30
                 },
@@ -207,7 +207,7 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
                 fontWeight={700}
                 sx={{
                   color: colorPalette.textDark,
-                  "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
                   "@media (max-width:599px)": { fontSize: "0.75rem" }
                 }}
               >
@@ -218,7 +218,7 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
                   variant="caption"
                   sx={{
                     color: colorPalette.textLight,
-                    "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
                     "@media (max-width:599px)": { fontSize: "0.75rem" }
                   }}
                 >
@@ -235,7 +235,7 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
           sx={{
             mb: 2,
             borderColor: colorPalette.primaryLighter,
-            "@media (max-width:1599px)": { mb: 0.65 }
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { mb: 0.65 }
           }}
         />
         {children}
@@ -263,7 +263,7 @@ const StatCard = ({ title, value, icon, color, hint }) => {
       <CardContent
         sx={{
           p: 2.5,
-          "@media (max-width:1599px)": { p: 0.85 },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { p: 0.85 },
           "@media (max-width:599px)": { p: 0.6 }
         }}
       >
@@ -273,7 +273,7 @@ const StatCard = ({ title, value, icon, color, hint }) => {
               variant="subtitle2"
               sx={{
                 color: colorPalette.textLight,
-                "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
                 "@media (max-width:599px)": { fontSize: "0.75rem" }
               }}
             >
@@ -284,7 +284,7 @@ const StatCard = ({ title, value, icon, color, hint }) => {
               fontWeight={800}
               sx={{
                 color: colorValue,
-                "@media (max-width:1599px)": { fontSize: "1rem" },
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "1rem" },
                 "@media (max-width:599px)": { fontSize: "0.82rem" }
               }}
             >
@@ -295,7 +295,7 @@ const StatCard = ({ title, value, icon, color, hint }) => {
                 variant="caption"
                 sx={{
                   color: colorPalette.textLight,
-                  "@media (max-width:1599px)": { fontSize: "0.75rem" },
+                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
                   "@media (max-width:599px)": { fontSize: "0.75rem" }
                 }}
               >
@@ -307,7 +307,7 @@ const StatCard = ({ title, value, icon, color, hint }) => {
             sx={{
               width: 48,
               height: 48,
-              "@media (max-width:1599px)": {
+              [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                 width: 31,
                 height: 31
               },
@@ -337,7 +337,7 @@ const Row = ({ label, value, color, isCurrency }) => (
     alignItems="center"
     py={0.5}
     sx={{
-      "@media (max-width:1599px)": { py: 0.2, gap: 0.5 },
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { py: 0.2, gap: 0.5 },
       "@media (max-width:599px)": { py: 0.15 }
     }}
   >
@@ -345,7 +345,7 @@ const Row = ({ label, value, color, isCurrency }) => (
       variant="body2"
       sx={{
         color: colorPalette.textLight,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -356,7 +356,7 @@ const Row = ({ label, value, color, isCurrency }) => (
       fontWeight={600}
       sx={{
         color: color || colorPalette.textDark,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -379,7 +379,7 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
       sx={{
         p: 1.2,
         borderRadius: 2,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           p: 0.55,
           borderRadius: 1.4
         },
@@ -400,7 +400,7 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
           sx={{
             width: 32,
             height: 32,
-            "@media (max-width:1599px)": {
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               width: 24,
               height: 24
             },
@@ -421,7 +421,7 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
           variant="body2"
           sx={{
             color: colorPalette.textLight,
-            "@media (max-width:1599px)": { fontSize: "0.75rem" },
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
             "@media (max-width:599px)": { fontSize: "0.75rem" }
           }}
         >
@@ -434,7 +434,7 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
         fontWeight={800}
         sx={{
           color: t.fg,
-          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
           "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
@@ -547,7 +547,7 @@ const RegistrationCommissions = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -941,7 +941,7 @@ setData(zeroizeForHamza(json[0]));
                     : undefined,
                   gap: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
                   alignItems: "center"
-                }, uiLayout.formGridSx)}
+                }, uiLayout.formSectionSx)}
               >
                 <DatePicker
                   label="تاريخ البداية"

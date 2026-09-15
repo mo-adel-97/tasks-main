@@ -835,7 +835,7 @@ export default function HrPermissionsPage() {
               gridTemplateColumns: { xs: "1fr", md: "repeat(2,1fr)", xl: "1fr 1fr 1fr 1fr 1.6fr auto" },
               gap: 1,
               alignItems: "center"
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx}
               type="date"
@@ -1045,7 +1045,7 @@ export default function HrPermissionsPage() {
           {lookupsLoading ? (
             <Stack alignItems="center" sx={{ py: 4 }}><CircularProgress /></Stack>
           ) : (
-            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5, pt: 0.5 }, uiLayout.formGridSx)}>
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5, pt: 0.5 }, uiLayout.formSectionSx)}>
               <Autocomplete
               ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
                 options={lookups.employees}

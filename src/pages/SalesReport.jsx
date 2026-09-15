@@ -1768,7 +1768,7 @@ export default function SalesReport() {
         {
           field: "notes",
           headerName: "ملاحظات",
-          minWidth: 150,
+          minWidth: 140,
           flex: 1.2,
           align: "center",
           headerAlign: "center"

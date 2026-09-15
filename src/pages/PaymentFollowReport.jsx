@@ -376,7 +376,7 @@ const TextCell = ({
         fontSize: "0.76rem",
         fontWeight: 700,
         "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.15, fontWeight: 800 },
-        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem", lineHeight: 1.25 }
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem", lineHeight: 1.25 }
       }}
     >
       {value || "-"}
@@ -393,7 +393,7 @@ const MoneyCell = ({ value }) => (
       fontSize: "0.75rem",
       fontWeight: 800,
       "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.1, fontWeight: 900 },
-      "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem", lineHeight: 1.2 }
+      [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem", lineHeight: 1.2 }
     }}
   >
     {money(value)}
@@ -412,7 +412,7 @@ const TotalItem = ({
       py: 1.1,
       borderRadius: 2.5,
       "@media (max-width: 599px)": { px: 0.55, py: 0.48, borderRadius: 1.5, minHeight: 43 },
-      "@media (min-width: 600px) and (max-width: 1599px)": { px: 0.75, py: 0.65, borderRadius: 2 },
+      [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { px: 0.75, py: 0.65, borderRadius: 2 },
       border:
         "1px solid rgba(5,117,70,0.12)",
       background:
@@ -441,7 +441,7 @@ const TotalItem = ({
         fontSize: "0.75rem",
         fontWeight: 800,
         "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.1 },
-        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" },
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -458,7 +458,7 @@ const TotalItem = ({
         fontSize: "0.9rem",
         fontWeight: 900,
         "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.15 },
-        "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" },
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -521,7 +521,7 @@ const PaymentTotalsSection = ({
             fontSize: "0.76rem",
             fontWeight: 800,
             "@media (max-width: 599px)": { fontSize: "0.75rem" },
-            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" },
+            [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
             opacity: 0.88
           }}
         >
@@ -535,7 +535,7 @@ const PaymentTotalsSection = ({
             fontSize: "0.88rem",
             fontWeight: 900,
             "@media (max-width: 599px)": { fontSize: "0.75rem", lineHeight: 1.3 },
-            "@media (min-width: 600px) and (max-width: 1599px)": { fontSize: "0.75rem" }
+            [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" }
           }}
         >
           العدد {rowCount} — المسددين {totals.paid} — لم يسدد {totals.unpaid}
@@ -824,7 +824,7 @@ const PaymentFollowReport = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(

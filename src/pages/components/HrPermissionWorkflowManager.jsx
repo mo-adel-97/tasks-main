@@ -209,7 +209,7 @@ export default function HrPermissionWorkflowManager({ buttonColor = "#fff", butt
         </Stack>}
 
         {tab===1 && <Stack sx={uiLayout.filterBarSx} spacing={1}>
-          <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"1.4fr 1fr 1.4fr 100px"},gap:1}, uiLayout.formGridSx)}>
+          <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"1.4fr 1fr 1.4fr 100px"},gap:1}, uiLayout.formSectionSx)}>
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم المسار" value={form.policyName} onChange={(e)=>setForm((x)=>({...x,policyName:e.target.value}))}/>
             <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>نوع الإذن</InputLabel><Select label="نوع الإذن" value={form.permissionType} onChange={(e)=>setForm((x)=>({...x,permissionType:e.target.value}))}><MenuItem value="">كل الأنواع</MenuItem>{(config.permissionTypes||[]).map((t)=><MenuItem key={t.value} value={t.value}>{t.name}</MenuItem>)}</Select></FormControl>
             <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>الوحدة المصدر</InputLabel><Select label="الوحدة المصدر" value={form.sourceOrgUnitGuid} onChange={(e)=>setForm((x)=>({...x,sourceOrgUnitGuid:e.target.value}))}><MenuItem value="">كل الوحدات</MenuItem>{(config.units||[]).map((u)=><MenuItem key={u.orgUnitGuid} value={u.orgUnitGuid}>{u.unitName}</MenuItem>)}</Select></FormControl>
@@ -218,8 +218,8 @@ export default function HrPermissionWorkflowManager({ buttonColor = "#fff", butt
           <FormControl size="small" sx={uiLayout.withUiSx({width:260}, uiLayout.formFieldSx)}><InputLabel>تطبيق الوحدة</InputLabel><Select label="تطبيق الوحدة" value={form.includeDescendants?"yes":"no"} onChange={(e)=>setForm((x)=>({...x,includeDescendants:e.target.value==="yes"}))}><MenuItem value="yes">الوحدة وكل ما تحتها</MenuItem><MenuItem value="no">الوحدة فقط</MenuItem></Select></FormControl>
 
           <Typography sx={{fontWeight:950}}>خطوات الموافقة</Typography>
-          {form.steps.map((step,index)=><Paper key={index} variant="outlined" sx={uiLayout.withUiSx({p:1,borderRadius:2.5}, uiLayout.formGridSx)}>
-            <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px 1.2fr 1.3fr 1fr auto"},gap:1,alignItems:"center"}, uiLayout.formGridSx)}>
+          {form.steps.map((step,index)=><Paper key={index} variant="outlined" sx={uiLayout.withUiSx({p:1,borderRadius:2.5}, uiLayout.formSectionSx)}>
+            <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px 1.2fr 1.3fr 1fr auto"},gap:1,alignItems:"center"}, uiLayout.formSectionSx)}>
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الخطوة" value={index+1} disabled/>
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم الخطوة" value={step.stepName} onChange={(e)=>updateStep(index,{stepName:e.target.value})}/>
               <FormControl sx={uiLayout.formFieldSx} size="small"><InputLabel>الموافق من</InputLabel><Select label="الموافق من" value={step.approverSource} onChange={(e)=>updateStep(index,{approverSource:e.target.value,targetOrgUnitGuid:"",approverUserGuids:[]})}>{(config.approverSources||[]).map((s)=><MenuItem key={s.value} value={s.value}>{s.name}</MenuItem>)}</Select></FormControl>

@@ -102,7 +102,7 @@ const DocumentHistoryDialog = ({
       field: "notes",
       headerName: "ملاحظات",
       flex: 1.5,
-      minWidth: 220,
+      minWidth: 140,
       align: "center",
       headerAlign: "center"
     }

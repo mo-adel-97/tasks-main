@@ -251,7 +251,7 @@ export default function BalanceReviewPage() {
   const theme = useTheme();
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
 
   const user = useMemo(() => currentUser(), []);
   const userGuid = useMemo(() => getUserGuid(user), [user]);
@@ -541,20 +541,20 @@ export default function BalanceReviewPage() {
       {
         field: "billCode",
         headerName: "رقم الفاتورة",
-        width: 115,
+        width: 110,
         align: "center",
         headerAlign: "center"
       },
       {
         field: "studentName",
         headerName: "اسم الطالب",
-        minWidth: 190,
+        minWidth: 140,
         flex: 1.15
       },
       {
         field: "branchName",
         headerName: "الفرع",
-        minWidth: 200,
+        minWidth: 140,
         flex: 1.15
       },
       {
@@ -610,7 +610,7 @@ export default function BalanceReviewPage() {
       {
         field: "notes",
         headerName: "التوضيح",
-        minWidth: 280,
+        minWidth: 140,
         flex: 1.4
       }
     ],
@@ -695,7 +695,7 @@ export default function BalanceReviewPage() {
       headerAlign: "center",
       valueFormatter: (params) => money(params.value)
     },
-    { field: "notes", headerName: "التوضيح", flex: 1.5, minWidth: 300 }
+    { field: "notes", headerName: "التوضيح", flex: 1.5, minWidth: 140 }
   ], []);
 
   const compactCheckColumns = useMemo(() => [
@@ -773,11 +773,11 @@ export default function BalanceReviewPage() {
     },
     { field: "problemTitle", headerName: "المشكلة", minWidth: 220, flex: 1.15 },
     { field: "suggestedPlace", headerName: "مكان المراجعة", minWidth: 200, flex: 1 },
-    { field: "billCode", headerName: "رقم المستند", width: 115, align: "center", headerAlign: "center" },
+    { field: "billCode", headerName: "رقم المستند", width: 110, align: "center", headerAlign: "center" },
     { field: "day1Code", headerName: "رقم القيد", width: 105, align: "center", headerAlign: "center" },
-    { field: "studentName", headerName: "الطالب / الحساب", minWidth: 175, flex: 1 },
-    { field: "nationalId", headerName: "الهوية", width: 120, align: "center", headerAlign: "center" },
-    { field: "branchName", headerName: "الفرع", minWidth: 190, flex: 1 },
+    { field: "studentName", headerName: "الطالب / الحساب", minWidth: 140, flex: 1 },
+    { field: "nationalId", headerName: "الهوية", width: 110, align: "center", headerAlign: "center" },
+    { field: "branchName", headerName: "الفرع", minWidth: 140, flex: 1 },
     {
       field: "amount",
       headerName: "القيمة",
@@ -802,7 +802,7 @@ export default function BalanceReviewPage() {
       headerAlign: "center",
       valueFormatter: (params) => gridMoney(params.value)
     },
-    { field: "notes", headerName: "البيان", minWidth: 240, flex: 1.2 }
+    { field: "notes", headerName: "البيان", minWidth: 140, flex: 1.2 }
   ], []);
 
   const compactProblemColumns = useMemo(() => {
@@ -936,7 +936,7 @@ export default function BalanceReviewPage() {
       <PageContainer
         component="main"
         sx={{
-          maxWidth: "100vw",
+          maxWidth: "100%",
           
           boxSizing: "border-box",
           transition: "margin 0.2s ease, width 0.2s ease",

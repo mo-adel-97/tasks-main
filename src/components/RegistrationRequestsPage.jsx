@@ -61,7 +61,7 @@ const shortName = (name) => {
 const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isCompact = isPhone || isTablet;
 
@@ -118,7 +118,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
   }, []);
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100vw", overflowX: "hidden", background: "#f5f8f7", direction: "rtl" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100%", overflowX: "hidden", background: "#f5f8f7", direction: "rtl" }}>
       {!isDesktop && (
         <GlobalStyles
           styles={{

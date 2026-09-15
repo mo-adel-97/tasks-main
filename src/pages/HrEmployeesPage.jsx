@@ -497,7 +497,7 @@ const HrEmployeesPage = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -3657,7 +3657,7 @@ const HrEmployeesPage = () => {
                 "& .MuiInputBase-root.Mui-focused": {
                   boxShadow: "0 0 0 4px rgba(5,117,70,.06)"
                 }
-              }], uiLayout.formGridSx)}
+              }], uiLayout.formSectionSx)}
             >
               <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>الفرع</InputLabel>
@@ -4952,7 +4952,7 @@ const HrEmployeesPage = () => {
                               "& .MuiSelect-select": {
                                 textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                               }
-                            }], uiLayout.formGridSx)}
+                            }], uiLayout.formSectionSx)}
                           >
                             <TextField InputLabelProps={{ shrink: true }}
                               size="small"
@@ -5531,7 +5531,7 @@ const HrEmployeesPage = () => {
                             "& .MuiSelect-select": {
                               textAlign: EMPLOYEE_DIALOG_TEXT_ALIGN
                             }
-                          }], uiLayout.formGridSx)}
+                          }], uiLayout.formSectionSx)}
                         >
                           <TextField sx={uiLayout.formFieldSx}
                             size="small"
@@ -9658,7 +9658,7 @@ const HrEmployeesPage = () => {
               direction: EMPLOYEE_DIALOG_DIRECTION
             }}
           >
-            <Stack sx={uiLayout.formGridSx} spacing={1.1}>
+            <Stack sx={uiLayout.formSectionSx} spacing={1.1}>
               <Paper
                 variant="outlined"
                 sx={{

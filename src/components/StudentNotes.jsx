@@ -72,7 +72,7 @@ export default function StudentNotes() {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -192,7 +192,7 @@ export default function StudentNotes() {
         background: bg,
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl"
       }}

@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -56,7 +57,7 @@ const TrainerStudentGrid2 = () => {
   
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
-  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`, { noSsr: true });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // عدد الصفوف في كل صفحة - على جميع الشاشات
@@ -1109,7 +1110,7 @@ const getStatusDisplayText = (status) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>تقرير السداد - ${fromDate.format('YYYY/MM/DD')} إلى ${toDate.format('YYYY/MM/DD')}</title>
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <style>
+        <style>@page { size: A4 portrait; margin: 10mm; }
           * {
             margin: 0;
             padding: 0;
@@ -1489,7 +1490,7 @@ const getStatusDisplayText = (status) => {
             }
           }
         </style>
-      </head>
+      ${PRINT_READY_SCRIPT}</head>
       <body>
         <div class="report-container">
           <!-- Header -->
@@ -1709,7 +1710,7 @@ const getStatusDisplayText = (status) => {
           <div class="report-footer">
             <p>تم إنشاء هذا التقرير تلقائياً بواسطة نظام المعهد السعودي للتدريب</p>
             <p>جميع الحقوق محفوظة © ${new Date().getFullYear()}</p>
-            <button class="print-button" onclick="window.print()">🖨️ طباعة التقرير</button>
+            <button class="print-button" onclick="printWhenReady()">🖨️ طباعة التقرير</button>
           </div>
         </div>
         
@@ -1723,7 +1724,7 @@ const getStatusDisplayText = (status) => {
             const printButton = document.querySelector('.print-button');
             if (printButton) {
               printButton.addEventListener('click', function() {
-                window.print();
+                printWhenReady();
               });
             }
           });
@@ -1962,7 +1963,7 @@ const getStatusDisplayText = (status) => {
             tr { break-inside: avoid; }
           }
         </style>
-      </head>
+      ${PRINT_READY_SCRIPT}</head>
       <body>
         <div class="pdf-page">
           <div class="pdf-header">
@@ -2036,7 +2037,7 @@ const getStatusDisplayText = (status) => {
           </div>
 
           <div class="no-print">
-            <button class="print-btn" onclick="window.print()">حفظ / طباعة PDF</button>
+            <button class="print-btn" onclick="printWhenReady()">حفظ / طباعة PDF</button>
           </div>
         </div>
       </body>

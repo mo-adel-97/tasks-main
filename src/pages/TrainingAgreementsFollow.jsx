@@ -224,7 +224,7 @@ const TrainingAgreementsFollow = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -481,14 +481,14 @@ const TrainingAgreementsFollow = () => {
         headerName: "الفرع",
         type: "string",
         flex: 1.45,
-        minWidth: 160
+        minWidth: 140
       },
       {
         field: "studentName",
         headerName: "اسم الطالب",
         type: "string",
         flex: 1.3,
-        minWidth: 145
+        minWidth: 140
       },
       {
         field: "studentTel",
@@ -502,7 +502,7 @@ const TrainingAgreementsFollow = () => {
         headerName: "رقم الهوية",
         type: "string",
         flex: 0.95,
-        minWidth: 115
+        minWidth: 110
       },
       {
         field: "registeredDays",
@@ -774,7 +774,7 @@ const TrainingAgreementsFollow = () => {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         background: "#f5f8f7",
         direction: "rtl"

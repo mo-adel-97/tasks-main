@@ -1416,7 +1416,7 @@ export default function HrJobTitlesPage() {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         bgcolor: "#f4f7f5",
         p: { xs: 0.8, sm: 1.2, md: 1.8 },
@@ -1644,7 +1644,7 @@ export default function HrJobTitlesPage() {
                 sm: "minmax(260px,1fr) 180px"
               },
               gap: 1
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
@@ -2018,7 +2018,7 @@ export default function HrJobTitlesPage() {
               gap: 1.2,
               textAlign:
                 DIALOG_TEXT_ALIGN
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم المسمى الوظيفي"
@@ -2270,7 +2270,7 @@ export default function HrJobTitlesPage() {
                   },
                   gap: 1,
                   mb: 1.2
-                }, uiLayout.formGridSx)}
+                }, uiLayout.formSectionSx)}
               >
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   size="small"
@@ -2561,7 +2561,7 @@ export default function HrJobTitlesPage() {
                   sm: "repeat(2,minmax(0,1fr))"
                 },
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <FormControl sx={uiLayout.formFieldSx} fullWidth>
                 <InputLabel>
@@ -2765,7 +2765,7 @@ export default function HrJobTitlesPage() {
               },
               gap: 1,
               mb: 1.2
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"

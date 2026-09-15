@@ -267,7 +267,7 @@ const TextCell = ({
           fontSize: "0.75rem",
           lineHeight: 1.05
         },
-        "@media (min-width: 600px) and (max-width: 1599px)": {
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           fontSize: "0.75rem",
           lineHeight: 1.15
         }
@@ -323,7 +323,7 @@ const StatusChip = ({
             px: 0.35
           }
         },
-        "@media (min-width: 600px) and (max-width: 1599px)": {
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           height: 24,
           fontSize: "0.75rem"
         }
@@ -543,7 +543,7 @@ const PromoStudentsDialog = ({
             maxHeight: "86dvh",
             borderRadius: 2.5
           },
-          "@media (min-width: 600px) and (max-width: 1599px)": {
+          [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             width: "90vw",
             maxHeight: "84dvh"
           }
@@ -707,7 +707,7 @@ const DiscountRequestsReport = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -1566,7 +1566,7 @@ const DiscountRequestsReport = () => {
           }><Box
       sx={{
         minHeight: "100vh",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
@@ -2584,7 +2584,7 @@ const DiscountRequestsReport = () => {
           </DialogTitle>
 
           <DialogContent dividers>
-            <Stack sx={uiLayout.formGridSx} spacing={1.5}>
+            <Stack sx={uiLayout.formSectionSx} spacing={1.5}>
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 select
                 label="حالة التنفيذ"

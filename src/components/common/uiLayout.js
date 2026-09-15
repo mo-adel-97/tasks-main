@@ -46,6 +46,11 @@ export const formFieldSx = {
   },
 };
 
+export const formSectionSx = {
+  minWidth: 0, maxWidth: '100%',
+  '& > *': { minWidth: 0, maxWidth: '100%' },
+};
+
 export const formGridSx = {
   direction: 'rtl', textAlign: 'start',
   display: 'grid', minWidth: 0, alignItems: 'start', alignContent: 'start', gap: designTokens.layoutGap,

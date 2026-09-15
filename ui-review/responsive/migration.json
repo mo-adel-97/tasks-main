@@ -1,0 +1,297 @@
+[
+  {
+    "file": "src\\components\\AddStudentDialog.jsx",
+    "legacy": 4,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\AdminStudentNotes.jsx",
+    "legacy": 6,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\AdmissionOrderDialog.jsx",
+    "legacy": 23,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\CallHistory.jsx",
+    "legacy": 0,
+    "sections": 1
+  },
+  {
+    "file": "src\\components\\ChangeStudentStatusDialog.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\DiscountOrderDialog.jsx",
+    "legacy": 7,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\EditStudentDialog.jsx",
+    "legacy": 2,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\HrPermissionWorkflowManager.jsx",
+    "legacy": 0,
+    "sections": 1
+  },
+  {
+    "file": "src\\components\\InvoiceReturnDialog.jsx",
+    "legacy": 2,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\RefundRequestDialog.jsx",
+    "legacy": 4,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\RegistrationCommissions.jsx",
+    "legacy": 20,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\RegistrationRequestsPage.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\RegistrationReturnDialog.jsx",
+    "legacy": 2,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\SpecialComponent.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\StudentNotes.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\StudentOperationsDialog.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\StudentRegFeesDialog.jsx",
+    "legacy": 8,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\StudentStudyFileDialog.jsx",
+    "legacy": 6,
+    "sections": 0
+  },
+  {
+    "file": "src\\components\\TrainerStudentGrid2.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\AdmissionRequests.jsx",
+    "legacy": 6,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\AdmissionRequestsReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\AfterSalesFollow.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\AfterSalesReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\BatchCountManagement.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\BatchManagement.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\BatchSeatsCounter.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\BatchStatistics.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\CollectionCommissionsReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\components\\HrPermissionWorkflowManager.jsx",
+    "legacy": 0,
+    "sections": 1
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "legacy": 0,
+    "sections": 1
+  },
+  {
+    "file": "src\\pages\\Dashboard.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\DeregistrationRequestsReport.jsx",
+    "legacy": 3,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\DiscountRequestsReport.jsx",
+    "legacy": 4,
+    "sections": 1
+  },
+  {
+    "file": "src\\pages\\GeneralAccountStatement.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\GeneralDaily.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\GraduatesFollowReport.jsx",
+    "legacy": 3,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\HrAttendancePage.js",
+    "legacy": 0,
+    "sections": 3
+  },
+  {
+    "file": "src\\pages\\HrEmployeesPage.jsx",
+    "legacy": 1,
+    "sections": 1
+  },
+  {
+    "file": "src\\pages\\HrJobTitlesPage.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\HrLeavesPage.jsx",
+    "legacy": 0,
+    "sections": 3
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "legacy": 0,
+    "sections": 1
+  },
+  {
+    "file": "src\\pages\\MarketersReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\OtherInstituteRegistrationsPage.jsx",
+    "legacy": 3,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\PaymentFollowReport.jsx",
+    "legacy": 8,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\PaymentRequestsReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\QualityFormsPage.jsx",
+    "legacy": 25,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\ReceptionOffice.jsx",
+    "legacy": 5,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\RefundRequestsReport.jsx",
+    "legacy": 3,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\RegistrationRequestReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\RewardsList.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\SalesManManagement.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\TaxReturnsReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\TaxSalesReport.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\TrainingAgreementsFollow.jsx",
+    "legacy": 1,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\TransferRequestsReport.jsx",
+    "legacy": 3,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\UserManagement.jsx",
+    "legacy": 0,
+    "sections": 0
+  },
+  {
+    "file": "src\\pages\\VipCustomers.jsx",
+    "legacy": 1,
+    "sections": 0
+  }
+]

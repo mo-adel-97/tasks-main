@@ -1,4 +1,5 @@
 import * as uiLayout from './common/uiLayout';
+import { designTokens } from '../config/designTokens';
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box, Typography, Card, Button, CircularProgress
@@ -78,7 +79,7 @@ const BranchesDashboardReport = () => {
       field: "brEName",
       headerName: "اسم الفرع",
       flex: 2.2,
-      minWidth: 280,
+      minWidth: 160,
       renderCell: (params) => (
         <Box display="flex" alignItems="center" gap={1}>
           <LocationOnIcon sx={{ color: colorMap[params.value] || "#1976d2", fontSize: 28 }} />
@@ -219,8 +220,8 @@ const BranchesDashboardReport = () => {
       <Box sx={{
         minHeight: "100vh",
         background: "#f7f9fa",
-        py: 4,
-        px: { xs: 2, sm: 4, md: 8 }, // وسع العرض هنا
+        padding: designTokens.pageGutter,
+        boxSizing: 'border-box',
         width: "100%",
         position: "relative"
       }}>
@@ -228,13 +229,12 @@ const BranchesDashboardReport = () => {
         <Box ref={reportRef} sx={{
           background: "#fff",
           borderRadius: 3,
-          p: 3.5,
+          p: 1,
           boxShadow: 4,
-          mb: 4,
-          overflow: "auto",
+          mb: 1,
           width: "100%",
-          minWidth: "1300px",  // توسعة زيادة للجدول والرسومات
-          maxWidth: "99vw",
+          minWidth: 0,
+          maxWidth: "100%",
           height: "auto",
           "@media print": {
             boxShadow: "none",
@@ -243,13 +243,13 @@ const BranchesDashboardReport = () => {
         }}>
           {/* Header */}
           <Card elevation={0} sx={{
-            mb: 3, mx: "auto", px: 4, py: 2.5,
+            mb: 1, mx: "auto", px: 1, py: 1,
             borderRadius: 3, boxShadow: 0, display: "flex",
-            alignItems: "center", gap: 4, justifyContent: "space-between",
+            alignItems: "center", gap: 1, justifyContent: "space-between",
             flexWrap: "wrap", background: "#fff",
-            minWidth: 1100
+            minWidth: 0
           }}>
-            <Box flex={2} sx={{ minWidth: 220 }}>
+            <Box sx={{ flex: '1 1 100%', minWidth: 0 }}>
               <Typography fontWeight="bold" color="primary.main" fontSize={30} mb={0.2}>
                 <AttachMoneyIcon sx={{ fontSize: 35, mb: -0.7, color: "#1976d2" }} /> تقرير تحصيلات جميع الفروع
               </Typography>
@@ -300,9 +300,9 @@ const BranchesDashboardReport = () => {
           {/* Chart */}
           <Box
             sx={{
-              width: "99%",
-              minWidth: "1200px",
-              maxWidth: "2000px",
+              width: "100%",
+              minWidth: 0,
+              maxWidth: "100%",
               mx: "auto",
               mt: 2,
               mb: 5,
@@ -376,8 +376,8 @@ const BranchesDashboardReport = () => {
           {/* Table */}
           <Box
             sx={uiLayout.withUiSx({
-              mt: 5, width: "100%", minWidth: 1300, maxWidth: 1800, mx: "auto",
-              bgcolor: "#fff", borderRadius: 4, boxShadow: 1, p: 2.5,
+              mt: 1, width: "100%", minWidth: 0, maxWidth: "100%", mx: "auto",
+              bgcolor: "#fff", borderRadius: 4, boxShadow: 1, p: 1,
             }, uiLayout.tableContainerSx)}
           >
             <Typography
@@ -401,7 +401,7 @@ const BranchesDashboardReport = () => {
                 "& .MuiDataGrid-columnHeaderTitle": { fontWeight: "bold" },
                 "& .MuiDataGrid-cell": { fontSize: 17 },
                 direction: "rtl",
-                minWidth: 1300
+                minWidth: 0
               }, uiLayout.dataGridSx)}
               localeText={{
                 noRowsLabel: "لا توجد بيانات",

@@ -1,3 +1,4 @@
+import { printWhenReady } from '../utils/printReady';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { hrChipSx } from "../components/hrControlStyles";
@@ -2707,7 +2708,7 @@ export default function HrAttendancePage() {
     `);
     win.document.close();
     win.focus();
-    setTimeout(() => win.print(), 250);
+    printWhenReady(win);
   }, [reportData, reportForm]);
 
   const statCards = [
@@ -3482,7 +3483,7 @@ export default function HrAttendancePage() {
                   "180px minmax(250px,1.4fr) 180px 180px 180px 110px"
               },
               gap: 1
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx}
               size="small"
@@ -4279,7 +4280,7 @@ export default function HrAttendancePage() {
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx}
                 type="time"
@@ -4475,7 +4476,7 @@ export default function HrAttendancePage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
+          <Stack sx={uiLayout.formSectionSx} spacing={1.1}>
             <Paper
               variant="outlined"
               sx={{
@@ -4546,7 +4547,7 @@ export default function HrAttendancePage() {
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx}
                 type="date"
@@ -4692,7 +4693,7 @@ export default function HrAttendancePage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
+          <Stack sx={uiLayout.formSectionSx} spacing={1.1}>
             <Alert severity="info">
               تم تحديد{" "}
               <strong>{selectedCount}</strong>
@@ -4745,7 +4746,7 @@ export default function HrAttendancePage() {
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx}
                 type="date"
@@ -4890,7 +4891,7 @@ export default function HrAttendancePage() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
+          <Stack sx={uiLayout.formSectionSx} spacing={1.1}>
             <Paper
               variant="outlined"
               sx={{
@@ -4921,7 +4922,7 @@ export default function HrAttendancePage() {
                 gridTemplateColumns:
                   "repeat(2,minmax(0,1fr))",
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx}
                 type="datetime-local"
@@ -6795,3 +6796,4 @@ export default function HrAttendancePage() {
     </></NavigationShell>
   );
 }
+

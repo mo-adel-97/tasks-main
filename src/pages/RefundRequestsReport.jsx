@@ -223,7 +223,7 @@ const TextCell = ({
           fontSize: "0.75rem",
           lineHeight: 1.05
         },
-        "@media (min-width: 600px) and (max-width: 1599px)": {
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           fontSize: "0.75rem",
           lineHeight: 1.15
         }
@@ -360,7 +360,7 @@ const RefundRequestsReport =
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -915,7 +915,7 @@ const RefundRequestsReport =
                 lineHeight: 1
               }
             },
-            "@media (min-width: 600px) and (max-width: 1599px)": {
+            [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               height: 23,
               fontSize: "0.75rem",
               "& .MuiChip-label": {
@@ -1345,7 +1345,7 @@ const RefundRequestsReport =
           }><Box
       sx={{
         minHeight: "100vh",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
         background:

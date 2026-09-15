@@ -1,0 +1,387 @@
+[
+  {
+    "file": "src\\components\\DocumentHistoryDialog.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\components\\SpecialComponent.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 120,
+    "after": 110
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "field": "date",
+    "key": "width",
+    "before": 120,
+    "after": 110
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "field": "date",
+    "key": "width",
+    "before": 125,
+    "after": 110
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "field": "date",
+    "key": "width",
+    "before": 130,
+    "after": 110
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "field": "date",
+    "key": "width",
+    "before": 130,
+    "after": 110
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 180,
+    "after": 140
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "field": "nationalId",
+    "key": "width",
+    "before": 140,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 230,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 145,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 140,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 230,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 145,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 230,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 145,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 270,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 230,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 145,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 140,
+    "after": 110
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 230,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\AfterSalesFollow.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 150,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\AfterSalesFollow.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 120,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\AfterSalesFollow.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 170,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\AfterSalesReport.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 145,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\AfterSalesReport.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 170,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "billCode",
+    "key": "width",
+    "before": 115,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 190,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 200,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 280,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 300,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "billCode",
+    "key": "width",
+    "before": 115,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 175,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "nationalId",
+    "key": "width",
+    "before": 120,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 190,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BalanceReviewPage.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 240,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "field": "balance",
+    "key": "minWidth",
+    "before": 115,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 200,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 220,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\BranchDailyReport.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 130,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 180,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\CourseStudentsPage.jsx",
+    "field": "courseName",
+    "key": "minWidth",
+    "before": 170,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\DiplomaStudentsPage.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 190,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\GeneralAccountStatement.jsx",
+    "field": "balance",
+    "key": "width",
+    "before": 130,
+    "after": 110
+  },
+  {
+    "file": "src\\pages\\GeneralAccountStatement.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 300,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\GeneralAccountStatement.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 230,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\NewStudentsPage.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 150,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\SalesReport.jsx",
+    "field": "notes",
+    "key": "minWidth",
+    "before": 150,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\TrainingAgreementsFollow.jsx",
+    "field": "branchName",
+    "key": "minWidth",
+    "before": 160,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\TrainingAgreementsFollow.jsx",
+    "field": "studentName",
+    "key": "minWidth",
+    "before": 145,
+    "after": 140
+  },
+  {
+    "file": "src\\pages\\TrainingAgreementsFollow.jsx",
+    "field": "nationalId",
+    "key": "minWidth",
+    "before": 115,
+    "after": 110
+  }
+]

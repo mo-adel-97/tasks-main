@@ -347,7 +347,8 @@ const NewStudentsPage = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
   );
 
   const isDesktop = useMediaQuery(
@@ -355,7 +356,7 @@ const NewStudentsPage = () => {
     { noSsr: true }
   );
 
-  const isCompact = isPhone || isTablet;
+  const isCompact = !isDesktop;
 
   const isLargeScreen = useMediaQuery(
     theme.breakpoints.up("xl")
@@ -1127,7 +1128,7 @@ const NewStudentsPage = () => {
       {
         field: "studentName",
         headerName: "اسم الطالب",
-        minWidth: 150,
+        minWidth: 140,
         flex: 1.3
       },
       {
@@ -1203,7 +1204,7 @@ const NewStudentsPage = () => {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
         background:
@@ -1397,9 +1398,9 @@ const NewStudentsPage = () => {
         <Paper
           elevation={0}
           sx={{
-            p: isPhone ? 0.8 : isTablet ? 1.05 : 2,
-            mb: isPhone ? 0.7 : isTablet ? 0.85 : 1.4,
-            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 4,
+            p: isPhone ? 0.8 : isTablet ? 0.95 : 1.1,
+            mb: isPhone ? 0.7 : isTablet ? 0.8 : 0.8,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 2,
             border:
               "1px solid rgba(5,117,70,.14)",
             direction: "rtl"
@@ -1420,7 +1421,8 @@ const NewStudentsPage = () => {
               alignItems="center"
               spacing={1}
               sx={{
-                flex: 1,
+                flex: "1 1 240px",
+                minWidth: isCompact ? 0 : 220,
                 ...(isCompact && {
                   flexBasis: "100%",
                   width: "100%"
@@ -1675,14 +1677,14 @@ const NewStudentsPage = () => {
                   ? 31
                   : isTablet
                     ? 38
-                    : 54
+                    : 42
               }
               columnHeaderHeight={
                 isPhone
                   ? 30
                   : isTablet
                     ? 36
-                    : 54
+                    : 40
               }
               density="compact"
               pageSizeOptions={[25, 50, 100]}

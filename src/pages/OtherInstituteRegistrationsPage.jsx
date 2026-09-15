@@ -124,7 +124,7 @@ const getStatusChip = (isStillRegistered) => {
               px: 0.5,
               fontSize: "0.75rem"
             },
-            "@media (min-width:600px) and (max-width:1599px)": {
+            [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               px: 0.7,
               fontSize: "0.75rem"
             }
@@ -135,7 +135,7 @@ const getStatusChip = (isStillRegistered) => {
               fontSize: 13
             }
           },
-          "@media (min-width:600px) and (max-width:1599px)": {
+          [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             height: 23,
             "& .MuiSvgIcon-root": {
               fontSize: 14
@@ -174,7 +174,7 @@ export default function OtherInstituteRegistrationsPage() {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -404,7 +404,7 @@ export default function OtherInstituteRegistrationsPage() {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         backgroundColor: "#f7faf9",
         direction: "rtl"

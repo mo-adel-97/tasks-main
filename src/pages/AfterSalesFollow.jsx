@@ -118,7 +118,7 @@ const AfterSalesFollow = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -427,7 +427,7 @@ const AfterSalesFollow = () => {
         headerName: "اسم الطالب",
         type: "string",
         flex: 1.3,
-        minWidth: 150
+        minWidth: 140
       },
       {
         field: "studentTel",
@@ -441,7 +441,7 @@ const AfterSalesFollow = () => {
         headerName: "رقم الهوية",
         type: "string",
         flex: 1,
-        minWidth: 120
+        minWidth: 110
       },
       {
         field: "diplomName",
@@ -455,7 +455,7 @@ const AfterSalesFollow = () => {
         headerName: "الفرع",
         type: "string",
         flex: 1.45,
-        minWidth: 170
+        minWidth: 140
       },
       {
         field: "batchName",
@@ -970,7 +970,7 @@ const AfterSalesFollow = () => {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         background: "#f5f8f7",
         direction: "rtl"

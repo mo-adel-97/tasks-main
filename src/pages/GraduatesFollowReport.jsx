@@ -194,7 +194,7 @@ const TextCell = ({
           fontSize: "0.75rem",
           lineHeight: 1.05
         },
-        "@media (min-width: 600px) and (max-width: 1599px)": {
+        [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           fontSize: "0.75rem",
           lineHeight: 1.15
         }
@@ -217,7 +217,7 @@ const MoneyCell = ({ value }) => (
         fontSize: "0.75rem",
         lineHeight: 1.05
       },
-      "@media (min-width: 600px) and (max-width: 1599px)": {
+      [`@media (min-width: 600px) and (max-width: ${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         fontSize: "0.75rem",
         lineHeight: 1.15
       }
@@ -424,7 +424,7 @@ const GraduatesFollowReport = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -1949,7 +1949,7 @@ const GraduatesFollowReport = () => {
           }><Box
       sx={{
         minHeight: "100vh",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         background:
           "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",

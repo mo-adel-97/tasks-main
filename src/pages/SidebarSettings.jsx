@@ -409,7 +409,7 @@ export default function SidebarSettings() {
           <b>المصدر واحد:</b> تغيير اسم الشاشة هنا يحدث Form_Name مباشرة؛ شاشة «إضافة مستخدم» والسايدبار سيقرآن نفس الاسم.
         </Alert>
 
-        <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }, uiLayout.formGridSx)}>
+        <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }, uiLayout.formSectionSx)}>
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم الشاشة" value={screen.name} onChange={(e) => setScreenField("name", e.target.value)} />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="Code الصلاحية / Form_Name" value={screen.code || screen.formCode || data.nextCode} disabled={Boolean(screen.formGuid)} onChange={(e) => setScreenField("code", e.target.value)} helperText={screen.formGuid ? "كود Form_Name ثابت بعد الإنشاء" : "يتم توليده تلقائيًا إذا تركته فارغًا"} />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="ItemKey" value={screen.itemKey} disabled={Boolean(screen.formGuid)} onChange={(e) => setScreenField("itemKey", e.target.value)} helperText="مفتاح تقني ثابت مثل payment-follow" />
@@ -501,7 +501,7 @@ export default function SidebarSettings() {
           </Stack>
         </Stack>
         <Divider sx={{ my: 1.5 }} />
-        <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }, uiLayout.formGridSx)}>
+        <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: 1.2 }, uiLayout.formSectionSx)}>
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم القائمة" value={group.name || ""} onChange={(e) => setGroupField("name", e.target.value)} />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="كود صلاحية القائمة القديمة (اختياري)" value={group.code || group.permissionMenuCode || ""} onChange={(e) => setGroupField("code", e.target.value)} helperText="مثال: sales / report / maintools. اتركه فارغًا للقوائم الويب فقط." />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="GroupKey" value={group.groupKey || ""} disabled={Boolean(group.groupGuid)} onChange={(e) => setGroupField("groupKey", e.target.value)} />

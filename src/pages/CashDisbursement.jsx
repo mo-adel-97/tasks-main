@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -608,7 +609,7 @@ export default function CashDisbursement() {
       const result = await res.json().catch(() => null); if (!res.ok) throw new Error(result?.message || "تعذر تحميل الطباعة");
       const w = window.open("", "_blank", "width=1100,height=800"); if (!w) throw new Error("المتصفح منع نافذة الطباعة");
       const body = rows.map(r => `<tr><td>${r.accountName}</td><td>${r.notes}</td><td>${money(r.amount)}</td><td>${r.costName || ""}</td></tr>`).join("");
-      w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سند صرف ${code}</title><style>body{font-family:Arial,Tahoma;padding:28px}h1{text-align:center;color:${primary}}table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:8px;text-align:center}th{background:#eef6f2}.box{border:1px solid #ccc;padding:10px;margin:8px 0}.total{font-size:20px;font-weight:bold}</style></head><body><h1>سند صرف رقم ${code}</h1><div class="box">التاريخ: ${date} | الخزينة/البنك: ${cashBoxName} | الإجمالي: ${money(total)}</div><div class="box">المورد: ${vendorName || "-"} | الرقم الضريبي: ${vendorTax || "-"} | الهاتف: ${vendorTel || "-"}</div><div class="box"><b>ملاحظات:</b> ${notes}</div><table><thead><tr><th>الحساب</th><th>البيان</th><th>المبلغ</th><th>مركز التكلفة</th></tr></thead><tbody>${body}</tbody></table><div class="total">الإجمالي: ${money(total)}</div><div class="box"><b>التفقيط:</b> ${result?.data?.tafkeet || ""}</div><script>window.onload=()=>window.print()</script></body></html>`);
+      w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سند صرف ${code}</title><style>@page { size: A4 portrait; margin: 10mm; }body{font-family:Arial,Tahoma;padding:28px}h1{text-align:center;color:${primary}}table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:8px;text-align:center}th{background:#eef6f2}.box{border:1px solid #ccc;padding:10px;margin:8px 0}.total{font-size:20px;font-weight:bold}</style>${PRINT_READY_SCRIPT}</head><body><h1>سند صرف رقم ${code}</h1><div class="box">التاريخ: ${date} | الخزينة/البنك: ${cashBoxName} | الإجمالي: ${money(total)}</div><div class="box">المورد: ${vendorName || "-"} | الرقم الضريبي: ${vendorTax || "-"} | الهاتف: ${vendorTel || "-"}</div><div class="box"><b>ملاحظات:</b> ${notes}</div><table><thead><tr><th>الحساب</th><th>البيان</th><th>المبلغ</th><th>مركز التكلفة</th></tr></thead><tbody>${body}</tbody></table><div class="total">الإجمالي: ${money(total)}</div><div class="box"><b>التفقيط:</b> ${result?.data?.tafkeet || ""}</div><script>window.onload=()=>printWhenReady()</script></body></html>`);
       w.document.close();
     } catch (e) { Swal.fire({ icon: "error", title: "تعذر الطباعة", text: e?.message || "حدث خطأ" }); }
   }, [guid, userGuid, code, date, cashBoxName, total, vendorName, vendorTax, vendorTel, notes, rows]);
@@ -639,7 +640,7 @@ export default function CashDisbursement() {
               <Button variant="outlined" startIcon={<PrintIcon />} disabled={!guid} onClick={printDoc} sx={uiLayout.withUiSx({ fontWeight: 900 }, uiLayout.buttonSx)}>طباعة</Button>
             </Box>
 
-            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "150px 180px minmax(220px,1fr)", lg: "150px 190px minmax(220px,1fr) minmax(260px,1fr)" }, gap: 1, mb: 1 }, uiLayout.formGridSx)}>
+            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "150px 180px minmax(220px,1fr)", lg: "150px 190px minmax(220px,1fr) minmax(260px,1fr)" }, gap: 1, mb: 1 }, uiLayout.formSectionSx)}>
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="رقم السند" value={code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
               <TextField sx={uiLayout.formFieldSx}
                 size="small"

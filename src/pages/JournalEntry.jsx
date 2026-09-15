@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -920,7 +921,7 @@ export default function JournalEntry() {
 <head>
 <meta charset="utf-8">
 <title>قيد يومية ${code}</title>
-<style>
+<style>@page { size: A4 portrait; margin: 10mm; }
 body{font-family:Arial,Tahoma,sans-serif;padding:24px;color:#111}
 h1{text-align:center;color:${primary};margin:0 0 20px}
 .meta{display:flex;gap:20px;justify-content:space-between;border:1px solid #ddd;padding:12px;margin-bottom:16px}
@@ -930,7 +931,7 @@ th{background:#eef6f2}
 .totals{margin-top:18px;font-weight:bold;font-size:18px}
 .notes{margin:15px 0;padding:12px;border:1px solid #ddd;min-height:50px}
 </style>
-</head>
+${PRINT_READY_SCRIPT}</head>
 <body>
 <h1>قيد يومية رقم ${code}</h1>
 <div class="meta"><span>التاريخ: ${dayDate}</span><span>الحالة: ${isUse ? "نشط" : "غير نشط"}</span></div>
@@ -940,7 +941,7 @@ th{background:#eef6f2}
 <tbody>${detailHtml}</tbody>
 </table>
 <div class="totals">إجمالي مدين: ${money(totals.debit)} &nbsp;&nbsp; | &nbsp;&nbsp; إجمالي دائن: ${money(totals.credit)} &nbsp;&nbsp; | &nbsp;&nbsp; الفرق: ${money(totals.diff)}</div>
-<script>window.onload=()=>{window.print();}</script>
+<script>window.onload=()=>{printWhenReady();}</script>
 </body></html>`);
       p.document.close();
     } catch (e) {
@@ -1143,7 +1144,7 @@ th{background:#eef6f2}
               },
               gap: 1.2,
               mb: 1.5
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="رقم القيد"
@@ -1224,7 +1225,7 @@ th{background:#eef6f2}
                     boxShadow: "0 4px 14px rgba(5,117,70,.05)"
                   }}
                 >
-                  <Stack sx={uiLayout.formGridSx} spacing={1}>
+                  <Stack sx={uiLayout.formSectionSx} spacing={1}>
                     <Stack direction="row" spacing={1}>
                       <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                         fullWidth
@@ -1340,7 +1341,9 @@ th{background:#eef6f2}
               <Table
                 size="small"
                 sx={{
-                  minWidth: isTablet ? 950 : 1100,
+                  width: '100%',
+                  minWidth: 860,
+                  tableLayout: 'fixed',
                   "& th": {
                     bgcolor: "#eaf3ef",
                     fontWeight: 900,
@@ -1351,13 +1354,13 @@ th{background:#eef6f2}
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ width: 120 }}>رقم الحساب</TableCell>
-                    <TableCell sx={{ minWidth: 220 }}>اسم الحساب</TableCell>
-                    <TableCell sx={{ minWidth: 280 }}>البيان</TableCell>
-                    <TableCell sx={{ width: 120 }}>مدين</TableCell>
-                    <TableCell sx={{ width: 120 }}>دائن</TableCell>
-                    <TableCell sx={{ minWidth: 180 }}>مركز تكلفة</TableCell>
-                    <TableCell sx={{ width: 60 }} />
+                    <TableCell sx={{ width: 110 }}>رقم الحساب</TableCell>
+                    <TableCell sx={{ width: '20%' }}>اسم الحساب</TableCell>
+                    <TableCell>البيان</TableCell>
+                    <TableCell sx={{ width: 90 }}>مدين</TableCell>
+                    <TableCell sx={{ width: 90 }}>دائن</TableCell>
+                    <TableCell sx={{ width: '17%' }}>مركز تكلفة</TableCell>
+                    <TableCell sx={{ width: 48 }} />
                   </TableRow>
                 </TableHead>
 

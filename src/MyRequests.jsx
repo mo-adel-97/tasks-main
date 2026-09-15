@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from './utils/printReady';
 import * as uiLayout from './components/common/uiLayout';
 import PageContainer from './components/common/PageContainer';
 import { designTokens } from './config/designTokens';
@@ -1640,7 +1641,7 @@ export default function MyRequests() {
       .items{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}.items th{background:#dedede;border:1px solid #fff;padding:8px 5px;font-weight:900}.items td{border-bottom:1px dotted #999;padding:7px 5px;text-align:center;font-weight:700}.items .statement{text-align:right;width:54%}
       .separator{border-top:2px solid #222;margin:10px 0 12px}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.totals{width:100%;border-collapse:collapse;font-size:13px}.totals td{border:1px solid #777;padding:7px 8px;font-weight:900}.totals .number{width:34%;text-align:center;font-size:15px}
       .qr-box{text-align:center;font-size:11px;font-weight:800}.qr-box img{width:135px;height:135px;object-fit:contain;display:block;margin:0 auto 5px}.policy-note{text-align:center;font-size:16px;font-weight:900;margin-top:16px}.notes{margin-top:12px;border:1px solid #ddd;padding:8px 10px;min-height:42px;font-size:12px;line-height:1.7}.footer{margin-top:12px;display:flex;justify-content:space-between;font-size:10px;direction:ltr}@media print{.sheet{border:none}}
-    </style></head><body><section class="sheet">
+    </style>${PRINT_READY_SCRIPT}</head><body><section class="sheet">
       <div class="header"><img class="logo" src="${escapeHtml(instituteLogo)}" alt="SSTLI"/><div class="company"><div class="main">شركة معهد السعودي المتخصص العالي للتدريب</div><div>${escapeHtml(branchName || "المعهد السعودي المتخصص العالي للتدريب")}</div><div>السجل التجاري: 920012673</div><div>الرقم الضريبي: 312191561600003</div></div></div>
       <div class="title">طلب التحاق</div>
       <table class="info"><tr><td class="label">اسم العميل</td><td class="value">${escapeHtml(admissionData.studentName || "")}</td><td class="label">رقم الطلب</td><td class="value">${escapeHtml(code)}</td></tr><tr><td class="label">رقم الهوية</td><td class="value">${escapeHtml(admissionData.nationalId || "")}</td><td class="label">تاريخ الطلب</td><td class="value">${escapeHtml(admissionDateText(formDate))}</td></tr><tr><td class="label">رقم الجوال</td><td class="value">${escapeHtml(admissionData.studentTel || "")}</td><td class="label">البائع</td><td class="value">${escapeHtml(sellerName)}</td></tr></table>
@@ -1648,7 +1649,7 @@ export default function MyRequests() {
       <div class="separator"></div><div class="bottom"><table class="totals"><tr><td>الإجمالي قبل الضريبة</td><td class="number">${escapeHtml(money(total))}</td></tr><tr><td>ضريبة القيمة المضافة</td><td class="number">${escapeHtml(money(tax))}</td></tr><tr><td>الإجمالي بعد الضريبة</td><td class="number">${escapeHtml(money(subTotal))}</td></tr><tr><td>المدفوع</td><td class="number">${escapeHtml(money(paid))}</td></tr></table><div class="qr-box"><img src="${escapeHtml(refundQrUrl)}" alt="سياسة الاسترداد"/><div>يرجى مراجعة سياسة الاسترداد</div></div></div>
       ${admissionData.notes ? `<div class="notes"><strong>ملاحظات:</strong> ${escapeHtml(admissionData.notes)}</div>` : ""}
       <div class="policy-note">المبالغ المدفوعة رسوم دراسية غير مستردة</div><div class="footer"><span>${escapeHtml(new Date().toLocaleDateString("en-GB"))}</span><span>Page 1 of 1</span></div>
-    </section><script>window.addEventListener("load",function(){window.setTimeout(function(){window.print()},700)})</script></body></html>`;
+    </section><script>window.addEventListener("load",function(){window.setTimeout(function(){printWhenReady()},700)})</script></body></html>`;
 
     if (isCompact) {
       try {
@@ -1741,9 +1742,9 @@ export default function MyRequests() {
     .watermark{position:absolute;left:24px;bottom:22px;font-size:39px;font-weight:950;color:rgba(5,117,70,.055);letter-spacing:5px}
     @media print{body{background:#fff}.print-btn{display:none}.preview{padding:0}.sheet{width:190mm;min-height:270mm;border:0;border-radius:0;box-shadow:none;padding:8mm 9mm}.sheet:before{display:none}}
   </style>
-</head>
+${PRINT_READY_SCRIPT}</head>
 <body>
-  <button class="print-btn" onclick="window.print()">طباعة</button>
+  <button class="print-btn" onclick="printWhenReady()">طباعة</button>
   <div class="preview"><section class="sheet">
     <div class="header">
       <div class="logo-card"><img class="logo" src="${escapeHtml(instituteLogo)}" alt="SSTLI"/></div>
@@ -2199,9 +2200,9 @@ export default function MyRequests() {
   const commonRequestColumns = (extra = []) => [
     { field: "code", headerName: "كود", minWidth: 90, align: "center", headerAlign: "center" },
     commonDateColumn,
-    { field: "studentName", headerName: "اسم الطالب", minWidth: 230, flex: 1, align: "center", headerAlign: "center" },
+    { field: "studentName", headerName: "اسم الطالب", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
     { field: "studentTel", headerName: "رقم الجوال", minWidth: 140, align: "center", headerAlign: "center" },
-    { field: "nationalId", headerName: "رقم الهوية", minWidth: 145, align: "center", headerAlign: "center" },
+    { field: "nationalId", headerName: "رقم الهوية", minWidth: 110, align: "center", headerAlign: "center" },
     ...extra
   ];
 
@@ -2327,7 +2328,7 @@ export default function MyRequests() {
     {
       field: "studentName",
       headerName: "اسم الطالب",
-      minWidth: 220,
+      minWidth: 140,
       flex: 1,
       align: "center",
       headerAlign: "center"
@@ -2342,7 +2343,7 @@ export default function MyRequests() {
     {
       field: "nationalId",
       headerName: "رقم الهوية",
-      minWidth: 140,
+      minWidth: 110,
       align: "center",
       headerAlign: "center"
     },
@@ -2415,7 +2416,7 @@ export default function MyRequests() {
     {
       field: "studentName",
       headerName: "اسم الطالب",
-      minWidth: 230,
+      minWidth: 140,
       flex: 1,
       align: "center",
       headerAlign: "center"
@@ -2430,7 +2431,7 @@ export default function MyRequests() {
     {
       field: "nationalId",
       headerName: "رقم الهوية",
-      minWidth: 145,
+      minWidth: 110,
       align: "center",
       headerAlign: "center"
     },
@@ -2463,7 +2464,7 @@ export default function MyRequests() {
     {
       field: "studentName",
       headerName: "اسم الطالب",
-      minWidth: 230,
+      minWidth: 140,
       flex: 1,
       align: "center",
       headerAlign: "center"
@@ -2478,14 +2479,14 @@ export default function MyRequests() {
     {
       field: "nationalId",
       headerName: "رقم الهوية",
-      minWidth: 145,
+      minWidth: 110,
       align: "center",
       headerAlign: "center"
     },
     {
       field: "branchName",
       headerName: "الفرع",
-      minWidth: 270,
+      minWidth: 140,
       flex: 1.2,
       align: "center",
       headerAlign: "center"
@@ -2536,9 +2537,9 @@ export default function MyRequests() {
   const deregistrationColumns = [
     { field: "code", headerName: "كود", minWidth: 90, align: "center", headerAlign: "center" },
     { ...commonDateColumn, field: "actionDate" },
-    { field: "studentName", headerName: "اسم الطالب", minWidth: 230, flex: 1, align: "center", headerAlign: "center" },
+    { field: "studentName", headerName: "اسم الطالب", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
     { field: "studentTel", headerName: "رقم الجوال", minWidth: 140, align: "center", headerAlign: "center" },
-    { field: "nationalId", headerName: "رقم الهوية", minWidth: 145, align: "center", headerAlign: "center" },
+    { field: "nationalId", headerName: "رقم الهوية", minWidth: 110, align: "center", headerAlign: "center" },
     { field: "orderStatus", headerName: "حالة الطلب", minWidth: 140, align: "center", headerAlign: "center" },
     { field: "accountNotes", headerName: "ملاحظات الحسابات", minWidth: 320, flex: 1.3, align: "center", headerAlign: "center" }
   ];
@@ -2560,7 +2561,7 @@ export default function MyRequests() {
       )
     },
     ...commonRequestColumns([
-      { field: "branchName", headerName: "فرع الدراسة", minWidth: 220, flex: 1, align: "center", headerAlign: "center" },
+      { field: "branchName", headerName: "فرع الدراسة", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
       { field: "sectorName", headerName: "القطاع", minWidth: 220, flex: 1, align: "center", headerAlign: "center" },
       { field: "diplomName", headerName: "الدبلوم / الدورة", minWidth: 240, flex: 1, align: "center", headerAlign: "center" },
       { field: "batchName", headerName: "الدفعة", minWidth: 130, align: "center", headerAlign: "center" },
@@ -2618,14 +2619,14 @@ export default function MyRequests() {
     { field: "code", headerName: "كود", minWidth: 80, align: "center", headerAlign: "center" },
     { field: "orderCode", headerName: "رقم الطلب", minWidth: 100, align: "center", headerAlign: "center" },
     { field: "regDocCode", headerName: "رقم الاستمارة", minWidth: 110, align: "center", headerAlign: "center" },
-    { field: "studentName", headerName: "اسم الطالب", minWidth: 220, flex: 1, align: "center", headerAlign: "center" },
-    { field: "nationalId", headerName: "رقم الهوية", minWidth: 140, align: "center", headerAlign: "center" },
+    { field: "studentName", headerName: "اسم الطالب", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
+    { field: "nationalId", headerName: "رقم الهوية", minWidth: 110, align: "center", headerAlign: "center" },
     { field: "studentTel", headerName: "رقم الجوال", minWidth: 140, align: "center", headerAlign: "center" },
-    { field: "branchName", headerName: "الفرع", minWidth: 220, flex: 1, align: "center", headerAlign: "center" },
+    { field: "branchName", headerName: "الفرع", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
     { field: "sellerName", headerName: "مسؤول التسجيل", minWidth: 170, align: "center", headerAlign: "center" },
     { field: "otherInstituteName", headerName: "المعهد الآخر", minWidth: 190, align: "center", headerAlign: "center" },
     { field: "isStillRegisteredText", headerName: "هل تم طي قيده؟", minWidth: 160, align: "center", headerAlign: "center" },
-    { field: "notes", headerName: "ملاحظات", minWidth: 230, flex: 1, align: "center", headerAlign: "center" },
+    { field: "notes", headerName: "ملاحظات", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
     { field: "statusUpdateNote", headerName: "ملاحظة طي القيد", minWidth: 230, flex: 1, align: "center", headerAlign: "center" },
     {
       field: "traineeStatusNote",
@@ -2933,7 +2934,7 @@ export default function MyRequests() {
         height: isDesktop ? "100dvh" : "auto",
         minHeight: isDesktop ? 0 : "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflow: isDesktop ? "hidden" : "visible",
         background: "linear-gradient(180deg, #f8fcfa 0%, #eef8f3 100%)",
         fontFamily: "Cairo, Arial, sans-serif",
@@ -3129,7 +3130,7 @@ export default function MyRequests() {
                         flex: isCompact ? "none" : "1 1 0",
                         width: isCompact ? "100%" : "auto"
                       }
-                    }, uiLayout.formGridSx, {
+                    }, uiLayout.formSectionSx, {
                       display: isCompact ? "grid" : "flex",
                       gridTemplateColumns: isCompact ? "repeat(2, minmax(0, 1fr))" : undefined,
                       flexWrap: isCompact ? "wrap" : "nowrap",

@@ -527,7 +527,7 @@ export default function TrainerManagement() {
             gridTemplateColumns: { xs: "repeat(2,minmax(0,1fr))", sm: "repeat(4,minmax(0,1fr))" },
             gap: { xs: 0.55, sm: 0.8 },
             "& .MuiTextField-root": fieldSx
-          }, uiLayout.formGridSx)}>
+          }, uiLayout.formSectionSx)}>
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="كود" size="small" value={model.code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="اسم المدرب" size="small" value={model.name} onChange={(e) => setField("name", e.target.value)} required />
 

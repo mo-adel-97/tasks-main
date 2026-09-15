@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -89,7 +90,7 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
     sx={{
       p: 1.4,
       borderRadius: 3,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.5,
         borderRadius: 1.35,
         minHeight: 48
@@ -113,7 +114,7 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
       alignItems="center"
       sx={{
         mb: 0.7,
-        "@media (max-width:1599px)": { mb: 0.18, gap: "4px !important" }
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { mb: 0.18, gap: "4px !important" }
       }}
     >
       {icon}
@@ -123,7 +124,7 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
           fontWeight: 950,
           fontSize: "0.78rem",
           lineHeight: 1.1,
-          "@media (max-width:1599px)": { fontSize: "0.75rem" },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
           "@media (max-width:599px)": { fontSize: "0.75rem" }
         }}
       >
@@ -137,7 +138,7 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
           fontWeight: strong ? 1000 : 950,
           fontSize: strong ? "1rem" : "0.92rem",
           lineHeight: 1.7,
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             fontSize: strong ? "0.75rem" : "0.75rem",
             lineHeight: 1.2
           },
@@ -174,7 +175,7 @@ const statusChipSx = (value) => {
 const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const [loading, setLoading] = useState(false);
@@ -359,7 +360,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
     <>
       <style>
         {`
-          @media (max-width: 1599px) {
+          @media screen {
             .sstli-study-swal {
               max-width: 420px !important;
               border-radius: 14px !important;

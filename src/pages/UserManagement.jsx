@@ -1187,7 +1187,7 @@ export default function UserManagement() {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         bgcolor: soft,
         
@@ -1401,7 +1401,7 @@ export default function UserManagement() {
                   md: "repeat(4,minmax(0,1fr))"
                 },
                 gap: { xs: 0.45, sm: 0.7 }
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 size="small"
@@ -1752,7 +1752,7 @@ export default function UserManagement() {
                     md: "repeat(2,minmax(0,1fr))"
                   },
                   gap: 1
-                }, uiLayout.formGridSx)}
+                }, uiLayout.formSectionSx)}
               >
                 {model.chkTrainer && (
                   <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}

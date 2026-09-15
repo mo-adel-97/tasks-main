@@ -682,7 +682,7 @@ const BranchDailyReport = () => {
         field: "balance",
         headerName: "الرصيد",
         type: "number",
-        minWidth: 115,
+        minWidth: 110,
         flex: 0.85,
         valueFormatter: (value) =>
           money(value)
@@ -690,7 +690,7 @@ const BranchDailyReport = () => {
       {
         field: "notes",
         headerName: "بيان",
-        minWidth: 220,
+        minWidth: 140,
         flex: 1.7
       },
       {
@@ -702,7 +702,7 @@ const BranchDailyReport = () => {
       {
         field: "branchName",
         headerName: "الفرع",
-        minWidth: 200,
+        minWidth: 140,
         flex: 1.4
       }
     ],
@@ -728,13 +728,13 @@ const BranchDailyReport = () => {
       {
         field: "studentName",
         headerName: "اسم الطالب",
-        minWidth: 220,
+        minWidth: 140,
         flex: 1.5
       },
       {
         field: "nationalId",
         headerName: "رقم الهوية",
-        minWidth: 130,
+        minWidth: 110,
         flex: 0.9
       },
       {
@@ -878,7 +878,7 @@ const BranchDailyReport = () => {
                 md: "1fr 1fr"
               },
               gap: 1.2
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx}
               type="date"

@@ -440,7 +440,8 @@ const DiplomaStudentsPage = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
   );
 
   const isDesktop = useMediaQuery(
@@ -448,7 +449,7 @@ const DiplomaStudentsPage = () => {
     { noSsr: true }
   );
 
-  const isCompact = isPhone || isTablet;
+  const isCompact = !isDesktop;
 
   const [mobileSidebarOpen, setMobileSidebarOpen] =
     useState(false);
@@ -2701,7 +2702,7 @@ ${record.map((value) =>
     return [
       actionColumn,
       { field: "acadmyId", headerName: "كود", minWidth: 78, flex: .55 },
-      { field: "studentName", headerName: "اسم الطالب", minWidth: 190, flex: 1.5 },
+      { field: "studentName", headerName: "اسم الطالب", minWidth: 140, flex: 1.5 },
       { field: "nationalId", headerName: "رقم الهوية", minWidth: 105, flex: .8 },
       { field: "studentTel", headerName: "رقم الجوال", minWidth: 105, flex: .8 },
       { field: "batchName", headerName: "الدفعة/اليوم", minWidth: 105, flex: .85 },
@@ -2726,7 +2727,7 @@ ${record.map((value) =>
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
         background:
@@ -2848,9 +2849,9 @@ ${record.map((value) =>
         <Paper
           elevation={0}
           sx={{
-            p: isPhone ? .7 : isTablet ? .9 : 1.4,
-            mb: isPhone ? .55 : isTablet ? .75 : 1,
-            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
+            p: isPhone ? .7 : isTablet ? .9 : 1.05,
+            mb: isPhone ? .55 : isTablet ? .7 : .8,
+            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 2,
             border:
               "1px solid rgba(5,117,70,.14)"
           }}
@@ -2869,7 +2870,8 @@ ${record.map((value) =>
               spacing={1}
               alignItems="center"
               sx={{
-                flex: 1,
+                flex: "1 1 240px",
+                minWidth: isCompact ? 0 : 220,
                 ...(isCompact && { flexBasis: "100%", width: "100%" })
               }}
             >
@@ -3514,7 +3516,7 @@ ${record.map((value) =>
                     ? "0.75rem"
                     : "0.75rem"
               }
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
@@ -3775,8 +3777,8 @@ ${record.map((value) =>
             onRowSelectionModelChange={
               setSelectionModel
             }
-            rowHeight={isPhone ? 31 : isTablet ? 38 : 43}
-            columnHeaderHeight={isPhone ? 30 : isTablet ? 36 : 48}
+            rowHeight={isPhone ? 31 : isTablet ? 36 : 40}
+            columnHeaderHeight={isPhone ? 30 : isTablet ? 34 : 38}
             pageSizeOptions={[15, 25, 50, 100]}
             initialState={{
               pagination: {
@@ -4079,7 +4081,7 @@ ${record.map((value) =>
           display: "flex",
           alignItems: "center"
         }
-      }, uiLayout.formGridSx)}
+      }, uiLayout.formSectionSx)}
     >
       {/* ========================= */}
       {/* البحث العام */}

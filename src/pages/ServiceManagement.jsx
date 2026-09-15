@@ -1010,7 +1010,7 @@ export default function ServiceManagement() {
               },
               gap: { xs: 0.5, sm: 0.8 },
               "& .MuiTextField-root": fieldSx
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود"

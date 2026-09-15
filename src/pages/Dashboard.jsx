@@ -143,7 +143,7 @@ export default function Dashboard() {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         background:
           "linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%)",

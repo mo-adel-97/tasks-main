@@ -172,7 +172,8 @@ export default function CourseStudentsPage() {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
+    { noSsr: true }
   );
 
   const isDesktop = useMediaQuery(
@@ -180,7 +181,7 @@ export default function CourseStudentsPage() {
     { noSsr: true }
   );
 
-  const isCompact = isPhone || isTablet;
+  const isCompact = !isDesktop;
 
   const [mobileSidebarOpen, setMobileSidebarOpen] =
     useState(false);
@@ -715,12 +716,12 @@ export default function CourseStudentsPage() {
     return [
       actionColumn,
       { field: "code", headerName: "كود", minWidth: 90, flex: .7 },
-      { field: "studentName", headerName: "اسم الطالب", minWidth: 180, flex: 1.5 },
+      { field: "studentName", headerName: "اسم الطالب", minWidth: 140, flex: 1.5 },
       { field: "nationalId", headerName: "رقم الهوية", minWidth: 105, flex: .85 },
       { field: "studentTel", headerName: "رقم الجوال", minWidth: 105, flex: .85 },
       { field: "batchOrDate", headerName: "الدفعة/اليوم", minWidth: 105, flex: .9 },
       { field: "programName", headerName: "البرنامج", minWidth: 95, flex: .8 },
-      { field: "courseName", headerName: "الدبلوم/الدورة", minWidth: 170, flex: 1.35 },
+      { field: "courseName", headerName: "الدبلوم/الدورة", minWidth: 140, flex: 1.35 },
       { field: "studyStatus", headerName: "حالة الدراسة", minWidth: 95, flex: .8 },
       { field: "levelName", headerName: "المستوى", minWidth: 80, flex: .65 },
       { field: "email", headerName: "الإيميل", minWidth: 145, flex: 1.1 },
@@ -737,7 +738,7 @@ export default function CourseStudentsPage() {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
         bgcolor: "#f6faf8"
@@ -852,9 +853,9 @@ export default function CourseStudentsPage() {
         
         ...navigationContentSx
       }}>
-        <Paper elevation={0} sx={{ p: 1.2, borderRadius: 3, border: "1px solid #dbece4" }}>
+        <Paper elevation={0} sx={{ p: 1, borderRadius: 2, border: "1px solid #dbece4" }}>
           <Stack sx={uiLayout.filterBarSx} direction={{ xs: "column", lg: "row" }} spacing={1} alignItems="center" mb={1}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: "1 1 240px", minWidth: 220 }}>
               <SchoolIcon sx={{ color: "#057546", fontSize: 34 }} />
               <Box dir="rtl">
                 <Typography fontWeight={900} fontSize={20}>قائمة طلاب الدورات</Typography>
@@ -867,7 +868,7 @@ export default function CourseStudentsPage() {
             <TextField InputLabelProps={{ shrink: true }}
               select size="small" label="الفرع" value={branchGuid}
               onChange={(event) => setBranchGuid(event.target.value)}
-              sx={uiLayout.withUiSx({ minWidth: 280 }, uiLayout.formFieldSx)}
+              sx={uiLayout.withUiSx(uiLayout.formFieldSx, { flex: "1 1 220px", minWidth: 190, maxWidth: 320 })}
             >
               {branches.map((item) => (
                 <MenuItem key={item.guid} value={item.guid}>{item.branchName}</MenuItem>
@@ -877,7 +878,7 @@ export default function CourseStudentsPage() {
             <TextField InputLabelProps={{ shrink: true }}
               select size="small" label="الدفعة" value={batchKey}
               onChange={(event) => setBatchKey(event.target.value)}
-              sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}
+              sx={uiLayout.withUiSx(uiLayout.formFieldSx, { flex: "1 1 180px", minWidth: 160, maxWidth: 260 })}
             >
               {batches.map((item) => (
                 <MenuItem key={item.key} value={item.key}>{item.name}</MenuItem>
@@ -887,7 +888,7 @@ export default function CourseStudentsPage() {
             <TextField InputLabelProps={{ shrink: true }}
               select size="small" label="الدورة" value={courseGuid}
               onChange={(event) => setCourseGuid(event.target.value)}
-              sx={uiLayout.withUiSx({ minWidth: 260 }, uiLayout.formFieldSx)}
+              sx={uiLayout.withUiSx(uiLayout.formFieldSx, { flex: "1 1 200px", minWidth: 180, maxWidth: 300 })}
             >
               {courses.map((item) => (
                 <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>
@@ -1043,7 +1044,7 @@ export default function CourseStudentsPage() {
             </Stack>
 
             <Box
-              sx={uiLayout.withUiSx({
+              sx={uiLayout.withUiSx(uiLayout.formSectionSx, {
                 width: "100%",
                 display: "grid",
                 gridTemplateColumns: {
@@ -1057,7 +1058,7 @@ export default function CourseStudentsPage() {
                 flexBasis: isCompact ? "100%" : "auto",
                 flexGrow: isCompact ? 1 : 0,
                 minWidth: 0
-              }, uiLayout.formGridSx)}
+              })}
             >
               <TextField InputLabelProps={{ shrink: true }}
                 select
@@ -1390,8 +1391,8 @@ export default function CourseStudentsPage() {
                   showQuickFilter: !isPhone
                 }
               }}
-              rowHeight={isPhone ? 29 : isTablet ? 38 : 52}
-              columnHeaderHeight={isPhone ? 28 : isTablet ? 36 : 52}
+              rowHeight={isPhone ? 29 : isTablet ? 36 : 40}
+              columnHeaderHeight={isPhone ? 28 : isTablet ? 34 : 38}
               pageSizeOptions={[15, 25, 50, 100]}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
@@ -1636,7 +1637,7 @@ export default function CourseStudentsPage() {
       >
         <DialogTitle>إنهاء دراسة طالب</DialogTitle>
         <DialogContent>
-          <Stack sx={uiLayout.formGridSx} spacing={1.5} mt={1}>
+          <Stack sx={uiLayout.formSectionSx} spacing={1.5} mt={1}>
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} select fullWidth label="حالة التسجيل" value={finishStatusGuid}
               onChange={(event) => setFinishStatusGuid(event.target.value)}>
               {statuses.map((item) => <MenuItem key={item.guid} value={item.guid}>{item.name}</MenuItem>)}

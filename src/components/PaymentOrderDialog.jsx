@@ -1,3 +1,4 @@
+import { printWhenReady } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -1094,10 +1095,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
     doc.open();
     doc.write(buildPrintHtml());
     doc.close();
-    setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-    }, 250);
+    printWhenReady(iframe.contentWindow);
   };
 
   return (
@@ -1212,7 +1210,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                     lg: "repeat(5, minmax(0, 1fr))"
                   },
                   gap: { xs: 0.55, sm: 0.75, md: 0.9 }
-                }, uiLayout.formGridSx)}
+                }, uiLayout.formSectionSx)}
               >
                 <InfoField compact={isCompact} label="اسم الطالب" value={data.studentName} span={isPhone ? 2 : 1} />
                 <InfoField compact={isCompact} label="الكود" value={data.code} />
@@ -1915,3 +1913,4 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
     </>
   );
 }
+

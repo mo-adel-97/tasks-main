@@ -101,7 +101,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
       <CardContent
         sx={{
           p: 2.5,
-          "@media (max-width:1599px)": { p: 1 },
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { p: 1 },
           "@media (max-width:599px)": { p: 0.7 }
         }}
       >
@@ -112,7 +112,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 sx={{
                   width: 40,
                   height: 40,
-                  "@media (max-width:1599px)": {
+                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                     width: 30,
                     height: 30
                   },
@@ -133,7 +133,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                   sx={{ 
                     fontWeight: 800,
                     color: theme.text,
-                    "@media (max-width:1599px)": {
+                    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                       fontSize: "0.75rem"
                     },
                     "@media (max-width:599px)": {
@@ -159,7 +159,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 mb: 2,
                 lineHeight: 1.6,
                 minHeight: 48,
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   mb: 0.7,
                   minHeight: 34,
                   fontSize: "0.75rem",
@@ -238,7 +238,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
         sx={{
           p: 1.5,
           pt: 1,
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             p: 0.65,
             pt: 0.55
           },
@@ -303,7 +303,7 @@ export default function AdminStudentNotes() {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -497,7 +497,7 @@ export default function AdminStudentNotes() {
         background: theme.bg,
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl"
       }}

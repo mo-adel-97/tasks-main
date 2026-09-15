@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -122,7 +123,7 @@ const MoneyCell = ({ value }) => (
       width: "100%",
       fontWeight: 900,
       fontSize: "0.9rem",
-      "@media (max-width:1599px)": { fontSize: "0.75rem" },
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
       "@media (max-width:599px)": { fontSize: "0.75rem" },
       textAlign: "center",
       direction: "ltr",
@@ -161,7 +162,7 @@ const InfoCard = ({ label, value }) => (
       border: "1px solid #e4eeea",
       backgroundColor: "#fff",
       height: "100%",
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.48,
         borderRadius: 1.3,
         minHeight: 46
@@ -179,7 +180,7 @@ const InfoCard = ({ label, value }) => (
         color: "#6f8a81",
         mb: 0.4,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.75rem", mb: 0.15 },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem", mb: 0.15 },
         "@media (max-width:599px)": { fontSize: "0.75rem", mb: 0.1 }
       }}
     >
@@ -190,7 +191,7 @@ const InfoCard = ({ label, value }) => (
         fontSize: "0.9rem",
         fontWeight: 900,
         lineHeight: 1.15,
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" },
         color: textColor,
         wordBreak: "break-word"
@@ -210,7 +211,7 @@ const TotalBox = ({ label, value, color = textColor }) => (
       border: "1px solid #e4eeea",
       backgroundColor: "#fff",
       minWidth: 150,
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         minWidth: 0,
         flex: 1,
         p: 0.45,
@@ -227,7 +228,7 @@ const TotalBox = ({ label, value, color = textColor }) => (
         fontWeight: 900,
         color: "#6f8a81",
         mb: 0.4,
-        "@media (max-width:1599px)": { fontSize: "0.75rem", mb: 0.1 },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem", mb: 0.1 },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -239,7 +240,7 @@ const TotalBox = ({ label, value, color = textColor }) => (
         fontWeight: 1000,
         color,
         direction: "ltr",
-        "@media (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         "@media (max-width:599px)": { fontSize: "0.75rem" }
       }}
     >
@@ -257,7 +258,7 @@ const StudentRegFeesDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const [loadingContext, setLoadingContext] = useState(false);

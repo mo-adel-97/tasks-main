@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import { designTokens } from '../config/designTokens';
@@ -464,7 +465,7 @@ const actionMenuItemSx = (color = primaryColor) => ({
   },
 
   // موبايل + تابلت فقط
-  "@media (max-width:1599px)": {
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
     mx: 0.35,
     my: 0.12,
     minHeight: 33,
@@ -510,7 +511,7 @@ const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
             fontSize: "1.18rem"
           },
 
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             width: 25,
             height: 25,
             borderRadius: 1.15,
@@ -546,7 +547,7 @@ const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
           lineHeight: 1.25,
           whiteSpace: "nowrap",
 
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             fontSize: "0.62rem"
           },
 
@@ -563,7 +564,7 @@ const ActionMenuSection = ({ children }) => (
   <Box
     sx={{
       py: 0.35,
-      "@media (max-width:1599px)": { py: 0.12 }
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { py: 0.12 }
     }}
   >
     {children}
@@ -644,7 +645,7 @@ const OldStudentStatementDialog = ({
             td { border:1px solid #d9e6e0; padding:6px 4px; text-align:center; }
             h2 { color:#057546; font-size:16px; margin:10px 0 5px; }
           </style>
-        </head>
+        ${PRINT_READY_SCRIPT}</head>
         <body>
           <h1>كشف حساب سابق</h1>
           <div class="sub">
@@ -670,7 +671,7 @@ const OldStudentStatementDialog = ({
             <thead><tr><th>التاريخ</th><th>رقم المستند</th><th>مدين</th><th>دائن</th><th>البيان</th><th>المرجع</th><th>البنك / الخزينة</th></tr></thead>
             <tbody>${renderRows(data.cashMovements, "cash") || '<tr><td colspan="7">لا توجد حركات</td></tr>'}</tbody>
           </table>
-          <script>window.onload=()=>setTimeout(()=>window.print(),300);</script>
+          <script>window.onload=()=>setTimeout(()=>printWhenReady(),300);</script>
         </body>
       </html>
     `);
@@ -789,7 +790,7 @@ const ReceptionOffice = () => {
   
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
-  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`, { noSsr: true });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [searchType, setSearchType] = useState("nationalId");
   const [searchText, setSearchText] = useState("");

@@ -693,7 +693,7 @@ export default function BatchCountManagement() {
       dir="rtl"
       sx={{
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         minHeight: "100vh",
         overflowX: "hidden",
         bgcolor: soft,
@@ -842,7 +842,7 @@ export default function BatchCountManagement() {
                 md: "repeat(3,minmax(0,1fr))"
               },
               gap: { xs: 0.4, sm: 0.7 }
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"

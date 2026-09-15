@@ -369,7 +369,7 @@ export default function OverviewTab({
             alignItems: "center",
             justifyContent: "center",
             gap: { xs: 0.7, sm: 0.9 },
-          }, uiLayout.formGridSx)}
+          }, uiLayout.formSectionSx)}
         >
           <Typography
             sx={{

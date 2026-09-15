@@ -277,7 +277,7 @@ export default function ChangeUserPassword() {
               },
               gap: { xs: 0.65, sm: 1 },
               "& .MuiTextField-root": fieldSx
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               autoFocus

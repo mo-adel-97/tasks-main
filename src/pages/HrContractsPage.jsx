@@ -1461,7 +1461,7 @@ export default function HrContractsPage() {
                   "minmax(260px,1.4fr) 180px 180px 180px 110px"
               },
               gap: 1
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
@@ -2241,7 +2241,7 @@ export default function HrContractsPage() {
               },
               gap: 1,
               mb: 1.2
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
@@ -2262,12 +2262,8 @@ export default function HrContractsPage() {
             />
 
             <FormControl sx={uiLayout.formFieldSx} size="small">
-              <InputLabel>
-                مستوى التنبيه
-              </InputLabel>
               <Select
                   MenuProps={RTL_MENU_PROPS}
-                label="مستوى التنبيه"
                 value={alertLevel}
                 onChange={(e) =>
                   setAlertLevel(
@@ -2793,7 +2789,7 @@ export default function HrContractsPage() {
                   sm: "repeat(2,minmax(0,1fr))"
                 },
                 gap: 1
-              }, uiLayout.formGridSx)}
+              }, uiLayout.formSectionSx)}
             >
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 label="رقم العقد"

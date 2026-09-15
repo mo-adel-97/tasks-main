@@ -4,6 +4,7 @@ import { prefixer } from 'stylis';
 import { rtlComponents } from './config/rtlComponents';
 import { designTokens } from './config/designTokens';
 import { typographyStyles } from './config/typographySystem';
+import { DESKTOP_BREAKPOINT } from './config/sidebarLayout';
 
 // Direction comes from the document/theme. Physical CSS properties and explicit
 // LTR values must retain their meaning; do not run a CSS mirroring plugin here.
@@ -15,6 +16,7 @@ export const createAppCache = (options = {}) => createCache({
 
 const theme = createTheme({
   direction: 'rtl',
+  breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: DESKTOP_BREAKPOINT, xl: 1536 } },
   components: { ...rtlComponents, MuiCssBaseline: { styleOverrides: typographyStyles } },
   palette: {
     primary: { main: designTokens.primary, dark: designTokens.primaryDark },

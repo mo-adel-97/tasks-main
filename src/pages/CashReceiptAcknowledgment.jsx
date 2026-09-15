@@ -778,7 +778,7 @@ const CashReceiptAcknowledgment = () => {
                   "repeat(2,minmax(0,1fr))"
               },
               gap: 1.5
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="كود الإقرار"

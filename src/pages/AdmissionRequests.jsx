@@ -371,7 +371,7 @@ const DetailItem = ({ label, value, strong = false }) => (
     sx={{
       p: 1.2,
       "@media (max-width:599px)": { p: 0.45, borderRadius: 1 },
-      "@media (min-width:600px) and (max-width:1599px)": { p: 0.65, borderRadius: 1.3 },
+      [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { p: 0.65, borderRadius: 1.3 },
       borderRadius: 2,
       border: "1px solid #e4eeea",
       backgroundColor: "#fcfdfd",
@@ -386,7 +386,7 @@ const DetailItem = ({ label, value, strong = false }) => (
         display: "block",
         mb: 0.4,
         "@media (max-width:599px)": { fontSize: "0.75rem", mb: 0.15 },
-        "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.75rem", mb: 0.2 }
+        [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem", mb: 0.2 }
       }}
     >
       {label}
@@ -401,7 +401,7 @@ const DetailItem = ({ label, value, strong = false }) => (
         wordBreak: "break-word",
         fontSize: strong ? "1rem" : "0.9rem",
         "@media (max-width:599px)": { fontSize: strong ? "0.75rem" : "0.75rem", lineHeight: 1.35 },
-        "@media (min-width:600px) and (max-width:1599px)": { fontSize: strong ? "0.75rem" : "0.75rem", lineHeight: 1.4 }
+        [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: strong ? "0.75rem" : "0.75rem", lineHeight: 1.4 }
       }}
     >
       {value || "-"}
@@ -416,7 +416,7 @@ const EllipsisCell = ({ value }) => (
         width: "100%",
         fontSize: "0.75rem",
         "@media (max-width:599px)": { fontSize: "0.75rem" },
-        "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.75rem" },
+        [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
         fontWeight: 800,
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -457,7 +457,7 @@ const SmallDataTable = ({ title, rows, emptyText = "لا توجد بيانات" 
       sx={{
         "& th, & td": {
           "@media (max-width:599px)": { fontSize: "0.75rem", px: 0.35, py: 0.45 },
-          "@media (min-width:600px) and (max-width:1599px)": { fontSize: "0.75rem", px: 0.55, py: 0.55 }
+          [`@media (min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem", px: 0.55, py: 0.55 }
         }
       }}
     >
@@ -516,7 +516,7 @@ const AdmissionRequests = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -1837,7 +1837,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         background: softBg,
         fontFamily: "Cairo, Arial, sans-serif",
         direction: "rtl",

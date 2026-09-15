@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -243,7 +244,7 @@ const fieldSx = {
     fontFamily: "Cairo"
   },
 
-  "@media (max-width:1599px)": {
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
     "& .MuiInputLabel-root": {
       fontFamily: "Cairo",
       fontSize: "0.56rem",
@@ -290,7 +291,7 @@ const QualityFormsPage = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -1330,7 +1331,7 @@ const exportPdfDirect = async () => {
               }
             }
           </style>
-        </head>
+        ${PRINT_READY_SCRIPT}</head>
 
         <body>
           ${clonedNode.outerHTML}
@@ -1384,7 +1385,7 @@ const exportPdfDirect = async () => {
 
                 setTimeout(() => {
                   window.focus();
-                  window.print();
+                  printWhenReady();
                 }, 700);
               }
             );
@@ -1624,7 +1625,7 @@ const handleExportPdf = () => {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
         background:
@@ -1979,7 +1980,7 @@ const handleExportPdf = () => {
               direction: "rtl",
 
               "& .MuiPaper-outlined": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   padding: "9px !important",
                   marginBottom: "9px !important",
                   borderRadius: "11px !important"
@@ -1993,7 +1994,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiInputLabel-root": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   fontSize: "0.56rem !important",
                   fontWeight: "800 !important"
                 },
@@ -2004,7 +2005,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiInputBase-input, & .MuiSelect-select": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   fontSize: "0.6rem !important",
                   paddingTop: "8px !important",
                   paddingBottom: "8px !important"
@@ -2018,7 +2019,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiOutlinedInput-root": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   minHeight: "35px !important",
                   borderRadius: "9px !important"
                 },
@@ -2030,7 +2031,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiFormControl-root": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   marginTop: "3px",
                   marginBottom: "3px"
                 },
@@ -2042,7 +2043,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiButton-root": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   minHeight: "33px",
                   fontSize: "0.75rem",
                   padding: "5px 9px"
@@ -2056,7 +2057,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiFormControlLabel-label": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   fontSize: "0.75rem",
                   fontWeight: 800
                 },
@@ -2067,7 +2068,7 @@ const handleExportPdf = () => {
               },
 
               "& .MuiAlert-root": {
-                "@media (max-width:1599px)": {
+                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                   fontSize: "0.75rem",
                   paddingTop: "4px",
                   paddingBottom: "4px"
@@ -2393,7 +2394,7 @@ const handleExportPdf = () => {
                 sx={uiLayout.withUiSx({
                   ...fieldSx,
 
-                  "@media (max-width:1599px)": {
+                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                     "& .MuiOutlinedInput-root": {
                       minHeight: "44px !important",
                       p: "5px 7px !important"
@@ -2643,7 +2644,7 @@ const Section = ({
       mb: 2,
       borderRadius: 3,
 
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.85,
         mb: 0.85,
         borderRadius: 2
@@ -2663,7 +2664,7 @@ const Section = ({
         fontWeight: 900,
         mb: 1.5,
 
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           mb: 0.55,
           fontSize: "0.75rem"
         },
@@ -2709,7 +2710,7 @@ const Section = ({
 const compactTextAreaSx = {
   ...fieldSx,
 
-  "@media (max-width:1599px)": {
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
     "& .MuiInputLabel-root": {
       fontSize: "0.5rem !important"
     },
@@ -4507,7 +4508,7 @@ const ExamScheduleEditor = ({
           p: 2,
           mb: 2,
           borderRadius: 3,
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             p: 0.75,
             mb: 0.85,
             borderRadius: 2
@@ -4525,7 +4526,7 @@ const ExamScheduleEditor = ({
             color: "#057546",
             fontWeight: 900,
             mb: 1,
-            "@media (max-width:1599px)": {
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               mb: 0.45,
               fontSize: "0.75rem"
             },
@@ -4557,7 +4558,7 @@ const ExamScheduleEditor = ({
           borderRadius: 3,
           overflowX: "hidden",
 
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             p: 0.75,
             mb: 0.85,
             borderRadius: 2
@@ -4724,7 +4725,7 @@ const ExamScheduleEditor = ({
                       xs: 0.75,
                       sm: 0.95
                     }
-                  }, uiLayout.formGridSx)}
+                  }, uiLayout.formSectionSx)}
                 >
                   <TextField
                     type="date"
@@ -5092,7 +5093,7 @@ const CourseListEditor = ({
         mb: 2,
         borderRadius: 3,
 
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           p: 0.75,
           mb: 0.85,
           borderRadius: 2
@@ -5112,7 +5113,7 @@ const CourseListEditor = ({
           fontWeight: 900,
           mb: 1,
 
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             mb: 0.55,
             fontSize: "0.75rem"
           },
@@ -5374,7 +5375,7 @@ const GradeWarningEditor = ({
         p: 2,
         mb: 2,
         borderRadius: 3,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           p: 0.75,
           mb: 0.85,
           borderRadius: 2
@@ -5392,7 +5393,7 @@ const GradeWarningEditor = ({
           color: "#057546",
           fontWeight: 900,
           mb: 1,
-          "@media (max-width:1599px)": {
+          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
             mb: 0.5,
             fontSize: "0.75rem"
           },
@@ -5588,7 +5589,7 @@ const GeneralLetterEditor = ({
             borderRadius: 3,
             direction: "rtl",
 
-            "@media (max-width:1599px)": {
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               p: 0.75,
               mb: 0.85,
               borderRadius: 2
@@ -5608,7 +5609,7 @@ const GeneralLetterEditor = ({
               fontWeight: 900,
               mb: 1,
 
-              "@media (max-width:1599px)": {
+              [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                 mb: 0.45,
                 fontSize: "0.75rem"
               },
@@ -5649,7 +5650,7 @@ const GeneralLetterEditor = ({
                 "& .MuiFormControlLabel-label": {
                   fontFamily: "Cairo",
                   fontWeight: 800,
-                  "@media (max-width:1599px)": {
+                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                     fontSize: "0.75rem",
                     lineHeight: 1.35
                   },
@@ -5691,7 +5692,7 @@ const GeneralLetterEditor = ({
                 "& .MuiFormControlLabel-label": {
                   fontFamily: "Cairo",
                   fontWeight: 800,
-                  "@media (max-width:1599px)": {
+                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                     fontSize: "0.75rem",
                     lineHeight: 1.35
                   },

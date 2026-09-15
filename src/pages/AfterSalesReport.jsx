@@ -204,7 +204,7 @@ const AfterSalesReport = () => {
   );
 
   const isTablet = useMediaQuery(
-    "(min-width:600px) and (max-width:1599px)"
+    `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
   );
 
   const isDesktop = useMediaQuery(
@@ -589,7 +589,7 @@ const AfterSalesReport = () => {
         headerName: "اسم الطالب",
         type: "string",
         flex: 1.35,
-        minWidth: 145
+        minWidth: 140
       },
       {
         field: "studentTel",
@@ -650,7 +650,7 @@ const AfterSalesReport = () => {
         headerName: "الملاحظات",
         type: "string",
         flex: 1.6,
-        minWidth: 170
+        minWidth: 140
       },
       actionColumn
     ];
@@ -1111,7 +1111,7 @@ const AfterSalesReport = () => {
       sx={{
         minHeight: "100dvh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         background: "#f5f8f7",
         direction: "rtl"

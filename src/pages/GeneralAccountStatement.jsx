@@ -188,7 +188,7 @@ export default function GeneralAccountStatement() {
 
   const isTablet =
     useMediaQuery(
-      "(min-width:600px) and (max-width:1599px)"
+      `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
     );
 
   const user =
@@ -1023,7 +1023,7 @@ export default function GeneralAccountStatement() {
         {
           field: "balance",
           headerName: "الرصيد",
-          width: 130,
+          width: 110,
           align: "center",
           headerAlign: "center",
           valueFormatter:
@@ -1033,7 +1033,7 @@ export default function GeneralAccountStatement() {
         {
           field: "notes",
           headerName: "بيان",
-          minWidth: 300,
+          minWidth: 140,
           flex: 1.6
         },
         {
@@ -1045,7 +1045,7 @@ export default function GeneralAccountStatement() {
         {
           field: "branchName",
           headerName: "الفرع",
-          minWidth: 230,
+          minWidth: 140,
           flex: 1.2
         }
       ],

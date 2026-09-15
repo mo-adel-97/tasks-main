@@ -831,7 +831,7 @@ export default function BatchManagement() {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        maxWidth: "100vw",
+        maxWidth: "100%",
         overflowX: "hidden",
         bgcolor: soft,
         p: { xs: 0.4, sm: 0.75, md: 1 }
@@ -1039,7 +1039,7 @@ export default function BatchManagement() {
                 md: "repeat(4,minmax(0,1fr))"
               },
               gap: { xs: 0.4, sm: 0.7 }
-            }, uiLayout.formGridSx)}
+            }, uiLayout.formSectionSx)}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               size="small"
@@ -1208,7 +1208,7 @@ export default function BatchManagement() {
                     px: { xs: 0.4, sm: 0.7 },
                     py: { xs: 0.3, sm: 0.45 },
                     borderTop: "1px solid #edf2ef"
-                  }, uiLayout.formGridSx)}
+                  }, uiLayout.formSectionSx)}
                 >
                   <Typography
                     noWrap

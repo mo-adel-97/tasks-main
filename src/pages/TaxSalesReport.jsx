@@ -233,7 +233,7 @@ export default function TaxSalesReport() {
 
   const isTablet =
     useMediaQuery(
-      "(min-width:600px) and (max-width:1599px)"
+      `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`
     );
 
   const user =

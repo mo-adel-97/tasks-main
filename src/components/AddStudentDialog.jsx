@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -121,7 +122,7 @@ const FieldLabel = ({ children }) => (
       mb: 0.5,
       textAlign: "start",
 
-      "@media (max-width:1599px)": {
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         fontSize: "0.75rem",
         mb: 0.22,
         lineHeight: 1.2
@@ -144,7 +145,7 @@ const inputSx = {
     borderRadius: 2,
     fontWeight: 900,
 
-    "@media (max-width:1599px)": {
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
       minHeight: 34,
       borderRadius: 1.35,
       fontSize: "0.62rem"
@@ -171,7 +172,7 @@ const inputSx = {
   "& .MuiInputBase-input": {
     fontWeight: 900,
 
-    "@media (max-width:1599px)": {
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
       py: 0.7,
       px: 0.8,
       fontSize: "0.62rem"
@@ -243,7 +244,7 @@ const AddStudentDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
 
   const [form, setForm] = useState(emptyForm);
   const [context, setContext] = useState(null);

@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -286,7 +287,7 @@ const StudentField = ({ label, children }) => (
         fontSize: "0.8rem",
         fontWeight: 950,
         lineHeight: 1.2,
-        "@media (max-width:1599px)": {
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           mb: 0.22,
           fontSize: "0.75rem"
         },
@@ -311,7 +312,7 @@ const EditStudentDialog = ({
 }) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
 
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);

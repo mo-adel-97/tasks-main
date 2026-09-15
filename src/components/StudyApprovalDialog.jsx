@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -1429,7 +1430,7 @@ const StudyApprovalDialog = ({
               }
             }
           </style>
-        </head>
+        ${PRINT_READY_SCRIPT}</head>
 
         <body>
           <div class="page">
@@ -1556,7 +1557,7 @@ const StudyApprovalDialog = ({
                 Promise.all([fontsReady, waitForImages()]).then(function () {
                   window.focus();
                   window.setTimeout(function () {
-                    window.print();
+                    printWhenReady();
                   }, 250);
                 });
               });

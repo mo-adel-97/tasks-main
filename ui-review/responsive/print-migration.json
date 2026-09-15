@@ -1,0 +1,50 @@
+[
+  {
+    "file": "src\\components\\AdmissionOrderDialog.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\components\\RegisterDocumentDialog.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\components\\StudentPaymentOrderDialog.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\components\\StudentStatementDialog2.jsx",
+    "documents": 2
+  },
+  {
+    "file": "src\\components\\StudyApprovalDialog.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\components\\TrainerStudentGrid2.jsx",
+    "documents": 2
+  },
+  {
+    "file": "src\\MyRequests.jsx",
+    "documents": 2
+  },
+  {
+    "file": "src\\pages\\CashDisbursement.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\pages\\JournalEntry.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\pages\\QualityFormsPage.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\pages\\ReceptionOffice.jsx",
+    "documents": 1
+  },
+  {
+    "file": "src\\pages\\TrialBalance.jsx",
+    "documents": 1
+  }
+]

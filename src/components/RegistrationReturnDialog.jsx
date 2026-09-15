@@ -1,3 +1,4 @@
+import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -73,7 +74,7 @@ export default function RegistrationReturnDialog({
 }) {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery("(min-width:600px) and (max-width:1599px)");
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
 
   const getResponsiveSwalOptions = () => {
@@ -357,7 +358,7 @@ export default function RegistrationReturnDialog({
     <>
       <style>
         {`
-          @media (max-width: 1599px) {
+          @media screen {
             .sstli-return-swal {
               max-width: 420px !important;
               border-radius: 14px !important;

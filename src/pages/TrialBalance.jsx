@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -968,7 +969,7 @@ export default function TrialBalance() {
                 background: #e8f2ee;
               }
             </style>
-          </head>
+          ${PRINT_READY_SCRIPT}</head>
 
           <body>
             <h1>ميزان المراجعة</h1>
@@ -1007,7 +1008,7 @@ export default function TrialBalance() {
             <script>
               window.onload =
                 function () {
-                  window.print();
+                  printWhenReady();
                 };
             </script>
           </body>

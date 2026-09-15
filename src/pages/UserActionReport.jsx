@@ -1103,7 +1103,7 @@ export default function UserActionReport() {
                     xs: 0.45,
                     sm: 0.65
                   }
-                }, uiLayout.formGridSx)}
+                }, uiLayout.formSectionSx)}
               >
                 <TextField InputLabelProps={{ shrink: true }}
                   size="small"

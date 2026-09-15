@@ -66,7 +66,7 @@ const SpecialComponent = () => {
   
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const isPhone = useMediaQuery('(max-width:599px)', { noSsr: true });
-  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1599px)', { noSsr: true });
+  const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`, { noSsr: true });
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -665,7 +665,7 @@ const SpecialComponent = () => {
         </Box>
       ),
     },
-    { field: "nationalId", headerName: "رقم الهوية", flex: 1, minWidth: 120 },
+    { field: "nationalId", headerName: "رقم الهوية", flex: 1, minWidth: 110 },
     { field: "studentTel", headerName: "الجوال", flex: 1, minWidth: 120 },
     { field: "diplomName", headerName: "البرنامج", flex: 1, minWidth: 150 },
     {

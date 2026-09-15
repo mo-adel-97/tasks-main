@@ -1,3 +1,4 @@
+import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useState } from "react";
@@ -693,7 +694,7 @@ const StudentStatementDialog2 = ({
               }
             }
           </style>
-        </head>
+        ${PRINT_READY_SCRIPT}</head>
         <body>
           <section class="page-header">
             <div class="title">كشف حساب سابق</div>
@@ -806,7 +807,7 @@ const StudentStatementDialog2 = ({
           <script>
             window.addEventListener("load", function () {
               window.setTimeout(function () {
-                window.print();
+                printWhenReady();
               }, 350);
             });
           </script>
@@ -838,7 +839,7 @@ const StudentStatementDialog2 = ({
 
 
   const oldRegistrationColumns = [
-    { field: "date", headerName: "التاريخ", width: 120, align: "center", headerAlign: "center" },
+    { field: "date", headerName: "التاريخ", width: 110, align: "center", headerAlign: "center" },
     { field: "documentType", headerName: "نوع المستند", width: 150, align: "center", headerAlign: "center" },
     { field: "documentNo", headerName: "رقم المستند", width: 130, align: "center", headerAlign: "center" },
     { field: "debit", headerName: "مدين", width: 110, align: "center", headerAlign: "center", renderCell: (params) => <MoneyCell value={params.value} /> },
@@ -851,7 +852,7 @@ const StudentStatementDialog2 = ({
     {
       field: "date",
       headerName: "التاريخ",
-      width: 125,
+      width: 110,
       align: "center",
       headerAlign: "center"
     },
@@ -1169,7 +1170,7 @@ const StudentStatementDialog2 = ({
               }
             }
           </style>
-        </head>
+        ${PRINT_READY_SCRIPT}</head>
         <body>
           <section class="page-header">
             <div class="title">كشف حساب طالب</div>
@@ -1232,7 +1233,7 @@ const StudentStatementDialog2 = ({
           <script>
             window.addEventListener("load", function () {
               window.setTimeout(function () {
-                window.print();
+                printWhenReady();
               }, 350);
             });
           </script>
@@ -1444,7 +1445,7 @@ const StudentStatementDialog2 = ({
     {
       field: "date",
       headerName: "التاريخ الميلادي",
-      width: 130,
+      width: 110,
       align: "center",
       headerAlign: "center",
       valueFormatter: (params) =>
@@ -1521,7 +1522,7 @@ const StudentStatementDialog2 = ({
     {
       field: "date",
       headerName: "التاريخ الميلادي",
-      width: 130,
+      width: 110,
       align: "center",
       headerAlign: "center",
       valueFormatter: (params) =>
@@ -2293,7 +2294,7 @@ const StudentStatementDialog2 = ({
                           field: "studentName",
                           headerName: "اسم الطالب",
                           flex: 1,
-                          minWidth: 180
+                          minWidth: 140
                         },
                         {
                           field: "studentTel",
@@ -2305,7 +2306,7 @@ const StudentStatementDialog2 = ({
                         {
                           field: "nationalId",
                           headerName: "رقم الهوية",
-                          width: 140,
+                          width: 110,
                           align: "center",
                           headerAlign: "center"
                         },
