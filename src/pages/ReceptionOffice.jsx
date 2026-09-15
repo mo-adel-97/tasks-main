@@ -2859,7 +2859,6 @@ const handleAcceptOrder = (row) => {
                     if (e.key === "Enter") handleSearch();
                   }}
                   label={searchLabel}
-                  placeholder={`اكتب ${searchLabel}`}
                  InputLabelProps={{
   sx: {
     fontWeight: 900,
