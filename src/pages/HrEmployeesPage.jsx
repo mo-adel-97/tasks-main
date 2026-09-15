@@ -1,5 +1,5 @@
 import PageContainer from '../components/common/PageContainer';
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { hrChipSx, hrEmployeeFieldSx, hrTabIconSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -3395,7 +3395,7 @@ const HrEmployeesPage = () => {
             px: 1.5,
             py: 1.5
           },
-          ...navigationContentSx
+          ...navigationContentSx, ...uiLayout.scopeSx
         }}
       >
         <Stack
@@ -3447,7 +3447,7 @@ const HrEmployeesPage = () => {
             spacing={2}
           >
             <Box>
-              <Typography
+              <Typography className="hr-page-title"
                 variant="h5"
                 sx={{
                   fontFamily: "Cairo",
@@ -3513,7 +3513,7 @@ const HrEmployeesPage = () => {
               md: "repeat(3, 1fr)",
               lg: "repeat(5, 1fr)"
             },
-            gap: { xs: .65, sm: .8, lg: 1.5 }
+            gap: { xs: .65, sm: .8, lg: 1 }
           }}
         >
           {statCards.map((card) => (
@@ -3645,7 +3645,7 @@ const HrEmployeesPage = () => {
               sx={uiLayout.withUiSx([EMPLOYEE_PAGE_FIELD_GAP, EMPLOYEE_PAGE_FIELD_SX, {
                 display: "grid",
                 gridTemplateColumns: {
-                  xs: "repeat(2, minmax(0, 1fr))",
+                  xs: "minmax(0, 1fr)",
                   sm: "repeat(2, minmax(0, 1fr))",
                   md: "repeat(2, minmax(0, 1fr))",
                   lg: "repeat(4, minmax(0, 1fr))"

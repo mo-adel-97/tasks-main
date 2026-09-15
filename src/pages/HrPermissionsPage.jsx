@@ -42,7 +42,6 @@ import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import DoNotDisturbAltRoundedIcon from "@mui/icons-material/DoNotDisturbAltRounded";
-import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -286,21 +285,50 @@ const emptyForm = () => ({
   autoApprove: false
 });
 
-const getActor = () => {
+const getStoredUser = () => {
   try {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    return {
-      actorUserGuid: user?.guid || user?.Guid || user?.userGuid || user?.UserGuid || null,
-      actorName:
-        user?.fullName ||
-        user?.FullName ||
-        user?.userName ||
-        user?.UserName ||
-        "مستخدم النظام"
-    };
+    return JSON.parse(localStorage.getItem("user") || "{}");
   } catch {
-    return { actorUserGuid: null, actorName: "مستخدم النظام" };
+    return {};
   }
+};
+
+const getStoredUserGuid = (user) => {
+  const candidate =
+    user?.userGuid ||
+    user?.UserGuid ||
+    user?.guid ||
+    user?.Guid ||
+    user?.USER_GUID ||
+    user?.USER_GUID____ ||
+    user?.sellerGuid ||
+    user?.SellerGuid ||
+    localStorage.getItem("userGuid") ||
+    localStorage.getItem("UserGuid") ||
+    localStorage.getItem("guid") ||
+    "";
+
+  const value = String(candidate || "").trim();
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+    ? value
+    : "";
+};
+
+const getActor = () => {
+  const user = getStoredUser();
+  return {
+    actorUserGuid: getStoredUserGuid(user) || null,
+    actorName:
+      user?.fullName ||
+      user?.FullName ||
+      user?.ManFullName ||
+      user?.manFullName ||
+      user?.userName ||
+      user?.UserName ||
+      user?.name ||
+      user?.Name ||
+      "مستخدم النظام"
+  };
 };
 
 const statusMeta = (status) => {
@@ -558,7 +586,8 @@ export default function HrPermissionsPage() {
     }
     if (Number(form.permissionType) === 3) {
       if (!form.fromTime || !form.toTime) return "حدد وقت الخروج ووقت العودة";
-      if (form.toTime <= form.fromTime) return "وقت العودة يجب أن يكون بعد وقت الخروج";
+      // لا نقارن الوقتين نصيًا هنا لأن الوردية قد تعبر منتصف الليل.
+      // الـ API هو المصدر النهائي للتحقق من أن الفترة تقع بالكامل داخل الوردية.
     }
     return "";
   };
@@ -739,12 +768,10 @@ export default function HrPermissionsPage() {
 
   const statCards = useMemo(
     () => [
-      ["إجمالي الفترة", stats.totalCount, <AccessTimeRoundedIcon fontSize="small" />],
-      ["قيد المراجعة", stats.pendingCount, <TimerOutlinedIcon fontSize="small" />],
-      ["معتمد", stats.approvedCount, <CheckCircleRoundedIcon fontSize="small" />],
-      ["مرفوض", stats.rejectedCount, <CloseRoundedIcon fontSize="small" />],
-      ["معتمد اليوم", stats.approvedTodayCount, <EventAvailableRoundedIcon fontSize="small" />],
-      ["مدة الأذونات", minutesText(stats.approvedMinutes), <TimerOutlinedIcon fontSize="small" />]
+      ["إجمالي الطلبات", stats.totalCount, <AccessTimeRoundedIcon fontSize="small" />],
+      ["تنتظر الموافقة", stats.pendingCount, <TimerOutlinedIcon fontSize="small" />],
+      ["معتمدة", stats.approvedCount, <CheckCircleRoundedIcon fontSize="small" />],
+      ["مرفوضة / ملغاة", stats.rejectedCount + stats.cancelledCount, <CloseRoundedIcon fontSize="small" />]
     ],
     [stats]
   );
@@ -773,16 +800,16 @@ export default function HrPermissionsPage() {
               )}
               <AccessTimeRoundedIcon />
               <Box>
-                <Typography sx={{ fontSize: { xs: 19, md: 24 }, fontWeight: 1000 }}>
+                <Typography className="hr-page-title" sx={{ fontSize: { xs: 19, md: 24 }, fontWeight: 1000 }}>
                   أذونات الموظفين
                 </Typography>
-                <Typography sx={{ opacity: 0.78, fontSize: 12 }}>
-                  إدارة التأخير، الانصراف المبكر، الخروج أثناء الدوام، والإذن ليوم كامل
+                <Typography sx={{ opacity: 0.82, fontSize: 12 }}>
+                  متابعة الطلبات ومعرفة حالتها والجهة التي يوجد عندها الطلب الآن
                 </Typography>
               </Box>
             </Stack>
 
-            <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={0.8} justifyContent="flex-end" alignItems={{ xs: "stretch", sm: "center" }}>
               <Tooltip title="تحديث">
                 <span>
                   <IconButton
@@ -807,94 +834,80 @@ export default function HrPermissionsPage() {
           </Stack>
         </Paper>
 
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "repeat(2,1fr)", md: "repeat(3,1fr)", xl: "repeat(6,1fr)" },
-            gap: 1,
-            mb: 1
-          }}
+        <Paper
+          elevation={0}
+          sx={{ border: `1px solid ${border}`, borderRadius: 2.5, p: 1, mb: 1, bgcolor: "#fff" }}
         >
-          {statCards.map(([label, value, icon]) => (
-            <Paper key={label} elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.5, p: 1.2 }}>
-              <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-                <Box>
-                  <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{label}</Typography>
-                  <Typography sx={{ fontWeight: 1000, fontSize: 19 }}>{value}</Typography>
-                </Box>
-                <Box sx={{ color: primary }}>{icon}</Box>
-              </Stack>
-            </Paper>
-          ))}
-        </Box>
-
-        <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.5, p: 1.2, mb: 1 }}>
           <Box
-            sx={uiLayout.withUiSx({
+            sx={{
               display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(2,1fr)", xl: "1fr 1fr 1fr 1fr 1.6fr auto" },
-              gap: 1,
-              alignItems: "center"
-            }, uiLayout.formSectionSx)}
+              gridTemplateColumns: { xs: "repeat(2,minmax(0,1fr))", md: "repeat(4,minmax(0,1fr))" },
+              gap: 0.75
+            }}
           >
-            <TextField sx={uiLayout.formFieldSx}
-              type="date"
-              size="small"
-              label="من تاريخ"
-              value={filters.fromDate}
-              onChange={(e) => setFilters((x) => ({ ...x, fromDate: e.target.value }))}
-              InputLabelProps={{ shrink: true }}
-             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField sx={uiLayout.formFieldSx}
-              type="date"
-              size="small"
-              label="إلى تاريخ"
-              value={filters.toDate}
-              onChange={(e) => setFilters((x) => ({ ...x, toDate: e.target.value }))}
-              InputLabelProps={{ shrink: true }}
-             inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <FormControl sx={uiLayout.formFieldSx} size="small">
-              <InputLabel>الفرع</InputLabel>
-              <Select
-                  MenuProps={RTL_MENU_PROPS}
-                label="الفرع"
-                value={filters.branchGuid}
-                onChange={(e) => setFilters((x) => ({ ...x, branchGuid: e.target.value }))}
+            {statCards.map(([label, value, icon]) => (
+              <Box
+                key={label}
+                sx={{
+                  px: 1.15,
+                  py: 0.85,
+                  borderRadius: 2,
+                  bgcolor: "#f8fbf9",
+                  border: `1px solid ${border}`
+                }}
               >
-                <MenuItem value="">كل الفروع</MenuItem>
-                {lookups.branches.map((b) => (
-                  <MenuItem key={b.branchGuid} value={b.branchGuid}>{b.branchName}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={uiLayout.formFieldSx} size="small">
-              <InputLabel>نوع الإذن</InputLabel>
-              <Select
-                  MenuProps={RTL_MENU_PROPS}
-                label="نوع الإذن"
-                value={filters.permissionType}
-                onChange={(e) => setFilters((x) => ({ ...x, permissionType: e.target.value }))}
-              >
-                <MenuItem value="">كل الأنواع</MenuItem>
-                {lookups.permissionTypes.map((t) => (
-                  <MenuItem key={t.value} value={t.value}>{t.name}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-              size="small"
-              placeholder="بحث باسم الموظف أو الكود أو رقم الإذن..."
-              value={filters.search}
-              onChange={(e) => setFilters((x) => ({ ...x, search: e.target.value }))}
-              onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment>
-                )
-              }}
-            />
-            <Stack sx={uiLayout.filterBarSx} direction="row" spacing={0.7}>
-              <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 125 }, uiLayout.formFieldSx)}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.8}>
+                  <Box>
+                    <Typography sx={{ fontSize: 11.5, color: "text.secondary" }}>{label}</Typography>
+                    <Typography sx={{ fontWeight: 1000, fontSize: 17 }}>{value}</Typography>
+                  </Box>
+                  <Box sx={{ color: primary, display: "flex" }}>{icon}</Box>
+                </Stack>
+              </Box>
+            ))}
+          </Box>
+          <Typography sx={{ mt: 0.75, px: 0.25, fontSize: 11.5, color: "text.secondary" }}>
+            اليوم: {stats.approvedTodayCount} طلب معتمد • إجمالي مدة الأذونات المعتمدة: {minutesText(stats.approvedMinutes)}
+          </Typography>
+        </Paper>
+
+        <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: 2.5, p: 1.15, mb: 1 }}>
+          <Stack spacing={0.9}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
+              <Box>
+                <Typography sx={{ fontWeight: 950, color: primaryDark, fontSize: 13 }}>البحث والتصفية</Typography>
+                <Typography sx={{ fontSize: 11.5, color: "text.secondary" }}>حدد ما تحتاجه فقط ثم اضغط عرض.</Typography>
+              </Box>
+              <Button size="small" variant="text" onClick={clearFilters} sx={{ fontWeight: 850 }}>إعادة ضبط</Button>
+            </Stack>
+
+            <Box
+              sx={uiLayout.withUiSx({
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "repeat(2,minmax(0,1fr))", lg: "repeat(3,minmax(0,1fr))" },
+                gap: 0.9,
+                alignItems: "end"
+              }, uiLayout.formSectionSx)}
+            >
+              <TextField sx={uiLayout.formFieldSx}
+                type="date"
+                size="small"
+                label="من تاريخ"
+                value={filters.fromDate}
+                onChange={(e) => setFilters((x) => ({ ...x, fromDate: e.target.value }))}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+              />
+              <TextField sx={uiLayout.formFieldSx}
+                type="date"
+                size="small"
+                label="إلى تاريخ"
+                value={filters.toDate}
+                onChange={(e) => setFilters((x) => ({ ...x, toDate: e.target.value }))}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
+              />
+              <FormControl sx={uiLayout.formFieldSx} size="small">
                 <InputLabel>الحالة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -903,17 +916,63 @@ export default function HrPermissionsPage() {
                   onChange={(e) => setFilters((x) => ({ ...x, status: e.target.value }))}
                 >
                   <MenuItem value="">كل الحالات</MenuItem>
-                  {lookups.statuses.map((s) => (
-                    <MenuItem key={s.value} value={s.value}>{s.name}</MenuItem>
+                  {lookups.statuses.map((status) => (
+                    <MenuItem key={status.value} value={status.value}>{status.name}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <Button variant="contained" onClick={applyFilters} sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 800 }, uiLayout.buttonSx)}>
-                عرض
+
+              <FormControl sx={uiLayout.formFieldSx} size="small">
+                <InputLabel>الفرع</InputLabel>
+                <Select
+                  MenuProps={RTL_MENU_PROPS}
+                  label="الفرع"
+                  value={filters.branchGuid}
+                  onChange={(e) => setFilters((x) => ({ ...x, branchGuid: e.target.value }))}
+                >
+                  <MenuItem value="">كل الفروع</MenuItem>
+                  {lookups.branches.map((branch) => (
+                    <MenuItem key={branch.branchGuid} value={branch.branchGuid}>{branch.branchName}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={uiLayout.formFieldSx} size="small">
+                <InputLabel>نوع الإذن</InputLabel>
+                <Select
+                  MenuProps={RTL_MENU_PROPS}
+                  label="نوع الإذن"
+                  value={filters.permissionType}
+                  onChange={(e) => setFilters((x) => ({ ...x, permissionType: e.target.value }))}
+                >
+                  <MenuItem value="">كل الأنواع</MenuItem>
+                  {lookups.permissionTypes.map((type) => (
+                    <MenuItem key={type.value} value={type.value}>{type.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                sx={uiLayout.formFieldSx}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+                label="بحث"
+                placeholder="اسم الموظف، الكود أو رقم الإذن"
+                value={filters.search}
+                onChange={(e) => setFilters((x) => ({ ...x, search: e.target.value }))}
+                onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment>
+                  )
+                }}
+              />
+            </Box>
+
+            <Stack direction="row" justifyContent="flex-end" spacing={0.7}>
+              <Button variant="contained" onClick={applyFilters} sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 850, minWidth: 100 }, uiLayout.buttonSx)}>
+                عرض النتائج
               </Button>
-              <Button variant="outlined" onClick={clearFilters} sx={uiLayout.withUiSx({ minWidth: 55 }, uiLayout.buttonSx)}>مسح</Button>
             </Stack>
-          </Box>
+          </Stack>
         </Paper>
 
         {error && <Alert severity="error" sx={{ mb: 1 }}>{error}</Alert>}
@@ -930,13 +989,17 @@ export default function HrPermissionsPage() {
               <Typography sx={{ fontWeight: 800 }}>لا توجد أذونات في الفترة المحددة</Typography>
             </Stack>
           ) : (
-            <TableContainer sx={uiLayout.withUiSx({ maxHeight: "calc(100vh - 390px)" }, uiLayout.tableContainerSx)}>
-              <Table stickyHeader size="small" sx={{ minWidth: 1350 }}>
+            <TableContainer sx={uiLayout.withUiSx({ maxHeight: "calc(100vh - 350px)" }, uiLayout.tableContainerSx)}>
+              <Table stickyHeader size="small" sx={{ minWidth: 1040 }}>
                 <TableHead>
                   <TableRow>
-                    {["#", "الموظف", "الفرع", "التاريخ", "نوع الإذن", "الوقت", "السبب", "الحالة", "المرحلة الحالية", "مقدم الطلب", "الإجراءات"].map((h) => (
-                      <TableCell key={h} align="right" sx={{ fontWeight: 1000, bgcolor: "#f1f7f4", whiteSpace: "nowrap" }}>
-                        {h}
+                    {["الطلب", "الموظف", "الإذن", "السبب", "الحالة", "مسار الموافقة", "الإجراءات"].map((header) => (
+                      <TableCell
+                        key={header}
+                        align="right"
+                        sx={{ fontWeight: 1000, bgcolor: "#f1f7f4", whiteSpace: "nowrap" }}
+                      >
+                        {header}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -947,41 +1010,85 @@ export default function HrPermissionsPage() {
                     const busy = actionGuid === row.permissionGuid;
                     return (
                       <TableRow key={row.permissionGuid} hover>
-                        <TableCell>{row.permissionNumber}</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ minWidth: 100 }}>
+                          <Typography sx={{ fontWeight: 950, fontSize: 13 }}>#{row.permissionNumber}</Typography>
+                          <Typography sx={{ fontSize: 11.5, color: "text.secondary", whiteSpace: "nowrap" }}>
+                            {formatDate(row.permissionDate)}
+                          </Typography>
+                        </TableCell>
+
+                        <TableCell sx={{ minWidth: 185 }}>
                           <Typography sx={{ fontWeight: 900, fontSize: 13 }}>{row.employeeName}</Typography>
-                          <Typography sx={{ fontSize: 12, color: "text.secondary" }}>كود {row.employeeCode || "-"}</Typography>
+                          <Typography sx={{ fontSize: 11.5, color: "text.secondary" }}>
+                            كود {row.employeeCode || "-"} • {row.branchName || "بدون فرع"}
+                          </Typography>
                         </TableCell>
-                        <TableCell>{row.branchName || "-"}</TableCell>
-                        <TableCell sx={{ whiteSpace: "nowrap" }}>{formatDate(row.permissionDate)}</TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>{row.permissionTypeName}</TableCell>
+
+                        <TableCell sx={{ minWidth: 170 }}>
+                          <Typography sx={{ fontWeight: 900, fontSize: 12.5 }}>{row.permissionTypeName}</Typography>
+                          <Typography sx={{ fontSize: 11.5, color: "text.secondary", whiteSpace: "nowrap" }}>
+                            {permissionTimeDescription(row)}
+                            {Number(row.requestedMinutes || 0) > 0 ? ` • ${minutesText(row.requestedMinutes)}` : ""}
+                          </Typography>
+                        </TableCell>
+
+                        <TableCell sx={{ minWidth: 180, maxWidth: 260 }}>
+                          <Tooltip title={row.reason || "-"} arrow>
+                            <Typography
+                              sx={{
+                                fontSize: 12.5,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical"
+                              }}
+                            >
+                              {row.reason || "-"}
+                            </Typography>
+                          </Tooltip>
+                        </TableCell>
+
                         <TableCell sx={{ whiteSpace: "nowrap" }}>
-                          <Typography sx={{ fontWeight: 800, fontSize: 12.5 }}>{permissionTimeDescription(row)}</Typography>
-                          {Number(row.requestedMinutes || 0) > 0 && (
-                            <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{minutesText(row.requestedMinutes)}</Typography>
+                          <Chip size="small" label={meta.label} color={meta.color} sx={{ fontWeight: 850 }} />
+                        </TableCell>
+
+                        <TableCell sx={{ minWidth: 210 }}>
+                          {row.status === "Pending" ? (
+                            <Box sx={{ p: 0.75, borderRadius: 1.5, bgcolor: "#fff8e8", border: "1px solid #f2dfae" }}>
+                              <Typography sx={{ fontSize: 11, color: "text.secondary" }}>الطلب موجود الآن عند</Typography>
+                              <Typography sx={{ fontSize: 12.5, fontWeight: 950 }}>
+                                {row.currentApprovalRole || (row.currentApprovalStep ? `الخطوة ${row.currentApprovalStep}` : "المسؤول المباشر")}
+                              </Typography>
+                              <Typography sx={{ fontSize: 11.5, color: "text.secondary" }}>
+                                المسؤول: {row.currentApproverName || "يُحدد من الهيكل الإداري"}
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Box>
+                              <Typography sx={{ fontSize: 12.5, fontWeight: 850 }}>
+                                {row.status === "Approved"
+                                  ? "اكتمل الاعتماد"
+                                  : row.status === "Rejected"
+                                    ? "تم رفض الطلب"
+                                    : row.status === "Cancelled"
+                                      ? "تم إلغاء الطلب"
+                                      : "-"}
+                              </Typography>
+                              {row.decisionByName && (
+                                <Typography sx={{ fontSize: 11.5, color: "text.secondary" }}>
+                                  آخر قرار بواسطة: {row.decisionByName}
+                                </Typography>
+                              )}
+                            </Box>
                           )}
                         </TableCell>
-                        <TableCell sx={{ minWidth: 200 }}>{row.reason || "-"}</TableCell>
-                        <TableCell><Chip size="small" label={meta.label} color={meta.color} sx={{ fontWeight: 800 }} /></TableCell>
-                        <TableCell sx={{ minWidth: 150 }}>
-                          {row.status === "Pending" && row.currentApprovalStep ? (
-                            <>
-                              <Typography sx={{ fontSize: 12, fontWeight: 900 }}>{row.currentApprovalRole || `الخطوة ${row.currentApprovalStep}`}</Typography>
-                              <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{row.currentApproverName || "حسب الهيكل الإداري"}</Typography>
-                            </>
-                          ) : "-"}
-                        </TableCell>
-                        <TableCell>
-                          <Typography sx={{ fontSize: 12 }}>{row.requestedByName || "-"}</Typography>
-                          {row.decisionByName && row.status !== "Pending" && (
-                            <Typography sx={{ fontSize: 12, color: "text.secondary" }}>القرار: {row.decisionByName}</Typography>
-                          )}
-                        </TableCell>
-                        <TableCell sx={{ minWidth: 220 }}>
+
+                        <TableCell sx={{ minWidth: 185 }}>
                           {busy ? (
                             <CircularProgress size={22} />
                           ) : (
-                            <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.6} flexWrap="wrap" useFlexGap>
+                            <Stack sx={uiLayout.actionBarSx} direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
                               {row.status !== "Approved" && row.status !== "Cancelled" && (
                                 <Button sx={uiLayout.buttonSx} size="small" color="success" variant="contained" onClick={() => decidePermission(row, "Approved")}>اعتماد</Button>
                               )}
@@ -1038,113 +1145,344 @@ export default function HrPermissionsPage() {
         onClose={() => !saving && setCreateOpen(false)}
         fullWidth
         maxWidth="md"
+        PaperProps={{
+          sx: {
+            width: {
+              xs: "calc(100% - 12px)",
+              sm: "min(720px, calc(100% - 32px))",
+              md: "min(780px, calc(100% - 48px))"
+            },
+            maxWidth: "780px !important",
+            m: { xs: 0.75, sm: 2 },
+            maxHeight: { xs: "94dvh", sm: "90vh" },
+            borderRadius: { xs: 2.5, sm: 3 },
+            overflow: "hidden",
+            direction: "rtl"
+          }
+        }}
         dir="rtl"
       >
-        <DialogTitle sx={{ fontWeight: 1000, color: primaryDark }}>إضافة إذن موظف</DialogTitle>
-        <DialogContent dividers>
+        <DialogTitle
+          sx={{
+            px: { xs: 1.4, sm: 2.2 },
+            py: { xs: 1.15, sm: 1.45 },
+            borderBottom: `1px solid ${border}`,
+            background: "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
+          }}
+        >
+          <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 1000, color: primaryDark, fontSize: { xs: 15, sm: 18 } }}>
+                إضافة إذن موظف
+              </Typography>
+              <Typography color="text.secondary" sx={{ mt: 0.2, fontSize: 11.5, lineHeight: 1.5 }}>
+                يجب أن توجد وردية فعالة تغطي التاريخ والوقت، ويُطبق مسار الموافقات عند عدم الاعتماد المباشر.
+              </Typography>
+            </Box>
+            <IconButton
+              size="small"
+              onClick={() => setCreateOpen(false)}
+              disabled={saving}
+              sx={{ flexShrink: 0, border: `1px solid ${border}`, borderRadius: 1.7 }}
+            >
+              <CloseRoundedIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+
+        <DialogContent
+          dividers
+          sx={{
+            px: { xs: 1.25, sm: 2.2 },
+            py: { xs: "14px !important", sm: "20px !important" },
+            bgcolor: "#fbfdfc",
+            overflowX: "hidden"
+          }}
+        >
           {lookupsLoading ? (
-            <Stack alignItems="center" sx={{ py: 4 }}><CircularProgress /></Stack>
+            <Stack alignItems="center" sx={{ py: 5 }}>
+              <CircularProgress />
+            </Stack>
           ) : (
-            <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5, pt: 0.5 }, uiLayout.formSectionSx)}>
-              <Autocomplete
-              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
-                options={lookups.employees}
-                value={form.employee}
-                onChange={(_, value) => setForm((x) => ({ ...x, employee: value }))}
-                getOptionLabel={(option) => `${option?.employeeName || ""}${option?.employeeCode ? ` - ${option.employeeCode}` : ""}`}
-                isOptionEqualToValue={(option, value) => option?.employeeGuid === value?.employeeGuid}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.employeeGuid}>
-                    <Box>
-                      <Typography sx={{ fontWeight: 800, fontSize: 13 }}>{option.employeeName}</Typography>
-                      <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{option.branchName} • كود {option.employeeCode || "-"}</Typography>
-                    </Box>
-                  </li>
-                )}
-                renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="الموظف" required />}
-              />
-              <TextField sx={uiLayout.formFieldSx}
-                type="date"
-                label="تاريخ الإذن"
-                value={form.permissionDate}
-                onChange={(e) => setForm((x) => ({ ...x, permissionDate: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-                required
-               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <Stack spacing={1.25}>
+              <Alert severity="info" sx={{ borderRadius: 2, py: 0.35 }}>
+                لن يُقبل الإذن إذا لم يكن للموظف تكليف وردية فعال في هذا التاريخ أو إذا كان اليوم غير داخل أيام عمل الوردية.
+              </Alert>
 
-              <FormControl sx={uiLayout.formFieldSx} fullWidth required>
-                <InputLabel>نوع الإذن</InputLabel>
-                <Select
-                  MenuProps={RTL_MENU_PROPS}
-                  label="نوع الإذن"
-                  value={form.permissionType}
-                  onChange={(e) => setForm((x) => ({ ...x, permissionType: Number(e.target.value), fromTime: "", toTime: "" }))}
-                >
-                  {lookups.permissionTypes.map((t) => <MenuItem key={t.value} value={t.value}>{t.name}</MenuItem>)}
-                </Select>
-              </FormControl>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1.4fr .8fr" },
+                  gap: 1.1,
+                  alignItems: "start",
+                  "& > *": { minWidth: 0 }
+                }}
+              >
+                <Autocomplete
+                  ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
+                  options={lookups.employees}
+                  value={form.employee}
+                  onChange={(_, value) => setForm((x) => ({ ...x, employee: value }))}
+                  getOptionLabel={(option) =>
+                    `${option?.employeeName || ""}${option?.employeeCode ? ` - ${option.employeeCode}` : ""}`
+                  }
+                  isOptionEqualToValue={(option, value) =>
+                    option?.employeeGuid === value?.employeeGuid
+                  }
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.employeeGuid}>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={{ fontWeight: 900, fontSize: 12.5 }}>
+                          {option.employeeName}
+                        </Typography>
+                        <Typography sx={{ fontSize: 11, color: "text.secondary" }}>
+                          {option.branchName || "فرع غير محدد"} • كود {option.employeeCode || "-"}
+                        </Typography>
+                      </Box>
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={uiLayout.formFieldSx}
+                      InputLabelProps={{ shrink: true }}
+                      size="small"
+                      label="الموظف"
+                      required
+                    />
+                  )}
+                />
 
-              <Box sx={uiLayout.formGridSx}>
-                {Number(form.permissionType) === 1 && (
-                  <TextField sx={uiLayout.formFieldSx}
-                    fullWidth type="time" label="السماح بالحضور حتى" value={form.toTime}
-                    onChange={(e) => setForm((x) => ({ ...x, toTime: e.target.value }))}
-                    InputLabelProps={{ shrink: true }} required
-                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                )}
-                {Number(form.permissionType) === 2 && (
-                  <TextField sx={uiLayout.formFieldSx}
-                    fullWidth type="time" label="السماح بالانصراف من" value={form.fromTime}
-                    onChange={(e) => setForm((x) => ({ ...x, fromTime: e.target.value }))}
-                    InputLabelProps={{ shrink: true }} required
-                   inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                )}
-                {Number(form.permissionType) === 3 && (
-                  <Stack sx={uiLayout.formGridSx} direction="row" spacing={1}>
-                    <TextField sx={uiLayout.formFieldSx}
-                      fullWidth type="time" label="وقت الخروج" value={form.fromTime}
-                      onChange={(e) => setForm((x) => ({ ...x, fromTime: e.target.value }))}
-                      InputLabelProps={{ shrink: true }} required
-                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                    <TextField sx={uiLayout.formFieldSx}
-                      fullWidth type="time" label="وقت العودة" value={form.toTime}
-                      onChange={(e) => setForm((x) => ({ ...x, toTime: e.target.value }))}
-                      InputLabelProps={{ shrink: true }} required
-                     inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-                  </Stack>
-                )}
-                {Number(form.permissionType) === 4 && (
-                  <Alert severity="info">سيتم اعتبار اليوم إذن يوم كامل داخل الحضور والانصراف بعد الاعتماد.</Alert>
-                )}
+                <TextField
+                  sx={uiLayout.formFieldSx}
+                  size="small"
+                  type="date"
+                  label="تاريخ الإذن"
+                  value={form.permissionDate}
+                  onChange={(e) =>
+                    setForm((x) => ({ ...x, permissionDate: e.target.value }))
+                  }
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  inputProps={{
+                    dir: "ltr",
+                    style: { direction: "ltr", unicodeBidi: "isolate" }
+                  }}
+                />
               </Box>
 
-              <TextField InputLabelProps={{ shrink: true }}
-                fullWidth label="سبب الإذن" value={form.reason}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 1.1,
+                  alignItems: "start",
+                  "& > *": { minWidth: 0 }
+                }}
+              >
+                <FormControl sx={uiLayout.formFieldSx} fullWidth required size="small">
+                  <InputLabel>نوع الإذن</InputLabel>
+                  <Select
+                    MenuProps={RTL_MENU_PROPS}
+                    label="نوع الإذن"
+                    value={form.permissionType}
+                    onChange={(e) =>
+                      setForm((x) => ({
+                        ...x,
+                        permissionType: Number(e.target.value),
+                        fromTime: "",
+                        toTime: ""
+                      }))
+                    }
+                  >
+                    {lookups.permissionTypes.map((t) => (
+                      <MenuItem key={t.value} value={t.value}>
+                        {t.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Box sx={{ minWidth: 0 }}>
+                  {Number(form.permissionType) === 1 && (
+                    <TextField
+                      sx={uiLayout.formFieldSx}
+                      fullWidth
+                      size="small"
+                      type="time"
+                      label="السماح بالحضور حتى"
+                      value={form.toTime}
+                      onChange={(e) =>
+                        setForm((x) => ({ ...x, toTime: e.target.value }))
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      required
+                      inputProps={{
+                        dir: "ltr",
+                        style: { direction: "ltr", unicodeBidi: "isolate" }
+                      }}
+                    />
+                  )}
+
+                  {Number(form.permissionType) === 2 && (
+                    <TextField
+                      sx={uiLayout.formFieldSx}
+                      fullWidth
+                      size="small"
+                      type="time"
+                      label="السماح بالانصراف من"
+                      value={form.fromTime}
+                      onChange={(e) =>
+                        setForm((x) => ({ ...x, fromTime: e.target.value }))
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      required
+                      inputProps={{
+                        dir: "ltr",
+                        style: { direction: "ltr", unicodeBidi: "isolate" }
+                      }}
+                    />
+                  )}
+
+                  {Number(form.permissionType) === 3 && (
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+                        gap: 0.8
+                      }}
+                    >
+                      <TextField
+                        sx={uiLayout.formFieldSx}
+                        fullWidth
+                        size="small"
+                        type="time"
+                        label="وقت الخروج"
+                        value={form.fromTime}
+                        onChange={(e) =>
+                          setForm((x) => ({ ...x, fromTime: e.target.value }))
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        required
+                        inputProps={{
+                          dir: "ltr",
+                          style: { direction: "ltr", unicodeBidi: "isolate" }
+                        }}
+                      />
+                      <TextField
+                        sx={uiLayout.formFieldSx}
+                        fullWidth
+                        size="small"
+                        type="time"
+                        label="وقت العودة"
+                        value={form.toTime}
+                        onChange={(e) =>
+                          setForm((x) => ({ ...x, toTime: e.target.value }))
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        required
+                        inputProps={{
+                          dir: "ltr",
+                          style: { direction: "ltr", unicodeBidi: "isolate" }
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {Number(form.permissionType) === 4 && (
+                    <Alert severity="info" sx={{ py: 0.25, borderRadius: 1.8 }}>
+                      إذن يوم كامل، بشرط أن يكون التاريخ يوم عمل فعليًا في وردية الموظف.
+                    </Alert>
+                  )}
+                </Box>
+              </Box>
+
+              <TextField
+                sx={uiLayout.formFieldSx}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                size="small"
+                label="سبب الإذن"
+                value={form.reason}
                 onChange={(e) => setForm((x) => ({ ...x, reason: e.target.value }))}
-                required sx={uiLayout.withUiSx({ gridColumn: { md: "1 / -1" } }, uiLayout.formFieldSx)}
+                required
               />
-              <TextField InputLabelProps={{ shrink: true }}
-                fullWidth multiline minRows={2} label="ملاحظات إضافية" value={form.notes}
+
+              <TextField
+                sx={uiLayout.formFieldSx}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                size="small"
+                multiline
+                minRows={2}
+                label="ملاحظات إضافية"
+                value={form.notes}
                 onChange={(e) => setForm((x) => ({ ...x, notes: e.target.value }))}
-                sx={uiLayout.withUiSx({ gridColumn: { md: "1 / -1" } }, uiLayout.formFieldSx)}
               />
-              <FormControlLabel
-                control={<Checkbox checked={form.autoApprove} onChange={(e) => setForm((x) => ({ ...x, autoApprove: e.target.checked }))} />}
-                label="اعتماد الإذن مباشرة عند الإنشاء"
-                sx={uiLayout.withUiSx({ gridColumn: { md: "1 / -1" } }, uiLayout.checkboxFieldSx)}
-              />
-            </Box>
+
+              <Paper
+                variant="outlined"
+                sx={{
+                  px: 1,
+                  py: 0.3,
+                  borderRadius: 2,
+                  borderColor: border,
+                  bgcolor: "#fff"
+                }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.autoApprove}
+                      onChange={(e) =>
+                        setForm((x) => ({ ...x, autoApprove: e.target.checked }))
+                      }
+                    />
+                  }
+                  label="اعتماد الإذن مباشرة عند الإنشاء"
+                  sx={uiLayout.checkboxFieldSx}
+                />
+                {!form.autoApprove && (
+                  <Typography
+                    color="text.secondary"
+                    sx={{ pr: 4.5, pb: 0.7, mt: -0.6, fontSize: 11 }}
+                  >
+                    سيتم تجميد مسار الموافقات المناسب للطلب عند الحفظ.
+                  </Typography>
+                )}
+              </Paper>
+            </Stack>
           )}
         </DialogContent>
-        <DialogActions sx={uiLayout.withUiSx({ p: 1.5 }, uiLayout.dialogActionsSx)}>
-          <Button sx={uiLayout.buttonSx} onClick={() => setCreateOpen(false)} disabled={saving}>إلغاء</Button>
+
+        <DialogActions
+          sx={uiLayout.withUiSx({
+            px: { xs: 1.25, sm: 2.2 },
+            py: { xs: 1, sm: 1.25 },
+            gap: 0.75,
+            borderTop: `1px solid ${border}`,
+            bgcolor: "#fff",
+            justifyContent: "flex-start"
+          }, uiLayout.dialogActionsSx)}
+        >
           <Button
             variant="contained"
             onClick={savePermission}
             disabled={saving || lookupsLoading}
-            sx={uiLayout.withUiSx({ bgcolor: primary, minWidth: 120, fontWeight: 900 }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({
+              bgcolor: primary,
+              minWidth: 120,
+              fontWeight: 900
+            }, uiLayout.buttonSx)}
           >
-            {saving ? <CircularProgress size={22} color="inherit" /> : "حفظ الإذن"}
+            {saving ? <CircularProgress size={21} color="inherit" /> : "حفظ الإذن"}
+          </Button>
+          <Button
+            sx={uiLayout.buttonSx}
+            onClick={() => setCreateOpen(false)}
+            disabled={saving}
+          >
+            إلغاء
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,4 +1,4 @@
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import React, {
   useCallback,
@@ -1767,10 +1767,8 @@ export default function HrEmployeeHomePage() {
         return;
       }
 
-      if (permissionForm.toTime <= permissionForm.fromTime) {
-        setPermissionError("وقت العودة يجب أن يكون بعد وقت الخروج.");
-        return;
-      }
+      // الوردية قد تكون ليلية وتعبر منتصف الليل؛
+      // التحقق النهائي من ترتيب/احتواء الأوقات يتم في الـ API مقابل الوردية الفعلية.
     }
 
     try {
@@ -2179,6 +2177,7 @@ const decideLeaveApproval = async (
         width: "100%",
         maxWidth: "100%",
         minWidth: 0,
+        ...uiLayout.scopeSx,
         pb: { xs: 1, sm: 1.5 },
         textAlign: PAGE_TEXT_ALIGN,
         "& .MuiButton-startIcon": {
@@ -3634,11 +3633,11 @@ const decideLeaveApproval = async (
           sx: {
             width: {
               xs: "calc(100% - 12px)",
-              sm: "calc(100% - 32px)"
+              sm: "min(620px, calc(100% - 32px))"
             },
-            maxWidth: 620,
+            maxWidth: "620px !important",
             m: { xs: 0.75, sm: 2 },
-            maxHeight: { xs: "92dvh", sm: "88vh" },
+            maxHeight: { xs: "94dvh", sm: "88vh" },
             borderRadius: { xs: 2.5, sm: 3.2 },
             direction: LEAVE_DIALOG_DIRECTION,
             textAlign: LEAVE_DIALOG_TEXT_ALIGN,
@@ -3649,24 +3648,32 @@ const decideLeaveApproval = async (
         <DialogTitle
           sx={{
             px: { xs: 1.25, sm: 2.3 },
-            py: { xs: 1.05, sm: 1.7 },
+            py: { xs: 1.05, sm: 1.55 },
             borderBottom: `1px solid ${border}`,
-            background:
-              "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
+            background: "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
           }}
         >
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="center"
+            alignItems="flex-start"
             gap={1}
           >
-            <Box>
-              <Typography sx={{ fontSize: { xs: 14.5, sm: 17 }, fontWeight: 950, color: "#17372b" }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                sx={{
+                  fontSize: { xs: 14.5, sm: 17 },
+                  fontWeight: 950,
+                  color: "#17372b"
+                }}
+              >
                 طلب إذن جديد
               </Typography>
-              <Typography color="text.secondary" sx={{ fontSize: 12, mt: 0.2 }}>
-                يتم إرسال الطلب للمراجعة ولا يعتمد تلقائيًا
+              <Typography
+                color="text.secondary"
+                sx={{ fontSize: 11.5, mt: 0.2, lineHeight: 1.5 }}
+              >
+                الطلب يمر بمسار الموافقات، ويشترط وجود وردية فعالة تغطي التاريخ والوقت.
               </Typography>
             </Box>
 
@@ -3675,6 +3682,7 @@ const decideLeaveApproval = async (
               onClick={() => setPermissionDialogOpen(false)}
               disabled={permissionSubmitting}
               sx={{
+                flexShrink: 0,
                 width: 34,
                 height: 34,
                 border: `1px solid ${border}`,
@@ -3687,29 +3695,33 @@ const decideLeaveApproval = async (
         </DialogTitle>
 
         <DialogContent
+          dividers
           sx={{
             px: { xs: 1.25, sm: 2.3 },
-            py: { xs: "12px !important", sm: "20px !important" },
-            background: "#fff",
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              background: "#fff"
-            }
+            py: { xs: "12px !important", sm: "18px !important" },
+            background: "#fbfdfc",
+            overflowX: "hidden"
           }}
         >
-          <Stack spacing={1.35}>
+          <Stack spacing={1.2}>
+            <Alert severity="info" sx={{ borderRadius: 2, py: 0.35 }}>
+              لن يتم إرسال الإذن إذا لم تكن هناك وردية فعالة أو إذا كان التاريخ ليس يوم عمل في ورديتك.
+            </Alert>
+
             <Box
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-                gap: 1.2
+                gap: 1.1,
+                "& > *": { minWidth: 0 }
               }}
             >
               <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
+                <Typography sx={{ mb: 0.5, fontSize: 11.5, fontWeight: 900, color: "#52635c" }}>
                   تاريخ الإذن
                 </Typography>
-                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+                <TextField
+                  sx={uiLayout.formFieldSx}
                   size="small"
                   fullWidth
                   type="date"
@@ -3722,18 +3734,22 @@ const decideLeaveApproval = async (
                   }
                   inputProps={{
                     dir: "ltr",
-                    style: { textAlign: DATE_TEXT_ALIGN , direction: "ltr", unicodeBidi: "isolate" }
+                    style: {
+                      textAlign: DATE_TEXT_ALIGN,
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
                   }}
                 />
               </Box>
 
               <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
+                <Typography sx={{ mb: 0.5, fontSize: 11.5, fontWeight: 900, color: "#52635c" }}>
                   نوع الإذن
                 </Typography>
                 <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                   <Select
-                  MenuProps={RTL_MENU_PROPS}
+                    MenuProps={RTL_MENU_PROPS}
                     value={permissionForm.permissionType}
                     onChange={(event) =>
                       setPermissionForm((current) => ({
@@ -3753,65 +3769,96 @@ const decideLeaveApproval = async (
               </Box>
             </Box>
 
-            {(permissionForm.permissionType === 2 ||
-              permissionForm.permissionType === 3) && (
-              <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
-                  {permissionForm.permissionType === 2
-                    ? "وقت بداية الانصراف المسموح"
-                    : "وقت الخروج"}
-                </Typography>
-                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                  size="small"
-                  fullWidth
-                  type="time"
-                  value={permissionForm.fromTime}
-                  onChange={(event) =>
-                    setPermissionForm((current) => ({
-                      ...current,
-                      fromTime: event.target.value
-                    }))
-                  }
-                  inputProps={{
-                    dir: "ltr",
-                    style: { textAlign: DATE_TEXT_ALIGN , direction: "ltr", unicodeBidi: "isolate" }
-                  }}
-                />
+            {permissionForm.permissionType !== 4 && (
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    permissionForm.permissionType === 3
+                      ? { xs: "1fr", sm: "1fr 1fr" }
+                      : "1fr",
+                  gap: 1.1,
+                  "& > *": { minWidth: 0 }
+                }}
+              >
+                {(permissionForm.permissionType === 2 ||
+                  permissionForm.permissionType === 3) && (
+                  <Box>
+                    <Typography sx={{ mb: 0.5, fontSize: 11.5, fontWeight: 900, color: "#52635c" }}>
+                      {permissionForm.permissionType === 2
+                        ? "وقت بداية الانصراف المسموح"
+                        : "وقت الخروج"}
+                    </Typography>
+                    <TextField
+                      sx={uiLayout.formFieldSx}
+                      size="small"
+                      fullWidth
+                      type="time"
+                      value={permissionForm.fromTime}
+                      onChange={(event) =>
+                        setPermissionForm((current) => ({
+                          ...current,
+                          fromTime: event.target.value
+                        }))
+                      }
+                      inputProps={{
+                        dir: "ltr",
+                        style: {
+                          textAlign: DATE_TEXT_ALIGN,
+                          direction: "ltr",
+                          unicodeBidi: "isolate"
+                        }
+                      }}
+                    />
+                  </Box>
+                )}
+
+                {(permissionForm.permissionType === 1 ||
+                  permissionForm.permissionType === 3) && (
+                  <Box>
+                    <Typography sx={{ mb: 0.5, fontSize: 11.5, fontWeight: 900, color: "#52635c" }}>
+                      {permissionForm.permissionType === 1
+                        ? "السماح بالحضور حتى"
+                        : "وقت العودة"}
+                    </Typography>
+                    <TextField
+                      sx={uiLayout.formFieldSx}
+                      size="small"
+                      fullWidth
+                      type="time"
+                      value={permissionForm.toTime}
+                      onChange={(event) =>
+                        setPermissionForm((current) => ({
+                          ...current,
+                          toTime: event.target.value
+                        }))
+                      }
+                      inputProps={{
+                        dir: "ltr",
+                        style: {
+                          textAlign: DATE_TEXT_ALIGN,
+                          direction: "ltr",
+                          unicodeBidi: "isolate"
+                        }
+                      }}
+                    />
+                  </Box>
+                )}
               </Box>
             )}
 
-            {(permissionForm.permissionType === 1 ||
-              permissionForm.permissionType === 3) && (
-              <Box>
-                <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
-                  {permissionForm.permissionType === 1
-                    ? "السماح بالحضور حتى"
-                    : "وقت العودة"}
-                </Typography>
-                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                  size="small"
-                  fullWidth
-                  type="time"
-                  value={permissionForm.toTime}
-                  onChange={(event) =>
-                    setPermissionForm((current) => ({
-                      ...current,
-                      toTime: event.target.value
-                    }))
-                  }
-                  inputProps={{
-                    dir: "ltr",
-                    style: { textAlign: DATE_TEXT_ALIGN , direction: "ltr", unicodeBidi: "isolate" }
-                  }}
-                />
-              </Box>
+            {permissionForm.permissionType === 4 && (
+              <Alert severity="info" sx={{ borderRadius: 2, py: 0.35 }}>
+                إذن يوم كامل، لكن يجب أن يكون اليوم ضمن أيام العمل الفعلية في ورديتك.
+              </Alert>
             )}
 
             <Box>
-              <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
+              <Typography sx={{ mb: 0.5, fontSize: 11.5, fontWeight: 900, color: "#52635c" }}>
                 السبب
               </Typography>
-              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+              <TextField
+                sx={uiLayout.formFieldSx}
                 size="small"
                 fullWidth
                 multiline
@@ -3828,10 +3875,11 @@ const decideLeaveApproval = async (
             </Box>
 
             <Box>
-              <Typography sx={{ mb: 0.55, fontSize: 12, fontWeight: 900, color: "#52635c" }}>
+              <Typography sx={{ mb: 0.5, fontSize: 11.5, fontWeight: 900, color: "#52635c" }}>
                 ملاحظات
               </Typography>
-              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+              <TextField
+                sx={uiLayout.formFieldSx}
                 size="small"
                 fullWidth
                 multiline
@@ -3848,7 +3896,7 @@ const decideLeaveApproval = async (
             </Box>
 
             {permissionError && (
-              <Alert severity="error">
+              <Alert severity="error" sx={{ borderRadius: 2 }}>
                 {permissionError}
               </Alert>
             )}
@@ -3858,10 +3906,11 @@ const decideLeaveApproval = async (
         <DialogActions
           sx={uiLayout.withUiSx({
             px: { xs: 1.1, sm: 2.3 },
-            py: { xs: 0.9, sm: 1.35 },
+            py: { xs: 0.9, sm: 1.25 },
             borderTop: `1px solid ${border}`,
-            background: "#fbfdfc",
-                    gap: 0.7
+            background: "#fff",
+            gap: 0.7,
+            justifyContent: "flex-start"
           }, uiLayout.dialogActionsSx)}
         >
           <Button
@@ -3869,14 +3918,13 @@ const decideLeaveApproval = async (
             startIcon={<SaveRoundedIcon />}
             onClick={submitPermissionRequest}
             disabled={permissionSubmitting}
-            sx={uiLayout.withUiSx({ fontWeight: 900 }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ fontWeight: 900, minWidth: 118 }, uiLayout.buttonSx)}
           >
-            {permissionSubmitting
-              ? "جاري الإرسال..."
-              : "إرسال الطلب"}
+            {permissionSubmitting ? "جاري الإرسال..." : "إرسال الطلب"}
           </Button>
 
-          <Button sx={uiLayout.buttonSx}
+          <Button
+            sx={uiLayout.buttonSx}
             onClick={() => setPermissionDialogOpen(false)}
             disabled={permissionSubmitting}
           >

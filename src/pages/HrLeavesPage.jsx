@@ -1,5 +1,5 @@
 import PageContainer from '../components/common/PageContainer';
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -2010,7 +2010,7 @@ export default function HrLeavesPage() {
         component="main"
         sx={{
           
-          ...navigationContentSx
+          ...navigationContentSx, ...uiLayout.scopeSx
         }}
       >
         <Paper
@@ -2042,7 +2042,7 @@ export default function HrLeavesPage() {
             >
               <BeachAccessRoundedIcon />
               <Box>
-                <Typography
+                <Typography className="hr-page-title"
                   sx={{
                     fontWeight: 1000,
                     fontSize: {
@@ -3352,7 +3352,7 @@ export default function HrLeavesPage() {
                               ? <Chip size="small" color="info" label={row.branchName || "فرع محدد"}/>
                               : <Chip size="small" variant="outlined" label="كل الفروع"/>}
                           </TableCell>
-                          <TableCell sx={{minWidth:520}}>
+                          <TableCell sx={{minWidth:220, maxWidth:360}}>
                             <Stack direction="row" spacing={.5} flexWrap="wrap" useFlexGap alignItems="center">
                               {(row.steps || []).map((step,index) => {
                                 let personText = Array.isArray(step.approvers) && step.approvers.length
@@ -3473,7 +3473,7 @@ export default function HrLeavesPage() {
                 return (
                   <Paper key={index} variant="outlined" sx={{p:1.25,borderRadius:2}}>
                     <Stack spacing={1}>
-                      <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",md:"70px minmax(210px,1fr) minmax(250px,1.3fr) minmax(180px,1fr) auto"},gap:1,alignItems:"center"}, uiLayout.formSectionSx)}>
+                      <Box sx={uiLayout.withUiSx({display:"grid",gridTemplateColumns:{xs:"1fr",sm:"repeat(2,minmax(0,1fr))",lg:"60px minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr) auto"},gap:1,alignItems:"center"}, uiLayout.formSectionSx)}>
                         <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="الخطوة" value={index+1} disabled/>
                         <FormControl sx={uiLayout.formFieldSx} size="small">
                           <InputLabel>تذهب إلى</InputLabel>
@@ -3595,246 +3595,278 @@ export default function HrLeavesPage() {
         }
         fullWidth
         maxWidth="md"
+        PaperProps={{
+          sx: {
+            width: {
+              xs: "calc(100% - 12px)",
+              sm: "min(720px, calc(100% - 32px))",
+              md: "min(780px, calc(100% - 48px))"
+            },
+            maxWidth: "780px !important",
+            m: { xs: 0.75, sm: 2 },
+            maxHeight: { xs: "94dvh", sm: "90vh" },
+            borderRadius: { xs: 2.5, sm: 3 },
+            overflow: "hidden",
+            direction: LEAVES_PAGE_DIRECTION
+          }
+        }}
         dir={LEAVES_PAGE_DIRECTION}
       >
         <DialogTitle
-          sx={{ fontWeight: 950 }}
+          sx={{
+            px: { xs: 1.4, sm: 2.2 },
+            py: { xs: 1.15, sm: 1.45 },
+            borderBottom: `1px solid ${border}`,
+            background: "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
+          }}
         >
-          طلب إجازة جديد
+          <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 950, color: primaryDark, fontSize: { xs: 15, sm: 18 } }}>
+                طلب إجازة جديد
+              </Typography>
+              <Typography color="text.secondary" sx={{ mt: 0.2, fontSize: 11.5 }}>
+                يتم حساب الأيام من الوردية والعطلات ثم تطبيق مسار الموافقات المخصص.
+              </Typography>
+            </Box>
+            <IconButton
+              size="small"
+              onClick={() => setRequestOpen(false)}
+              disabled={requestSaving}
+              sx={{ flexShrink: 0, border: `1px solid ${border}`, borderRadius: 1.7 }}
+            >
+              <CloseRoundedIcon fontSize="small" />
+            </IconButton>
+          </Stack>
         </DialogTitle>
 
-        <DialogContent dividers>
-          <Stack sx={uiLayout.filterBarSx} spacing={1.2}>
-            <Autocomplete
-              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
-              options={lookups.employees}
-              value={requestForm.employee}
-              onChange={(_, value) =>
-                setRequestForm(
-                  (current) => ({
-                    ...current,
-                    employee: value
-                  })
-                )
-              }
-              getOptionLabel={(option) =>
-                `${option.employeeName || ""} • #${option.employeeCode || "-"} • ${option.branchName || ""}`
-              }
-              renderInput={(params) => (
-                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                  {...params}
-                  label="الموظف"
-                  placeholder="ابحث باسم الموظف..."
-                />
-              )}
-            />
-
-            <FormControl sx={uiLayout.formFieldSx} fullWidth>
-              <InputLabel>
-                نوع الإجازة
-              </InputLabel>
-              <Select
-                  MenuProps={RTL_MENU_PROPS}
-                label="نوع الإجازة"
-                value={
-                  requestForm.leaveTypeGuid
-                }
-                onChange={(e) =>
+        <DialogContent
+          dividers
+          sx={{
+            px: { xs: 1.25, sm: 2.2 },
+            py: { xs: "14px !important", sm: "20px !important" },
+            bgcolor: "#fbfdfc",
+            overflowX: "hidden"
+          }}
+        >
+          <Stack
+            spacing={1.25}
+            sx={{
+              width: "100%",
+              minWidth: 0,
+              "& > *": { minWidth: 0 }
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1.35fr .85fr" },
+                gap: 1.1,
+                alignItems: "start",
+                "& > *": { minWidth: 0 }
+              }}
+            >
+              <Autocomplete
+                ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
+                options={lookups.employees}
+                value={requestForm.employee}
+                onChange={(_, value) =>
                   setRequestForm(
                     (current) => ({
                       ...current,
-                      leaveTypeGuid:
-                        e.target.value,
-                      dayPart: 0
+                      employee: value
                     })
                   )
                 }
-              >
-                {lookups.leaveTypes.map(
-                  (type) => (
+                getOptionLabel={(option) =>
+                  `${option.employeeName || ""} • #${option.employeeCode || "-"} • ${option.branchName || ""}`
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={uiLayout.formFieldSx}
+                    InputLabelProps={{ shrink: true }}
+                    size="small"
+                    label="الموظف"
+                    placeholder="ابحث باسم الموظف..."
+                  />
+                )}
+              />
+
+              <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
+                <InputLabel>نوع الإجازة</InputLabel>
+                <Select
+                  MenuProps={RTL_MENU_PROPS}
+                  label="نوع الإجازة"
+                  value={requestForm.leaveTypeGuid}
+                  onChange={(e) =>
+                    setRequestForm(
+                      (current) => ({
+                        ...current,
+                        leaveTypeGuid: e.target.value,
+                        dayPart: 0
+                      })
+                    )
+                  }
+                >
+                  {lookups.leaveTypes.map((type) => (
                     <MenuItem
-                      key={
-                        type.leaveTypeGuid
-                      }
-                      value={
-                        type.leaveTypeGuid
-                      }
+                      key={type.leaveTypeGuid}
+                      value={type.leaveTypeGuid}
                     >
                       {type.leaveTypeName}
-                      {type.requiresBalance
-                        ? " • من الرصيد"
-                        : ""}
+                      {type.requiresBalance ? " • من الرصيد" : ""}
                     </MenuItem>
-                  )
-                )}
-              </Select>
-            </FormControl>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
-            <Stack sx={uiLayout.formGridSx}
-              direction={{
-                xs: "column",
-                sm: "row"
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: selectedType?.allowsHalfDay &&
+                    requestForm.fromDate === requestForm.toDate
+                    ? "1fr 1fr .8fr"
+                    : "1fr 1fr"
+                },
+                gap: 1.1,
+                alignItems: "start",
+                "& > *": { minWidth: 0 }
               }}
-              spacing={1}
             >
-              <TextField sx={uiLayout.formFieldSx}
+              <TextField
+                sx={uiLayout.formFieldSx}
+                size="small"
                 fullWidth
                 type="date"
                 label="من تاريخ"
-                value={
-                  requestForm.fromDate
-                }
+                value={requestForm.fromDate}
                 onChange={(e) =>
-                  setRequestForm(
-                    (current) => ({
-                      ...current,
-                      fromDate:
-                        e.target.value
-                    })
-                  )
+                  setRequestForm((current) => ({
+                    ...current,
+                    fromDate: e.target.value
+                  }))
                 }
-                InputLabelProps={{
-                  shrink: true
-                }}
+                InputLabelProps={{ shrink: true }}
                 inputProps={{
-                  dir:
-                    "ltr"
-                , style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                  dir: "ltr",
+                  style: { direction: "ltr", unicodeBidi: "isolate" }
+                }}
               />
 
-              <TextField sx={uiLayout.formFieldSx}
+              <TextField
+                sx={uiLayout.formFieldSx}
+                size="small"
                 fullWidth
                 type="date"
                 label="إلى تاريخ"
                 value={requestForm.toDate}
                 onChange={(e) =>
-                  setRequestForm(
-                    (current) => ({
-                      ...current,
-                      toDate:
-                        e.target.value
-                    })
-                  )
+                  setRequestForm((current) => ({
+                    ...current,
+                    toDate: e.target.value
+                  }))
                 }
-                InputLabelProps={{
-                  shrink: true
-                }}
+                InputLabelProps={{ shrink: true }}
                 inputProps={{
-                  dir:
-                    "ltr"
-                , style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                  dir: "ltr",
+                  style: { direction: "ltr", unicodeBidi: "isolate" }
+                }}
               />
-            </Stack>
 
-            {selectedType?.allowsHalfDay &&
-              requestForm.fromDate ===
-                requestForm.toDate && (
-                <FormControl sx={uiLayout.formFieldSx} fullWidth>
-                  <InputLabel>
-                    نوع اليوم
-                  </InputLabel>
-                  <Select
-                  MenuProps={RTL_MENU_PROPS}
-                    label="نوع اليوم"
-                    value={
-                      requestForm.dayPart
-                    }
-                    onChange={(e) =>
-                      setRequestForm(
-                        (current) => ({
+              {selectedType?.allowsHalfDay &&
+                requestForm.fromDate === requestForm.toDate && (
+                  <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
+                    <InputLabel>نوع اليوم</InputLabel>
+                    <Select
+                      MenuProps={RTL_MENU_PROPS}
+                      label="نوع اليوم"
+                      value={requestForm.dayPart}
+                      onChange={(e) =>
+                        setRequestForm((current) => ({
                           ...current,
-                          dayPart:
-                            Number(
-                              e.target.value
-                            )
-                        })
-                      )
-                    }
-                  >
-                    <MenuItem value={0}>
-                      يوم كامل
-                    </MenuItem>
-                    <MenuItem value={1}>
-                      النصف الأول
-                    </MenuItem>
-                    <MenuItem value={2}>
-                      النصف الثاني
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              )}
+                          dayPart: Number(e.target.value)
+                        }))
+                      }
+                    >
+                      <MenuItem value={0}>يوم كامل</MenuItem>
+                      <MenuItem value={1}>النصف الأول</MenuItem>
+                      <MenuItem value={2}>النصف الثاني</MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
+            </Box>
 
             {calculating ? (
-              <Alert severity="info">
+              <Alert severity="info" sx={{ borderRadius: 2 }}>
                 جاري حساب أيام الإجازة حسب الوردية والعطلات...
               </Alert>
             ) : calculation?.error ? (
-              <Alert severity="error">
+              <Alert severity="error" sx={{ borderRadius: 2 }}>
                 {calculation.error}
               </Alert>
             ) : calculation ? (
               <Alert
                 severity={
                   calculation.requiresBalance &&
-                  Number(
-                    calculation.availableBalance ||
-                      0
-                  ) <
-                    Number(
-                      calculation.requestedDays ||
-                        0
-                    )
+                  Number(calculation.availableBalance || 0) <
+                    Number(calculation.requestedDays || 0)
                     ? "warning"
                     : "success"
                 }
+                sx={{ borderRadius: 2 }}
               >
                 الأيام المحسوبة:{" "}
-                <strong>
-                  {calculation.requestedDays}
-                </strong>
+                <strong>{calculation.requestedDays}</strong>
                 {calculation.requiresBalance && (
                   <>
                     {" • "}الرصيد المتاح:{" "}
-                    <strong>
-                      {calculation.availableBalance ??
-                        0}
-                    </strong>
+                    <strong>{calculation.availableBalance ?? 0}</strong>
                   </>
                 )}
-                {Number(
-                  calculation.holidayDays ||
-                    0
-                ) > 0 && (
+                {Number(calculation.holidayDays || 0) > 0 && (
                   <>
-                    {" • "}عطلات مستبعدة:{" "}
-                    {calculation.holidayDays}
+                    {" • "}عطلات مستبعدة: {calculation.holidayDays}
                   </>
                 )}
               </Alert>
-            ) : null}
+            ) : (
+              <Alert severity="info" sx={{ borderRadius: 2, py: 0.35 }}>
+                اختر الموظف ونوع الإجازة والفترة ليتم التحقق من الوردية وحساب الأيام.
+              </Alert>
+            )}
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+            <TextField
+              sx={uiLayout.formFieldSx}
+              InputLabelProps={{ shrink: true }}
+              size="small"
               multiline
-              minRows={3}
+              minRows={2}
               label="السبب / الملاحظات"
               value={requestForm.reason}
               onChange={(e) =>
-                setRequestForm(
-                  (current) => ({
-                    ...current,
-                    reason:
-                      e.target.value
-                  })
-                )
+                setRequestForm((current) => ({
+                  ...current,
+                  reason: e.target.value
+                }))
               }
             />
 
-            <Button sx={uiLayout.buttonSx}
+            <Button
+              sx={uiLayout.withUiSx({
+                alignSelf: { xs: "stretch", sm: "flex-start" },
+                width: { xs: "100%", sm: "auto" },
+                maxWidth: "100%",
+                minHeight: 40,
+                px: 1.4,
+                fontWeight: 850
+              }, uiLayout.buttonSx)}
               component="label"
               variant="outlined"
-              startIcon={
-                <FolderRoundedIcon />
-              }
+              startIcon={<FolderRoundedIcon />}
             >
               {requestForm.attachment
                 ? requestForm.attachment.name
@@ -3846,29 +3878,26 @@ export default function HrLeavesPage() {
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.webp"
                 onChange={(e) =>
-                  setRequestForm(
-                    (current) => ({
-                      ...current,
-                      attachment:
-                        e.target.files?.[0] ||
-                        null
-                    })
-                  )
+                  setRequestForm((current) => ({
+                    ...current,
+                    attachment: e.target.files?.[0] || null
+                  }))
                 }
               />
             </Button>
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={uiLayout.dialogActionsSx}>
-          <Button sx={uiLayout.buttonSx}
-            onClick={() =>
-              setRequestOpen(false)
-            }
-            disabled={requestSaving}
-          >
-            إلغاء
-          </Button>
+        <DialogActions
+          sx={uiLayout.withUiSx({
+            px: { xs: 1.25, sm: 2.2 },
+            py: { xs: 1, sm: 1.25 },
+            gap: 0.75,
+            borderTop: `1px solid ${border}`,
+            bgcolor: "#fff",
+            justifyContent: "flex-start"
+          }, uiLayout.dialogActionsSx)}
+        >
           <Button
             variant="contained"
             onClick={submitRequest}
@@ -3879,12 +3908,18 @@ export default function HrLeavesPage() {
             }
             sx={uiLayout.withUiSx({
               bgcolor: primary,
-              fontWeight: 950
+              fontWeight: 950,
+              minWidth: 120
             }, uiLayout.buttonSx)}
           >
-            {requestSaving
-              ? "جاري الإرسال..."
-              : "إرسال الطلب"}
+            {requestSaving ? "جاري الإرسال..." : "إرسال الطلب"}
+          </Button>
+          <Button
+            sx={uiLayout.buttonSx}
+            onClick={() => setRequestOpen(false)}
+            disabled={requestSaving}
+          >
+            إلغاء
           </Button>
         </DialogActions>
       </Dialog>

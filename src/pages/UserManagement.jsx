@@ -86,12 +86,43 @@ const getUserGuid = () => {
     currentUser?.Guid ||
     currentUser?.userGuid ||
     currentUser?.UserGuid ||
+    currentUser?.USER_GUID ||
+    currentUser?.USER_GUID____ ||
+    localStorage.getItem("userGuid") ||
+    localStorage.getItem("UserGuid") ||
+    localStorage.getItem("guid") ||
     ""
   ).trim();
 };
 
 const norm = (value) =>
   String(value ?? "").trim().toLowerCase();
+
+const lookupFieldSx = {
+  "& .MuiOutlinedInput-root": {
+    position: "relative",
+    paddingLeft: "42px !important",
+    paddingRight: "12px !important"
+  },
+  "& .MuiInputBase-input": {
+    paddingLeft: "0 !important",
+    paddingRight: "0 !important",
+    textAlign: "right"
+  },
+  "& .MuiInputAdornment-positionEnd": {
+    position: "absolute",
+    left: 4,
+    right: "auto",
+    margin: "0 !important",
+    height: "100%"
+  },
+  "& .MuiInputAdornment-positionEnd .MuiIconButton-root": {
+    width: 34,
+    height: 34,
+    p: 0.5,
+    color: primary
+  }
+};
 
 const emptyUser = () => ({
   guid: "",
@@ -354,6 +385,7 @@ export default function UserManagement() {
 
   const [jobTitles, setJobTitles] = useState([]);
   const [jobTitlesLoading, setJobTitlesLoading] = useState(false);
+  const [jobTitlesError, setJobTitlesError] = useState("");
 
   const [lookup, setLookup] = useState({
     open: false,
@@ -496,11 +528,24 @@ export default function UserManagement() {
     if (!authorized) return;
 
     setJobTitlesLoading(true);
+    setJobTitlesError("");
 
     try {
+      const token = String(
+        localStorage.getItem("token") || ""
+      ).trim();
+
       const response = await fetch(
         `${API_BASE_URL}/api/hr/job-titles/lookups`,
-        { cache: "no-store" }
+        {
+          cache: "no-store",
+          headers: {
+            Accept: "application/json",
+            ...(token
+              ? { Authorization: `Bearer ${token}` }
+              : {})
+          }
+        }
       );
 
       const result = await response.json().catch(() => null);
@@ -516,22 +561,49 @@ export default function UserManagement() {
         ? result.data
         : [];
 
-      setJobTitles(
-        rows
-          .filter(
-            (job) =>
-              job?.isActive === true &&
-              Number.isInteger(Number(job?.legacyJobCode))
-          )
-          .sort(
-            (a, b) =>
-              Number(a.legacyJobCode) -
-              Number(b.legacyJobCode)
-          )
-      );
+      // User_Info.UserJop is still the Desktop legacy integer.
+      // Therefore this screen can safely select only HR titles that have
+      // a valid LegacyJobCode, while keeping the title/name source in HR_JobTitle.
+      const compatibleRows = rows
+        .filter((job) => {
+          const active =
+            job?.isActive === true ||
+            job?.isActive === 1 ||
+            String(job?.isActive || "").toLowerCase() === "true";
+
+          const rawLegacyCode = job?.legacyJobCode;
+          const hasLegacyCode =
+            rawLegacyCode !== null &&
+            rawLegacyCode !== undefined &&
+            String(rawLegacyCode).trim() !== "" &&
+            Number.isInteger(Number(rawLegacyCode));
+
+          return (
+            active &&
+            hasLegacyCode &&
+            Number(rawLegacyCode) !== 12
+          );
+        })
+        .sort(
+          (a, b) =>
+            Number(a.legacyJobCode) -
+            Number(b.legacyJobCode)
+        );
+
+      setJobTitles(compatibleRows);
+
+      if (!compatibleRows.length && rows.length) {
+        setJobTitlesError(
+          "المسميات موجودة في الموارد البشرية، لكن لا يوجد منها مسميات مرتبطة بكود الوظيفة القديم المستخدم في حسابات المستخدمين."
+        );
+      }
     } catch (e) {
       console.error("Failed to load HR job titles:", e);
       setJobTitles([]);
+      setJobTitlesError(
+        e?.message ||
+          "تعذر تحميل الوظائف والمسميات الوظيفية"
+      );
     } finally {
       setJobTitlesLoading(false);
     }
@@ -1111,6 +1183,17 @@ export default function UserManagement() {
         code: saved.code || current.code
       }));
 
+      // Reuse the existing sidebar refresh mechanism; no full-page reload.
+      window.dispatchEvent(
+        new CustomEvent("sstli:sidebar-refresh", {
+          detail: {
+            reason: "user-permissions-updated",
+            targetUserGuid:
+              saved.guid || model.guid || null
+          }
+        })
+      );
+
       await Swal.fire({
         icon: "success",
         title: isEdit
@@ -1495,40 +1578,44 @@ export default function UserManagement() {
                     }
                   }}
                 >
-                  {jobTitles
-                    .filter(
-                      (job) =>
-                        job.showInUserSelection === true ||
-                        Number(job.legacyJobCode) ===
-                          Number(model.userJop)
-                    )
-                    .map((job) => {
-                      const legacyCode =
-                        Number(job.legacyJobCode);
+                  {jobTitles.map((job) => {
+                    const legacyCode =
+                      Number(job.legacyJobCode);
 
-                      const hiddenLegacy =
-                        job.showInUserSelection !== true;
+                    const hiddenLegacy =
+                      job.showInUserSelection === false &&
+                      legacyCode !== Number(model.userJop);
 
-                      return (
-                        <MenuItem
-                          key={
-                            job.jobTitleGuid ||
-                            `legacy-${legacyCode}`
-                          }
-                          value={legacyCode}
-                          disabled={hiddenLegacy}
-                        >
-                          {job.jobTitleName}
-                          {hiddenLegacy
-                            ? " — غير مستخدم"
-                            : ""}
-                        </MenuItem>
-                      );
-                    })}
+                    return (
+                      <MenuItem
+                        key={
+                          job.jobTitleGuid ||
+                          `legacy-${legacyCode}`
+                        }
+                        value={legacyCode}
+                        disabled={hiddenLegacy}
+                      >
+                        {job.jobTitleName}
+                        {hiddenLegacy
+                          ? " — غير متاح للاختيار"
+                          : ""}
+                      </MenuItem>
+                    );
+                  })}
+
+                  {!jobTitlesLoading &&
+                    !jobTitles.length && (
+                      <MenuItem disabled>
+                        {jobTitlesError ||
+                          "لا توجد وظائف متاحة"}
+                      </MenuItem>
+                    )}
                 </Select>
               </FormControl>
 
-              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+              <TextField
+                sx={uiLayout.withUiSx(lookupFieldSx, uiLayout.formFieldSx)}
+                InputLabelProps={{ shrink: true }}
                 size="small"
                 label="الفرع التابع له"
                 value={model.branchForWorkName}
@@ -1551,7 +1638,9 @@ export default function UserManagement() {
                 }}
               />
 
-              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+              <TextField
+                sx={uiLayout.withUiSx(lookupFieldSx, uiLayout.formFieldSx)}
+                InputLabelProps={{ shrink: true }}
                 size="small"
                 label="القسم التابع له"
                 value={model.departmentName}
@@ -1574,7 +1663,9 @@ export default function UserManagement() {
                 }}
               />
 
-              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+              <TextField
+                sx={uiLayout.withUiSx(lookupFieldSx, uiLayout.formFieldSx)}
+                InputLabelProps={{ shrink: true }}
                 size="small"
                 label="مندوب البيع"
                 value={model.sellerName}
@@ -1968,7 +2059,7 @@ export default function UserManagement() {
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "1fr",
-                  xl: "280px minmax(0,1fr)"
+                  lg: "260px minmax(0,1fr)"
                 },
                 gap: { xs: 0.75, sm: 1 }
               }}
@@ -1988,6 +2079,15 @@ export default function UserManagement() {
                 >
                   <Typography sx={{ fontWeight: 900 }}>
                     القوائم الرئيسية
+                  </Typography>
+                  <Typography
+                    sx={{
+                      mt: 0.15,
+                      fontSize: 11,
+                      color: "text.secondary"
+                    }}
+                  >
+                    صلاحيات القوائم المشتركة المستخدمة في تنظيم الـ Sidebar.
                   </Typography>
                 </Box>
 
@@ -2052,28 +2152,125 @@ export default function UserManagement() {
                     gap: 0.75
                   }}
                 >
-                  <Typography sx={{ fontWeight: 900 }}>
-                    الشاشات والصلاحيات
-                  </Typography>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 900 }}>
+                      شاشات الويب والصلاحيات
+                    </Typography>
+                    <Typography
+                      sx={{
+                        mt: 0.15,
+                        fontSize: 11.5,
+                        color: "text.secondary"
+                      }}
+                    >
+                      تظهر هنا شاشات الموقع فقط كما هي معرفة في إعدادات الـ Web Sidebar.
+                    </Typography>
+                  </Box>
 
                   <Autocomplete
                     size="small"
-                    options={forms}
+                    options={forms.filter(
+                      (form) =>
+                        !permissions.some(
+                          (item) =>
+                            norm(item.guid) ===
+                            norm(form.guid)
+                        )
+                    )}
                     getOptionLabel={(o) =>
                       o?.name || ""
                     }
+                    isOptionEqualToValue={(option, value) =>
+                      norm(option?.guid) ===
+                      norm(value?.guid)
+                    }
+                    filterOptions={(options, state) => {
+                      const q = norm(state.inputValue);
+
+                      if (!q) return options;
+
+                      return options.filter((option) =>
+                        [
+                          option?.name,
+                          option?.webItemKey,
+                          option?.webRoute,
+                          option?.code
+                        ].some((value) =>
+                          norm(value).includes(q)
+                        )
+                      );
+                    }}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.guid}>
+                        <Box sx={{ minWidth: 0, width: "100%" }}>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={0.6}
+                          >
+                            <Chip
+                              size="small"
+                              label="ويب"
+                              sx={{
+                                height: 20,
+                                fontSize: 10,
+                                bgcolor: "#e8f5ee",
+                                color: primary,
+                                fontWeight: 900
+                              }}
+                            />
+                            <Typography
+                              sx={{
+                                fontSize: 12.5,
+                                fontWeight: 850
+                              }}
+                            >
+                              {option.name}
+                            </Typography>
+                          </Stack>
+                          <Typography
+                            sx={{
+                              mt: 0.15,
+                              fontSize: 10.5,
+                              color: "text.secondary",
+                              direction: "ltr",
+                              textAlign: "right",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap"
+                            }}
+                          >
+                            {option.webRoute || option.webItemKey}
+                          </Typography>
+                        </Box>
+                      </li>
+                    )}
                     onChange={(_, value) => {
                       if (value)
                         addFormToPermissions(value);
                     }}
                     renderInput={(params) => (
-                      <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+                      <TextField
                         {...params}
-                        placeholder="بحث عن شاشة..."
+                        sx={uiLayout.withUiSx({
+                          "& .MuiAutocomplete-endAdornment": {
+                            left: 6,
+                            right: "auto"
+                          },
+                          "& .MuiAutocomplete-inputRoot": {
+                            paddingLeft: "56px !important",
+                            paddingRight: "10px !important"
+                          }
+                        }, uiLayout.formFieldSx)}
+                        InputLabelProps={{ shrink: true }}
+                        placeholder="ابحث في شاشات الويب..."
+                        InputProps={{
+                          ...params.InputProps
+                        }}
                       />
                     )}
                     sx={{
-                      width: { xs: "100%", sm: 280 },
+                      width: { xs: "100%", sm: 340 },
                       minWidth: 0
                     }}
                   />

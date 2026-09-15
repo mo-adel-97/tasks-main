@@ -33,7 +33,6 @@ import {
   Badge,
   IconButton,
   Popover,
-  Stack,
   CircularProgress,
   Divider
 } from '@mui/material';
@@ -605,63 +604,64 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   }, [configuredSidebarItems]);
 
 const childItemSx = (selected) => ({
-  mb: isDesktop ? 0.25 : 0.18,
+  // عناصر المستوى الداخلي أصغر وأضيق بوضوح من رأس المجموعة.
+  mb: isDesktop ? 0.22 : 0.16,
 
-  // نفس عرض التاب الرئيسي تقريبًا
-  mx: isDesktop ? 1 : 0.45,
-  ml: isDesktop ? 1 : 0.45,
-  mr: isDesktop ? 1 : 0.45,
+  // Inset من الجانبين ليظهر العنصر كـ sub-list وليس tab رئيسي.
+  mx: isDesktop ? 2.15 : 1.15,
 
-  minHeight: designTokens.sidebar.itemHeight,
+  minHeight: isDesktop ? 38 : 35,
 
-  px: isDesktop ? 0.6 : 0.45,
-  py: isDesktop ? 0.25 : 0.18,
+  px: isDesktop ? 0.65 : 0.5,
+  py: isDesktop ? 0.15 : 0.12,
 
-  borderRadius: isDesktop ? 2.5 : 1.8,
+  borderRadius: isDesktop ? 2 : 1.7,
 
-  color: selected ? whiteColor : textColor,
+  color: selected ? whiteColor : '#263b34',
 
   background: selected
-    ? `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
-    : '#ffffff',
+    ? `linear-gradient(135deg, ${accentColor} 0%, #8f171a 100%)`
+    : 'rgba(255,255,255,.88)',
 
   border: selected
     ? '1px solid transparent'
-    : '1px solid rgba(5,117,70,0.09)',
+    : '1px solid rgba(5,117,70,0.085)',
 
   boxShadow: selected
-    ? '0 7px 16px rgba(174,30,33,0.20)'
-    : '0 2px 8px rgba(31,45,61,0.035)',
+    ? '0 5px 12px rgba(174,30,33,0.18)'
+    : '0 1px 4px rgba(31,45,61,0.025)',
 
   position: 'relative',
   overflow: 'hidden',
 
+  // علامة بسيطة تبين أن العنصر تابع للمجموعة.
   '&:before': {
     content: '""',
     position: 'absolute',
     insetInlineStart: 0,
-    top: 7,
-    bottom: 7,
-    width: 3,
-    borderRadius: '999px 0 0 999px',
-    background: selected ? whiteColor : primaryColor
+    top: 8,
+    bottom: 8,
+    width: 2.5,
+    borderRadius: 999,
+    background: selected ? whiteColor : 'rgba(5,117,70,.72)'
   },
 
   '&.Mui-selected': {
     color: whiteColor,
-    background: `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
+    background: `linear-gradient(135deg, ${accentColor} 0%, #8f171a 100%)`
   },
 
   '&:hover': {
     color: selected ? whiteColor : primaryDark,
     background: selected
-      ? `linear-gradient(135deg, ${accentColor} 0%, #7f1518 100%)`
-      : primaryLight,
-
-    transform: 'translateX(-2px)'
+      ? `linear-gradient(135deg, ${accentColor} 0%, #8f171a 100%)`
+      : '#f1f8f5',
+    boxShadow: selected
+      ? '0 5px 12px rgba(174,30,33,0.18)'
+      : '0 3px 8px rgba(5,117,70,0.08)'
   },
 
-  transition: 'all 0.2s ease'
+  transition: 'background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease'
 });
 
   const renderChildItem = (item) => {
@@ -691,9 +691,11 @@ const childItemSx = (selected) => ({
           >
             <ListItemIcon
                 sx={{
-                  minWidth: isDesktop ? 22 : 20,
+                  minWidth: isDesktop ? 19 : 18,
                   color: selected ? whiteColor : primaryColor,
-                  '& svg': { fontSize: designTokens.sidebar.iconSize }
+                  '& svg': {
+                    fontSize: isDesktop ? 17 : 16
+                  }
                 }}
               >
                 {item.icon}
@@ -706,17 +708,20 @@ const childItemSx = (selected) => ({
                 minWidth: 0,
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
-                  fontWeight: 500,
-                  fontSize: designTokens.sidebar.titleSize,
+                  fontWeight: selected ? 850 : 650,
+                  fontSize: isDesktop ? '0.74rem' : '0.72rem',
                   textAlign: 'start',
-                  marginInlineStart: isDesktop ? '8px' : '5px',
-                  lineHeight: isDesktop ? 1.45 : 1.3
+                  marginInlineStart: isDesktop ? '6px' : '4px',
+                  lineHeight: 1.28,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: designTokens.typography.helper,
+                  fontSize: isDesktop ? '0.64rem' : '0.62rem',
                   textAlign: 'start',
-                  marginInlineStart: isDesktop ? '8px' : '5px',
+                  marginInlineStart: isDesktop ? '6px' : '4px',
                   color: selected
                     ? 'rgba(255,255,255,.78)'
                     : mutedTextColor
@@ -794,9 +799,9 @@ const childItemSx = (selected) => ({
             '&:hover': {
               color: whiteColor,
               background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
-              transform: 'translateX(-4px)'
+              boxShadow: '0 6px 15px rgba(25,118,210,0.14)'
             },
-            transition: 'all 0.22s ease'
+            transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease'
           }}
         >
           <Box
@@ -913,9 +918,9 @@ const childItemSx = (selected) => ({
             '&:hover': {
               color: whiteColor,
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-              transform: 'translateX(-4px)'
+              boxShadow: '0 6px 15px rgba(5,117,70,0.14)'
             },
-            transition: 'all 0.22s ease'
+            transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease'
           }}
         >
           <Box
@@ -968,7 +973,25 @@ const childItemSx = (selected) => ({
         </ListItem>
 
         <Collapse in={open} timeout={260} unmountOnExit>
-          <List component="div" disablePadding>
+          <List
+            component="div"
+            disablePadding
+            sx={{
+              position: 'relative',
+              pt: 0.15,
+              pb: 0.35,
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                insetInlineStart: isDesktop ? 13 : 8,
+                top: 3,
+                bottom: 6,
+                width: 1,
+                bgcolor: 'rgba(5,117,70,.10)',
+                borderRadius: 999
+              }
+            }}
+          >
             {items.length > 0 ? (
               items.map(renderChildItem)
             ) : (
@@ -1007,8 +1030,7 @@ const childItemSx = (selected) => ({
         width: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_WIDTH,
         maxWidth: isDesktop ? SIDEBAR_WIDTH : SIDEBAR_MOBILE_MAX_WIDTH,
         height: '100dvh',
-        overflowY: 'auto',
-        overflowX: 'hidden',
+        overflow: 'hidden',
         boxSizing: 'border-box',
         minWidth: 0,
         flexShrink: 0,
@@ -1033,42 +1055,61 @@ const childItemSx = (selected) => ({
         zIndex: 1200,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
+        alignItems: 'stretch',
+        justifyContent: 'flex-start',
         boxShadow: isDesktop
           ? '8px 0 28px rgba(5,117,70,0.10)'
           : 'none',
         transition: 'all 0.3s ease'
       }, uiLayout.sidebarSurfaceSx)}
     >
-      <Box sx={{ width: '100%' }}>
+      <Box
+        sx={{
+          width: '100%',
+          flex: '1 1 auto',
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}
+      >
         {!isDesktop && <DrawerHeader onClose={onMobileClose} />}
         <Box
           sx={{
             display: isDesktop ? 'flex' : 'none',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            py: 1,
+            flex: '0 0 auto',
+            height: 74,
             width: '100%',
-            overflow: 'hidden',
-            background: `linear-gradient(145deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-            color: whiteColor,
-            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
             position: 'relative',
-            boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.10)'
+            overflow: 'hidden',
+            background: `linear-gradient(135deg, ${primaryDark} 0%, ${primaryColor} 58%, #0a8152 100%)`,
+            boxShadow: '0 4px 14px rgba(3,77,49,0.14)',
+            borderBottom: '1px solid rgba(255,255,255,0.22)',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              insetInline: 0,
+              bottom: 0,
+              height: 3,
+              background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.75), rgba(255,255,255,0))'
+            }
           }}
         >
           <Box
             sx={{
-              width: 'clamp(2.75rem, 3.5vw, 3.5rem)',
-              aspectRatio: '1',
-              borderRadius: designTokens.radius,
+              width: 52,
+              height: 52,
+              borderRadius: '50%',
+              display: 'grid',
+              placeItems: 'center',
               overflow: 'hidden',
-              border: `3px solid ${whiteColor}`,
-              background: whiteColor,
-              boxShadow: softShadow,
-              mb: 0.75
+              background: '#fff',
+              border: '2px solid rgba(255,255,255,.95)',
+              boxShadow: '0 6px 16px rgba(0,0,0,.16)',
+              position: 'relative',
+              zIndex: 1
             }}
           >
             <Box
@@ -1078,34 +1119,11 @@ const childItemSx = (selected) => ({
               sx={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain'
+                objectFit: 'contain',
+                p: 0.15
               }}
             />
           </Box>
-
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-            spacing={0.55}
-            sx={{
-              width: '100%',
-              minHeight: 30
-            }}
-          >
-
-          </Stack>
-
-          <Typography
-            sx={{
-              fontFamily: 'Cairo',
-              fontWeight: 500,
-              fontSize: '0.78rem',
-              opacity: 0.95
-            }}
-          >
-            المستخدم
-          </Typography>
         </Box>
 
         <List
@@ -1113,15 +1131,26 @@ const childItemSx = (selected) => ({
             width: '100%',
             maxWidth: '100%',
             minWidth: 0,
+            flex: '1 1 auto',
+            minHeight: 0,
 
-            // على الموبايل/التابلت نسيب مساحة تحت الهيدر الثابت
-            // عشان أول التابات ما تتغطاش.
-            pt: 1.2,
+            // منطقة القوائم فقط هي التي تعمل Scroll.
+            // إخفاء شكل الـ scrollbar يمنع زق السايدبار عند فتح/غلق أي مجموعة.
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            overscrollBehavior: 'contain',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            '&::-webkit-scrollbar': {
+              width: 0,
+              height: 0,
+              display: 'none'
+            },
 
-            pb: isDesktop ? 1.2 : 0.5,
-
-            px: 0,
-            overflowX: 'hidden'
+            // على الموبايل/التابلت نسيب مساحة تحت الهيدر الثابت.
+            pt: isDesktop ? 0.9 : 1.2,
+            pb: isDesktop ? 0.9 : 0.5,
+            px: 0
           }}
         >
           <Popover
@@ -1323,9 +1352,12 @@ const childItemSx = (selected) => ({
           maxWidth: '100%',
           minWidth: 0,
           boxSizing: 'border-box',
-          p: isDesktop ? 2 : 0.65,
+          flex: '0 0 auto',
+          p: isDesktop ? 1.15 : 0.65,
           overflowX: 'hidden',
-          borderTop: `1px solid ${primaryLight}`
+          background: 'rgba(255,255,255,.96)',
+          borderTop: `1px solid ${primaryLight}`,
+          boxShadow: '0 -5px 14px rgba(5,117,70,.05)'
         }}
       >
         <Button

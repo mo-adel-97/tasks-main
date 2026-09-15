@@ -1,0 +1,132 @@
+[
+  {
+    file: 'src/pages/HrAttendancePage.js',
+    dialogs: 8,
+    tables: 0,
+    tabs: 0,
+    imports: [
+      '../utils/printReady',
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../components/hrControlStyles',
+      '../config/sidebarLayout',
+      '../components/NavigationShell'
+    ]
+  },
+  {
+    file: 'src/pages/HrContractsPage.jsx',
+    dialogs: 4,
+    tables: 0,
+    tabs: 0,
+    imports: [
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../components/hrControlStyles',
+      '../config/sidebarLayout',
+      '../components/NavigationShell'
+    ]
+  },
+  {
+    file: 'src/pages/HrDepartmentsPage.jsx',
+    dialogs: 6,
+    tables: 1,
+    tabs: 0,
+    imports: [
+      '../components/common/PageContainer',
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../config/sidebarLayout',
+      '../components/NavigationShell',
+      './components/HrOrganizationDesigner'
+    ]
+  },
+  {
+    file: 'src/pages/HrEmployeeHomePage.jsx',
+    dialogs: 6,
+    tables: 3,
+    tabs: 0,
+    imports: [
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      './components/HrOrgOverviewPanel'
+    ]
+  },
+  {
+    file: 'src/pages/HrEmployeesPage.jsx',
+    dialogs: 3,
+    tables: 1,
+    tabs: 1,
+    imports: [
+      '../components/common/PageContainer',
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../components/hrControlStyles',
+      '../config/sidebarLayout',
+      '../components/NavigationShell'
+    ]
+  },
+  {
+    file: 'src/pages/HrJobTitlesPage.jsx',
+    dialogs: 5,
+    tables: 0,
+    tabs: 0,
+    imports: [
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../config/sidebarLayout',
+      '../components/NavigationShell'
+    ]
+  },
+  {
+    file: 'src/pages/HrLeavesPage.jsx',
+    dialogs: 6,
+    tables: 6,
+    tabs: 1,
+    imports: [
+      '../components/common/PageContainer',
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../config/sidebarLayout',
+      '../components/NavigationShell'
+    ]
+  },
+  {
+    file: 'src/pages/HrPermissionsPage.jsx',
+    dialogs: 1,
+    tables: 1,
+    tabs: 0,
+    imports: [
+      '../components/common/PageContainer',
+      '../components/hrLayout',
+      './rtl-forms-fix.css',
+      '../config/sidebarLayout',
+      '../components/NavigationShell',
+      './components/HrPermissionWorkflowManager'
+    ]
+  },
+  {
+    file: 'src/pages/components/HrOrganizationDesigner.jsx',
+    dialogs: 1,
+    tables: 0,
+    tabs: 1,
+    imports: [
+      '../../components/hrLayout',
+      '../rtl-forms-fix.css',
+      '../../components/hrControlStyles'
+    ]
+  },
+  {
+    file: 'src/pages/components/HrOrgOverviewPanel.jsx',
+    dialogs: 1,
+    tables: 1,
+    tabs: 0,
+    imports: [ '../../components/hrLayout', '../rtl-forms-fix.css' ]
+  },
+  {
+    file: 'src/pages/components/HrPermissionWorkflowManager.jsx',
+    dialogs: 1,
+    tables: 0,
+    tabs: 1,
+    imports: [ '../../components/hrLayout', '../rtl-forms-fix.css' ]
+  }
+]

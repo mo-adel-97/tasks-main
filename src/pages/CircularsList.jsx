@@ -59,7 +59,16 @@ const WHITE = "#ffffff";
 const getUserGuid = () => {
   try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    return String(user?.guid || user?.Guid || "").trim();
+    return String(
+      user?.guid ||
+      user?.Guid ||
+      user?.userGuid ||
+      user?.UserGuid ||
+      user?.USER_GUID ||
+      localStorage.getItem("userGuid") ||
+      localStorage.getItem("UserGuid") ||
+      ""
+    ).trim();
   } catch {
     return "";
   }
@@ -212,6 +221,37 @@ const CircularsList = () => {
     [folders, activeFolderGuid]
   );
 
+  const folderPath = useMemo(() => {
+    if (!activeFolder) return [];
+
+    const byGuid = new Map(
+      folders.map((folder) => [String(folder.guid), folder])
+    );
+    const path = [];
+    const visited = new Set();
+    let current = activeFolder;
+
+    while (current && !visited.has(String(current.guid))) {
+      path.unshift(current);
+      visited.add(String(current.guid));
+      const parentGuid = String(current.parentFolderGuid || "");
+      current = parentGuid ? byGuid.get(parentGuid) || null : null;
+    }
+
+    return path;
+  }, [folders, activeFolder]);
+
+  const currentFolders = useMemo(() => {
+    const parentGuid = String(activeFolder?.guid || "");
+
+    return folders.filter((folder) => {
+      const folderParentGuid = String(folder?.parentFolderGuid || "");
+      return parentGuid
+        ? folderParentGuid === parentGuid
+        : !folderParentGuid;
+    });
+  }, [folders, activeFolder]);
+
   useEffect(() => {
     if (
       activeFolderGuid &&
@@ -223,14 +263,14 @@ const CircularsList = () => {
 
   const visibleFolders = useMemo(() => {
     const search = searchText.trim().toLowerCase();
-    if (!search) return folders;
+    if (!search) return currentFolders;
 
-    return folders.filter((folder) =>
+    return currentFolders.filter((folder) =>
       [folder?.name, folder?.description]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(search))
     );
-  }, [folders, searchText]);
+  }, [currentFolders, searchText]);
 
   const visibleFiles = useMemo(() => {
     const files = Array.isArray(activeFolder?.files) ? activeFolder.files : [];
@@ -257,7 +297,7 @@ const CircularsList = () => {
   };
 
   const leaveFolder = () => {
-    setActiveFolderGuid("");
+    setActiveFolderGuid(activeFolder?.parentFolderGuid || "");
     setSearchText("");
   };
 
@@ -538,23 +578,36 @@ const CircularsList = () => {
                         {activeTab?.name || ""}
                       </Typography>
 
-                      {activeFolder && (
-                        <>
+                      {folderPath.map((folder, index) => (
+                        <React.Fragment key={folder.guid}>
                           <Typography sx={{ color: "#a3b2ac" }}>/</Typography>
-                          <Typography
-                            sx={{
+                          <Button
+                            onClick={() => {
+                              setActiveFolderGuid(folder.guid);
+                              setSearchText("");
+                            }}
+                            disabled={index === folderPath.length - 1}
+                            sx={uiLayout.withUiSx({
+                              minWidth: 0,
+                              maxWidth: { xs: 110, sm: 180 },
+                              px: 0.35,
+                              color:
+                                index === folderPath.length - 1
+                                  ? TEXT
+                                  : MUTED,
                               fontFamily: "Cairo",
-                              fontWeight: 950,
-                              color: TEXT,
-                              whiteSpace: "nowrap",
+                              fontWeight:
+                                index === folderPath.length - 1 ? 950 : 800,
+                              justifyContent: "flex-start",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
-                            }}
+                              whiteSpace: "nowrap",
+                            }, uiLayout.buttonSx)}
                           >
-                            {activeFolder.name}
-                          </Typography>
-                        </>
-                      )}
+                            {folder.name}
+                          </Button>
+                        </React.Fragment>
+                      ))}
                     </Stack>
 
                     <TextField InputLabelProps={{ shrink: true }}
@@ -563,7 +616,7 @@ const CircularsList = () => {
                       onChange={(event) => setSearchText(event.target.value)}
                       placeholder={
                         activeFolder
-                          ? "ابحث في الملفات..."
+                          ? "ابحث في المجلدات والملفات..."
                           : "ابحث في المجلدات..."
                       }
                       sx={uiLayout.withUiSx({
@@ -585,9 +638,73 @@ const CircularsList = () => {
                   </Stack>
                 </Box>
 
-                {!activeFolder ? (
-                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
-                    {activeTab?.description && (
+                <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+                  {activeFolder ? (
+                    <>
+                      <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        alignItems={{ xs: "stretch", sm: "center" }}
+                        justifyContent="space-between"
+                        spacing={1}
+                        sx={{ mb: 1.5 }}
+                      >
+                        <Stack direction="row" spacing={1.1} alignItems="center">
+                          <Box
+                            sx={{
+                              width: 48,
+                              height: 48,
+                              borderRadius: 2.5,
+                              bgcolor: "#fff7dc",
+                              display: "grid",
+                              placeItems: "center",
+                              flexShrink: 0,
+                            }}
+                          >
+                            <FolderOpenRoundedIcon
+                              sx={{ color: "#c89512", fontSize: 31 }}
+                            />
+                          </Box>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontWeight: 950,
+                                color: TEXT,
+                                lineHeight: 1.35,
+                              }}
+                            >
+                              {activeFolder.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ fontFamily: "Cairo", color: MUTED }}
+                            >
+                              {currentFolders.length} مجلد فرعي •{" "}
+                              {Array.isArray(activeFolder.files)
+                                ? activeFolder.files.length
+                                : 0}{" "}
+                              ملف
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </Stack>
+
+                      {activeFolder.description && (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            mb: 1.5,
+                            fontFamily: "Cairo",
+                            color: MUTED,
+                          }}
+                        >
+                          {activeFolder.description}
+                        </Typography>
+                      )}
+                    </>
+                  ) : (
+                    activeTab?.description && (
                       <Typography
                         variant="body2"
                         sx={{
@@ -598,27 +715,24 @@ const CircularsList = () => {
                       >
                         {activeTab.description}
                       </Typography>
-                    )}
+                    )
+                  )}
 
-                    {visibleFolders.length === 0 ? (
-                      <Box sx={{ py: 8, textAlign: "center" }}>
-                        <FolderRoundedIcon
-                          sx={{ fontSize: 58, color: "#b4c4bd" }}
-                        />
+                  {visibleFolders.length > 0 && (
+                    <Box sx={{ mb: activeFolder ? 2 : 0 }}>
+                      {activeFolder && (
                         <Typography
                           sx={{
-                            mt: 1,
+                            mb: 1,
                             fontFamily: "Cairo",
-                            fontWeight: 850,
-                            color: MUTED,
+                            fontWeight: 950,
+                            color: TEXT,
                           }}
                         >
-                          {searchText
-                            ? "لا توجد مجلدات مطابقة للبحث."
-                            : "لا توجد مجلدات داخل هذا القسم."}
+                          المجلدات الفرعية
                         </Typography>
-                      </Box>
-                    ) : (
+                      )}
+
                       <Box
                         sx={{
                           display: "grid",
@@ -633,9 +747,14 @@ const CircularsList = () => {
                         }}
                       >
                         {visibleFolders.map((folder) => {
-                          const count = Array.isArray(folder.files)
+                          const fileCount = Array.isArray(folder.files)
                             ? folder.files.length
                             : 0;
+                          const subFolderCount = folders.filter(
+                            (candidate) =>
+                              String(candidate?.parentFolderGuid || "") ===
+                              String(folder.guid)
+                          ).length;
 
                           return (
                             <Paper
@@ -682,7 +801,7 @@ const CircularsList = () => {
                                 />
                                 <Chip
                                   size="small"
-                                  label={`${count}`}
+                                  label={`${subFolderCount} مجلد`}
                                   sx={{
                                     height: 23,
                                     fontFamily: "Cairo",
@@ -715,92 +834,29 @@ const CircularsList = () => {
                                     color: MUTED,
                                   }}
                                 >
-                                  {count} ملف
+                                  {fileCount} ملف
                                 </Typography>
                               </Box>
                             </Paper>
                           );
                         })}
                       </Box>
-                    )}
-                  </Box>
-                ) : (
-                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
-                    <Stack
-                      direction={{ xs: "column", sm: "row" }}
-                      alignItems={{ xs: "stretch", sm: "center" }}
-                      justifyContent="space-between"
-                      spacing={1}
-                      sx={{ mb: 1.7 }}
-                    >
-                      <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 2.5,
-                            bgcolor: "#fff7dc",
-                            display: "grid",
-                            placeItems: "center",
-                          }}
-                        >
-                          <FolderOpenRoundedIcon
-                            sx={{ color: "#c89512", fontSize: 31 }}
-                          />
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              fontFamily: "Cairo",
-                              fontWeight: 950,
-                              color: TEXT,
-                            }}
-                          >
-                            {activeFolder.name}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ fontFamily: "Cairo", color: MUTED }}
-                          >
-                            {visibleFiles.length} ملف
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
+                    </Box>
+                  )}
 
-                    {activeFolder.description && (
+                  {activeFolder && visibleFiles.length > 0 && (
+                    <Box>
                       <Typography
-                        variant="body2"
                         sx={{
-                          mb: 1.5,
+                          mb: 1,
                           fontFamily: "Cairo",
-                          color: MUTED,
+                          fontWeight: 950,
+                          color: TEXT,
                         }}
                       >
-                        {activeFolder.description}
+                        الملفات
                       </Typography>
-                    )}
 
-                    {visibleFiles.length === 0 ? (
-                      <Box sx={{ py: 8, textAlign: "center" }}>
-                        <InsertDriveFileRoundedIcon
-                          sx={{ fontSize: 56, color: "#b7c5bf" }}
-                        />
-                        <Typography
-                          sx={{
-                            mt: 1,
-                            fontFamily: "Cairo",
-                            fontWeight: 850,
-                            color: MUTED,
-                          }}
-                        >
-                          {searchText
-                            ? "لا توجد ملفات مطابقة للبحث."
-                            : "هذا المجلد فارغ."}
-                        </Typography>
-                      </Box>
-                    ) : (
                       <Box
                         sx={{
                           display: "grid",
@@ -940,9 +996,38 @@ const CircularsList = () => {
                           </Paper>
                         ))}
                       </Box>
+                    </Box>
+                  )}
+
+                  {visibleFolders.length === 0 &&
+                    (!activeFolder || visibleFiles.length === 0) && (
+                      <Box sx={{ py: 8, textAlign: "center" }}>
+                        {activeFolder ? (
+                          <InsertDriveFileRoundedIcon
+                            sx={{ fontSize: 56, color: "#b7c5bf" }}
+                          />
+                        ) : (
+                          <FolderRoundedIcon
+                            sx={{ fontSize: 58, color: "#b4c4bd" }}
+                          />
+                        )}
+                        <Typography
+                          sx={{
+                            mt: 1,
+                            fontFamily: "Cairo",
+                            fontWeight: 850,
+                            color: MUTED,
+                          }}
+                        >
+                          {searchText
+                            ? "لا توجد مجلدات أو ملفات مطابقة للبحث."
+                            : activeFolder
+                              ? "هذا المجلد فارغ."
+                              : "لا توجد مجلدات داخل هذا القسم."}
+                        </Typography>
+                      </Box>
                     )}
-                  </Box>
-                )}
+                </Box>
               </Paper>
             </>
           )}

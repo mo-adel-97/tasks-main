@@ -1,5 +1,5 @@
 import { printWhenReady } from '../utils/printReady';
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { hrChipSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -2756,13 +2756,13 @@ export default function HrAttendancePage() {
         textAlign: PAGE_TEXT_ALIGN
       }}
     >
-      <Box sx={{ maxWidth: 1650, mx: "auto" }}>
+      <Box sx={{ maxWidth: "100%", minWidth: 0, mx: "auto" }}>
         <Paper
           elevation={0}
           sx={{
             bgcolor: primaryDark,
             color: "#fff",
-            p: { xs: 1.2, sm: 1.8 },
+            p: { xs: 1.2, sm: 1.25 },
             borderRadius: 3,
             mb: 1.3
           }}
@@ -2798,12 +2798,12 @@ export default function HrAttendancePage() {
               <AccessTimeRoundedIcon />
 
               <Box>
-                <Typography
+                <Typography className="hr-page-title"
                   sx={{
                     fontWeight: 950,
                     fontSize: {
                       xs: 18,
-                      sm: 24
+                      sm: uiLayout.hrTokens.title
                     }
                   }}
                 >
@@ -3477,11 +3477,7 @@ export default function HrAttendancePage() {
           <Box
             sx={uiLayout.withUiSx({
               display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md:
-                  "180px minmax(250px,1.4fr) 180px 180px 180px 110px"
-              },
+              gridTemplateColumns: uiLayout.filterColumns,
               gap: 1
             }, uiLayout.formSectionSx)}
           >
@@ -3769,21 +3765,27 @@ export default function HrAttendancePage() {
                 >
                   <Box
                     sx={{
-                      display: "grid",
-                      gridTemplateColumns: {
-                        xs: "1fr",
-                        lg:
-                          "minmax(280px,1.5fr) minmax(170px,.9fr) minmax(145px,.8fr) minmax(145px,.8fr) minmax(180px,.9fr) minmax(170px,.9fr) 265px"
-                      },
-                      gap: 1,
-                      alignItems: "center"
+                      ...uiLayout.attendanceRowSx,
+
+                      // Desktop attendance rows need to prioritize employee identity.
+                      // Keep the branch readable instead of squeezing it behind the
+                      // attendance/status/action columns.
+                      ...(isDesktop
+                        ? {
+                            gridTemplateColumns:
+                              "minmax(340px,2.35fr) minmax(100px,.72fr) minmax(74px,.5fr) minmax(74px,.5fr) minmax(88px,.6fr) minmax(102px,.72fr) minmax(142px,auto)",
+                            columnGap: 0.85,
+                            rowGap: 0.45,
+                            alignItems: "center"
+                          }
+                        : {})
                     }}
                   >
                     <Box sx={{ minWidth: 0 }}>
                       <Stack
                         direction="row"
-                        spacing={0.7}
-                        alignItems="center"
+                        spacing={isDesktop ? 0.45 : 0.7}
+                        alignItems="flex-start"
                       >
                         <Checkbox
                           checked={isEmployeeSelected(
@@ -3803,8 +3805,9 @@ export default function HrAttendancePage() {
 
                         <Box
                           sx={{
-                            width: 34,
-                            height: 34,
+                            width: isDesktop ? 30 : 34,
+                            height: isDesktop ? 30 : 34,
+                            flexShrink: 0,
                             borderRadius: 2,
                             display: "grid",
                             placeItems: "center",
@@ -3817,11 +3820,14 @@ export default function HrAttendancePage() {
                           />
                         </Box>
 
-                        <Box sx={{ minWidth: 0 }}>
+                        <Box sx={{ minWidth: 0, flex: 1 }}>
                           <Typography
                             sx={{
                               fontWeight: 950,
-                              fontSize: 14
+                              fontSize: isDesktop ? 12.5 : 14,
+                              lineHeight: 1.3,
+                              whiteSpace: "normal",
+                              overflowWrap: "anywhere"
                             }}
                           >
                             {row.employeeName}
@@ -3830,12 +3836,13 @@ export default function HrAttendancePage() {
                           <Typography
                             color="text.secondary"
                             sx={{
-                              mt: 0.15,
-                              fontSize: 12,
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow:
-                                "ellipsis"
+                              mt: 0.1,
+                              fontSize: isDesktop ? 10.5 : 12,
+                              lineHeight: 1.35,
+                              whiteSpace: "normal",
+                              overflow: "visible",
+                              textOverflow: "clip",
+                              overflowWrap: "anywhere"
                             }}
                           >
                             #{row.employeeCode || "-"}
@@ -3849,23 +3856,32 @@ export default function HrAttendancePage() {
 
                           <Stack
                             direction="row"
-                            spacing={0.35}
-                            alignItems="center"
+                            spacing={0.3}
+                            alignItems="flex-start"
                             sx={{
-                              mt: 0.25,
+                              mt: 0.18,
+                              minWidth: 0,
                               color: "text.secondary"
                             }}
                           >
                             <BusinessRoundedIcon
-                              sx={{ fontSize: 13 }}
+                              sx={{
+                                fontSize: isDesktop ? 11 : 13,
+                                mt: 0.15,
+                                flexShrink: 0
+                              }}
                             />
                             <Typography
+                              title={row.branchName || "الفرع غير محدد"}
                               sx={{
-                                fontSize: 12,
+                                minWidth: 0,
+                                fontSize: isDesktop ? 10.5 : 12,
+                                lineHeight: 1.35,
                                 fontWeight: 850,
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis"
+                                whiteSpace: "normal",
+                                overflow: "visible",
+                                textOverflow: "clip",
+                                overflowWrap: "anywhere"
                               }}
                             >
                               {row.branchName ||
@@ -3875,9 +3891,9 @@ export default function HrAttendancePage() {
 
                           <Stack
                             direction="row"
-                            spacing={0.4}
+                            spacing={0.35}
                             alignItems="center"
-                            sx={{ mt: 0.45 }}
+                            sx={{ mt: isDesktop ? 0.28 : 0.45 }}
                           >
                             <Chip
                               size="small"
@@ -3896,9 +3912,12 @@ export default function HrAttendancePage() {
                               }
                               variant="outlined"
                               sx={[hrChipSx("small"), {
-                                height: 22,
-                                fontSize: 12,
-                                fontWeight: 850
+                                height: isDesktop ? 20 : 22,
+                                fontSize: isDesktop ? 10 : 12,
+                                fontWeight: 850,
+                                "& .MuiChip-icon": {
+                                  fontSize: isDesktop ? 13 : undefined
+                                }
                               }]}
                             />
                           </Stack>
@@ -3906,10 +3925,10 @@ export default function HrAttendancePage() {
                       </Stack>
                     </Box>
 
-                    <Box>
+                    <Box sx={{ minWidth: 0 }}>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: isDesktop ? 10.5 : 12 }}
                       >
                         الوردية
                       </Typography>
@@ -3917,7 +3936,8 @@ export default function HrAttendancePage() {
                       <Typography
                         sx={{
                           fontWeight: 900,
-                          fontSize: 12
+                          fontSize: isDesktop ? 11 : 12,
+                          lineHeight: 1.35
                         }}
                       >
                         {row.shiftName ||
@@ -3927,7 +3947,7 @@ export default function HrAttendancePage() {
                       {row.shiftGuid && (
                         <Typography
                           color="text.secondary"
-                          sx={{ fontSize: 12 }}
+                          sx={{ fontSize: isDesktop ? 10.5 : 12, lineHeight: 1.3 }}
                         >
                           {formatTimeSpan(
                             row.shiftStartTime
@@ -3940,45 +3960,45 @@ export default function HrAttendancePage() {
                       )}
                     </Box>
 
-                    <Box>
+                    <Box sx={{ minWidth: 0 }}>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: isDesktop ? 10.5 : 12 }}
                       >
                         الحضور
                       </Typography>
 
-                      <Typography fontWeight={900}>
+                      <Typography sx={{ fontWeight: 900, fontSize: isDesktop ? 11.5 : undefined }}>
                         {formatTime(
                           row.checkInAt
                         )}
                       </Typography>
                     </Box>
 
-                    <Box>
+                    <Box sx={{ minWidth: 0 }}>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: isDesktop ? 10.5 : 12 }}
                       >
                         الانصراف
                       </Typography>
 
-                      <Typography fontWeight={900}>
+                      <Typography sx={{ fontWeight: 900, fontSize: isDesktop ? 11.5 : undefined }}>
                         {formatTime(
                           row.checkOutAt
                         )}
                       </Typography>
                     </Box>
 
-                    <Box>
+                    <Box sx={{ minWidth: 0 }}>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: isDesktop ? 10.5 : 12 }}
                       >
                         ساعات العمل
                       </Typography>
 
-                      <Typography fontWeight={900}>
+                      <Typography sx={{ fontWeight: 900, fontSize: isDesktop ? 11.5 : undefined }}>
                         {minutesToText(
                           row.workedMinutes
                         )}
@@ -3990,7 +4010,7 @@ export default function HrAttendancePage() {
                         <Typography
                           sx={{
                             color: primary,
-                            fontSize: 12,
+                            fontSize: isDesktop ? 10.5 : 12,
                             fontWeight: 850
                           }}
                         >
@@ -4002,10 +4022,10 @@ export default function HrAttendancePage() {
                       )}
                     </Box>
 
-                    <Box>
+                    <Box sx={{ minWidth: 0 }}>
                       <Typography
                         color="text.secondary"
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: isDesktop ? 10.5 : 12 }}
                       >
                         الحالة
                       </Typography>
@@ -4022,7 +4042,8 @@ export default function HrAttendancePage() {
                           label={meta.label}
                           color={meta.color}
                           sx={{
-                            height: 24,
+                            height: isDesktop ? 21 : 24,
+                            fontSize: isDesktop ? 10.5 : undefined,
                             fontWeight: 900
                           }}
                         />
@@ -4040,7 +4061,10 @@ export default function HrAttendancePage() {
                             )}`}
                             color="warning"
                             variant="outlined"
-                            sx={[hrChipSx("small"), { height: 24 }]}
+                            sx={[hrChipSx("small"), {
+                              height: isDesktop ? 21 : 24,
+                              fontSize: isDesktop ? 10 : undefined
+                            }]}
                           />
                         )}
 
@@ -4051,15 +4075,40 @@ export default function HrAttendancePage() {
                               label="لم يسجل انصراف"
                               color="info"
                               variant="outlined"
-                              sx={{ height: 24 }}
+                              sx={{
+                                height: isDesktop ? 21 : 24,
+                                fontSize: isDesktop ? 10 : undefined
+                              }}
                             />
                           )}
                       </Stack>
                     </Box>
 
-                    <Stack sx={uiLayout.actionBarSx}
+                    <Stack
+                      sx={{
+                        ...uiLayout.actionBarSx,
+                        minWidth: 0,
+                        "& .MuiIconButton-root": {
+                          width: isDesktop ? 30 : undefined,
+                          height: isDesktop ? 30 : undefined,
+                          p: isDesktop ? 0.45 : undefined
+                        },
+                        "& .MuiButton-root": {
+                          minHeight: isDesktop ? 30 : undefined,
+                          px: isDesktop ? 0.8 : undefined,
+                          fontSize: isDesktop ? "0.68rem" : undefined,
+                          whiteSpace: "nowrap"
+                        },
+                        "& .MuiButton-startIcon": {
+                          ml: isDesktop ? 0.35 : undefined,
+                          mr: 0
+                        },
+                        "& .MuiSvgIcon-root": {
+                          fontSize: isDesktop ? "1rem" : undefined
+                        }
+                      }}
                       direction="row"
-                      spacing={0.4}
+                      spacing={isDesktop ? 0.3 : 0.4}
                       justifyContent="flex-start"
                       alignItems="center"
                       flexWrap="nowrap"
@@ -4112,7 +4161,7 @@ export default function HrAttendancePage() {
                             openAssignment(row)
                           }
                           sx={uiLayout.withUiSx({
-                            minWidth: 115,
+                            minWidth: isDesktop ? 88 : 115,
                             bgcolor: primary,
                             fontWeight: 900
                           }, uiLayout.buttonSx)}
@@ -4135,7 +4184,7 @@ export default function HrAttendancePage() {
                                 )
                               }
                               sx={uiLayout.withUiSx({
-                                minWidth: 95,
+                                minWidth: isDesktop ? 72 : 95,
                                 bgcolor: primary,
                                 fontWeight: 900
                               }, uiLayout.buttonSx)}
@@ -4242,7 +4291,7 @@ export default function HrAttendancePage() {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
-      <Box sx={navigationContentSx}>{content}</Box>
+      <Box sx={[navigationContentSx, uiLayout.scopeSx]}>{content}</Box>
 
       {/* Shift dialog */}
       <Dialog

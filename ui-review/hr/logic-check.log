@@ -1,0 +1,12 @@
+warning: in the working copy of 'src/pages/HrAttendancePage.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrContractsPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrDepartmentsPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrEmployeeHomePage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrEmployeesPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrJobTitlesPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrLeavesPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/HrPermissionsPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/components/HrOrgOverviewPanel.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/components/HrOrganizationDesigner.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/pages/components/HrPermissionWorkflowManager.jsx', LF will be replaced by CRLF the next time Git touches it
+PASS: 11 HR sources differ only in presentation attributes and HR style imports.

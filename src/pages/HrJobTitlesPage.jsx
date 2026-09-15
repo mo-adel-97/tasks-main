@@ -1,4 +1,4 @@
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -1425,7 +1425,7 @@ export default function HrJobTitlesPage() {
     >
       <Box
         sx={{
-          maxWidth: 1500,
+          maxWidth: "100%",
           mx: "auto"
         }}
       >
@@ -1484,7 +1484,7 @@ export default function HrJobTitlesPage() {
               </Box>
 
               <Box sx={{ minWidth: 0 }}>
-                <Typography
+                <Typography className="hr-page-title"
                   sx={{
                     fontWeight: 950,
                     fontSize: { xs: 18, sm: 24 },
@@ -1975,50 +1975,105 @@ export default function HrJobTitlesPage() {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
-      <Box sx={{ ...navigationContentSx, bgcolor: soft, minHeight: "100vh" }}>{content}</Box>
+      <Box sx={{ ...navigationContentSx, ...uiLayout.scopeSx, bgcolor: soft, minHeight: "100vh" }}>{content}</Box>
 
       {/* =======================================================
           Create / Edit dialog
           ======================================================= */}
       <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX]}
         open={editOpen}
         onClose={closeEdit}
         fullWidth
-        maxWidth="md"
+        maxWidth={false}
         dir={DIALOG_DIRECTION}
         disableEnforceFocus
         PaperProps={{
           sx: {
-            borderRadius: 2.5
+            width: {
+              xs: "calc(100% - 16px)",
+              sm: "min(900px, calc(100% - 32px))"
+            },
+            maxWidth: "900px !important",
+            m: { xs: 1, sm: 2 },
+            borderRadius: { xs: 2.5, sm: 3 },
+            overflow: "hidden",
+            backgroundImage: "none"
           }
         }}
       >
         <DialogTitle
           sx={{
-            fontWeight: 950,
-            textAlign:
-              DIALOG_TEXT_ALIGN
+            px: { xs: 1.5, sm: 2.25 },
+            py: { xs: 1.15, sm: 1.35 },
+            borderBottom: `1px solid ${border}`,
+            bgcolor: "#fff"
           }}
         >
-          {editMode === "edit"
-            ? "تعديل المسمى الوظيفي"
-            : "إضافة مسمى وظيفي جديد"}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            gap={1}
+          >
+            <Box sx={{ minWidth: 0, textAlign: DIALOG_TEXT_ALIGN }}>
+              <Typography
+                sx={{
+                  fontWeight: 950,
+                  fontSize: { xs: "1rem", sm: "1.08rem" },
+                  color: primaryDark,
+                  lineHeight: 1.35
+                }}
+              >
+                {editMode === "edit"
+                  ? "تعديل المسمى الوظيفي"
+                  : "إضافة مسمى وظيفي جديد"}
+              </Typography>
+              <Typography
+                sx={{
+                  mt: 0.2,
+                  fontSize: "0.72rem",
+                  lineHeight: 1.6,
+                  color: "text.secondary"
+                }}
+              >
+                {editMode === "edit"
+                  ? "حدّث بيانات المسمى الوظيفي ثم احفظ التغييرات."
+                  : "أدخل بيانات المسمى الوظيفي وحدد القسم التابع له."}
+              </Typography>
+            </Box>
+            <IconButton onClick={closeEdit} disabled={saving} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Stack>
         </DialogTitle>
 
-        <DialogContent dividers>
-
+        <DialogContent
+          dividers
+          sx={{
+            px: { xs: 1.25, sm: 2.25 },
+            py: { xs: 1.25, sm: 1.7 },
+            bgcolor: "#fbfdfc",
+            overflowX: "hidden"
+          }}
+        >
           <Box
-            sx={uiLayout.withUiSx({
+            sx={{
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
-                md: "repeat(2,minmax(0,1fr))"
+                sm: "repeat(2, minmax(0, 1fr))"
               },
-              gap: 1.2,
-              textAlign:
-                DIALOG_TEXT_ALIGN
-            }, uiLayout.formSectionSx)}
+              gap: { xs: 1.1, sm: 1.25 },
+              width: "100%",
+              minWidth: 0,
+              alignItems: "start",
+              textAlign: DIALOG_TEXT_ALIGN,
+              "& > *": {
+                minWidth: 0,
+                width: "100%"
+              }
+            }}
           >
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم المسمى الوظيفي"
@@ -2073,7 +2128,7 @@ export default function HrJobTitlesPage() {
             <TextField InputLabelProps={{ shrink: true }}
               label="الوصف"
               multiline
-              minRows={3}
+              minRows={2}
               value={form.description}
               onChange={(e) =>
                 setFormField(
@@ -2083,7 +2138,7 @@ export default function HrJobTitlesPage() {
               }
               sx={uiLayout.withUiSx({
                 gridColumn: {
-                  md: "span 2"
+                  sm: "1 / -1"
                 }
               }, uiLayout.formFieldSx)}
             />
@@ -2091,7 +2146,7 @@ export default function HrJobTitlesPage() {
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="المهام والمسؤوليات"
               multiline
-              minRows={4}
+              minRows={2}
               value={form.responsibilities}
               onChange={(e) =>
                 setFormField(
@@ -2104,7 +2159,7 @@ export default function HrJobTitlesPage() {
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="المتطلبات"
               multiline
-              minRows={4}
+              minRows={2}
               value={form.requirements}
               onChange={(e) =>
                 setFormField(
@@ -2117,12 +2172,25 @@ export default function HrJobTitlesPage() {
 
           <Box
             sx={{
-              mt: 1.5,
+              mt: 1.25,
+              p: { xs: 1, sm: 1.1 },
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "stretch", sm: "center" },
               flexWrap: "wrap",
-              gap: 1,
-              textAlign:
-                DIALOG_TEXT_ALIGN
+              gap: { xs: 0.25, sm: 1.25 },
+              border: `1px solid ${border}`,
+              borderRadius: 2,
+              bgcolor: "#fff",
+              textAlign: DIALOG_TEXT_ALIGN,
+              "& .MuiFormControlLabel-root": {
+                m: 0,
+                minHeight: 34
+              },
+              "& .MuiFormControlLabel-label": {
+                fontSize: "0.78rem",
+                fontWeight: 700
+              }
             }}
           >
             <FormControlLabel
@@ -2176,19 +2244,21 @@ export default function HrJobTitlesPage() {
           </Box>
         </DialogContent>
 
-        <DialogActions sx={uiLayout.dialogActionsSx}>
-          <Button sx={uiLayout.buttonSx}
-            onClick={closeEdit}
-            disabled={saving}
-          >
-            إلغاء
-          </Button>
-
+        <DialogActions
+          sx={uiLayout.withUiSx({
+            px: { xs: 1.25, sm: 2.25 },
+            py: { xs: 1.05, sm: 1.2 },
+            justifyContent: "flex-start",
+            gap: 0.75,
+            bgcolor: "#fff"
+          }, uiLayout.dialogActionsSx)}
+        >
           <Button
             variant="contained"
             onClick={save}
             disabled={saving}
             sx={uiLayout.withUiSx({
+              minWidth: 104,
               bgcolor: primary,
               "&:hover": {
                 bgcolor: primaryDark
@@ -2198,6 +2268,14 @@ export default function HrJobTitlesPage() {
             {saving
               ? "جاري الحفظ..."
               : "حفظ"}
+          </Button>
+
+          <Button
+            sx={uiLayout.buttonSx}
+            onClick={closeEdit}
+            disabled={saving}
+          >
+            إلغاء
           </Button>
         </DialogActions>
       </Dialog>

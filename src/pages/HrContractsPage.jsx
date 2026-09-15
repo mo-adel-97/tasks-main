@@ -1,4 +1,4 @@
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { hrChipSx } from "../components/hrControlStyles";
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1250,7 +1250,7 @@ export default function HrContractsPage() {
         textAlign: PAGE_TEXT_ALIGN
       }}
     >
-      <Box sx={{ maxWidth: 1600, mx: "auto" }}>
+      <Box sx={{ maxWidth: "100%", minWidth: 0, mx: "auto" }}>
         <Paper
           elevation={0}
           sx={{
@@ -1285,7 +1285,7 @@ export default function HrContractsPage() {
               <ArticleOutlinedIcon />
 
               <Box>
-                <Typography
+                <Typography className="hr-page-title"
                   sx={{
                     fontWeight: 950,
                     fontSize: {
@@ -1455,11 +1455,7 @@ export default function HrContractsPage() {
           <Box
             sx={uiLayout.withUiSx({
               display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                sm:
-                  "minmax(260px,1.4fr) 180px 180px 180px 110px"
-              },
+              gridTemplateColumns: uiLayout.filterColumns,
               gap: 1
             }, uiLayout.formSectionSx)}
           >
@@ -1677,8 +1673,9 @@ export default function HrContractsPage() {
                       display: "grid",
                       gridTemplateColumns: {
                         xs: "1fr",
+                        sm: "repeat(2,minmax(0,1fr))",
                         lg:
-                          "minmax(290px,1.65fr) minmax(165px,.9fr) minmax(220px,1.05fr) minmax(145px,.75fr) minmax(190px,.9fr) 315px"
+                          "minmax(150px,1.4fr) repeat(4,minmax(0,1fr)) minmax(150px,1.2fr)"
                       },
                       columnGap: 1.25,
                       rowGap: 1,
@@ -1971,12 +1968,9 @@ export default function HrContractsPage() {
                       spacing={0.4}
                       justifyContent="flex-start"
                       alignItems="center"
-                      flexWrap="nowrap"
+                      flexWrap="wrap"
                       useFlexGap
-                      sx={{
-                        width: "315px",
-                        minWidth: "315px"
-                      }}
+                      sx={{ width: "100%", minWidth: 0 }}
                     >
                       <Button
                         size="small"
@@ -2169,7 +2163,7 @@ export default function HrContractsPage() {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
-      <Box sx={navigationContentSx}>{content}</Box>
+      <Box sx={[navigationContentSx, uiLayout.scopeSx]}>{content}</Box>
 
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
@@ -2744,9 +2738,32 @@ export default function HrContractsPage() {
         }}
         fullWidth
         maxWidth="md"
+        PaperProps={{
+          sx: {
+            width: {
+              xs: "calc(100% - 16px)",
+              sm: "min(760px, calc(100% - 32px))",
+              md: "min(820px, calc(100% - 48px))"
+            },
+            maxWidth: "820px !important",
+            m: { xs: 1, sm: 2 },
+            borderRadius: { xs: 2.5, sm: 3 },
+            overflow: "hidden"
+          }
+        }}
         dir={DIALOG_DIRECTION}
       >
-        <DialogTitle sx={{ fontWeight: 950 }}>
+        <DialogTitle
+          sx={{
+            fontWeight: 950,
+            fontSize: { xs: "1rem", sm: "1.08rem" },
+            px: { xs: 1.5, sm: 2.25 },
+            py: { xs: 1.15, sm: 1.4 },
+            borderBottom: `1px solid ${border}`,
+            bgcolor: "#fff",
+            color: primaryDark
+          }}
+        >
           {contractMode === "edit"
             ? "تعديل بيانات العقد الحالي"
             : contractMode === "renew"
@@ -2754,24 +2771,56 @@ export default function HrContractsPage() {
               : "إضافة عقد وظيفي"}
         </DialogTitle>
 
-        <DialogContent dividers>
-          <Stack sx={uiLayout.filterBarSx} spacing={1.2}>
+        <DialogContent
+          dividers
+          sx={{
+            px: { xs: 1.25, sm: 2.25 },
+            py: { xs: 1.25, sm: 1.8 },
+            bgcolor: "#fbfdfc",
+            overflowX: "hidden"
+          }}
+        >
+          <Stack
+            spacing={1.2}
+            sx={{
+              width: "100%",
+              minWidth: 0,
+              direction: "rtl",
+              "& > *": {
+                width: "100%",
+                minWidth: 0
+              }
+            }}
+          >
             <Paper
               variant="outlined"
               sx={{
-                p: 1,
-                borderRadius: 2,
-                borderColor: border
+                p: { xs: 1, sm: 1.2 },
+                borderRadius: 2.2,
+                borderColor: border,
+                bgcolor: "#fff"
               }}
             >
-              <Typography fontWeight={950}>
+              <Typography
+                sx={{
+                  fontWeight: 950,
+                  fontSize: { xs: "0.9rem", sm: "0.96rem" },
+                  lineHeight: 1.4
+                }}
+              >
                 {selectedEmployee?.employeeName ||
                   "-"}
               </Typography>
 
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: 12 }}
+                sx={{
+                  mt: 0.25,
+                  fontSize: { xs: "0.72rem", sm: "0.76rem" },
+                  lineHeight: 1.55,
+                  whiteSpace: "normal",
+                  overflowWrap: "anywhere"
+                }}
               >
                 {selectedEmployee?.jobTitle ||
                   "غير محدد"}
@@ -2782,14 +2831,21 @@ export default function HrContractsPage() {
             </Paper>
 
             <Box
-              sx={uiLayout.withUiSx({
+              sx={{
                 display: "grid",
                 gridTemplateColumns: {
                   xs: "1fr",
-                  sm: "repeat(2,minmax(0,1fr))"
+                  sm: "repeat(2, minmax(0, 1fr))"
                 },
-                gap: 1
-              }, uiLayout.formSectionSx)}
+                gap: { xs: 1, sm: 1.15 },
+                width: "100%",
+                minWidth: 0,
+                alignItems: "start",
+                "& > *": {
+                  minWidth: 0,
+                  width: "100%"
+                }
+              }}
             >
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                 label="رقم العقد"
@@ -2891,21 +2947,37 @@ export default function HrContractsPage() {
               />
             </Box>
 
-            <FormControlLabel sx={uiLayout.checkboxFieldSx}
-              control={
-                <Checkbox
-                  checked={form.autoRenew}
-                  onChange={(e) =>
-                    setForm((x) => ({
-                      ...x,
-                      autoRenew:
-                        e.target.checked
-                    }))
-                  }
-                />
-              }
-              label="تجديد تلقائي"
-            />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: { xs: "stretch", sm: "center" },
+                justifyContent: "space-between",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: 1,
+                width: "100%"
+              }}
+            >
+              <FormControlLabel
+                sx={{
+                  ...uiLayout.checkboxFieldSx,
+                  m: 0,
+                  flexShrink: 0
+                }}
+                control={
+                  <Checkbox
+                    checked={form.autoRenew}
+                    onChange={(e) =>
+                      setForm((x) => ({
+                        ...x,
+                        autoRenew:
+                          e.target.checked
+                      }))
+                    }
+                  />
+                }
+                label="تجديد تلقائي"
+              />
+            </Box>
 
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="ملاحظات"
@@ -2944,7 +3016,17 @@ export default function HrContractsPage() {
                 <ArticleOutlinedIcon />
               }
               sx={uiLayout.withUiSx({
-                            fontWeight: 850
+                alignSelf: { xs: "stretch", sm: "flex-start" },
+                width: { xs: "100%", sm: "auto" },
+                maxWidth: "100%",
+                minHeight: 40,
+                px: 1.4,
+                fontWeight: 850,
+                justifyContent: "center",
+                "& .MuiButton-startIcon": {
+                  ml: 0.6,
+                  mr: 0
+                }
               }, uiLayout.buttonSx)}
             >
               {form.file
@@ -2970,7 +3052,21 @@ export default function HrContractsPage() {
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={uiLayout.dialogActionsSx}>
+        <DialogActions
+          sx={uiLayout.withUiSx({
+            px: { xs: 1.25, sm: 2.25 },
+            py: { xs: 1.1, sm: 1.35 },
+            gap: 0.75,
+            justifyContent: "flex-start",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            bgcolor: "#fff",
+            "& .MuiButton-root": {
+              minHeight: 38,
+              minWidth: { xs: 96, sm: 110 }
+            }
+          }, uiLayout.dialogActionsSx)}
+        >
           <Button sx={uiLayout.buttonSx}
             onClick={() =>
               setContractOpen(false)

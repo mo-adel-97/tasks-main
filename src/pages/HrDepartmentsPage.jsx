@@ -1,5 +1,5 @@
 import PageContainer from '../components/common/PageContainer';
-import * as uiLayout from '../components/common/uiLayout';
+import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
@@ -1290,7 +1290,7 @@ const HrDepartmentsPage = () => {
             px: 1.5,
             py: 1.5
           },
-          ...navigationContentSx
+          ...navigationContentSx, ...uiLayout.scopeSx
         }}
       >
         <Stack spacing={{ xs: 1, sm: 1.3, md: 1.6 }}>
@@ -1305,7 +1305,7 @@ const HrDepartmentsPage = () => {
           >
             <Stack direction="row" alignItems="center" justifyContent="space-between">
               <Box>
-                <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: { xs: "1rem", md: "1.35rem" } }}>
+                <Typography className="hr-page-title" sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: { xs: "1rem", md: "1.35rem" } }}>
                   إدارة الأقسام
                 </Typography>
                 <Typography sx={{ mt: 0.25, opacity: 0.9, fontFamily: "Cairo", fontSize: { xs: "0.75rem", md: ".82rem" } }}>
@@ -1513,7 +1513,7 @@ const HrDepartmentsPage = () => {
       </PageContainer>
 
       <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX]}
         open={formOpen}
         onClose={() => {
           if (!saving) {
@@ -1522,20 +1522,31 @@ const HrDepartmentsPage = () => {
           }
         }}
         fullWidth
-        maxWidth="sm"
+        maxWidth={false}
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            width: {
+              xs: "calc(100% - 16px)",
+              sm: "min(760px, calc(100% - 32px))"
+            },
+            maxWidth: "760px !important",
+            m: { xs: 1, sm: 2 },
+            borderRadius: { xs: 2.5, sm: 3 },
             direction: DIALOG_DIRECTION,
-            textAlign: DIALOG_TEXT_ALIGN
+            textAlign: DIALOG_TEXT_ALIGN,
+            overflow: "hidden",
+            backgroundImage: "none"
           }
         }}
       >
         <DialogTitle
           sx={{
+            px: { xs: 1.5, sm: 2.25 },
+            py: { xs: 1.15, sm: 1.35 },
             borderBottom: "1px solid rgba(5,117,70,.10)",
             direction: DIALOG_DIRECTION,
-            textAlign: DIALOG_TEXT_ALIGN
+            textAlign: DIALOG_TEXT_ALIGN,
+            bgcolor: "#fff"
           }}
         >
           <Stack
@@ -1545,11 +1556,29 @@ const HrDepartmentsPage = () => {
             sx={{ direction: DIALOG_DIRECTION }}
           >
             <Box sx={{ textAlign: DIALOG_TEXT_ALIGN }}>
-              <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: primaryDark, textAlign: DIALOG_TEXT_ALIGN }}>
+              <Typography
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 950,
+                  fontSize: { xs: "1rem", sm: "1.08rem" },
+                  color: primaryDark,
+                  textAlign: DIALOG_TEXT_ALIGN
+                }}
+              >
                 {editingDepartment ? "تعديل القسم" : "إضافة قسم جديد"}
               </Typography>
-              <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: "#7a8580" }}>
-                لا يتم تعديل ID أو Code أو Guid القديمة
+              <Typography
+                sx={{
+                  mt: 0.2,
+                  fontFamily: "Cairo",
+                  fontSize: "0.72rem",
+                  lineHeight: 1.6,
+                  color: "#7a8580"
+                }}
+              >
+                {editingDepartment
+                  ? "حدّث اسم القسم ومديره وبياناته الأساسية."
+                  : "أدخل بيانات القسم، ويمكن تعيين المدير بعد إضافة موظفين إليه."}
               </Typography>
             </Box>
             <IconButton
@@ -1565,43 +1594,38 @@ const HrDepartmentsPage = () => {
         </DialogTitle>
 
         <DialogContent
+          dividers
           sx={{
-            pt: "16px !important",
+            px: { xs: 1.25, sm: 2.25 },
+            py: { xs: 1.25, sm: 1.7 },
             direction: DIALOG_DIRECTION,
             textAlign: DIALOG_TEXT_ALIGN,
-
-            "& .MuiInputBase-root": {
-              direction: DIALOG_DIRECTION,
-              textAlign: DIALOG_TEXT_ALIGN
-            },
-
-            "& .MuiInputBase-input": {
-              direction: DIALOG_DIRECTION,
-              textAlign: DIALOG_TEXT_ALIGN
-            },
-
-            "& textarea": {
-              direction: DIALOG_DIRECTION,
-              textAlign: DIALOG_TEXT_ALIGN
-            },
-
-            "& .MuiInputLabel-root": {
-              direction: DIALOG_DIRECTION,
-              textAlign: DIALOG_TEXT_ALIGN,
-              transformOrigin:
-                DIALOG_TEXT_ALIGN === "right"
-                  ? "top right"
-                  : "top left"
-            },
-
-            "& .MuiSelect-select": {
-              direction: DIALOG_DIRECTION,
-              textAlign: DIALOG_TEXT_ALIGN
-            }
+            bgcolor: "#fbfdfc",
+            overflowX: "hidden"
           }}
         >
-          <Stack sx={uiLayout.formGridSx} spacing={1.1}>
-            {formError && <Alert severity="error">{formError}</Alert>}
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, minmax(0, 1fr))"
+              },
+              gap: { xs: 1.1, sm: 1.25 },
+              width: "100%",
+              minWidth: 0,
+              alignItems: "start",
+              "& > *": {
+                minWidth: 0,
+                width: "100%"
+              }
+            }}
+          >
+            {formError && (
+              <Alert severity="error" sx={{ gridColumn: "1 / -1" }}>
+                {formError}
+              </Alert>
+            )}
 
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               label="اسم القسم"
@@ -1807,7 +1831,12 @@ const HrDepartmentsPage = () => {
             />
 
             {editingDepartment && (
-              <FormControl sx={uiLayout.formFieldSx} fullWidth>
+              <FormControl
+                fullWidth
+                sx={uiLayout.withUiSx({
+                  gridColumn: { sm: "1 / -1" }
+                }, uiLayout.formFieldSx)}
+              >
                 <InputLabel>الحالة</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -1820,19 +1849,30 @@ const HrDepartmentsPage = () => {
                 </Select>
               </FormControl>
             )}
-          </Stack>
+          </Box>
         </DialogContent>
 
         <DialogActions
           sx={uiLayout.withUiSx({
-            p: 1.5,
+            px: { xs: 1.25, sm: 2.25 },
+            py: { xs: 1.05, sm: 1.2 },
             direction: DIALOG_DIRECTION,
-            justifyContent:
-              DIALOG_TEXT_ALIGN === "right"
-                ? "flex-end"
-                : "flex-start"
+            justifyContent: "flex-start",
+            gap: 0.75,
+            bgcolor: "#fff"
           }, uiLayout.dialogActionsSx)}
         >
+          <Button
+            onClick={saveDepartment}
+            disabled={saving}
+            variant="contained"
+            sx={uiLayout.withUiSx({
+              ...primaryButtonSx,
+              minWidth: 104
+            }, uiLayout.buttonSx)}
+          >
+            {saving ? <CircularProgress size={20} color="inherit" /> : "حفظ"}
+          </Button>
           <Button
             onClick={() => {
               setFormOpen(false);
@@ -1842,9 +1882,6 @@ const HrDepartmentsPage = () => {
             sx={uiLayout.withUiSx(dangerButtonSx, uiLayout.buttonSx)}
           >
             إلغاء
-          </Button>
-          <Button onClick={saveDepartment} disabled={saving} variant="contained" sx={uiLayout.withUiSx(primaryButtonSx, uiLayout.buttonSx)}>
-            {saving ? <CircularProgress size={20} color="inherit" /> : "حفظ"}
           </Button>
         </DialogActions>
       </Dialog>

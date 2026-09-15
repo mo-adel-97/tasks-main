@@ -1,4 +1,4 @@
-import * as uiLayout from '../../components/common/uiLayout';
+import * as uiLayout from '../../components/hrLayout';
 import '../rtl-forms-fix.css';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {

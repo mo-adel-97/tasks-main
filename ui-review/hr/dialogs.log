@@ -1,0 +1,152 @@
+[
+  {
+    "page": "HrAttendancePage",
+    "label": "وردية جديدة",
+    "width": 1366,
+    "clicked": false,
+    "dialog": false
+  },
+  {
+    "page": "HrAttendancePage",
+    "label": "وردية جديدة",
+    "width": 351,
+    "clicked": true,
+    "dialog": true,
+    "left": 12,
+    "right": 363,
+    "viewport": 390,
+    "fields": 7
+  },
+  {
+    "page": "HrAttendancePage",
+    "label": "إعداد الورديات",
+    "width": 1318,
+    "clicked": true,
+    "dialog": true,
+    "left": 24,
+    "right": 1342,
+    "viewport": 1366,
+    "fields": 7
+  },
+  {
+    "page": "HrAttendancePage",
+    "label": "إعداد الورديات",
+    "width": 351,
+    "clicked": true,
+    "dialog": true,
+    "left": 12,
+    "right": 363,
+    "viewport": 390,
+    "fields": 7
+  },
+  {
+    "page": "HrContractsPage",
+    "label": "تنبيهات العقود",
+    "width": 1318,
+    "clicked": true,
+    "dialog": true,
+    "left": 24,
+    "right": 1342,
+    "viewport": 1366,
+    "fields": 2
+  },
+  {
+    "page": "HrContractsPage",
+    "label": "تنبيهات العقود",
+    "width": 351,
+    "clicked": true,
+    "dialog": true,
+    "left": 12,
+    "right": 363,
+    "viewport": 390,
+    "fields": 2
+  },
+  {
+    "page": "HrDepartmentsPage",
+    "label": "إضافة قسم",
+    "width": 1318,
+    "clicked": true,
+    "dialog": true,
+    "left": 24,
+    "right": 1342,
+    "viewport": 1366,
+    "fields": 2
+  },
+  {
+    "page": "HrDepartmentsPage",
+    "label": "إضافة قسم",
+    "width": 366,
+    "clicked": true,
+    "dialog": true,
+    "left": 12,
+    "right": 378,
+    "viewport": 390,
+    "fields": 2
+  },
+  {
+    "page": "HrJobTitlesPage",
+    "label": "مسمى جديد",
+    "width": 1318,
+    "clicked": true,
+    "dialog": true,
+    "left": 24,
+    "right": 1342,
+    "viewport": 1366,
+    "fields": 4
+  },
+  {
+    "page": "HrJobTitlesPage",
+    "label": "مسمى جديد",
+    "width": 366,
+    "clicked": true,
+    "dialog": true,
+    "left": 12,
+    "right": 378,
+    "viewport": 390,
+    "fields": 4
+  },
+  {
+    "page": "HrPermissionsPage",
+    "label": "إذن جديد",
+    "width": 1318,
+    "clicked": true,
+    "dialog": true,
+    "left": 24,
+    "right": 1342,
+    "viewport": 1366,
+    "fields": 6
+  },
+  {
+    "page": "HrPermissionsPage",
+    "label": "إذن جديد",
+    "width": 366,
+    "clicked": true,
+    "dialog": true,
+    "left": 12,
+    "right": 378,
+    "viewport": 390,
+    "fields": 6
+  },
+  {
+    "page": "leaves",
+    "label": "طلب إجازة جديد",
+    "width": 512,
+    "clicked": false,
+    "dialog": true,
+    "left": 427,
+    "right": 939,
+    "viewport": 1366,
+    "fields": 4
+  },
+  {
+    "page": "leaves",
+    "label": "طلب إجازة جديد",
+    "width": 361.25,
+    "clicked": true,
+    "dialog": true,
+    "left": 6.875,
+    "right": 368.125,
+    "viewport": 390,
+    "fields": 4
+  }
+]
