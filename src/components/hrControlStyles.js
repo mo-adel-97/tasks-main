@@ -7,12 +7,6 @@ export const hrTabIconSx = {
   },
 };
 
-// Employee Files field geometry.
-//
-// Arabic Employee Files forms use external labels above the control instead of
-// MUI's outlined floating-label geometry. Keeping the label in normal document
-// flow removes the RTL notch collision and gives every label a predictable
-// vertical space regardless of the control height or Arabic font metrics.
 const toRemValue = (value) => {
   if (typeof value === 'number') return value + 'rem';
   if (value !== null && typeof value === 'object') {
@@ -23,7 +17,9 @@ const toRemValue = (value) => {
   return value;
 };
 
-// Shared geometry for every Employee Files input (page filters and dialogs).
+// Shared geometry for every Employee Files input. Label positioning is owned by
+// the project-wide MUI theme so HR fields follow the same placeholder -> focus
+// floating behaviour as the rest of the application.
 export const hrEmployeeFieldSx = ({
   height = 42,
   inputSize = 0.78,
@@ -43,41 +39,16 @@ export const hrEmployeeFieldSx = ({
       maxWidth: '100%',
     },
 
-    // Force the Arabic label into its own row above the field. !important is
-    // intentional because a few legacy fields still opt into uiLayout.formFieldSx,
-    // which otherwise absolutely positions the label on the outlined border.
     '& .MuiInputLabel-root': {
-      position: 'static !important',
-      inset: 'auto !important',
-      transform: 'none !important',
-      transformOrigin: 'top right !important',
-      display: 'block',
-      width: '100% !important',
-      maxWidth: '100% !important',
-      height: 'auto !important',
-      minHeight: 0,
-      margin: '0 0 6px 0 !important',
-      padding: '0 !important',
-      whiteSpace: 'normal',
-      overflow: 'visible',
-      textOverflow: 'clip',
-      direction: 'rtl',
-      textAlign: 'right !important',
-      lineHeight: 1.45,
       fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
       fontSize: toRemValue(label),
-      fontWeight: 800,
-      zIndex: 1,
-    },
-
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: '#057546',
+      fontWeight: 700,
     },
 
     '& .MuiInputBase-root': {
       minHeight: height,
       height: 'auto',
-      marginTop: '0 !important',
+      marginTop: 0,
       fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
       fontSize: toRemValue(inputSize),
       borderRadius: radius,
@@ -92,22 +63,13 @@ export const hrEmployeeFieldSx = ({
       fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
     },
 
-    // The label is rendered above the field, so the outline no longer needs a
-    // notch reserved for a floating label.
-    '& .MuiOutlinedInput-notchedOutline legend': {
-      maxWidth: '0 !important',
-    },
-    '& .MuiOutlinedInput-notchedOutline legend > span': {
-      display: 'none !important',
-    },
-
     '& .MuiSelect-select': {
-      paddingRight: '14px !important',
-      paddingLeft: '40px !important',
+      paddingRight: '14px',
+      paddingLeft: '40px',
     },
     '& .MuiSelect-icon': {
-      right: 'auto !important',
-      left: '10px !important',
+      right: 'auto',
+      left: '10px',
     },
 
     '& .MuiFormHelperText-root': {
