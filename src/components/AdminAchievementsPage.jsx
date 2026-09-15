@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -586,7 +587,7 @@ export default function AdminAchievementsPage() {
                     لوحة التحكم — الإنتاجية الأسبوعية
                   </Typography>
                   <Typography sx={{ color: "#64748b", fontSize: 14, mt: 0.5 }}>
-                    المستخدم: <b style={{ color: ADMIN_ACCENT }}>{adminName}</b> • 
+                    المستخدم: <b style={adaptiveInlineStyle({ color: ADMIN_ACCENT })}>{adminName}</b> • 
                     {loading ? " جاري التحميل..." : ` ${filteredAchievements.length} إنجاز`}
                   </Typography>
                 </Box>
@@ -1630,13 +1631,13 @@ export default function AdminAchievementsPage() {
                 <img
                   src={selectedImage.preview || selectedImage.url}
                   alt={selectedImage.name}
-                  style={{
+                  style={adaptiveInlineStyle({
                     maxWidth: '100%',
                     maxHeight: '80vh',
                     borderRadius: 8,
                     display: 'block',
                     margin: 'auto'
-                  }}
+                  })}
                 />
               </Box>
             )}

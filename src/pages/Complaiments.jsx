@@ -56,9 +56,9 @@ import appTheme from '../theme';
 const theme = createTheme(deepmerge(appTheme, {
   palette: {
     primary: {
-      main: '#80b49e',
-      light: '#a8d5c0',
-      dark: '#5a8f7e',
+      main: '#057546',
+      light: '#80b49e',
+      dark: '#034d31',
       contrastText: '#ffffff',
     },
     secondary: {
@@ -117,10 +117,10 @@ const theme = createTheme(deepmerge(appTheme, {
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
-          padding: '8px 24px',
-          boxShadow: '0 2px 8px rgba(128, 180, 158, 0.2)',
+          padding: '7px 16px',
+          boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 4px 12px rgba(128, 180, 158, 0.3)',
+            boxShadow: 'none',
           },
         },
       },
@@ -128,8 +128,8 @@ const theme = createTheme(deepmerge(appTheme, {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 4px 20px rgba(128, 180, 158, 0.15)',
-          border: '1px solid rgba(128, 180, 158, 0.1)',
+          boxShadow: 'none',
+          border: '1px solid rgba(5,117,70,0.11)',
         },
       },
     },
@@ -157,60 +157,66 @@ const theme = createTheme(deepmerge(appTheme, {
 
 // Styled components
 const CenteredContainer = styled(Container)({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  minHeight: '80vh',
-  padding: '2rem',
-  background: 'linear-gradient(135deg, #f8fbf9 0%, #e8f4ef 100%)',
+  display: 'block',
+  width: '100%',
+  maxWidth: 'none !important',
+  minHeight: 'auto',
+  padding: '0 !important',
+  margin: 0,
+  background: 'transparent',
 });
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: '16px',
-  boxShadow: '0 8px 32px rgba(128, 180, 158, 0.15)',
-  marginBottom: theme.spacing(4),
+  borderRadius: '12px',
+  boxShadow: 'none',
+  marginBottom: theme.spacing(1.5),
   overflow: 'hidden',
-  border: `1px solid ${theme.palette.primary.light}20`,
-  background: 'linear-gradient(145deg, #ffffff 0%, #f8fbf9 100%)',
-  transition: 'all 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 12px 40px rgba(128, 180, 158, 0.25)',
-  }
+  border: '1px solid rgba(5,117,70,0.12)',
+  background: '#ffffff',
 }));
 
-const StyledTable = styled(Table)(({ theme }) => ({
-  minWidth: 650,
-  '& .MuiTableCell-head': {
-    fontWeight: 'bold',
-    backgroundColor: '#f8fbf9',
-    borderBottom: `2px solid ${theme.palette.primary.light}40`,
+const StyledTable = styled(Table)(() => ({
+  minWidth: 920,
+  '& .MuiTableCell-root': {
+    borderBottom: '1px solid #edf2ef',
+    padding: '9px 10px',
+    fontSize: '0.74rem',
+    color: '#30483f',
+    whiteSpace: 'nowrap',
   },
-  '& .MuiTableRow-root': {
-    transition: 'background-color 0.2s ease',
-    '&:hover': {
-      backgroundColor: `${theme.palette.primary.light}10`,
-    }
-  }
+  '& .MuiTableCell-head': {
+    fontWeight: 900,
+    backgroundColor: '#edf7f2',
+    color: '#17372b',
+    borderBottom: '1px solid rgba(5,117,70,.16)',
+  },
+  '& .MuiTableRow-root:hover': {
+    backgroundColor: '#f8fbf9',
+  },
 }));
 
-const StatusBadge = styled(Box)(({ theme, status }) => ({
+const StatusBadge = styled(Box)(({ status }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(0.5, 1.5),
-  borderRadius: 20,
-  fontWeight: 600,
-  fontSize: '0.75rem',
-  backgroundColor: 
-    status === 'pending' ? theme.palette.warning.light : 
-    status === 'resolved' ? theme.palette.success.light : 
-    theme.palette.error.light,
-  color: 
-    status === 'pending' ? theme.palette.warning.dark : 
-    status === 'resolved' ? theme.palette.success.dark : 
-    theme.palette.error.dark,
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  minHeight: 24,
+  paddingInline: 10,
+  borderRadius: 999,
+  fontWeight: 850,
+  fontSize: '0.68rem',
+  border: '1px solid',
+  backgroundColor:
+    status === 'pending' ? '#fff8e7' :
+    status === 'resolved' ? '#edf8f0' :
+    '#fff0f0',
+  color:
+    status === 'pending' ? '#9a6500' :
+    status === 'resolved' ? '#237a3a' :
+    '#b3261e',
+  borderColor:
+    status === 'pending' ? '#f0d28c' :
+    status === 'resolved' ? '#b8dec1' :
+    '#efb8b4',
 }));
 
 const CommentText = styled(Typography)(({ theme }) => ({
@@ -224,19 +230,22 @@ const CommentText = styled(Typography)(({ theme }) => ({
 }));
 
 const GradientButton = styled(Button)(({ theme }) => ({
-  background: `linear-gradient(45deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
+  background: '#057546',
   color: 'white',
-  fontWeight: 600,
+  fontWeight: 700,
+  boxShadow: 'none',
   '&:hover': {
-    background: `linear-gradient(45deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-    boxShadow: '0 6px 20px rgba(128, 180, 158, 0.4)',
+    background: '#034d31',
+    boxShadow: 'none',
   },
 }));
 
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
-  background: `linear-gradient(45deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
-  fontWeight: 'bold',
-  boxShadow: '0 2px 8px rgba(128, 180, 158, 0.3)',
+const StyledAvatar = styled(Avatar)(() => ({
+  background: '#edf7f2',
+  color: '#057546',
+  fontWeight: 900,
+  boxShadow: 'none',
+  border: '1px solid rgba(5,117,70,.12)',
 }));
 
 const Complaints = () => {
@@ -608,135 +617,156 @@ const Complaints = () => {
   };
 
   const renderComplaintsTable = (complaintsData, title, showActions = false, isPrevious = false) => {
-    // Calculate pagination based on whether it's previous complaints or not
     const currentPage = isPrevious ? previousPage : page;
     const currentRowsPerPage = isPrevious ? previousRowsPerPage : rowsPerPage;
-    
+
     const paginatedComplaints = complaintsData.slice(
       currentPage * currentRowsPerPage,
       currentPage * currentRowsPerPage + currentRowsPerPage
     );
 
     return (
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'primary.dark' }}>{title}</Typography>
+      <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, mb: 0.8 }}>
+          <Box>
+            <Typography sx={{ fontWeight: 900, color: '#17372b', fontSize: '0.9rem', lineHeight: 1.25 }}>
+              {title}
+            </Typography>
+            <Typography sx={{ mt: 0.1, color: '#6b7d75', fontSize: '0.67rem' }}>
+              {complaintsData.length} شكوى
+            </Typography>
+          </Box>
+
+          <Box sx={{
+            minWidth: 34, height: 28, px: 0.8, borderRadius: 999,
+            display: 'grid', placeItems: 'center',
+            bgcolor: '#edf7f2', color: '#057546',
+            border: '1px solid rgba(5,117,70,.12)',
+            fontWeight: 900, fontSize: '0.72rem'
+          }}>
+            {complaintsData.length}
+          </Box>
+        </Box>
+
         {complaintsData.length > 0 ? (
           <>
-            <Box sx={{ overflowX: 'auto', borderRadius: 3, border: '1px solid', borderColor: 'primary.light', background: 'white' }}>
-              <StyledTable>
+            <Box sx={{
+              overflowX: 'auto',
+              borderRadius: 2,
+              border: '1px solid rgba(5,117,70,.11)',
+              background: '#fff',
+              scrollbarWidth: 'thin'
+            }}>
+              <StyledTable size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell>أرسلت بواسطة</TableCell>
-                    <TableCell>شكوى من</TableCell>
+                    <TableCell>الشكوى من</TableCell>
                     <TableCell>إلى</TableCell>
                     <TableCell>العنوان</TableCell>
                     <TableCell>التفاصيل</TableCell>
                     <TableCell>الحالة</TableCell>
                     <TableCell>التاريخ</TableCell>
-                    {showActions && <TableCell>إجراءات</TableCell>}
+                    {showActions && <TableCell align="center">الإجراءات</TableCell>}
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
-                  {paginatedComplaints.map(complaint => (
-                    <TableRow key={complaint.id} hover sx={{ '&:last-child td': { borderBottom: 0 } }}>
+                  {paginatedComplaints.map((complaint) => (
+                    <TableRow key={complaint.id} hover>
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <StyledAvatar sx={{ width: 32, height: 32, mr: 2, fontSize: '0.875rem' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+                          <StyledAvatar sx={{ width: 26, height: 26, fontSize: '0.7rem' }}>
                             {complaint.created_by_name?.charAt(0) || '?'}
                           </StyledAvatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={500} color="text.primary">
-                              {complaint.created_by_name || 'غير معروف'}
-                            </Typography>
-                          </Box>
+                          <Typography sx={{ fontSize: '0.73rem', fontWeight: 750 }}>
+                            {complaint.created_by_name || 'غير معروف'}
+                          </Typography>
                         </Box>
                       </TableCell>
+
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <StyledAvatar sx={{ width: 32, height: 32, mr: 2, fontSize: '0.875rem' }}>
-                            {complaint.complaint_from_name?.charAt(0) || '?'}
-                          </StyledAvatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={500} color="text.primary">
-                              {complaint.complaint_from_name || 'غير معروف'}
-                            </Typography>
-                          </Box>
-                        </Box>
+                        <Typography sx={{ fontSize: '0.73rem', fontWeight: 700 }}>
+                          {complaint.complaint_from_name || 'غير معروف'}
+                        </Typography>
                       </TableCell>
+
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <StyledAvatar sx={{ width: 32, height: 32, mr: 2, fontSize: '0.875rem' }}>
-                            {complaint.complaint_to_name?.charAt(0) || '?'}
-                          </StyledAvatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={500} color="text.primary">
-                              {complaint.complaint_to_name || 'غير معروف'}
-                            </Typography>
-                          </Box>
-                        </Box>
+                        <Typography sx={{ fontSize: '0.73rem', fontWeight: 700 }}>
+                          {complaint.complaint_to_name || 'غير معروف'}
+                        </Typography>
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 200 }}>
-                        <Typography variant="body2" noWrap color="text.primary">
+
+                      <TableCell sx={{ maxWidth: 190 }}>
+                        <Typography
+                          title={complaint.title}
+                          sx={{
+                            maxWidth: 190, overflow: 'hidden',
+                            textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            fontSize: '0.73rem', fontWeight: 750
+                          }}
+                        >
                           {complaint.title}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 300 }}>
-                        <Box display="flex" alignItems="center">
-                          <Typography variant="body2" noWrap sx={{ maxWidth: 100 }} color="text.primary">
-                            {complaint.details.length > 10 
-                              ? `${complaint.details.substring(0, 10)}...` 
-                              : complaint.details}
-                          </Typography>
-                          {complaint.details.length > 10 && (
-                              <Tooltip title="شاهد التفاصيل ">
-                              <IconButton 
-                                size="small" 
-                                onClick={() => handleDetailsDialogOpen(complaint.details)}
-                                sx={{ ml: 1, color: 'primary.main' }}
-                              >
-                                <VisibilityIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </Box>
-                      </TableCell>
+
                       <TableCell>
-                        <Box display="flex" alignItems="center">
+                        <Button
+                          size="small"
+                          variant="text"
+                          startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}
+                          onClick={() => handleDetailsDialogOpen(complaint.details)}
+                          sx={{ minWidth: 0, px: 0.6, color: '#057546', fontSize: '0.68rem', fontWeight: 800 }}
+                        >
+                          عرض
+                        </Button>
+                      </TableCell>
+
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35 }}>
                           <StatusBadge status={complaint.status}>
                             {getStatusText(complaint.status)}
                           </StatusBadge>
+
                           {complaint.comment && (
                             <Tooltip title="عرض التعليق">
-                              <IconButton 
-                                size="small" 
+                              <IconButton
+                                size="small"
                                 onClick={() => handleCommentDialogOpen(complaint.comment)}
-                                sx={{ ml: 1, color: 'primary.main' }}
+                                sx={{ width: 26, height: 26, color: '#057546' }}
                               >
-                                <VisibilityIcon fontSize="small" />
+                                <VisibilityIcon sx={{ fontSize: 16 }} />
                               </IconButton>
                             </Tooltip>
                           )}
                         </Box>
                       </TableCell>
+
                       <TableCell>
-                        <Typography variant="body2" color="text.primary">
+                        <Typography sx={{ fontSize: '0.7rem', fontWeight: 700 }}>
                           {new Date(complaint.created_at).toLocaleDateString('ar-EG')}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography sx={{ fontSize: '0.61rem', color: '#7b8983' }}>
                           {new Date(complaint.created_at).toLocaleTimeString('ar-EG')}
                         </Typography>
                       </TableCell>
+
                       {showActions && (
-                        <TableCell>
+                        <TableCell align="center">
                           <IconButton
-                            aria-label="more"
+                            aria-label="إجراءات الشكوى"
                             aria-controls="complaint-actions"
                             aria-haspopup="true"
-                            onClick={(e) => handleMenuOpen(e, complaint)}
+                            onClick={(event) => handleMenuOpen(event, complaint)}
                             disabled={statusUpdating}
-                            sx={{ color: 'primary.main' }}
+                            size="small"
+                            sx={{
+                              width: 30, height: 30,
+                              border: '1px solid rgba(5,117,70,.14)',
+                              color: '#057546'
+                            }}
                           >
-                            <MoreVertIcon />
+                            <MoreVertIcon sx={{ fontSize: 18 }} />
                           </IconButton>
                         </TableCell>
                       )}
@@ -745,23 +775,28 @@ const Complaints = () => {
                 </TableBody>
               </StyledTable>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-              <Pagination
-                count={Math.ceil(complaintsData.length / currentRowsPerPage)}
-                page={currentPage + 1}
-                onChange={(e, page) => isPrevious ? handlePreviousChangePage(e, page - 1) : handleChangePage(e, page - 1)}
-                color="primary"
-                showFirstButton
-                showLastButton
-              />
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-              <FormControl variant="outlined" sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)}>
-                <InputLabel>عدد الصفوف</InputLabel>
+
+            <Box sx={{
+              mt: 0.75,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 1,
+              flexWrap: 'wrap'
+            }}>
+              <FormControl
+                size="small"
+                sx={uiLayout.withUiSx({
+                  width: 105,
+                  minWidth: 105,
+                  '& .MuiInputBase-root': { minHeight: 34, fontSize: '0.72rem' }
+                }, uiLayout.formFieldSx)}
+              >
+                <InputLabel>الصفوف</InputLabel>
                 <Select
                   value={currentRowsPerPage}
                   onChange={isPrevious ? handlePreviousChangeRowsPerPage : handleChangeRowsPerPage}
-                  label="عدد الصفوف"
+                  label="الصفوف"
                 >
                   <MenuItem value={5}>5</MenuItem>
                   <MenuItem value={10}>10</MenuItem>
@@ -769,40 +804,41 @@ const Complaints = () => {
                   <MenuItem value={50}>50</MenuItem>
                 </Select>
               </FormControl>
+
+              <Pagination
+                count={Math.ceil(complaintsData.length / currentRowsPerPage)}
+                page={currentPage + 1}
+                onChange={(event, nextPage) =>
+                  isPrevious
+                    ? handlePreviousChangePage(event, nextPage - 1)
+                    : handleChangePage(event, nextPage - 1)
+                }
+                color="primary"
+                size="small"
+                siblingCount={1}
+              />
             </Box>
           </>
         ) : (
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            py: 6,
-            border: '2px dashed',
-            borderColor: 'primary.light',
-            borderRadius: 3,
-            backgroundColor: '#f8fbf9'
+          <Box sx={{
+            minHeight: 120,
+            display: 'grid',
+            placeItems: 'center',
+            textAlign: 'center',
+            borderRadius: 2,
+            border: '1px dashed rgba(5,117,70,.20)',
+            bgcolor: '#fbfdfc',
+            px: 2,
+            py: 2
           }}>
-            <Box 
-              sx={{ 
-                width: 120, 
-                height: 120, 
-                backgroundColor: 'primary.light', 
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 2,
-                opacity: 0.7
-              }}
-            >
-              <Typography variant="h4" color="primary.dark">📝</Typography>
+            <Box>
+              <Typography sx={{ fontWeight: 900, color: '#50645b', fontSize: '0.82rem' }}>
+                لا توجد شكاوى لعرضها
+              </Typography>
+              <Typography sx={{ mt: 0.25, color: '#85928c', fontSize: '0.67rem' }}>
+                ستظهر الشكاوى هنا عند توفرها
+              </Typography>
             </Box>
-            <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
-              لا توجد شكاوى لعرضها
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-              قم بإضافة شكوى جديدة لبدء العمل
-            </Typography>
           </Box>
         )}
       </Box>
@@ -810,32 +846,51 @@ const Complaints = () => {
   };
 
   const renderAddComplaintDialog = () => (
-    <Dialog sx={uiLayout.dialogLayoutSx} 
-      open={openDialog} 
-      onClose={() => setOpenDialog(false)}
-      maxWidth="md"
+    <Dialog
+      sx={uiLayout.dialogLayoutSx}
+      open={openDialog}
+      onClose={() => !submitting && setOpenDialog(false)}
       fullWidth
+      maxWidth={false}
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8fbf9 100%)'
+          width: { xs: 'calc(100% - 16px)', sm: 'min(760px, calc(100% - 32px))' },
+          maxWidth: '760px !important',
+          m: { xs: 1, sm: 2 },
+          borderRadius: 2.5,
+          overflow: 'hidden',
+          background: '#fff'
         }
       }}
     >
-      <DialogTitle sx={{ 
-        bgcolor: 'primary.main', 
-        color: 'white',
-        textAlign: 'center',
-        py: 3
-      }}>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <AddIcon sx={{ marginInlineEnd: 1 }} />
-          <Typography variant="h6" fontWeight={600}>إضافة شكوى جديدة</Typography>
+      <DialogTitle sx={{ px: { xs: 1.25, sm: 1.75 }, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
+          <Box>
+            <Typography sx={{ fontWeight: 950, color: '#17372b', fontSize: '1rem' }}>
+              إضافة شكوى جديدة
+            </Typography>
+            <Typography sx={{ mt: 0.1, color: '#74827c', fontSize: '0.67rem' }}>
+              حدد أطراف الشكوى ثم اكتب العنوان والتفاصيل
+            </Typography>
+          </Box>
+          <IconButton size="small" disabled={submitting} onClick={() => setOpenDialog(false)}>
+            <CloseIcon sx={{ fontSize: 19 }} />
+          </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers sx={{ py: 3, bgcolor: '#f8fbf9' }}>
-        <Box sx={uiLayout.formGridSx} component="form" onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}>
+
+      <DialogContent dividers sx={{ p: { xs: 1.25, sm: 1.75 }, bgcolor: '#fbfdfc' }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' },
+            gap: 1.1,
+            '& > *': { minWidth: 0, width: '100%' }
+          }}
+        >
+          <FormControl fullWidth size="small" sx={uiLayout.formFieldSx}>
             <InputLabel>الشكوى من</InputLabel>
             <Select
               name="complaintFromGuid"
@@ -844,20 +899,20 @@ const Complaints = () => {
               required
               label="الشكوى من"
             >
-              {getComplaintFromEmployees().map(emp => (
+              {getComplaintFromEmployees().map((emp) => (
                 <MenuItem key={emp.guid} value={emp.guid}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <StyledAvatar sx={{ width: 32, height: 32, mr: 2, fontSize: '0.875rem' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+                    <StyledAvatar sx={{ width: 24, height: 24, fontSize: '0.66rem' }}>
                       {emp.fullName.charAt(0)}
                     </StyledAvatar>
-                    {emp.fullName}
+                    <Typography sx={{ fontSize: '0.75rem' }}>{emp.fullName}</Typography>
                   </Box>
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          
-          <FormControl fullWidth sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}>
+
+          <FormControl fullWidth size="small" sx={uiLayout.formFieldSx}>
             <InputLabel>الشكوى إلى</InputLabel>
             <Select
               name="complaintToGuid"
@@ -866,334 +921,358 @@ const Complaints = () => {
               required
               label="الشكوى إلى"
             >
-              {getComplaintToEmployees().map(emp => (
+              {getComplaintToEmployees().map((emp) => (
                 <MenuItem key={emp.guid} value={emp.guid}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <StyledAvatar sx={{ width: 32, height: 32, mr: 2, fontSize: '0.875rem' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+                    <StyledAvatar sx={{ width: 24, height: 24, fontSize: '0.66rem' }}>
                       {emp.fullName.charAt(0)}
                     </StyledAvatar>
-                    {emp.fullName}
+                    <Typography sx={{ fontSize: '0.75rem' }}>{emp.fullName}</Typography>
                   </Box>
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          
-          <TextField InputLabelProps={{ shrink: true }}
+
+          <TextField
+            InputLabelProps={{ shrink: true }}
             fullWidth
+            size="small"
             label="عنوان الشكوى"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
             required
-            sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
-            variant="outlined"
+            sx={uiLayout.withUiSx({ gridColumn: { sm: '1 / -1' } }, uiLayout.formFieldSx)}
           />
-          
-          <TextField InputLabelProps={{ shrink: true }}
+
+          <TextField
+            InputLabelProps={{ shrink: true }}
             fullWidth
+            size="small"
             label="تفاصيل الشكوى"
             name="details"
             value={formData.details}
             onChange={handleInputChange}
             required
             multiline
-            rows={6}
-            sx={uiLayout.withUiSx({ mb: 3 }, uiLayout.formFieldSx)}
-            variant="outlined"
+            minRows={4}
+            sx={uiLayout.withUiSx({ gridColumn: { sm: '1 / -1' } }, uiLayout.formFieldSx)}
           />
         </Box>
       </DialogContent>
-      <DialogActions sx={uiLayout.withUiSx({ px: 3, py: 2, bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
-        <Button 
-          onClick={() => setOpenDialog(false)}
-          color="error"
-          variant="outlined"
-          sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
-        >
-          إلغاء
-        </Button>
-        <GradientButton 
+
+      <DialogActions sx={uiLayout.withUiSx({
+        px: { xs: 1.25, sm: 1.75 }, py: 1, gap: 0.75, justifyContent: 'flex-start'
+      }, uiLayout.dialogActionsSx)}>
+        <GradientButton
           onClick={handleSubmit}
           disabled={submitting}
-          startIcon={submitting ? <CircularProgress size={20} /> : <AddIcon />}
+          startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : <AddIcon />}
+          sx={{ minWidth: 118 }}
         >
           {submitting ? 'جاري الإرسال...' : 'إرسال الشكوى'}
         </GradientButton>
+        <Button onClick={() => setOpenDialog(false)} disabled={submitting} color="inherit">
+          إلغاء
+        </Button>
       </DialogActions>
     </Dialog>
   );
 
   const renderStatusDialog = () => (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog
+      sx={uiLayout.dialogLayoutSx}
       open={statusDialogOpen}
       onClose={handleStatusDialogClose}
-      maxWidth="sm"
       fullWidth
+      maxWidth={false}
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8fbf9 100%)'
+          width: { xs: 'calc(100% - 16px)', sm: 'min(520px, calc(100% - 32px))' },
+          maxWidth: '520px !important',
+          borderRadius: 2.5,
+          overflow: 'hidden'
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', py: 3 }}>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          {selectedStatus === 'resolved' ? (
-            <CheckIcon color="success" sx={{ mr: 1, fontSize: 32 }} />
-          ) : selectedStatus === 'rejected' ? (
-            <CloseIcon color="error" sx={{ mr: 1, fontSize: 32 }} />
-          ) : (
-            <MoreVertIcon color="warning" sx={{ mr: 1, fontSize: 32 }} />
-          )}
-          <Typography variant="h6" fontWeight={600}>
-            {selectedStatus === 'resolved' ? 'تم الحل' : 
-             selectedStatus === 'rejected' ? 'رفض الشكوى' : 
-             'إعادة إلى قيد الانتظار'}
-          </Typography>
+      <DialogTitle sx={{ px: 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
+          <Box display="flex" alignItems="center" gap={0.7}>
+            {selectedStatus === 'resolved' ? (
+              <CheckIcon color="success" sx={{ fontSize: 20 }} />
+            ) : selectedStatus === 'rejected' ? (
+              <CloseIcon color="error" sx={{ fontSize: 20 }} />
+            ) : (
+              <MoreVertIcon color="warning" sx={{ fontSize: 20 }} />
+            )}
+            <Typography sx={{ fontWeight: 900, fontSize: '0.92rem', color: '#17372b' }}>
+              {selectedStatus === 'resolved'
+                ? 'اعتماد حل الشكوى'
+                : selectedStatus === 'rejected'
+                ? 'رفض الشكوى'
+                : 'إعادة إلى قيد الانتظار'}
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={handleStatusDialogClose}>
+            <CloseIcon sx={{ fontSize: 18 }} />
+          </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers sx={{ bgcolor: '#f8fbf9' }}>
-        <Typography variant="body1" gutterBottom color="text.primary">
-          {selectedStatus === 'resolved' ? 'يرجى إضافة تعليق حول حل الشكوى (اختياري)' : 
-           selectedStatus === 'rejected' ? 'يرجى إضافة سبب الرفض (اختياري)' : 
-           'يرجى إضافة تعليق (اختياري)'}
+
+      <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+        <Typography sx={{ mb: 0.8, color: '#60736b', fontSize: '0.72rem' }}>
+          {selectedStatus === 'resolved'
+            ? 'يمكن إضافة تعليق مختصر يوضح الإجراء الذي تم.'
+            : selectedStatus === 'rejected'
+            ? 'يمكن إضافة سبب الرفض.'
+            : 'يمكن إضافة ملاحظة قبل إعادة الشكوى للانتظار.'}
         </Typography>
-        <TextareaAutosize
-          minRows={4}
-          maxRows={8}
-          style={{ 
-            width: '100%', 
-            padding: '12px', 
-            marginTop: '16px', 
-            fontFamily: "Cairo, Tahoma, Arial, sans-serif",
-            borderRadius: '8px',
-            border: `2px solid #80b49e40`,
-            backgroundColor: '#ffffff',
-            fontSize: '14px',
-            resize: 'vertical'
-          }}
-          placeholder="أضف تعليقك هنا..."
+        <TextField
+          fullWidth
+          multiline
+          minRows={3}
+          maxRows={6}
+          placeholder="أضف تعليقًا - اختياري"
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(event) => setComment(event.target.value)}
+          sx={uiLayout.formFieldSx}
         />
       </DialogContent>
-      <DialogActions sx={uiLayout.withUiSx({ bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
-        <Button onClick={handleStatusDialogClose} color="error" variant="outlined" sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}>
-          إلغاء
-        </Button>
-        <GradientButton 
+
+      <DialogActions sx={uiLayout.withUiSx({ px: 1.5, py: 1, gap: 0.75, justifyContent: 'flex-start' }, uiLayout.dialogActionsSx)}>
+        <GradientButton
           onClick={updateComplaintStatus}
           disabled={statusUpdating}
-          startIcon={statusUpdating ? <CircularProgress size={20} /> : null}
+          startIcon={statusUpdating ? <CircularProgress size={18} color="inherit" /> : null}
+          sx={{ minWidth: 96 }}
         >
           {statusUpdating ? 'جاري التحديث...' : 'تأكيد'}
         </GradientButton>
+        <Button onClick={handleStatusDialogClose} disabled={statusUpdating} color="inherit">
+          إلغاء
+        </Button>
       </DialogActions>
     </Dialog>
   );
 
   const renderCommentDialog = () => (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog
+      sx={uiLayout.dialogLayoutSx}
       open={commentDialogOpen}
       onClose={handleCommentDialogClose}
-      maxWidth="sm"
       fullWidth
+      maxWidth={false}
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8fbf9 100%)'
+          width: { xs: 'calc(100% - 16px)', sm: 'min(520px, calc(100% - 32px))' },
+          maxWidth: '520px !important',
+          borderRadius: 2.5,
+          overflow: 'hidden'
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', py: 3 }}>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <VisibilityIcon color="info" sx={{ marginInlineEnd: 1, fontSize: 32 }} />
-          <Typography variant="h6" fontWeight={600}>تعليق على الشكوى</Typography>
+      <DialogTitle sx={{ px: 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography sx={{ fontWeight: 900, fontSize: '0.92rem', color: '#17372b' }}>
+            تعليق على الشكوى
+          </Typography>
+          <IconButton size="small" onClick={handleCommentDialogClose}>
+            <CloseIcon sx={{ fontSize: 18 }} />
+          </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers sx={{ bgcolor: '#f8fbf9' }}>
-        <Typography variant="body1" sx={{ 
-          p: 3, 
-          backgroundColor: '#ffffff', 
-          borderRadius: 2,
-          border: `1px solid #80b49e20`,
-          minHeight: 100,
-          lineHeight: 1.6
+      <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+        <Box sx={{
+          p: 1.25, bgcolor: '#fff', border: '1px solid rgba(5,117,70,.11)',
+          borderRadius: 2, minHeight: 80, whiteSpace: 'pre-wrap',
+          color: '#30483f', fontSize: '0.78rem', lineHeight: 1.7
         }}>
           {selectedComment || 'لا يوجد تعليق'}
-        </Typography>
+        </Box>
       </DialogContent>
-      <DialogActions sx={uiLayout.withUiSx({ bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
-        <GradientButton onClick={handleCommentDialogClose}>
-          إغلاق
-        </GradientButton>
+      <DialogActions sx={uiLayout.withUiSx({ px: 1.5, py: 1 }, uiLayout.dialogActionsSx)}>
+        <GradientButton onClick={handleCommentDialogClose}>إغلاق</GradientButton>
       </DialogActions>
     </Dialog>
   );
 
   const renderDetailsDialog = () => (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog
+      sx={uiLayout.dialogLayoutSx}
       open={detailsDialogOpen}
       onClose={handleDetailsDialogClose}
-      maxWidth="md"
       fullWidth
+      maxWidth={false}
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8fbf9 100%)'
+          width: { xs: 'calc(100% - 16px)', sm: 'min(620px, calc(100% - 32px))' },
+          maxWidth: '620px !important',
+          borderRadius: 2.5,
+          overflow: 'hidden'
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', py: 3 }}>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <VisibilityIcon color="info" sx={{ marginInlineEnd: 1, fontSize: 32 }} />
-          <Typography variant="h6" fontWeight={600}>تفاصيل الشكوى</Typography>
+      <DialogTitle sx={{ px: 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography sx={{ fontWeight: 900, fontSize: '0.92rem', color: '#17372b' }}>
+            تفاصيل الشكوى
+          </Typography>
+          <IconButton size="small" onClick={handleDetailsDialogClose}>
+            <CloseIcon sx={{ fontSize: 18 }} />
+          </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers sx={{ bgcolor: '#f8fbf9' }}>
-        <Typography variant="body1" sx={{ 
-          p: 3, 
-          backgroundColor: '#ffffff', 
-          borderRadius: 2,
-          border: `1px solid #80b49e20`,
-          minHeight: 200,
-          lineHeight: 1.6,
-          whiteSpace: 'pre-wrap'
+      <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+        <Box sx={{
+          p: 1.25, bgcolor: '#fff', border: '1px solid rgba(5,117,70,.11)',
+          borderRadius: 2, minHeight: 110, whiteSpace: 'pre-wrap',
+          color: '#30483f', fontSize: '0.78rem', lineHeight: 1.75
         }}>
           {selectedDetails}
-        </Typography>
+        </Box>
       </DialogContent>
-      <DialogActions sx={uiLayout.withUiSx({ bgcolor: '#f8fbf9' }, uiLayout.dialogActionsSx)}>
-        <GradientButton onClick={handleDetailsDialogClose}>
-          إغلاق
-        </GradientButton>
+      <DialogActions sx={uiLayout.withUiSx({ px: 1.5, py: 1 }, uiLayout.dialogActionsSx)}>
+        <GradientButton onClick={handleDetailsDialogClose}>إغلاق</GradientButton>
       </DialogActions>
     </Dialog>
   );
 
+
   return (
-    <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #f8fbf9 0%, #e8f4ef 100%)' }}>
-        
-        <PageContainer component="main" sx={{
-          flexGrow: 1,
-          
-          ...navigationContentSx
-        }}>
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-              <CircularProgress size={60} sx={{ color: 'primary.main' }} />
-            </Box>
-          ) : ![0, 1, 2].includes(user.userJop) ? (
-            <CenteredContainer maxWidth="lg">
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                <Typography variant="h4" fontWeight={700} color="primary.dark">
-                  نظام إدارة الشكاوى
-                </Typography>
-                <GradientButton
-                  startIcon={<AddIcon />}
-                  onClick={() => setOpenDialog(true)}
-                  sx={{ px: 4, py: 1.5 }}
-                >
-                  إضافة شكوى جديدة
-                </GradientButton>
+    <NavigationShell variant="standard">
+      <ThemeProvider theme={(outerTheme) => ({ ...theme, palette: outerTheme.palette })}>
+        <Box sx={{ display: 'flex', minHeight: '100vh', background: '#f6faf8' }}>
+          <PageContainer component="main" sx={{ flexGrow: 1, ...navigationContentSx }}>
+            {loading ? (
+              <Box sx={{ minHeight: 220, display: 'grid', placeItems: 'center' }}>
+                <CircularProgress size={36} sx={{ color: '#057546' }} />
               </Box>
+            ) : (
+              <>
+                <Box
+                  sx={{
+                    minHeight: 72,
+                    mb: 1,
+                    px: 1.5,
+                    py: 1,
+                    borderRadius: 2.5,
+                    bgcolor: '#034d31',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1.25,
+                    flexWrap: 'wrap'
+                  }}
+                >
+                  <Box minWidth={0}>
+                    <Typography sx={{ fontWeight: 950, fontSize: '1.1rem', lineHeight: 1.25 }}>
+                      الشكاوى
+                    </Typography>
+                    <Typography sx={{ mt: 0.18, color: 'rgba(255,255,255,.76)', fontSize: '0.7rem' }}>
+                      {[0, 1, 2].includes(user.userJop)
+                        ? `لديك ${complaints.length} شكوى موجهة إليك للمراجعة`
+                        : 'متابعة الشكاوى التي قمت بإرسالها وحالتها'}
+                    </Typography>
+                  </Box>
 
-              <StyledCard>
-                <CardContent sx={{ p: 4 }}>
-                  {renderComplaintsTable(previousComplaints, "الشكاوى التي أرسلتها", false, true)}
-                </CardContent>
-              </StyledCard>
-
-              {renderAddComplaintDialog()}
-              {renderCommentDialog()}
-              {renderDetailsDialog()}
-            </CenteredContainer>
-          ) : (
-            <CenteredContainer maxWidth="lg">
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                <Box>
-                  <Typography variant="h4" fontWeight={700} color="primary.dark">
-                    الشكاوى المرسلة إليك
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-                    لديك {complaints.length} شكوى تحتاج إلى مراجعتك
-                  </Typography>
+                  {!([0, 1, 2].includes(user.userJop)) ? (
+                    <Button
+                      startIcon={<AddIcon />}
+                      onClick={() => setOpenDialog(true)}
+                      variant="contained"
+                      sx={{
+                        minHeight: 36,
+                        px: 1.25,
+                        bgcolor: '#fff',
+                        color: '#034d31',
+                        fontWeight: 900,
+                        fontSize: '0.72rem',
+                        boxShadow: 'none',
+                        '&:hover': { bgcolor: '#f4f8f6', boxShadow: 'none' }
+                      }}
+                    >
+                      شكوى جديدة
+                    </Button>
+                  ) : (
+                    <Box sx={{
+                      minWidth: 42, height: 34, px: 1, borderRadius: 999,
+                      display: 'grid', placeItems: 'center',
+                      bgcolor: 'rgba(255,255,255,.12)',
+                      border: '1px solid rgba(255,255,255,.22)',
+                      fontWeight: 950, fontSize: '0.78rem'
+                    }}>
+                      {complaints.length}
+                    </Box>
+                  )}
                 </Box>
-                <Box sx={{ 
-                  backgroundColor: 'primary.light', 
-                  color: 'primary.dark',
-                  px: 3,
-                  py: 1,
-                  borderRadius: 3,
-                  fontWeight: 600
-                }}>
-                  {complaints.length}
-                </Box>
-              </Box>
 
-              <StyledCard>
-                <CardContent sx={{ p: 4 }}>
-                  {renderComplaintsTable(complaints, "الشكاوى الموجهة إليك", true)}
-                </CardContent>
-              </StyledCard>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 1.25,
+                    borderRadius: 2.5,
+                    border: '1px solid rgba(5,117,70,.11)',
+                    bgcolor: '#fff'
+                  }}
+                >
+                  {!([0, 1, 2].includes(user.userJop))
+                    ? renderComplaintsTable(previousComplaints, 'الشكاوى التي أرسلتها', false, true)
+                    : renderComplaintsTable(complaints, 'الشكاوى الموجهة إليك', true)}
+                </Paper>
 
-              {/* Status Update Menu */}
-              <Menu
-                id="complaint-actions"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                PaperProps={{
-                  sx: {
-                    borderRadius: 2,
-                    boxShadow: '0 8px 24px rgba(128, 180, 158, 0.2)',
-                    border: '1px solid rgba(128, 180, 158, 0.1)'
-                  }
-                }}
-              >
-                <MenuItem 
-                  onClick={() => handleStatusDialogOpen('resolved')}
-                  disabled={selectedComplaint?.status === 'resolved'}
-                  sx={{ borderRadius: 1, my: 0.5 }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <CheckIcon color="success" sx={{ marginInlineEnd: 1 }} />
-                    <Typography>تم الحل</Typography>
-                  </Box>
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => handleStatusDialogOpen('rejected')}
-                  disabled={selectedComplaint?.status === 'rejected'}
-                  sx={{ borderRadius: 1, my: 0.5 }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <CloseIcon color="error" sx={{ marginInlineEnd: 1 }} />
-                    <Typography>رفض</Typography>
-                  </Box>
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => handleStatusDialogOpen('pending')}
-                  disabled={selectedComplaint?.status === 'pending'}
-                  sx={{ borderRadius: 1, my: 0.5 }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <MoreVertIcon color="warning" sx={{ marginInlineEnd: 1 }} />
-                    <Typography>إعادة إلى قيد الانتظار</Typography>
-                  </Box>
-                </MenuItem>
-              </Menu>
+                {!([0, 1, 2].includes(user.userJop)) && renderAddComplaintDialog()}
 
-              {renderStatusDialog()}
-              {renderCommentDialog()}
-              {renderDetailsDialog()}
-            </CenteredContainer>
-          )}
-        </PageContainer>
-      </Box>
-    </ThemeProvider></NavigationShell>
+                <Menu
+                  id="complaint-actions"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  PaperProps={{
+                    sx: {
+                      mt: 0.4, minWidth: 190, p: 0.4, borderRadius: 2,
+                      boxShadow: '0 8px 24px rgba(31,45,61,.12)',
+                      border: '1px solid rgba(5,117,70,.10)'
+                    }
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => handleStatusDialogOpen('resolved')}
+                    disabled={selectedComplaint?.status === 'resolved'}
+                    sx={{ minHeight: 38, borderRadius: 1.4, fontSize: '0.74rem', fontWeight: 750 }}
+                  >
+                    <CheckIcon color="success" sx={{ marginInlineEnd: 0.75, fontSize: 18 }} />
+                    تم الحل
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleStatusDialogOpen('rejected')}
+                    disabled={selectedComplaint?.status === 'rejected'}
+                    sx={{ minHeight: 38, borderRadius: 1.4, fontSize: '0.74rem', fontWeight: 750 }}
+                  >
+                    <CloseIcon color="error" sx={{ marginInlineEnd: 0.75, fontSize: 18 }} />
+                    رفض
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleStatusDialogOpen('pending')}
+                    disabled={selectedComplaint?.status === 'pending'}
+                    sx={{ minHeight: 38, borderRadius: 1.4, fontSize: '0.74rem', fontWeight: 750 }}
+                  >
+                    <MoreVertIcon color="warning" sx={{ marginInlineEnd: 0.75, fontSize: 18 }} />
+                    إعادة إلى الانتظار
+                  </MenuItem>
+                </Menu>
+
+                {renderStatusDialog()}
+                {renderCommentDialog()}
+                {renderDetailsDialog()}
+              </>
+            )}
+          </PageContainer>
+        </Box>
+      </ThemeProvider>
+    </NavigationShell>
   );
 };
 

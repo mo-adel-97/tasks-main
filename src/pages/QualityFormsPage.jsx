@@ -1744,19 +1744,15 @@ const handleExportPdf = () => {
           boxSizing: "border-box",
           overflowX: "hidden",
           direction: "rtl",
-          
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            p: 2
-          },
           ...navigationContentSx
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: isPhone ? 0.65 : isTablet ? 0.9 : 2,
-            mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
-            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
+            p: isPhone ? 0.65 : isTablet ? 0.9 : 1.15,
+            mb: isPhone ? 0.55 : isTablet ? 0.75 : 1,
+            borderRadius: isPhone ? 1.5 : isTablet ? 2 : 2.5,
             border:
               "1px solid rgba(5,117,70,.14)",
             direction: "rtl"
@@ -1770,7 +1766,7 @@ const handleExportPdf = () => {
             <DescriptionIcon
               sx={{
                 color: "#057546",
-                fontSize: isPhone ? 20 : isTablet ? 25 : 40
+                fontSize: isPhone ? 20 : isTablet ? 24 : 28
               }}
             />
 
@@ -1779,7 +1775,7 @@ const handleExportPdf = () => {
                 sx={{
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.86rem" : "1.25rem",
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.86rem" : "1.05rem",
                   color: "#173b2b"
                 }}
               >
@@ -1803,9 +1799,9 @@ const handleExportPdf = () => {
         <Paper
           elevation={0}
           sx={{
-            p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
-            mb: isPhone ? 0.55 : isTablet ? 0.75 : 1.5,
-            borderRadius: isPhone ? 1.4 : isTablet ? 2 : 4,
+            p: isPhone ? 0.55 : isTablet ? 0.8 : 1,
+            mb: isPhone ? 0.55 : isTablet ? 0.75 : 1,
+            borderRadius: isPhone ? 1.4 : isTablet ? 2 : 2.5,
             border:
               "1px solid rgba(5,117,70,.14)",
             direction: "rtl"
@@ -1973,8 +1969,8 @@ const handleExportPdf = () => {
             className="quality-editor-shell"
             elevation={0}
             sx={uiLayout.withUiSx({
-              p: isPhone ? 0.55 : isTablet ? 0.85 : 2.5,
-              borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
+              p: isPhone ? 0.55 : isTablet ? 0.85 : 1.15,
+              borderRadius: isPhone ? 1.5 : isTablet ? 2 : 2.5,
               border:
                 "1px solid rgba(5,117,70,.14)",
               direction: "rtl",
@@ -2085,7 +2081,7 @@ const handleExportPdf = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                fontSize: isPhone ? "0.78rem" : isTablet ? "0.95rem" : "2rem",
+                fontSize: isPhone ? "0.78rem" : isTablet ? "0.95rem" : "1.2rem",
                 color: "#057546"
               }}
             >
@@ -2098,7 +2094,7 @@ const handleExportPdf = () => {
                 fontFamily: "Cairo",
                 fontWeight: 800,
                 color: "#ae1e21",
-                mb: isPhone ? 0.55 : isTablet ? 0.75 : 2,
+                mb: isPhone ? 0.55 : isTablet ? 0.75 : 0.85,
                 fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
               }}
             >
@@ -2128,35 +2124,63 @@ const handleExportPdf = () => {
             <Section
               title="البيانات الأساسية"
             >
-              <TextField InputLabelProps={{ shrink: true }}
+              <TextField
+                InputLabelProps={{ shrink: true }}
                 label="السجل المدني"
                 value={form.nationalId}
                 onChange={update("nationalId")}
+                size="small"
                 inputProps={{
                   maxLength: 10,
-                  inputMode: "numeric"
-                , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-                sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
+                  inputMode: "numeric",
+                  dir: "ltr",
+                  style: {
+                    direction: "ltr",
+                    unicodeBidi: "isolate",
+                    textAlign: "right"
+                  }
+                }}
+                sx={uiLayout.withUiSx({
+                  ...fieldSx,
+                  "& .MuiInputBase-root": {
+                    ...fieldSx["& .MuiInputBase-root"],
+                    gap: 0.5
+                  },
+                  "& .MuiInputBase-input": {
+                    paddingInlineEnd: "8px"
+                  }
+                }, uiLayout.formFieldSx)}
                 InputProps={{
-                  endAdornment:
-                    loadingStudent
-                      ? (
-                        <CircularProgress
-                          size={20}
-                        />
-                      )
-                      : (
-                        <Button sx={uiLayout.withUiSx({ flexShrink: 0, minWidth: 62, px: 0.5 }, uiLayout.buttonSx)}
-                          onClick={() =>
-                            loadStudent()
-                          }
-                          startIcon={
-                            <SearchIcon />
-                          }
-                        >
-                          تحميل
-                        </Button>
-                      )
+                  endAdornment: loadingStudent ? (
+                    <Box
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        flexShrink: 0,
+                        display: "grid",
+                        placeItems: "center"
+                      }}
+                    >
+                      <CircularProgress size={18} />
+                    </Box>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      aria-label="تحميل بيانات المتدرب"
+                      onClick={() => loadStudent()}
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        flexShrink: 0,
+                        color: "#057546",
+                        border: "1px solid rgba(5,117,70,.18)",
+                        bgcolor: "#f7fbf9",
+                        "&:hover": { bgcolor: "#edf7f2" }
+                      }}
+                    >
+                      <SearchIcon sx={{ fontSize: 18 }} />
+                    </IconButton>
+                  )
                 }}
               />
 
@@ -2640,9 +2664,9 @@ const Section = ({
   <Paper
     variant="outlined"
     sx={{
-      p: 2,
-      mb: 2,
-      borderRadius: 3,
+      p: 1,
+      mb: 1,
+      borderRadius: 2,
 
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.85,
@@ -2662,7 +2686,7 @@ const Section = ({
         fontFamily: "Cairo",
         color: "#057546",
         fontWeight: 900,
-        mb: 1.5,
+        mb: 0.75,
 
         [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           mb: 0.55,

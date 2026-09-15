@@ -7,7 +7,30 @@ body {
     sans-serif;
   direction: rtl;
   text-align: start;
-  background: #f1f5f9;
+  background: light-dark(#f5f8f6, #101914);
+}
+
+/* Reserve the same scrollbar space when MUI/SweetAlert lock the document.
+   MUI adds physical right padding, which would otherwise double this gutter. */
+html { overflow-y: scroll; scrollbar-gutter: stable; }
+@supports (scrollbar-gutter: stable) {
+  body { padding-right: 0 !important; }
+}
+
+html[data-color-mode="dark"] .swal2-popup {
+  background: #19261f;
+  color: #e6f0ea;
+}
+html[data-color-mode="dark"] .swal2-input,
+html[data-color-mode="dark"] .swal2-textarea,
+html[data-color-mode="dark"] .swal2-select {
+  background: #101914;
+  color: #e6f0ea;
+  border-color: #364a3e;
+}
+@media print {
+  :root { color-scheme: light !important; }
+  .app-color-mode-toggle { display: none !important; }
 }
 
 /* Explicit dir attributes take precedence for technical form fields. */

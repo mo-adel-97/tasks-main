@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useState } from "react";
 import { Box, Typography, Grid, Card, CardContent, Chip, Button, TextField } from "@mui/material";
@@ -89,12 +90,12 @@ export default function TasksCalendarView({ tasks, userMap, subTaskNameMap, curr
                 </Typography>
                 <Typography sx={{ color: '#64748b', fontWeight: 500, fontSize: 15, mb: 2 }}>
                   الحالة:
-                  <span style={{
+                  <span style={adaptiveInlineStyle({
                     fontWeight: 700,
                     color: t.taskStatus === "معلقة" ? "#f59e42" :
                       t.taskStatus === "جاري التنفيذ" ? "#3b82f6" :
                         t.taskStatus === "مكتملة" ? "#10b981" : "#ef4444"
-                  }}>
+                  })}>
                     {" "}{t.taskStatus}
                   </span>
                 </Typography>

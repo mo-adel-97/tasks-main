@@ -3255,17 +3255,20 @@ export default function HrAttendancePage() {
                   sx={{
                     borderRadius: 2.8,
                     border: `1px solid ${border}`,
+                    width: "100%",
+                    minWidth: 0,
                     overflow: "hidden",
                     bgcolor: "#fff"
                   }}
                 >
-                  <Box sx={{ overflowX: "auto" }}>
+                  <Box sx={{ width: "100%", minWidth: 0, overflowX: { xs: "auto", lg: "hidden" }, bgcolor: "#fff" }}>
                     <Box
                       sx={{
-                        minWidth: 1080,
+                        width: "100%",
+                        minWidth: { xs: 920, lg: 0 },
                         display: "grid",
                         gridTemplateColumns:
-                          "110px 90px 160px 105px 105px 115px 100px 100px 100px 120px 180px 80px",
+                          "1.05fr 0.75fr 1.2fr 0.85fr 0.85fr 1fr 0.75fr 0.85fr 0.75fr 1fr 1.35fr 0.65fr",
                         px: 1.2,
                         py: 1,
                         bgcolor: "#edf6f1",
@@ -3295,10 +3298,11 @@ export default function HrAttendancePage() {
                         <Box
                           key={`${row.attendanceDate}-${index}`}
                           sx={{
-                            minWidth: 1080,
+                            width: "100%",
+                            minWidth: { xs: 920, lg: 0 },
                             display: "grid",
                             gridTemplateColumns:
-                              "110px 90px 160px 105px 105px 115px 100px 100px 100px 120px 180px 80px",
+                              "1.05fr 0.75fr 1.2fr 0.85fr 0.85fr 1fr 0.75fr 0.85fr 0.75fr 1fr 1.35fr 0.65fr",
                             px: 1.2,
                             py: 0.9,
                             alignItems: "center",
@@ -5313,16 +5317,21 @@ export default function HrAttendancePage() {
                   variant="outlined"
                   sx={{
                     borderRadius: 2.5,
-                    overflow: "auto",
+                    width: "100%",
+                    minWidth: 0,
+                    overflowX: { xs: "auto", lg: "hidden" },
+                    overflowY: "auto",
+                    bgcolor: "#fff",
                     maxHeight: 480
                   }}
                 >
                   <Box
                     sx={{
-                      minWidth: 1050,
+                      width: "100%",
+                      minWidth: { xs: 920, lg: 0 },
                       display: "grid",
                       gridTemplateColumns:
-                        "100px 90px 145px 95px 95px 115px 100px 100px 100px 115px 175px 80px",
+                        "1.05fr 0.75fr 1.2fr 0.85fr 0.85fr 1fr 0.75fr 0.85fr 0.75fr 1fr 1.35fr 0.65fr",
                       bgcolor: "#eef6f2",
                       borderBottom: `1px solid ${border}`,
                       p: 1,
@@ -5343,10 +5352,11 @@ export default function HrAttendancePage() {
                       <Box
                         key={`${row.attendanceDate}-${row.employeeGuid}`}
                         sx={{
-                          minWidth: 1050,
+                          width: "100%",
+                          minWidth: { xs: 920, lg: 0 },
                           display: "grid",
                           gridTemplateColumns:
-                            "100px 90px 145px 95px 95px 115px 100px 100px 100px 115px 175px 80px",
+                            "1.05fr 0.75fr 1.2fr 0.85fr 0.85fr 1fr 0.75fr 0.85fr 0.75fr 1fr 1.35fr 0.65fr",
                           p: 0.9,
                           alignItems: "center",
                           textAlign: "center",

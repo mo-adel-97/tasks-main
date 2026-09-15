@@ -253,7 +253,7 @@ const AttendancePage = () => {
   };
 
   return (
-    <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={(outerTheme) => ({ ...theme, palette: outerTheme.palette })}>
       <CssBaseline />
       <Box sx={{ display: 'flex' }}>
         {/* السايدبار */}

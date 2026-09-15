@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React from "react";
 import {
@@ -42,7 +43,7 @@ export default function AttachmentViewer({ open, onClose, filePath, sourceType =
           <img
             src={fileUrl}
             alt="مرفق"
-            style={{ maxWidth: "100%", maxHeight: "70vh", borderRadius: 8 }}
+            style={adaptiveInlineStyle({ maxWidth: "100%", maxHeight: "70vh", borderRadius: 8 })}
           />
         ) : (
           <>

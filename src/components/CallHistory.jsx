@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
@@ -362,7 +363,7 @@ const handleUpdateCall = async () => {
                   </TableCell>
                   <TableCell align="center">{call.notes || '-'}</TableCell>
                   <TableCell align="center">
-                    <span style={{
+                    <span style={adaptiveInlineStyle({
                       padding: '4px 12px',
                       borderRadius: '20px',
                       fontWeight: 'bold',
@@ -371,7 +372,7 @@ const handleUpdateCall = async () => {
                         call.status === 'مكتملة' ? '#4caf50' :
                         call.status === 'متابعة لاحقًا' ? '#fb8c00' :
                         '#9e9e9e'
-                    }}>
+                    })}>
                       {call.status}
                     </span>
                   </TableCell>

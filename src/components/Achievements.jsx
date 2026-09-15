@@ -646,23 +646,24 @@ const AchievementsPage = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: 1.5,
           ...navigationContentSx
         }}
       >
-        <Container maxWidth="xl" sx={{ py: 2 }}>
+        <Container maxWidth={false} disableGutters sx={{ p: 0 }}>
           {/* Header */}
           <Paper
             elevation={0}
             sx={{
-              p: 4,
-              mb: 4,
+              p: 1.25,
+              mb: 1.25,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
+              background: '#fff',
+              color: '#17372b',
               position: 'relative',
               overflow: 'hidden',
-              boxShadow: '0 10px 30px rgba(102, 126, 234, 0.2)'
+              border: '1px solid rgba(5,117,70,.12)',
+              boxShadow: 'none'
             }}
           >
             <Box sx={{ position: 'relative', zIndex: 1 }}>
@@ -671,20 +672,20 @@ const AchievementsPage = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Avatar
                       sx={{
-                        width: 60,
-                        height: 60,
-                        marginInlineEnd: 3,
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        backdropFilter: 'blur(10px)'
+                        width: 40,
+                        height: 40,
+                        marginInlineEnd: 1.25,
+                        bgcolor: '#edf7f2',
+                        color: '#057546'
                       }}
                     >
-                      <EmojiEventsIcon sx={{ fontSize: 32 }} />
+                      <EmojiEventsIcon sx={{ fontSize: 22 }} />
                     </Avatar>
                     <Box>
-                      <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
+                      <Typography variant="h5" sx={{ fontWeight: 900, mb: 0.25, color: '#034d31', fontSize: '1.15rem' }}>
                         الإنتاجية الأسبوعية
                       </Typography>
-                      <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 650 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 650 }}>
                         إضافة بنود أسبوعية + مرفقات + متابعة التقدم
                       </Typography>
                     </Box>
@@ -694,11 +695,11 @@ const AchievementsPage = () => {
                   <Paper
                     elevation={0}
                     sx={{
-                      mt: 2,
-                      p: 2,
+                      mt: 0.75,
+                      p: 0.75,
                       borderRadius: 2,
-                      bgcolor: 'rgba(255,255,255,0.18)',
-                      border: '1px solid rgba(255,255,255,0.25)'
+                      bgcolor: '#f7fbf9',
+                      border: '1px solid rgba(5,117,70,.10)'
                     }}
                   >
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -716,18 +717,18 @@ const AchievementsPage = () => {
                       onClick={() => handleOpenDialog(null)}
                       disabled={loading}
                       sx={uiLayout.withUiSx({
-                        background: 'white',
-                        color: '#764ba2',
+                        background: '#057546',
+                        color: '#fff',
                         borderRadius: 2,
-                        px: 4,
-                        py: 1.5,
-                        fontWeight: 700,
+                        px: 1.5,
+                        py: 0.75,
+                        minHeight: 40,
+                        fontWeight: 800,
+                        boxShadow: 'none',
                         '&:hover': {
-                          background: 'rgba(255,255,255,0.9)',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
-                        },
-                        transition: 'all 0.3s ease'
+                          background: '#034d31',
+                          boxShadow: 'none'
+                        }
                       }, uiLayout.buttonSx)}
                     >
                       {isCurrentWeekAlreadySubmitted
@@ -741,14 +742,15 @@ const AchievementsPage = () => {
           </Paper>
 
           {/* Stats Cards */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={1.25} sx={{ mb: 1.5 }}>
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderInlineStart: '5px solid #667eea',
-                '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
+                borderTop: '3px solid #057546',
+                boxShadow: 'none',
+                border: '1px solid rgba(5,117,70,.12)'
               }}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box>
                       <Typography variant="h3" sx={{ fontWeight: 800, color: '#667eea' }}>
@@ -769,10 +771,11 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderInlineStart: '5px solid #4caf50',
-                '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
+                borderTop: '3px solid #2e7d32',
+                boxShadow: 'none',
+                border: '1px solid rgba(5,117,70,.12)'
               }}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box>
                       <Typography variant="h3" sx={{ fontWeight: 800, color: '#4caf50' }}>
@@ -793,10 +796,11 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderInlineStart: '5px solid #2196f3',
-                '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
+                borderTop: '3px solid #1976d2',
+                boxShadow: 'none',
+                border: '1px solid rgba(5,117,70,.12)'
               }}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box>
                       <Typography variant="h3" sx={{ fontWeight: 800, color: '#2196f3' }}>
@@ -817,10 +821,11 @@ const AchievementsPage = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card elevation={2} sx={{
                 borderRadius: 3,
-                borderInlineStart: '5px solid #ff9800',
-                '&:hover': { transform: 'translateY(-5px)', transition: 'transform 0.3s ease' }
+                borderTop: '3px solid #ed9b22',
+                boxShadow: 'none',
+                border: '1px solid rgba(5,117,70,.12)'
               }}>
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box>
                       <Typography variant="h3" sx={{ fontWeight: 800, color: '#ff9800' }}>

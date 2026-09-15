@@ -1,43 +1,44 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import { HEADER_NAVIGATION } from '../config/sidebarNavigation';
 import React from "react";
 import { NavLink } from "react-router-dom";
 
 const Header = ({ user, branch, onLogout }) => {
   return (
-    <header className="main-header" style={headerStyles}>
+    <header className="main-header" style={adaptiveInlineStyle(headerStyles)}>
       {/* الجانب الأيسر - الشعار والمعلومات */}
-      <div style={leftSectionStyles}>
-        <div style={logoStyles}>
-          <span style={logoIconStyles}>📊</span>
-          <strong style={logoTextStyles}>نظام الاختبارات</strong>
+      <div style={adaptiveInlineStyle(leftSectionStyles)}>
+        <div style={adaptiveInlineStyle(logoStyles)}>
+          <span style={adaptiveInlineStyle(logoIconStyles)}>📊</span>
+          <strong style={adaptiveInlineStyle(logoTextStyles)}>نظام الاختبارات</strong>
         </div>
         
         {branch && (
-          <div style={branchBadgeStyles}>
-            <span style={branchIconStyles}>📍</span>
-            <span style={branchTextStyles}>{branch.name}</span>
+          <div style={adaptiveInlineStyle(branchBadgeStyles)}>
+            <span style={adaptiveInlineStyle(branchIconStyles)}>📍</span>
+            <span style={adaptiveInlineStyle(branchTextStyles)}>{branch.name}</span>
           </div>
         )}
       </div>
 
       {/* الجانب الأيمن - التنقل والمستخدم */}
-      <div style={rightSectionStyles}>
+      <div style={adaptiveInlineStyle(rightSectionStyles)}>
         {/* قائمة التنقل */}
-        <nav style={navStyles}>
+        <nav style={adaptiveInlineStyle(navStyles)}>
           {HEADER_NAVIGATION.map((item) => (
             <NavLink key={item.to} to={item.to}
-              style={({ isActive }) => isActive ? { ...navLinkStyles, ...navLinkActiveStyles } : navLinkStyles}>
+              style={adaptiveInlineStyle(({ isActive }) => isActive ? { ...navLinkStyles, ...navLinkActiveStyles } : navLinkStyles)}>
               {item.label}
             </NavLink>
           ))}
         </nav>
 
         {/* معلومات المستخدم */}
-        <div style={userInfoStyles}>
-          <div style={userAvatarStyles}>
-            <span style={avatarIconStyles}>👤</span>
+        <div style={adaptiveInlineStyle(userInfoStyles)}>
+          <div style={adaptiveInlineStyle(userAvatarStyles)}>
+            <span style={adaptiveInlineStyle(avatarIconStyles)}>👤</span>
           </div>
-          <span style={userNameStyles}>{user.fullName}</span>
+          <span style={adaptiveInlineStyle(userNameStyles)}>{user.fullName}</span>
         </div>
       </div>
     </header>

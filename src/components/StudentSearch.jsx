@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentStyle } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -418,14 +419,14 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 };
 
     return (
-        <NavigationShell variant="standard" ><div style={{ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor }}>
+        <NavigationShell variant="standard" ><div style={adaptiveInlineStyle({ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor })}>
             
-            <div style={{
+            <div style={adaptiveInlineStyle({
               flex: 1,
               padding: '20px',
               direction: 'rtl',
               ...navigationContentStyle
-            }}>
+            })}>
                 <Card sx={{ 
                     mb: 3, 
                     borderRadius: 3, 
@@ -911,12 +912,12 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                                           <Grow in={showCallHistory}>
                                             <Box mt={3}>
-                                              <Typography variant="h5" style={{ 
+                                              <Typography variant="h5" style={adaptiveInlineStyle({
                                                   fontWeight: 'bold', 
                                                   color: primaryDark, 
                                                   marginBottom: '15px',
                                                   fontFamily:"cairo"
-                                                }}>
+                                                })}>
                                                 📞 سجل الاتصالات
                                               </Typography>
                                                 <CallHistory 
@@ -962,7 +963,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                     </DialogTitle>
                     <DialogContent sx={{ direction: 'rtl', pt: 3 }}>
                         <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal" error={!!errors.callType}>
-                            <InputLabel id="call-type-label" style={{ fontFamily: "Cairo", color: primaryDark }}>نوع الاتصال</InputLabel>
+                            <InputLabel id="call-type-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>نوع الاتصال</InputLabel>
                             <Select
                                 labelId="call-type-label"
                                 id="call-type"
@@ -988,7 +989,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         {callForm.callType === 'study' && (
                             <>
                                 <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                                    <InputLabel id="program-inquiry-label" style={{ fontFamily: "Cairo", color: primaryDark }}>البرنامج</InputLabel>
+                                    <InputLabel id="program-inquiry-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>البرنامج</InputLabel>
                                     <Select
                                         labelId="program-inquiry-label"
                                         id="program-inquiry"
@@ -1011,7 +1012,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                 </FormControl>
 
                                 <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                                    <InputLabel id="study-topic-label" style={{ fontFamily: "Cairo", color: primaryDark }}>موضوع الاستفسار</InputLabel>
+                                    <InputLabel id="study-topic-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>موضوع الاستفسار</InputLabel>
                                     <Select
                                         labelId="study-topic-label"
                                         id="study-topic"
@@ -1038,7 +1039,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         {callForm.callType === 'complain' && (
                             <>
                                 <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                                    <InputLabel id="complain-source-label" style={{ fontFamily: "Cairo", color: primaryDark }}>شكوى من</InputLabel>
+                                    <InputLabel id="complain-source-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>شكوى من</InputLabel>
                                     <Select
                                         labelId="complain-source-label"
                                         id="complain-source"
@@ -1084,7 +1085,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         )}
 
                         <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal" error={!!errors.callStatus}>
-                            <InputLabel id="call-status-label" style={{ fontFamily: "Cairo", color: primaryDark }}>حالة الاتصال</InputLabel>
+                            <InputLabel id="call-status-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>حالة الاتصال</InputLabel>
                             <Select
                                 labelId="call-status-label"
                                 id="call-status"
@@ -1109,7 +1110,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         </FormControl>
 
                         <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                            <InputLabel id="forward-call-label" style={{ fontFamily: "Cairo", color: primaryDark }}>هل تريد تمرير الاتصال؟</InputLabel>
+                            <InputLabel id="forward-call-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>هل تريد تمرير الاتصال؟</InputLabel>
                             <Select
                                 labelId="forward-call-label"
                                 id="forward-call"
@@ -1133,7 +1134,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         {callForm.forwardCall === "yes" && (
                             <>
                                 <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                                    <InputLabel id="forward-to-label" style={{ fontFamily: "Cairo", color: primaryDark }}>تمرير إلى</InputLabel>
+                                    <InputLabel id="forward-to-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>تمرير إلى</InputLabel>
                                     <Select
                                         labelId="forward-to-label"
                                         id="forward-to"
@@ -1156,7 +1157,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                                 {callForm.forwardTo === "supervisor" && (
                                     <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                                        <InputLabel id="supervisor-label" style={{ fontFamily: "Cairo", color: primaryDark }}>اختر المشرف</InputLabel>
+                                        <InputLabel id="supervisor-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>اختر المشرف</InputLabel>
                                         <Select
                                             labelId="supervisor-label"
                                             id="supervisor"
@@ -1185,7 +1186,7 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
 
                                 {callForm.forwardTo === "sales" && (
                                     <FormControl sx={uiLayout.formFieldSx} fullWidth margin="normal">
-                                        <InputLabel id="sales-label" style={{ fontFamily: "Cairo", color: primaryDark }}>اختر موظف المبيعات</InputLabel>
+                                        <InputLabel id="sales-label" style={adaptiveInlineStyle({ fontFamily: "Cairo", color: primaryDark })}>اختر موظف المبيعات</InputLabel>
                                         <Select
                                             labelId="sales-label"
                                             id="sales"
@@ -1295,10 +1296,10 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                                 <Table>
                                     <TableHead sx={{ backgroundColor: '#f0f7f4' }}>
                                         <TableRow>
-                                            <TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="center">التاريخ</TableCell>
-                                            <TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="center">الوقت</TableCell>
-                                            <TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="center">ملاحظات</TableCell>
-                                            <TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="center">المستخدم</TableCell>
+                                            <TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="center">التاريخ</TableCell>
+                                            <TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="center">الوقت</TableCell>
+                                            <TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="center">ملاحظات</TableCell>
+                                            <TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="center">المستخدم</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -1325,13 +1326,13 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         border: `1px solid ${primaryLight}`
                     } 
                 }}>
-                    <DialogTitle style={{ 
+                    <DialogTitle style={adaptiveInlineStyle({
                         textAlign: 'center', 
                         fontWeight: 'bold', 
                         color: primaryDark, 
                         fontFamily: "cairo",
                         borderBottom: `1px solid ${primaryLight}`
-                    }}>
+                    })}>
                         📚 الملف التدريبي
                     </DialogTitle>
 
@@ -1339,19 +1340,19 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                         {studyInfo.length === 0 ? (
                             <Typography align="center" mt={2}>لا توجد بيانات متاحة.</Typography>
                         ) : (
-                            <TableContainer sx={uiLayout.tableContainerSx} component={Paper} style={{ marginTop: 10, borderRadius: 2, border: `1px solid ${primaryLight}` }}>
+                            <TableContainer sx={uiLayout.tableContainerSx} component={Paper} style={adaptiveInlineStyle({ marginTop: 10, borderRadius: 2, border: `1px solid ${primaryLight}` })}>
                                 <Table>
                                     <TableBody>
                                         {studyInfo.map((item, index) => (
                                             <React.Fragment key={index}>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الفرع</TableCell><TableCell align="right">{item.branch}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">البرنامج</TableCell><TableCell align="right">{item.diplom}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الدفعة</TableCell><TableCell align="right">{item.batch}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">المستوى</TableCell><TableCell align="right">{item.level}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">تاريخ البداية</TableCell><TableCell align="left">{item.dateStart || '---'}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">تاريخ النهاية</TableCell><TableCell align="left">{item.dateEnd || '---'}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">الحالة</TableCell><TableCell align="right">{item.status}</TableCell></TableRow>
-                                                <TableRow><TableCell style={{ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark }} align="right">ملاحظات</TableCell><TableCell align="right">{item.notes}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">الفرع</TableCell><TableCell align="right">{item.branch}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">البرنامج</TableCell><TableCell align="right">{item.diplom}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">الدفعة</TableCell><TableCell align="right">{item.batch}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">المستوى</TableCell><TableCell align="right">{item.level}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">تاريخ البداية</TableCell><TableCell align="left">{item.dateStart || '---'}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">تاريخ النهاية</TableCell><TableCell align="left">{item.dateEnd || '---'}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">الحالة</TableCell><TableCell align="right">{item.status}</TableCell></TableRow>
+                                                <TableRow><TableCell style={adaptiveInlineStyle({ fontFamily: "Cairo, sans-serif", fontWeight: 'bold', color: primaryDark })} align="right">ملاحظات</TableCell><TableCell align="right">{item.notes}</TableCell></TableRow>
                                             </React.Fragment>
                                         ))}
                                     </TableBody>
@@ -1472,16 +1473,16 @@ const getForwardedToName = (forwardTo, supervisorGuid) => {
                             </Alert>
                         )}
                     </DialogContent>
-                    <DialogActions sx={uiLayout.dialogActionsSx} style={{ justifyContent: 'space-between', p: 3, borderTop: `1px solid ${primaryLight}` }}>
+                    <DialogActions sx={uiLayout.dialogActionsSx} style={adaptiveInlineStyle({ justifyContent: 'space-between', p: 3, borderTop: `1px solid ${primaryLight}` })}>
                         <div>
                             <Button sx={uiLayout.buttonSx}
-                                style={{
+                                style={adaptiveInlineStyle({
                                     fontFamily: "Cairo",
                                     backgroundColor: whatsappData.sentToStudent ? '#4caf50' : '#25D366',
                                     color: 'white',
                                     marginLeft: '8px',
                                     borderRadius: '8px'
-                                }}
+                                })}
                                 onClick={() => {
                                     if (!whatsappData.name || !whatsappData.phone) {
                                         Swal.fire({
@@ -1531,12 +1532,12 @@ hr@administration.sstli.com
                             </Button>
 
                             <Button sx={uiLayout.buttonSx}
-                                style={{
+                                style={adaptiveInlineStyle({
                                     fontFamily: "Cairo",
                                     backgroundColor: whatsappData.sentToHR ? '#4caf50' : primaryColor,
                                     color: 'white',
                                     borderRadius: '8px'
-                                }}
+                                })}
                                 onClick={() => {
                                     if (!whatsappData.name || !whatsappData.phone) {
                                         Swal.fire({
@@ -1581,11 +1582,11 @@ hr@administration.sstli.com
                         </div>
 
                         <Button sx={uiLayout.buttonSx}
-                            style={{ 
+                            style={adaptiveInlineStyle({
                                 fontFamily: "Cairo",
                                 color: primaryColor,
                                 borderRadius: '8px'
-                            }}
+                            })}
                             onClick={() => {
                                 setOpenWhatsAppDialog(false);
                                 setWhatsappData({ name: '', phone: '', notes: '', sentToStudent: false, sentToHR: false });

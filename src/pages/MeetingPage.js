@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from '../components/common/uiLayout';
 // MeetingPageRtc.jsx
 import './rtl-forms-fix.css';
@@ -886,7 +887,7 @@ const VideoTile = ({ name, avatar, stream, isAudioOn, isVideoOn, isSelf = false 
             autoPlay
             playsInline
             muted={isSelf}
-            style={{ width: "100%", height: "100%", objectFit: "cover", background: "#000" }}
+            style={adaptiveInlineStyle({ width: "100%", height: "100%", objectFit: "cover", background: "#000" })}
           />
         ) : (
           <Box

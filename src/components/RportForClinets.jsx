@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentStyle } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -1104,11 +1105,11 @@ const resetFilters = () => {
   return (
     <NavigationShell variant="standard" ><>
       
-      <Box style={{
+      <Box style={adaptiveInlineStyle({
         padding: "20px",
         direction: 'rtl',
         ...navigationContentStyle
-      }}>
+      })}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
             <Description sx={{ verticalAlign: 'middle', marginInlineEnd: 1 }} />

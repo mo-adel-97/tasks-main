@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -1648,7 +1649,7 @@ const VipCustomers = () => {
                                       column.key
                                     }
                                     style={
-                                      column.key ===
+                                      adaptiveInlineStyle(column.key ===
                                       "orderStatus"
                                         ? {
                                             background:
@@ -1673,7 +1674,7 @@ const VipCustomers = () => {
                                             fontWeight:
                                               800
                                           }
-                                        : undefined
+                                        : undefined)
                                     }
                                   >
                                     {column.render(

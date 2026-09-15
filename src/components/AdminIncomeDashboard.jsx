@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -373,7 +374,7 @@ function StockChart({ points = [] }) {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <canvas ref={ref} style={{ width: "100%", borderRadius: 16 }} />
+      <canvas ref={ref} style={adaptiveInlineStyle({ width: "100%", borderRadius: 16 })} />
     </Box>
   );
 }
@@ -1126,7 +1127,7 @@ const refundBillsCount = useMemo(() => {
                   <Box sx={{ textAlign: "right" }}>
                     <Typography sx={{ color: MUTED, fontWeight: 800 }}>
                       آخر قيمة:
-                      <span style={{ color: "white", fontWeight: 950, marginInlineStart: 10 }}>
+                      <span style={adaptiveInlineStyle({ color: "white", fontWeight: 950, marginInlineStart: 10 })}>
                         {formatSAR(lastChartValue)}
                       </span>
                     </Typography>
@@ -1143,7 +1144,7 @@ const refundBillsCount = useMemo(() => {
                           }}
                         >
                           قبل آخر تحديث:{" "}
-                          <span style={{ color: "#e2e8f0", textDecoration: "line-through", opacity: 0.95 }}>
+                          <span style={adaptiveInlineStyle({ color: "#e2e8f0", textDecoration: "line-through", opacity: 0.95 })}>
                             {formatSAR(prevTotalShown || 0)}
                           </span>
                         </Typography>

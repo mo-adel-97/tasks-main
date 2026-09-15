@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from 'react';
 import {
@@ -456,7 +457,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                       }}
                     >
                       <MenuItem value="">
-                        <em style={{ color: '#64748b' }}>اختر الوظيفة</em>
+                        <em style={adaptiveInlineStyle({ color: '#64748b' })}>اختر الوظيفة</em>
                       </MenuItem>
                       {jobTitlesLoading && (
                         <MenuItem value="" disabled>
@@ -508,7 +509,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
                       }}
                     >
                       <MenuItem value="">
-                        <em style={{ color: '#64748b' }}>اختر الفرع</em>
+                        <em style={adaptiveInlineStyle({ color: '#64748b' })}>اختر الفرع</em>
                       </MenuItem>
                       {branches.map(branch => (
                         <MenuItem key={branch.guid} value={branch.guid}>

@@ -43,6 +43,7 @@ import {
   ListItemAvatar,
   TablePagination,
   DialogContentText,
+  useMediaQuery,
   Autocomplete,
 } from '@mui/material';
 import {
@@ -81,7 +82,12 @@ const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/tech_tickets.php'
 const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
 const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
 
+const DESKTOP_BREAKPOINT = 1200;
+
 const TechnicalSupport = () => {
+  const isPhone = useMediaQuery('(max-width:599.95px)');
+  const isTablet = useMediaQuery('(min-width:600px) and (max-width:1199.95px)');
+  const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userGuid = user?.guid || '';
   const userName = user?.userName || '';
@@ -809,48 +815,101 @@ const TechnicalSupport = () => {
   );
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f6faf8' }}>
       
       
       <Box 
         component="main" 
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: isPhone ? 0.5 : isTablet ? 0.8 : 1.2,
           minHeight: '100vh',
-          ...navigationContentSx
+          minWidth: 0,
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          overflowX: 'hidden',
+          ...navigationContentSx,
+          '& .MuiTypography-root': {
+            wordBreak: 'break-word'
+          },
+          '& .MuiButton-root': {
+            textTransform: 'none'
+          }
         }}
       >
-        <Container maxWidth="xl">
-          {/* العنوان مع الملاحظة */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: isSupportStaff ? '#e8f5e9' : '#e3f2fd', 
-                  borderRadius: 3,
+        <Container maxWidth={false} disableGutters sx={{ width: "100%", maxWidth: "100%", p: 0 }}>
+          {/* العنوان */}
+          <Box sx={{ mb: isPhone ? 0.7 : 1 }}>
+            <Box
+              sx={{
+                minHeight: isPhone ? 62 : 70,
+                px: isPhone ? 1 : isTablet ? 1.2 : 1.5,
+                py: isPhone ? 0.8 : 1,
+                mb: 0.7,
+                borderRadius: isPhone ? 2 : 2.5,
+                bgcolor: '#034d31',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexDirection: isPhone ? 'column' : 'row',
+                gap: isPhone ? 0.7 : 1.2
+              }}
+            >
+              <Box
+                sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
+                  gap: isPhone ? 0.7 : 0.9,
+                  width: isPhone ? '100%' : 'auto',
+                  minWidth: 0
+                }}
+              >
+                <Box
+                  sx={{
+                    width: isPhone ? 34 : 38,
+                    height: isPhone ? 34 : 38,
+                    flexShrink: 0,
+                    borderRadius: 1.8,
+                    display: 'grid',
+                    placeItems: 'center',
+                    bgcolor: 'rgba(255,255,255,.11)',
+                    border: '1px solid rgba(255,255,255,.16)'
+                  }}
+                >
                   {isSupportStaff ? (
-                    <AdminPanelSettings sx={{ fontSize: 32, color: '#4caf50' }} />
+                    <AdminPanelSettings sx={{ fontSize: isPhone ? 19 : 21, color: '#fff' }} />
                   ) : (
-                    <Computer sx={{ fontSize: 32, color: '#2196f3' }} />
+                    <Computer sx={{ fontSize: isPhone ? 19 : 21, color: '#fff' }} />
                   )}
                 </Box>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1a237e' }}>
-                    {isSupportStaff ? 'لوحة تحكم الدعم الفني' : 'مركز الدعم الفني'}
+
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 950,
+                      fontSize: isPhone ? '0.95rem' : isTablet ? '1.02rem' : '1.12rem',
+                      lineHeight: 1.25
+                    }}
+                  >
+                    {isSupportStaff ? 'الدعم الفني' : 'مركز الدعم الفني'}
                   </Typography>
-                  <Typography sx={{ mt: "20px"}} variant="body1" color="text.secondary">
-                    {isSupportStaff 
-                      ? 'إدارة جميع تذاكر الدعم الفني والرد عليها' 
-                      : 'قدم تذكرة دعم فني أو تابع حالة التذاكر السابقة'}
+
+                  <Typography
+                    sx={{
+                      mt: 0.12,
+                      color: 'rgba(255,255,255,.76)',
+                      fontSize: isPhone ? '0.62rem' : '0.7rem',
+                      lineHeight: 1.45
+                    }}
+                  >
+                    {isSupportStaff
+                      ? 'متابعة التذاكر والرد على طلبات المستخدمين'
+                      : 'رفع تذكرة جديدة ومتابعة طلباتك السابقة'}
                   </Typography>
                 </Box>
               </Box>
+
               <Button
                 variant="outlined"
                 startIcon={<Refresh />}
@@ -861,7 +920,19 @@ const TechnicalSupport = () => {
                     fetchUserTickets();
                   }
                 }}
-                sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
+                sx={uiLayout.withUiSx({
+                  minHeight: 34,
+                  px: 1.1,
+                  width: isPhone ? '100%' : 'auto',
+                  color: '#fff',
+                  borderColor: 'rgba(255,255,255,.48)',
+                  fontSize: '0.7rem',
+                  fontWeight: 850,
+                  '&:hover': {
+                    borderColor: '#fff',
+                    bgcolor: 'rgba(255,255,255,.08)'
+                  }
+                }, uiLayout.buttonSx)}
               >
                 تحديث
               </Button>
@@ -873,14 +944,15 @@ const TechnicalSupport = () => {
                 icon={<Info />}
                 sx={{ 
                   borderRadius: 2,
-                  bgcolor: '#e3f2fd',
-                  border: '1px solid #bbdefb',
-                  mb: 3
+                  bgcolor: '#f7fbf9',
+                  border: '1px solid rgba(5,117,70,.14)',
+                  py: 0.1,
+                  mb: 0.65,
+                  '& .MuiAlert-icon': { color: '#057546' }
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  ⚠️ ملاحظة: قد تستغرق معالجة التذكرة من 1 إلى 24 ساعة حسب درجة الأولوية وتوفر فريق الدعم.
-                  نحرص على الرد في أقرب وقت ممكن.
+عادةً تتم مراجعة التذكرة خلال 1 إلى 24 ساعة حسب الأولوية وتوفر فريق الدعم.
                 </Typography>
               </Alert>
             )}
@@ -891,13 +963,14 @@ const TechnicalSupport = () => {
                 icon={<Info />}
                 sx={{ 
                   borderRadius: 2,
-                  bgcolor: '#e8f5e9',
-                  border: '1px solid #c8e6c9',
-                  mb: 3
+                  bgcolor: '#f7fbf9',
+                  border: '1px solid rgba(5,117,70,.14)',
+                  py: 0.1,
+                  mb: 0.65
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  👨‍💼 حالة المشرف: يمكنك تقديم تذاكر دون قيود بغض النظر عن عدد التذاكر القيد الانتظار.
+                  يمكنك تقديم تذاكر جديدة دون قيود عددية.
                 </Typography>
               </Alert>
             )}
@@ -906,11 +979,12 @@ const TechnicalSupport = () => {
           {/* نموذج إنشاء تذكرة (للمستخدمين العاديين فقط) */}
           {!isSupportStaff && (
             <Paper sx={{ 
-              p: 4, 
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              border: '1px solid #e0e0e0',
-              mb: 4,
+              p: isPhone ? 0.8 : isTablet ? 1 : 1.25, 
+              borderRadius: isPhone ? 2 : 2.5,
+              boxShadow: 'none',
+              border: '1px solid rgba(5,117,70,.12)',
+              bgcolor: '#fff',
+              mb: isPhone ? 0.8 : 1,
               position: 'relative',
               opacity: (hasPendingTicket && !isSupervisor) ? 0.7 : 1,
               filter: (hasPendingTicket && !isSupervisor) ? 'grayscale(0.3)' : 'none',
@@ -928,23 +1002,23 @@ const TechnicalSupport = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   zIndex: 10,
-                  borderRadius: 3,
-                  p: 4,
+                  borderRadius: 2.5,
+                  p: isPhone ? 1.2 : 2,
                   textAlign: 'center',
                 }}>
                   <Avatar sx={{ 
                     bgcolor: '#ff9800', 
-                    width: 80, 
-                    height: 80,
-                    mb: 3,
+                    width: isPhone ? 46 : 56, 
+                    height: isPhone ? 46 : 56,
+                    mb: 1,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}>
-                    <Block sx={{ fontSize: 40 }} />
+                    <Block sx={{ fontSize: isPhone ? 24 : 30 }} />
                   </Avatar>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: '#1a237e' }}>
+                  <Typography sx={{ fontWeight: 900, mb: 0.5, color: '#034d31', fontSize: isPhone ? '0.88rem' : '1rem' }}>
                     ⚠️ لديك طلبين مازال قيد الانتظار
                   </Typography>
-                  <Typography variant="body1" sx={{ mb: 3, maxWidth: 500, lineHeight: 1.8 }}>
+                  <Typography sx={{ mb: 1, maxWidth: 500, lineHeight: 1.6, fontSize: '0.72rem', color: 'text.secondary' }}>
                     لا يمكنك تقديم تذكرة جديدة حتى يتم الرد على تذكرتك الحالية أو تغيير حالتها.
                     يمكنك متابعة حالة التذكرة الحالية في قسم "تذاكري السابقة" أدناه.
                   </Typography>
@@ -954,14 +1028,14 @@ const TechnicalSupport = () => {
                       document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     sx={uiLayout.withUiSx({
-                      bgcolor: '#2196f3',
+                      bgcolor: '#057546',
                       py: 1.5,
                       px: 4,
                       borderRadius: 2,
                       fontSize: '1rem',
                       fontWeight: 'bold',
                       '&:hover': {
-                        bgcolor: '#1976d2',
+                        bgcolor: '#034d31',
                       }
                     }, uiLayout.buttonSx)}
                   >
@@ -970,20 +1044,22 @@ const TechnicalSupport = () => {
                 </Box>
               )}
               
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.85 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                   <Box sx={{ 
-                    p: 1.5, 
-                    bgcolor: '#2196f3', 
-                    borderRadius: 2,
+                    width: 34,
+                    height: 34,
+                    bgcolor: '#edf7f2', 
+                    color: '#057546',
+                    borderRadius: 1.8,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    <Add sx={{ color: 'white' }} />
+                    <Add sx={{ color: '#057546', fontSize: 19 }} />
                   </Box>
                   <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1a237e' }}>
+                    <Typography sx={{ fontWeight: 900, color: '#034d31', fontSize: isPhone ? '0.85rem' : '0.95rem' }}>
                       تقديم تذكرة جديدة
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -995,32 +1071,31 @@ const TechnicalSupport = () => {
 
               <Alert 
                 severity="warning" 
-                sx={{ mb: 4, borderRadius: 2 }}
+                sx={{ mb: 0.9, borderRadius: 2, py: 0.1 }}
                 icon={<Warning />}
               >
                 <Typography variant="body2">
-                  <strong>تنويه مهم:</strong> قبل تقديم التذكرة، تأكد من وصف المشكلة بوضوح وإرفاق الصور اللازمة. 
-                  هذا يساعد فريق الدعم على فهم المشكلة وحلها بشكل أسرع.
+                  صف المشكلة بوضوح وأرفق صورة أو ملفًا عند الحاجة.
                 </Typography>
               </Alert>
 
               <form onSubmit={handleSubmit}>
-                <Grid container spacing={4}>
+                <Grid container spacing={isPhone ? 0.8 : 1.1}>
                   <Grid item xs={12}>
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={6}>
+                    <Grid container spacing={isPhone ? 0.8 : 1}>
+                      <Grid item xs={12} lg={6}>
                         <FormControl fullWidth required sx={uiLayout.withUiSx({ bgcolor: 'white', borderRadius: 1 }, uiLayout.formFieldSx)}>
                           <InputLabel sx={{ fontWeight: 'medium', color: '#555' }}>نوع التذكرة</InputLabel>
                           <Select
                             value={ticketType}
                             onChange={(e) => setTicketType(e.target.value)}
                             label="نوع التذكرة"
-                            sx={{ height: '56px' }}
+                            sx={{ height: isPhone ? '40px' : '42px' }}
                             disabled={hasPendingTicket && !isSupervisor}
                           >
                             {ticketTypes.map((type) => (
                               <MenuItem key={type.value} value={type.value}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
                                   <Avatar sx={{ bgcolor: type.color + '20', color: type.color, width: 32, height: 32 }}>
                                     {type.icon}
                                   </Avatar>
@@ -1039,19 +1114,19 @@ const TechnicalSupport = () => {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={12} md={6}>
+                      <Grid item xs={12} lg={6}>
                         <FormControl fullWidth sx={uiLayout.withUiSx({ bgcolor: 'white', borderRadius: 1 }, uiLayout.formFieldSx)}>
                           <InputLabel sx={{ fontWeight: 'medium', color: '#555' }}>درجة الأولوية</InputLabel>
                           <Select
                             value={priority}
                             onChange={(e) => setPriority(e.target.value)}
                             label="درجة الأولوية"
-                            sx={{ height: '56px' }}
+                            sx={{ height: isPhone ? '40px' : '42px' }}
                             disabled={hasPendingTicket && !isSupervisor}
                           >
                             {priorities.map((p) => (
                               <MenuItem key={p.value} value={p.value}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
                                   <Box sx={{ 
                                     p: 0.5, 
                                     bgcolor: p.color + '20', 
@@ -1090,7 +1165,7 @@ const TechnicalSupport = () => {
                         }
                       }, uiLayout.formFieldSx)}
                       InputProps={{
-                        sx: { height: '56px', fontSize: '1rem' }
+                        sx: { height: isPhone ? '40px' : '42px', fontSize: '0.78rem' }
                       }}
                       disabled={hasPendingTicket && !isSupervisor}
                     />
@@ -1101,7 +1176,7 @@ const TechnicalSupport = () => {
                       fullWidth
                       required
                       multiline
-                      rows={6}
+                      minRows={isPhone ? 3 : 4}
                       label="وصف المشكلة / الاقتراح"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -1119,18 +1194,18 @@ const TechnicalSupport = () => {
 
                   <Grid item xs={12}>
                     <Box sx={{ 
-                      p: 3, 
-                      border: '2px dashed #2196f3', 
+                      p: isPhone ? 0.8 : 1,
+                      border: '1px dashed rgba(5,117,70,.28)', 
                       borderRadius: 2,
-                      bgcolor: '#f8fdff',
+                      bgcolor: '#fbfdfc',
                       textAlign: 'center',
                       opacity: (hasPendingTicket && !isSupervisor) ? 0.6 : 1,
                     }}>
-                      <CloudUpload sx={{ fontSize: 48, color: '#2196f3', mb: 2 }} />
-                      <Typography variant="h6" sx={{ mb: 1, color: '#1a237e' }}>
+                      <CloudUpload sx={{ fontSize: isPhone ? 25 : 30, color: '#057546', mb: 0.35 }} />
+                      <Typography sx={{ mb: 0.15, color: '#034d31', fontSize: '0.8rem', fontWeight: 900 }}>
                         إرفاق ملفات داعمة
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.7, fontSize: '0.68rem' }}>
                         اسحب الملفات هنا أو انقر للرفع. المسموح: صور، PDF، Word. الحد الأقصى 5 ملفات، كل ملف حتى 100MB
                       </Typography>
                       
@@ -1139,12 +1214,13 @@ const TechnicalSupport = () => {
                         variant="contained"
                         startIcon={<CloudUpload />}
                         sx={uiLayout.withUiSx({ 
-                          bgcolor: '#2196f3',
+                          bgcolor: '#057546',
                           borderRadius: 2,
-                          px: 4,
-                          py: 1.2,
+                          px: 1.4,
+                          py: 0.65,
+                          fontSize: '0.72rem',
                           '&:hover': {
-                            bgcolor: '#1976d2',
+                            bgcolor: '#034d31',
                           }
                         }, uiLayout.buttonSx)}
                         disabled={hasPendingTicket && !isSupervisor}
@@ -1162,14 +1238,14 @@ const TechnicalSupport = () => {
                     </Box>
 
                     {files.length > 0 && (
-                      <Box sx={{ mt: 3 }}>
-                        <Divider sx={{ my: 3 }} />
-                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#1a237e' }}>
+                      <Box sx={{ mt: 0.8 }}>
+                        <Divider sx={{ my: 0.8 }} />
+                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#034d31' }}>
                           📎 الملفات المرفوعة ({files.length}/5)
                         </Typography>
-                        <Grid container spacing={2}>
+                        <Grid container spacing={isPhone ? 0.7 : 0.9}>
                           {files.map((file) => (
-                            <Grid item xs={12} sm={6} md={4} key={file.id}>
+                            <Grid item xs={12} sm={6} lg={4} key={file.id}>
                               <Card 
                                 variant="outlined" 
                                 sx={{ 
@@ -1180,9 +1256,9 @@ const TechnicalSupport = () => {
                                   }
                                 }}
                               >
-                                <CardContent sx={{ p: 2 }}>
+                                <CardContent sx={{ p: isPhone ? 0.75 : 1 }}>
                                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
                                       <Box sx={{ 
                                         p: 1.5, 
                                         bgcolor: file.type === 'image' ? '#e8f5e9' : '#e3f2fd',
@@ -1224,23 +1300,37 @@ const TechnicalSupport = () => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <Box sx={{ 
-                      p: 3, 
-                      bgcolor: '#f9f9f9', 
+                    <Box sx={{
+                      p: isPhone ? 0.7 : 0.85,
+                      bgcolor: '#f7fbf9',
                       borderRadius: 2,
-                      border: '1px solid #e8e8e8',
-                      mb: 2
+                      border: '1px solid rgba(5,117,70,.10)',
+                      mb: 0.8
                     }}>
-                      <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <Info fontSize="small" />
-                        <strong>معلومة:</strong> عند إرسال التذكرة، ستحصل على رقم متابعة فريد يمكنك استخدامه لمتابعة حالتها.
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        ستتلقى تحديثات حالة التذكرة عبر النظام.
+                      <Typography
+                        color="text.secondary"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 0.55,
+                          fontSize: isPhone ? '0.65rem' : '0.7rem',
+                          lineHeight: 1.5
+                        }}
+                      >
+                        <Info sx={{ fontSize: 16, mt: 0.1, flexShrink: 0 }} />
+                        عند الإرسال ستحصل على رقم متابعة ويمكنك متابعة حالة التذكرة من نفس الصفحة.
                       </Typography>
                     </Box>
 
-                    <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'center', gap: 2 }, uiLayout.actionBarSx)}>
+                    <Box
+                      sx={uiLayout.withUiSx({
+                        display: 'flex',
+                        flexDirection: isPhone ? 'column' : 'row',
+                        justifyContent: 'center',
+                        gap: 0.65,
+                        width: '100%'
+                      }, uiLayout.actionBarSx)}
+                    >
                       <Button
                         variant="outlined"
                         onClick={() => {
@@ -1250,12 +1340,14 @@ const TechnicalSupport = () => {
                           setPriority('medium');
                           setFiles([]);
                         }}
-                        sx={uiLayout.withUiSx({ 
-                          py: 1.5, 
-                          px: 6,
+                        sx={uiLayout.withUiSx({
+                          minHeight: 38,
+                          py: 0.55,
+                          px: 1.5,
+                          width: isPhone ? '100%' : 'auto',
                           borderRadius: 2,
-                          fontSize: '1rem',
-                          fontWeight: 'medium'
+                          fontSize: '0.72rem',
+                          fontWeight: 750
                         }, uiLayout.buttonSx)}
                         disabled={hasPendingTicket && !isSupervisor}
                       >
@@ -1266,20 +1358,21 @@ const TechnicalSupport = () => {
                         variant="contained"
                         disabled={loading || uploading || (hasPendingTicket && !isSupervisor)}
                         startIcon={(loading || uploading) ? <CircularProgress size={20} color="inherit" /> : <Send />}
-                        sx={uiLayout.withUiSx({ 
-                          py: 1.5, 
-                          px: 8,
+                        sx={uiLayout.withUiSx({
+                          minHeight: 38,
+                          py: 0.55,
+                          px: 1.6,
+                          width: isPhone ? '100%' : 'auto',
                           borderRadius: 2,
-                          bgcolor: (hasPendingTicket && !isSupervisor) ? '#9e9e9e' : '#2196f3',
-                          fontSize: '1.1rem',
-                          fontWeight: 'bold',
-                          minWidth: 200,
+                          bgcolor: (hasPendingTicket && !isSupervisor) ? '#9e9e9e' : '#057546',
+                          fontSize: '0.74rem',
+                          fontWeight: 850,
+                          minWidth: isPhone ? 0 : 150,
+                          boxShadow: 'none',
                           '&:hover': (hasPendingTicket && !isSupervisor) ? {} : {
-                            bgcolor: '#1976d2',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)'
+                            bgcolor: '#034d31',
+                            boxShadow: 'none'
                           },
-                          transition: 'all 0.3s ease',
                           cursor: (hasPendingTicket && !isSupervisor) ? 'not-allowed' : 'pointer'
                         }, uiLayout.buttonSx)}
                       >
@@ -1300,126 +1393,355 @@ const TechnicalSupport = () => {
           <Paper 
             id="tickets-section"
             sx={{ 
-              p: 4, 
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              border: '1px solid #e0e0e0',
+              p: isPhone ? 0.7 : isTablet ? 0.9 : 1,
+              borderRadius: isPhone ? 2 : 2.5,
+              boxShadow: 'none',
+              border: '1px solid rgba(5,117,70,.11)',
+              bgcolor: '#fff',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ 
-                  p: 1.5, 
-                  bgcolor: '#e8f5e9', 
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <CalendarToday sx={{ color: '#4caf50' }} />
-                </Box>
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1a237e' }}>
-                    {isSupportStaff && viewAllTickets ? 'جميع تذاكر المستخدمين' : 'تذاكري السابقة'}
-                  </Typography>
-                  <Typography sx={{mt:"10px"}} variant="body2" color="text.secondary">
-                    {isSupportStaff && viewAllTickets 
-                      ? `إدارة جميع التذاكر المقدمة من المستخدمين (${allUsersTickets.length} تذكرة)` 
-                      : `جميع التذاكر التي قدمتها سابقاً (${tickets.length} تذكرة)`}
-                  </Typography>
-                </Box>
-              </Box>
-              
-              <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 1, alignItems: 'center' }, uiLayout.filterBarSx)}>
-                {isSupportStaff && viewAllTickets && (
-                  <>
-                    <TextField InputLabelProps={{ shrink: true }}
-                      size="small"
-                      placeholder="ابحث في التذاكر..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      sx={uiLayout.withUiSx({ width: 200 }, uiLayout.formFieldSx)}
-                      InputProps={{
-                        startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />,
+            {isSupportStaff && viewAllTickets ? (
+              <Box sx={{ mb: 1 }}>
+                {/* Admin section heading */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: isPhone ? 'stretch' : 'center',
+                    justifyContent: 'space-between',
+                    flexDirection: isPhone ? 'column' : 'row',
+                    gap: 0.75,
+                    mb: 0.8
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
+                    <Box
+                      sx={{
+                        width: 34,
+                        height: 34,
+                        flexShrink: 0,
+                        bgcolor: '#edf7f2',
+                        color: '#057546',
+                        borderRadius: 1.7,
+                        display: 'grid',
+                        placeItems: 'center',
+                        border: '1px solid rgba(5,117,70,.10)'
                       }}
-                    />
-
-                    <Autocomplete
-                      size="small"
-                      sx={{ width: 240 }}
-                      options={[{ guid: 'all', name: 'جميع الموظفين' }, ...employeeOptions]}
-                      value={
-                        selectedEmployeeGuid === 'all'
-                          ? { guid: 'all', name: 'جميع الموظفين' }
-                          : employeeOptions.find(emp => emp.guid === selectedEmployeeGuid) || { guid: 'all', name: 'جميع الموظفين' }
-                      }
-                      onChange={(event, newValue) => {
-                        setSelectedEmployeeGuid(newValue?.guid || 'all');
-                      }}
-                      getOptionLabel={(option) => option.name || ''}
-                      isOptionEqualToValue={(option, value) => option.guid === value.guid}
-                      renderInput={(params) => (
-                        <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                          {...params}
-                          label="الموظف"
-                          placeholder="ابحث باسم الموظف"
-                        />
-                      )}
-                    />
-
-                    <FormControl size="small" sx={uiLayout.withUiSx({ minWidth: 140 }, uiLayout.formFieldSx)}>
-                      <Select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        displayEmpty
-                      >
-                        <MenuItem value="all">جميع الحالات</MenuItem>
-                        <MenuItem value="pending">قيد الانتظار</MenuItem>
-                        <MenuItem value="in_progress">قيد المعالجة</MenuItem>
-                        <MenuItem value="resolved">تم الحل</MenuItem>
-                        <MenuItem value="closed">مغلقة</MenuItem>
-                      </Select>
-                    </FormControl>
-
-                    <Button
-                      variant="contained"
-                      color="success"
-                      startIcon={<Download />}
-                      onClick={exportTicketsToExcel}
-                      disabled={displayedTickets.length === 0}
-                      sx={uiLayout.withUiSx({ borderRadius: 2, whiteSpace: 'nowrap' }, uiLayout.buttonSx)}
                     >
-                      تصدير Excel
-                    </Button>
-                  </>
-                )}
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    if (isSupportStaff && viewAllTickets) {
-                      fetchAllTickets();
-                    } else {
-                      fetchUserTickets();
+                      <CalendarToday sx={{ fontSize: 18 }} />
+                    </Box>
+
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography
+                        sx={{
+                          fontWeight: 900,
+                          color: '#034d31',
+                          fontSize: isPhone ? '0.82rem' : '0.96rem',
+                          lineHeight: 1.25
+                        }}
+                      >
+                        تذاكر الدعم الفني
+                      </Typography>
+                      <Typography
+                        sx={{
+                          mt: 0.1,
+                          color: '#70827a',
+                          fontSize: isPhone ? '0.62rem' : '0.68rem',
+                          lineHeight: 1.4
+                        }}
+                      >
+                        عرض وفرز ومتابعة طلبات المستخدمين
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.45,
+                      flexWrap: 'wrap'
+                    }}
+                  >
+                    <Chip
+                      size="small"
+                      label={`${allUsersTickets.length} إجمالي`}
+                      sx={{
+                        height: 26,
+                        bgcolor: '#edf7f2',
+                        color: '#057546',
+                        fontWeight: 850,
+                        fontSize: '0.64rem',
+                        '& .MuiChip-label': { px: 0.85 }
+                      }}
+                    />
+                    <Chip
+                      size="small"
+                      label={`${allUsersTickets.filter((t) => t.status === 'pending').length} انتظار`}
+                      sx={{
+                        height: 26,
+                        bgcolor: '#fff8e7',
+                        color: '#9a6500',
+                        fontWeight: 800,
+                        fontSize: '0.62rem',
+                        '& .MuiChip-label': { px: 0.8 }
+                      }}
+                    />
+                    <Chip
+                      size="small"
+                      label={`${allUsersTickets.filter((t) => t.status === 'in_progress').length} معالجة`}
+                      sx={{
+                        height: 26,
+                        bgcolor: '#eef5ff',
+                        color: '#31669a',
+                        fontWeight: 800,
+                        fontSize: '0.62rem',
+                        '& .MuiChip-label': { px: 0.8 }
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* Admin filters: one coherent toolbar, no uiLayout.filterBarSx override */}
+                <Box
+                  sx={{
+                    p: isPhone ? 0.65 : 0.75,
+                    borderRadius: 2,
+                    bgcolor: '#f8fbf9',
+                    border: '1px solid rgba(5,117,70,.10)',
+                    display: 'grid',
+                    gridTemplateColumns: isDesktop
+                      ? 'minmax(250px, 1.55fr) minmax(210px, 1.2fr) minmax(145px, .75fr) auto 38px'
+                      : isTablet
+                      ? 'repeat(2, minmax(0, 1fr))'
+                      : '1fr',
+                    gap: 0.6,
+                    alignItems: 'center',
+                    '& .MuiInputBase-root': {
+                      minHeight: 38,
+                      bgcolor: '#fff',
+                      fontSize: '0.72rem'
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontSize: '0.7rem'
                     }
                   }}
+                >
+                  <TextField
+                    InputLabelProps={{ shrink: true }}
+                    size="small"
+                    label="البحث"
+                    placeholder="رقم التذكرة، العنوان، المستخدم أو الفرع"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{
+                      minWidth: 0,
+                      width: '100%',
+                      '& .MuiOutlinedInput-root': { borderRadius: 1.7 }
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <Search
+                          sx={{
+                            ml: 0.4,
+                            color: '#6f8179',
+                            fontSize: 18,
+                            flexShrink: 0
+                          }}
+                        />
+                      )
+                    }}
+                  />
+
+                  <Autocomplete
+                    size="small"
+                    options={[{ guid: 'all', name: 'جميع الموظفين' }, ...employeeOptions]}
+                    value={
+                      selectedEmployeeGuid === 'all'
+                        ? { guid: 'all', name: 'جميع الموظفين' }
+                        : employeeOptions.find((emp) => emp.guid === selectedEmployeeGuid) ||
+                          { guid: 'all', name: 'جميع الموظفين' }
+                    }
+                    onChange={(event, newValue) => {
+                      setSelectedEmployeeGuid(newValue?.guid || 'all');
+                    }}
+                    getOptionLabel={(option) => option.name || ''}
+                    isOptionEqualToValue={(option, value) => option.guid === value.guid}
+                    sx={{
+                      width: '100%',
+                      minWidth: 0,
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 1.7,
+                        minHeight: 38,
+                        py: '0 !important'
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        InputLabelProps={{ shrink: true }}
+                        label="الموظف"
+                        placeholder="جميع الموظفين"
+                      />
+                    )}
+                  />
+
+                  <FormControl
+                    size="small"
+                    sx={{
+                      width: '100%',
+                      minWidth: 0,
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 1.7
+                      }
+                    }}
+                  >
+                    <InputLabel>الحالة</InputLabel>
+                    <Select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      label="الحالة"
+                    >
+                      <MenuItem value="all">جميع الحالات</MenuItem>
+                      <MenuItem value="pending">قيد الانتظار</MenuItem>
+                      <MenuItem value="in_progress">قيد المعالجة</MenuItem>
+                      <MenuItem value="resolved">تم الحل</MenuItem>
+                      <MenuItem value="closed">مغلقة</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <Button
+                    variant="contained"
+                    startIcon={<Download sx={{ fontSize: 17 }} />}
+                    onClick={exportTicketsToExcel}
+                    disabled={displayedTickets.length === 0}
+                    sx={{
+                      minHeight: 38,
+                      width: isTablet || isPhone ? '100%' : 'auto',
+                      px: 1.25,
+                      borderRadius: 1.7,
+                      bgcolor: '#057546',
+                      boxShadow: 'none',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.68rem',
+                      fontWeight: 850,
+                      '&:hover': {
+                        bgcolor: '#034d31',
+                        boxShadow: 'none'
+                      }
+                    }}
+                  >
+                    تصدير Excel
+                  </Button>
+
+                  <Tooltip title="تحديث التذاكر">
+                    <IconButton
+                      onClick={fetchAllTickets}
+                      sx={{
+                        width: isPhone || isTablet ? '100%' : 38,
+                        height: 38,
+                        borderRadius: 1.7,
+                        color: '#057546',
+                        bgcolor: '#fff',
+                        border: '1px solid rgba(5,117,70,.18)',
+                        '&:hover': {
+                          bgcolor: '#edf7f2'
+                        },
+                        ...(isTablet && {
+                          gridColumn: '2 / 3'
+                        })
+                      }}
+                    >
+                      <Refresh sx={{ fontSize: 19 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: isPhone ? 'stretch' : 'center',
+                  justifyContent: 'space-between',
+                  flexDirection: isPhone ? 'column' : 'row',
+                  gap: 0.7,
+                  mb: 0.9
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <Box
+                    sx={{
+                      width: 34,
+                      height: 34,
+                      bgcolor: '#edf7f2',
+                      borderRadius: 1.7,
+                      display: 'grid',
+                      placeItems: 'center'
+                    }}
+                  >
+                    <CalendarToday sx={{ color: '#057546', fontSize: 18 }} />
+                  </Box>
+
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontWeight: 900,
+                        color: '#034d31',
+                        fontSize: isPhone ? '0.82rem' : '0.96rem'
+                      }}
+                    >
+                      تذاكري السابقة
+                    </Typography>
+                    <Typography sx={{ mt: 0.1, color: '#70827a', fontSize: '0.66rem' }}>
+                      {tickets.length} تذكرة
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Button
+                  variant="outlined"
+                  onClick={fetchUserTickets}
                   startIcon={<Refresh />}
-                  sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
+                  sx={{
+                    minHeight: 36,
+                    width: isPhone ? '100%' : 'auto',
+                    px: 1.1,
+                    borderRadius: 1.7,
+                    color: '#057546',
+                    borderColor: 'rgba(5,117,70,.26)',
+                    fontSize: '0.68rem',
+                    fontWeight: 800
+                  }}
                 >
                   تحديث
                 </Button>
               </Box>
-            </Box>
+            )}
 
             {/* تبويبات الفلترة للمستخدمين العاديين */}
             {!isSupportStaff && (
               <Tabs
                 value={tabValue}
                 onChange={(e, newValue) => setTabValue(newValue)}
-                sx={{ 
-                  mb: 3,
+                variant={isPhone ? 'scrollable' : 'standard'}
+                scrollButtons={isPhone ? 'auto' : false}
+                allowScrollButtonsMobile
+                sx={{
+                  mb: 0.8,
+                  minHeight: 38,
+                  borderBottom: '1px solid rgba(5,117,70,.10)',
+                  '& .MuiTabs-flexContainer': {
+                    gap: isPhone ? 0.1 : 0.35
+                  },
                   '& .MuiTab-root': {
-                    fontWeight: 'medium',
-                    fontSize: '0.9rem'
+                    minHeight: 38,
+                    minWidth: isPhone ? 92 : 110,
+                    px: isPhone ? 0.7 : 1,
+                    py: 0.45,
+                    fontWeight: 750,
+                    fontSize: isPhone ? '0.66rem' : '0.72rem'
+                  },
+                  '& .MuiTab-iconWrapper': {
+                    fontSize: 17
                   }
                 }}
               >
@@ -1431,29 +1753,336 @@ const TechnicalSupport = () => {
             )}
 
             {loadingTickets ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 1.2 }}>
                 <CircularProgress />
               </Box>
             ) : (
               <>
-                {/* جدول التذاكر */}
-                <TableContainer component={Paper} variant="outlined" sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.tableContainerSx)}>
-                  <Table>
-                    <TableHead sx={{ bgcolor: '#f5f5f5' }}>
+
+                {!isDesktop ? (
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: isTablet ? 'repeat(2, minmax(0, 1fr))' : '1fr',
+                      gap: isPhone ? 0.65 : 0.8
+                    }}
+                  >
+                    {paginatedTickets.length > 0 ? (
+                      paginatedTickets.map((ticket) => {
+                        const typeInfo = ticketTypes.find(t => t.value === ticket.ticket_type);
+                        const priorityInfo = priorities.find(p => p.value === ticket.priority);
+
+                        return (
+                          <Paper
+                            key={ticket.id}
+                            variant="outlined"
+                            sx={{
+                              p: isPhone ? 0.8 : 0.95,
+                              minWidth: 0,
+                              borderRadius: 2,
+                              borderColor: 'rgba(5,117,70,.12)',
+                              boxShadow: 'none',
+                              bgcolor: '#fff'
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                justifyContent: 'space-between',
+                                gap: 0.7
+                              }}
+                            >
+                              <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.55, mb: 0.35, flexWrap: 'wrap' }}>
+                                  <Typography
+                                    sx={{
+                                      fontFamily: 'monospace',
+                                      fontWeight: 900,
+                                      color: '#057546',
+                                      fontSize: '0.7rem'
+                                    }}
+                                  >
+                                    #{ticket.ticket_number}
+                                  </Typography>
+
+                                  <Chip
+                                    label={getStatusText(ticket.status)}
+                                    size="small"
+                                    sx={{
+                                      height: 22,
+                                      bgcolor: getStatusColor(ticket.status) + '12',
+                                      color: getStatusColor(ticket.status),
+                                      fontWeight: 800,
+                                      fontSize: '0.62rem',
+                                      '& .MuiChip-label': { px: 0.7 }
+                                    }}
+                                  />
+                                </Box>
+
+                                <Typography
+                                  sx={{
+                                    fontWeight: 850,
+                                    color: '#243a31',
+                                    fontSize: isPhone ? '0.75rem' : '0.8rem',
+                                    lineHeight: 1.45,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                  }}
+                                >
+                                  {ticket.subject}
+                                </Typography>
+                              </Box>
+
+                              <IconButton
+                                size="small"
+                                aria-label="مشاهدة التفاصيل"
+                                onClick={() => openTicketDetails(ticket)}
+                                sx={{
+                                  width: 30,
+                                  height: 30,
+                                  flexShrink: 0,
+                                  color: '#057546',
+                                  border: '1px solid rgba(5,117,70,.14)'
+                                }}
+                              >
+                                <Visibility sx={{ fontSize: 17 }} />
+                              </IconButton>
+                            </Box>
+
+                            {isSupportStaff && viewAllTickets && (
+                              <Box
+                                sx={{
+                                  display: 'grid',
+                                  gridTemplateColumns: isPhone ? '1fr' : 'repeat(2,minmax(0,1fr))',
+                                  gap: 0.45,
+                                  mt: 0.65,
+                                  p: 0.6,
+                                  borderRadius: 1.5,
+                                  bgcolor: '#f8fbf9'
+                                }}
+                              >
+                                <Typography sx={{ fontSize: '0.64rem', color: '#60736b' }}>
+                                  <strong>الموظف:</strong> {getUserNameFromGuid(ticket.user_guid)}
+                                </Typography>
+                                <Typography sx={{ fontSize: '0.64rem', color: '#60736b' }}>
+                                  <strong>الفرع:</strong> {getBranchNameFromGuid(ticket.branch_guid)}
+                                </Typography>
+                              </Box>
+                            )}
+
+                            <Box
+                              sx={{
+                                mt: 0.65,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.45,
+                                flexWrap: 'wrap'
+                              }}
+                            >
+                              <Chip
+                                label={typeInfo?.label || 'غير محدد'}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  height: 22,
+                                  borderColor: typeInfo?.color,
+                                  color: typeInfo?.color,
+                                  fontSize: '0.61rem',
+                                  '& .MuiChip-label': { px: 0.65 }
+                                }}
+                              />
+
+                              <Chip
+                                label={priorityInfo?.label || 'غير محدد'}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  height: 22,
+                                  borderColor: priorityInfo?.color,
+                                  color: priorityInfo?.color,
+                                  fontSize: '0.61rem',
+                                  '& .MuiChip-label': { px: 0.65 }
+                                }}
+                              />
+
+                              <Typography
+                                sx={{
+                                  marginInlineStart: 'auto',
+                                  fontSize: '0.61rem',
+                                  color: '#7b8983',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                {new Date(ticket.created_at).toLocaleDateString('ar-EG')}
+                              </Typography>
+                            </Box>
+
+                            <Box
+                              sx={{
+                                mt: 0.7,
+                                pt: 0.6,
+                                borderTop: '1px solid rgba(5,117,70,.08)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.35,
+                                flexWrap: 'wrap'
+                              }}
+                            >
+                              {(isSupportStaff || (ticket.user_guid === userGuid && ticket.status !== 'closed')) && (
+                                <Button
+                                  size="small"
+                                  variant="text"
+                                  startIcon={<Reply sx={{ fontSize: 16 }} />}
+                                  onClick={() => openReplyDialog(ticket)}
+                                  sx={{
+                                    minHeight: 30,
+                                    px: 0.65,
+                                    color: '#057546',
+                                    fontSize: '0.64rem',
+                                    fontWeight: 800
+                                  }}
+                                >
+                                  رد
+                                </Button>
+                              )}
+
+                              {isSupportStaff && ticket.status !== 'resolved' && ticket.status !== 'closed' && (
+                                <Button
+                                  size="small"
+                                  variant="text"
+                                  startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
+                                  onClick={() => updateTicketStatus(ticket.id, 'resolved')}
+                                  sx={{
+                                    minHeight: 30,
+                                    px: 0.65,
+                                    color: '#2e7d32',
+                                    fontSize: '0.64rem',
+                                    fontWeight: 800
+                                  }}
+                                >
+                                  تم الحل
+                                </Button>
+                              )}
+
+                              {isSupportStaff &&
+                                ticket.status !== 'in_progress' &&
+                                ticket.status !== 'resolved' &&
+                                ticket.status !== 'closed' && (
+                                  <Button
+                                    size="small"
+                                    variant="text"
+                                    startIcon={<AccessTime sx={{ fontSize: 16 }} />}
+                                    onClick={() => updateTicketStatus(ticket.id, 'in_progress')}
+                                    sx={{
+                                      minHeight: 30,
+                                      px: 0.65,
+                                      color: '#b26a00',
+                                      fontSize: '0.64rem',
+                                      fontWeight: 800
+                                    }}
+                                  >
+                                    معالجة
+                                  </Button>
+                                )}
+
+                              {isSupportStaff && ticket.status !== 'closed' && (
+                                <Button
+                                  size="small"
+                                  variant="text"
+                                  startIcon={<Close sx={{ fontSize: 16 }} />}
+                                  onClick={() => updateTicketStatus(ticket.id, 'closed')}
+                                  sx={{
+                                    minHeight: 30,
+                                    px: 0.65,
+                                    color: '#6f7d77',
+                                    fontSize: '0.64rem',
+                                    fontWeight: 800
+                                  }}
+                                >
+                                  إغلاق
+                                </Button>
+                              )}
+                            </Box>
+                          </Paper>
+                        );
+                      })
+                    ) : (
+                      <Box
+                        sx={{
+                          gridColumn: '1 / -1',
+                          minHeight: 110,
+                          display: 'grid',
+                          placeItems: 'center',
+                          textAlign: 'center',
+                          border: '1px dashed rgba(5,117,70,.18)',
+                          borderRadius: 2,
+                          bgcolor: '#fbfdfc',
+                          p: 1.5
+                        }}
+                      >
+                        <Box>
+                          <Description sx={{ fontSize: 30, color: '#aab9b2', mb: 0.35 }} />
+                          <Typography sx={{ fontWeight: 850, color: '#52645d', fontSize: '0.75rem' }}>
+                            لا توجد تذاكر
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                <TableContainer
+                  component={Paper}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 2,
+                    boxShadow: 'none',
+                    overflow: 'hidden',
+                    width: '100%',
+                    maxWidth: '100%',
+                    border: '1px solid rgba(5,117,70,.11)',
+                    '& .MuiTable-root': {
+                      width: '100%',
+                      minWidth: 0,
+                      tableLayout: 'fixed'
+                    },
+                    '& .MuiTableCell-root': {
+                      px: 0.6,
+                      py: 0.68,
+                      fontSize: '0.67rem',
+                      whiteSpace: 'normal',
+                      overflow: 'hidden',
+                      verticalAlign: 'middle'
+                    }
+                  }}
+                >
+                  <Table size="small">
+                    <TableHead
+                      sx={{
+                        bgcolor: '#edf7f2',
+                        '& .MuiTableCell-head': {
+                          color: '#27463a',
+                          fontWeight: 900,
+                          borderBottom: '1px solid rgba(5,117,70,.14)'
+                        }
+                      }}
+                    >
                       <TableRow>
                         {isSupportStaff && viewAllTickets && (
-                          <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>المستخدم</TableCell>
+                          <TableCell sx={{ width: '17%', fontWeight: 900, color: '#034d31' }}>المستخدم</TableCell>
                         )}
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>#</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>التذكرة</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>النوع</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>الحالة</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>الأولوية</TableCell>
+                        <TableCell sx={{ width: '13%', fontWeight: 900, color: '#034d31' }}>#</TableCell>
+                        <TableCell sx={{ width: '20%', fontWeight: 900, color: '#034d31' }}>التذكرة</TableCell>
+                        <TableCell sx={{ width: '8%', fontWeight: 900, color: '#034d31' }}>النوع</TableCell>
+                        <TableCell sx={{ width: '9%', fontWeight: 900, color: '#034d31' }}>الحالة</TableCell>
+                        <TableCell sx={{ width: '7%', fontWeight: 900, color: '#034d31' }}>الأولوية</TableCell>
                         {isSupportStaff && viewAllTickets && (
-                          <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>الفرع</TableCell>
+                          <TableCell sx={{ width: '8%', fontWeight: 900, color: '#034d31' }}>الفرع</TableCell>
                         )}
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>التاريخ</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1a237e' }}>الإجراءات</TableCell>
+                        <TableCell sx={{ width: '8%', fontWeight: 900, color: '#034d31' }}>التاريخ</TableCell>
+                        <TableCell sx={{ width: '10%', fontWeight: 900, color: '#034d31' }}>الإجراءات</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -1466,95 +2095,189 @@ const TechnicalSupport = () => {
                             <TableRow 
                               key={ticket.id}
                               sx={{ 
-                                '&:hover': { bgcolor: '#f9f9f9' },
-                                cursor: 'pointer'
+                                '&:hover': { bgcolor: '#f8fbf9' },
+                                '& .MuiTableCell-root': {
+                                  borderBottom: '1px solid #eef2f0'
+                                }
                               }}
                             >
                               {isSupportStaff && viewAllTickets && (
                                 <TableCell>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Avatar sx={{ bgcolor: '#2196f3', width: 32, height: 32, fontSize: 14 }}>
-                                      <Person />
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
+                                    <Avatar
+                                      sx={{
+                                        bgcolor: '#edf7f2',
+                                        color: '#057546',
+                                        width: 27,
+                                        height: 27,
+                                        flexShrink: 0
+                                      }}
+                                    >
+                                      <Person sx={{ fontSize: 17 }} />
                                     </Avatar>
-                                    <Box>
-                                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                                        {getUserNameFromGuid(ticket.user_guid)}
-                                      </Typography>
-                                    </Box>
+                                    <Typography
+                                      title={getUserNameFromGuid(ticket.user_guid)}
+                                      sx={{
+                                        minWidth: 0,
+                                        fontWeight: 750,
+                                        fontSize: '0.65rem',
+                                        lineHeight: 1.35,
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                      }}
+                                    >
+                                      {getUserNameFromGuid(ticket.user_guid)}
+                                    </Typography>
                                   </Box>
                                 </TableCell>
                               )}
                               <TableCell>
-                                <Typography variant="body2" sx={{ fontFamily: 'monospace', fontWeight: 'bold' }}>
+                                <Typography
+                                  title={`#${ticket.ticket_number}`}
+                                  sx={{
+                                    fontFamily: 'monospace',
+                                    fontWeight: 800,
+                                    fontSize: '0.6rem',
+                                    lineHeight: 1.3,
+                                    overflowWrap: 'anywhere',
+                                    color: '#40574e'
+                                  }}
+                                >
                                   #{ticket.ticket_number}
                                 </Typography>
                               </TableCell>
                               <TableCell>
-                                <Box>
-                                  <Typography variant="body2" sx={{ fontWeight: 'medium', mb: 0.5 }}>
-                                    {ticket.subject}
-                                  </Typography>
-                                  <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
-                                    {ticket.description ? (ticket.description.substring(0, 60) + (ticket.description.length > 60 ? '...' : '')) : 'لا يوجد وصف'}
-                                  </Typography>
-                                </Box>
+                                <Typography
+                                  title={ticket.subject}
+                                  sx={{
+                                    fontWeight: 800,
+                                    color: '#30483f',
+                                    fontSize: '0.67rem',
+                                    lineHeight: 1.4,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                  }}
+                                >
+                                  {ticket.subject}
+                                </Typography>
                               </TableCell>
                               <TableCell>
                                 <Chip
-                                  icon={typeInfo?.icon}
                                   label={typeInfo?.label}
                                   size="small"
                                   variant="outlined"
                                   sx={{
+                                    maxWidth: '100%',
+                                    height: 22,
                                     borderColor: typeInfo?.color,
                                     color: typeInfo?.color,
-                                    fontWeight: 'medium'
+                                    fontWeight: 750,
+                                    fontSize: '0.58rem',
+                                    '& .MuiChip-label': {
+                                      px: 0.5,
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis'
+                                    }
                                   }}
                                 />
                               </TableCell>
                               <TableCell>
                                 <Chip
-                                  icon={getStatusIcon(ticket.status)}
                                   label={getStatusText(ticket.status)}
                                   size="small"
                                   sx={{
-                                    bgcolor: getStatusColor(ticket.status) + '15',
+                                    maxWidth: '100%',
+                                    height: 22,
+                                    bgcolor: getStatusColor(ticket.status) + '12',
                                     color: getStatusColor(ticket.status),
-                                    fontWeight: 'bold'
+                                    fontWeight: 800,
+                                    fontSize: '0.58rem',
+                                    '& .MuiChip-label': {
+                                      px: 0.5,
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis'
+                                    }
                                   }}
                                 />
                               </TableCell>
                               <TableCell>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: priorityInfo?.color }} />
-                                  <Typography variant="body2">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3, minWidth: 0 }}>
+                                  <Box
+                                    sx={{
+                                      width: 6,
+                                      height: 6,
+                                      borderRadius: '50%',
+                                      bgcolor: priorityInfo?.color,
+                                      flexShrink: 0
+                                    }}
+                                  />
+                                  <Typography
+                                    sx={{
+                                      minWidth: 0,
+                                      fontSize: '0.6rem',
+                                      fontWeight: 750,
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis'
+                                    }}
+                                  >
                                     {priorityInfo?.label}
                                   </Typography>
                                 </Box>
                               </TableCell>
                               {isSupportStaff && viewAllTickets && (
                                 <TableCell>
-                                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                                  <Typography
+                                    title={getBranchNameFromGuid(ticket.branch_guid)}
+                                    sx={{
+                                      fontWeight: 700,
+                                      fontSize: '0.61rem',
+                                      lineHeight: 1.3,
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden'
+                                    }}
+                                  >
                                     {getBranchNameFromGuid(ticket.branch_guid)}
                                   </Typography>
                                 </TableCell>
                               )}
                               <TableCell>
-                                <Box>
-                                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                                    {new Date(ticket.created_at).toLocaleDateString('ar-EG')}
-                                  </Typography>
-                                  <Typography variant="caption" color="text.secondary">
-                                    {new Date(ticket.created_at).toLocaleTimeString('ar-EG')}
-                                  </Typography>
-                                </Box>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 750,
+                                    fontSize: '0.6rem',
+                                    lineHeight: 1.3,
+                                    color: '#52645d'
+                                  }}
+                                >
+                                  {new Date(ticket.created_at).toLocaleDateString('ar-EG')}
+                                </Typography>
                               </TableCell>
                               <TableCell>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 0.2,
+                                    flexWrap: 'wrap',
+                                    maxWidth: '100%'
+                                  }}
+                                >
                                   <Tooltip title="مشاهدة التفاصيل">
                                     <IconButton 
                                       size="small" 
-                                      sx={{ color: '#2196f3' }}
+                                      sx={{
+                                        width: 30,
+                                        height: 30,
+                                        color: '#057546',
+                                        border: '1px solid rgba(5,117,70,.12)'
+                                      }}
                                       onClick={() => openTicketDetails(ticket)}
                                     >
                                       <Visibility fontSize="small" />
@@ -1566,7 +2289,7 @@ const TechnicalSupport = () => {
                                     <Tooltip title="إضافة رد">
                                       <IconButton 
                                         size="small" 
-                                        sx={{ color: '#4caf50' }}
+                                        sx={{ width: 27, height: 27, color: '#2e7d32' }}
                                         onClick={() => openReplyDialog(ticket)}
                                       >
                                         <Reply fontSize="small" />
@@ -1586,7 +2309,11 @@ const TechnicalSupport = () => {
                                       <span>
                                         <IconButton
                                           size="small"
-                                          sx={{ color: ticket.status === 'closed' ? '#9e9e9e' : '#4caf50' }}
+                                          sx={{
+                                              width: 27,
+                                              height: 27,
+                                              color: ticket.status === 'closed' ? '#9e9e9e' : '#2e7d32'
+                                            }}
                                           onClick={
                                             ticket.status === 'closed'
                                               ? undefined
@@ -1607,7 +2334,7 @@ const TechnicalSupport = () => {
                                         <Tooltip title="تم الحل">
                                           <IconButton 
                                             size="small" 
-                                            sx={{ color: '#4caf50' }}
+                                            sx={{ width: 27, height: 27, color: '#2e7d32' }}
                                             onClick={() => updateTicketStatus(ticket.id, 'resolved')}
                                           >
                                             <CheckCircle fontSize="small" />
@@ -1618,7 +2345,7 @@ const TechnicalSupport = () => {
                                         <Tooltip title="قيد المعالجة">
                                           <IconButton 
                                             size="small" 
-                                            sx={{ color: '#ff9800' }}
+                                            sx={{ width: 27, height: 27, color: '#b26a00' }}
                                             onClick={() => updateTicketStatus(ticket.id, 'in_progress')}
                                           >
                                             <AccessTime fontSize="small" />
@@ -1629,7 +2356,7 @@ const TechnicalSupport = () => {
                                         <Tooltip title="إغلاق التذكرة">
                                           <IconButton 
                                             size="small" 
-                                            sx={{ color: '#9e9e9e' }}
+                                            sx={{ width: 27, height: 27, color: '#6f7d77' }}
                                             onClick={() => updateTicketStatus(ticket.id, 'closed')}
                                           >
                                             <Close fontSize="small" />
@@ -1648,11 +2375,11 @@ const TechnicalSupport = () => {
                           <TableCell colSpan={isSupportStaff && viewAllTickets ? 9 : 7}>
                             <Box sx={{ 
                               textAlign: 'center', 
-                              py: 4,
+                              py: 1.2,
                               bgcolor: '#fafafa',
                               borderRadius: 2
                             }}>
-                              <Description sx={{ fontSize: 64, color: '#bdbdbd', mb: 2 }} />
+                              <Description sx={{ fontSize: 34, color: '#aab9b2', mb: 0.6 }} />
                               <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                                 لا توجد تذاكر
                               </Typography>
@@ -1671,6 +2398,8 @@ const TechnicalSupport = () => {
                   </Table>
                 </TableContainer>
 
+                )}
+
                 {/* Pagination */}
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25]}
@@ -1682,7 +2411,28 @@ const TechnicalSupport = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   labelRowsPerPage="صفوف لكل صفحة:"
                   labelDisplayedRows={({ from, to, count }) => `${from}-${to} من ${count}`}
-                  sx={uiLayout.withUiSx({ direction: "rtl" }, uiLayout.tablePaginationSx)}
+                  sx={uiLayout.withUiSx({
+                    direction: 'rtl',
+                    mt: 0.55,
+                    borderTop: '1px solid rgba(5,117,70,.08)',
+                    '& .MuiTablePagination-toolbar': {
+                      minHeight: 42,
+                      px: isPhone ? 0 : 0.5,
+                      gap: isPhone ? 0.25 : 0.5,
+                      flexWrap: isPhone ? 'wrap' : 'nowrap',
+                      justifyContent: isPhone ? 'center' : 'flex-end'
+                    },
+                    '& .MuiTablePagination-spacer': {
+                      display: isPhone ? 'none' : 'block'
+                    },
+                    '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                      m: 0,
+                      fontSize: isPhone ? '0.62rem' : '0.68rem'
+                    },
+                    '& .MuiTablePagination-actions': {
+                      marginInlineStart: isPhone ? 0 : 1
+                    }
+                  }, uiLayout.tablePaginationSx)}
                 />
               </>
             )}
@@ -1690,16 +2440,27 @@ const TechnicalSupport = () => {
         </Container>
 
         {/* ديالوج تفاصيل التذكرة */}
-        <Dialog sx={uiLayout.dialogLayoutSx}
+        <Dialog
+          sx={uiLayout.dialogLayoutSx}
           open={detailsDialogOpen}
           onClose={() => setDetailsDialogOpen(false)}
-          maxWidth="md"
           fullWidth
+          maxWidth={false}
+          PaperProps={{
+            sx: {
+              width: isPhone ? 'calc(100% - 16px)' : isTablet ? 'calc(100% - 32px)' : 'min(900px, calc(100% - 48px))',
+              maxWidth: isPhone ? 'calc(100% - 16px)' : isTablet ? '900px' : '900px',
+              maxHeight: isPhone ? 'calc(100dvh - 16px)' : 'calc(100dvh - 40px)',
+              m: isPhone ? 1 : 2,
+              borderRadius: isPhone ? 2 : 2.5,
+              overflow: 'hidden'
+            }
+          }}
         >
           {ticketDetails && (
             <>
-              <DialogTitle>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <DialogTitle sx={{ px: isPhone ? 1 : 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                       تفاصيل التذكرة #{ticketDetails.ticket_number}
@@ -1720,9 +2481,9 @@ const TechnicalSupport = () => {
                   />
                 </Box>
               </DialogTitle>
-              <DialogContent dividers>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+              <DialogContent dividers sx={{ p: isPhone ? 1 : 1.5, bgcolor: '#fbfdfc' }}>
+                <Grid container spacing={isPhone ? 0.8 : 1}>
+                  <Grid item xs={12} lg={6}>
                     <Typography variant="subtitle2" color="text.secondary">
                       العنوان
                     </Typography>
@@ -1731,7 +2492,7 @@ const TechnicalSupport = () => {
                     </Typography>
                   </Grid>
                   
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} lg={6}>
                     <Typography variant="subtitle2" color="text.secondary">
                       النوع
                     </Typography>
@@ -1761,8 +2522,8 @@ const TechnicalSupport = () => {
                         معلومات مقدم التذكرة
                       </Typography>
                       <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f5f5f5' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Avatar sx={{ bgcolor: '#2196f3' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
+                          <Avatar sx={{ bgcolor: '#057546' }}>
                             <Person />
                           </Avatar>
                           <Box>
@@ -1784,13 +2545,13 @@ const TechnicalSupport = () => {
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
                         المرفقات ({ticketDetails.attachments.length})
                       </Typography>
-                      <Grid container spacing={2}>
+                      <Grid container spacing={isPhone ? 0.7 : 0.9}>
                         {ticketDetails.attachments.map((attachment, index) => (
                           <Grid item xs={12} sm={6} key={index}>
                             <Card variant="outlined">
                               <CardContent sx={{ p: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
                                     <AttachFile />
                                     <Box>
                                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
@@ -1875,7 +2636,13 @@ const TechnicalSupport = () => {
                   )}
                 </Grid>
               </DialogContent>
-              <DialogActions sx={uiLayout.dialogActionsSx}>
+              <DialogActions sx={uiLayout.withUiSx({
+                  px: isPhone ? 1 : 1.5,
+                  py: 1,
+                  gap: 0.6,
+                  flexWrap: 'wrap',
+                  justifyContent: 'flex-start'
+                }, uiLayout.dialogActionsSx)}>
                 <Button sx={uiLayout.buttonSx} onClick={() => setDetailsDialogOpen(false)}>
                   إغلاق
                 </Button>
@@ -1896,7 +2663,7 @@ const TechnicalSupport = () => {
                           openReplyDialog(ticketDetails);
                         }}
                         disabled={!isSupportStaff && ticketDetails.status === 'closed'}
-                        sx={uiLayout.withUiSx({ bgcolor: '#2196f3' }, uiLayout.buttonSx)}
+                        sx={uiLayout.withUiSx({ bgcolor: '#057546' }, uiLayout.buttonSx)}
                       >
                         إضافة رد
                       </Button>
@@ -1909,28 +2676,38 @@ const TechnicalSupport = () => {
         </Dialog>
 
         {/* ديالوج إضافة رد */}
-        <Dialog sx={uiLayout.dialogLayoutSx}
+        <Dialog
+          sx={uiLayout.dialogLayoutSx}
           open={replyDialogOpen}
           onClose={() => setReplyDialogOpen(false)}
-          maxWidth="sm"
           fullWidth
+          maxWidth={false}
+          PaperProps={{
+            sx: {
+              width: isPhone ? 'calc(100% - 16px)' : 'min(640px, calc(100% - 32px))',
+              maxWidth: '640px',
+              m: isPhone ? 1 : 2,
+              borderRadius: isPhone ? 2 : 2.5,
+              overflow: 'hidden'
+            }
+          }}
         >
-          <DialogTitle>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <DialogTitle sx={{ px: isPhone ? 1 : 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
               <Reply />
               إضافة رد على التذكرة #{selectedTicket?.ticket_number}
             </Box>
           </DialogTitle>
-          <DialogContent dividers>
+          <DialogContent dividers sx={{ p: isPhone ? 1 : 1.5, bgcolor: '#fbfdfc' }}>
             <TextField InputLabelProps={{ shrink: true }}
               autoFocus
               multiline
-              rows={4}
+              minRows={isPhone ? 3 : 4}
               fullWidth
               label="رسالة الرد"
               value={replyMessage}
               onChange={(e) => setReplyMessage(e.target.value)}
-              sx={uiLayout.withUiSx({ mb: 2 }, uiLayout.formFieldSx)}
+              sx={uiLayout.withUiSx({ mb: 0.8 }, uiLayout.formFieldSx)}
             />
             
             <Box sx={{ mb: 2 }}>
@@ -1980,7 +2757,13 @@ const TechnicalSupport = () => {
               )}
             </Box>
           </DialogContent>
-          <DialogActions sx={uiLayout.dialogActionsSx}>
+          <DialogActions sx={uiLayout.withUiSx({
+                  px: isPhone ? 1 : 1.5,
+                  py: 1,
+                  gap: 0.6,
+                  flexWrap: 'wrap',
+                  justifyContent: 'flex-start'
+                }, uiLayout.dialogActionsSx)}>
             <Button sx={uiLayout.buttonSx} onClick={() => setReplyDialogOpen(false)}>
               إلغاء
             </Button>
@@ -1989,7 +2772,7 @@ const TechnicalSupport = () => {
               onClick={handleSubmitReply}
               disabled={sendingReply || !replyMessage.trim()}
               startIcon={sendingReply ? <CircularProgress size={20} /> : <Send />}
-              sx={uiLayout.withUiSx({ bgcolor: '#2196f3' }, uiLayout.buttonSx)}
+              sx={uiLayout.withUiSx({ bgcolor: '#057546' }, uiLayout.buttonSx)}
             >
               {sendingReply ? 'جاري الإرسال...' : 'إرسال الرد'}
             </Button>
@@ -1997,22 +2780,33 @@ const TechnicalSupport = () => {
         </Dialog>
 
         {/* ديالوج طلب قيد الانتظار */}
-        <Dialog sx={uiLayout.dialogLayoutSx}
+        <Dialog
+          sx={uiLayout.dialogLayoutSx}
           open={pendingTicketDialogOpen}
           onClose={() => setPendingTicketDialogOpen(false)}
-          maxWidth="sm"
+          fullWidth
+          maxWidth={false}
+          PaperProps={{
+            sx: {
+              width: isPhone ? 'calc(100% - 16px)' : 'min(600px, calc(100% - 32px))',
+              maxWidth: '600px',
+              m: isPhone ? 1 : 2,
+              borderRadius: isPhone ? 2 : 2.5,
+              overflow: 'hidden'
+            }
+          }}
         >
-          <DialogTitle sx={{ textAlign: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 1 }}>
-              <Avatar sx={{ bgcolor: '#ff9800', width: 48, height: 48 }}>
-                <Block sx={{ fontSize: 32 }} />
+          <DialogTitle sx={{ px: isPhone ? 1 : 1.5, py: 1, textAlign: 'center', borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.7, mb: 0.35 }}>
+              <Avatar sx={{ bgcolor: '#fff8e7', color: '#c77800', width: 34, height: 34 }}>
+                <Block sx={{ fontSize: 19 }} />
               </Avatar>
             </Box>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1a237e' }}>
+            <Typography sx={{ fontWeight: 900, color: '#034d31', fontSize: '0.9rem' }}>
               ⚠️ لديك طلب مازال قيد الانتظار
             </Typography>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ p: isPhone ? 1 : 1.5 }}>
             <DialogContentText sx={{ textAlign: 'center', mb: 2 }}>
               <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.8 }}>
                 لا يمكنك تقديم تذكرة جديدة حتى يتم الرد على تذكرتك الحالية أو تغيير حالتها.
@@ -2023,7 +2817,7 @@ const TechnicalSupport = () => {
             </DialogContentText>
             
             {tickets.filter(t => t.status === 'pending' || t.status === 'in_progress').slice(0, 2).map(ticket => (
-              <Card key={ticket.id} variant="outlined" sx={{ mb: 2 }}>
+              <Card key={ticket.id} variant="outlined" sx={{ mb: 0.7, borderRadius: 2, boxShadow: 'none' }}>
                 <CardContent sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
@@ -2048,7 +2842,13 @@ const TechnicalSupport = () => {
               </Card>
             ))}
           </DialogContent>
-          <DialogActions sx={uiLayout.withUiSx({ justifyContent: 'center', pb: 3 }, uiLayout.dialogActionsSx)}>
+          <DialogActions sx={uiLayout.withUiSx({
+              px: isPhone ? 1 : 1.5,
+              py: 1,
+              gap: 0.6,
+              flexWrap: 'wrap',
+              justifyContent: 'center'
+            }, uiLayout.dialogActionsSx)}>
             <Button
               variant="contained"
               onClick={() => {
@@ -2056,13 +2856,15 @@ const TechnicalSupport = () => {
                 document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
               sx={uiLayout.withUiSx({
-                bgcolor: '#2196f3',
-                py: 1.2,
-                px: 4,
+                bgcolor: '#057546',
+                minHeight: 36,
+                py: 0.55,
+                px: 1.25,
+                width: isPhone ? '100%' : 'auto',
                 borderRadius: 2,
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                minWidth: 200,
+                fontSize: '0.7rem',
+                fontWeight: 850,
+                minWidth: isPhone ? 0 : 150,
               }, uiLayout.buttonSx)}
             >
               عرض تذكرتي الحالية
@@ -2081,15 +2883,20 @@ const TechnicalSupport = () => {
           open={alert.open}
           autoHideDuration={5000}
           onClose={() => setAlert({ ...alert, open: false })}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: isPhone ? 'center' : 'right'
+          }}
         >
           <Alert
             severity={alert.type}
             onClose={() => setAlert({ ...alert, open: false })}
             sx={{ 
-              minWidth: 350,
+              minWidth: isPhone ? 0 : 320,
+              width: isPhone ? 'calc(100vw - 24px)' : 'auto',
+              maxWidth: '100%',
               borderRadius: 2,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              boxShadow: '0 6px 18px rgba(31,45,61,.12)'
             }}
           >
             <Typography variant="body2" sx={{ fontWeight: 'medium' }}>

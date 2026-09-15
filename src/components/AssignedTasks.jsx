@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -1264,12 +1265,12 @@ if (loading || externalLoading) {
           }}>
             <iframe
               src={openAttachment}
-              style={{ 
+              style={adaptiveInlineStyle({ 
                 width: '100%', 
                 height: '400px', 
                 border: `1px solid ${colorPalette.primaryLighter}`,
                 borderRadius: '4px'
-              }}
+              })}
               title="Attachment"
             />
             <Button 

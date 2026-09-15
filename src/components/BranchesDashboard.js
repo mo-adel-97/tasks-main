@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { designTokens } from '../config/designTokens';
 import React, { useEffect, useRef, useState } from "react";
@@ -255,7 +256,7 @@ const BranchesDashboardReport = () => {
               </Typography>
               <Typography fontSize={19} color="text.secondary" mt={1.5}>
                 اجمالي تحصيل الفروع:&nbsp;
-                <span style={{ color: "#1976d2", fontWeight: 700 }}>
+                <span style={adaptiveInlineStyle({ color: "#1976d2", fontWeight: 700 })}>
                   {totalAllDaen?.toLocaleString("ar-EG", { maximumFractionDigits: 2 })} ريال
                 </span>
               </Typography>

@@ -90,17 +90,17 @@ import Swal from 'sweetalert2';
 
 
 // الألوان الأساسية
-const primaryColor = '#80b49e';
-const primaryDark = '#6a9a87';
-const primaryLight = '#9ac9b5';
-const backgroundColor = '#f8fbfa';
-const textColor = '#2c3e50';
+const primaryColor = '#057546';
+const primaryDark = '#034d31';
+const primaryLight = '#80b49e';
+const backgroundColor = '#f6faf8';
+const textColor = '#17372b';
 
 const IMAGE_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php';
 const SURVEY_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/survey_api.php';
 
-const steps = ['المعلومات الأساسية', 'تحديد المستلمين', 'الأسئلة', 'المراجعة'];
-const externalSteps = ['المعلومات الأساسية', 'تحديد الفروع والدبلومات', 'الأسئلة', 'المراجعة'];
+const steps = ['البيانات', 'المستلمون', 'الأسئلة', 'المراجعة'];
+const externalSteps = ['البيانات', 'الفروع والدبلومات', 'الأسئلة', 'المراجعة'];
 
 const jobTitles = [
   "رئيس الشركة",                 // 0
@@ -183,7 +183,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #2c3e50;
-            background: linear-gradient(135deg, #f8fbfa 0%, #e8f5f1 100%);
+            background: #f6faf8;
             padding: 20px;
         }
         .container {
@@ -191,12 +191,12 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 15px 50px rgba(128, 180, 158, 0.15);
+            box-shadow: none;
             border: 1px solid #9ac9b5;
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #80b49e 0%, #6a9a87 100%);
+            background: #034d31;
             color: white;
             padding: 30px;
             text-align: center;
@@ -228,7 +228,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             border: 1px solid #9ac9b5;
         }
         .info-item strong {
-            color: #6a9a87;
+            color: #034d31;
             display: block;
             margin-bottom: 5px;
             font-size: 1.1rem;
@@ -244,12 +244,12 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             margin-top: 20px;
         }
         .stat-card {
-            background: linear-gradient(135deg, #80b49e 0%, #6a9a87 100%);
+            background: #034d31;
             color: white;
             padding: 25px;
             border-radius: 12px;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(128, 180, 158, 0.3);
+            box-shadow: none;
         }
         .stat-number {
             font-size: 2.5rem;
@@ -269,7 +269,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(128, 180, 158, 0.1);
+            box-shadow: none;
         }
         .question-header {
             display: flex;
@@ -280,7 +280,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             border-bottom: 2px solid #f8fbfa;
         }
         .question-number {
-            background: #80b49e;
+            background: #057546;
             color: white;
             width: 40px;
             height: 40px;
@@ -300,7 +300,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
         }
         .question-type {
             background: #e8f5f1;
-            color: #6a9a87;
+            color: #034d31;
             padding: 8px 15px;
             border-radius: 20px;
             font-weight: bold;
@@ -315,7 +315,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             box-shadow: 0 3px 15px rgba(0,0,0,0.1);
         }
         .responses-table th {
-            background: linear-gradient(135deg, #80b49e 0%, #6a9a87 100%);
+            background: #034d31;
             color: white;
             padding: 15px;
             text-align: right;
@@ -333,7 +333,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
             background: #e8f5f1;
         }
         .answer-badge {
-            background: #80b49e;
+            background: #057546;
             color: white;
             padding: 5px 12px;
             border-radius: 15px;
@@ -348,14 +348,14 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
         .empty-state {
             text-align: center;
             padding: 40px;
-            color: #6a9a87;
+            color: #034d31;
             font-size: 1.2rem;
         }
         .footer {
             text-align: center;
             padding: 20px;
             background: #f8fbfa;
-            color: #6a9a87;
+            color: #034d31;
             border-top: 1px solid #9ac9b5;
             margin-top: 30px;
         }
@@ -370,42 +370,42 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 التقرير الإحصائي للاستبيان</h1>
+            <h1>التقرير الإحصائي للاستبيان</h1>
             <div class="subtitle">${survey.title}</div>
         </div>
         
         <div class="survey-info">
-            <h2 style="color: #6a9a87; margin-bottom: 15px;">معلومات الاستبيان</h2>
+            <h2 style="color: #034d31; margin-bottom: 15px;">معلومات الاستبيان</h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <strong>📝 العنوان:</strong>
+                    <strong>العنوان:</strong>
                     <span>${survey.title}</span>
                 </div>
                 <div class="info-item">
-                    <strong>📋 الوصف:</strong>
+                    <strong>الوصف:</strong>
                     <span>${survey.description || 'لا يوجد وصف'}</span>
                 </div>
                 <div class="info-item">
-                    <strong>📅 تاريخ البدء:</strong>
+                    <strong>تاريخ البدء:</strong>
                     <span>${new Date(survey.start_date).toLocaleDateString('ar-EG')}</span>
                 </div>
                 <div class="info-item">
-                    <strong>⏰ تاريخ الانتهاء:</strong>
+                    <strong>تاريخ الانتهاء:</strong>
                     <span>${new Date(survey.end_date).toLocaleDateString('ar-EG')}</span>
                 </div>
                 <div class="info-item">
-                    <strong>👥 نوع الاستبيان:</strong>
+                    <strong>نوع الاستبيان:</strong>
                     <span>${isExternal ? 'استبيان خارجي للعملاء' : 'استبيان داخلي للموظفين'}</span>
                 </div>
                 <div class="info-item">
-                    <strong>🕒 تاريخ التصدير:</strong>
+                    <strong>تاريخ التصدير:</strong>
                     <span>${new Date().toLocaleDateString('ar-EG')} - ${new Date().toLocaleTimeString('ar-EG')}</span>
                 </div>
             </div>
         </div>
         
         <div class="stats-section">
-            <h2 style="color: #6a9a87; margin-bottom: 15px;">الإحصائيات العامة</h2>
+            <h2 style="color: #034d31; margin-bottom: 15px;">الإحصائيات العامة</h2>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number">${responses.length}</div>
@@ -427,10 +427,10 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
         </div>
         
         <div class="questions-section">
-            <h2 style="color: #6a9a87; margin-bottom: 25px;">الردود التفصيلية</h2>
+            <h2 style="color: #034d31; margin-bottom: 25px;">الردود التفصيلية</h2>
             
             ${responses.length === 0 ? 
-                '<div class="empty-state">🚫 لا توجد ردود على هذا الاستبيان بعد</div>' :
+                '<div class="empty-state">لا توجد ردود على هذا الاستبيان بعد</div>' :
                 survey.questions?.map((question, qIndex) => {
                     const questionResponses = responses.map(response => ({
                         respondent: isExternal ? response.student_name : response.employee_name,
@@ -467,7 +467,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
                         
                         ${question.type === 'radio' || question.type === 'checkbox' ? `
                             <div style="margin-top: 20px; padding: 15px; background: #f8fbfa; border-radius: 8px;">
-                                <h4 style="color: #6a9a87; margin-bottom: 10px;">📈 تحليل الإجابات:</h4>
+                                <h4 style="color: #034d31; margin-bottom: 10px;">تحليل الإجابات:</h4>
                                 ${generateAnswerAnalysis(questionResponses, question.options, question.type)}
                             </div>
                         ` : ''}
@@ -478,7 +478,7 @@ const exportSurveyReport = (survey, responses, isExternal = false) => {
         </div>
         
         <div class="footer">
-            <p>تم إنشاء هذا التقرير تلقائياً من نظام إدارة الاستبيانات</p>
+            <p>تقرير الاستبيان</p>
             <p>© ${new Date().getFullYear()} - جميع الحقوق محفوظة</p>
         </div>
     </div>
@@ -573,9 +573,9 @@ const generateAnswerAnalysis = (responses, options, type) => {
             <span style="font-weight: bold;">${option}</span>
           </div>
           <div style="width: 100px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
-            <div style="width: ${percentage}%; background: linear-gradient(90deg, #80b49e, #6a9a87); height: 20px; border-radius: 10px;"></div>
+            <div style="width: ${percentage}%; background: #057546; height: 20px; border-radius: 10px;"></div>
           </div>
-          <div style="width: 80px; text-align: left; font-weight: bold; color: #6a9a87;">
+          <div style="width: 80px; text-align: left; font-weight: bold; color: #034d31;">
             ${count} (${percentage}%)
           </div>
         </div>
@@ -1299,7 +1299,7 @@ const fetchExternalSurveyResponses = async (surveyId) => {
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  // فانكشن لتوليد لينك الاستبيان الخارجي
+  // فانكشن لتوليد رابط الاستبيان الخارجي
 const generateSurveyLink = (survey, trainer = null) => {
   const baseUrl = 'https://surveys.sstli.com';
 
@@ -1477,7 +1477,7 @@ const exportSurveyQrCode = async (link, title = 'استبيان', subTitle = '')
   // فانكشن نسخ اللينك
   const copySurveyLink = (link) => {
     navigator.clipboard.writeText(link).then(() => {
-      showSuccessAlert('تم نسخ لينك الاستبيان بنجاح!');
+      showSuccessAlert('تم نسخ رابط الاستبيان بنجاح!');
     }).catch(err => {
       console.error('Failed to copy link: ', err);
       showErrorAlert('حدث خطأ في نسخ اللينك');
@@ -1739,7 +1739,7 @@ const normalizeSurveyPayload = (obj) => ({
         showSuccessAlert(
           isExternalEditMode
             ? 'تم تعديل الاستبيان الخارجي بنجاح!'
-            : 'تم إنشاء الاستبيان الخارجي بنجاح!'
+            : 'تم حفظ الاستبيان الخارجي بنجاح'
         );
 
         resetExternalForm();
@@ -1772,7 +1772,7 @@ const normalizeSurveyPayload = (obj) => ({
       showSuccessAlert(
         isEditMode
           ? 'تم تعديل الاستبيان الداخلي بنجاح!'
-          : 'تم إنشاء الاستبيان الداخلي بنجاح!'
+          : 'تم حفظ الاستبيان الداخلي بنجاح'
       );
 
       resetForm();
@@ -1966,7 +1966,7 @@ const handleDeleteSurvey = async (id, isExternal = false) => {
 const handleDuplicateSurvey = async (row, isExternal = false) => {
   const result = await Swal.fire({
     title: 'نسخ الاستبيان',
-    text: 'سيتم إنشاء استبيان جديد بنفس البيانات والأسئلة بدون الردود. هل تريد المتابعة؟',
+    text: 'سيتم إنشاء نسخة جديدة من الاستبيان بدون الردود. هل تريد المتابعة؟',
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'نعم، انسخ',
@@ -2572,104 +2572,130 @@ async function chartToPngBase64({
   // Styles
   const containerStyle = {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f8fbfa 0%, #e8f5f1 100%)',
+    background: '#f6faf8',
     padding: 0,
     margin: 0
   };
 
   const mainPaperStyle = {
-    p: 4,
-    background: 'white',
-    borderRadius: 4,
-    boxShadow: '0 15px 50px rgba(128, 180, 158, 0.15)',
-    border: `1px solid ${primaryLight}`,
+    p: 0,
+    background: 'transparent',
+    borderRadius: 0,
+    boxShadow: 'none',
+    border: 'none',
     width: '100%',
-    maxWidth: '1400px',
-    my: 4,
-    minHeight: '80vh'
+    maxWidth: 'none',
+    my: 0,
+    minHeight: 'auto'
   };
 
-  const fieldStyle = {
+  const textFieldStyle = {
     '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      backgroundColor: '#fff',
       '&:hover fieldset': { borderColor: primaryColor },
-      '&.Mui-focused fieldset': { borderColor: primaryColor },
+      '&.Mui-focused fieldset': { borderColor: primaryColor, borderWidth: '1px' },
     },
-    '& .MuiInputLabel-root.Mui-focused': { color: primaryColor },
+    '& .MuiInputLabel-root': {
+      fontFamily: '"Cairo", sans-serif',
+      fontSize: '0.78rem',
+    },
+    '& .MuiInputBase-input': {
+      fontFamily: '"Cairo", sans-serif',
+      fontSize: '0.78rem',
+    },
   };
 
-  const chipStyle = {
-    backgroundColor: backgroundColor,
-    color: textColor,
-    border: `1px solid ${primaryLight}`,
-    fontFamily: '"Cairo", sans-serif'
-  };
-
-  const primaryChipStyle = {
-    backgroundColor: primaryColor,
-    color: 'white',
-    fontFamily: '"Cairo", sans-serif'
-  };
-
-  const cardStyle = {
-    border: `1px solid ${primaryLight}`,
-    borderRadius: 3,
-    background: 'white',
-    transition: 'all 0.3s ease',
-    mb: 2,
-    '&:hover': {
-      boxShadow: `0 8px 25px rgba(128, 180, 158, 0.15)`,
-      transform: 'translateY(-2px)'
-    }
-  };
+  // Shared aliases used by the existing survey builders/details UI.
+  // Keeping them defined here preserves the current logic while using the
+  // simplified design language introduced in this refactor.
+  const fieldStyle = textFieldStyle;
 
   const subtitleStyle = {
     color: primaryDark,
-    fontWeight: 'bold',
-    fontSize: '1.1rem',
+    fontWeight: 850,
+    fontSize: '0.86rem',
+    lineHeight: 1.35,
     fontFamily: '"Cairo", sans-serif'
   };
 
   const iconButtonStyle = {
-    '&:hover': { background: 'rgba(211, 47, 47, 0.1)' }
+    width: 34,
+    height: 34,
+    borderRadius: 1.7,
+    border: '1px solid rgba(211,47,47,.16)',
+    color: '#c62828',
+    backgroundColor: '#fff',
+    '&:hover': {
+      backgroundColor: 'rgba(211,47,47,.06)',
+      borderColor: 'rgba(211,47,47,.28)'
+    }
+  };
+
+  const cardStyle = {
+    border: '1px solid rgba(5,117,70,0.11)',
+    borderRadius: 2,
+    background: '#fff',
+    mb: 1,
+    boxShadow: 'none'
+  };
+
+  const chipStyle = {
+    backgroundColor: '#f4f8f6',
+    color: '#456056',
+    border: '1px solid #e0ebe6',
+    fontFamily: '"Cairo", sans-serif',
+    fontSize: '0.67rem'
+  };
+
+  const primaryChipStyle = {
+    backgroundColor: '#edf7f2',
+    color: primaryDark,
+    border: '1px solid rgba(5,117,70,0.16)',
+    fontFamily: '"Cairo", sans-serif',
+    fontWeight: 800,
+    fontSize: '0.67rem'
   };
 
   const outlinedButtonStyle = {
-    borderColor: primaryColor,
-    color: primaryColor,
-    mt: 2,
-    px: 3,
-    py: 1,
+    borderColor: 'rgba(5,117,70,.35)',
+    color: primaryDark,
+    mt: 0,
+    px: 1.25,
+    py: 0.65,
+    minHeight: 36,
     borderRadius: 2,
     fontFamily: '"Cairo", sans-serif',
+    fontSize: '0.72rem',
+    fontWeight: 800,
+    boxShadow: 'none',
     '&:hover': {
-      borderColor: primaryDark,
-      backgroundColor: 'rgba(128, 180, 158, 0.1)',
-      transform: 'translateY(-1px)'
-    },
-    transition: 'all 0.3s ease'
+      borderColor: primaryColor,
+      backgroundColor: '#edf7f2'
+    }
   };
 
   const primaryButtonStyle = {
-    background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
+    background: primaryColor,
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: 850,
     borderRadius: 2,
-    px: 4,
-    py: 1.5,
-    fontSize: '1rem',
+    px: 1.35,
+    py: 0.7,
+    minHeight: 36,
+    fontSize: '0.72rem',
     fontFamily: '"Cairo", sans-serif',
+    boxShadow: 'none',
     '&:hover': {
-      background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`,
-      boxShadow: `0 8px 25px rgba(128, 180, 158, 0.4)`,
-      transform: 'translateY(-2px)'
-    },
-    transition: 'all 0.3s ease'
+      background: primaryDark,
+      boxShadow: 'none'
+    }
   };
 
   const reviewTextStyle = {
     color: textColor,
-    lineHeight: 1.8,
-    fontSize: '1rem',
+    lineHeight: 1.6,
+    fontSize: '0.78rem',
     fontFamily: '"Cairo", sans-serif'
   };
 
@@ -3487,9 +3513,28 @@ async function chartToPngBase64({
 
   // Render functions for main page
   const renderSurveysTable = () => (
-    <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 3, border: `1px solid ${primaryLight}` }, uiLayout.tableContainerSx)}>
-      <Table>
-        <TableHead sx={{ backgroundColor: backgroundColor }}>
+    <TableContainer
+      component={Paper}
+      elevation={0}
+      sx={uiLayout.withUiSx({
+        borderRadius: 2,
+        border: '1px solid rgba(5,117,70,.11)',
+        overflowX: 'auto'
+      }, uiLayout.tableContainerSx)}
+    >
+      <Table
+        size="small"
+        sx={{
+          minWidth: 980,
+          '& .MuiTableCell-root': {
+            py: 0.85,
+            px: 1,
+            fontSize: '0.72rem',
+            borderColor: '#edf2ef'
+          }
+        }}
+      >
+        <TableHead sx={{ backgroundColor: '#edf7f2' }}>
           <TableRow>
             <TableCell sx={{ fontWeight: 'bold', color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>العنوان</TableCell>
             <TableCell sx={{ fontWeight: 'bold', color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>الوصف</TableCell>
@@ -3530,110 +3575,28 @@ async function chartToPngBase64({
                 {surveyResponses[survey.id]?.length || 0} رد
               </TableCell>
               <TableCell>
-  <Box
-    sx={uiLayout.withUiSx({
-      display: 'flex',
-      gap: 1,
-      flexDirection: 'column',
-      minWidth: 150
-    }, uiLayout.actionBarSx)}
-  >
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<Visibility />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: primaryColor,
-        color: primaryDark,
-        '&:hover': {
-          borderColor: primaryDark,
-          backgroundColor: `${primaryColor}10`
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleViewResponses(survey, false)}
-    >
-      عرض الردود
-    </Button>
-
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<Edit />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: primaryColor,
-        color: primaryDark,
-        '&:hover': {
-          borderColor: primaryDark,
-          backgroundColor: `${primaryColor}10`
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleEditSurvey(survey)}
-    >
-      تعديل
-    </Button>
-
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<ContentCopy />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: '#1976d2',
-        color: '#1976d2',
-        '&:hover': {
-          borderColor: '#115293',
-          backgroundColor: 'rgba(25, 118, 210, 0.08)'
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleDuplicateSurvey(survey, false)}
-    >
-      نسخ
-    </Button>
-
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<Delete />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: '#d32f2f',
-        color: '#d32f2f',
-        '&:hover': {
-          borderColor: '#b71c1c',
-          backgroundColor: 'rgba(211, 47, 47, 0.08)'
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleDeleteSurvey(survey.id, false)}
-    >
-      حذف
-    </Button>
-
-    <Button
-      startIcon={<Download />}
-      variant="contained"
-      size="small"
-      sx={uiLayout.withUiSx({
-        backgroundColor: '#28a745',
-        color: 'white',
-        fontFamily: '"Cairo", sans-serif',
-        '&:hover': {
-          backgroundColor: '#218838'
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleExportReport(survey, false)}
-      disabled={
-        !surveyResponses[survey.id] ||
-        surveyResponses[survey.id].length === 0
-      }
-    >
-      تصدير التقرير
-    </Button>
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, flexWrap: 'nowrap' }}>
+    <IconButton size="small" title="عرض الردود" onClick={() => handleViewResponses(survey, false)}
+      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      <Visibility sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="تعديل" onClick={() => handleEditSurvey(survey)}
+      sx={{ width: 30, height: 30, color: primaryDark, border: '1px solid rgba(5,117,70,.14)' }}>
+      <Edit sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="نسخ" onClick={() => handleDuplicateSurvey(survey, false)}
+      sx={{ width: 30, height: 30, color: '#1976d2', border: '1px solid rgba(25,118,210,.16)' }}>
+      <ContentCopy sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="حذف" onClick={() => handleDeleteSurvey(survey.id, false)}
+      sx={{ width: 30, height: 30, color: '#c62828', border: '1px solid rgba(198,40,40,.16)' }}>
+      <Delete sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="تصدير التقرير" onClick={() => handleExportReport(survey, false)}
+      disabled={!surveyResponses[survey.id] || surveyResponses[survey.id].length === 0}
+      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      <Download sx={{ fontSize: 17 }} />
+    </IconButton>
   </Box>
 </TableCell>
             </TableRow>
@@ -3646,14 +3609,26 @@ async function chartToPngBase64({
 const renderExternalSurveysTable = () => (
   <TableContainer
     component={Paper}
+    elevation={0}
     sx={uiLayout.withUiSx({
-      borderRadius: 3,
-      border: `1px solid ${primaryLight}`,
+      borderRadius: 2,
+      border: '1px solid rgba(5,117,70,.11)',
       overflowX: 'auto'
     }, uiLayout.tableContainerSx)}
   >
-    <Table sx={{ minWidth: 900 }}>
-      <TableHead sx={{ backgroundColor: backgroundColor }}>
+    <Table
+      size="small"
+      sx={{
+        minWidth: 940,
+        '& .MuiTableCell-root': {
+          py: 0.85,
+          px: 1,
+          fontSize: '0.72rem',
+          borderColor: '#edf2ef'
+        }
+      }}
+    >
+      <TableHead sx={{ backgroundColor: '#edf7f2' }}>
         <TableRow>
           <TableCell
             sx={{
@@ -3686,7 +3661,7 @@ const renderExternalSurveysTable = () => (
               width: '46%'
             }}
           >
-            لينك الاستبيان
+            رابط الاستبيان
           </TableCell>
 
           <TableCell
@@ -3982,110 +3957,28 @@ const renderExternalSurveysTable = () => (
 
               {/* الإجراءات */}
               <TableCell>
-  <Box
-    sx={uiLayout.withUiSx({
-      display: 'flex',
-      gap: 1,
-      flexDirection: 'column',
-      minWidth: 150
-    }, uiLayout.actionBarSx)}
-  >
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<Visibility />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: primaryColor,
-        color: primaryDark,
-        '&:hover': {
-          borderColor: primaryDark,
-          backgroundColor: `${primaryColor}10`
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleViewResponses(survey, true)}
-    >
-      عرض كل الردود
-    </Button>
-
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<Edit />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: primaryColor,
-        color: primaryDark,
-        '&:hover': {
-          borderColor: primaryDark,
-          backgroundColor: `${primaryColor}10`
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleEditExternalSurvey(survey)}
-    >
-      تعديل
-    </Button>
-
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<ContentCopy />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: '#1976d2',
-        color: '#1976d2',
-        '&:hover': {
-          borderColor: '#115293',
-          backgroundColor: 'rgba(25, 118, 210, 0.08)'
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleDuplicateSurvey(survey, true)}
-    >
-      نسخ
-    </Button>
-
-    <Button
-      variant="outlined"
-      size="small"
-      startIcon={<Delete />}
-      sx={uiLayout.withUiSx({
-        fontFamily: '"Cairo", sans-serif',
-        fontSize: '0.75rem',
-        borderColor: '#d32f2f',
-        color: '#d32f2f',
-        '&:hover': {
-          borderColor: '#b71c1c',
-          backgroundColor: 'rgba(211, 47, 47, 0.08)'
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleDeleteSurvey(survey.id, true)}
-    >
-      حذف
-    </Button>
-
-    <Button
-      startIcon={<Download />}
-      variant="contained"
-      size="small"
-      sx={uiLayout.withUiSx({
-        backgroundColor: '#28a745',
-        color: 'white',
-        fontFamily: '"Cairo", sans-serif',
-        '&:hover': {
-          backgroundColor: '#218838'
-        }
-      }, uiLayout.buttonSx)}
-      onClick={() => handleExportReport(survey, true)}
-      disabled={
-        !externalSurveyResponses[survey.id] ||
-        externalSurveyResponses[survey.id].length === 0
-      }
-    >
-      تصدير التقرير
-    </Button>
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, flexWrap: 'nowrap' }}>
+    <IconButton size="small" title="عرض الردود" onClick={() => handleViewResponses(survey, true)}
+      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      <Visibility sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="تعديل" onClick={() => handleEditExternalSurvey(survey)}
+      sx={{ width: 30, height: 30, color: primaryDark, border: '1px solid rgba(5,117,70,.14)' }}>
+      <Edit sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="نسخ" onClick={() => handleDuplicateSurvey(survey, true)}
+      sx={{ width: 30, height: 30, color: '#1976d2', border: '1px solid rgba(25,118,210,.16)' }}>
+      <ContentCopy sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="حذف" onClick={() => handleDeleteSurvey(survey.id, true)}
+      sx={{ width: 30, height: 30, color: '#c62828', border: '1px solid rgba(198,40,40,.16)' }}>
+      <Delete sx={{ fontSize: 17 }} />
+    </IconButton>
+    <IconButton size="small" title="تصدير التقرير" onClick={() => handleExportReport(survey, true)}
+      disabled={!externalSurveyResponses[survey.id] || externalSurveyResponses[survey.id].length === 0}
+      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      <Download sx={{ fontSize: 17 }} />
+    </IconButton>
   </Box>
 </TableCell>
             </TableRow>
@@ -4098,11 +3991,11 @@ const renderExternalSurveysTable = () => (
 
   const renderResponsesView = () => (
     <Box>
-      <Typography variant="h6" gutterBottom sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', mb: 3 }}>
-        الردود على الاستبيانات الداخلية
+      <Typography variant="h6" gutterBottom sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', mb: 1 }}>
+        ردود الاستبيانات الداخلية
       </Typography>
       {allSurveys.map((survey) => (
-        <Card key={survey.id} sx={{ ...cardStyle, mb: 3 }}>
+        <Card key={survey.id} sx={{ ...cardStyle, mb: 1 }}>
           <CardContent>
             <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }, uiLayout.pageHeaderSx)}>
               <Typography variant="h6" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
@@ -4134,7 +4027,7 @@ const renderExternalSurveysTable = () => (
             </Box>
             
             {surveyResponses[survey.id]?.map((response, index) => (
-              <Accordion key={index} sx={{ mb: 2, border: `1px solid ${primaryLight}`, borderRadius: '8px !important' }}>
+              <Accordion key={index} sx={{ mb: 0.75, border: '1px solid rgba(5,117,70,.11)', borderRadius: '8px !important', boxShadow: 'none' }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
                     <EmployeeAvatar 
@@ -4166,11 +4059,11 @@ const renderExternalSurveysTable = () => (
         </Card>
       ))}
 
-      <Typography variant="h6" gutterBottom sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', mb: 3, mt: 4 }}>
-        الردود على الاستبيانات الخارجية
+      <Typography variant="h6" gutterBottom sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', mb: 1, mt: 2 }}>
+        ردود الاستبيانات الخارجية
       </Typography>
       {allExternalSurveys.map((survey) => (
-        <Card key={survey.id} sx={{ ...cardStyle, mb: 3 }}>
+        <Card key={survey.id} sx={{ ...cardStyle, mb: 1 }}>
           <CardContent>
             <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }, uiLayout.pageHeaderSx)}>
               <Typography variant="h6" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
@@ -4202,12 +4095,12 @@ const renderExternalSurveysTable = () => (
             </Box>
             
             {externalSurveyResponses[survey.id]?.map((response, index) => (
-              <Accordion key={index} sx={{ mb: 2, border: `1px solid ${primaryLight}`, borderRadius: '8px !important' }}>
+              <Accordion key={index} sx={{ mb: 0.75, border: '1px solid rgba(5,117,70,.11)', borderRadius: '8px !important', boxShadow: 'none' }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
                     <Avatar sx={{ 
-                      width: 60, 
-                      height: 60, 
+                      width: 34, 
+                      height: 34, 
                       backgroundColor: primaryColor,
                       border: `2px solid ${primaryLight}`,
                       fontSize: '1.2rem',
@@ -4244,25 +4137,11 @@ const renderExternalSurveysTable = () => (
 
   const renderExternalSurveysView = () => (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h6" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
-          الاستبيانات الخارجية للعملاء
-        </Typography>
-        <Button 
-          startIcon={<Add />}
-          onClick={handleOpenCreateExternalDialog}
-          variant="contained"
-          sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
-        >
-          إنشاء استبيان خارجي
-        </Button>
-      </Box>
-
       {loadingExternalSurveys ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
-          <CircularProgress sx={{ color: primaryColor }} />
-          <Typography sx={{ marginInlineStart: 2, fontFamily: '"Cairo", sans-serif' }}>
-            جاري تحميل البيانات...
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4, gap: 1 }}>
+          <CircularProgress size={26} sx={{ color: primaryColor }} />
+          <Typography sx={{ fontFamily: '"Cairo", sans-serif', fontSize: '0.75rem', color: '#60736b' }}>
+            جاري تحميل الاستبيانات...
           </Typography>
         </Box>
       ) : (
@@ -4302,100 +4181,138 @@ const renderExternalSurveysTable = () => (
       
       
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Container 
+        <Container
           maxWidth={false}
+          disableGutters
           sx={{
-            py: 4,
+            p: 0,
+            width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            transition: 'all 0.3s ease',
+            alignItems: 'stretch',
             ...navigationContentSx
           }}
         >
           <Paper sx={mainPaperStyle}>
             {/* Header */}
-            <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }, uiLayout.pageHeaderSx)}>
-              <Typography 
-                variant="h4" 
-                component="h1" 
-                sx={{
-                  color: primaryDark,
-                  fontWeight: 'bold',
-                  fontFamily: '"Cairo", sans-serif'
-                }}
-              >
-                إدارة الاستبيانات
-              </Typography>
-              
-              <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 2 }, uiLayout.actionBarSx)}>
-                <Button 
+            <Box
+              sx={{
+                minHeight: 72,
+                px: { xs: 1, sm: 1.25, md: 1.5 },
+                py: 1,
+                mb: 1,
+                borderRadius: 2.5,
+                bgcolor: primaryDark,
+                color: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 1
+              }}
+            >
+              <Box>
+                <Typography
+                  component="h1"
+                  sx={{
+                    color: '#fff',
+                    fontWeight: 950,
+                    fontFamily: '"Cairo", sans-serif',
+                    fontSize: '1.1rem',
+                    lineHeight: 1.25
+                  }}
+                >
+                  الاستبيانات والاختبارات
+                </Typography>
+                <Typography
+                  sx={{
+                    mt: 0.15,
+                    color: 'rgba(255,255,255,.75)',
+                    fontFamily: '"Cairo", sans-serif',
+                    fontSize: '0.68rem'
+                  }}
+                >
+                  إنشاء الاستبيانات ومتابعة الردود والاختبارات
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 0.6, flexWrap: 'wrap' }}>
+                <Button
                   startIcon={<Add />}
                   onClick={handleOpenCreateExternalDialog}
                   variant="outlined"
-                 sx={uiLayout.withUiSx({
-  ...outlinedButtonStyle,
-  mt: 0,
-  borderColor: '#ff9800',
-  color: '#ff9800',
-  '&:hover': {
-    borderColor: '#f57c00',
-    backgroundColor: 'rgba(255, 152, 0, 0.1)'
-  }
-}, uiLayout.buttonSx)}
+                  sx={{
+                    minHeight: 36,
+                    px: 1.1,
+                    color: '#fff',
+                    borderColor: 'rgba(255,255,255,.55)',
+                    fontFamily: '"Cairo", sans-serif',
+                    fontSize: '0.7rem',
+                    fontWeight: 850,
+                    '&:hover': {
+                      borderColor: '#fff',
+                      bgcolor: 'rgba(255,255,255,.08)'
+                    }
+                  }}
                 >
-                  استبيان خارجي
+                  إضافة خارجي
                 </Button>
-                <Button 
+
+                <Button
                   startIcon={<Add />}
                   onClick={handleOpenCreateDialog}
                   variant="contained"
-                  sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
+                  sx={{
+                    minHeight: 36,
+                    px: 1.1,
+                    bgcolor: '#fff',
+                    color: primaryDark,
+                    fontFamily: '"Cairo", sans-serif',
+                    fontSize: '0.7rem',
+                    fontWeight: 900,
+                    boxShadow: 'none',
+                    '&:hover': { bgcolor: '#f3f8f5', boxShadow: 'none' }
+                  }}
                 >
-                  استبيان داخلي
+                  إضافة داخلي
                 </Button>
               </Box>
             </Box>
 
             {/* Tabs */}
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
-              <Tabs 
-  value={activeTab} 
-  onChange={(e, newValue) => setActiveTab(newValue)}
-  sx={{
-    '& .MuiTab-root': {
-      fontFamily: '"Cairo", sans-serif',
-      fontWeight: 'bold',
-      fontSize: '1rem'
-    },
-    '& .Mui-selected': {
-      color: primaryColor
-    }
-  }}
->
-  <Tab sx={hrTabIconSx} 
-    icon={<Poll />}
-    iconPosition="start"
-    label="الاستبيانات الداخلية" 
-  />
-  <Tab sx={hrTabIconSx} 
-    icon={<Groups />}
-    iconPosition="start"
-    label="الاستبيانات الخارجية" 
-  />
-  <Tab sx={hrTabIconSx} 
-    icon={<History />}
-    iconPosition="start"
-    label="الردود والمشاركات" 
-  />
-
-  {/* 👇 الجديد */}
-  <Tab sx={hrTabIconSx} 
-    icon={<Quiz />}
-    iconPosition="start"
-    label="الاختبارات" 
-  />
-</Tabs>
+            <Box
+              sx={{
+                mb: 1,
+                px: 0.5,
+                bgcolor: '#fff',
+                border: '1px solid rgba(5,117,70,.11)',
+                borderRadius: 2,
+                overflowX: 'auto'
+              }}
+            >
+              <Tabs
+                value={activeTab}
+                onChange={(e, newValue) => setActiveTab(newValue)}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{
+                  minHeight: 44,
+                  '& .MuiTab-root': {
+                    minHeight: 44,
+                    px: 1.25,
+                    fontFamily: '"Cairo", sans-serif',
+                    fontWeight: 850,
+                    fontSize: '0.74rem'
+                  },
+                  '& .Mui-selected': { color: primaryColor },
+                  '& .MuiTabs-indicator': { bgcolor: primaryColor, height: 2 }
+                }}
+              >
+                <Tab sx={hrTabIconSx} icon={<Poll />} iconPosition="start" label="داخلي" />
+                <Tab sx={hrTabIconSx} icon={<Groups />} iconPosition="start" label="خارجي" />
+                <Tab sx={hrTabIconSx} icon={<History />} iconPosition="start" label="الردود" />
+                <Tab sx={hrTabIconSx} icon={<Quiz />} iconPosition="start" label="الاختبارات" />
+              </Tabs>
             </Box>
 
             {/* Content */}
@@ -4411,30 +4328,53 @@ const renderExternalSurveysTable = () => (
             )}
 
             {/* Create Internal Survey Dialog */}
-            <Dialog sx={uiLayout.dialogLayoutSx} 
-              open={showCreateDialog} 
+            <Dialog
+              sx={uiLayout.dialogLayoutSx}
+              open={showCreateDialog}
               onClose={handleCloseCreateDialog}
-              maxWidth="md"
               fullWidth
+              maxWidth={false}
               PaperProps={{
                 sx: {
-                  borderRadius: 3,
-                  background: 'white'
+                  width: { xs: 'calc(100% - 16px)', sm: 'min(900px, calc(100% - 32px))' },
+                  maxWidth: '900px !important',
+                  m: { xs: 1, sm: 2 },
+                  borderRadius: 2.5,
+                  overflow: 'hidden',
+                  background: '#fff'
                 }
               }}
             >
-              <DialogTitle sx={{ fontFamily: '"Cairo", sans-serif', color: primaryDark }}>
-  {isEditMode ? 'تعديل استبيان داخلي' : 'إنشاء استبيان داخلي'}
+              <DialogTitle sx={{
+                px: 1.5,
+                py: 1,
+                fontFamily: '"Cairo", sans-serif',
+                color: primaryDark,
+                fontWeight: 900,
+                fontSize: '0.98rem',
+                borderBottom: '1px solid rgba(5,117,70,.11)'
+              }}>
+  {isEditMode ? 'تعديل الاستبيان الداخلي' : 'إضافة استبيان داخلي'}
 </DialogTitle>
 
-              <DialogContent sx={{ p: 4 }}>
-                <Stepper activeStep={activeStep} sx={{ m: 4 }}>
+              <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+                <Stepper
+                  activeStep={activeStep}
+                  sx={{
+                    mb: 1.25,
+                    p: 0.8,
+                    bgcolor: '#fff',
+                    border: '1px solid rgba(5,117,70,.10)',
+                    borderRadius: 2,
+                    overflowX: 'auto'
+                  }}
+                >
                   {steps.map((label) => (
                     <Step key={label}>
                       <StepLabel sx={{ 
                         '& .MuiStepLabel-label': { 
                           fontWeight: 'bold', 
-                          fontSize: '0.9rem',
+                          fontSize: '0.72rem',
                           fontFamily: '"Cairo", sans-serif'
                         } 
                       }}>
@@ -4444,7 +4384,7 @@ const renderExternalSurveysTable = () => (
                   ))}
                 </Stepper>
 
-                <Box sx={{ minHeight: '400px'}}>
+                <Box sx={{ minHeight: 280 }}>
                   {activeStep === 0 && renderBasicInfoStep(false)}
                   {activeStep === 1 && renderRecipientsStep()}
                   {activeStep === 2 && renderQuestionsStep(false)}
@@ -4452,7 +4392,13 @@ const renderExternalSurveysTable = () => (
                 </Box>
               </DialogContent>
 
-              <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 2, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
+              <DialogActions sx={uiLayout.withUiSx({
+                px: 1.5,
+                py: 1,
+                gap: 0.65,
+                justifyContent: 'space-between',
+                bgcolor: '#fff'
+              }, uiLayout.dialogActionsSx)}>
                 <Box sx={uiLayout.actionBarSx}>
                   <Button
                     onClick={handleNext}
@@ -4479,37 +4425,60 @@ const renderExternalSurveysTable = () => (
   variant="contained"
   sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
 >
-  {isEditMode ? 'حفظ التعديل' : 'إنشاء الاستبيان'}
+  {isEditMode ? 'حفظ التعديل' : 'حفظ الاستبيان'}
 </Button>
                 ) : null}
               </DialogActions>
             </Dialog>
 
             {/* Create External Survey Dialog */}
-            <Dialog sx={uiLayout.dialogLayoutSx} 
-              open={showCreateExternalDialog} 
+            <Dialog
+              sx={uiLayout.dialogLayoutSx}
+              open={showCreateExternalDialog}
               onClose={handleCloseCreateExternalDialog}
-              maxWidth="md"
               fullWidth
+              maxWidth={false}
               PaperProps={{
                 sx: {
-                  borderRadius: 3,
-                  background: 'white'
+                  width: { xs: 'calc(100% - 16px)', sm: 'min(900px, calc(100% - 32px))' },
+                  maxWidth: '900px !important',
+                  m: { xs: 1, sm: 2 },
+                  borderRadius: 2.5,
+                  overflow: 'hidden',
+                  background: '#fff'
                 }
               }}
             >
-              <DialogTitle sx={{ fontFamily: '"Cairo", sans-serif', color: primaryDark }}>
-  {isExternalEditMode ? 'تعديل استبيان خارجي' : 'إنشاء استبيان خارجي'}
+              <DialogTitle sx={{
+                px: 1.5,
+                py: 1,
+                fontFamily: '"Cairo", sans-serif',
+                color: primaryDark,
+                fontWeight: 900,
+                fontSize: '0.98rem',
+                borderBottom: '1px solid rgba(5,117,70,.11)'
+              }}>
+  {isExternalEditMode ? 'تعديل الاستبيان الخارجي' : 'إضافة استبيان خارجي'}
 </DialogTitle>
 
-              <DialogContent sx={{ p: 4 }}>
-                <Stepper activeStep={activeStep} sx={{ m: 4 }}>
+              <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+                <Stepper
+                  activeStep={activeStep}
+                  sx={{
+                    mb: 1.25,
+                    p: 0.8,
+                    bgcolor: '#fff',
+                    border: '1px solid rgba(5,117,70,.10)',
+                    borderRadius: 2,
+                    overflowX: 'auto'
+                  }}
+                >
                   {externalSteps.map((label) => (
                     <Step key={label}>
                       <StepLabel sx={{ 
                         '& .MuiStepLabel-label': { 
                           fontWeight: 'bold', 
-                          fontSize: '0.9rem',
+                          fontSize: '0.72rem',
                           fontFamily: '"Cairo", sans-serif'
                         } 
                       }}>
@@ -4519,7 +4488,7 @@ const renderExternalSurveysTable = () => (
                   ))}
                 </Stepper>
 
-                <Box sx={{ minHeight: '400px'}}>
+                <Box sx={{ minHeight: 280 }}>
                   {activeStep === 0 && renderBasicInfoStep(true)}
                   {activeStep === 1 && renderBranchesDiplomasStep()}
                   {activeStep === 2 && renderQuestionsStep(true)}
@@ -4527,19 +4496,19 @@ const renderExternalSurveysTable = () => (
                 </Box>
               </DialogContent>
 
-              <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 2, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
+              <DialogActions sx={uiLayout.withUiSx({
+                px: 1.5,
+                py: 1,
+                gap: 0.65,
+                justifyContent: 'space-between',
+                bgcolor: '#fff'
+              }, uiLayout.dialogActionsSx)}>
                 <Box sx={uiLayout.actionBarSx}>
                   <Button
                     onClick={handleNext}
                     disabled={activeStep === externalSteps.length - 1}
                     endIcon={<ArrowBack />}
-                    sx={uiLayout.withUiSx({
-                      ...primaryButtonStyle,
-                      background: `linear-gradient(135deg, #ff9800 0%, #f57c00 100%)`,
-                      '&:hover': {
-                        background: `linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)`,
-                      }
-                    }, uiLayout.buttonSx)}
+                    sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
                   >
                     التالي
                   </Button>
@@ -4547,15 +4516,7 @@ const renderExternalSurveysTable = () => (
                   <Button
                     onClick={handleBack}
                     startIcon={<ArrowForward />}
-                    sx={uiLayout.withUiSx({
-                      ...outlinedButtonStyle,
-                      borderColor: '#ff9800',
-                      color: '#ff9800',
-                      '&:hover': {
-                        borderColor: '#f57c00',
-                        backgroundColor: 'rgba(255, 152, 0, 0.1)'
-                      }
-                    }, uiLayout.buttonSx)}
+                    sx={uiLayout.withUiSx(outlinedButtonStyle, uiLayout.buttonSx)}
                     disabled={activeStep === 0}
                   >
                     رجوع
@@ -4567,18 +4528,9 @@ const renderExternalSurveysTable = () => (
                     onClick={() => handleSubmit(true)}
                     variant="contained"
                     disabled={!isExternalFormValid}
-                    sx={uiLayout.withUiSx({
-                      ...primaryButtonStyle,
-                      background: `linear-gradient(135deg, #28a745 0%, #20c997 100%)`,
-                      '&:hover': {
-                        background: `linear-gradient(135deg, #20c997 0%, #1e9e8a 100%)`,
-                      },
-                      '&:disabled': {
-                        background: '#ccc'
-                      }
-                    }, uiLayout.buttonSx)}
+                    sx={uiLayout.withUiSx(primaryButtonStyle, uiLayout.buttonSx)}
                   >
-                   {isExternalEditMode ? 'حفظ التعديل' : 'إنشاء الاستبيان الخارجي'}
+                   {isExternalEditMode ? 'حفظ التعديل' : 'حفظ الاستبيان'}
                   </Button>
                 ) : null}
               </DialogActions>
@@ -4588,24 +4540,34 @@ const renderExternalSurveysTable = () => (
            <Dialog sx={uiLayout.dialogLayoutSx}
   open={responsesDialogOpen}
   onClose={() => setResponsesDialogOpen(false)}
-  maxWidth="xl"
+  maxWidth={false}
   fullWidth
-  PaperProps={{ sx: { borderRadius: 3, overflow: 'hidden' } }}
+  PaperProps={{
+    sx: {
+      width: { xs: 'calc(100% - 16px)', sm: 'min(1000px, calc(100% - 32px))' },
+      maxWidth: '1000px !important',
+      m: { xs: 1, sm: 2 },
+      borderRadius: 2.5,
+      overflow: 'hidden'
+    }
+  }}
 >
   <DialogTitle
     sx={{
-      background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-      color: 'white',
+      background: '#fff',
+      color: primaryDark,
       fontFamily: '"Cairo", sans-serif',
-      fontWeight: 'bold',
-      py: 2
+      fontWeight: 900,
+      px: 1.5,
+      py: 1,
+      borderBottom: '1px solid rgba(5,117,70,.11)'
     }}
   >
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Visibility />
         <Typography variant="h6" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-         عرض الردود - {responsesDialogSurvey?.title || ''}
+         ردود الاستبيان - {responsesDialogSurvey?.title || ''}
 {responsesDialogSurvey?.trainer_filter_name
   ? ` - ${responsesDialogSurvey.trainer_filter_name}`
   : ''}
@@ -4627,7 +4589,7 @@ const renderExternalSurveysTable = () => (
           تصدير Excel
         </Button>
 
-        <IconButton onClick={() => setResponsesDialogOpen(false)} sx={{ color: 'white' }}>
+        <IconButton onClick={() => setResponsesDialogOpen(false)} sx={{ color: primaryDark }}>
           <Close />
         </IconButton>
       </Box>
@@ -4652,9 +4614,9 @@ const renderExternalSurveysTable = () => (
     ) : null}
   </DialogContent>
 
-  <DialogActions sx={uiLayout.withUiSx({ p: 2, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
+  <DialogActions sx={uiLayout.withUiSx({ px: 1.5, py: 1, justifyContent: 'space-between' }, uiLayout.dialogActionsSx)}>
     <Typography variant="caption" sx={{ fontFamily: '"Cairo", sans-serif', color: primaryDark }}>
-      اختر صف من الجدول لعرض التفاصيل يمينًا.
+      اختر سجلًا لعرض تفاصيل الإجابات.
     </Typography>
 
     <Button variant="outlined" sx={uiLayout.withUiSx(outlinedButtonStyle, uiLayout.buttonSx)} onClick={() => setResponsesDialogOpen(false)}>

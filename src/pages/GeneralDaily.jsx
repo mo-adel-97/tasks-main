@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -1275,13 +1276,13 @@ export default function GeneralDaily() {
             <li
               {...props}
               key={`${field.key}-${option}`}
-              style={{
+              style={adaptiveInlineStyle({
                 ...props.style,
                 fontFamily:
                   "Cairo",
                 fontSize: 12,
                 minHeight: 34
-              }}
+              })}
             >
               <Checkbox
                 size="small"

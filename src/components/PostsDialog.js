@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { hrChipSx } from "./hrControlStyles";
 import React, { useState, useEffect, useRef } from 'react';
@@ -641,7 +642,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
           <img
             src={viewImageModal.image}
             alt="منشور"
-            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 4, display: 'block' }}
+            style={adaptiveInlineStyle({ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 4, display: 'block' })}
           />
         </Box>
       </Modal>
@@ -1372,7 +1373,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
                             <img
                               src={post.image_url}
                               alt="منشور"
-                              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 'inherit', display: 'block', cursor: 'pointer', transition: 'transform 0.4s ease' }}
+                              style={adaptiveInlineStyle({ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 'inherit', display: 'block', cursor: 'pointer', transition: 'transform 0.4s ease' })}
                               onClick={() => openImageModal(post.image_url)}
                               onMouseEnter={(e) => (e.target.style.transform = 'scale(1.03)')}
                               onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}

@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import React, { useEffect, useState } from "react";
 
 export default function CountdownTimer({ endDate, expired, onExpire }) {
@@ -13,7 +14,7 @@ export default function CountdownTimer({ endDate, expired, onExpire }) {
     return () => clearInterval(interval);
     // eslint-disable-next-line
   }, [endDate, remaining]);
-  if (expired) return <span style={{ color: "#ef4444" }}>0:00:00</span>;
+  if (expired) return <span style={adaptiveInlineStyle({ color: "#ef4444" })}>0:00:00</span>;
   return <span>{formatTime(remaining)}</span>;
 }
 function getRemainingTime(endDate) {

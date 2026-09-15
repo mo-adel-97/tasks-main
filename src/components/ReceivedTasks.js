@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -760,7 +761,7 @@ export default function AllTaskRoutesList() {
               if (imageTypes.includes(ext)) {
                 return (
                   <Box display="flex" justifyContent="center">
-                    <img src={att.url} alt={att.name} style={{ maxWidth: "100%", maxHeight: 500, borderRadius: 10, border: '1px solid #ddd' }} />
+                    <img src={att.url} alt={att.name} style={adaptiveInlineStyle({ maxWidth: "100%", maxHeight: 500, borderRadius: 10, border: '1px solid #ddd' })} />
                   </Box>
                 );
               } else if (ext === 'pdf') {

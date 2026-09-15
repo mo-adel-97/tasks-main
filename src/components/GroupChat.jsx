@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -753,7 +754,7 @@ const GroupChat = ({
           <img
             src={message.file_url}
             alt={message.file_name}
-            style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px' }}
+            style={adaptiveInlineStyle({ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px' })}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
@@ -768,7 +769,7 @@ const GroupChat = ({
           </video>
         ) : isPdf ? (
           <Box display="flex" flexDirection="column" alignItems="center">
-            <PdfIcon style={{ fontSize: 48, color: 'red' }} />
+            <PdfIcon style={adaptiveInlineStyle({ fontSize: 48, color: 'red' })} />
             <Button
               variant="outlined"
               size="small"
@@ -1200,7 +1201,7 @@ if (msg.message_type === 'notification' ||
                     )}
                     {attachment.type !== 'image' && (
                       <Box display="flex" flexDirection="column" alignItems="center">
-                        <DocIcon style={{ fontSize: 48, color: colorPalette.primary }} />
+                        <DocIcon style={adaptiveInlineStyle({ fontSize: 48, color: colorPalette.primary })} />
                         <Typography variant="caption" display="block">
                           {attachment.name}
                         </Typography>

@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -1129,7 +1130,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color={PRIMARY_COLOR_DARK} mt={1} textAlign="center">
                   {Number(totalCollected || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: PRIMARY_COLOR }}>ر.س</span>
+                  <span style={adaptiveInlineStyle({ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: PRIMARY_COLOR })}>ر.س</span>
                 </Typography>
               </Paper>
             </Grid>
@@ -1162,7 +1163,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#0c4a6e" mt={1} textAlign="center">
                   {Number(totalCommissionOnly || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#0ea5e9' }}>ر.س</span>
+                  <span style={adaptiveInlineStyle({ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#0ea5e9' })}>ر.س</span>
                 </Typography>
                 {isDesktop && (
                   <Typography variant="body2" color="#0ea5e9" sx={{ mt: 1, textAlign: 'center' }}>
@@ -1200,7 +1201,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#9d174d" mt={1} textAlign="center">
                   {Number(overallBonus || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#db2777' }}>ر.س</span>
+                  <span style={adaptiveInlineStyle({ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#db2777' })}>ر.س</span>
                 </Typography>
                 {isDesktop && (
                   <Typography variant="body2" color="#db2777" sx={{ mt: 1, textAlign: 'center' }}>
@@ -1238,7 +1239,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#065f46" mt={1} textAlign="center">
                   {Number(totalFinalCommission || 0).toLocaleString("ar-EG")}
-                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#10b981' }}>ر.س</span>
+                  <span style={adaptiveInlineStyle({ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#10b981' })}>ر.س</span>
                 </Typography>
                 {isDesktop && (
                   <Typography variant="body2" color="#059669" sx={{ mt: 1, textAlign: 'center', fontWeight: 'bold' }}>
@@ -1276,7 +1277,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#713f12" mt={1} textAlign="center">
                   {totalStudents}
-                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#eab308' }}>طالب</span>
+                  <span style={adaptiveInlineStyle({ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#eab308' })}>طالب</span>
                 </Typography>
               </Paper>
             </Grid>
@@ -1309,7 +1310,7 @@ const SpecialComponent = () => {
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="#dc2626" mt={1} textAlign="center">
                   {totalUnpaid}
-                  <span style={{ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#ef4444' }}>طالب</span>
+                  <span style={adaptiveInlineStyle({ fontSize: isDesktop ? 18 : 12, marginRight: isDesktop ? 6 : 2, color: '#ef4444' })}>طالب</span>
                 </Typography>
               </Paper>
             </Grid>

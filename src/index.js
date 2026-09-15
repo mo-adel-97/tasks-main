@@ -6,10 +6,9 @@ import './index.css';
 import './security/apiAuth';
 import { AuthProvider } from './contexts/AuthContext';
 
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { ColorModeProvider } from './contexts/ColorModeContext';
 import { CacheProvider } from '@emotion/react';
-import theme, { createAppCache } from './theme';
+import { createAppCache } from './theme';
 
 const cacheRtl = createAppCache();
 
@@ -24,12 +23,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <CacheProvider value={cacheRtl}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <ColorModeProvider>
             <AuthProvider>
         <App />
             </AuthProvider>
-      </ThemeProvider>
+      </ColorModeProvider>
     </CacheProvider>
   </React.StrictMode>
 );

@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import React from "react";
 
 const footerStyle = {
@@ -14,9 +15,9 @@ export default function Footer() {
   const text = "تم تطويره بواسطة فريق الدعم الفني وتطوير البرمجيات ";
 
   return (
-    <footer style={footerStyle}>
+    <footer style={adaptiveInlineStyle(footerStyle)}>
       <div
-        style={{
+        style={adaptiveInlineStyle({
           direction: "rtl",
           textAlign: "center",
           width: "100%",
@@ -25,7 +26,7 @@ export default function Footer() {
           color: "#fff",
           fontFamily: "Cairo, sans-serif",
           letterSpacing: "0.5px",
-        }}
+        })}
       >
         {text}
       </div>

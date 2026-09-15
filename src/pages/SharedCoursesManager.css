@@ -18,11 +18,11 @@
 .shared-courses-manager .btn { min-height: 44px; white-space: normal; }
 
 .shared-course-item {
-  border: 1px solid #eaeaea;
+  border: 1px solid light-dark(#eaeaea, rgba(65, 86, 77, 1));
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  background: white;
+  background: light-dark(white, rgba(22, 22, 22, 1));
 }
 
 .course-header {
@@ -34,7 +34,7 @@
 
 .course-header h4 {
   margin: 0;
-  color: #2c3e50;
+  color: light-dark(#2c3e50, rgba(196, 201, 206, 1));
 }
 
 .course-combinations {
@@ -43,21 +43,21 @@
 
 .combination-tag {
   display: inline-block;
-  background: #f8f9fa;
+  background: light-dark(#f8f9fa, rgba(23, 23, 23, 1));
   padding: 4px 8px;
   border-radius: 4px;
   margin: 2px 4px;
   font-size: 12px;
-  border: 1px solid #eaeaea;
+  border: 1px solid light-dark(#eaeaea, rgba(65, 86, 77, 1));
 }
 
 /* تنسيقات عرض الأسئلة */
 .exam-details {
-  border: 1px solid #eaeaea;
+  border: 1px solid light-dark(#eaeaea, rgba(65, 86, 77, 1));
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 20px;
-  background: #f8f9fa;
+  background: light-dark(#f8f9fa, rgba(23, 23, 23, 1));
 }
 
 .questions-preview {
@@ -67,11 +67,11 @@
 }
 
 .question-preview {
-  background: white;
+  background: light-dark(white, rgba(22, 22, 22, 1));
   padding: 12px;
   border-radius: 6px;
   margin-bottom: 10px;
-  border-right: 3px solid #3498db;
+  border-right: 3px solid light-dark(#3498db, rgba(65, 86, 77, 1));
 }
 
 .question-text {
@@ -99,14 +99,14 @@
   padding: 6px 10px;
   margin-bottom: 4px;
   border-radius: 4px;
-  background: #f8f9fa;
-  border: 1px solid #eaeaea;
+  background: light-dark(#f8f9fa, rgba(23, 23, 23, 1));
+  border: 1px solid light-dark(#eaeaea, rgba(65, 86, 77, 1));
   font-size: 13px;
 }
 
 .option-preview.correct {
-  background: #d5f4e6;
-  border-color: #27ae60;
+  background: light-dark(#d5f4e6, rgba(27, 23, 25, 1));
+  border-color: light-dark(#27ae60, rgba(65, 86, 77, 1));
   font-weight: 500;
 }
 
@@ -114,7 +114,7 @@
 .copy-actions {
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px dashed #eaeaea;
+  border-top: 1px dashed light-dark(#eaeaea, rgba(65, 86, 77, 1));
 }
 
 .copy-buttons {
@@ -125,9 +125,9 @@
 }
 
 .copy-buttons .btn {
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  color: #2c3e50;
+  background: light-dark(#f8f9fa, rgba(23, 23, 23, 1));
+  border: 1px solid light-dark(#ddd, rgba(65, 86, 77, 1));
+  color: light-dark(#2c3e50, rgba(196, 201, 206, 1));
 }
 
 .copy-buttons .btn:hover:not(:disabled) {
@@ -136,7 +136,7 @@
 }
 
 .copy-buttons .btn:disabled {
-  background: #e9ecef;
-  color: #6c757d;
+  background: light-dark(#e9ecef, rgba(25, 24, 24, 1));
+  color: light-dark(#6c757d, rgba(214, 216, 219, 1));
   cursor: not-allowed;
 }

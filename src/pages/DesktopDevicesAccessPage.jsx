@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
@@ -1868,10 +1869,10 @@ export default function DesktopDevicesAccessPage() {
                   title="device-location-map"
                   width="100%"
                   height="100%"
-                  style={{
+                  style={adaptiveInlineStyle({
                     border: 0,
                     display: "block",
-                  }}
+                  })}
                   loading="lazy"
                   src={`https://maps.google.com/maps?q=${mapDialog.row.location_lat},${mapDialog.row.location_lng}&z=12&output=embed`}
                 />

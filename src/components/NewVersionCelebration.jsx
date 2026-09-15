@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Chip, Button } from "@mui/material";
@@ -147,12 +148,12 @@ const PerchedBird = ({
               y: -8 - i * 4
             }}
             transition={{ duration: 1.2 + i * 0.1, repeat: Infinity, repeatDelay: 1.2 }}
-            style={{
+            style={adaptiveInlineStyle({
               position: "absolute",
               width: 6, height: 6, borderRadius: 2,
               background: COLOR_SCHEME.gold,
               boxShadow: "0 0 6px rgba(255,215,0,.8)"
-            }}
+            })}
           />
         ))}
       </Box>
@@ -178,7 +179,7 @@ const CenterRope = ({ side = "right", delay = 0, lengthVh = 55 }) => {
         initial={{ scaleY: 0, opacity: 0.8 }}
         animate={{ scaleY: 1, opacity: 1 }}
         transition={{ delay, duration: 1.1, type: "spring", stiffness: 160, damping: 18 }}
-        style={{
+        style={adaptiveInlineStyle({
           position: "absolute",
           top: 0,
           left: "50%",
@@ -188,7 +189,7 @@ const CenterRope = ({ side = "right", delay = 0, lengthVh = 55 }) => {
           background: "linear-gradient(to bottom, rgba(255,255,255,.9), rgba(255,255,255,.55))",
           boxShadow: "0 0 6px rgba(255,255,255,.45)",
           transformOrigin: "top"
-        }}
+        })}
       />
     </Box>
   );
@@ -218,7 +219,7 @@ const CardEmitter = ({ side = "right", delay = 1.2 }) => {
             opacity: [0, 1, 0]
           }}
           transition={{ delay: delay + i * 0.16, duration: 1.35, ease: "easeOut" }}
-          style={{
+          style={adaptiveInlineStyle({
             position: "absolute",
             left: "50%",
             transform: "translateX(-50%)",
@@ -227,7 +228,7 @@ const CardEmitter = ({ side = "right", delay = 1.2 }) => {
             borderRadius: 6,
             background: "white",
             boxShadow: "0 8px 24px rgba(0,0,0,.25)"
-          }}
+          })}
         />
       ))}
     </Box>
@@ -369,7 +370,7 @@ const FireworksDisplay = () => (
         initial={{ x: typeof window !== "undefined" ? Math.random() * window.innerWidth : 0, y: typeof window !== "undefined" ? window.innerHeight : 0, scale: 0 }}
         animate={{ y: typeof window !== "undefined" ? Math.random() * window.innerHeight * 0.6 : 0, scale: [0, 1, 0], opacity: [0, 1, 0] }}
         transition={{ duration: Math.random() * 1.5 + 1, repeat: Infinity, delay: Math.random() * 2, ease: "easeOut" }}
-        style={{ position: 'absolute', width: 8, height: 8, background: [COLOR_SCHEME.gold, COLOR_SCHEME.primary, COLOR_SCHEME.accent, COLOR_SCHEME.secondary][i % 4], borderRadius: '50%', filter: 'blur(1px)' }}
+        style={adaptiveInlineStyle({ position: 'absolute', width: 8, height: 8, background: [COLOR_SCHEME.gold, COLOR_SCHEME.primary, COLOR_SCHEME.accent, COLOR_SCHEME.secondary][i % 4], borderRadius: '50%', filter: 'blur(1px)' })}
       >
         {[...Array(8)].map((_, j) => (
           <motion.div
@@ -377,7 +378,7 @@ const FireworksDisplay = () => (
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: [0, 1, 0], opacity: [0, 1, 0], x: Math.cos((j * 45 * Math.PI) / 180) * 50, y: Math.sin((j * 45 * Math.PI) / 180) * 50 }}
             transition={{ duration: 1, repeat: Infinity, delay: Math.random() * 0.5, ease: "easeOut" }}
-            style={{ position: 'absolute', width: 4, height: 4, background: [COLOR_SCHEME.gold, COLOR_SCHEME.primary, COLOR_SCHEME.accent, COLOR_SCHEME.secondary][(i + j) % 4], borderRadius: '50%' }}
+            style={adaptiveInlineStyle({ position: 'absolute', width: 4, height: 4, background: [COLOR_SCHEME.gold, COLOR_SCHEME.primary, COLOR_SCHEME.accent, COLOR_SCHEME.secondary][(i + j) % 4], borderRadius: '50%' })}
           />
         ))}
       </motion.div>
@@ -400,7 +401,7 @@ const Confetti = () => {
             x: typeof window !== "undefined" ? Math.random() * 200 - 100 + (Math.random() * window.innerWidth) : 0
           }}
           transition={{ duration: Math.random() * 3 + 2, delay: Math.random() * 1, ease: "easeInOut" }}
-          style={{ position: 'absolute', width: 12, height: 12, background: confettiColors[Math.floor(Math.random() * confettiColors.length)], borderRadius: Math.random() > 0.5 ? '50%' : '0%', opacity: 0.8 }}
+          style={adaptiveInlineStyle({ position: 'absolute', width: 12, height: 12, background: confettiColors[Math.floor(Math.random() * confettiColors.length)], borderRadius: Math.random() > 0.5 ? '50%' : '0%', opacity: 0.8 })}
         />
       ))}
     </Box>
@@ -427,12 +428,12 @@ const NewVersionCelebration = ({ onClose }) => {
       {show && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          style={{
+          style={adaptiveInlineStyle({
             position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
             background: `linear-gradient(135deg, ${COLOR_SCHEME.primary} 0%, ${COLOR_SCHEME.primaryDark} 30%, ${COLOR_SCHEME.accent} 100%)`,
             zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'white', overflow: 'hidden', direction: "rtl"
-          }}
+          })}
         >
           {showFireworks && <FireworksDisplay />}
           <Confetti />

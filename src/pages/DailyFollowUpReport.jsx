@@ -1547,7 +1547,7 @@ const renderStepContent = (step) => {
 };
 
   return (
-    <NavigationShell variant="standard" ><ThemeProvider theme={theme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={(outerTheme) => ({ ...theme, palette: outerTheme.palette })}>
       <MainContainer>
         
         <ContentContainer>

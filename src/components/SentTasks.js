@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -338,12 +339,12 @@ const isExpanded = expandedTasks[task?.id] || false;
                       <Typography variant="h6" fontWeight={700} color="primary.main">{task?.taskName}</Typography>
                       <Typography sx={{ color: '#64748b', fontWeight: 500, fontSize: 15, mb: 1 }}>
   الحالة:
-  <span style={{
+  <span style={adaptiveInlineStyle({
     fontWeight: 700,
     color: getCurrentStatus(task?.id) === "معلقة" ? "#f59e42" :
       getCurrentStatus(task?.id) === "جاري التنفيذ" ? "#3b82f6" :
         getCurrentStatus(task?.id) === "مكتملة" ? "#10b981" : "#ef4444"
-  }}>
+  })}>
     {" "}{getCurrentStatus(task?.id)}
   </span>
 </Typography>
@@ -517,7 +518,7 @@ const isExpanded = expandedTasks[task?.id] || false;
               if (imageTypes.includes(ext)) {
                 return (
                   <Box display="flex" justifyContent="center">
-                    <img src={openAttachment.url} alt={openAttachment.name} style={{ maxWidth: "100%", maxHeight: 500, borderRadius: 10, border: '1px solid #ddd' }} />
+                    <img src={openAttachment.url} alt={openAttachment.name} style={adaptiveInlineStyle({ maxWidth: "100%", maxHeight: 500, borderRadius: 10, border: '1px solid #ddd' })} />
                   </Box>
                 );
               } else if (ext === 'pdf') {

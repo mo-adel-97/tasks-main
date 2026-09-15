@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import { 
@@ -32,7 +33,7 @@ export default function StudentStatementDialog({ open, onClose, accountGuid }) {
 
   return (
     <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle style={{ textAlign: 'center', fontWeight: 'bold', color: '#1976d2' }}>
+      <DialogTitle style={adaptiveInlineStyle({ textAlign: 'center', fontWeight: 'bold', color: '#1976d2' })}>
         📑 كشف الحساب
       </DialogTitle>
 
@@ -45,7 +46,7 @@ export default function StudentStatementDialog({ open, onClose, accountGuid }) {
           <TableContainer sx={uiLayout.tableContainerSx} component={Paper} style={{ marginTop: 10 }}>
             <Table>
               <TableHead>
-                <TableRow style={{ backgroundColor: '#f1f1f1' }}>
+                <TableRow style={adaptiveInlineStyle({ backgroundColor: '#f1f1f1' })}>
                   <TableCell align="center" style={{ fontWeight: 'bold',fontFamily:"cairo"}}>📅 التاريخ</TableCell>
                   <TableCell align="center" style={{ fontWeight: 'bold',fontFamily:"cairo"}}>📄 نوع المستند</TableCell>
                   <TableCell align="center" style={{ fontWeight: 'bold',fontFamily:"cairo"}}>🔢 رقم المستند</TableCell>

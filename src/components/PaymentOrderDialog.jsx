@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import { printWhenReady } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -1902,13 +1903,13 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
       <iframe
         ref={printFrameRef}
         title="payment-order-print"
-        style={{
+        style={adaptiveInlineStyle({
           position: "fixed",
           width: 0,
           height: 0,
           border: 0,
           visibility: "hidden"
-        }}
+        })}
       />
     </>
   );

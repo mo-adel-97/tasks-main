@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
@@ -541,7 +542,7 @@ const Chats = () => {
           <img
             src={message.file_url}
             alt={message.file_name}
-            style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px' }}
+            style={adaptiveInlineStyle({ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px' })}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
@@ -551,7 +552,7 @@ const Chats = () => {
           <audio controls src={message.file_url} />
         ) : isPdf ? (
           <>
-            <PdfIcon style={{ fontSize: 48, color: 'red' }} />
+            <PdfIcon style={adaptiveInlineStyle({ fontSize: 48, color: 'red' })} />
             <Button
               variant="outlined"
               size="small"
@@ -859,7 +860,7 @@ if (loading) {
                       )}
                       {attachment.type !== 'image' && (
                         <Box display="flex" flexDirection="column" alignItems="center">
-                          <DocIcon style={{ fontSize: 48, color: colorPalette.primary }} />
+                          <DocIcon style={adaptiveInlineStyle({ fontSize: 48, color: colorPalette.primary })} />
                           <Typography variant="caption" display="block">
                             {attachment.name}
                           </Typography>

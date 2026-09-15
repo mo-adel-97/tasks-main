@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -1254,13 +1255,13 @@ export default function SalesInvoiceDialog({
       <iframe
         ref={printFrameRef}
         title="invoice-print-frame"
-        style={{
+        style={adaptiveInlineStyle({
           position: "fixed",
           width: 0,
           height: 0,
           border: 0,
           visibility: "hidden"
-        }}
+        })}
       />
     </>
   );

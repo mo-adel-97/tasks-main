@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -1537,7 +1538,7 @@ export default function UserActionReport() {
                        <th
   key={column}
   style={
-    normalizeColumn(column) === "actionreason"
+    adaptiveInlineStyle(normalizeColumn(column) === "actionreason"
       ? {
           minWidth: "55px",
           width: "55px",
@@ -1545,7 +1546,7 @@ export default function UserActionReport() {
           paddingLeft: "4px",
           paddingRight: "4px"
         }
-      : undefined
+      : undefined)
   }
 >
   {getColumnCaption(column)}
@@ -1579,7 +1580,7 @@ export default function UserActionReport() {
                           >
                             <td
   style={
-    normalizeColumn(column) === "actionreason"
+    adaptiveInlineStyle(normalizeColumn(column) === "actionreason"
       ? {
           minWidth: "55px",
           width: "55px",
@@ -1589,7 +1590,7 @@ export default function UserActionReport() {
           overflow: "hidden",
           textOverflow: "ellipsis"
         }
-      : undefined
+      : undefined)
   }
 >
   {formatCell(column, row?.[column])}

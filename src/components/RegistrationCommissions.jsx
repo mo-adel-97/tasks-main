@@ -88,10 +88,10 @@ const API_BASE =
 
 /* ===================== Color Palette ===================== */
 const colorPalette = {
-  primary: "#80b49e",
-  primaryLight: "#a8c9bb",
-  primaryDark: "#5a8f7a",
-  primaryLighter: "#e1efe9",
+  primary: "#057546",
+  primaryLight: "#80b49e",
+  primaryDark: "#034d31",
+  primaryLighter: "#edf7f2",
   textDark: "#2d4a3e",
   textLight: "#5a7a6a",
   background: "#f8fbf9",
@@ -109,7 +109,7 @@ const DashboardContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   maxWidth: "100%",
   overflowX: "hidden",
-  backgroundColor: colorPalette.background,
+  backgroundColor: "#f6faf8",
   fontFamily: "'Tajawal', sans-serif",
   direction: "rtl",
 }));
@@ -126,23 +126,13 @@ const ContentContainer = styled(PageContainer)(() => ({
 }));
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: 16,
-
-  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-    borderRadius: 11,
-  },
-
-  "@media (max-width:599px)": {
-    borderRadius: 9,
-  },
-  boxShadow: "0 6px 24px 0 rgba(128, 180, 158, 0.1)",
-  transition: "all 0.25s ease",
-  borderInlineStart: `5px solid ${colorPalette.primary}`,
-  backgroundColor: "white",
-  "&:hover": {
-    transform: "translateY(-3px)",
-    boxShadow: "0 10px 28px 0 rgba(128, 180, 158, 0.15)",
-  },
+  borderRadius: 10,
+  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { borderRadius: 9 },
+  "@media (max-width:599px)": { borderRadius: 8 },
+  boxShadow: "none",
+  border: "1px solid rgba(5,117,70,0.11)",
+  backgroundColor: "#fff",
+  overflow: "hidden",
 }));
 
 const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) => {
@@ -158,86 +148,76 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
     return colors[c] || colorPalette.primary;
   };
 
+  const tone = getColor(color);
+
   return (
-    <StyledCard>
-      <CardContent
+    <StyledCard sx={{ height: "100%" }}>
+      <Box
         sx={{
-          p: 3,
-          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { p: 1.1 },
-          "@media (max-width:599px)": { p: 0.75 }
+          px: { xs: 0.8, sm: 1, md: 1.15 },
+          py: { xs: 0.65, sm: 0.75, md: 0.85 },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 1,
+          bgcolor: "#fbfdfc",
+          borderBottom: "1px solid rgba(5,117,70,.08)"
         }}
       >
-        <Box
-          display="flex"
-          alignItems="flex-start"
-          justifyContent="space-between"
-          mb={2}
-          gap={2}
-          sx={{
-            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { mb: 0.75, gap: 0.7 },
-            "@media (max-width:599px)": { mb: 0.5, gap: 0.45 }
-          }}
-        >
-          <Box display="flex" alignItems="center" gap={1.5}>
-            <Box
-              sx={{
-                width: 44,
-                height: 44,
-                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-                  width: 30,
-                  height: 30
-                },
-                "@media (max-width:599px)": {
-                  width: 26,
-                  height: 26
-                },
-                borderRadius: 2,
-                bgcolor: `${getColor(color)}20`,
-                color: getColor(color),
-                display: "grid",
-                placeItems: "center",
-                flex: "0 0 auto",
-              }}
-            >
-              {icon}
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                fontWeight={700}
-                sx={{
-                  color: colorPalette.textDark,
-                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
-                  "@media (max-width:599px)": { fontSize: "0.75rem" }
-                }}
-              >
-                {title}
-              </Typography>
-              {subtitle && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: colorPalette.textLight,
-                    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
-                    "@media (max-width:599px)": { fontSize: "0.75rem" }
-                  }}
-                >
-                  {subtitle}
-                </Typography>
-              )}
-            </Box>
+        <Box display="flex" alignItems="center" gap={0.75} minWidth={0}>
+          <Box
+            sx={{
+              width: { xs: 26, sm: 28, md: 30 },
+              height: { xs: 26, sm: 28, md: 30 },
+              borderRadius: 1.5,
+              bgcolor: `${tone}14`,
+              color: tone,
+              display: "grid",
+              placeItems: "center",
+              flexShrink: 0,
+              "& .MuiSvgIcon-root": {
+                fontSize: { xs: 15, sm: 16, md: 17 }
+              }
+            }}
+          >
+            {icon}
           </Box>
 
-          {actions ? <Box>{actions}</Box> : null}
+          <Box minWidth={0}>
+            <Typography
+              sx={{
+                color: colorPalette.textDark,
+                fontWeight: 900,
+                fontSize: { xs: "0.74rem", sm: "0.78rem", md: "0.84rem" },
+                lineHeight: 1.25
+              }}
+            >
+              {title}
+            </Typography>
+
+            {subtitle && (
+              <Typography
+                sx={{
+                  color: colorPalette.textLight,
+                  fontSize: { xs: "0.62rem", sm: "0.66rem", md: "0.7rem" },
+                  lineHeight: 1.25,
+                  mt: 0.1
+                }}
+              >
+                {subtitle}
+              </Typography>
+            )}
+          </Box>
         </Box>
 
-        <Divider
-          sx={{
-            mb: 2,
-            borderColor: colorPalette.primaryLighter,
-            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { mb: 0.65 }
-          }}
-        />
+        {actions ? <Box>{actions}</Box> : null}
+      </Box>
+
+      <CardContent
+        sx={{
+          p: { xs: "8px !important", sm: "10px !important", md: "12px !important" }
+        }}
+      >
         {children}
       </CardContent>
     </StyledCard>
@@ -262,67 +242,69 @@ const StatCard = ({ title, value, icon, color, hint }) => {
     <StyledCard sx={{ height: "100%" }}>
       <CardContent
         sx={{
-          p: 2.5,
-          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { p: 0.85 },
-          "@media (max-width:599px)": { p: 0.6 }
+          p: { xs: "8px !important", sm: "10px !important", md: "11px !important" }
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-          <Box>
+        <Box display="flex" alignItems="center" gap={{ xs: 0.7, md: 0.9 }}>
+          <Box
+            sx={{
+              width: { xs: 30, sm: 32, md: 34 },
+              height: { xs: 30, sm: 32, md: 34 },
+              borderRadius: 1.6,
+              bgcolor: `${colorValue}12`,
+              color: colorValue,
+              display: "grid",
+              placeItems: "center",
+              flexShrink: 0,
+              "& .MuiSvgIcon-root": {
+                fontSize: { xs: 17, sm: 18, md: 19 }
+              }
+            }}
+          >
+            {icon}
+          </Box>
+
+          <Box minWidth={0}>
             <Typography
-              variant="subtitle2"
               sx={{
                 color: colorPalette.textLight,
-                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
-                "@media (max-width:599px)": { fontSize: "0.75rem" }
+                fontSize: { xs: "0.62rem", sm: "0.66rem", md: "0.7rem" },
+                fontWeight: 700,
+                lineHeight: 1.2
               }}
             >
               {title}
             </Typography>
+
             <Typography
-              variant="h4"
-              fontWeight={800}
               sx={{
                 color: colorValue,
-                [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "1rem" },
-                "@media (max-width:599px)": { fontSize: "0.82rem" }
+                fontWeight: 950,
+                fontSize: { xs: "0.92rem", sm: "1rem", md: "1.05rem" },
+                lineHeight: 1.25,
+                mt: 0.1,
+                whiteSpace: "nowrap"
               }}
             >
               {value}
             </Typography>
+
             {hint && (
               <Typography
-                variant="caption"
                 sx={{
                   color: colorPalette.textLight,
-                  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
-                  "@media (max-width:599px)": { fontSize: "0.75rem" }
+                  fontSize: { xs: "0.58rem", md: "0.64rem" },
+                  lineHeight: 1.2,
+                  mt: 0.1,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: 180
                 }}
               >
                 {hint}
               </Typography>
             )}
-          </Box>
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-                width: 31,
-                height: 31
-              },
-              "@media (max-width:599px)": {
-                width: 27,
-                height: 27
-              },
-              borderRadius: 2,
-              bgcolor: `${colorValue}20`,
-              color: colorValue,
-              display: "grid",
-              placeItems: "center",
-            }}
-          >
-            {icon}
           </Box>
         </Box>
       </CardContent>
@@ -335,9 +317,10 @@ const Row = ({ label, value, color, isCurrency }) => (
     display="flex"
     justifyContent="space-between"
     alignItems="center"
-    py={0.5}
+    py={0.32}
     sx={{
-      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { py: 0.2, gap: 0.5 },
+      gap: 0.6,
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { py: 0.2, gap: 0.45 },
       "@media (max-width:599px)": { py: 0.15 }
     }}
   >
@@ -377,8 +360,8 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
     <Paper
       variant="outlined"
       sx={{
-        p: 1.2,
-        borderRadius: 2,
+        p: 0.75,
+        borderRadius: 1.7,
         [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
           p: 0.55,
           borderRadius: 1.4
@@ -398,8 +381,8 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
       <Box display="flex" alignItems="center" gap={1}>
         <Box
           sx={{
-            width: 32,
-            height: 32,
+            width: 26,
+            height: 26,
             [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
               width: 24,
               height: 24
@@ -898,49 +881,112 @@ setData(zeroizeForHamza(json[0]));
             </Box>
           )}
 
-          {/* Header */}
+          {/* Page header */}
+          {isDesktop && (
+            <Box
+              sx={{
+                minHeight: 72,
+                mb: 1,
+                px: 1.5,
+                py: 1,
+                borderRadius: 2.5,
+                bgcolor: colorPalette.primaryDark,
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 1.5
+              }}
+            >
+              <Box minWidth={0}>
+                <Typography
+                  sx={{
+                    fontWeight: 950,
+                    fontSize: "1.15rem",
+                    lineHeight: 1.3
+                  }}
+                >
+                  العمولات والإحصائيات
+                </Typography>
+                <Typography
+                  sx={{
+                    mt: 0.15,
+                    fontSize: "0.72rem",
+                    color: "rgba(255,255,255,.78)"
+                  }}
+                >
+                  ملخص التسجيلات والعمولات والخصومات خلال الفترة المحددة
+                </Typography>
+              </Box>
+
+              <Stack direction="row" spacing={0.65} alignItems="center">
+                <Button
+                  onClick={openDetailsDialog}
+                  disabled={!startDate || !endDate}
+                  startIcon={<ViewIcon />}
+                  variant="outlined"
+                  sx={{
+                    minHeight: 36,
+                    px: 1.25,
+                    color: "#fff",
+                    borderColor: "rgba(255,255,255,.55)",
+                    fontWeight: 850,
+                    fontSize: "0.72rem",
+                    "&:hover": {
+                      borderColor: "#fff",
+                      bgcolor: "rgba(255,255,255,.08)"
+                    }
+                  }}
+                >
+                  تفاصيل الخصم والإضافة
+                </Button>
+
+                <IconButton
+                  onClick={fetchData}
+                  aria-label="تحديث البيانات"
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    color: "#fff",
+                    border: "1px solid rgba(255,255,255,.55)",
+                    "&:hover": {
+                      bgcolor: "rgba(255,255,255,.08)"
+                    }
+                  }}
+                >
+                  <RefreshIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Stack>
+            </Box>
+          )}
+
+          {/* Filters */}
           <Box
             sx={{
-              display: "flex",
-              flexDirection: isCompact ? "column" : "row",
-              alignItems: isCompact ? "stretch" : "center",
-              justifyContent: "space-between",
-              gap: isPhone ? 0.6 : isTablet ? 0.9 : 2,
-              mb: isPhone ? 0.7 : isTablet ? 1 : 3,
+              mb: isPhone ? 0.7 : isTablet ? 1 : 1,
             }}
           >
-            <Box>
-              <Typography
-                variant="h4"
-                fontWeight={800}
-                sx={{
-                  color: colorPalette.textDark,
-                  fontSize: isPhone ? "0.85rem" : isTablet ? "1rem" : undefined
-                }}
-              >
-                لوحة العمولات والإحصائيات
-              </Typography>
-            </Box>
-
             {/* Filters */}
             <Paper
               elevation={0}
               sx={{
-                p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
+                p: isPhone ? 0.55 : isTablet ? 0.8 : 1,
                 borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 2,
                 border: `1px solid ${colorPalette.primaryLighter}`,
                 bgcolor: "white",
-                minWidth: isCompact ? "100%" : 560,
+                width: "100%",
+                minWidth: 0,
               }}
             >
               <Box
                 sx={uiLayout.withUiSx({
-                  display: isCompact ? "grid" : "flex",
+                  display: "grid",
                   gridTemplateColumns: isCompact
                     ? "repeat(2,minmax(0,1fr))"
-                    : undefined,
-                  gap: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
-                  alignItems: "center"
+                    : "minmax(220px,1fr) minmax(220px,1fr) auto",
+                  gap: isPhone ? 0.5 : isTablet ? 0.7 : 0.75,
+                  alignItems: "center",
+                  width: "100%"
                 }, uiLayout.formSectionSx)}
               >
                 <DatePicker
@@ -1010,8 +1056,9 @@ setData(zeroizeForHamza(json[0]));
                   }}
                 />
 
+                {isCompact && (
                 <Tooltip title="تحديث البيانات">
-                  <span>
+                  <Box component="span" sx={{ display: "inline-flex", justifyContent: "center", width: "100%" }}>
                     <IconButton
                       sx={{
                         color: colorPalette.primary,
@@ -1024,11 +1071,13 @@ setData(zeroizeForHamza(json[0]));
                     >
                       <RefreshIcon />
                     </IconButton>
-                  </span>
+                  </Box>
                 </Tooltip>
+                )}
 
+                {isCompact && (
                 <Tooltip title="عرض تفاصيل الخصم/الإضافة">
-                  <span>
+                  <Box component="span" sx={{ display: "flex", width: "100%", gridColumn: isCompact ? "1 / -1" : "auto" }}>
                     <Button
                       onClick={openDetailsDialog}
                       startIcon={<ViewIcon />}
@@ -1038,25 +1087,28 @@ setData(zeroizeForHamza(json[0]));
                         "&:hover": { bgcolor: colorPalette.primaryDark },
                         borderRadius: isCompact ? 1.2 : 2,
                         whiteSpace: "nowrap",
-                        gridColumn: isCompact ? "1 / -1" : undefined,
-                        minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
+                        width: "100%",
+                        minWidth: 118,
+                        minHeight: isPhone ? 31 : isTablet ? 34 : 40,
                         fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       }, uiLayout.buttonSx)}
                       disabled={!startDate || !endDate}
                     >
                       عرض التفاصيل
                     </Button>
-                  </span>
+                  </Box>
                 </Tooltip>
+                )}
               </Box>
 
               {/* Quick Range */}
               <Stack
                 direction="row"
-                gap={isPhone ? 0.45 : isTablet ? 0.65 : 1}
-                mt={isPhone ? 0.6 : isTablet ? 0.8 : 1.5}
+                gap={isPhone ? 0.45 : isTablet ? 0.65 : 0.6}
+                mt={isPhone ? 0.6 : isTablet ? 0.8 : 0.6}
                 flexWrap="wrap"
                 alignItems="center"
+                justifyContent="flex-start"
                 sx={{
                   "& .MuiChip-root": {
                     height: isPhone ? 24 : isTablet ? 27 : undefined,
@@ -1116,14 +1168,14 @@ setData(zeroizeForHamza(json[0]));
 
           {/* Error */}
           {err && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert severity="error" sx={{ mb: 1 }}>
               {err}
             </Alert>
           )}
 
           {/* Empty State */}
           {!data && !err && (
-            <Box sx={{ display: "grid", placeItems: "center", height: "40vh", textAlign: "center", borderRadius: 2 }}>
+            <Box sx={{ display: "grid", placeItems: "center", minHeight: 180, textAlign: "center", borderRadius: 2 }}>
               <Typography variant="h6" sx={{ color: colorPalette.textLight }}>
                 اختر نطاق التاريخ ثم اضغط تحديث لعرض البيانات.
               </Typography>
@@ -1136,8 +1188,8 @@ setData(zeroizeForHamza(json[0]));
               {/* Summary Cards */}
               <Grid
                 container
-                spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}
-                sx={{ mb: isPhone ? 0.75 : isTablet ? 1 : 3 }}
+                spacing={isPhone ? 0.55 : isTablet ? 0.8 : 1}
+                sx={{ mb: isPhone ? 0.75 : isTablet ? 1 : 1 }}
               >
                 <Grid item xs={6} sm={3} md={3}>
                   <StatCard
@@ -1177,8 +1229,8 @@ setData(zeroizeForHamza(json[0]));
               {/* Civil & Military */}
               <Grid
                 container
-                spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}
-                sx={{ mb: isPhone ? 0.75 : isTablet ? 1 : 3 }}
+                spacing={isPhone ? 0.65 : isTablet ? 0.9 : 1}
+                sx={{ mb: isPhone ? 0.75 : isTablet ? 1 : 1 }}
               >
                 {/* Civil */}
                 <Grid item xs={12} md={6}>
@@ -1188,7 +1240,7 @@ setData(zeroizeForHamza(json[0]));
                     title="الدبلومات المدنية"
                     subtitle="تفاصيل المدني + المشترك"
                   >
-                    <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 2}>
+                    <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 1}>
                       <Grid item xs={6}>
                         <Row label="الإجمالي" value={data[K.civil]} />
                         <Row label="المرتجعات" value={data[K.civilReturn]} color={colorPalette.error} />
@@ -1200,11 +1252,11 @@ setData(zeroizeForHamza(json[0]));
                       </Grid>
 
                       <Grid item xs={12}>
-                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Divider sx={{ my: 0.55, borderColor: colorPalette.primaryLighter }} />
                         <Typography variant="subtitle2" sx={{ color: colorPalette.textDark, mb: 1 }}>
                           المشترك (مدني)
                         </Typography>
-                        <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.5}>
+                        <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 0.75}>
                           <Grid item xs={6} sm={6}>
                             <MiniStat
                               label="خصم"
@@ -1225,7 +1277,7 @@ setData(zeroizeForHamza(json[0]));
                       </Grid>
 
                       <Grid item xs={12}>
-                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Divider sx={{ my: 0.55, borderColor: colorPalette.primaryLighter }} />
                         <Row
                           label="العمولة (بعد الخصم/الإضافة)"
                           value={data[K.civilCommission]}
@@ -1245,7 +1297,7 @@ setData(zeroizeForHamza(json[0]));
                     title="الدبلومات العسكرية"
                     subtitle="تفاصيل العسكري + المشترك"
                   >
-                    <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 2}>
+                    <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 1}>
                       <Grid item xs={6}>
                         <Row label="الإجمالي" value={data[K.mil]} />
                         <Row label="المرتجعات" value={data[K.milReturn]} color={colorPalette.error} />
@@ -1257,11 +1309,11 @@ setData(zeroizeForHamza(json[0]));
                       </Grid>
 
                       <Grid item xs={12}>
-                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Divider sx={{ my: 0.55, borderColor: colorPalette.primaryLighter }} />
                         <Typography variant="subtitle2" sx={{ color: colorPalette.textDark, mb: 1 }}>
                           المشترك (عسكري)
                         </Typography>
-                        <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.5}>
+                        <Grid container spacing={isPhone ? 0.45 : isTablet ? 0.65 : 0.75}>
                           <Grid item xs={6} sm={6}>
                             <MiniStat
                               label="خصم"
@@ -1282,7 +1334,7 @@ setData(zeroizeForHamza(json[0]));
                       </Grid>
 
                       <Grid item xs={12}>
-                        <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                        <Divider sx={{ my: 0.55, borderColor: colorPalette.primaryLighter }} />
                         <Row
                           label="العمولة (بعد الخصم/الإضافة)"
                           value={data[K.milCommission]}
@@ -1296,12 +1348,12 @@ setData(zeroizeForHamza(json[0]));
               </Grid>
 
               {/* Courses */}
-              <Grid container spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}>
+              <Grid container spacing={isPhone ? 0.65 : isTablet ? 0.9 : 1}>
                 <Grid item xs={12} md={6}>
                   <Panel color="success" icon={<TrendingUpIcon />} title="الدورات التأهيلية" subtitle="عدد وعمولة">
                     <Row label="عدد الدورات" value={data[K.qual]} />
                     <Row label="المرتجع" value={data[K.qualReturn]} color={colorPalette.error} />
-                    <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                    <Divider sx={{ my: 0.55, borderColor: colorPalette.primaryLighter }} />
                     <Row label="العمولة" value={data[K.qualCommission]} color={colorPalette.primary} isCurrency />
                   </Panel>
                 </Grid>
@@ -1310,7 +1362,7 @@ setData(zeroizeForHamza(json[0]));
                   <Panel color="secondary" icon={<GroupsIcon />} title="الدورات التطويرية" subtitle="عدد وعمولة">
                     <Row label="عدد الدورات" value={data[K.dev]} />
                     <Row label="المرتجع" value={data[K.devReturn]} color={colorPalette.error} />
-                    <Divider sx={{ my: 1, borderColor: colorPalette.primaryLighter }} />
+                    <Divider sx={{ my: 0.55, borderColor: colorPalette.primaryLighter }} />
                     <Row label="العمولة" value={data[K.devCommission]} color={colorPalette.primary} isCurrency />
                   </Panel>
                 </Grid>
@@ -1324,7 +1376,7 @@ setData(zeroizeForHamza(json[0]));
             onClose={closeDetailsDialog}
             fullWidth
             fullScreen={isPhone}
-            maxWidth="lg"
+            maxWidth="md"
             sx={uiLayout.withUiSx({
               "& .MuiDialog-container": {
                 pt: isPhone ? "52px" : isTablet ? "62px" : 0,
@@ -1334,10 +1386,10 @@ setData(zeroizeForHamza(json[0]));
             }, uiLayout.dialogLayoutSx)}
             PaperProps={{
               sx: {
-                borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
+                borderRadius: isPhone ? 0 : isTablet ? 2 : 2.5,
                 overflow: "hidden",
-                width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
-                maxWidth: isPhone ? "100vw" : isTablet ? "1050px" : undefined,
+                width: isPhone ? "100vw" : isTablet ? "95vw" : "min(860px, calc(100vw - 48px))",
+                maxWidth: isPhone ? "100vw" : isTablet ? "860px" : "860px",
                 height: isPhone ? "calc(100dvh - 52px)" : undefined,
                 maxHeight: isPhone ? "calc(100dvh - 52px)" : isTablet ? "90dvh" : undefined,
                 m: isPhone ? 0 : undefined,
@@ -1352,9 +1404,9 @@ setData(zeroizeForHamza(json[0]));
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: isPhone ? 0.5 : isTablet ? 0.75 : 2,
-                px: isPhone ? 0.7 : isTablet ? 1 : 3,
-                py: isPhone ? 0.55 : isTablet ? 0.75 : 2,
+                gap: isPhone ? 0.5 : isTablet ? 0.75 : 1,
+                px: isPhone ? 0.7 : isTablet ? 1 : 1.5,
+                py: isPhone ? 0.55 : isTablet ? 0.75 : 1,
               }}
             >
               <Box>
@@ -1389,12 +1441,12 @@ setData(zeroizeForHamza(json[0]));
             <DialogContent
               sx={{
                 bgcolor: "white",
-                px: isPhone ? 0.65 : isTablet ? 1 : 3,
-                py: isPhone ? 0.55 : isTablet ? 0.8 : 2
+                px: isPhone ? 0.65 : isTablet ? 1 : 1.5,
+                py: isPhone ? 0.55 : isTablet ? 0.8 : 1.1
               }}
             >
               {/* top controls */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mt: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 0.75 }}>
                 <Box
                   sx={{
                     display: "flex",
@@ -1580,7 +1632,7 @@ setData(zeroizeForHamza(json[0]));
                   >
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ bgcolor: colorPalette.primaryLighter }}>
+                        <TableRow sx={{ bgcolor: "#edf7f2" }}>
                           <TableCell
                             sx={{
                               fontWeight: 800,
@@ -1730,9 +1782,10 @@ setData(zeroizeForHamza(json[0]));
               sx={uiLayout.withUiSx({
                 bgcolor: "white",
                 borderTop: `1px solid ${colorPalette.primaryLighter}`,
-                p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
+                px: isPhone ? 0.65 : isTablet ? 1 : 1.5,
+                py: isPhone ? 0.5 : isTablet ? 0.75 : 0.9,
                 justifyContent: "space-between",
-                gap: isPhone ? 0.5 : isTablet ? 0.75 : 2,
+                gap: isPhone ? 0.5 : isTablet ? 0.75 : 1,
               }, uiLayout.dialogActionsSx)}
             >
               <Typography variant="caption" sx={{ color: colorPalette.textLight }}>

@@ -28,21 +28,15 @@ import {
   Checkbox,
   FormGroup,
   Rating,
-  Fade,
-  Zoom,
   Tabs,
   Tab
 } from '@mui/material';
 import {
-  Poll,
   AccessTime,
   Assignment,
   Send,
   CheckCircle,
-  EmojiEvents,
-  TrendingUp,
   History,
-  Description
 } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -50,11 +44,11 @@ import axios from 'axios';
 
 
 // الألوان الأساسية
-const primaryColor = '#80b49e';
-const primaryDark = '#6a9a87';
-const primaryLight = '#9ac9b5';
-const backgroundColor = '#f8fbfa';
-const textColor = '#2c3e50';
+const primaryColor = '#057546';
+const primaryDark = '#034d31';
+const primaryLight = '#80b49e';
+const backgroundColor = '#f6faf8';
+const textColor = '#17372b';
 
 const EmployeeSurveys = () => {
   const [surveys, setSurveys] = useState([]);
@@ -249,7 +243,7 @@ const fetchSubmittedSurveys = async (user) => {
             onChange={(e) => handleResponseChange(index, e.target.value)}
             variant="outlined"
             sx={uiLayout.withUiSx({ 
-              mt: 2,
+              mt: 0.8,
               '& .MuiOutlinedInput-root': {
                 '&:hover fieldset': { borderColor: primaryColor },
                 '&.Mui-focused fieldset': { borderColor: primaryColor },
@@ -260,7 +254,7 @@ const fetchSubmittedSurveys = async (user) => {
 
       case 'radio':
         return (
-          <FormControl component="fieldset" sx={uiLayout.withUiSx({ mt: 2, width: '100%' }, uiLayout.formFieldSx)}>
+          <FormControl component="fieldset" sx={uiLayout.withUiSx({ mt: 0.8, width: '100%' }, uiLayout.formFieldSx)}>
             <RadioGroup sx={uiLayout.radioGroupSx}
               value={responses[index] || ''}
               onChange={(e) => handleResponseChange(index, e.target.value)}
@@ -271,17 +265,17 @@ const fetchSubmittedSurveys = async (user) => {
                   value={option}
                   control={<Radio sx={{ color: primaryColor }} />}
                   label={
-                    <Typography sx={{ fontFamily: '"Cairo", sans-serif', fontSize: '1rem' }}>
+                    <Typography sx={{ fontFamily: '"Cairo", sans-serif', fontSize: '0.76rem' }}>
                       {option}
                     </Typography>
                   }
                   sx={{ 
-                    mb: 2,
-                    padding: '8px 12px',
+                    mb: 0.5,
+                    padding: '5px 8px',
                     borderRadius: '8px',
                     backgroundColor: responses[index] === option ? `${primaryColor}15` : 'transparent',
                     border: responses[index] === option ? `1px solid ${primaryColor}` : '1px solid transparent',
-                    transition: 'all 0.3s ease',
+                    transition: 'background-color .15s ease, border-color .15s ease',
                     '&:hover': {
                       backgroundColor: `${primaryColor}10`
                     }
@@ -312,17 +306,17 @@ const fetchSubmittedSurveys = async (user) => {
                   />
                 }
                 label={
-                  <Typography sx={{ fontFamily: '"Cairo", sans-serif', fontSize: '1rem' }}>
+                  <Typography sx={{ fontFamily: '"Cairo", sans-serif', fontSize: '0.76rem' }}>
                     {option}
                   </Typography>
                 }
                 sx={{ 
-                  mb: 2,
-                  padding: '8px 12px',
+                  mb: 0.5,
+                  padding: '5px 8px',
                   borderRadius: '8px',
                   backgroundColor: (responses[index] || []).includes(option) ? `${primaryColor}15` : 'transparent',
                   border: (responses[index] || []).includes(option) ? `1px solid ${primaryColor}` : '1px solid transparent',
-                  transition: 'all 0.3s ease',
+                  transition: 'background-color .15s ease, border-color .15s ease',
                   '&:hover': {
                     backgroundColor: `${primaryColor}10`
                   }
@@ -334,7 +328,7 @@ const fetchSubmittedSurveys = async (user) => {
 
       case 'rating':
         return (
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Box sx={{ mt: 1, textAlign: 'center' }}>
             <Rating
               value={parseInt(responses[index]) || 0}
               onChange={(event, newValue) => {
@@ -342,14 +336,14 @@ const fetchSubmittedSurveys = async (user) => {
               }}
               size="large"
               sx={{ 
-                fontSize: '3rem',
+                fontSize: '2rem',
                 '& .MuiRating-icon': {
                   color: primaryColor
                 }
               }}
             />
-            <Typography variant="h6" sx={{ mt: 2, color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
-              {responses[index] ? `تقييمك: ${responses[index]} نجوم` : 'اختر تقييمك من 1 إلى 5 نجوم'}
+            <Typography variant="body2" sx={{ mt: 0.5, color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
+              {responses[index] ? `التقييم: ${responses[index]} من 5` : 'اختر التقييم'}
             </Typography>
           </Box>
         );
@@ -382,180 +376,196 @@ const fetchSubmittedSurveys = async (user) => {
   };
 
   const renderNewSurveys = () => (
-    <Grid container spacing={3} justifyContent="center">
-      {surveys.map((survey, index) => (
-        <Grid item xs={12} md={6} lg={4} key={survey.id}>
-          <Zoom in={true} timeout={500 + (index * 100)}>
-            <Card 
-              sx={{ 
-                border: `2px solid ${primaryLight}`,
-                borderRadius: 3,
-                transition: 'all 0.4s ease',
-                cursor: 'pointer',
-                background: `linear-gradient(135deg, #ffffff 0%, ${backgroundColor} 100%)`,
+    <Grid container spacing={1}>
+      {surveys.map((survey) => {
+        const daysRemaining = getDaysRemaining(survey.end_date);
+
+        return (
+          <Grid item xs={12} md={6} xl={4} key={survey.id}>
+            <Card
+              onClick={() => handleSurveyClick(survey)}
+              sx={{
                 height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
+                cursor: 'pointer',
+                borderRadius: 2.5,
+                border: '1px solid rgba(5,117,70,.12)',
+                boxShadow: 'none',
+                bgcolor: '#fff',
+                transition: 'border-color .15s ease, background-color .15s ease',
                 '&:hover': {
-                  boxShadow: `0 15px 40px rgba(128, 180, 158, 0.25)`,
-                  transform: 'translateY(-8px)',
-                  borderColor: primaryColor
+                  borderColor: 'rgba(5,117,70,.32)',
+                  bgcolor: '#fbfdfc'
                 }
               }}
-              onClick={() => handleSurveyClick(survey)}
             >
-              <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography 
-                      variant="h5" 
-                      sx={{ 
-                        color: primaryDark,
-                        fontWeight: 'bold',
+              <CardContent sx={{ p: '12px !important' }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+                  <Box sx={{ minWidth: 0, flex: 1 }}>
+                    <Typography
+                      sx={{
+                        color: '#17372b',
+                        fontWeight: 900,
                         fontFamily: '"Cairo", sans-serif',
-                        lineHeight: 1.3,
-                        mb: 1
+                        fontSize: '0.88rem',
+                        lineHeight: 1.4
                       }}
                     >
                       {survey.title}
                     </Typography>
+
+                    {survey.description && (
+                      <Typography
+                        sx={{
+                          mt: 0.35,
+                          color: '#6d7e76',
+                          fontFamily: '"Cairo", sans-serif',
+                          fontSize: '0.68rem',
+                          lineHeight: 1.55,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}
+                      >
+                        {survey.description}
+                      </Typography>
+                    )}
                   </Box>
-                  <Chip 
-                    icon={<AccessTime />}
-                    label={`${getDaysRemaining(survey.end_date)} أيام`}
+
+                  <Chip
+                    icon={<AccessTime sx={{ fontSize: 14 }} />}
+                    label={`${daysRemaining} يوم`}
                     size="small"
-                    sx={[hrChipSx("small"), { 
-                      backgroundColor: getUrgencyColor(getDaysRemaining(survey.end_date)) + '15',
-                      color: getUrgencyColor(getDaysRemaining(survey.end_date)),
+                    sx={[hrChipSx("small"), {
+                      height: 24,
+                      flexShrink: 0,
+                      bgcolor: daysRemaining <= 3 ? '#fff5e8' : '#edf7f2',
+                      color: daysRemaining <= 3 ? '#a86600' : '#057546',
+                      border: `1px solid ${daysRemaining <= 3 ? '#f0d5a0' : 'rgba(5,117,70,.16)'}`,
                       fontFamily: '"Cairo", sans-serif',
-                      fontWeight: 'bold',
-                      border: `1px solid ${getUrgencyColor(getDaysRemaining(survey.end_date))}30`
+                      fontSize: '0.64rem',
+                      fontWeight: 850
                     }]}
                   />
                 </Box>
 
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    color: textColor,
-                    mb: 3,
-                    fontFamily: '"Cairo", sans-serif',
-                    lineHeight: 1.6,
-                    flexGrow: 1
+                <Box
+                  sx={{
+                    mt: 1,
+                    pt: 0.8,
+                    borderTop: '1px solid #edf2ef',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1
                   }}
                 >
-                  {survey.description}
-                </Typography>
-
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Assignment sx={{ fontSize: 20, color: primaryColor }} />
-                    <Typography variant="body2" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-                      {survey.questions.length} أسئلة
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.45, color: '#60736b' }}>
+                    <Assignment sx={{ fontSize: 16, color: primaryColor }} />
+                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 750 }}>
+                      {survey.questions.length} سؤال
                     </Typography>
                   </Box>
-                  
+
                   <Button
                     variant="contained"
-                    size="medium"
+                    size="small"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleSurveyClick(survey);
+                    }}
                     sx={uiLayout.withUiSx({
-                      background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-                      color: 'white',
-                      borderRadius: 2,
-                      px: 3,
-                      py: 1,
+                      minHeight: 32,
+                      px: 1,
+                      bgcolor: primaryColor,
+                      color: '#fff',
+                      borderRadius: 1.7,
                       fontFamily: '"Cairo", sans-serif',
-                      fontWeight: 'bold',
-                      boxShadow: `0 4px 15px ${primaryColor}40`,
+                      fontSize: '0.67rem',
+                      fontWeight: 850,
+                      boxShadow: 'none',
                       '&:hover': {
-                        background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`,
-                        boxShadow: `0 6px 20px ${primaryColor}60`,
-                        transform: 'translateY(-2px)'
-                      },
-                      transition: 'all 0.3s ease'
+                        bgcolor: primaryDark,
+                        boxShadow: 'none'
+                      }
                     }, uiLayout.buttonSx)}
                   >
-                    ابدأ الآن
+                    فتح الاستبيان
                   </Button>
                 </Box>
               </CardContent>
             </Card>
-          </Zoom>
-        </Grid>
-      ))}
+          </Grid>
+        );
+      })}
     </Grid>
   );
 
   const renderSubmittedSurveys = () => (
-    <Grid container spacing={3} justifyContent="center">
-      {submittedSurveys.map((survey, index) => (
-        <Grid item xs={12} md={6} lg={4} key={survey.id}>
-          <Zoom in={true} timeout={500 + (index * 100)}>
-            <Card 
-              sx={{ 
-                border: `2px solid ${primaryLight}`,
-                borderRadius: 3,
-                background: `linear-gradient(135deg, ${backgroundColor} 0%, ${primaryLight}15 100%)`,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                opacity: 0.8
-              }}
-            >
-              <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography 
-                      variant="h5" 
-                      sx={{ 
-                        color: primaryDark,
-                        fontWeight: 'bold',
-                        fontFamily: '"Cairo", sans-serif',
-                        lineHeight: 1.3,
-                        mb: 1
-                      }}
-                    >
-                      {survey.title}
-                    </Typography>
-                  </Box>
-                  <Chip 
-                    icon={<CheckCircle />}
-                    label="مكتمل"
-                    size="small"
-                    sx={[hrChipSx("small"), { 
-                      backgroundColor: '#4caf50',
-                      color: 'white',
-                      fontFamily: '"Cairo", sans-serif',
-                      fontWeight: 'bold'
-                    }]}
-                  />
-                </Box>
+    <Grid container spacing={1}>
+      {submittedSurveys.map((survey) => (
+        <Grid item xs={12} md={6} xl={4} key={survey.id}>
+          <Card
+            sx={{
+              height: '100%',
+              borderRadius: 2.5,
+              border: '1px solid rgba(5,117,70,.10)',
+              boxShadow: 'none',
+              bgcolor: '#fff'
+            }}
+          >
+            <CardContent sx={{ p: '12px !important' }}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+                <Typography
+                  sx={{
+                    color: '#17372b',
+                    fontWeight: 900,
+                    fontFamily: '"Cairo", sans-serif',
+                    fontSize: '0.86rem',
+                    lineHeight: 1.4
+                  }}
+                >
+                  {survey.title}
+                </Typography>
 
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <Description sx={{ fontSize: 18, color: primaryColor }} />
-                    <Typography variant="body2" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
-                      {survey.questions_count} أسئلة
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <History sx={{ fontSize: 18, color: primaryColor }} />
-                    <Typography variant="body2" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
-                      تم التقديم: {formatDate(survey.submitted_date)}
-                    </Typography>
-                  </Box>
-                </Box>
+                <Chip
+                  icon={<CheckCircle sx={{ fontSize: 14 }} />}
+                  label="تم الإرسال"
+                  size="small"
+                  sx={[hrChipSx("small"), {
+                    height: 24,
+                    bgcolor: '#edf8f0',
+                    color: '#237a3a',
+                    border: '1px solid #c3e1ca',
+                    fontFamily: '"Cairo", sans-serif',
+                    fontSize: '0.63rem',
+                    fontWeight: 850
+                  }]}
+                />
+              </Box>
 
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                  <CheckCircle sx={{ fontSize: 40, color: '#4caf50', mb: 1 }} />
-                  <Typography variant="body2" sx={{ color: '#4caf50', fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-                    شكراً لمشاركتك
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Zoom>
+              <Box
+                sx={{
+                  mt: 1,
+                  pt: 0.8,
+                  borderTop: '1px solid #edf2ef',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 1,
+                  flexWrap: 'wrap'
+                }}
+              >
+                <Typography sx={{ color: '#60736b', fontSize: '0.66rem' }}>
+                  {survey.questions_count} سؤال
+                </Typography>
+
+                <Typography sx={{ color: '#60736b', fontSize: '0.66rem' }}>
+                  {formatDate(survey.submitted_date)}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
         </Grid>
       ))}
     </Grid>
@@ -563,325 +573,388 @@ const fetchSubmittedSurveys = async (user) => {
 
   if (loading) {
     return (
-      <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', background: backgroundColor }}>
-        
-        <Container 
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '100vh',
-            ...navigationContentSx
-          }}
-        >
-          <Box sx={{ textAlign: 'center' }}>
-            <CircularProgress sx={{ color: primaryColor, mb: 2 }} size={60} />
-            <Typography variant="h6" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif' }}>
-              جاري تحميل الاستبيانات...
-            </Typography>
-          </Box>
-        </Container>
-      </Box></NavigationShell>
+      <NavigationShell variant="standard">
+        <Box sx={{ display: 'flex', minHeight: '100vh', background: '#f6faf8' }}>
+          <Container
+            maxWidth={false}
+            disableGutters
+            sx={{
+              minHeight: 220,
+              display: 'grid',
+              placeItems: 'center',
+              ...navigationContentSx
+            }}
+          >
+            <Box sx={{ textAlign: 'center' }}>
+              <CircularProgress sx={{ color: primaryColor }} size={34} />
+              <Typography sx={{ mt: 0.75, color: '#60736b', fontSize: '0.72rem' }}>
+                جاري تحميل الاستبيانات...
+              </Typography>
+            </Box>
+          </Container>
+        </Box>
+      </NavigationShell>
     );
   }
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', background: backgroundColor }}>
-      
-      
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Container 
-          maxWidth="lg" 
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            ...navigationContentSx
-          }}
-        >
-          <Fade in={true} timeout={800}>
-            <Paper 
-              elevation={0}
-              sx={{ 
-                p: { xs: 3, md: 5 },
-                background: 'white',
-                borderRadius: 4,
-                boxShadow: '0 20px 60px rgba(128, 180, 158, 0.15)',
-                border: `1px solid ${primaryLight}`,
-                width: '100%',
-                maxWidth: '1200px',
-                my: 4
+    <NavigationShell variant="standard">
+      <Box sx={{ display: 'flex', minHeight: '100vh', background: '#f6faf8' }}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Container
+            maxWidth={false}
+            disableGutters
+            sx={{
+              width: '100%',
+              ...navigationContentSx
+            }}
+          >
+            <Box
+              sx={{
+                minHeight: 72,
+                px: { xs: 1, sm: 1.25, md: 1.5 },
+                py: 1,
+                mb: 1,
+                borderRadius: 2.5,
+                bgcolor: primaryDark,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 1,
+                flexWrap: 'wrap'
               }}
             >
-              {/* Header Section */}
-              <Box sx={{ 
-                textAlign: 'center', 
-                mb: 4,
-                background: `linear-gradient(135deg, ${primaryColor}15 0%, ${primaryDark}15 100%)`,
-                padding: 4,
-                borderRadius: 3,
-                border: `1px solid ${primaryLight}`
-              }}>
-                <Poll sx={{ fontSize: 60, color: primaryColor, mb: 2 }} />
-                <Typography 
-                  variant="h3" 
-                  sx={{ 
-                    color: primaryDark,
-                    fontWeight: 'bold',
+              <Box>
+                <Typography
+                  sx={{
                     fontFamily: '"Cairo", sans-serif',
-                    mb: 1
+                    fontWeight: 950,
+                    fontSize: '1.08rem',
+                    lineHeight: 1.25
                   }}
                 >
-                  الاستبيانات
+                  استبياناتي
                 </Typography>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    color: primaryDark,
+                <Typography
+                  sx={{
+                    mt: 0.15,
+                    color: 'rgba(255,255,255,.74)',
                     fontFamily: '"Cairo", sans-serif',
-                    opacity: 0.8
+                    fontSize: '0.68rem'
                   }}
                 >
-                  شارك برأيك وساعدنا في التحسين المستمر
+                  الاستبيانات المطلوبة والمكتملة
                 </Typography>
               </Box>
 
-              {/* Tabs Section */}
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
-                <Tabs 
-                  value={activeTab} 
-                  onChange={(e, newValue) => setActiveTab(newValue)}
-                  centered
+              <Box
+                sx={{
+                  minWidth: 42,
+                  height: 32,
+                  px: 0.8,
+                  borderRadius: 999,
+                  display: 'grid',
+                  placeItems: 'center',
+                  bgcolor: 'rgba(255,255,255,.12)',
+                  border: '1px solid rgba(255,255,255,.2)',
+                  fontSize: '0.7rem',
+                  fontWeight: 900
+                }}
+              >
+                {surveys.length} متاح
+              </Box>
+            </Box>
+
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 0.75, sm: 1, md: 1.15 },
+                borderRadius: 2.5,
+                border: '1px solid rgba(5,117,70,.11)',
+                bgcolor: '#fff'
+              }}
+            >
+              <Box
+                sx={{
+                  mb: 1,
+                  borderBottom: '1px solid #edf2ef',
+                  overflowX: 'auto'
+                }}
+              >
+                <Tabs
+                  value={activeTab}
+                  onChange={(event, newValue) => setActiveTab(newValue)}
+                  variant="scrollable"
+                  scrollButtons="auto"
                   sx={{
+                    minHeight: 42,
                     '& .MuiTab-root': {
+                      minHeight: 42,
+                      px: 1.2,
                       fontFamily: '"Cairo", sans-serif',
-                      fontWeight: 'bold',
-                      fontSize: '1.1rem'
+                      fontWeight: 850,
+                      fontSize: '0.72rem'
                     },
-                    '& .Mui-selected': {
-                      color: primaryColor
-                    }
+                    '& .Mui-selected': { color: primaryColor },
+                    '& .MuiTabs-indicator': { bgcolor: primaryColor, height: 2 }
                   }}
                 >
-                  <Tab sx={hrTabIconSx} 
-                    icon={<EmojiEvents />}
+                  <Tab
+                    sx={hrTabIconSx}
+                    icon={<Assignment sx={{ fontSize: 17 }} />}
                     iconPosition="start"
-                    label={`استبيانات جديدة (${surveys.length})`} 
+                    label={`المطلوبة (${surveys.length})`}
                   />
-                  <Tab sx={hrTabIconSx} 
-                    icon={<History />}
+                  <Tab
+                    sx={hrTabIconSx}
+                    icon={<History sx={{ fontSize: 17 }} />}
                     iconPosition="start"
-                    label={`الاستبيانات السابقة (${submittedSurveys.length})`} 
+                    label={`المكتملة (${submittedSurveys.length})`}
                   />
                 </Tabs>
               </Box>
 
-              {/* Content based on active tab */}
               {activeTab === 0 ? (
                 surveys.length === 0 ? (
-                  <Box sx={{ textAlign: 'center', py: 8 }}>
-                    <CheckCircle sx={{ fontSize: 80, color: primaryLight, mb: 3 }} />
-                    {/* <Typography variant="h4" sx={{ color: primaryDark, mb: 2, fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-                      أحسنت! 🎉
-                    </Typography> */}
-                    <Typography variant="h6" sx={{ color: primaryDark, mb: 1, fontFamily: '"Cairo", sans-serif' }}>
-                      لا توجد استبيانات جديدة حالياً
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', opacity: 0.7 }}>
-                      جميع الاستبيانات المطلوبة منك قد تم إكمالها بنجاح
-                    </Typography>
+                  <Box
+                    sx={{
+                      minHeight: 140,
+                      display: 'grid',
+                      placeItems: 'center',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <Box>
+                      <Typography sx={{ fontWeight: 900, color: '#50645b', fontSize: '0.82rem' }}>
+                        لا توجد استبيانات مطلوبة
+                      </Typography>
+                      <Typography sx={{ mt: 0.25, color: '#85928c', fontSize: '0.66rem' }}>
+                        ستظهر هنا الاستبيانات الجديدة عند إضافتها
+                      </Typography>
+                    </Box>
                   </Box>
                 ) : (
                   renderNewSurveys()
                 )
-              ) : (
-                submittedSurveys.length === 0 ? (
-                  <Box sx={{ textAlign: 'center', py: 8 }}>
-                    <History sx={{ fontSize: 80, color: primaryLight, mb: 3 }} />
-                    <Typography variant="h4" sx={{ color: primaryDark, mb: 2, fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-                      لا توجد استبيانات سابقة
+              ) : submittedSurveys.length === 0 ? (
+                <Box
+                  sx={{
+                    minHeight: 140,
+                    display: 'grid',
+                    placeItems: 'center',
+                    textAlign: 'center'
+                  }}
+                >
+                  <Box>
+                    <Typography sx={{ fontWeight: 900, color: '#50645b', fontSize: '0.82rem' }}>
+                      لا توجد استبيانات مكتملة
                     </Typography>
-                    <Typography variant="body1" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', opacity: 0.7 }}>
-                      لم تقم بتقديم أي استبيانات حتى الآن
+                    <Typography sx={{ mt: 0.25, color: '#85928c', fontSize: '0.66rem' }}>
+                      الاستبيانات التي ترسلها ستظهر هنا
                     </Typography>
                   </Box>
-                ) : (
-                  renderSubmittedSurveys()
-                )
-              )}
-            </Paper>
-          </Fade>
-
-          {/* Survey Response Dialog */}
-          <Dialog sx={uiLayout.dialogLayoutSx} 
-            open={responseDialog} 
-            onClose={() => !submitting && setResponseDialog(false)}
-            maxWidth="md"
-            fullWidth
-            PaperProps={{
-              sx: {
-                borderRadius: 3,
-                background: 'white'
-              }
-            }}
-          >
-            <DialogTitle sx={{ 
-              background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-              color: 'white',
-              fontFamily: '"Cairo", sans-serif',
-              fontWeight: 'bold',
-              textAlign: 'center',
-              py: 3
-            }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                <Poll sx={{ fontSize: 32 }} />
-                <Typography variant="h4" sx={{ fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-                  {selectedSurvey?.title}
-                </Typography>
-              </Box>
-            </DialogTitle>
-
-            <DialogContent sx={{ p: 4 }}>
-              {submitSuccess ? (
-                <Box sx={{ textAlign: 'center', py: 6 }}>
-                  <CheckCircle sx={{ fontSize: 80, color: '#4caf50', mb: 3 }} />
-                  <Typography variant="h4" sx={{ color: primaryDark, mb: 2, fontFamily: '"Cairo", sans-serif', fontWeight: 'bold' }}>
-                    شكراً لمشاركتك! 🌟
-                  </Typography>
-                  <Typography variant="h6" sx={{ color: primaryDark, mb: 1, fontFamily: '"Cairo", sans-serif' }}>
-                    تم إرسال إجاباتك بنجاح
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: primaryDark, fontFamily: '"Cairo", sans-serif', opacity: 0.7 }}>
-                    رأيك يساعدنا في التحسين المستمر
-                  </Typography>
                 </Box>
               ) : (
-                <>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      color: primaryDark,
-                      mb: 3,
-                      fontFamily: '"Cairo", sans-serif',
-                      lineHeight: 1.6,
-                      textAlign: 'center',
-                      background: `${primaryColor}10`,
-                      padding: 3,
-                      borderRadius: 2,
-                      border: `1px solid ${primaryLight}`
-                    }}
-                  >
-                    {selectedSurvey?.description}
-                  </Typography>
+                renderSubmittedSurveys()
+              )}
+            </Paper>
 
-                  <Divider sx={{ my: 3, borderColor: primaryLight }} />
-
-                  {selectedSurvey?.questions.map((question, index) => (
-                    <Box 
-                      key={index} 
-                      sx={{ 
-                        mb: 4, 
-                        p: 3, 
-                        border: `2px solid ${primaryLight}`,
-                        borderRadius: 3,
-                        background: 'white',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          borderColor: primaryColor,
-                          boxShadow: `0 4px 20px ${primaryColor}15`
-                        }
+            <Dialog
+              sx={uiLayout.dialogLayoutSx}
+              open={responseDialog}
+              onClose={() => !submitting && setResponseDialog(false)}
+              fullWidth
+              maxWidth={false}
+              PaperProps={{
+                sx: {
+                  width: { xs: 'calc(100% - 16px)', sm: 'min(820px, calc(100% - 32px))' },
+                  maxWidth: '820px !important',
+                  m: { xs: 1, sm: 2 },
+                  borderRadius: 2.5,
+                  overflow: 'hidden',
+                  bgcolor: '#fff'
+                }
+              }}
+            >
+              <DialogTitle
+                sx={{
+                  px: { xs: 1.25, sm: 1.5 },
+                  py: 1,
+                  borderBottom: '1px solid rgba(5,117,70,.11)',
+                  bgcolor: '#fff'
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+                  <Box minWidth={0}>
+                    <Typography
+                      sx={{
+                        color: '#17372b',
+                        fontFamily: '"Cairo", sans-serif',
+                        fontWeight: 950,
+                        fontSize: '0.96rem',
+                        lineHeight: 1.35
                       }}
                     >
-                      <Typography 
-                        variant="h5" 
-                        sx={{ 
-                          color: primaryDark,
-                          mb: 3,
-                          fontFamily: '"Cairo", sans-serif',
-                          fontWeight: 'bold',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1
+                      {selectedSurvey?.title}
+                    </Typography>
+                    <Typography sx={{ mt: 0.1, color: '#74827c', fontSize: '0.66rem' }}>
+                      أجب عن جميع الأسئلة ثم أرسل الاستبيان
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    onClick={() => setResponseDialog(false)}
+                    disabled={submitting}
+                    color="inherit"
+                    size="small"
+                    sx={{ minWidth: 0, px: 0.75, fontSize: '0.68rem' }}
+                  >
+                    إغلاق
+                  </Button>
+                </Box>
+              </DialogTitle>
+
+              <DialogContent dividers sx={{ p: { xs: 1, sm: 1.5 }, bgcolor: '#fbfdfc' }}>
+                {submitSuccess ? (
+                  <Box
+                    sx={{
+                      minHeight: 180,
+                      display: 'grid',
+                      placeItems: 'center',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <Box>
+                      <CheckCircle sx={{ fontSize: 42, color: '#2e7d32' }} />
+                      <Typography sx={{ mt: 0.6, color: '#17372b', fontWeight: 900, fontSize: '0.9rem' }}>
+                        تم إرسال الاستبيان
+                      </Typography>
+                      <Typography sx={{ mt: 0.2, color: '#74827c', fontSize: '0.68rem' }}>
+                        تم حفظ إجاباتك بنجاح
+                      </Typography>
+                    </Box>
+                  </Box>
+                ) : (
+                  <>
+                    {selectedSurvey?.description && (
+                      <Box
+                        sx={{
+                          mb: 1,
+                          p: 1,
+                          borderRadius: 2,
+                          bgcolor: '#edf7f2',
+                          border: '1px solid rgba(5,117,70,.10)'
                         }}
                       >
-                        <Box 
-                          sx={{ 
-                            background: primaryColor,
-                            color: 'white',
-                            width: 32,
-                            height: 32,
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1rem',
-                            fontWeight: 'bold'
+                        <Typography
+                          sx={{
+                            color: '#456056',
+                            fontFamily: '"Cairo", sans-serif',
+                            fontSize: '0.72rem',
+                            lineHeight: 1.6
                           }}
                         >
-                          {index + 1}
-                        </Box>
-                        {question.text}
-                      </Typography>
-                      {renderQuestion(question, index)}
-                    </Box>
-                  ))}
-                </>
-              )}
-            </DialogContent>
+                          {selectedSurvey.description}
+                        </Typography>
+                      </Box>
+                    )}
 
-            {!submitSuccess && (
-              <DialogActions sx={uiLayout.withUiSx({ p: 3, gap: 2, justifyContent: 'center' }, uiLayout.dialogActionsSx)}>
-                <Button
-                  onClick={() => setResponseDialog(false)}
-                  disabled={submitting}
-                  variant="outlined"
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+                      {selectedSurvey?.questions.map((question, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            p: { xs: 0.9, sm: 1.1 },
+                            border: '1px solid rgba(5,117,70,.11)',
+                            borderRadius: 2,
+                            bgcolor: '#fff'
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: '#17372b',
+                              mb: 0.65,
+                              fontFamily: '"Cairo", sans-serif',
+                              fontWeight: 900,
+                              fontSize: '0.78rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0.6
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 1.5,
+                                display: 'grid',
+                                placeItems: 'center',
+                                bgcolor: '#edf7f2',
+                                color: primaryColor,
+                                fontSize: '0.67rem',
+                                fontWeight: 950,
+                                flexShrink: 0
+                              }}
+                            >
+                              {index + 1}
+                            </Box>
+                            {question.text}
+                          </Typography>
+                          {renderQuestion(question, index)}
+                        </Box>
+                      ))}
+                    </Box>
+                  </>
+                )}
+              </DialogContent>
+
+              {!submitSuccess && (
+                <DialogActions
                   sx={uiLayout.withUiSx({
-                    borderColor: primaryColor,
-                    color: primaryColor,
-                    fontFamily: '"Cairo", sans-serif',
-                    fontWeight: 'bold',
-                    borderRadius: 2,
-                    px: 4,
+                    px: { xs: 1.25, sm: 1.5 },
                     py: 1,
-                    '&:hover': {
-                      borderColor: primaryDark,
-                      backgroundColor: `${primaryColor}10`
-                    }
-                  }, uiLayout.buttonSx)}
+                    gap: 0.7,
+                    justifyContent: 'flex-start',
+                    bgcolor: '#fff'
+                  }, uiLayout.dialogActionsSx)}
                 >
-                  إلغاء
-                </Button>
-                <Button
-                  onClick={handleSubmitResponse}
-                  disabled={submitting}
-                  variant="contained"
-                  startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : <Send />}
-                  sx={uiLayout.withUiSx({
-                    background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-                    color: 'white',
-                    fontFamily: '"Cairo", sans-serif',
-                    fontWeight: 'bold',
-                    borderRadius: 2,
-                    px: 4,
-                    py: 1,
-                    boxShadow: `0 4px 15px ${primaryColor}40`,
-                    '&:hover': {
-                      background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`,
-                      boxShadow: `0 6px 20px ${primaryColor}60`
-                    },
-                    '&:disabled': {
-                      background: '#ccc'
-                    }
-                  }, uiLayout.buttonSx)}
-                >
-                  {submitting ? 'جاري الإرسال...' : 'إرسال الإجابات'}
-                </Button>
-              </DialogActions>
-            )}
-          </Dialog>
-        </Container>
-      </LocalizationProvider>
-    </Box></NavigationShell>
+                  <Button
+                    onClick={handleSubmitResponse}
+                    disabled={submitting}
+                    variant="contained"
+                    startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : <Send />}
+                    sx={uiLayout.withUiSx({
+                      minHeight: 36,
+                      px: 1.25,
+                      bgcolor: primaryColor,
+                      color: '#fff',
+                      fontFamily: '"Cairo", sans-serif',
+                      fontWeight: 900,
+                      fontSize: '0.7rem',
+                      boxShadow: 'none',
+                      '&:hover': { bgcolor: primaryDark, boxShadow: 'none' },
+                      '&:disabled': { bgcolor: '#c9d3ce' }
+                    }, uiLayout.buttonSx)}
+                  >
+                    {submitting ? 'جاري الإرسال...' : 'إرسال الاستبيان'}
+                  </Button>
+
+                  <Button
+                    onClick={() => setResponseDialog(false)}
+                    disabled={submitting}
+                    color="inherit"
+                    sx={uiLayout.buttonSx}
+                  >
+                    إلغاء
+                  </Button>
+                </DialogActions>
+              )}
+            </Dialog>
+          </Container>
+        </LocalizationProvider>
+      </Box>
+    </NavigationShell>
   );
 };
 

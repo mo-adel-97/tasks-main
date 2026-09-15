@@ -44,7 +44,7 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   pointer-events: none !important;
-  background: #fff !important;
+  background: light-dark(#fff, rgba(22, 22, 22, 1)) !important;
   transition: color .15s ease, transform .15s ease, top .15s ease,
     left .15s ease, right .15s ease !important;
 }

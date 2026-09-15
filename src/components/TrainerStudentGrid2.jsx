@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -964,30 +965,53 @@ const handleStatusChange = async (id, status) => {
     }
   };
 
-  // فتح الديلوج + جلب البيانات
-  const handleOpenActionDialog = async (row) => {
+  // فتح الديالوج فورًا ثم جلب البيانات في الخلفية.
+  // بهذه الطريقة الضغط على زر الإجراءات لا ينتظر طلبات الشبكة قبل إظهار النافذة.
+  const handleOpenActionDialog = (row) => {
     setCurrentActionRow(row);
     setNoteInput(rowNotes[row.id] || '');
     setCurrentTab(0);
-    setStatusError(''); // إعادة تعيين رسالة الخطأ
+    setStatusError('');
 
-    const completeHistory = await fetchStudentHistory(row.id);
-    setStudentHistory((prev) => ({
-      ...prev,
-      [row.id]: completeHistory,
-    }));
+    // منع ظهور بيانات الطالب السابق لحظيًا أثناء تحميل الطالب الجديد.
+    setStatements([]);
+    setTrainingFile([]);
+    setStudyInfo([]);
 
-    const accountGuid = await getOrFetchAccountGuid(row);
-
-    await fetchLastOrderPay(accountGuid, row.id);
-
-    await Promise.allSettled([
-      fetchStatements(accountGuid),
-      fetchTrainingFile(accountGuid),
-      fetchStudyInfo(accountGuid),
-    ]);
-
+    // افتح فورًا - البيانات الأساسية موجودة بالفعل في الصف.
     setActionDialogOpen(true);
+
+    const loadActionDialogData = async () => {
+      try {
+        // التاريخ و accountGuid لا يعتمد أحدهما على الآخر.
+        const historyPromise = fetchStudentHistory(row.id);
+        const accountGuidPromise = getOrFetchAccountGuid(row);
+
+        const [completeHistory, accountGuid] = await Promise.all([
+          historyPromise,
+          accountGuidPromise,
+        ]);
+
+        setStudentHistory((prev) => ({
+          ...prev,
+          [row.id]: completeHistory,
+        }));
+
+        if (!accountGuid) return;
+
+        // كل بيانات التابات يتم تحميلها بالتوازي بدل التسلسل.
+        await Promise.allSettled([
+          fetchLastOrderPay(accountGuid, row.id),
+          fetchStatements(accountGuid),
+          fetchTrainingFile(accountGuid),
+          fetchStudyInfo(accountGuid),
+        ]);
+      } catch (error) {
+        console.error('Failed to load action dialog data:', error);
+      }
+    };
+
+    loadActionDialogData();
   };
 
   const handleWhatsAppClick = (phoneNumber) => {
@@ -2328,11 +2352,11 @@ const getStatusDisplayText = (status) => {
 
   // تعريف التبويبات
   const tabs = [
-    { label: 'المعلومات الرئيسية', icon: <PersonIcon /> },
-    { label: ' الفواتير', icon: <ReceiptIcon /> },
+    { label: 'الرئيسية', icon: <PersonIcon /> },
+    { label: 'الفواتير', icon: <ReceiptIcon /> },
     { label: 'الملف التدريبي', icon: <FolderIcon /> },
-    { label: 'آخر طلب سداد', icon: <PendingActionsIcon /> },
-    { label: 'سجل المتابعات', icon: <HistoryIcon /> },
+    { label: 'طلب السداد', icon: <PendingActionsIcon /> },
+    { label: 'المتابعات', icon: <HistoryIcon /> },
   ];
 
   return showSpecial ? (
@@ -3007,85 +3031,121 @@ const getStatusDisplayText = (status) => {
           <Dialog
             open={actionDialogOpen}
             onClose={() => setActionDialogOpen(false)}
-            maxWidth="lg"
-            fullWidth
+            maxWidth={false}
             fullScreen={isPhone}
-            sx={uiLayout.withUiSx({
-
+            transitionDuration={{ enter: 120, exit: 90 }}
+            PaperProps={{
+              sx: {
+                width: isPhone
+                  ? '100vw'
+                  : isTablet
+                    ? 'calc(100vw - 24px)'
+                    : 'min(1080px, calc(100vw - 64px))',
+                maxWidth: isPhone ? '100vw' : '1080px',
+                height: isPhone ? '100dvh' : 'auto',
+                maxHeight: isPhone ? '100dvh' : '88dvh',
+                m: isPhone ? 0 : 1.5,
+                borderRadius: isPhone ? 0 : 2.5,
+                overflow: 'hidden',
+                direction: 'rtl',
+                boxSizing: 'border-box',
+                bgcolor: '#f7faf8',
+                boxShadow: isPhone ? 'none' : '0 18px 50px rgba(15,23,42,.20)',
+                border: isPhone ? 'none' : '1px solid rgba(5,117,70,.10)'
+              }
+            }}
+            BackdropProps={{
+              sx: {
+                backgroundColor: 'rgba(15,23,42,.42)'
+              }
+            }}
+            sx={{
               '& .MuiDialog-container': {
                 alignItems: isPhone ? 'stretch' : 'center',
-                justifyContent: 'center',
-                p: isPhone ? 0 : { sm: 1, md: 1.5 },
-              },
-
-              '& .MuiDialog-paper': {
-                width: isDesktop
-                  ? undefined
-                  : isPhone
-                    ? '100vw'
-                    : { sm: '94vw', md: '92vw' },
-
-                maxWidth: isDesktop
-                  ? undefined
-                  : isPhone
-                    ? '100vw'
-                    : { sm: '760px', md: '1050px' },
-
-                height: isPhone ? '100dvh' : 'auto',
-                maxHeight: isDesktop ? '90vh' : isPhone ? '100dvh' : '92dvh',
-
-                m: isPhone ? 0 : { sm: 1, md: 1.5 },
-
-                borderRadius: isDesktop
-                  ? 3
-                  : isPhone
-                    ? 0
-                    : { sm: 2, md: 2.5 },
-
-                overflow: 'hidden',
-                direction: "rtl",
-                boxSizing: 'border-box',
-              },
-            }, uiLayout.dialogLayoutSx)}
+                justifyContent: 'center'
+              }
+            }}
           >
             <DialogTitle
               sx={{
-                bgcolor: PRIMARY_COLOR,
-                color: 'white',
-                py: isDesktop ? 3 : { xs: 0.55, sm: 0.75, md: 0.95 },
-                px: isDesktop ? 3 : { xs: 0.75, sm: 1.05, md: 1.5 },
-                textAlign: 'center',
-                fontSize: isDesktop ? '1.5rem' : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
-                lineHeight: 1.35,
-                fontWeight: 'bold',
+                bgcolor: '#034d31',
+                color: '#fff',
+                px: isPhone ? 1 : 1.4,
+                py: isPhone ? 0.75 : 0.9,
                 flexShrink: 0,
+                borderBottom: '1px solid rgba(255,255,255,.12)'
               }}
             >
               <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                gap={isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.7 }}
-                sx={{ minWidth: 0 }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 1,
+                  minWidth: 0
+                }}
               >
-                <PersonIcon
-                  sx={{
-                    fontSize: isDesktop ? 34 : { xs: 15, sm: 18, md: 20 },
-                    flexShrink: 0,
-                  }}
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
+                  <Box
+                    sx={{
+                      width: isPhone ? 30 : 34,
+                      height: isPhone ? 30 : 34,
+                      borderRadius: 1.6,
+                      display: 'grid',
+                      placeItems: 'center',
+                      bgcolor: 'rgba(255,255,255,.10)',
+                      border: '1px solid rgba(255,255,255,.15)',
+                      flexShrink: 0
+                    }}
+                  >
+                    <PersonIcon sx={{ fontSize: isPhone ? 17 : 19 }} />
+                  </Box>
 
-                <Box
-                  component="span"
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                      sx={{
+                        fontWeight: 900,
+                        fontSize: isPhone ? '0.82rem' : '0.94rem',
+                        lineHeight: 1.25
+                      }}
+                    >
+                      إجراءات الطالب
+                    </Typography>
+                    <Typography
+                      title={currentActionRow?.studentName || ''}
+                      sx={{
+                        mt: 0.08,
+                        color: 'rgba(255,255,255,.78)',
+                        fontSize: isPhone ? '0.62rem' : '0.68rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: isPhone ? '72vw' : 680
+                      }}
+                    >
+                      {currentActionRow?.studentName || '-'}
+                      {currentActionRow?.nationalId ? ` • ${currentActionRow.nationalId}` : ''}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <IconButton
+                  aria-label="إغلاق"
+                  size="small"
+                  onClick={() => setActionDialogOpen(false)}
                   sx={{
-                    minWidth: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: isPhone ? 'normal' : 'nowrap',
+                    width: 32,
+                    height: 32,
+                    flexShrink: 0,
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,.20)',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,.10)'
+                    }
                   }}
                 >
-                  إجراءات الطالب - {currentActionRow?.studentName}
-                </Box>
+                  <CancelIcon sx={{ fontSize: 18 }} />
+                </IconButton>
               </Box>
             </DialogTitle>
 
@@ -3111,73 +3171,50 @@ const getStatusDisplayText = (status) => {
                 <Tabs
                   value={currentTab}
                   onChange={handleTabChange}
-                  variant={isDesktop ? 'fullWidth' : 'scrollable'}
-                  scrollButtons={false}
+                  variant={isPhone ? 'scrollable' : 'fullWidth'}
+                  scrollButtons={isPhone ? 'auto' : false}
                   allowScrollButtonsMobile
                   sx={{
-                    minHeight: isDesktop ? undefined : { xs: 34, sm: 38, md: 42 },
-
+                    minHeight: 42,
+                    bgcolor: '#fff',
                     '& .MuiTabs-flexContainer': {
-                      justifyContent: isDesktop ? 'initial' : 'flex-start',
+                      minHeight: 42
                     },
-
                     '& .MuiTab-root': {
-                      fontSize: isDesktop
-                        ? '1rem'
-                        : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-
-                      fontWeight: 'bold',
-
-                      py: isDesktop
-                        ? 2
-                        : { xs: 0.22, sm: 0.3, md: 0.4 },
-
-                      px: isDesktop
-                        ? undefined
-                        : { xs: 0.35, sm: 0.5, md: 0.65 },
-
-                      minWidth: isDesktop
-                        ? undefined
-                        : { xs: 62, sm: 74, md: 84 },
-
-                      minHeight: isDesktop
-                        ? undefined
-                        : { xs: 34, sm: 38, md: 42 },
-
-                      color: PRIMARY_COLOR,
+                      minHeight: 42,
+                      minWidth: isPhone ? 92 : 0,
+                      py: 0.55,
+                      px: isPhone ? 0.8 : 0.65,
+                      color: '#60736b',
+                      fontWeight: 800,
+                      fontSize: isPhone ? '0.66rem' : isTablet ? '0.69rem' : '0.72rem',
                       whiteSpace: 'nowrap',
                       lineHeight: 1.15,
-                      letterSpacing: 0,
-
                       '& .MuiTab-iconWrapper': {
-                        mr: isDesktop ? 1 : 0.2,
-                        mb: 0,
+                        marginInlineEnd: 0.35,
+                        mb: 0
                       },
-
                       '& .MuiSvgIcon-root': {
-                        fontSize: isDesktop
-                          ? undefined
-                          : { xs: 12, sm: 14, md: 16 },
-                      },
+                        fontSize: isPhone ? 16 : 17
+                      }
                     },
-
                     '& .Mui-selected': {
-                      color: PRIMARY_COLOR,
-                      bgcolor: isDesktop ? 'transparent' : 'rgba(128,180,158,0.10)',
+                      color: '#057546 !important',
+                      bgcolor: '#f7fbf9'
                     },
-
                     '& .MuiTabs-indicator': {
-                      backgroundColor: PRIMARY_COLOR,
-                      height: isDesktop ? 2 : 2.5,
-                    },
+                      backgroundColor: '#057546',
+                      height: 2.5,
+                      borderRadius: 999
+                    }
                   }}
                 >
                   {tabs.map((tab, index) => (
-                    <Tab 
+                    <Tab
                       key={index}
-                      icon={tab.icon} 
+                      icon={tab.icon}
                       iconPosition="start"
-                      label={tab.label} 
+                      label={tab.label}
                     />
                   ))}
                 </Tabs>
@@ -3190,134 +3227,86 @@ const getStatusDisplayText = (status) => {
                   maxWidth: '100%',
                   minWidth: 0,
                   boxSizing: 'border-box',
-
-                  // مهم جدًا: محتوى الديالوج لا يحجز مساحة للسايدبار.
-                  // ده كان سبب انزياح الديالوج ناحية واحدة.
-                  ml: 0,
-                  mr: 0,
-
-                  p: isDesktop
-                    ? 3
-                    : { xs: 0.35, sm: 0.55, md: 0.8 },
-
-                  pt: isDesktop
-                    ? 3
-                    : { xs: 0.35, sm: 0.5, md: 0.75 },
-
+                  p: isPhone ? 0.6 : isTablet ? 0.8 : 1,
                   overflowX: 'hidden',
                   overflowY: 'auto',
                   flex: 1,
                   minHeight: 0,
+                  bgcolor: '#f7faf8',
 
                   '& .MuiCard-root': {
-                    borderRadius: isDesktop ? undefined : { xs: 1.5, sm: 1.8, md: 2 },
-                    boxShadow: isDesktop ? undefined : '0 2px 8px rgba(15,23,42,0.08)',
+                    boxShadow: 'none !important',
+                    backgroundImage: 'none !important',
+                    background: '#fff !important',
+                    border: '1px solid rgba(5,117,70,.10) !important',
+                    borderRadius: '10px !important'
                   },
 
                   '& .MuiCardContent-root': {
-                    p: isDesktop
-                      ? undefined
-                      : {
-                          xs: '5px !important',
-                          sm: '7px !important',
-                          md: '9px !important',
-                        },
+                    padding: isPhone
+                      ? '8px !important'
+                      : isTablet
+                        ? '10px !important'
+                        : '12px !important'
                   },
 
-                  '& .MuiTypography-h4': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
-                  },
-
-                  '& .MuiTypography-h5': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' },
-                  },
-
-                  '& .MuiTypography-h6': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-                    lineHeight: 1.35,
+                  '& .MuiTypography-h4, & .MuiTypography-h5, & .MuiTypography-h6': {
+                    fontSize: isPhone ? '0.78rem' : isTablet ? '0.84rem' : '0.9rem',
+                    lineHeight: 1.35
                   },
 
                   '& .MuiTypography-subtitle1, & .MuiTypography-subtitle2': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                    fontSize: isPhone ? '0.69rem' : '0.74rem'
                   },
 
                   '& .MuiTypography-body1, & .MuiTypography-body2': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-                    lineHeight: 1.45,
+                    fontSize: isPhone ? '0.68rem' : isTablet ? '0.71rem' : '0.74rem',
+                    lineHeight: 1.5
                   },
 
                   '& .MuiTypography-caption': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                    fontSize: isPhone ? '0.61rem' : '0.65rem'
                   },
 
                   '& .MuiButton-root': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-
-                    minHeight: isDesktop
-                      ? undefined
-                      : { xs: 25, sm: 28, md: 31 },
-
-                    py: isDesktop
-                      ? undefined
-                      : { xs: 0.35, sm: 0.45, md: 0.6 },
+                    minHeight: 34,
+                    py: 0.45,
+                    px: 1,
+                    borderRadius: 1.7,
+                    fontSize: isPhone ? '0.66rem' : '0.7rem',
+                    fontWeight: 800,
+                    boxShadow: 'none !important',
+                    transform: 'none !important'
                   },
 
                   '& .MuiChip-root': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-
-                    height: isDesktop
-                      ? undefined
-                      : { xs: 19, sm: 22, md: 24 },
+                    minHeight: 22,
+                    height: 'auto',
+                    fontSize: isPhone ? '0.61rem' : '0.65rem'
                   },
 
-                  '& .MuiInputBase-root, & .MuiInputLabel-root': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                  '& .MuiInputBase-root': {
+                    fontSize: isPhone ? '0.68rem' : '0.72rem'
                   },
 
-                  '& .MuiInputBase-input': {
-                    py: isDesktop
-                      ? undefined
-                      : { xs: 0.75, sm: 0.9, md: 1 },
+                  '& .MuiInputLabel-root': {
+                    fontSize: isPhone ? '0.66rem' : '0.7rem'
                   },
 
                   '& .MuiSvgIcon-root': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: 16, sm: 18, md: 20 },
+                    fontSize: isPhone ? 17 : 19
                   },
 
-                  // الجداول داخل التابات تبقى مضغوطة على الموبايل/التابلت.
                   '& table': {
                     width: '100%',
-                    tableLayout: isDesktop ? 'auto' : 'fixed',
+                    tableLayout: isDesktop ? 'auto' : 'fixed'
                   },
 
                   '& th, & td': {
-                    fontSize: isDesktop
-                      ? undefined
-                      : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-
-                    p: isDesktop ? undefined : 0.5,
-                    wordBreak: 'break-word',
-                  },
+                    fontSize: isPhone ? '0.64rem' : '0.69rem',
+                    padding: isPhone ? '6px' : '7px',
+                    wordBreak: 'break-word'
+                  }
                 }}
               >
                 {/* التبويب 1: المعلومات الرئيسية */}
@@ -3326,23 +3315,25 @@ const getStatusDisplayText = (status) => {
                     sx={{
                       display: 'grid',
                       gridTemplateColumns: isDesktop
-                        ? '1fr 1fr'
-                        : { xs: '1fr', md: '1fr 1fr' },
-                      gap: isDesktop ? 4 : { xs: 0.4, sm: 0.6, md: 0.85 },
+                        ? 'minmax(0, 1.08fr) minmax(320px, 0.92fr)'
+                        : '1fr',
+                      gap: isPhone ? 0.65 : 0.85,
+                      alignItems: 'start',
                     }}
                   >
                     {/* Left Column - Student Info and Actions */}
                     <Box
                       display="flex"
                       flexDirection="column"
-                      gap={isDesktop ? 3 : { xs: 0.4, sm: 0.6, md: 0.85 }}
+                      gap={isPhone ? 0.65 : 0.85}
                     >
                       {/* Student Info Card */}
                       <Card
                         sx={{
-                          boxShadow: 3,
-                          borderRadius: 3,
-                          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                          boxShadow: 'none',
+                          borderRadius: 2,
+                          background: '#fff',
+                          border: '1px solid rgba(5,117,70,.10)'
                         }}
                       >
                         <CardContent sx={{ p: 3 }}>
@@ -3350,7 +3341,7 @@ const getStatusDisplayText = (status) => {
                             variant="h6"
                             gutterBottom
                             sx={{
-                              color: PRIMARY_COLOR,
+                              color: '#057546',
                               display: 'flex',
                               alignItems: 'center',
                               gap: 1,
@@ -3374,10 +3365,11 @@ const getStatusDisplayText = (status) => {
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 1,
+                                boxShadow: 'none',
+                                border: '1px solid rgba(5,117,70,.09)',
                               }}
                             >
-                              <PaymentIcon sx={{ color: PRIMARY_COLOR, fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
+                              <PaymentIcon sx={{ color: '#057546', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 الرصيد الحالي
                               </Typography>
@@ -3392,7 +3384,8 @@ const getStatusDisplayText = (status) => {
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 1,
+                                boxShadow: 'none',
+                                border: '1px solid rgba(5,117,70,.09)',
                               }}
                             >
                               <PaymentIcon sx={{ color: isValidMonthpay(currentActionRow?.monthpay) ? '#2196f3' : '#ff9800', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
@@ -3415,7 +3408,8 @@ const getStatusDisplayText = (status) => {
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 1,
+                                boxShadow: 'none',
+                                border: '1px solid rgba(5,117,70,.09)',
                               }}
                             >
                               <PaymentIcon sx={{ color: '#ff9800', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
@@ -3433,10 +3427,11 @@ const getStatusDisplayText = (status) => {
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
                                 bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 1,
+                                boxShadow: 'none',
+                                border: '1px solid rgba(5,117,70,.09)',
                               }}
                             >
-                              <SchoolIcon sx={{ color: PRIMARY_COLOR, fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
+                              <SchoolIcon sx={{ color: '#057546', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 البرنامج
                               </Typography>
@@ -3449,13 +3444,14 @@ const getStatusDisplayText = (status) => {
                       </Card>
 
                       {/* Current Status Card */}
-                      <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
+                      <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
                         <CardContent sx={{ p: 3 }}>
                           <Typography
                             variant="h6"
                             gutterBottom
                             sx={{
-                              color: PRIMARY_COLOR,
+                              color: '#057546',
                               display: 'flex',
                               alignItems: 'center',
                               gap: 1,
@@ -3521,9 +3517,10 @@ borderColor:
                       </Card>
 
                       {/* Actions Card */}
-                      <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
+                      <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
                         <CardContent sx={{ p: 3 }}>
-                          <Typography variant="h6" gutterBottom sx={{ color: PRIMARY_COLOR, mb: 3, fontWeight: 'bold' }}>
+                          <Typography variant="h6" gutterBottom sx={{ color: '#057546', mb: 3, fontWeight: 'bold' }}>
                             الإجراءات السريعة
                           </Typography>
 
@@ -3571,10 +3568,11 @@ borderColor:
                                 borderRadius: 2,
                                 '&:hover': {
                                   backgroundColor: '#1DA851',
-                                  transform: 'translateY(-2px)',
-                                  boxShadow: 3,
+                                  
+                                  boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)',
                                 },
-                                transition: 'all 0.3s ease',
+                                transition: 'background-color .15s ease, color .15s ease',
                               }, uiLayout.buttonSx)}
                             >
                               التواصل عبر واتساب
@@ -3588,16 +3586,17 @@ borderColor:
                     <Box
                       display="flex"
                       flexDirection="column"
-                      gap={isDesktop ? 3 : { xs: 0.4, sm: 0.6, md: 0.85 }}
+                      gap={isPhone ? 0.65 : 0.85}
                     >
                       {/* Add Note Card */}
-                      <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
+                      <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
                         <CardContent sx={{ p: 3 }}>
                           <Typography
                             variant="h6"
                             gutterBottom
                             sx={{
-                              color: PRIMARY_COLOR,
+                              color: '#057546',
                               display: 'flex',
                               alignItems: 'center',
                               gap: 1,
@@ -3628,13 +3627,14 @@ borderColor:
                               fontSize: isDesktop ? '1rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                               fontWeight: 'bold',
                               borderRadius: 2,
-                              backgroundColor: PRIMARY_COLOR,
+                              backgroundColor: '#057546',
                               '&:hover': {
-                                backgroundColor: PRIMARY_COLOR_DARK,
-                                transform: 'translateY(-2px)',
-                                boxShadow: 3,
+                                backgroundColor: '#034d31',
+                                
+                                boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)',
                               },
-                              transition: 'all 0.3s ease',
+                              transition: 'background-color .15s ease, color .15s ease',
                             }, uiLayout.buttonSx)}
                           >
                             حفظ المتابعة الجديدة
@@ -3647,13 +3647,14 @@ borderColor:
 
                 {/* التبويب 2: كشف الحساب */}
                 {currentTab === 1 && (
-                  <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
+                  <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
                     <CardContent sx={{ p: 3 }}>
                       <Typography
                         variant="h6"
                         gutterBottom
                         sx={{
-                          color: PRIMARY_COLOR,
+                          color: '#057546',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1,
@@ -3674,22 +3675,22 @@ borderColor:
                         </Typography>
                       ) : (
                         <Box sx={{ overflowX: 'auto', border: '1px solid #eee', borderRadius: 2 }}>
-                          <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
+                          <table style={adaptiveInlineStyle({ width: '100%', borderCollapse: 'collapse', direction: 'rtl' })}>
                             <thead>
-                              <tr style={{ backgroundColor: PRIMARY_COLOR_LIGHT }}>
-                                <th style={thCell}>📅 التاريخ</th>
-                                <th style={thCell}>➖ دفعة الشهر</th>
-                                <th style={thCell}>💰 الرصيد المتبقي عليه</th>
-                                <th style={thCell}>📝 ملاحظات</th>
+                              <tr style={adaptiveInlineStyle({ backgroundColor: PRIMARY_COLOR_LIGHT })}>
+                                <th style={adaptiveInlineStyle(thCell)}>📅 التاريخ</th>
+                                <th style={adaptiveInlineStyle(thCell)}>➖ دفعة الشهر</th>
+                                <th style={adaptiveInlineStyle(thCell)}>💰 الرصيد المتبقي عليه</th>
+                                <th style={adaptiveInlineStyle(thCell)}>📝 ملاحظات</th>
                               </tr>
                             </thead>
                             <tbody>
                               {statements.map((item, idx) => (
-                                <tr key={idx} style={{ borderTop: '1px solid #eee' }}>
-                                  <td style={tdCell}>{item.dayDate ? item.dayDate.split('T')[0] : '-'}</td>
-                                  <td style={tdCell}>{item.daen}</td>
-                                  <td style={tdCell}>{item.balance}</td>
-                                  <td style={{ ...tdCell, maxWidth: 200, wordWrap: 'break-word', whiteSpace: 'normal' }}>
+                                <tr key={idx} style={adaptiveInlineStyle({ borderTop: '1px solid #eee' })}>
+                                  <td style={adaptiveInlineStyle(tdCell)}>{item.dayDate ? item.dayDate.split('T')[0] : '-'}</td>
+                                  <td style={adaptiveInlineStyle(tdCell)}>{item.daen}</td>
+                                  <td style={adaptiveInlineStyle(tdCell)}>{item.balance}</td>
+                                  <td style={adaptiveInlineStyle({ ...tdCell, maxWidth: 200, wordWrap: 'break-word', whiteSpace: 'normal' })}>
                                     {item.notes || '-'}
                                   </td>
                                 </tr>
@@ -3704,13 +3705,14 @@ borderColor:
 
                 {/* التبويب 3: الملف التدريبي */}
                 {currentTab === 2 && (
-                  <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
+                  <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
                     <CardContent sx={{ p: 3 }}>
                       <Typography
                         variant="h6"
                         gutterBottom
                         sx={{
-                          color: PRIMARY_COLOR,
+                          color: '#057546',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1,
@@ -3731,45 +3733,45 @@ borderColor:
                         </Typography>
                       ) : (
                         <Box sx={{ overflowX: 'auto', border: '1px solid #eee', borderRadius: 2 }}>
-                          <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
+                          <table style={adaptiveInlineStyle({ width: '100%', borderCollapse: 'collapse', direction: 'rtl' })}>
                             <tbody>
                               {trainingFile.map((item, index) => (
                                 <React.Fragment key={index}>
-                                  <tr style={{ borderTop: '1px solid #eee' }}>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>الفرع</td>
-                                    <td style={tdCell}>{item.branch}</td>
+                                  <tr style={adaptiveInlineStyle({ borderTop: '1px solid #eee' })}>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الفرع</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.branch}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>البرنامج</td>
-                                    <td style={tdCell}>{item.diplom}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>البرنامج</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.diplom}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>الدفعة</td>
-                                    <td style={tdCell}>{item.batch}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الدفعة</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.batch}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>المستوى</td>
-                                    <td style={tdCell}>{item.level}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>المستوى</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.level}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>تاريخ البداية</td>
-                                    <td style={tdCell}>{item.dateStart || '---'}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>تاريخ البداية</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.dateStart || '---'}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>تاريخ النهاية</td>
-                                    <td style={tdCell}>{item.dateEnd || '---'}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>تاريخ النهاية</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.dateEnd || '---'}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>الحالة</td>
-                                    <td style={tdCell}>{item.status}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الحالة</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.status}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>ملاحظات</td>
-                                    <td style={tdCell}>{item.notes}</td>
+                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>ملاحظات</td>
+                                    <td style={adaptiveInlineStyle(tdCell)}>{item.notes}</td>
                                   </tr>
                                   {index < trainingFile.length - 1 && (
                                     <tr>
-                                      <td colSpan="2" style={{ padding: '15px', backgroundColor: '#f8f9fa' }}></td>
+                                      <td colSpan="2" style={adaptiveInlineStyle({ padding: '15px', backgroundColor: '#f8f9fa' })}></td>
                                     </tr>
                                   )}
                                 </React.Fragment>
@@ -3784,13 +3786,14 @@ borderColor:
 
                 {/* ✅ التبويب 4: آخر طلب سداد */}
                 {currentTab === 3 && (
-                  <Card sx={{ boxShadow: 3, borderRadius: 3 }}>
+                  <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
                     <CardContent sx={{ p: 3 }}>
                       <Typography
                         variant="h6"
                         gutterBottom
                         sx={{
-                          color: PRIMARY_COLOR,
+                          color: '#057546',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1,
@@ -3876,7 +3879,8 @@ borderColor:
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1, gridColumn: '1 / -1' }}>
+                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 'none',
+                                border: '1px solid rgba(5,117,70,.09)', gridColumn: '1 / -1' }}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     حالة الطلب
                                   </Typography>
@@ -3889,7 +3893,8 @@ borderColor:
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1, gridColumn: '1 / -1' }}>
+                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 'none',
+                                border: '1px solid rgba(5,117,70,.09)', gridColumn: '1 / -1' }}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     اسم المسدد
                                   </Typography>
@@ -3951,13 +3956,14 @@ borderColor:
 
                 {/* التبويب 5: سجل المتابعات */}
                 {currentTab === 4 && (
-                  <Card sx={{ boxShadow: 3, borderRadius: 3, flex: 1 }}>
+                  <Card sx={{ boxShadow: 'none',
+                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3, flex: 1 }}>
                     <CardContent sx={{ p: 3, height: '100%' }}>
                       <Typography
                         variant="h6"
                         gutterBottom
                         sx={{
-                          color: PRIMARY_COLOR,
+                          color: '#057546',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1,
@@ -3970,12 +3976,8 @@ borderColor:
 
                       <List
                         sx={{
-                          height: isDesktop ? 400 : { xs: 280, sm: 340, md: 380 },
-                          overflow: 'auto',
-                          '&::-webkit-scrollbar': { width: 8 },
-                          '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: 4 },
-                          '&::-webkit-scrollbar-thumb': { background: PRIMARY_COLOR, borderRadius: 4 },
-                          '&::-webkit-scrollbar-thumb:hover': { background: PRIMARY_COLOR_DARK },
+                          height: 'auto',
+                          overflow: 'visible'
                         }}
                       >
                         {studentHistory[currentActionRow?.id] && studentHistory[currentActionRow?.id].length > 0 ? (
@@ -4075,33 +4077,7 @@ borderColor:
               </Box>
             </DialogContent>
 
-            <DialogActions
-              sx={uiLayout.withUiSx({
-                p: isDesktop ? 3 : { xs: 0.35, sm: 0.5, md: 0.7 },
-                bgcolor: '#f8fafc',
-                borderTop: '1px solid #e2e8f0',
-                flexShrink: 0,
-              }, uiLayout.dialogActionsSx)}
-            >
-              <Button
-                onClick={() => setActionDialogOpen(false)}
-                variant="contained"
-                fullWidth={isPhone}
-                sx={uiLayout.withUiSx({
-                  px: isDesktop ? 4 : { xs: 0.8, sm: 1.1, md: 1.4 },
-                  py: isDesktop ? 1 : { xs: 0.3, sm: 0.4, md: 0.5 },
-                  fontSize: isDesktop ? '1rem' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-                  fontWeight: 'bold',
-                  borderRadius: isDesktop ? 2 : 1.5,
-                  backgroundColor: PRIMARY_COLOR,
-                  '&:hover': {
-                    backgroundColor: PRIMARY_COLOR_DARK,
-                  },
-                }, uiLayout.buttonSx)}
-              >
-                إغلاق النافذة
-              </Button>
-            </DialogActions>
+
           </Dialog>
 
          <style>{`

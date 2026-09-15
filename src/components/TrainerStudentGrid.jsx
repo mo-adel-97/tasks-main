@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -1122,22 +1123,22 @@ const filteredRows = rows.filter((row) => {
                         </Typography>
                       ) : (
                         <Box sx={{ overflowX: 'auto', border: '1px solid #eee', borderRadius: 2 }}>
-                          <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
+                          <table style={adaptiveInlineStyle({ width: '100%', borderCollapse: 'collapse', direction: 'rtl' })}>
                             <thead>
-                              <tr style={{ backgroundColor: PRIMARY_COLOR_LIGHT }}>
-                                <th style={thCell}>📅 التاريخ</th>
-                                <th style={thCell}>➖ دفعة الشهر</th>
-                                <th style={thCell}>💰 الرصيد المتبقي عليه</th>
-                                <th style={thCell}>📝 ملاحظات</th>
+                              <tr style={adaptiveInlineStyle({ backgroundColor: PRIMARY_COLOR_LIGHT })}>
+                                <th style={adaptiveInlineStyle(thCell)}>📅 التاريخ</th>
+                                <th style={adaptiveInlineStyle(thCell)}>➖ دفعة الشهر</th>
+                                <th style={adaptiveInlineStyle(thCell)}>💰 الرصيد المتبقي عليه</th>
+                                <th style={adaptiveInlineStyle(thCell)}>📝 ملاحظات</th>
                               </tr>
                             </thead>
                             <tbody>
                               {statements.map((item, idx) => (
-                                <tr key={idx} style={{ borderTop: '1px solid #eee' }}>
-                                  <td style={tdCell}>{item.dayDate ? item.dayDate.split('T')[0] : '-'}</td>
-                                  <td style={tdCell}>{item.daen}</td>
-                                  <td style={tdCell}>{item.balance}</td>
-                                  <td style={{ ...tdCell, maxWidth: 200, wordWrap: 'break-word', whiteSpace: 'normal' }}>
+                                <tr key={idx} style={adaptiveInlineStyle({ borderTop: '1px solid #eee' })}>
+                                  <td style={adaptiveInlineStyle(tdCell)}>{item.dayDate ? item.dayDate.split('T')[0] : '-'}</td>
+                                  <td style={adaptiveInlineStyle(tdCell)}>{item.daen}</td>
+                                  <td style={adaptiveInlineStyle(tdCell)}>{item.balance}</td>
+                                  <td style={adaptiveInlineStyle({ ...tdCell, maxWidth: 200, wordWrap: 'break-word', whiteSpace: 'normal' })}>
                                     {item.notes || '-'}
                                   </td>
                                 </tr>
@@ -1179,45 +1180,45 @@ const filteredRows = rows.filter((row) => {
         </Typography>
       ) : (
         <Box sx={{ overflowX: 'auto', border: '1px solid #eee', borderRadius: 2 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
+          <table style={adaptiveInlineStyle({ width: '100%', borderCollapse: 'collapse', direction: 'rtl' })}>
             <tbody>
               {trainingFile.map((item, index) => (
                 <React.Fragment key={index}>
-                  <tr style={{ borderTop: '1px solid #eee' }}>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>الفرع</td>
-                    <td style={tdCell}>{item.branch}</td>
+                  <tr style={adaptiveInlineStyle({ borderTop: '1px solid #eee' })}>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الفرع</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.branch}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>البرنامج</td>
-                    <td style={tdCell}>{item.diplom}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>البرنامج</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.diplom}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>الدفعة</td>
-                    <td style={tdCell}>{item.batch}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الدفعة</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.batch}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>المستوى</td>
-                    <td style={tdCell}>{item.level}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>المستوى</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.level}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>تاريخ البداية</td>
-                    <td style={tdCell}>{item.dateStart || '---'}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>تاريخ البداية</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.dateStart || '---'}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>تاريخ النهاية</td>
-                    <td style={tdCell}>{item.dateEnd || '---'}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>تاريخ النهاية</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.dateEnd || '---'}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>الحالة</td>
-                    <td style={tdCell}>{item.status}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الحالة</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.status}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT }}>ملاحظات</td>
-                    <td style={tdCell}>{item.notes}</td>
+                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>ملاحظات</td>
+                    <td style={adaptiveInlineStyle(tdCell)}>{item.notes}</td>
                   </tr>
                   {index < trainingFile.length - 1 && (
                     <tr>
-                      <td colSpan="2" style={{ padding: '15px', backgroundColor: '#f8f9fa' }}></td>
+                      <td colSpan="2" style={adaptiveInlineStyle({ padding: '15px', backgroundColor: '#f8f9fa' })}></td>
                     </tr>
                   )}
                 </React.Fragment>

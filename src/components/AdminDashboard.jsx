@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -125,8 +126,8 @@ export default function AdminDashboard() {
         ...navigationContentSx
       }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
-          👋 مرحباً <span style={{ color: "#1e40af" }}>{currentUser?.fullName || currentUser?.userName || "المستخدم"}</span>، إليك المهام الخاصة بتاريخ:
-          <span style={{ color: "#2563eb", marginRight: 8 }}>
+          👋 مرحباً <span style={adaptiveInlineStyle({ color: "#1e40af" })}>{currentUser?.fullName || currentUser?.userName || "المستخدم"}</span>، إليك المهام الخاصة بتاريخ:
+          <span style={adaptiveInlineStyle({ color: "#2563eb", marginRight: 8 })}>
             {selectedDate.toLocaleDateString('ar-EG')}
           </span>
         </Typography>

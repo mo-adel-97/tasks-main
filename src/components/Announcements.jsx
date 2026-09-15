@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
@@ -950,12 +951,12 @@ const Announcements = () => {
                             <img 
                               src={image} 
                               alt={`${selectedAnnouncement.title} - ${index + 1}`}
-                              style={{
+                              style={adaptiveInlineStyle({
                                 width: '100%',
                                 height: '200px',
                                 objectFit: 'cover',
                                 borderRadius: '8px'
-                              }}
+                              })}
                             />
                           </Grid>
                         ))}
@@ -964,12 +965,12 @@ const Announcements = () => {
                       <img 
                         src={selectedAnnouncement.images[0]} 
                         alt={selectedAnnouncement.title}
-                        style={{
+                        style={adaptiveInlineStyle({
                           width: '100%',
                           height: '300px',
                           objectFit: 'cover',
                           borderRadius: '12px'
-                        }}
+                        })}
                       />
                     )}
                   </Box>

@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useState } from 'react';
 import {
@@ -167,7 +168,7 @@ export default function TaskTrail({ subTaskGuid, currentUserGuid }) {
                           </span>
                         </TableCell>
                         <TableCell>
-                          <span style={{ color: '#444', fontSize: 13 }}>{row.note || '-'}</span>
+                          <span style={adaptiveInlineStyle({ color: '#444', fontSize: 13 })}>{row.note || '-'}</span>
                         </TableCell>
                       </TableRow>
                     );

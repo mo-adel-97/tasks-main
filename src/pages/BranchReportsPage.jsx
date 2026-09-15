@@ -384,7 +384,7 @@ const BranchReportsPage = () => {
   const selectedBranchName = branches.find(b => b.guid === selectedBranch)?.name || '';
 
   return (
-    <NavigationShell variant="standard" ><ThemeProvider theme={customTheme}>
+    <NavigationShell variant="standard" ><ThemeProvider theme={(outerTheme) => ({ ...customTheme, palette: outerTheme.palette })}>
       <Box sx={{ minHeight: '100vh', backgroundColor: customTheme.palette.background.default }}>
         
         

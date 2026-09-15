@@ -1,3 +1,4 @@
+import { adaptiveInlineStyle } from '../config/themeColors';
 import React from "react";
 import { Box } from "@mui/material";
 import { motion } from "framer-motion";
@@ -37,14 +38,14 @@ const FloatingParticles = () => {
             repeat: Infinity,
             delay: Math.random() * 2
           }}
-          style={{
+          style={adaptiveInlineStyle({
             position: 'absolute',
             width: 6,
             height: 6,
             background: COLOR_SCHEME.primaryLight,
             borderRadius: '50%',
             filter: 'blur(1px)'
-          }}
+          })}
         />
       ))}
     </Box>
