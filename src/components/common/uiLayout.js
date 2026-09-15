@@ -3,6 +3,8 @@
 import { designTokens, mobileHeaderStyles } from '../../config/designTokens';
 import { DESKTOP_BREAKPOINT } from '../../config/sidebarLayout';
 
+const FORM_GAP = 'clamp(0.625rem, 0.8vw, 0.875rem)';
+
 export const mobileHeaderSx = {
   [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { ...mobileHeaderStyles, px: '12px', gap: '10px' },
 };
@@ -23,30 +25,18 @@ export const formFieldSx = {
   minWidth: 0,
   maxWidth: '100%',
   textAlign: 'start',
-  // Labels stay inside the field shell, but are physically anchored on the
-  // left side so RTL direction never mirrors them back to the right.
+  // Label position/state is owned by the shared MUI theme. Keep local field
+  // helpers geometry-only so pages cannot accidentally pin labels open.
   '&& > .MuiInputLabel-root': {
-    position: 'absolute',
-    top: 0,
-    left: 12,
-    right: 'auto',
-    width: 'auto',
-    maxWidth: 'calc(100% - 24px)',
-    height: 'auto',
+    maxWidth: 'calc(100% - 28px)',
     minHeight: 0,
     margin: 0,
-    paddingInline: '4px',
+    fontSize: designTokens.typography.label,
+    fontWeight: 500,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    textAlign: 'left',
-    fontSize: designTokens.typography.label,
-    fontWeight: 500,
-    lineHeight: 1,
-    transformOrigin: 'top left',
-    transform: 'translateY(-50%) scale(0.82)',
     zIndex: 1,
-    pointerEvents: 'auto',
   },
   '&& > .MuiInputBase-root': {
     marginTop: 0, minHeight: { xs: 44, lg: designTokens.controlHeight }, height: 'auto', borderRadius: `${designTokens.radius}px`,
@@ -54,10 +44,6 @@ export const formFieldSx = {
   },
   '&& > .MuiInputBase-root:not(.MuiInputBase-multiline) .MuiInputBase-input': {
     paddingBlock: { xs: '9px', lg: '4px' }, height: 'auto', lineHeight: { xs: '22px', lg: '18px' },
-  },
-  '&& > .MuiInputBase-root > .MuiOutlinedInput-notchedOutline > legend': {
-    display: 'block',
-    maxWidth: '100%',
   },
   '&& > .MuiAutocomplete-inputRoot .MuiAutocomplete-input': { paddingBlock: { xs: '2px', lg: '0px' } },
   '&& .MuiFormHelperText-root': {
@@ -72,7 +58,7 @@ export const formSectionSx = {
 
 export const formGridSx = {
   direction: 'rtl', textAlign: 'start',
-  display: 'grid', minWidth: 0, alignItems: 'start', alignContent: 'start', gap: designTokens.layoutGap,
+  display: 'grid', minWidth: 0, alignItems: 'start', alignContent: 'start', gap: FORM_GAP,
   gridTemplateColumns: {
     xs: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))',
   },
@@ -84,7 +70,7 @@ export const formGridSx = {
 export const filterBarSx = {
   direction: 'rtl', textAlign: 'start',
   display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-  alignItems: 'center', alignContent: 'flex-start', gap: designTokens.layoutGap, minWidth: 0,
+  alignItems: 'center', alignContent: 'flex-start', gap: FORM_GAP, minWidth: 0,
   '& > .MuiFormControl-root, & > .MuiAutocomplete-root': {
     flex: '1 1 auto', minWidth: 0, width: 'min(100%, 14rem)',
   },
@@ -122,7 +108,7 @@ export const dialogLayoutSx = {
     textAlign: 'start', padding: { xs: '10px', sm: '10px 14px' },
     overflowWrap: 'anywhere',
   },
-  '& .MuiDialogContent-root': { minWidth: 0, padding: { xs: '10px', sm: '10px 14px' } },
+  '& .MuiDialogContent-root': { minWidth: 0, overflowX: 'hidden', padding: { xs: '10px', sm: '10px 14px' } },
 };
 
 export const dialogActionsSx = {
@@ -167,7 +153,7 @@ export const radioGroupSx = {
 
 export const pageHeaderSx = {
   direction: 'rtl', textAlign: 'start',
-  flexWrap: 'wrap', gap: designTokens.layoutGap, minWidth: 0,
+  flexWrap: 'wrap', gap: FORM_GAP, minWidth: 0,
   '& > *': { minWidth: 0, maxWidth: '100%' },
   '& .MuiTypography-root': { overflowWrap: 'anywhere', whiteSpace: 'normal' },
 };
