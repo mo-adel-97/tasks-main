@@ -1,11 +1,17 @@
-/* Compatibility entry point for legacy RTL forms.
- * The shared MUI theme owns the normal label geometry. These selectors only
- * neutralize old page-level overrides that pin labels above controls or force
- * shrink=true, so legacy dialogs behave exactly like the rest of the app.
+/* HR-only compatibility layer for legacy MUI form overrides.
+ *
+ * NavigationShell adds body.hr-ui-active only while an HR route is active.
+ * This is deliberate: MUI Dialog/Popover and SweetAlert render through portals
+ * under <body>, so scoping only to the page container would miss them. The
+ * shared MUI theme remains the source of truth for normal control geometry.
  */
 
-/* Normal outlined fields: empty = placeholder inside the field. */
-.MuiFormControl-root:has(> .MuiOutlinedInput-root)
+/* --------------------------------------------------------------------------
+ * Labels: empty + blurred behaves like a placeholder; focused/filled floats.
+ * These selectors are intentionally more specific than legacy page sx blocks
+ * that used position:static !important and forced labels above the control.
+ * -------------------------------------------------------------------------- */
+body.hr-ui-active .MuiFormControl-root:has(> .MuiOutlinedInput-root)
   > .MuiInputLabel-root:not(.MuiInputLabel-shrink) {
   position: absolute !important;
   top: 50% !important;
@@ -13,8 +19,10 @@
   right: 14px !important;
   width: auto !important;
   max-width: calc(100% - 28px) !important;
+  min-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
+  direction: rtl !important;
   line-height: 1.35 !important;
   text-align: right !important;
   transform-origin: top right !important;
@@ -23,10 +31,10 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   pointer-events: none !important;
+  background: transparent !important;
 }
 
-/* Focused / filled state: float the label on the physical left edge. */
-.MuiFormControl-root:has(> .MuiOutlinedInput-root)
+body.hr-ui-active .MuiFormControl-root:has(> .MuiOutlinedInput-root)
   > .MuiInputLabel-root.MuiInputLabel-shrink {
   position: absolute !important;
   top: 0 !important;
@@ -34,8 +42,10 @@
   right: auto !important;
   width: auto !important;
   max-width: calc(100% - 28px) !important;
+  min-height: 0 !important;
   margin: 0 !important;
   padding: 0 4px !important;
+  direction: rtl !important;
   line-height: 1 !important;
   text-align: left !important;
   transform-origin: top left !important;
@@ -49,10 +59,9 @@
     left .15s ease, right .15s ease !important;
 }
 
-/* Some old pages explicitly pass shrink=true even while the field is empty.
- * Restore placeholder behaviour until the user focuses the field. Date/time
- * controls stay floated because the browser renders its own value shell. */
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
+/* Legacy fields that force shrink=true are restored to the empty placeholder
+ * state until focused. Native date/time controls remain floated on purpose. */
+body.hr-ui-active .MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
   > .MuiInputLabel-root.MuiInputLabel-shrink {
   top: 50% !important;
   left: auto !important;
@@ -65,124 +74,89 @@
   background: transparent !important;
 }
 
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
+body.hr-ui-active .MuiFormControl-root:has(> .MuiOutlinedInput-root input[value=""]):not(:has(.Mui-focused)):not(:has(input[type="date"], input[type="time"], input[type="datetime-local"]))
   .MuiOutlinedInput-notchedOutline legend {
   max-width: 0 !important;
 }
 
-/* If the control already has a visible field title above it, do not repeat the
- * same title inside the outlined border. This is common in reception dialogs
- * such as EditStudentDialog (StudentField + FormControl/InputLabel). */
-.MuiBox-root:has(> .MuiTypography-root + .MuiFormControl-root)
-  > .MuiFormControl-root
-  > .MuiInputLabel-root,
-.MuiBox-root:has(> .MuiTypography-root + .MuiAutocomplete-root)
-  > .MuiAutocomplete-root
-  .MuiInputLabel-root {
-  display: none !important;
-}
-
-.MuiBox-root:has(> .MuiTypography-root + .MuiFormControl-root)
-  > .MuiFormControl-root
-  .MuiOutlinedInput-notchedOutline legend,
-.MuiBox-root:has(> .MuiTypography-root + .MuiAutocomplete-root)
-  > .MuiAutocomplete-root
-  .MuiOutlinedInput-notchedOutline legend {
-  max-width: 0 !important;
-  width: 0 !important;
-  padding: 0 !important;
-}
-
-/* Any control that already provides a real placeholder must not render the
- * same text again as a floating outlined label. */
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder]:not([placeholder=""]))
-  > .MuiInputLabel-root,
-.MuiFormControl-root:has(> .MuiOutlinedInput-root textarea[placeholder]:not([placeholder=""]))
-  > .MuiInputLabel-root {
-  display: none !important;
-}
-
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder]:not([placeholder=""]))
-  .MuiOutlinedInput-notchedOutline legend,
-.MuiFormControl-root:has(> .MuiOutlinedInput-root textarea[placeholder]:not([placeholder=""]))
-  .MuiOutlinedInput-notchedOutline legend {
-  max-width: 0 !important;
-  width: 0 !important;
-  padding: 0 !important;
-}
-
-/* In RTL, a startAdornment is physically rendered on the right by default.
- * Put it after the input in the flex order so it occupies the left side and
- * never sits on top of the Arabic placeholder/value. */
-[dir="rtl"] .MuiOutlinedInput-root > .MuiInputAdornment-positionStart {
+/* --------------------------------------------------------------------------
+ * RTL adornments and picker icons. Reserve physical space instead of allowing
+ * icons to overlap the Arabic field name/value.
+ * -------------------------------------------------------------------------- */
+body.hr-ui-active [dir="rtl"] .MuiOutlinedInput-root > .MuiInputAdornment-positionStart {
   order: 2;
   margin-right: 8px !important;
   margin-left: 0 !important;
   flex-shrink: 0;
 }
 
-[dir="rtl"] .MuiOutlinedInput-root > .MuiInputBase-input,
-[dir="rtl"] .MuiOutlinedInput-root > textarea.MuiInputBase-input {
+body.hr-ui-active [dir="rtl"] .MuiOutlinedInput-root > .MuiInputAdornment-positionEnd {
+  order: 0;
+  margin-right: 0 !important;
+  margin-left: 8px !important;
+  flex-shrink: 0;
+}
+
+body.hr-ui-active [dir="rtl"] .MuiOutlinedInput-root > .MuiInputBase-input,
+body.hr-ui-active [dir="rtl"] .MuiOutlinedInput-root > textarea.MuiInputBase-input {
   order: 1;
   min-width: 0;
 }
 
-/* Select arrows belong on the visual left in RTL. Reserve their space so they
- * never overlap the placeholder/value on the right. */
-[dir="rtl"] .MuiSelect-icon {
+body.hr-ui-active [dir="rtl"] .MuiSelect-icon {
   left: 7px !important;
   right: auto !important;
 }
 
-[dir="rtl"] .MuiSelect-select.MuiSelect-outlined {
+body.hr-ui-active [dir="rtl"] .MuiSelect-select.MuiSelect-outlined {
   padding-left: 34px !important;
   padding-right: 10px !important;
   text-align: right !important;
 }
 
-/* Autocomplete clear/dropdown icons use absolute positioning. Keep them on the
- * left and reserve enough room for one or two icons. */
-[dir="rtl"] .MuiAutocomplete-endAdornment {
+body.hr-ui-active [dir="rtl"] .MuiAutocomplete-endAdornment {
   left: 6px !important;
   right: auto !important;
 }
 
-[dir="rtl"] .MuiAutocomplete-inputRoot.MuiOutlinedInput-root {
+body.hr-ui-active [dir="rtl"] .MuiAutocomplete-inputRoot.MuiOutlinedInput-root {
   padding-left: 58px !important;
   padding-right: 9px !important;
 }
 
-[dir="rtl"] .MuiAutocomplete-inputRoot .MuiAutocomplete-input {
+body.hr-ui-active [dir="rtl"] .MuiAutocomplete-inputRoot .MuiAutocomplete-input {
+  min-width: 0 !important;
   padding-left: 4px !important;
   padding-right: 4px !important;
   text-align: right !important;
 }
 
-/* Keep the native date icon at the visual left as well. */
-[dir="rtl"] input[type="date"]::-webkit-calendar-picker-indicator,
-[dir="rtl"] input[type="time"]::-webkit-calendar-picker-indicator,
-[dir="rtl"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+body.hr-ui-active [dir="rtl"] input[type="date"]::-webkit-calendar-picker-indicator,
+body.hr-ui-active [dir="rtl"] input[type="time"]::-webkit-calendar-picker-indicator,
+body.hr-ui-active [dir="rtl"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   margin-left: 0 !important;
   margin-right: auto !important;
   flex-shrink: 0;
 }
 
-/* Checkboxes / switches are secondary form options. Always place them after
- * normal inputs. Direct labels cover Stack/Box rows; Grid selectors cover the
- * very common MUI form-row layout used by reception dialogs. */
-.MuiBox-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
-.MuiBox-root > .MuiFormControlLabel-root:has(.MuiSwitch-root),
-.MuiStack-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
-.MuiStack-root > .MuiFormControlLabel-root:has(.MuiSwitch-root),
-.MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiCheckbox-root),
-.MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiSwitch-root),
-.MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
-.MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiSwitch-root) {
+/* --------------------------------------------------------------------------
+ * Checkbox/switch options are secondary controls: inputs first, options last.
+ * Desktop keeps them compact in a single wrapping row wherever the form grid
+ * permits it; smaller widths may wrap naturally.
+ * -------------------------------------------------------------------------- */
+body.hr-ui-active .MuiBox-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
+body.hr-ui-active .MuiBox-root > .MuiFormControlLabel-root:has(.MuiSwitch-root),
+body.hr-ui-active .MuiStack-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
+body.hr-ui-active .MuiStack-root > .MuiFormControlLabel-root:has(.MuiSwitch-root),
+body.hr-ui-active .MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiCheckbox-root),
+body.hr-ui-active .MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiSwitch-root),
+body.hr-ui-active .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
+body.hr-ui-active .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiSwitch-root) {
   order: 999 !important;
 }
 
-.MuiFormControlLabel-root:has(.MuiCheckbox-root),
-.MuiFormControlLabel-root:has(.MuiSwitch-root) {
+body.hr-ui-active .MuiFormControlLabel-root:has(.MuiCheckbox-root),
+body.hr-ui-active .MuiFormControlLabel-root:has(.MuiSwitch-root) {
   margin-left: 0 !important;
   margin-right: 0 !important;
   min-height: 32px;
@@ -190,40 +164,104 @@
   flex-shrink: 0;
 }
 
-.MuiFormControlLabel-root .MuiCheckbox-root,
-.MuiFormControlLabel-root .MuiSwitch-root {
+body.hr-ui-active .MuiFormControlLabel-root .MuiCheckbox-root,
+body.hr-ui-active .MuiFormControlLabel-root .MuiSwitch-root {
   flex-shrink: 0;
 }
 
-/* Desktop reception forms: keep the trailing checkbox/switch compact so it
- * stays on the same line instead of consuming a complete grid row. */
-@media (min-width: 1200px) {
-  .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
-  .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiSwitch-root) {
-    flex-basis: auto !important;
-    max-width: max-content !important;
-    width: auto !important;
-    min-width: max-content !important;
-    margin-inline-start: auto !important;
-  }
+/* --------------------------------------------------------------------------
+ * Notes / long text: compact two-line default, with a small third-line ceiling.
+ * This also neutralizes legacy rows=6/8 visual height without changing state.
+ * -------------------------------------------------------------------------- */
+body.hr-ui-active .MuiOutlinedInput-root.MuiInputBase-multiline {
+  min-height: 52px !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  align-items: flex-start !important;
 }
 
-/* Keep multiline notes/reason fields as compact as the other controls. Longer
- * text remains scrollable instead of stretching the dialog vertically. */
-.MuiOutlinedInput-root.MuiInputBase-multiline {
-  min-height: 32px !important;
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
-  align-items: center !important;
-}
-
-.MuiFormControl-root textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"]) {
-  min-height: 20px !important;
-  height: 20px !important;
-  max-height: 40px !important;
+body.hr-ui-active .MuiFormControl-root textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"]) {
+  min-height: 40px !important;
+  height: 40px !important;
+  max-height: 60px !important;
   line-height: 20px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   overflow-y: auto !important;
-  resize: none !important;
+  resize: vertical !important;
+}
+
+/* Dialogs and portal content stay compact and Arabic-first. */
+body.hr-ui-active .MuiDialog-paper {
+  direction: rtl;
+  text-align: right;
+  max-width: calc(100vw - 24px);
+}
+
+body.hr-ui-active .MuiDialogTitle-root,
+body.hr-ui-active .MuiDialogContent-root,
+body.hr-ui-active .MuiDialogActions-root {
+  direction: rtl;
+}
+
+body.hr-ui-active .MuiDialogContent-root {
+  overflow-x: hidden;
+}
+
+body.hr-ui-active .MuiDialogActions-root {
+  flex-wrap: wrap;
+}
+
+/* Tables remain compact. On desktop/laptop (>=1200) a legacy responsive sx
+ * rule must not hide table cells merely because the viewport is <1600. */
+body.hr-ui-active .MuiTableContainer-root,
+body.hr-ui-active .MuiDataGrid-root {
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  body.hr-ui-active .MuiTableRow-root > .MuiTableCell-root {
+    display: table-cell !important;
+  }
+
+  body.hr-ui-active .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
+  body.hr-ui-active .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiSwitch-root) {
+    flex-basis: auto !important;
+    max-width: max-content !important;
+    width: auto !important;
+    min-width: max-content !important;
+  }
+}
+
+/* SweetAlert is a body portal, so compact it only while an HR route is active. */
+body.hr-ui-active .swal2-popup {
+  direction: rtl !important;
+  width: min(420px, calc(100vw - 24px)) !important;
+  padding: 14px !important;
+  font-family: Cairo, "Segoe UI", Tahoma, Arial, sans-serif !important;
+}
+
+body.hr-ui-active .swal2-title {
+  padding: 4px 8px !important;
+  font-size: 1.08rem !important;
+  line-height: 1.4 !important;
+}
+
+body.hr-ui-active .swal2-html-container {
+  margin: 8px 6px !important;
+  font-size: .82rem !important;
+  line-height: 1.55 !important;
+}
+
+body.hr-ui-active .swal2-actions {
+  gap: 8px !important;
+  margin: 10px 0 0 !important;
+}
+
+body.hr-ui-active .swal2-actions button {
+  margin: 0 !important;
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: .8rem;
 }
