@@ -70,16 +70,41 @@
   max-width: 0 !important;
 }
 
-/* Search/filter controls that already provide an explicit placeholder must not
- * render the same text again as a floating outlined label. This fixes the
- * reception search field ("اكتب رقم الهوية" / mobile / name) without changing
- * normal data-entry fields that rely on a visible label. */
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder^="اكتب "])
+/* If the control already has a visible field title above it, do not repeat the
+ * same title inside the outlined border. This is common in reception dialogs
+ * such as EditStudentDialog (StudentField + FormControl/InputLabel). */
+.MuiBox-root:has(> .MuiTypography-root + .MuiFormControl-root)
+  > .MuiFormControl-root
+  > .MuiInputLabel-root,
+.MuiBox-root:has(> .MuiTypography-root + .MuiAutocomplete-root)
+  > .MuiAutocomplete-root
+  .MuiInputLabel-root {
+  display: none !important;
+}
+
+.MuiBox-root:has(> .MuiTypography-root + .MuiFormControl-root)
+  > .MuiFormControl-root
+  .MuiOutlinedInput-notchedOutline legend,
+.MuiBox-root:has(> .MuiTypography-root + .MuiAutocomplete-root)
+  > .MuiAutocomplete-root
+  .MuiOutlinedInput-notchedOutline legend {
+  max-width: 0 !important;
+  width: 0 !important;
+  padding: 0 !important;
+}
+
+/* Any control that already provides a real placeholder must not render the
+ * same text again as a floating outlined label. */
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder]:not([placeholder=""]))
+  > .MuiInputLabel-root,
+.MuiFormControl-root:has(> .MuiOutlinedInput-root textarea[placeholder]:not([placeholder=""]))
   > .MuiInputLabel-root {
   display: none !important;
 }
 
-.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder^="اكتب "])
+.MuiFormControl-root:has(> .MuiOutlinedInput-root input[placeholder]:not([placeholder=""]))
+  .MuiOutlinedInput-notchedOutline legend,
+.MuiFormControl-root:has(> .MuiOutlinedInput-root textarea[placeholder]:not([placeholder=""]))
   .MuiOutlinedInput-notchedOutline legend {
   max-width: 0 !important;
   width: 0 !important;
@@ -102,21 +127,103 @@
   min-width: 0;
 }
 
-/* Checkboxes are secondary form options. Keep them after the normal inputs.
- * `order` only affects flex/grid parents, so standalone checkboxes elsewhere
- * remain unchanged. Direct labels cover simple forms; the Box selector covers
- * pages such as Trainer/Discount where the label is wrapped in a grid item. */
+/* Select arrows belong on the visual left in RTL. Reserve their space so they
+ * never overlap the placeholder/value on the right. */
+[dir="rtl"] .MuiSelect-icon {
+  left: 7px !important;
+  right: auto !important;
+}
+
+[dir="rtl"] .MuiSelect-select.MuiSelect-outlined {
+  padding-left: 34px !important;
+  padding-right: 10px !important;
+  text-align: right !important;
+}
+
+/* Autocomplete clear/dropdown icons use absolute positioning. Keep them on the
+ * left and reserve enough room for one or two icons. */
+[dir="rtl"] .MuiAutocomplete-endAdornment {
+  left: 6px !important;
+  right: auto !important;
+}
+
+[dir="rtl"] .MuiAutocomplete-inputRoot.MuiOutlinedInput-root {
+  padding-left: 58px !important;
+  padding-right: 9px !important;
+}
+
+[dir="rtl"] .MuiAutocomplete-inputRoot .MuiAutocomplete-input {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  text-align: right !important;
+}
+
+/* Keep the native date icon at the visual left as well. */
+[dir="rtl"] input[type="date"]::-webkit-calendar-picker-indicator,
+[dir="rtl"] input[type="time"]::-webkit-calendar-picker-indicator,
+[dir="rtl"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  flex-shrink: 0;
+}
+
+/* Checkboxes / switches are secondary form options. Always place them after
+ * normal inputs. Direct labels cover Stack/Box rows; Grid selectors cover the
+ * very common MUI form-row layout used by reception dialogs. */
 .MuiBox-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
-.MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiCheckbox-root) {
+.MuiBox-root > .MuiFormControlLabel-root:has(.MuiSwitch-root),
+.MuiStack-root > .MuiFormControlLabel-root:has(.MuiCheckbox-root),
+.MuiStack-root > .MuiFormControlLabel-root:has(.MuiSwitch-root),
+.MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiCheckbox-root),
+.MuiBox-root > .MuiBox-root:has(> .MuiFormControlLabel-root .MuiSwitch-root),
+.MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
+.MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiSwitch-root) {
   order: 999 !important;
 }
 
-/* Keep multiline notes/qualification controls compact. They remain scrollable
- * for longer content instead of expanding the whole form vertically. */
+.MuiFormControlLabel-root:has(.MuiCheckbox-root),
+.MuiFormControlLabel-root:has(.MuiSwitch-root) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  min-height: 32px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.MuiFormControlLabel-root .MuiCheckbox-root,
+.MuiFormControlLabel-root .MuiSwitch-root {
+  flex-shrink: 0;
+}
+
+/* Desktop reception forms: keep the trailing checkbox/switch compact so it
+ * stays on the same line instead of consuming a complete grid row. */
+@media (min-width: 1200px) {
+  .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiCheckbox-root),
+  .MuiGrid-container > .MuiGrid-item:has(.MuiFormControlLabel-root .MuiSwitch-root) {
+    flex-basis: auto !important;
+    max-width: max-content !important;
+    width: auto !important;
+    min-width: max-content !important;
+    margin-inline-start: auto !important;
+  }
+}
+
+/* Keep multiline notes/reason fields as compact as the other controls. Longer
+ * text remains scrollable instead of stretching the dialog vertically. */
+.MuiOutlinedInput-root.MuiInputBase-multiline {
+  min-height: 32px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  align-items: center !important;
+}
+
 .MuiFormControl-root textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"]) {
-  min-height: 2.7em !important;
-  height: 2.7em !important;
-  max-height: 4.2em !important;
+  min-height: 20px !important;
+  height: 20px !important;
+  max-height: 40px !important;
+  line-height: 20px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
   overflow-y: auto !important;
-  resize: vertical;
+  resize: none !important;
 }
