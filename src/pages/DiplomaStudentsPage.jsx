@@ -2443,27 +2443,44 @@ const DiplomaStudentsPage = () => {
     }
 
     const data = filteredRows.map((row) => ({
-      "كود": row.acadmyId,
-      "اسم الطالب": row.studentName,
-      "الاسم بالإنجليزية": row.studentNameEn,
-      "رقم الهوية": row.nationalId,
-      "رقم الجوال": row.studentTel,
-      "البرنامج": row.typeName,
-      "الدفعة/اليوم": row.batchName,
-      "الدبلوم/الدورة": row.diplomName,
-      "حالة الدراسة": row.statusName,
-      "المستوى": row.levelName,
-      "الإيميل": row.email,
-      "ملاحظات": row.levelNotes,
-      "النوع": row.typeStudent
+      "كود": String(row.acadmyId ?? ""),
+      "اسم الطالب": String(row.studentName ?? ""),
+      "الاسم بالإنجليزية": String(row.studentNameEn ?? ""),
+      "رقم الهوية": String(row.nationalId ?? ""),
+      "رقم الجوال": String(row.studentTel ?? ""),
+      "البرنامج": String(row.typeName ?? ""),
+      "الدفعة/اليوم": String(row.batchName ?? ""),
+      "الدبلوم/الدورة": String(row.diplomName ?? ""),
+      "حالة الدراسة": String(row.statusName ?? ""),
+      "المستوى": String(row.levelName ?? ""),
+      "الإيميل": String(row.email ?? ""),
+      "ملاحظات": String(row.levelNotes ?? ""),
+      "النوع": String(row.typeStudent ?? "")
     }));
 
     const sheet = XLSX.utils.json_to_sheet(data);
-    sheet["!cols"] = Object.keys(data[0]).map(
-      () => ({ wch: 22 })
-    );
+    const headers = Object.keys(data[0]);
+
+    sheet["!cols"] = headers.map((header) => {
+      const maxDataLength = data.reduce(
+        (max, row) =>
+          Math.max(max, String(row[header] ?? "").length),
+        0
+      );
+
+      return {
+        wch: Math.min(
+          Math.max(String(header).length + 2, maxDataLength + 2, 12),
+          40
+        )
+      };
+    });
 
     const workbook = XLSX.utils.book_new();
+    workbook.Workbook = {
+      Views: [{ RTL: true }]
+    };
+
     XLSX.utils.book_append_sheet(
       workbook,
       sheet,
@@ -2522,79 +2539,61 @@ const DiplomaStudentsPage = () => {
       ] = splitFullName(row.studentName);
 
       return [
-        row.nationalId,
-        firstName,
-        secondName,
-        thirdName,
-        lastName,
-        formatBirthDate(row.birthDate),
-        genderText(row),
-        nationalityText(row.studentNational),
+        String(row.nationalId ?? ""),
+        String(firstName ?? ""),
+        String(secondName ?? ""),
+        String(thirdName ?? ""),
+        String(lastName ?? ""),
+        String(formatBirthDate(row.birthDate) ?? ""),
+        String(genderText(row) ?? ""),
+        String(nationalityText(row.studentNational) ?? ""),
         "ثانوي",
-        row.email,
-        row.studentTel,
-        arabicPartToEnglish(firstName),
-        arabicPartToEnglish(secondName),
-        arabicPartToEnglish(thirdName),
-        arabicPartToEnglish(lastName)
+        String(row.email ?? ""),
+        String(row.studentTel ?? ""),
+        String(arabicPartToEnglish(firstName) ?? ""),
+        String(arabicPartToEnglish(secondName) ?? ""),
+        String(arabicPartToEnglish(thirdName) ?? ""),
+        String(arabicPartToEnglish(lastName) ?? "")
       ];
     });
 
-    const escapeHtml = (value) =>
-      String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
+    const sheet = XLSX.utils.aoa_to_sheet([
+      headers,
+      ...records
+    ]);
 
-    const html = `
-<html xmlns:x="urn:schemas-microsoft-com:office:excel">
-<head>
-<meta charset="utf-8" />
-<xml>
-<x:ExcelWorkbook>
-<x:ExcelWorksheets>
-<x:ExcelWorksheet>
-<x:Name>Students</x:Name>
-<x:WorksheetOptions>
-<x:DisplayRightToLeft />
-</x:WorksheetOptions>
-</x:ExcelWorksheet>
-</x:ExcelWorksheets>
-</x:ExcelWorkbook>
-</xml>
-</head>
-<body dir="rtl">
-<table border="1" dir="rtl"
- style="direction:rtl;font-family:Calibri;font-size:12pt;border-collapse:collapse">
-<tr>
-${headers.map((header) =>
-  `<th style="background:#D9EAF7;font-weight:bold;text-align:center">${escapeHtml(header)}</th>`
-).join("")}
-</tr>
-${records.map((record) => `
-<tr>
-${record.map((value) =>
-  `<td style="mso-number-format:'\\@';text-align:center">${escapeHtml(value)}</td>`
-).join("")}
-</tr>`).join("")}
-</table>
-</body>
-</html>`;
+    sheet["!cols"] = headers.map((header, columnIndex) => {
+      const maxDataLength = records.reduce(
+        (max, row) =>
+          Math.max(max, String(row[columnIndex] ?? "").length),
+        0
+      );
 
-    downloadBlob(
-      new Blob(
-        ["\uFEFF", html],
-        {
-          type:
-            "application/vnd.ms-excel;charset=utf-8"
-        }
-      ),
+      return {
+        wch: Math.min(
+          Math.max(String(header).length + 2, maxDataLength + 2, 14),
+          38
+        )
+      };
+    });
+
+    const workbook = XLSX.utils.book_new();
+    workbook.Workbook = {
+      Views: [{ RTL: true }]
+    };
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      sheet,
+      "Students"
+    );
+
+    XLSX.writeFile(
+      workbook,
       `ملف المؤسسة - قائمة طلاب الدبلومات ${new Date()
         .toISOString()
         .replaceAll(":", "")
-        .slice(0, 15)}.xls`
+        .slice(0, 15)}.xlsx`
     );
   };
 

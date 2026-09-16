@@ -583,6 +583,20 @@ export default function HrAttendancePage() {
   });
   const [bioBulkTotalCount, setBioBulkTotalCount] = useState(0);
   const [bioBulkPageCount, setBioBulkPageCount] = useState(0);
+  const bioBulkAbortRef = useRef(null);
+  const bioBulkRequestIdRef = useRef(0);
+  const bioBulkQueryRef = useRef({
+    search: "",
+    branchGuid: "",
+    page: 1,
+    pageSize: 30
+  });
+  bioBulkQueryRef.current = {
+    search: bioBulkSearch,
+    branchGuid: bioBulkBranchGuid,
+    page: bioBulkPage,
+    pageSize: bioBulkPageSize
+  };
 
   const [bioExcelOpen, setBioExcelOpen] = useState(false);
   const [bioExcelFile, setBioExcelFile] = useState(null);
@@ -1735,12 +1749,19 @@ export default function HrAttendancePage() {
 
   const loadBioBulkWorkspace = useCallback(
     async ({
-      searchValue = bioBulkSearch,
-      branchValue = bioBulkBranchGuid,
-      pageValue = bioBulkPage,
-      pageSizeValue = bioBulkPageSize,
+      searchValue = bioBulkQueryRef.current.search,
+      branchValue = bioBulkQueryRef.current.branchGuid,
+      pageValue = bioBulkQueryRef.current.page,
+      pageSizeValue = bioBulkQueryRef.current.pageSize,
       silent = false
     } = {}) => {
+      // Cancel any older workspace request so stale searches cannot pile up
+      // or overwrite the newest result.
+      bioBulkAbortRef.current?.abort();
+      const controller = new AbortController();
+      bioBulkAbortRef.current = controller;
+      const requestId = ++bioBulkRequestIdRef.current;
+
       if (!silent) setBioBulkLoading(true);
 
       try {
@@ -1749,137 +1770,95 @@ export default function HrAttendancePage() {
           pageSize: String(pageSizeValue || 30)
         });
 
-        if (searchValue?.trim()) {
-          params.set("search", searchValue.trim());
-        }
-
-        if (branchValue) {
-          params.set("branchGuid", branchValue);
-        }
+        const cleanSearch = String(searchValue || "").trim();
+        if (cleanSearch) params.set("search", cleanSearch);
+        if (branchValue) params.set("branchGuid", branchValue);
 
         const response = await fetch(
           `${API_BASE_URL}/api/hr/attendance/biotime/bulk/workspace?${params.toString()}`,
-          { cache: "no-store" }
+          { cache: "no-store", signal: controller.signal }
         );
 
-        const result = await response
-          .json()
-          .catch(() => null);
+        const result = await response.json().catch(() => null);
 
         if (!response.ok) {
           throw new Error(
             result?.error
               ? `${result?.message || "تعذر تحميل مركز الربط الجماعي"}: ${result.error}`
-              : result?.message ||
-                "تعذر تحميل مركز الربط الجماعي"
+              : result?.message || "تعذر تحميل مركز الربط الجماعي"
           );
         }
 
-        const employees = Array.isArray(result?.employees)
-          ? result.employees
-          : [];
+        // Ignore a response if a newer request has already started.
+        if (requestId !== bioBulkRequestIdRef.current) return;
 
-        const candidates = Array.isArray(
-          result?.availableBioEmployees
-        )
+        const employees = Array.isArray(result?.employees) ? result.employees : [];
+        const candidates = Array.isArray(result?.availableBioEmployees)
           ? result.availableBioEmployees
           : [];
 
         setBioBulkEmployees(employees);
         setBioBulkCandidates(candidates);
-        setBioBulkTotalCount(
-          Number(result?.totalCount || 0)
-        );
-        setBioBulkPageCount(
-          Number(result?.pageCount || 0)
-        );
+        setBioBulkTotalCount(Number(result?.totalCount || 0));
+        setBioBulkPageCount(Number(result?.pageCount || 0));
         setBioBulkStats({
-          linkedEmployees: Number(
-            result?.stats?.linkedEmployees || 0
-          ),
-          unlinkedEmployees: Number(
-            result?.stats?.unlinkedEmployees || 0
-          ),
-          cachedBioEmployees: Number(
-            result?.stats?.cachedBioEmployees || 0
-          ),
-          cacheLastSync:
-            result?.stats?.cacheLastSync || null
+          linkedEmployees: Number(result?.stats?.linkedEmployees || 0),
+          unlinkedEmployees: Number(result?.stats?.unlinkedEmployees || 0),
+          cachedBioEmployees: Number(result?.stats?.cachedBioEmployees || 0),
+          cacheLastSync: result?.stats?.cacheLastSync || null
         });
 
-        // Do not auto-approve anything.
-        // We only preselect the strongest suggestion for convenience.
         setBioBulkSelections((current) => {
           const next = { ...current };
-
           employees.forEach((employee) => {
             if (next[employee.employeeGuid]) return;
-
-            const top =
-              Array.isArray(employee?.suggestions) &&
-              employee.suggestions.length
-                ? employee.suggestions[0]
-                : null;
-
+            const top = Array.isArray(employee?.suggestions) && employee.suggestions.length
+              ? employee.suggestions[0]
+              : null;
             if (top && Number(top.score || 0) >= 55) {
               next[employee.employeeGuid] = {
-                bioTimeEmployeeId:
-                  Number(top.bioTimeEmployeeId),
-                bioTimeEmpCode:
-                  String(top.bioTimeEmpCode || ""),
+                bioTimeEmployeeId: Number(top.bioTimeEmployeeId),
+                bioTimeEmpCode: String(top.bioTimeEmpCode || ""),
                 fullName: top.fullName || "",
-                departmentName:
-                  top.departmentName || "",
+                departmentName: top.departmentName || "",
                 areasText: top.areasText || "",
                 score: Number(top.score || 0),
                 label: top.label || "",
-                reasons:
-                  Array.isArray(top.reasons)
-                    ? top.reasons
-                    : []
+                reasons: Array.isArray(top.reasons) ? top.reasons : []
               };
             }
           });
-
           return next;
         });
       } catch (error) {
-        if (!silent) {
-          await Swal.fire({
-            icon: "error",
-            title: "تعذر تحميل الربط الجماعي",
-            text:
-              error?.message ||
-              "حدث خطأ أثناء تحميل مركز الربط"
-          });
-        }
+        if (error?.name === "AbortError") return;
+        console.error(error);
+        await Swal.fire({
+          icon: "error",
+          title: "تعذر تحميل مركز الربط الجماعي",
+          text: error?.message || "حدث خطأ غير متوقع"
+        });
       } finally {
-        if (!silent) setBioBulkLoading(false);
+        if (requestId === bioBulkRequestIdRef.current) {
+          if (bioBulkAbortRef.current === controller) {
+            bioBulkAbortRef.current = null;
+          }
+          if (!silent) setBioBulkLoading(false);
+        }
       }
     },
-    [
-      bioBulkSearch,
-      bioBulkBranchGuid,
-      bioBulkPage,
-      bioBulkPageSize
-    ]
+    []
   );
 
-  const openBioBulkCenter = useCallback(async () => {
-    setBioBulkOpen(true);
+  const openBioBulkCenter = useCallback(() => {
     setBioBulkSearch("");
     setBioBulkBranchGuid("");
     setBioBulkPage(1);
     setBioBulkSelections({});
     setBioBulkApproved({});
-
-    await loadBioBulkWorkspace({
-      searchValue: "",
-      branchValue: "",
-      pageValue: 1,
-      pageSizeValue: bioBulkPageSize
-    });
-  }, [loadBioBulkWorkspace, bioBulkPageSize]);
+    setBioBulkOpen(true);
+    // Loading is intentionally handled by the effect below exactly once.
+  }, []);
 
   const refreshBioBulkCache = useCallback(async () => {
     setBioBulkRefreshing(true);
@@ -2085,21 +2064,39 @@ export default function HrAttendancePage() {
   useEffect(() => {
     if (!bioBulkOpen) return undefined;
 
+    const cleanSearch = bioBulkSearch.trim();
+
+    // Do not hit the heavy workspace endpoint for one-character name searches.
+    // Empty search is still allowed so opening/filtering by branch works normally.
+    if (cleanSearch.length === 1) {
+      return undefined;
+    }
+
+    const delay = cleanSearch ? 650 : 80;
     const timer = window.setTimeout(() => {
       setBioBulkPage(1);
       loadBioBulkWorkspace({
-        searchValue: bioBulkSearch,
+        searchValue: cleanSearch,
         branchValue: bioBulkBranchGuid,
-        pageValue: 1
+        pageValue: 1,
+        pageSizeValue: bioBulkPageSize
       });
-    }, bioBulkSearch.trim() ? 350 : 0);
+    }, delay);
 
     return () => window.clearTimeout(timer);
   }, [
     bioBulkOpen,
     bioBulkSearch,
-    bioBulkBranchGuid
+    bioBulkBranchGuid,
+    bioBulkPageSize,
+    loadBioBulkWorkspace
   ]);
+
+  useEffect(() => {
+    return () => {
+      bioBulkAbortRef.current?.abort();
+    };
+  }, []);
 
   const previewBioExcel = useCallback(async (file) => {
     if (!file) return;

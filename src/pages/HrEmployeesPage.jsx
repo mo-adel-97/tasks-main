@@ -305,6 +305,23 @@ const accentColor = "#ae1e21";
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
+const EDUCATION_LEVEL_OPTIONS = [
+  { value: 1, label: "ثانوي أو أقل" },
+  { value: 2, label: "دبلوم" },
+  { value: 3, label: "بكالوريوس" },
+  { value: 4, label: "ماجستير" },
+  { value: 5, label: "دكتوراه" },
+  { value: 6, label: "زمالة / بورد" },
+  { value: 7, label: "أخرى" },
+  { value: 8, label: "دبلوم عالي" },
+  { value: 9, label: "بدون مؤهل" }
+];
+
+const getEducationLevelName = (value) =>
+  EDUCATION_LEVEL_OPTIONS.find(
+    (item) => Number(item.value) === Number(value)
+  )?.label || "غير محدد";
+
 // ============================================================
 // إعدادات الاتجاه والمحاذاة - غيّر من هنا فقط
 // ============================================================
@@ -578,6 +595,8 @@ const HrEmployeesPage = () => {
     branchGuid: "",
     departmentGuid: "",
     jobCode: "",
+    educationLevel: "",
+    specialization: "",
     isActive: true
   });
 
@@ -602,6 +621,8 @@ const HrEmployeesPage = () => {
     nationality: "",
     gender: "",
     maritalStatus: "",
+    educationLevel: "",
+    specialization: "",
     address: "",
     city: "",
     emergencyContactName: "",
@@ -758,6 +779,12 @@ const HrEmployeesPage = () => {
         profile?.maritalStatus === undefined
           ? ""
           : profile.maritalStatus,
+      educationLevel:
+        profile?.educationLevel === null ||
+        profile?.educationLevel === undefined
+          ? ""
+          : profile.educationLevel,
+      specialization: profile?.specialization || "",
       address: profile?.address || "",
       city: profile?.city || "",
       emergencyContactName:
@@ -795,6 +822,12 @@ const HrEmployeesPage = () => {
         employee?.jobCode === undefined
           ? ""
           : employee.jobCode,
+      educationLevel:
+        employee?.educationLevel === null ||
+        employee?.educationLevel === undefined
+          ? ""
+          : employee.educationLevel,
+      specialization: employee?.specialization || "",
       isActive: employee?.isActive === true
     });
   };
@@ -951,6 +984,12 @@ const HrEmployeesPage = () => {
           editForm.jobCode === ""
             ? null
             : Number(editForm.jobCode),
+        educationLevel:
+          editForm.educationLevel === ""
+            ? null
+            : Number(editForm.educationLevel),
+        specialization:
+          editForm.specialization.trim() || null,
         isActive: editForm.isActive === true,
         ...getCurrentActor()
       };
@@ -1014,6 +1053,10 @@ const HrEmployeesPage = () => {
           selectedJob?.name ||
           selectedEmployee?.jobTitle ||
           "غير محدد",
+        educationLevelName:
+          getEducationLevelName(payload.educationLevel),
+        specialization:
+          payload.specialization,
         statusName:
           payload.isActive ? "نشط" : "غير نشط",
         workTypeName:
@@ -1051,6 +1094,9 @@ const HrEmployeesPage = () => {
       // إعادة التحميل لضمان أن الواجهة مطابقة تمامًا لقاعدة البيانات.
       await Promise.all([
         loadEmployees(),
+        loadEmployeeProfile(
+          selectedEmployee.employeeGuid
+        ),
         loadEmployeeAudit(
           selectedEmployee.employeeGuid
         )
@@ -1133,6 +1179,12 @@ const HrEmployeesPage = () => {
           profileForm.maritalStatus === ""
             ? null
             : Number(profileForm.maritalStatus),
+        educationLevel:
+          profileForm.educationLevel === ""
+            ? null
+            : Number(profileForm.educationLevel),
+        specialization:
+          profileForm.specialization.trim() || null,
         address:
           profileForm.address.trim() || null,
         city:
@@ -5037,6 +5089,57 @@ const HrEmployeesPage = () => {
                               fullWidth
                             >
                               <InputLabel>
+                                المؤهل
+                              </InputLabel>
+                              <Select
+                                MenuProps={RTL_MENU_PROPS}
+                                label="المؤهل"
+                                value={editForm.educationLevel}
+                                onChange={(event) =>
+                                  handleEditField(
+                                    "educationLevel",
+                                    event.target.value
+                                  )
+                                }
+                              >
+                                <MenuItem value="">
+                                  غير محدد
+                                </MenuItem>
+                                {EDUCATION_LEVEL_OPTIONS.map((item) => (
+                                  <MenuItem
+                                    key={item.value}
+                                    value={item.value}
+                                  >
+                                    {item.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+
+                            <TextField
+                              sx={uiLayout.formFieldSx}
+                              InputLabelProps={{ shrink: true }}
+                              size="small"
+                              label="التخصص"
+                              placeholder="اكتب التخصص"
+                              value={editForm.specialization}
+                              onChange={(event) =>
+                                handleEditField(
+                                  "specialization",
+                                  event.target.value
+                                )
+                              }
+                              inputProps={{
+                                dir: "rtl",
+                                maxLength: 200
+                              }}
+                            />
+
+                            <FormControl sx={uiLayout.formFieldSx}
+                              size="small"
+                              fullWidth
+                            >
+                              <InputLabel>
                                 نوع الدوام
                               </InputLabel>
                               <Select
@@ -5357,6 +5460,22 @@ const HrEmployeesPage = () => {
                             label="IBAN"
                             value={
                               selectedEmployee?.iban
+                            }
+                          />
+                          <EmployeeDetail
+                            label="المؤهل"
+                            value={
+                              selectedEmployee?.educationLevelName ||
+                              getEducationLevelName(
+                                selectedEmployee?.educationLevel
+                              )
+                            }
+                          />
+                          <EmployeeDetail
+                            label="التخصص"
+                            value={
+                              selectedEmployee?.specialization ||
+                              "غير محدد"
                             }
                           />
                           <EmployeeDetail

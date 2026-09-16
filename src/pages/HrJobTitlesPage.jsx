@@ -97,7 +97,12 @@ const RTL_DIALOG_SX = {
       fontSize: "0.78rem",
       fontWeight: 800,
       color: "#52635c",
-      pointerEvents: "auto"
+      pointerEvents: "none !important",
+      inset: "auto !important",
+      top: "auto !important",
+      right: "auto !important",
+      left: "auto !important",
+      zIndex: "1 !important"
     },
     "& .MuiInputLabel-root.Mui-focused": {
       color: "#057546"
@@ -198,6 +203,43 @@ const RTL_DIALOG_SX = {
       unicodeBidi: "isolate"
     }
   },
+  "& .MuiDialogContent-root .MuiFormControl-root": {
+    position: "relative",
+    isolation: "isolate",
+    overflow: "visible"
+  },
+  "& .MuiDialogContent-root .MuiInputLabel-root": {
+    position: "static !important",
+    transform: "none !important",
+    inset: "auto !important",
+    top: "auto !important",
+    right: "auto !important",
+    left: "auto !important",
+    zIndex: "1 !important",
+    pointerEvents: "none !important",
+    display: "block",
+    width: "100%",
+    margin: "0 0 6px 0 !important",
+    padding: "0 !important",
+    background: "transparent !important"
+  },
+  "& .MuiDialogContent-root .MuiOutlinedInput-root": {
+    position: "relative",
+    zIndex: 2,
+    overflow: "visible"
+  },
+  "& .MuiDialogContent-root .MuiSelect-select": {
+    position: "relative",
+    zIndex: 2
+  },
+  "& .MuiDialogContent-root .MuiOutlinedInput-notchedOutline": {
+    zIndex: 0
+  },
+  "& .MuiDialogContent-root .MuiOutlinedInput-notchedOutline legend": {
+    width: "0 !important",
+    maxWidth: "0 !important"
+  },
+
   "& .MuiDialogActions-root": {
     direction: "rtl",
     gap: "8px",
@@ -222,7 +264,17 @@ const RTL_DIALOG_SX = {
   }
 };
 
+const DIALOG_Z_INDEX = {
+  base: 1500,
+  nested: 1700,
+  menu: 2100
+};
+
 const RTL_MENU_PROPS = {
+  disablePortal: false,
+  sx: {
+    zIndex: `${DIALOG_Z_INDEX.menu} !important`
+  },
   PaperProps: {
     sx: {
       direction: "rtl",
@@ -230,6 +282,12 @@ const RTL_MENU_PROPS = {
       mt: 0.5,
       borderRadius: "10px",
       maxHeight: 360,
+      zIndex: `${DIALOG_Z_INDEX.menu + 1} !important`,
+      bgcolor: "background.paper",
+      color: "text.primary",
+      border: "1px solid",
+      borderColor: "divider",
+      boxShadow: 24,
       "& .MuiMenuItem-root": {
         direction: "rtl",
         textAlign: "right",
@@ -1981,7 +2039,7 @@ export default function HrJobTitlesPage() {
           Create / Edit dialog
           ======================================================= */}
       <Dialog
-        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX]}
+        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX, { zIndex: DIALOG_Z_INDEX.base }]}
         open={editOpen}
         onClose={closeEdit}
         fullWidth
@@ -1997,7 +2055,8 @@ export default function HrJobTitlesPage() {
             maxWidth: "900px !important",
             m: { xs: 1, sm: 2 },
             borderRadius: { xs: 2.5, sm: 3 },
-            overflow: "hidden",
+            overflowX: "hidden",
+            overflowY: "visible",
             backgroundImage: "none"
           }
         }}
@@ -2284,7 +2343,7 @@ export default function HrJobTitlesPage() {
           Employees dialog
           ======================================================= */}
       <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX, { zIndex: DIALOG_Z_INDEX.base }]}
         open={employeesOpen}
         onClose={() =>
           setEmployeesOpen(false)
@@ -2292,6 +2351,7 @@ export default function HrJobTitlesPage() {
         fullWidth
         maxWidth="md"
         dir={DIALOG_DIRECTION}
+        disableEnforceFocus
       >
         <DialogTitle>
           <Box
@@ -2587,182 +2647,565 @@ export default function HrJobTitlesPage() {
           Employee movement / promotion dialog
           ======================================================= */}
       <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+        sx={[
+          uiLayout.dialogLayoutSx,
+          RTL_DIALOG_SX,
+          {
+            zIndex: DIALOG_Z_INDEX.nested,
+            "& .MuiBackdrop-root": {
+              bgcolor: "rgba(2, 10, 7, .68)",
+              backdropFilter: "blur(3px)"
+            }
+          }
+        ]}
         open={jobMoveOpen}
         onClose={() => {
-          if (!jobMoveSaving) {
-            setJobMoveOpen(false);
-          }
+          if (!jobMoveSaving) setJobMoveOpen(false);
         }}
         fullWidth
-        maxWidth="sm"
+        maxWidth={false}
         dir={DIALOG_DIRECTION}
+        disableEnforceFocus
+        PaperProps={{
+          sx: {
+            width: {
+              xs: "calc(100% - 16px)",
+              sm: "min(760px, calc(100% - 32px))"
+            },
+            maxWidth: "760px !important",
+            m: { xs: 1, sm: 2 },
+            borderRadius: { xs: 2.5, sm: 3.5 },
+            overflow: "hidden",
+            bgcolor: "background.paper",
+            color: "text.primary",
+            backgroundImage: "none",
+            border: "1px solid",
+            borderColor: "divider",
+            boxShadow: "0 26px 80px rgba(0,0,0,.34)"
+          }
+        }}
       >
-        <DialogTitle sx={{ fontWeight: 950 }}>
-          {jobMoveMode === "plan"
-            ? "إضافة إلى خطة الترقيات"
-            : jobMoveMode === "promotion"
-              ? "ترقية موظف"
-              : "نقل موظف لمسمى آخر"}
+        <DialogTitle
+          sx={(theme) => ({
+            p: 0,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "#10241c"
+                : "#f3faf7"
+          })}
+        >
+          <Box
+            sx={{
+              px: { xs: 1.5, sm: 2 },
+              py: { xs: 1.25, sm: 1.5 },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 1.2
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={1.1}
+              alignItems="center"
+              sx={{ minWidth: 0 }}
+            >
+              <Box
+                sx={(theme) => ({
+                  width: 42,
+                  height: 42,
+                  borderRadius: 2,
+                  flexShrink: 0,
+                  display: "grid",
+                  placeItems: "center",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(35, 149, 99, .18)"
+                      : "rgba(5, 117, 70, .10)",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "#7bd7ad"
+                      : primary
+                })}
+              >
+                {jobMoveMode === "transfer" ? (
+                  <SwapHorizRoundedIcon />
+                ) : (
+                  <TrendingUpRoundedIcon />
+                )}
+              </Box>
+
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  sx={{
+                    fontFamily: "Cairo",
+                    fontWeight: 950,
+                    fontSize: { xs: 17, sm: 20 },
+                    lineHeight: 1.25
+                  }}
+                >
+                  {jobMoveMode === "plan"
+                    ? "إضافة الموظف إلى خطة ترقية"
+                    : jobMoveMode === "promotion"
+                      ? "ترقية الموظف"
+                      : "نقل الموظف إلى مسمى آخر"}
+                </Typography>
+                <Typography
+                  color="text.secondary"
+                  sx={{
+                    mt: 0.2,
+                    fontFamily: "Cairo",
+                    fontSize: 11.5,
+                    fontWeight: 700
+                  }}
+                >
+                  حدد المسمى الجديد وتاريخ السريان وسبب الإجراء
+                </Typography>
+              </Box>
+            </Stack>
+
+            <IconButton
+              onClick={() => setJobMoveOpen(false)}
+              disabled={jobMoveSaving}
+              aria-label="إغلاق"
+              sx={(theme) => ({
+                width: 38,
+                height: 38,
+                flexShrink: 0,
+                border: "1px solid",
+                borderColor: "divider",
+                color: "text.secondary",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,.03)"
+                    : "rgba(255,255,255,.7)",
+                "&:hover": {
+                  bgcolor: "action.hover",
+                  color: "text.primary"
+                }
+              })}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
         </DialogTitle>
 
-        <DialogContent dividers>
-          <Stack sx={uiLayout.filterBarSx} spacing={1.2}>
+        <DialogContent
+          sx={{
+            p: { xs: 1.4, sm: 2 },
+            overflowX: "hidden",
+            bgcolor: "background.paper"
+          }}
+        >
+          <Stack spacing={1.5}>
+            {/* الموظف والمسار الحالي */}
             <Paper
-              variant="outlined"
-              sx={{
-                p: 1.2,
-                borderRadius: 2,
-                borderColor: border,
-                bgcolor: "#f8fbf9"
-              }}
+              elevation={0}
+              sx={(theme) => ({
+                p: { xs: 1.2, sm: 1.4 },
+                borderRadius: 2.5,
+                border: "1px solid",
+                borderColor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(103, 194, 151, .22)"
+                    : "rgba(5, 117, 70, .16)",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(8, 43, 29, .30)"
+                    : "#f7fbf9"
+              })}
             >
-              <Typography fontWeight={950}>
-                {jobMoveEmployee?.employeeName || "-"}
-              </Typography>
-
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: 12 }}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "minmax(0,1fr) auto minmax(0,1fr)"
+                  },
+                  alignItems: "center",
+                  gap: { xs: 0.8, sm: 1.2 }
+                }}
               >
-                المسمى الحالي:{" "}
-                {employeesTitle?.jobTitleName ||
-                  "غير محدد"}
-              </Typography>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    color="text.secondary"
+                    sx={{ fontSize: 11, fontWeight: 800, mb: 0.2 }}
+                  >
+                    الموظف
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontWeight: 950,
+                      fontSize: 15.5,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {jobMoveEmployee?.employeeName || "-"}
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    sx={{ fontSize: 11.5, mt: 0.2 }}
+                  >
+                    الحالي: {employeesTitle?.jobTitleName || "غير محدد"}
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={(theme) => ({
+                    display: { xs: "none", sm: "grid" },
+                    placeItems: "center",
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    color:
+                      theme.palette.mode === "dark"
+                        ? "#72d0a5"
+                        : primary,
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(35,149,99,.14)"
+                        : "rgba(5,117,70,.08)"
+                  })}
+                >
+                  <SwapHorizRoundedIcon fontSize="small" />
+                </Box>
+
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    color="text.secondary"
+                    sx={{ fontSize: 11, fontWeight: 800, mb: 0.2 }}
+                  >
+                    المسمى المستهدف
+                  </Typography>
+                  <Typography
+                    sx={(theme) => ({
+                      fontWeight: 950,
+                      fontSize: 15,
+                      color: jobMoveTargetGuid
+                        ? theme.palette.mode === "dark"
+                          ? "#7bd7ad"
+                          : primary
+                        : "text.secondary"
+                    })}
+                  >
+                    {availableTargetJobTitles.find(
+                      (job) => job.jobTitleGuid === jobMoveTargetGuid
+                    )?.jobTitleName || "لم يتم الاختيار بعد"}
+                  </Typography>
+                </Box>
+              </Box>
             </Paper>
 
-            <Box
-              sx={uiLayout.withUiSx({
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "1fr",
-                  sm: "repeat(2,minmax(0,1fr))"
-                },
-                gap: 1
-              }, uiLayout.formSectionSx)}
-            >
-              <FormControl sx={uiLayout.formFieldSx} fullWidth>
-                <InputLabel>
-                  المسمى الوظيفي الجديد
-                </InputLabel>
-                <Select
-                  MenuProps={RTL_MENU_PROPS}
-                  label="المسمى الوظيفي الجديد"
-                  value={jobMoveTargetGuid}
-                  onChange={(event) =>
-                    setJobMoveTargetGuid(
-                      event.target.value
-                    )
-                  }
-                >
-                  {availableTargetJobTitles.map(
-                    (job) => (
-                      <MenuItem
-                        key={job.jobTitleGuid}
-                        value={job.jobTitleGuid}
-                      >
-                        {job.jobTitleName}
-                      </MenuItem>
-                    )
-                  )}
-                </Select>
-              </FormControl>
-
-              <TextField sx={uiLayout.formFieldSx}
-                type="date"
-                label={
-                  jobMoveMode === "plan"
-                    ? "تاريخ الترقية المخطط"
-                    : "تاريخ السريان"
-                }
-                value={jobMoveDate}
-                onChange={(event) =>
-                  setJobMoveDate(
-                    event.target.value
-                  )
-                }
-                InputLabelProps={{
-                  shrink: true
+            {/* بيانات الإجراء */}
+            <Box>
+              <Typography
+                sx={{
+                  fontWeight: 950,
+                  fontSize: 13,
+                  mb: 0.8,
+                  color: "text.primary"
                 }}
-               inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+              >
+                بيانات الإجراء
+              </Typography>
+
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2,minmax(0,1fr))"
+                  },
+                  gap: 1.2
+                }}
+              >
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    component="label"
+                    sx={{
+                      display: "block",
+                      mb: 0.55,
+                      fontSize: 11.5,
+                      fontWeight: 900,
+                      color: "text.secondary"
+                    }}
+                  >
+                    المسمى الوظيفي الجديد
+                    <Box component="span" sx={{ color: "error.main", mx: 0.35 }}>*</Box>
+                  </Typography>
+                  <FormControl fullWidth size="small">
+                    <Select
+                      MenuProps={RTL_MENU_PROPS}
+                      displayEmpty
+                      value={jobMoveTargetGuid}
+                      onChange={(event) =>
+                        setJobMoveTargetGuid(event.target.value)
+                      }
+                      renderValue={(value) => {
+                        if (!value) {
+                          return (
+                            <Box component="span" sx={{ color: "text.disabled" }}>
+                              اختر المسمى المستهدف
+                            </Box>
+                          );
+                        }
+
+                        return (
+                          availableTargetJobTitles.find(
+                            (job) => job.jobTitleGuid === value
+                          )?.jobTitleName || "المسمى المحدد"
+                        );
+                      }}
+                      sx={(theme) => ({
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? "rgba(0,0,0,.18)"
+                            : "#fff",
+                        "& .MuiSelect-select": {
+                          display: "flex",
+                          alignItems: "center",
+                          py: 1
+                        }
+                      })}
+                    >
+                      {availableTargetJobTitles.map((job) => (
+                        <MenuItem
+                          key={job.jobTitleGuid}
+                          value={job.jobTitleGuid}
+                        >
+                          {job.jobTitleName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    component="label"
+                    sx={{
+                      display: "block",
+                      mb: 0.55,
+                      fontSize: 11.5,
+                      fontWeight: 900,
+                      color: "text.secondary"
+                    }}
+                  >
+                    {jobMoveMode === "plan"
+                      ? "تاريخ الترقية المخطط"
+                      : "تاريخ السريان"}
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    type="date"
+                    value={jobMoveDate}
+                    onChange={(event) => setJobMoveDate(event.target.value)}
+                    inputProps={{
+                      dir: "ltr",
+                      style: {
+                        direction: "ltr",
+                        unicodeBidi: "isolate",
+                        textAlign: "center"
+                      }
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: 44,
+                        borderRadius: 2
+                      }
+                    }}
+                  />
+                </Box>
+              </Box>
             </Box>
 
             {jobMoveMode !== "transfer" && (
-              <FormControl sx={uiLayout.formFieldSx} fullWidth>
-                <InputLabel>نوع الإجراء</InputLabel>
-                <Select
-                  MenuProps={RTL_MENU_PROPS}
-                  label="نوع الإجراء"
-                  value={jobMoveMode}
-                  onChange={(event) =>
-                    setJobMoveMode(
-                      event.target.value
-                    )
-                  }
+              <Box>
+                <Typography
+                  sx={{
+                    display: "block",
+                    mb: 0.55,
+                    fontSize: 11.5,
+                    fontWeight: 900,
+                    color: "text.secondary"
+                  }}
                 >
-                  <MenuItem value="promotion">
-                    ترقية وتنفيذ الآن
-                  </MenuItem>
-                  <MenuItem value="plan">
-                    إضافة لخطة الترقيات
-                  </MenuItem>
-                </Select>
-              </FormControl>
+                  طريقة الترقية
+                </Typography>
+                <Box
+                  sx={(theme) => ({
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+                    gap: 0.7,
+                    p: 0.55,
+                    borderRadius: 2.2,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(255,255,255,.025)"
+                        : "#f7faf8"
+                  })}
+                >
+                  <Button
+                    variant={jobMoveMode === "promotion" ? "contained" : "text"}
+                    startIcon={<TrendingUpRoundedIcon />}
+                    onClick={() => setJobMoveMode("promotion")}
+                    sx={uiLayout.withUiSx({
+                      minHeight: 42,
+                      borderRadius: 1.7,
+                      boxShadow: "none",
+                      fontWeight: 900,
+                      ...(jobMoveMode === "promotion"
+                        ? {
+                            bgcolor: primary,
+                            "&:hover": { bgcolor: primaryDark, boxShadow: "none" }
+                          }
+                        : { color: "text.secondary" })
+                    }, uiLayout.buttonSx)}
+                  >
+                    تنفيذ الترقية الآن
+                  </Button>
+
+                  <Button
+                    variant={jobMoveMode === "plan" ? "contained" : "text"}
+                    startIcon={<EventNoteRoundedIcon />}
+                    onClick={() => setJobMoveMode("plan")}
+                    sx={uiLayout.withUiSx({
+                      minHeight: 42,
+                      borderRadius: 1.7,
+                      boxShadow: "none",
+                      fontWeight: 900,
+                      ...(jobMoveMode === "plan"
+                        ? {
+                            bgcolor: primary,
+                            "&:hover": { bgcolor: primaryDark, boxShadow: "none" }
+                          }
+                        : { color: "text.secondary" })
+                    }, uiLayout.buttonSx)}
+                  >
+                    إضافتها لخطة الترقيات
+                  </Button>
+                </Box>
+              </Box>
             )}
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-              label={
-                jobMoveMode === "plan"
-                  ? "سبب خطة الترقية"
-                  : "سبب الإجراء"
-              }
-              value={jobMoveReason}
-              onChange={(event) =>
-                setJobMoveReason(
-                  event.target.value
-                )
-              }
-              multiline
-              minRows={2}
-              required
-            />
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "minmax(0,1.25fr) minmax(0,.75fr)"
+                },
+                gap: 1.2
+              }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  component="label"
+                  sx={{
+                    display: "block",
+                    mb: 0.55,
+                    fontSize: 11.5,
+                    fontWeight: 900,
+                    color: "text.secondary"
+                  }}
+                >
+                  {jobMoveMode === "plan"
+                    ? "سبب خطة الترقية"
+                    : "سبب الإجراء"}
+                  <Box component="span" sx={{ color: "error.main", mx: 0.35 }}>*</Box>
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={jobMoveReason}
+                  onChange={(event) => setJobMoveReason(event.target.value)}
+                  placeholder={
+                    jobMoveMode === "transfer"
+                      ? "اكتب سبب نقل الموظف..."
+                      : "اكتب سبب الترقية..."
+                  }
+                  multiline
+                  minRows={3}
+                  required
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2
+                    }
+                  }}
+                />
+              </Box>
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-              label="ملاحظات"
-              value={jobMoveNotes}
-              onChange={(event) =>
-                setJobMoveNotes(
-                  event.target.value
-                )
-              }
-              multiline
-              minRows={2}
-            />
-
-            {jobMoveMode === "promotion" && (
-              <Button
-                variant="text"
-                startIcon={<EventNoteRoundedIcon />}
-                onClick={() =>
-                  setJobMoveMode("plan")
-                }
-                sx={uiLayout.withUiSx({
-                  alignSelf: "flex-start",
-                  fontWeight: 900
-                }, uiLayout.buttonSx)}
-              >
-                بدل التنفيذ الآن، أضفها لخطة الترقيات
-              </Button>
-            )}
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  component="label"
+                  sx={{
+                    display: "block",
+                    mb: 0.55,
+                    fontSize: 11.5,
+                    fontWeight: 900,
+                    color: "text.secondary"
+                  }}
+                >
+                  ملاحظات
+                  <Box
+                    component="span"
+                    sx={{ color: "text.disabled", fontWeight: 700, mx: 0.5 }}
+                  >
+                    اختياري
+                  </Box>
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={jobMoveNotes}
+                  onChange={(event) => setJobMoveNotes(event.target.value)}
+                  placeholder="أي ملاحظات إضافية..."
+                  multiline
+                  minRows={3}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2
+                    }
+                  }}
+                />
+              </Box>
+            </Box>
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={uiLayout.dialogActionsSx}>
-          <Button sx={uiLayout.buttonSx}
-            onClick={() =>
-              setJobMoveOpen(false)
-            }
+        <DialogActions
+          sx={(theme) => ({
+            px: { xs: 1.4, sm: 2 },
+            py: 1.25,
+            gap: 0.8,
+            borderTop: "1px solid",
+            borderColor: "divider",
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(255,255,255,.018)"
+                : "#fafcfb",
+            justifyContent: "flex-start"
+          })}
+        >
+          <Button
+            onClick={() => setJobMoveOpen(false)}
             disabled={jobMoveSaving}
+            variant="outlined"
+            sx={uiLayout.withUiSx({
+              minWidth: 92,
+              minHeight: 42,
+              borderRadius: 2,
+              color: "text.secondary",
+              borderColor: "divider",
+              fontWeight: 900
+            }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
@@ -2771,10 +3214,27 @@ export default function HrJobTitlesPage() {
             variant="contained"
             onClick={saveJobMove}
             disabled={jobMoveSaving}
+            startIcon={
+              jobMoveSaving ? (
+                <CircularProgress size={17} color="inherit" />
+              ) : jobMoveMode === "transfer" ? (
+                <SwapHorizRoundedIcon />
+              ) : jobMoveMode === "plan" ? (
+                <EventNoteRoundedIcon />
+              ) : (
+                <TrendingUpRoundedIcon />
+              )
+            }
             sx={uiLayout.withUiSx({
+              minWidth: 150,
+              minHeight: 42,
+              borderRadius: 2,
               bgcolor: primary,
+              fontWeight: 950,
+              boxShadow: "0 7px 18px rgba(5,117,70,.20)",
               "&:hover": {
-                bgcolor: primaryDark
+                bgcolor: primaryDark,
+                boxShadow: "0 9px 22px rgba(5,117,70,.26)"
               }
             }, uiLayout.buttonSx)}
           >
@@ -2793,7 +3253,7 @@ export default function HrJobTitlesPage() {
           Promotion plans dialog
           ======================================================= */}
       <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX, { zIndex: DIALOG_Z_INDEX.base }]}
         open={promotionPlansOpen}
         onClose={() =>
           setPromotionPlansOpen(false)
@@ -3054,7 +3514,7 @@ export default function HrJobTitlesPage() {
           History dialog
           ======================================================= */}
       <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+        sx={[uiLayout.dialogLayoutSx, RTL_DIALOG_SX, { zIndex: DIALOG_Z_INDEX.base }]}
         open={historyOpen}
         onClose={() =>
           setHistoryOpen(false)

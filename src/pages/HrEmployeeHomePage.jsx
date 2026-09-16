@@ -51,6 +51,7 @@ import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsActiveRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
 import HistoryToggleOffRoundedIcon from "@mui/icons-material/HistoryToggleOffRounded";
@@ -498,6 +499,25 @@ const maritalText = (value) => {
   return map[Number(value)] || "غير محدد";
 };
 
+const educationLevelText = (value, apiName) => {
+  const apiLabel = String(apiName || "").trim();
+  if (apiLabel) return apiLabel;
+
+  const map = {
+    1: "ثانوي أو أقل",
+    2: "دبلوم",
+    3: "بكالوريوس",
+    4: "ماجستير",
+    5: "دكتوراه",
+    6: "زمالة / بورد",
+    7: "أخرى",
+    8: "دبلوم عالي",
+    9: "بدون مؤهل"
+  };
+
+  return map[Number(value)] || "غير محدد";
+};
+
 const contractTypeText = (value) => {
   if (Number(value) === 1) return "محدد المدة";
   if (Number(value) === 2) return "غير محدد المدة";
@@ -767,10 +787,13 @@ function DetailTile({
           open={detailsOpen}
           onClose={() => setDetailsOpen(false)}
           fullWidth
-          maxWidth="sm"
+          maxWidth="xs"
           PaperProps={{
             sx: {
-              borderRadius: 3,
+              width: { xs: "calc(100% - 20px)", sm: "min(460px, calc(100% - 32px))" },
+              maxWidth: "460px !important",
+              m: { xs: 1.25, sm: 2 },
+              borderRadius: 2.5,
               direction: DETAIL_DIALOG_DIRECTION,
               textAlign: DETAIL_DIALOG_TEXT_ALIGN,
               overflow: "hidden"
@@ -779,8 +802,8 @@ function DetailTile({
         >
           <DialogTitle
             sx={{
-              px: 2.2,
-              py: 1.5,
+              px: { xs: 1.2, sm: 1.5 },
+              py: { xs: 0.9, sm: 1.05 },
               borderBottom: `1px solid ${border}`,
               textAlign: DETAIL_DIALOG_TEXT_ALIGN
             }}
@@ -826,7 +849,7 @@ function DetailTile({
 
           <DialogContent
             sx={{
-              p: "18px !important",
+              p: { xs: "10px !important", sm: "12px !important" },
               direction: DETAIL_DIALOG_DIRECTION,
               textAlign: DETAIL_DIALOG_TEXT_ALIGN
             }}
@@ -834,7 +857,7 @@ function DetailTile({
             <Paper
               elevation={0}
               sx={{
-                p: 1.6,
+                p: { xs: 1, sm: 1.2 },
                 borderRadius: 2.2,
                 border: `1px solid ${border}`,
                 background: soft
@@ -874,8 +897,8 @@ function DetailTile({
 
           <DialogActions
             sx={uiLayout.withUiSx({
-              px: 2,
-              py: 1.1,
+              px: { xs: 1.2, sm: 1.5 },
+              py: { xs: 0.7, sm: 0.8 },
               borderTop: `1px solid ${border}`,
               justifyContent: "flex-start"
             }, uiLayout.dialogActionsSx)}
@@ -927,15 +950,16 @@ function ProfileDetailsDialog({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="md"
+      maxWidth="sm"
       PaperProps={{
         sx: {
           width: {
-            xs: "calc(100% - 14px)",
-            sm: "calc(100% - 32px)"
+            xs: "calc(100% - 18px)",
+            sm: "min(620px, calc(100% - 32px))"
           },
-          m: { xs: 0.9, sm: 2 },
-          maxHeight: { xs: "88dvh", sm: "86vh" },
+          maxWidth: "620px !important",
+          m: { xs: 1.1, sm: 2 },
+          maxHeight: { xs: "82dvh", sm: "78vh" },
           borderRadius: { xs: 2.5, sm: 3.2 },
           direction: DETAIL_DIALOG_DIRECTION,
           textAlign: DETAIL_DIALOG_TEXT_ALIGN,
@@ -945,8 +969,8 @@ function ProfileDetailsDialog({
     >
       <DialogTitle
         sx={{
-          px: { xs: 1.2, sm: 2 },
-          py: { xs: 1.05, sm: 1.4 },
+          px: { xs: 1.15, sm: 1.5 },
+          py: { xs: 0.85, sm: 1 },
           borderBottom: `1px solid ${border}`,
           background:
             "linear-gradient(180deg,#ffffff 0%,#f7fbf9 100%)",
@@ -1002,8 +1026,8 @@ function ProfileDetailsDialog({
       <DialogContent
         sx={{
           p: {
-            xs: "10px !important",
-            sm: "16px !important"
+            xs: "8px !important",
+            sm: "10px !important"
           },
           background: "#fff",
           direction: DETAIL_DIALOG_DIRECTION,
@@ -1015,8 +1039,8 @@ function ProfileDetailsDialog({
 
       <DialogActions
         sx={uiLayout.withUiSx({
-          px: { xs: 1.2, sm: 2 },
-          py: { xs: 0.8, sm: 1 },
+          px: { xs: 1.15, sm: 1.5 },
+          py: { xs: 0.65, sm: 0.75 },
           borderTop: `1px solid ${border}`,
           background: "#fbfdfc",
           justifyContent: "flex-start"
@@ -1032,6 +1056,198 @@ function ProfileDetailsDialog({
           }, uiLayout.buttonSx)}
         >
           إغلاق
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+
+function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
+  const tone = String(alert?.alertType || "info").toLowerCase();
+  const toneColor =
+    tone === "error"
+      ? "#d94a4a"
+      : tone === "warning"
+        ? "#d79a2b"
+        : tone === "success"
+          ? "#2f9b68"
+          : "#4d8fe8";
+
+  return (
+    <Dialog
+      open={open}
+      onClose={() => {}}
+      disableEscapeKeyDown
+      fullWidth
+      maxWidth="xs"
+      dir="rtl"
+      sx={{
+        zIndex: (theme) => theme.zIndex.modal + 30,
+        "& .MuiBackdrop-root": {
+          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(0,0,0,.58)"
+        }
+      }}
+      PaperProps={{
+        sx: (theme) => ({
+          width: { xs: "calc(100% - 24px)", sm: "min(480px, calc(100% - 40px))" },
+          maxWidth: "480px !important",
+          m: { xs: 1.5, sm: 2.5 },
+          borderRadius: 3.2,
+          overflow: "hidden",
+          direction: "rtl",
+          textAlign: "right",
+          backgroundImage: "none",
+          backgroundColor: theme.palette.mode === "dark" ? "#111916" : "#ffffff",
+          border: theme.palette.mode === "dark"
+            ? "1px solid rgba(143,201,172,.22)"
+            : "1px solid rgba(5,117,70,.13)",
+          boxShadow: theme.palette.mode === "dark"
+            ? "0 26px 70px rgba(0,0,0,.56)"
+            : "0 26px 70px rgba(10,65,43,.18)"
+        })
+      }}
+    >
+      <Box
+        sx={(theme) => ({
+          position: "relative",
+          px: { xs: 1.6, sm: 2.2 },
+          pt: { xs: 2, sm: 2.4 },
+          pb: { xs: 1.45, sm: 1.7 },
+          borderBottom: theme.palette.mode === "dark"
+            ? "1px solid rgba(255,255,255,.08)"
+            : "1px solid rgba(5,117,70,.10)",
+          background: theme.palette.mode === "dark"
+            ? "linear-gradient(135deg, rgba(16,52,38,.95), rgba(17,25,22,.98))"
+            : "linear-gradient(135deg,#f0faf5 0%,#ffffff 75%)"
+        })}
+      >
+        <Stack direction="row" spacing={1.2} alignItems="center">
+          <Box
+            sx={(theme) => ({
+              width: 46,
+              height: 46,
+              borderRadius: 2.2,
+              display: "grid",
+              placeItems: "center",
+              flexShrink: 0,
+              color: theme.palette.mode === "dark" ? "#d8f4e5" : toneColor,
+              backgroundColor: theme.palette.mode === "dark"
+                ? "rgba(75,166,118,.16)"
+                : `${toneColor}12`,
+              border: theme.palette.mode === "dark"
+                ? "1px solid rgba(129,205,168,.28)"
+                : `1px solid ${toneColor}28`
+            })}
+          >
+            <NotificationsActiveRoundedIcon />
+          </Box>
+
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Stack direction="row" spacing={0.7} alignItems="center" sx={{ mb: 0.35, flexWrap: "wrap", rowGap: 0.5 }}>
+              <Typography
+                sx={(theme) => ({
+                  fontWeight: 950,
+                  fontSize: { xs: 16, sm: 18 },
+                  color: theme.palette.mode === "dark" ? "#eef8f2" : "#17372b"
+                })}
+              >
+                {alert?.title || "تنبيه"}
+              </Typography>
+              <Chip
+                size="small"
+                label={`تنبيه #${alert?.alertId ?? "-"}`}
+                sx={(theme) => ({
+                  height: 22,
+                  fontSize: 11,
+                  fontWeight: 900,
+                  color: theme.palette.mode === "dark" ? "#bfe8d2" : "#057546",
+                  backgroundColor: theme.palette.mode === "dark"
+                    ? "rgba(69,168,121,.12)"
+                    : "rgba(5,117,70,.07)",
+                  border: theme.palette.mode === "dark"
+                    ? "1px solid rgba(128,201,167,.28)"
+                    : "1px solid rgba(5,117,70,.16)"
+                })}
+              />
+            </Stack>
+            <Typography
+              sx={(theme) => ({
+                fontSize: 12,
+                lineHeight: 1.55,
+                color: theme.palette.mode === "dark" ? "rgba(226,238,231,.72)" : "#6a7c74"
+              })}
+            >
+              يرجى قراءة التنبيه ثم تأكيد الاطلاع عليه.
+            </Typography>
+          </Box>
+        </Stack>
+      </Box>
+
+      <DialogContent
+        sx={(theme) => ({
+          px: { xs: "16px !important", sm: "22px !important" },
+          py: { xs: "18px !important", sm: "22px !important" },
+          backgroundColor: theme.palette.mode === "dark" ? "#111916" : "#ffffff"
+        })}
+      >
+        <Paper
+          elevation={0}
+          sx={(theme) => ({
+            p: { xs: 1.5, sm: 1.8 },
+            borderRadius: 2.4,
+            backgroundColor: theme.palette.mode === "dark" ? "#151f1b" : "#f8fbf9",
+            border: theme.palette.mode === "dark"
+              ? "1px solid rgba(255,255,255,.07)"
+              : "1px solid rgba(5,117,70,.09)"
+          })}
+        >
+          <Typography
+            sx={(theme) => ({
+              whiteSpace: "pre-wrap",
+              overflowWrap: "anywhere",
+              fontSize: { xs: 13.2, sm: 14 },
+              lineHeight: 2,
+              fontWeight: 750,
+              color: theme.palette.mode === "dark" ? "#e7f2eb" : "#263d34"
+            })}
+          >
+            {alert?.message || ""}
+          </Typography>
+        </Paper>
+      </DialogContent>
+
+      <DialogActions
+        sx={(theme) => ({
+          px: { xs: 1.6, sm: 2.2 },
+          py: { xs: 1.2, sm: 1.35 },
+          justifyContent: "flex-start",
+          backgroundColor: theme.palette.mode === "dark" ? "#0f1714" : "#fbfdfc",
+          borderTop: theme.palette.mode === "dark"
+            ? "1px solid rgba(255,255,255,.07)"
+            : "1px solid rgba(5,117,70,.09)"
+        })}
+      >
+        <Button
+          variant="contained"
+          disabled={acknowledging}
+          onClick={onAcknowledge}
+          startIcon={<CheckCircleRoundedIcon />}
+          sx={(theme) => ({
+            minWidth: 145,
+            minHeight: 40,
+            borderRadius: 2,
+            fontWeight: 950,
+            boxShadow: "none",
+            backgroundColor: theme.palette.mode === "dark" ? "#1b7c52" : primary,
+            "&:hover": {
+              backgroundColor: theme.palette.mode === "dark" ? "#238d60" : primaryDark,
+              boxShadow: "none"
+            }
+          })}
+        >
+          {acknowledging ? "جاري الحفظ..." : "تم الاطلاع"}
         </Button>
       </DialogActions>
     </Dialog>
@@ -1197,9 +1413,9 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
       fullWidth
       PaperProps={{
         sx: {
-          width: { xs: "96vw", md: "86vw", xl: "76vw" },
-          maxWidth: 1350,
-          height: { xs: "90vh", md: "88vh" },
+          width: { xs: "94vw", md: "74vw", xl: "68vw" },
+          maxWidth: 1050,
+          height: { xs: "84vh", md: "82vh" },
           borderRadius: 3,
           overflow: "hidden"
         }
@@ -1318,6 +1534,8 @@ export default function HrEmployeeHomePage() {
 
   const [workDetailsOpen, setWorkDetailsOpen] = useState(false);
   const [personalDetailsOpen, setPersonalDetailsOpen] = useState(false);
+  const [homeAlerts, setHomeAlerts] = useState([]);
+  const [homeAlertAcknowledging, setHomeAlertAcknowledging] = useState(false);
 
   const userGuid = String(user?.guid || user?.Guid || "").trim();
   const userName = user?.fullName || user?.FullName || user?.userName || "الموظف";
@@ -1361,7 +1579,40 @@ export default function HrEmployeeHomePage() {
           throw new Error(detail ? `${message} — ${detail}` : message);
         }
 
-        setHome(result?.data || result);
+        const homeData = result?.data || result || {};
+        let mergedHomeData = homeData;
+
+        try {
+          const profileResponse = await fetch(
+            `${API_BASE_URL}/api/hr/employees/${encodeURIComponent(userGuid)}/profile`,
+            {
+              method: "GET",
+              headers: selfHeaders,
+              cache: "no-store"
+            }
+          );
+
+          const profileResult = await profileResponse
+            .json()
+            .catch(() => null);
+
+          if (profileResponse.ok) {
+            mergedHomeData = {
+              ...homeData,
+              profile: {
+                ...(homeData?.profile || {}),
+                ...(profileResult?.data || {})
+              }
+            };
+          }
+        } catch (profileError) {
+          console.warn(
+            "Employee education/profile enrichment failed:",
+            profileError
+          );
+        }
+
+        setHome(mergedHomeData);
       } catch (requestError) {
         console.error("HR home error:", requestError);
         setError(requestError?.message || "حدث خطأ أثناء تحميل الصفحة الرئيسية");
@@ -1509,6 +1760,82 @@ export default function HrEmployeeHomePage() {
       setResolvedManagerSource("");
     }
   }, [userGuid]);
+
+  const loadHomeAlerts = useCallback(async () => {
+    if (!userGuid) {
+      setHomeAlerts([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/hr/home-alerts/unread/${encodeURIComponent(userGuid)}`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: selfHeaders
+        }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message || result?.error || "تعذر تحميل التنبيهات"
+        );
+      }
+
+      setHomeAlerts(Array.isArray(result?.data) ? result.data : []);
+    } catch (homeAlertError) {
+      console.warn("Employee home alerts load failed:", homeAlertError);
+      setHomeAlerts([]);
+    }
+  }, [selfHeaders, userGuid]);
+
+  const acknowledgeHomeAlert = useCallback(async () => {
+    const currentAlert = homeAlerts[0];
+    if (!currentAlert?.alertGuid || !userGuid || homeAlertAcknowledging) return;
+
+    setHomeAlertAcknowledging(true);
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/hr/home-alerts/${encodeURIComponent(currentAlert.alertGuid)}/seen`,
+        {
+          method: "POST",
+          headers: {
+            ...selfHeaders,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ employeeGuid: userGuid })
+        }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message || result?.error || "تعذر حفظ الاطلاع على التنبيه"
+        );
+      }
+
+      setHomeAlerts((current) =>
+        current.filter((item) => item?.alertGuid !== currentAlert.alertGuid)
+      );
+    } catch (homeAlertError) {
+      console.error("Employee home alert acknowledge failed:", homeAlertError);
+      setNotice({
+        severity: "error",
+        text: homeAlertError?.message || "تعذر حفظ الاطلاع على التنبيه"
+      });
+    } finally {
+      setHomeAlertAcknowledging(false);
+    }
+  }, [homeAlerts, homeAlertAcknowledging, selfHeaders, userGuid]);
+
+  useEffect(() => {
+    loadHomeAlerts();
+  }, [loadHomeAlerts]);
 
   useEffect(() => {
     loadData({ initial: true });
@@ -2256,6 +2583,13 @@ const decideLeaveApproval = async (
         </Alert>
       )}
 
+      <HomeAlertDialog
+        alert={homeAlerts[0] || null}
+        open={Boolean(homeAlerts[0])}
+        acknowledging={homeAlertAcknowledging}
+        onAcknowledge={acknowledgeHomeAlert}
+      />
+
       <Paper
         elevation={0}
         sx={{
@@ -2885,6 +3219,19 @@ const decideLeaveApproval = async (
               value={maritalText(profile?.maritalStatus)}
             />
             <DetailTile
+              icon={<SchoolRoundedIcon fontSize="small" />}
+              label="المؤهل"
+              value={educationLevelText(
+                profile?.educationLevel,
+                profile?.educationLevelName
+              )}
+            />
+            <DetailTile
+              icon={<SchoolRoundedIcon fontSize="small" />}
+              label="التخصص"
+              value={profile?.specialization || "غير محدد"}
+            />
+            <DetailTile
               icon={<PhoneRoundedIcon fontSize="small" />}
               label="الجوال"
               value={employee?.mobile}
@@ -3213,7 +3560,7 @@ const decideLeaveApproval = async (
         open={workDetailsOpen}
         onClose={() => setWorkDetailsOpen(false)}
         title="تفاصيل البيانات الوظيفية"
-        subtitle="باقي بيانات الملف الوظيفي"
+        subtitle="بيانات إضافية"
       >
         <DetailGrid>
           <DetailTile
@@ -3252,7 +3599,7 @@ const decideLeaveApproval = async (
         open={personalDetailsOpen}
         onClose={() => setPersonalDetailsOpen(false)}
         title="تفاصيل البيانات الشخصية"
-        subtitle="باقي بيانات التواصل والبيانات المسجلة"
+        subtitle="بيانات إضافية"
       >
         <DetailGrid>
           <DetailTile
@@ -3260,6 +3607,19 @@ const decideLeaveApproval = async (
             label="IBAN"
             value={employee?.iban}
             ltr
+          />
+          <DetailTile
+            icon={<SchoolRoundedIcon fontSize="small" />}
+            label="المؤهل"
+            value={educationLevelText(
+              profile?.educationLevel,
+              profile?.educationLevelName
+            )}
+          />
+          <DetailTile
+            icon={<SchoolRoundedIcon fontSize="small" />}
+            label="التخصص"
+            value={profile?.specialization || "غير محدد"}
           />
           <DetailTile
             icon={<HomeWorkRoundedIcon fontSize="small" />}
@@ -3270,7 +3630,6 @@ const decideLeaveApproval = async (
             icon={<HomeWorkRoundedIcon fontSize="small" />}
             label="العنوان"
             value={profile?.address}
-            wide
             expandable
           />
           <DetailTile
@@ -3291,15 +3650,16 @@ const decideLeaveApproval = async (
           setLeaveTrackingOpen(false)
         }
         fullWidth
-        maxWidth="md"
+        maxWidth="sm"
         PaperProps={{
           sx: {
             width: {
-              xs: "calc(100% - 12px)",
-              sm: "calc(100% - 32px)"
+              xs: "calc(100% - 16px)",
+              sm: "min(640px, calc(100% - 32px))"
             },
-            m: { xs: 0.75, sm: 2 },
-            maxHeight: "92dvh",
+            maxWidth: "640px !important",
+            m: { xs: 1, sm: 2 },
+            maxHeight: { xs: "86dvh", sm: "82vh" },
             borderRadius: { xs: 2.5, sm: 3.2 },
             direction:
               LEAVE_TRACKING_DIALOG_DIRECTION,
@@ -3687,11 +4047,11 @@ const decideLeaveApproval = async (
           sx: {
             width: {
               xs: "calc(100% - 12px)",
-              sm: "min(620px, calc(100% - 32px))"
+              sm: "min(560px, calc(100% - 32px))"
             },
-            maxWidth: "620px !important",
+            maxWidth: "560px !important",
             m: { xs: 0.75, sm: 2 },
-            maxHeight: { xs: "94dvh", sm: "88vh" },
+            maxHeight: { xs: "88dvh", sm: "82vh" },
             borderRadius: { xs: 2.5, sm: 3.2 },
             direction: LEAVE_DIALOG_DIRECTION,
             textAlign: LEAVE_DIALOG_TEXT_ALIGN,
@@ -3701,8 +4061,8 @@ const decideLeaveApproval = async (
       >
         <DialogTitle
           sx={{
-            px: { xs: 1.25, sm: 2.3 },
-            py: { xs: 1.05, sm: 1.55 },
+            px: { xs: 1.1, sm: 1.5 },
+            py: { xs: 0.85, sm: 1 },
             borderBottom: `1px solid ${border}`,
             background: "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
           }}
@@ -4000,12 +4360,12 @@ const decideLeaveApproval = async (
         PaperProps={{
           sx: {
             width: {
-              xs: "calc(100% - 12px)",
-              sm: "calc(100% - 32px)"
+              xs: "calc(100% - 16px)",
+              sm: "min(560px, calc(100% - 32px))"
             },
-            maxWidth: 620,
+            maxWidth: "560px !important",
             m: { xs: 0.75, sm: 2 },
-            maxHeight: { xs: "92dvh", sm: "88vh" },
+            maxHeight: { xs: "88dvh", sm: "82vh" },
             borderRadius: { xs: 2.5, sm: 3.2 },
             direction: LEAVE_DIALOG_DIRECTION,
             textAlign: LEAVE_DIALOG_TEXT_ALIGN,
@@ -4015,8 +4375,8 @@ const decideLeaveApproval = async (
       >
         <DialogTitle
           sx={{
-            px: { xs: 1.25, sm: 2.3 },
-            py: { xs: 1.05, sm: 1.7 },
+            px: { xs: 1.1, sm: 1.5 },
+            py: { xs: 0.85, sm: 1 },
             borderBottom: `1px solid ${border}`,
             background:
               "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)",

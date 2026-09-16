@@ -35,6 +35,7 @@ import {
   DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
+import * as XLSX from "xlsx";
 import PersonAddAlt1Icon
   from "@mui/icons-material/PersonAddAlt1";
 import MenuRoundedIcon
@@ -911,7 +912,7 @@ const NewStudentsPage = () => {
     }
   };
 
-  const exportCsv = () => {
+  const exportXlsx = () => {
     if (filteredRows.length === 0) {
       showError("لا توجد بيانات للتصدير");
       return;
@@ -932,48 +933,56 @@ const NewStudentsPage = () => {
     ];
 
     const data = filteredRows.map((row) => [
-      row.regTypeName,
-      row.code,
-      row.regDate,
-      row.studentName,
-      row.studentNameEn,
-      row.studentTel,
-      row.nationalId,
-      row.diplomName,
-      row.batchOrDate,
-      row.manFullName,
-      row.email
+      String(row.regTypeName ?? ""),
+      String(row.code ?? ""),
+      String(row.regDate ?? ""),
+      String(row.studentName ?? ""),
+      String(row.studentNameEn ?? ""),
+      String(row.studentTel ?? ""),
+      String(row.nationalId ?? ""),
+      String(row.diplomName ?? ""),
+      String(row.batchOrDate ?? ""),
+      String(row.manFullName ?? ""),
+      String(row.email ?? "")
     ]);
 
-    const csv =
-      "\uFEFF" +
-      [headers, ...data]
-        .map((line) =>
-          line
-            .map((value) =>
-              `"${String(value ?? "")
-                .replaceAll('"', '""')}"`
-            )
-            .join(",")
-        )
-        .join("\r\n");
+    const sheet = XLSX.utils.aoa_to_sheet([
+      headers,
+      ...data
+    ]);
 
-    const blob = new Blob(
-      [csv],
-      { type: "text/csv;charset=utf-8" }
+    sheet["!cols"] = headers.map((header, columnIndex) => {
+      const maxDataLength = data.reduce(
+        (max, row) =>
+          Math.max(max, String(row[columnIndex] ?? "").length),
+        0
+      );
+
+      return {
+        wch: Math.min(
+          Math.max(String(header).length + 2, maxDataLength + 2, 12),
+          40
+        )
+      };
+    });
+
+    const workbook = XLSX.utils.book_new();
+    workbook.Workbook = {
+      Views: [{ RTL: true }]
+    };
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      sheet,
+      "الطلاب الجدد"
     );
 
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-
-    anchor.href = url;
-    anchor.download =
+    XLSX.writeFile(
+      workbook,
       `قائمة_الطلاب_الجدد_${new Date()
         .toISOString()
-        .slice(0, 10)}.csv`;
-
-    anchor.click();
-    URL.revokeObjectURL(url);
+        .slice(0, 10)}.xlsx`
+    );
   };
 
   const columns = useMemo(() => {
@@ -1582,7 +1591,7 @@ const NewStudentsPage = () => {
               variant="outlined"
               size={isCompact ? "small" : "medium"}
               startIcon={<FileDownloadIcon />}
-              onClick={exportCsv}
+              onClick={exportXlsx}
               sx={uiLayout.withUiSx({
                 flex: isCompact ? "1 1 calc(50% - 6px)" : undefined,
                 minWidth: 0,
