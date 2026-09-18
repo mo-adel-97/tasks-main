@@ -251,16 +251,6 @@ const textColor = '#1f2d3d';
 const mutedTextColor = '#6f8a81';
 const softShadow = '0 14px 35px rgba(5,117,70,0.12)';
 
-// Animates the registered custom property --border-angle so the
-// conic-gradient highlight sweeps around a border while the element's own
-// shape (a circle for the logo ring, a pill for the active sub-tab) stays
-// perfectly still -- no rotation of the box itself, so rounded pills never
-// get dragged into a diagonal-looking shape mid-spin.
-const tabBorderOrbit = keyframes`
-  from { --border-angle: 0deg; }
-  to { --border-angle: 360deg; }
-`;
-
 const logoRingOrbit = keyframes`
   from { --border-angle: 0deg; }
   to { --border-angle: 360deg; }
@@ -694,6 +684,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
       .sort((a, b) => a.__sortOrder - b.__sortOrder);
   }, [configuredSidebarItems]);
 
+
 const childItemSx = (selected) => ({
   mb: isDesktop ? 0.28 : 0.18,
   mx: isDesktop ? 1.55 : 0.8,
@@ -701,50 +692,47 @@ const childItemSx = (selected) => ({
   px: isDesktop ? 0.78 : 0.62,
   py: isDesktop ? 0.18 : 0.12,
 
-  // Compact pill sub-tab: clean base shape, organic motion only in the active outline.
-  borderRadius: 999,
+  // Same corner radius as the other sidebar tabs.
+  borderRadius: 2.4,
+
   color: selected
-    ? (isDarkMode ? '#f4fff9' : primaryDark)
+    ? (isDarkMode ? '#ffffff' : primaryDark)
     : sidebarColors.text,
 
   background: selected
-    ? (isDarkMode ? sidebarColors.childSurface : '#ffffff')
+    ? (isDarkMode ? sidebarColors.childSelected : sidebarColors.childSelected)
     : sidebarColors.childSurface,
 
-  // Active sub-tab: focused green border only.
+  // Normal solid border only — no dots, no orbit, no second border.
   border: selected
-    ? '2px solid #67C99D'
+    ? (isDarkMode ? '2px solid #67C99D' : '2px solid #67C99D')
     : `1px solid ${sidebarColors.border}`,
 
-  boxShadow: selected
-    ? (isDarkMode
-        ? '0 0 9px rgba(103,201,157,.20)'
-        : '0 0 0 1px rgba(103,201,157,.10)')
-    : 'none',
+  boxShadow: 'none',
   outline: 'none',
 
   position: 'relative',
-  overflow: 'visible',
+  overflow: 'hidden',
   isolation: 'isolate',
-  transform: 'translateZ(0)',
 
+  '&::before, &::after': {
+    content: '""',
+    display: 'none !important'
+  },
 
   '&.Mui-selected': {
     color: isDarkMode ? '#ffffff' : primaryDark,
-    background: isDarkMode ? sidebarColors.childSurface : '#ffffff',
+    background: isDarkMode ? sidebarColors.childSelected : sidebarColors.childSelected,
     borderColor: '#67C99D',
-    boxShadow: isDarkMode
-      ? '0 0 9px rgba(103,201,157,.20)'
-      : '0 0 0 1px rgba(103,201,157,.10)'
+    boxShadow: 'none'
   },
 
   '&.Mui-selected:hover': {
-    background: isDarkMode ? sidebarColors.childHover : '#ffffff',
-    borderColor: '#67C99D'
+    background: isDarkMode ? sidebarColors.childHover : sidebarColors.childSelected,
+    borderColor: '#67C99D',
+    boxShadow: 'none'
   },
 
-  // Kill the thick/ugly focus outline that was making the selected pill
-  // look double-bordered.
   '&:focus, &:focus-visible, &.Mui-focusVisible': {
     outline: 'none !important',
     boxShadow: 'none !important'
@@ -753,14 +741,10 @@ const childItemSx = (selected) => ({
   '&:hover': {
     color: isDarkMode ? '#ffffff' : primaryDark,
     background: selected
-      ? (isDarkMode ? sidebarColors.childHover : '#ffffff')
+      ? (isDarkMode ? sidebarColors.childHover : sidebarColors.childSelected)
       : sidebarColors.childHover,
     borderColor: selected ? '#67C99D' : sidebarColors.borderStrong,
-    boxShadow: selected
-      ? (isDarkMode
-          ? '0 0 9px rgba(103,201,157,.20)'
-          : '0 0 0 1px rgba(103,201,157,.10)')
-      : 'none',
+    boxShadow: 'none',
     transform: 'none',
     '& .MuiListItemIcon-root svg': {
       animation: 'none'
@@ -771,14 +755,8 @@ const childItemSx = (selected) => ({
     transform: 'none'
   },
 
-  '@media (prefers-reduced-motion: reduce)': {
-    animation: 'none',
-    transition: 'none',
-    '&:hover': { transform: 'none' }
-  },
-
   transition:
-    'background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease'
+    'background-color .2s ease, color .2s ease, border-color .2s ease'
 });
 
   const renderChildItem = (item) => {
@@ -800,12 +778,15 @@ const childItemSx = (selected) => ({
           selected={selected}
           sx={childItemSx(selected)}
         >
+
           <Box
             sx={{
               width: '100%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              position: 'relative',
+              zIndex: 4
             }}
           >
             <ListItemIcon

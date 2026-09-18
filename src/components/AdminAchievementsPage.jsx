@@ -46,6 +46,7 @@ import {
   AvatarGroup,
   Badge,
   alpha,
+  GlobalStyles,
   useTheme,
   Fab,
 } from "@mui/material";
@@ -112,6 +113,454 @@ const USERINFO_URL = "https://api1.sstli.com/api/userinfo";
 
 // ✅ Admin theme
 const ADMIN_ACCENT = "#80b49e";
+
+const adminAchievementsDarkStyles = (theme) => {
+  if (theme.palette.mode !== "dark") {
+    return {};
+  }
+
+  const page =
+    theme.palette.background?.default ||
+    "#0d1b15";
+
+  const card =
+    theme.palette.surfaces?.card ||
+    "#13251d";
+
+  const section =
+    theme.palette.surfaces?.section ||
+    "#172b22";
+
+  const nested =
+    theme.palette.surfaces?.nested ||
+    "#1b3328";
+
+  const hover =
+    theme.palette.surfaces?.hover ||
+    "#214333";
+
+  const selected =
+    theme.palette.surfaces?.selected ||
+    "#28513f";
+
+  const text =
+    theme.palette.text?.primary ||
+    "#eef8f3";
+
+  const muted =
+    theme.palette.text?.secondary ||
+    "#b7cfc3";
+
+  const border = "#67C99D";
+  const accent = "#9BE0C1";
+
+  return {
+    ".admin-achievements-ui": {
+      backgroundColor: `${page} !important`,
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiContainer-root": {
+      color: `${text} !important`
+    },
+
+    /* Main page surfaces */
+    ".admin-achievements-ui .MuiPaper-root, .admin-achievements-ui .MuiCard-root": {
+      background: `${card} !important`,
+      backgroundColor: `${card} !important`,
+      backgroundImage: "none !important",
+      color: `${text} !important`,
+      border: `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiCardContent-root": {
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiDivider-root": {
+      borderColor:
+        "rgba(103,201,157,.42) !important"
+    },
+
+    /* Typography */
+    ".admin-achievements-ui .MuiTypography-root": {
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiTypography-colorTextSecondary": {
+      color: `${muted} !important`
+    },
+
+    /* Buttons: transparent + green border */
+    ".admin-achievements-ui .MuiButton-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      backgroundImage: "none !important",
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiButton-root:hover": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: "#8EDBB8 !important",
+      boxShadow:
+        "0 0 0 1px rgba(103,201,157,.14) !important"
+    },
+
+    ".admin-achievements-ui .MuiButton-root.Mui-disabled": {
+      background: "transparent !important",
+      color:
+        "rgba(155,224,193,.42) !important",
+      borderColor:
+        "rgba(103,201,157,.34) !important"
+    },
+
+    /* Icon buttons: never circular/bordered */
+    ".admin-achievements-ui .MuiIconButton-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      backgroundImage: "none !important",
+      color: `${accent} !important`,
+      border: "none !important",
+      borderColor:
+        "transparent !important",
+      borderRadius: "0 !important",
+      boxShadow: "none !important",
+      outline: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiIconButton-root:hover, .admin-achievements-ui .MuiIconButton-root:focus, .admin-achievements-ui .MuiIconButton-root:focus-visible": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      color: "#C9F2DF !important",
+      border: "none !important",
+      borderColor:
+        "transparent !important",
+      boxShadow: "none !important",
+      outline: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiIconButton-root .MuiTouchRipple-root": {
+      display: "none !important"
+    },
+
+    /* Chips */
+    ".admin-achievements-ui .MuiChip-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      backgroundImage: "none !important",
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiChip-icon": {
+      color: "inherit !important"
+    },
+
+    /* Forms */
+    ".admin-achievements-ui .MuiOutlinedInput-root, .admin-achievements-ui .MuiInputBase-root": {
+      background: `${nested} !important`,
+      backgroundColor:
+        `${nested} !important`,
+      backgroundImage: "none !important",
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${border} !important`,
+      borderWidth: "1px !important"
+    },
+
+    ".admin-achievements-ui .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .admin-achievements-ui .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#8EDBB8 !important"
+    },
+
+    ".admin-achievements-ui .MuiInputLabel-root, .admin-achievements-ui .MuiFormHelperText-root": {
+      color: `${muted} !important`
+    },
+
+    ".admin-achievements-ui .MuiInputLabel-root.Mui-focused": {
+      color: `${accent} !important`
+    },
+
+    ".admin-achievements-ui .MuiInputBase-input, .admin-achievements-ui .MuiSelect-select": {
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiInputAdornment-root svg": {
+      color: `${accent} !important`
+    },
+
+    ".admin-achievements-ui input[type='date']": {
+      colorScheme: "dark"
+    },
+
+    /* Tables */
+    ".admin-achievements-ui .MuiTableContainer-root, .admin-achievements-ui .MuiTable-root": {
+      background: `${card} !important`,
+      backgroundColor:
+        `${card} !important`,
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiTableHead-root .MuiTableRow-root, .admin-achievements-ui .MuiTableHead-root .MuiTableCell-root": {
+      background: `${section} !important`,
+      backgroundColor:
+        `${section} !important`,
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiTableHead-root .MuiTableCell-root": {
+      borderBottom:
+        `1px solid ${border} !important`
+    },
+
+    ".admin-achievements-ui .MuiTableBody-root .MuiTableRow-root": {
+      background: `${card} !important`
+    },
+
+    ".admin-achievements-ui .MuiTableBody-root .MuiTableRow-root:hover": {
+      background: `${hover} !important`,
+      backgroundColor:
+        `${hover} !important`
+    },
+
+    ".admin-achievements-ui .MuiTableCell-root": {
+      color: `${text} !important`,
+      borderColor:
+        "rgba(103,201,157,.32) !important"
+    },
+
+    /* Pagination */
+    ".admin-achievements-ui .MuiTablePagination-root": {
+      background: `${section} !important`,
+      backgroundColor:
+        `${section} !important`,
+      color: `${text} !important`,
+      borderTop:
+        `1px solid ${border} !important`
+    },
+
+    ".admin-achievements-ui .MuiTablePagination-selectLabel, .admin-achievements-ui .MuiTablePagination-displayedRows": {
+      color: `${text} !important`
+    },
+
+    /* Progress */
+    ".admin-achievements-ui .MuiLinearProgress-root": {
+      backgroundColor:
+        `${nested} !important`,
+      border:
+        "1px solid rgba(103,201,157,.35) !important"
+    },
+
+    ".admin-achievements-ui .MuiLinearProgress-bar": {
+      backgroundColor:
+        `${border} !important`
+    },
+
+    /* Lists / collapses / nested areas */
+    ".admin-achievements-ui .MuiList-root, .admin-achievements-ui .MuiListItem-root, .admin-achievements-ui .MuiCollapse-root": {
+      color: `${text} !important`
+    },
+
+    ".admin-achievements-ui .MuiAvatar-root": {
+      backgroundColor:
+        `${nested} !important`,
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`
+    },
+
+    ".admin-achievements-ui .MuiBadge-badge": {
+      backgroundColor:
+        `${selected} !important`,
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`
+    },
+
+    ".admin-achievements-ui .MuiCheckbox-root": {
+      color: `${border} !important`
+    },
+
+    ".admin-achievements-ui .MuiCheckbox-root.Mui-checked": {
+      color: `${accent} !important`
+    },
+
+    /* FAB */
+    ".admin-achievements-ui .MuiFab-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiFab-root:hover": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: "#8EDBB8 !important"
+    },
+
+    /* In-page alerts */
+    ".admin-achievements-ui .MuiAlert-root": {
+      background: `${section} !important`,
+      backgroundColor:
+        `${section} !important`,
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".admin-achievements-ui .MuiAlert-icon": {
+      color: `${accent} !important`
+    },
+
+    /*
+     * Portaled UI: Dialog / Select Menu / Popover / Snackbar.
+     * These sit outside the page root, so style them here.
+     */
+    ".MuiDialog-paper": {
+      background: `${card} !important`,
+      backgroundColor:
+        `${card} !important`,
+      backgroundImage: "none !important",
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow:
+        "0 18px 50px rgba(0,0,0,.36) !important"
+    },
+
+    ".MuiDialogTitle-root, .MuiDialogContent-root, .MuiDialogActions-root": {
+      background: `${card} !important`,
+      backgroundColor:
+        `${card} !important`,
+      color: `${text} !important`,
+      borderColor:
+        "rgba(103,201,157,.34) !important"
+    },
+
+    ".MuiDialog-paper .MuiPaper-root:not(.MuiDialog-paper), .MuiDialog-paper .MuiCard-root": {
+      background: `${nested} !important`,
+      backgroundColor:
+        `${nested} !important`,
+      backgroundImage: "none !important",
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".MuiDialog-paper .MuiTypography-root": {
+      color: `${text} !important`
+    },
+
+    ".MuiDialog-paper .MuiDivider-root": {
+      borderColor:
+        "rgba(103,201,157,.42) !important"
+    },
+
+    ".MuiDialog-paper .MuiChip-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      backgroundImage: "none !important",
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".MuiDialog-paper .MuiButton-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      backgroundImage: "none !important",
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".MuiDialog-paper .MuiIconButton-root": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      color: `${accent} !important`,
+      border: "none !important",
+      borderColor:
+        "transparent !important",
+      borderRadius: "0 !important",
+      boxShadow: "none !important",
+      outline: "none !important"
+    },
+
+    ".MuiDialog-paper .MuiIconButton-root:hover": {
+      background: "transparent !important",
+      backgroundColor:
+        "transparent !important",
+      border: "none !important",
+      boxShadow: "none !important"
+    },
+
+    ".MuiMenu-paper, .MuiPopover-paper": {
+      background: `${card} !important`,
+      backgroundColor:
+        `${card} !important`,
+      backgroundImage: "none !important",
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`
+    },
+
+    ".MuiMenuItem-root": {
+      background: "transparent !important",
+      color: `${text} !important`
+    },
+
+    ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+      background: "transparent !important",
+      color: "#C9F2DF !important",
+      boxShadow:
+        `inset 0 0 0 1px ${border} !important`
+    },
+
+    ".MuiSnackbar-root .MuiAlert-root": {
+      background: `${section} !important`,
+      backgroundColor:
+        `${section} !important`,
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".MuiTooltip-tooltip": {
+      background: `${section} !important`,
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`
+    }
+  };
+};
 
 
 // ✅ View modes
@@ -532,7 +981,17 @@ export default function AdminAchievementsPage() {
   };
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc" }}>
+    <NavigationShell variant="standard">
+      <GlobalStyles styles={adminAchievementsDarkStyles} /><Box
+      className="admin-achievements-ui"
+      sx={(theme) => ({
+        minHeight: "100vh",
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? (theme.palette.background?.default || "#0d1b15")
+            : "#f8fafc"
+      })}
+    >
       
 
       <Box sx={{
@@ -547,8 +1006,14 @@ export default function AdminAchievementsPage() {
               p: 3,
               mb: 3,
               borderRadius: 3,
-              border: "1px solid #e2e8f0",
-              background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
+              border: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "1px solid #67C99D"
+                  : "1px solid #e2e8f0",
+              background: (theme) =>
+                theme.palette.mode === "dark"
+                  ? (theme.palette.surfaces?.card || "#13251d")
+                  : "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
               position: 'relative',
               overflow: 'hidden',
             }}
@@ -683,9 +1148,15 @@ export default function AdminAchievementsPage() {
               p: 3,
               mb: 3,
               borderRadius: 3,
-              border: "1px solid #e2e8f0",
-              background: "#ffffff",
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              border: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "1px solid #67C99D"
+                  : "1px solid #e2e8f0",
+              background: (theme) =>
+                theme.palette.mode === "dark"
+                  ? (theme.palette.surfaces?.card || "#13251d")
+                  : "#ffffff",
+              boxShadow: 'none',
             }}
           >
             <Grid container spacing={2} alignItems="center">
@@ -775,14 +1246,29 @@ export default function AdminAchievementsPage() {
                 <Tooltip title="إعادة تعيين">
                   <IconButton
                     onClick={clearFilters}
-                    sx={{
-                      border: '1px solid #e2e8f0',
-                      borderRadius: 2,
+                    sx={(theme) => ({
+                      border:
+                        theme.palette.mode === "dark"
+                          ? 'none'
+                          : '1px solid #e2e8f0',
+                      borderRadius:
+                        theme.palette.mode === "dark"
+                          ? 0
+                          : 2,
                       width: '100%',
                       height: 56,
-                      bgcolor: '#f8fafc',
-                      '&:hover': { bgcolor: '#f1f5f9' }
-                    }}
+                      bgcolor:
+                        theme.palette.mode === "dark"
+                          ? 'transparent'
+                          : '#f8fafc',
+                      boxShadow: 'none',
+                      '&:hover': {
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? 'transparent'
+                            : '#f1f5f9'
+                      }
+                    })}
                   >
                     <ClearIcon />
                   </IconButton>
@@ -797,7 +1283,10 @@ export default function AdminAchievementsPage() {
               elevation={0}
               sx={{
                 borderRadius: 3,
-                border: "1px solid #e2e8f0",
+                border: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "1px solid #67C99D"
+                    : "1px solid #e2e8f0",
                 overflow: 'hidden',
                 mb: 3,
               }}
@@ -1058,7 +1547,14 @@ export default function AdminAchievementsPage() {
                       elevation={0}
                       sx={{
                         borderRadius: 3,
-                        border: '1px solid #e2e8f0',
+                        border: (theme) =>
+                          theme.palette.mode === "dark"
+                            ? '1px solid #67C99D'
+                            : '1px solid #e2e8f0',
+                        bgcolor: (theme) =>
+                          theme.palette.mode === "dark"
+                            ? (theme.palette.surfaces?.card || "#13251d")
+                            : '#ffffff',
                         height: '100%',
                         display: 'flex',
                         flexDirection: 'column',
@@ -1254,11 +1750,19 @@ export default function AdminAchievementsPage() {
           >
             {selectedAchievement && (
               <>
-                <DialogTitle sx={{ 
-                  bgcolor: '#f8fafc', 
-                  borderBottom: '1px solid #e2e8f0',
-                  pb: 2 
-                }}>
+                <DialogTitle
+                  sx={(theme) => ({
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? (theme.palette.surfaces?.card || "#13251d")
+                        : '#f8fafc',
+                    borderBottom:
+                      theme.palette.mode === "dark"
+                        ? '1px solid #67C99D'
+                        : '1px solid #e2e8f0',
+                    pb: 2
+                  })}
+                >
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Typography variant="h6" sx={{ fontWeight: 900, color: '#0f172a' }}>
                       {selectedAchievement.mainTitle}

@@ -38,6 +38,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import BusinessIcon from "@mui/icons-material/Business";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PrintIcon from "@mui/icons-material/Print";
 import SaveIcon from "@mui/icons-material/Save";
@@ -160,6 +161,9 @@ const CashPaymentOrder = () => {
   const [saving, setSaving] =
     useState(false);
 
+  const [isEditing, setIsEditing] =
+    useState(false);
+
   const [tafkeetLoading, setTafkeetLoading] =
     useState(false);
 
@@ -190,6 +194,9 @@ const CashPaymentOrder = () => {
   const isExisting =
     Boolean(form.guid);
 
+  const isReadOnlyExisting =
+    isExisting && !isEditing;
+
   const updateForm = (
     field,
     value
@@ -215,6 +222,7 @@ const CashPaymentOrder = () => {
       createdByGuid: "",
       createdByName: ""
     });
+    setIsEditing(false);
   }, []);
 
   const loadBranches =
@@ -375,9 +383,9 @@ const CashPaymentOrder = () => {
       return;
     }
 
-    if (isExisting) {
+    if (isExisting && !isEditing) {
       await fireError(
-        "الأمر الحالي محفوظ بالفعل، اضغط جديد لإنشاء أمر آخر"
+        "اضغط تعديل أولًا لتعديل أمر الصرف الحالي"
       );
       return;
     }
@@ -385,10 +393,14 @@ const CashPaymentOrder = () => {
     try {
       setSaving(true);
 
+      const url = isExisting
+        ? `${API_BASE_URL}/api/cash-payment-orders/${encodeURIComponent(form.guid)}`
+        : `${API_BASE_URL}/api/cash-payment-orders`;
+
       const response = await fetch(
-        `${API_BASE_URL}/api/cash-payment-orders`,
+        url,
         {
-          method: "POST",
+          method: isExisting ? "PUT" : "POST",
           headers: {
             "Content-Type":
               "application/json"
@@ -422,9 +434,9 @@ const CashPaymentOrder = () => {
       setForm((current) => ({
         ...current,
         code:
-          String(data.code || ""),
+          String(data.code || current.code || ""),
         guid:
-          String(data.guid || ""),
+          String(data.guid || current.guid || ""),
         orderDate:
           String(
             data.orderDate ||
@@ -465,23 +477,31 @@ const CashPaymentOrder = () => {
         createdByGuid:
           String(
             data.userGuid ||
+            current.createdByGuid ||
             userGuid
           ),
         createdByName:
           String(
             data.userName ||
+            current.createdByName ||
             userName
           )
       }));
 
+      setIsEditing(false);
+
       await fireSuccess(
         result?.message ||
-        "تم حفظ بيانات أمر صرف النقدية بنجاح"
+        (isExisting
+          ? "تم تعديل أمر صرف النقدية بنجاح"
+          : "تم حفظ بيانات أمر صرف النقدية بنجاح")
       );
     } catch (error) {
       await fireError(
         error?.message ||
-        "تعذر حفظ أمر الصرف"
+        (isExisting
+          ? "تعذر تعديل أمر الصرف"
+          : "تعذر حفظ أمر الصرف")
       );
     } finally {
       setSaving(false);
@@ -568,6 +588,8 @@ const CashPaymentOrder = () => {
             )
         });
 
+        // بعد تحميل أمر موجود من البحث ندخل وضع التعديل مباشرة
+        setIsEditing(true);
         setOrderDialogOpen(false);
       } catch (error) {
         await fireError(
@@ -677,7 +699,7 @@ const CashPaymentOrder = () => {
                   color: "#708179"
                 }}
               >
-                إدارة الفرع / إنشاء واستعراض وطباعة أوامر صرف النقدية
+                إدارة الفرع / إنشاء واستعراض وتعديل وطباعة أوامر صرف النقدية
               </Typography>
             </Box>
 
@@ -714,6 +736,25 @@ const CashPaymentOrder = () => {
               بحث
             </Button>
 
+            {isExisting && !isEditing && (
+              <Button
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={() =>
+                  setIsEditing(true)
+                }
+                disabled={saving}
+                sx={uiLayout.withUiSx({
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  borderColor: "#057546",
+                  color: "#057546"
+                }, uiLayout.buttonSx)}
+              >
+                تعديل
+              </Button>
+            )}
+
             <Button
               variant="contained"
               startIcon={
@@ -729,7 +770,7 @@ const CashPaymentOrder = () => {
               onClick={save}
               disabled={
                 saving ||
-                isExisting
+                isReadOnlyExisting
               }
               sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
@@ -738,7 +779,9 @@ const CashPaymentOrder = () => {
                   "linear-gradient(135deg,#057546,#034d31)"
               }, uiLayout.buttonSx)}
             >
-              حفظ
+              {isExisting
+                ? "حفظ التعديل"
+                : "حفظ"}
             </Button>
 
             <Button
@@ -807,7 +850,7 @@ const CashPaymentOrder = () => {
               InputLabelProps={{
                 shrink: true
               }}
-              disabled={isExisting}
+              disabled={isReadOnlyExisting}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Autocomplete
@@ -861,7 +904,7 @@ const CashPaymentOrder = () => {
                   value?.name || ""
                 );
               }}
-              disabled={isExisting}
+              disabled={isReadOnlyExisting}
               renderInput={(params) => (
                 <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                   {...params}
@@ -891,7 +934,7 @@ const CashPaymentOrder = () => {
                   event.target.value
                 )
               }
-              disabled={isExisting}
+              disabled={isReadOnlyExisting}
             />
 
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
@@ -904,7 +947,7 @@ const CashPaymentOrder = () => {
                   event.target.value
                 )
               }
-              disabled={isExisting}
+              disabled={isReadOnlyExisting}
               inputProps={{
                 min: 0,
                 step: "0.01"
@@ -950,7 +993,7 @@ const CashPaymentOrder = () => {
                   event.target.value
                 )
               }
-              disabled={isExisting}
+              disabled={isReadOnlyExisting}
               multiline
               minRows={5}
               sx={uiLayout.withUiSx({
@@ -971,7 +1014,7 @@ const CashPaymentOrder = () => {
                       event.target.checked
                     )
                   }
-                  disabled={isExisting}
+                  disabled={isReadOnlyExisting}
                   color="success"
                 />
               }
@@ -993,6 +1036,18 @@ const CashPaymentOrder = () => {
                 }}
                 spacing={1}
               >
+                {isEditing && (
+                  <Chip
+                    label="وضع التعديل"
+                    color="success"
+                    variant="outlined"
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900
+                    }}
+                  />
+                )}
+
                 <Chip
                   label={`رقم الأمر: ${form.code}`}
                   sx={{
