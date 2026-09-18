@@ -11,6 +11,7 @@ import {
 } from '../config/sidebarLayout';
 import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
 import { designTokens } from '../config/designTokens';
+import { keyframes } from '@mui/system';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
@@ -35,7 +36,8 @@ import {
   IconButton,
   Popover,
   CircularProgress,
-  Divider
+  Divider,
+  GlobalStyles
 } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -241,6 +243,62 @@ const textColor = '#1f2d3d';
 const mutedTextColor = '#6f8a81';
 const softShadow = '0 14px 35px rgba(5,117,70,0.12)';
 
+// Animates the registered custom property --border-angle so the
+// conic-gradient highlight sweeps around a border while the element's own
+// shape (a circle for the logo ring, a pill for the active sub-tab) stays
+// perfectly still -- no rotation of the box itself, so rounded pills never
+// get dragged into a diagonal-looking shape mid-spin.
+const tabBorderOrbit = keyframes`
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+`;
+
+const logoRingOrbit = keyframes`
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+`;
+
+const organicRingMorph = keyframes`
+  0%, 100% {
+    border-radius: 18px 14px 19px 13px / 14px 19px 13px 18px;
+    transform: scale(1);
+    opacity: .52;
+  }
+  35% {
+    border-radius: 14px 19px 13px 18px / 19px 13px 18px 14px;
+    transform: scale(1.006);
+    opacity: .82;
+  }
+  70% {
+    border-radius: 19px 13px 18px 14px / 13px 18px 14px 19px;
+    transform: scale(.998);
+    opacity: .64;
+  }
+`;
+
+const activeTabBreathe = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+`;
+
+const iconMicroMotion = keyframes`
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.055) rotate(-2deg); }
+`;
+
+const indicatorPulse = keyframes`
+  0%, 100% { opacity: .68; transform: scaleY(.82); }
+  50% { opacity: 1; transform: scaleY(1); }
+`;
+
+// Active sub-tab arrow-head: a gentle brighten/fade breath plus a 1-2px
+// nudge toward the tab so the little pointer reads as "alive" without
+// actually moving the tab itself.
+const activeArrowBreathe = keyframes`
+  0%, 100% { opacity: .70; transform: translateY(-50%) scaleY(.90); }
+  50% { opacity: 1; transform: translateY(-50%) scaleY(1.04); }
+`;
+
 
 /*
  * Database-driven sidebar renderer.
@@ -254,20 +312,26 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
 
-  // Palette واحدة للسايدبار تتبدل تلقائياً مع Light / Dark.
+  // Palette واحدة للسايدبار تتبدل تلقائياً مع Light / Dark. Dark-mode borders
+  // pull from the shared theme border ladder (subtle/standard/accent/strong)
+  // instead of one-off literals, so the sidebar's hierarchy stays consistent
+  // with cards/tables/dialogs. Light mode keeps its original, validated colors.
   const sidebarColors = {
-    surface: isDarkMode ? '#111815' : '#f7fbf9',
-    surfaceRaised: isDarkMode ? '#171f1b' : '#ffffff',
-    surfaceHover: isDarkMode ? '#1d2823' : '#f0f7f3',
-    childSurface: isDarkMode ? 'rgba(255,255,255,.025)' : 'rgba(255,255,255,.92)',
-    childHover: isDarkMode ? 'rgba(5,117,70,.16)' : '#f0f8f4',
-    childSelected: isDarkMode ? 'rgba(5,117,70,.24)' : '#eaf7f0',
-    text: isDarkMode ? '#eef6f2' : '#24372f',
-    textMuted: isDarkMode ? '#9fb0a8' : '#6f8a81',
-    border: isDarkMode ? 'rgba(255,255,255,.075)' : 'rgba(5,117,70,.12)',
-    borderStrong: isDarkMode ? 'rgba(91,201,145,.28)' : 'rgba(5,117,70,.20)',
-    footer: isDarkMode ? '#101613' : 'rgba(255,255,255,.98)',
-    guide: isDarkMode ? 'rgba(101,211,158,.16)' : 'rgba(5,117,70,.11)'
+    // Dark Mode follows the same approved green surface system used across HR pages.
+    surface: isDarkMode ? theme.palette.surfaces.card : '#f7fbf9',
+    surfaceRaised: isDarkMode ? theme.palette.surfaces.section : '#ffffff',
+    surfaceHover: isDarkMode ? theme.palette.surfaces.hover : '#f0f7f3',
+    childSurface: isDarkMode ? theme.palette.surfaces.nested : 'rgba(255,255,255,.92)',
+    childHover: isDarkMode ? theme.palette.surfaces.hover : '#f0f8f4',
+    childSelected: isDarkMode ? theme.palette.surfaces.selected : '#eaf7f0',
+    text: isDarkMode ? theme.palette.text.primary : '#24372f',
+    textMuted: isDarkMode ? theme.palette.text.secondary : '#6f8a81',
+
+    // Approved project rule: dark borders stay permanently visible.
+    border: isDarkMode ? '#67C99D' : 'rgba(5,117,70,.12)',
+    borderStrong: isDarkMode ? '#67C99D' : 'rgba(5,117,70,.20)',
+    footer: isDarkMode ? theme.palette.surfaces.section : 'rgba(255,255,255,.98)',
+    guide: isDarkMode ? 'rgba(103,201,157,.62)' : 'rgba(5,117,70,.11)'
   };
 
   // نفس breakpoint المركزي للمشروع: ديسكتوب/Laptop دائم، وما دونه Drawer.
@@ -623,63 +687,90 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   }, [configuredSidebarItems]);
 
 const childItemSx = (selected) => ({
-  // Sub-list: أصغر من رأس المجموعة وبدون شكل Card ثقيل.
-  mb: isDesktop ? 0.16 : 0.12,
-  mx: isDesktop ? 1.75 : 0.9,
-  minHeight: isDesktop ? 34 : 33,
-  px: isDesktop ? 0.62 : 0.5,
-  py: 0.08,
-  borderRadius: isDesktop ? 1.7 : 1.5,
+  mb: isDesktop ? 0.28 : 0.18,
+  mx: isDesktop ? 1.55 : 0.8,
+  minHeight: isDesktop ? designTokens.sidebar.childItemHeight : 34,
+  px: isDesktop ? 0.78 : 0.62,
+  py: isDesktop ? 0.18 : 0.12,
 
+  // Compact pill sub-tab: clean base shape, organic motion only in the active outline.
+  borderRadius: 999,
   color: selected
     ? (isDarkMode ? '#f4fff9' : primaryDark)
     : sidebarColors.text,
 
   background: selected
-    ? sidebarColors.childSelected
+    ? (isDarkMode ? sidebarColors.childSurface : '#ffffff')
     : sidebarColors.childSurface,
 
+  // Active sub-tab: focused green border only.
   border: selected
-    ? `1px solid ${sidebarColors.borderStrong}`
+    ? '2px solid #67C99D'
     : `1px solid ${sidebarColors.border}`,
 
-  boxShadow: 'none',
-  position: 'relative',
-  overflow: 'hidden',
+  boxShadow: selected
+    ? (isDarkMode
+        ? '0 0 9px rgba(103,201,157,.20)'
+        : '0 0 0 1px rgba(103,201,157,.10)')
+    : 'none',
+  outline: 'none',
 
-  // خط صغير فقط للعنصر النشط بدل اللون الأحمر/الكارت الكبير.
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    insetInlineStart: 0,
-    top: 7,
-    bottom: 7,
-    width: selected ? 3 : 2,
-    borderRadius: 999,
-    background: selected
-      ? (isDarkMode ? '#67c99d' : primaryColor)
-      : 'transparent'
-  },
+  position: 'relative',
+  overflow: 'visible',
+  isolation: 'isolate',
+  transform: 'translateZ(0)',
+
 
   '&.Mui-selected': {
-    color: isDarkMode ? '#f4fff9' : primaryDark,
-    background: sidebarColors.childSelected
+    color: isDarkMode ? '#ffffff' : primaryDark,
+    background: isDarkMode ? sidebarColors.childSurface : '#ffffff',
+    borderColor: '#67C99D',
+    boxShadow: isDarkMode
+      ? '0 0 9px rgba(103,201,157,.20)'
+      : '0 0 0 1px rgba(103,201,157,.10)'
   },
 
   '&.Mui-selected:hover': {
-    background: sidebarColors.childSelected
+    background: isDarkMode ? sidebarColors.childHover : '#ffffff',
+    borderColor: '#67C99D'
+  },
+
+  // Kill the thick/ugly focus outline that was making the selected pill
+  // look double-bordered.
+  '&:focus, &:focus-visible, &.Mui-focusVisible': {
+    outline: 'none !important',
+    boxShadow: 'none !important'
   },
 
   '&:hover': {
     color: isDarkMode ? '#ffffff' : primaryDark,
     background: selected
-      ? sidebarColors.childSelected
+      ? (isDarkMode ? sidebarColors.childHover : '#ffffff')
       : sidebarColors.childHover,
-    borderColor: sidebarColors.borderStrong,
-    boxShadow: 'none'
+    borderColor: selected ? '#67C99D' : sidebarColors.borderStrong,
+    boxShadow: selected
+      ? (isDarkMode
+          ? '0 0 9px rgba(103,201,157,.20)'
+          : '0 0 0 1px rgba(103,201,157,.10)')
+      : 'none',
+    transform: 'none',
+    '& .MuiListItemIcon-root svg': {
+      animation: 'none'
+    }
   },
 
-  transition: 'background-color .14s ease, color .14s ease, border-color .14s ease'
+  '&:active': {
+    transform: 'none'
+  },
+
+  '@media (prefers-reduced-motion: reduce)': {
+    animation: 'none',
+    transition: 'none',
+    '&:hover': { transform: 'none' }
+  },
+
+  transition:
+    'background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease'
 });
 
   const renderChildItem = (item) => {
@@ -690,7 +781,9 @@ const childItemSx = (selected) => ({
         key={item.path || item.text}
         title={item.text}
         placement="left"
-        arrow
+        disableHoverListener
+        disableFocusListener
+        disableTouchListener
       >
         <ListItem
           button
@@ -709,12 +802,18 @@ const childItemSx = (selected) => ({
           >
             <ListItemIcon
                 sx={{
-                  minWidth: isDesktop ? 19 : 18,
+                  minWidth: isDesktop ? designTokens.sidebar.childIconBoxMinWidth : 18,
+                  // Unselected dark-mode icons used to sit at '#a9bdb4', a
+                  // desaturated gray-green that read as "off" rather than
+                  // brand green. A translucent version of the same vivid
+                  // selected green keeps the brand hue itself bright and
+                  // just dims it via opacity for hierarchy, instead of
+                  // muddying the color.
                   color: selected
                     ? (isDarkMode ? '#67c99d' : primaryColor)
-                    : (isDarkMode ? '#a9bdb4' : primaryColor),
+                    : (isDarkMode ? 'rgba(103,201,157,.78)' : primaryColor),
                   '& svg': {
-                    fontSize: isDesktop ? 16 : 15
+                    fontSize: isDesktop ? designTokens.sidebar.childIconSize : 15
                   }
                 }}
               >
@@ -729,7 +828,10 @@ const childItemSx = (selected) => ({
                 '& .MuiListItemText-primary': {
                   fontFamily: 'Cairo',
                   fontWeight: selected ? 850 : 700,
-                  fontSize: isDesktop ? '0.72rem' : '0.7rem',
+                  // Leaf menu links are the sidebar text read most often, so
+                  // this is the size that most needed to stop freezing at the
+                  // same value from 1200px through 3440px.
+                  fontSize: isDesktop ? designTokens.sidebar.childTitleSize : '0.7rem',
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '5px' : '4px',
                   lineHeight: 1.28,
@@ -739,7 +841,7 @@ const childItemSx = (selected) => ({
                 },
                 '& .MuiListItemText-secondary': {
                   fontFamily: 'Cairo',
-                  fontSize: isDesktop ? '0.64rem' : '0.62rem',
+                  fontSize: isDesktop ? designTokens.sidebar.childSecondarySize : '0.62rem',
                   textAlign: 'start',
                   marginInlineStart: isDesktop ? '6px' : '4px',
                   color: selected
@@ -803,28 +905,61 @@ const childItemSx = (selected) => ({
             minHeight: designTokens.sidebar.itemHeight,
             px: isDesktop ? 0.75 : 0.5,
             py: isDesktop ? 0.42 : 0.34,
-            borderRadius: designTokens.sidebar.itemRadius,
+            borderRadius: 2.4,
+            position: 'relative',
+            overflow: 'visible',
+            isolation: 'isolate',
             color: selected
-              ? (isDarkMode ? '#ffffff' : '#0d5f9d')
+              ? (isDarkMode ? '#f4fff9' : primaryDark)
               : sidebarColors.text,
             background: selected
-              ? (isDarkMode ? 'rgba(25,118,210,.18)' : '#eef7ff')
+              ? (isDarkMode ? sidebarColors.childSelected : '#eaf7f0')
               : sidebarColors.surfaceRaised,
-            border: selected
-              ? '1px solid rgba(33,150,243,.34)'
-              : `1px solid ${sidebarColors.border}`,
-            boxShadow: 'none',
+            border: `1px solid ${isDarkMode ? '#67C99D' : (selected ? 'rgba(5,117,70,.26)' : sidebarColors.border)}`,
+            boxShadow: selected && isDarkMode
+              ? '0 7px 20px rgba(0,0,0,.18)'
+              : 'none',
+            animation: selected && isDarkMode
+              ? `${activeTabBreathe} 3.6s ease-in-out infinite`
+              : 'none',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              inset: 2,
+              zIndex: -1,
+              pointerEvents: 'none',
+              border: selected && isDarkMode
+                ? '1px solid rgba(103,201,157,.55)'
+                : '1px solid transparent',
+              borderRadius: '18px 14px 19px 13px / 14px 19px 13px 18px',
+              animation: selected && isDarkMode
+                ? `${organicRingMorph} 6.2s ease-in-out infinite`
+                : 'none'
+            },
             '&.Mui-selected': {
-              color: isDarkMode ? '#ffffff' : '#0d5f9d',
-              background: isDarkMode ? 'rgba(25,118,210,.18)' : '#eef7ff'
+              color: isDarkMode ? '#f4fff9' : primaryDark,
+              background: isDarkMode ? sidebarColors.childSelected : '#eaf7f0'
             },
             '&:hover': {
-              color: isDarkMode ? '#ffffff' : '#0d5f9d',
-              background: isDarkMode ? 'rgba(25,118,210,.13)' : '#f3f9ff',
-              borderColor: 'rgba(33,150,243,.28)',
-              boxShadow: 'none'
+              color: isDarkMode ? '#ffffff' : primaryDark,
+              background: selected
+                ? (isDarkMode ? sidebarColors.childSelected : '#eaf7f0')
+                : sidebarColors.surfaceHover,
+              borderColor: isDarkMode ? '#67C99D' : sidebarColors.borderStrong,
+              boxShadow: isDarkMode ? '0 7px 20px rgba(0,0,0,.16)' : 'none',
+              transform: isDarkMode ? 'translateY(-1px)' : 'none',
+              '& .MuiListItemIcon-root svg': {
+                animation: isDarkMode ? `${iconMicroMotion} .55s ease both` : 'none'
+              }
             },
-            transition: 'background-color .14s ease, color .14s ease, border-color .14s ease'
+            '&:active': { transform: 'scale(.992)' },
+            '@media (prefers-reduced-motion: reduce)': {
+              animation: 'none',
+              transition: 'none',
+              '&::after': { animation: 'none' },
+              '&:hover': { transform: 'none' }
+            },
+            transition: 'background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease'
           }}
         >
           <Box
@@ -837,10 +972,10 @@ const childItemSx = (selected) => ({
           >
             <ListItemIcon
                 sx={{
-                  minWidth: isDesktop ? 26 : 22,
+                  minWidth: isDesktop ? designTokens.sidebar.iconBoxMinWidth : 22,
                   color: selected
-                    ? '#2196f3'
-                    : (isDarkMode ? '#a9bdb4' : '#1976d2'),
+                    ? (isDarkMode ? '#67C99D' : primaryColor)
+                    : (isDarkMode ? 'rgba(103,201,157,.78)' : primaryColor),
                   '& svg': { fontSize: designTokens.sidebar.iconSize }
                 }}
               >
@@ -882,11 +1017,14 @@ const childItemSx = (selected) => ({
                     fontFamily: 'Cairo',
                     fontSize: designTokens.typography.helper,
                     fontWeight: 900,
-                    color: selected ? '#1976d2' : whiteColor,
+                    color: selected
+                      ? (isDarkMode ? '#dff8ea' : primaryDark)
+                      : whiteColor,
                     background: selected
-                      ? whiteColor
-                      : 'linear-gradient(135deg, #2196f3, #0d6fc2)',
-                    boxShadow: '0 3px 8px rgba(33,150,243,0.24)'
+                      ? (isDarkMode ? 'rgba(103,201,157,.16)' : '#dff2e8')
+                      : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+                    border: isDarkMode ? '1px solid #67C99D' : 'none',
+                    boxShadow: 'none'
                   }}
                 >
                   {item.customBadge || item.badgeText}
@@ -929,19 +1067,42 @@ const childItemSx = (selected) => ({
             minHeight: designTokens.sidebar.itemHeight,
             px: isDesktop ? 0.75 : 0.5,
             py: isDesktop ? 0.42 : 0.34,
-            borderRadius: designTokens.sidebar.itemRadius,
+            borderRadius: 2.4,
             color: open || active ? whiteColor : sidebarColors.text,
+            position: 'relative',
+            overflow: 'visible',
+            isolation: 'isolate',
             background: open || active
               ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`
               : sidebarColors.surfaceRaised,
             border: open || active
-              ? '1px solid rgba(81,194,140,.22)'
+              ? (isDarkMode ? '2px solid #67C99D' : '1px solid rgba(81,194,140,.22)')
               : `1px solid ${sidebarColors.border}`,
             boxShadow: open || active
               ? (isDarkMode
-                  ? '0 5px 14px rgba(0,0,0,.20)'
-                  : '0 5px 14px rgba(5,117,70,.13)')
+                  ? '0 8px 22px rgba(0,0,0,.22)'
+                  : '0 8px 20px rgba(5,117,70,.13)')
               : 'none',
+            animation: (open || active) && isDarkMode
+              ? `${activeTabBreathe} 3.8s ease-in-out infinite`
+              : 'none',
+
+            // Animated organic frame: the tab remains clean; only the inner outline morphs.
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              inset: 2,
+              zIndex: -1,
+              pointerEvents: 'none',
+              border: (open || active) && isDarkMode
+                ? '1px solid rgba(179,241,213,.46)'
+                : '1px solid transparent',
+              borderRadius: '18px 14px 19px 13px / 14px 19px 13px 18px',
+              animation: (open || active) && isDarkMode
+                ? `${organicRingMorph} 5.6s ease-in-out infinite`
+                : 'none'
+            },
+
             '&:hover': {
               color: open || active
                 ? whiteColor
@@ -950,11 +1111,26 @@ const childItemSx = (selected) => ({
                 ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`
                 : sidebarColors.surfaceHover,
               borderColor: open || active
-                ? 'rgba(81,194,140,.22)'
+                ? (isDarkMode ? '#67C99D' : 'rgba(81,194,140,.22)')
                 : sidebarColors.borderStrong,
-              boxShadow: 'none'
+              boxShadow: open || active
+                ? (isDarkMode ? '0 9px 24px rgba(0,0,0,.24)' : '0 9px 22px rgba(5,117,70,.14)')
+                : (isDarkMode ? '0 6px 18px rgba(0,0,0,.14)' : '0 6px 16px rgba(5,117,70,.07)'),
+              transform: 'translateY(-1px)',
+              '& .MuiListItemIcon-root svg': {
+                animation: `${iconMicroMotion} .55s ease both`
+              }
             },
-            transition: 'background-color .14s ease, color .14s ease, border-color .14s ease'
+            '&:active': {
+              transform: 'scale(.992)'
+            },
+            '@media (prefers-reduced-motion: reduce)': {
+              animation: 'none',
+              transition: 'none',
+              '&::after': { animation: 'none' },
+              '&:hover': { transform: 'none' }
+            },
+            transition: 'background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease'
           }}
         >
           <Box
@@ -967,7 +1143,7 @@ const childItemSx = (selected) => ({
           >
             <ListItemIcon
                 sx={{
-                  minWidth: isDesktop ? 26 : 22,
+                  minWidth: isDesktop ? designTokens.sidebar.iconBoxMinWidth : 22,
                   color: 'inherit',
                   '& svg': { fontSize: designTokens.sidebar.iconSize }
                 }}
@@ -998,15 +1174,29 @@ const childItemSx = (selected) => ({
               
 
               {open ? (
-                <ExpandLess sx={{ fontSize: designTokens.sidebar.iconSize }} />
+                <ExpandLess
+                  sx={{
+                    fontSize: designTokens.sidebar.iconSize,
+                    transition: 'transform .22s ease, opacity .22s ease',
+                    transform: 'rotate(0deg)',
+                    opacity: .95
+                  }}
+                />
               ) : (
-                <ExpandMore sx={{ fontSize: designTokens.sidebar.iconSize }} />
+                <ExpandMore
+                  sx={{
+                    fontSize: designTokens.sidebar.iconSize,
+                    transition: 'transform .22s ease, opacity .22s ease',
+                    transform: 'rotate(0deg)',
+                    opacity: .82
+                  }}
+                />
               )}
             </Box>
           </Box>
         </ListItem>
 
-        <Collapse in={open} timeout={260} unmountOnExit>
+        <Collapse in={open} timeout={{ enter: 230, exit: 180 }} unmountOnExit>
           <List
             component="div"
             disablePadding
@@ -1083,6 +1273,7 @@ const childItemSx = (selected) => ({
         background: sidebarColors.surface,
         color: sidebarColors.text,
         borderInlineEnd: isDesktop ? `1px solid ${sidebarColors.border}` : 'none',
+        borderInlineStart: !isDesktop && isDarkMode ? '1px solid #67C99D' : 'none',
         fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
         position: isDesktop ? 'fixed' : 'relative',
         top: 0,
@@ -1123,38 +1314,85 @@ const childItemSx = (selected) => ({
             background: `linear-gradient(135deg, ${primaryDark} 0%, ${primaryColor} 64%, #0a8152 100%)`,
             boxShadow: 'none',
             borderBottom: isDarkMode
-              ? '1px solid rgba(103,201,157,.18)'
+              ? '1px solid #67C99D'
               : '1px solid rgba(255,255,255,.22)'
           }}
         >
           <Box
             sx={{
-              width: 50,
-              height: 50,
-              borderRadius: '50%',
+              width: 68,
+              height: 68,
+              position: 'relative',
               display: 'grid',
               placeItems: 'center',
-              overflow: 'hidden',
-              background: '#fff',
-              border: '1px solid rgba(255,255,255,.92)',
-              boxShadow: '0 3px 10px rgba(3,77,49,.18)',
-              position: 'relative',
-              zIndex: 1
+              flexShrink: 0,
+              // Two fixed layers, like a metallic frame with a light
+              // reflection orbiting it: ::before is the constant, clearly
+              // visible ring (never animates), ::after is only the bright
+              // shine sweeping around it (via the --border-angle custom
+              // property on a fixed circular mask -- nothing here rotates
+              // the logo image or the container itself). Dark-mode only;
+              // light mode keeps the plain crisp ring already on the badge
+              // underneath instead of an animated glow.
+              '&::before': isDarkMode ? {
+                content: '""',
+                position: 'absolute',
+                inset: 1,
+                borderRadius: '50%',
+                border: '3px solid #67C99D',
+                boxShadow: '0 0 6px rgba(103,201,157,.45)',
+                pointerEvents: 'none'
+              } : { content: 'none' },
+              '&::after': isDarkMode ? {
+                content: '""',
+                position: 'absolute',
+                inset: 1,
+                borderRadius: '50%',
+                padding: 3,
+                background: `conic-gradient(from var(--border-angle, 0deg), transparent 0deg, transparent 315deg, #eafff5 340deg, #ffffff 350deg, #eafff5 360deg)`,
+                WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+                filter: 'drop-shadow(0 0 6px rgba(103,201,157,.9)) drop-shadow(0 0 12px rgba(103,201,157,.5))',
+                animation: `${logoRingOrbit} 7s linear infinite`,
+                pointerEvents: 'none'
+              } : { content: 'none' },
+              '@media (prefers-reduced-motion: reduce)': {
+                '&::after': { animation: 'none' }
+              }
             }}
           >
             <Box
-              component="img"
-              src={logo}
-              alt="شعار النظام"
               sx={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
+                width: 50,
+                height: 50,
                 borderRadius: '50%',
-                bgcolor: '#fff',
-                p: 0
+                display: 'grid',
+                placeItems: 'center',
+                overflow: 'hidden',
+                background: '#fff',
+                border: isDarkMode ? '2px solid #ffffff' : '1px solid rgba(255,255,255,.92)',
+                boxShadow: isDarkMode
+                  ? '0 4px 14px rgba(3,77,49,.22), 0 0 0 2px rgba(103,201,157,.55)'
+                  : '0 4px 14px rgba(3,77,49,.22)',
+                position: 'relative',
+                zIndex: 1
               }}
-            />
+            >
+              <Box
+                component="img"
+                src={logo}
+                alt="شعار النظام"
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: '50%',
+                  bgcolor: '#fff',
+                  p: 0
+                }}
+              />
+            </Box>
           </Box>
         </Box>
 
@@ -1213,7 +1451,12 @@ const childItemSx = (selected) => ({
                 mt: { xs: .45, sm: .7 },
                 borderRadius: { xs: 2.2, sm: 2.5 },
                 overflow: "hidden",
-                boxShadow: "0 18px 45px rgba(3,77,49,.20)"
+                bgcolor: isDarkMode ? theme.palette.surfaces.card : '#ffffff',
+                color: isDarkMode ? theme.palette.text.primary : textColor,
+                border: isDarkMode ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)',
+                boxShadow: isDarkMode
+                  ? "0 18px 45px rgba(0,0,0,.28)"
+                  : "0 18px 45px rgba(3,77,49,.20)"
               }
             }}
           >
@@ -1274,16 +1517,18 @@ const childItemSx = (selected) => ({
                   sx={{
                     p: 1,
                     cursor: "pointer",
-                    borderBottom: "1px solid rgba(5,117,70,.10)",
-                    bgcolor: item.isRead ? "#fff" : "#f0fbf5",
-                    "&:hover": { bgcolor: "#e9f7f0" }
+                    borderBottom: isDarkMode ? '1px solid #67C99D' : "1px solid rgba(5,117,70,.10)",
+                    bgcolor: isDarkMode
+                      ? (item.isRead ? theme.palette.surfaces.card : theme.palette.surfaces.selected)
+                      : (item.isRead ? "#fff" : "#f0fbf5"),
+                    "&:hover": { bgcolor: isDarkMode ? theme.palette.surfaces.hover : "#e9f7f0" }
                   }}
                 >
                   <Typography sx={{
                     fontFamily: "Cairo",
                     fontWeight: item.isRead ? 800 : 950,
                     fontSize: 12,
-                    color: textColor
+                    color: isDarkMode ? sidebarColors.text : textColor
                   }}>
                     {item.title}
                   </Typography>
@@ -1339,9 +1584,9 @@ const childItemSx = (selected) => ({
                 textAlign: 'center',
                 fontFamily: 'Cairo',
                 fontSize: "0.75rem",
-                color: accentColor,
-                background: '#fff7f7',
-                border: '1px solid rgba(174,30,33,.16)'
+                color: isDarkMode ? '#ff8a80' : accentColor,
+                background: isDarkMode ? 'rgba(229,90,90,.12)' : '#fff7f7',
+                border: isDarkMode ? '1px solid rgba(229,90,90,.4)' : '1px solid rgba(174,30,33,.16)'
               }}
             >
               {sidebarConfig.error}
@@ -1367,7 +1612,7 @@ const childItemSx = (selected) => ({
                   sx={{
                     mt: 0.8,
                     pt: 0.8,
-                    borderTop: '1px solid rgba(5,117,70,0.10)'
+                    borderTop: isDarkMode ? '1px solid #67C99D' : '1px solid rgba(5,117,70,0.10)'
                   }}
                 >
                   {configuredStandaloneItems.map(renderStandaloneItem)}
@@ -1459,6 +1704,7 @@ const childItemSx = (selected) => ({
             : '-12px 0 34px rgba(3,77,49,.16)',
           overflow: 'hidden',
           borderRadius: 0,
+          borderInlineStart: isDarkMode ? '1px solid #67C99D' : 'none',
         },
       }}
     >
@@ -1468,18 +1714,31 @@ const childItemSx = (selected) => ({
 };
 
 
-const PRIMARY = "#80b49e";
-const PRIMARY_DARK = "#6a9a87";
-const BG = "#0f172a";        // slate-900
-const BG2 = "#111c33";       // deeper
-const TEXT_MUTED = "#94a3b8";
-
 function AdminSidebar({
   collapsed: controlledCollapsed,
   onCollapsedChange,
   mobileOpen = false,
   onMobileClose = () => {},
 }) {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  // Same background/color system as the rest of the app instead of a
+  // one-off dark-navy palette that never adapted to the light/dark toggle.
+  const PRIMARY = isDarkMode ? theme.palette.primary.main : primaryColor;
+  const PRIMARY_DARK = isDarkMode ? theme.palette.primary.dark : primaryDark;
+  const BG = isDarkMode ? theme.palette.surfaces.card : '#f7fbf9';
+  const BG2 = isDarkMode ? theme.palette.surfaces.section : '#ffffff';
+  const TEXT_MUTED = isDarkMode ? theme.palette.text.secondary : mutedTextColor;
+  const TEXT = isDarkMode ? theme.palette.text.primary : '#24372f';
+  const ON_PRIMARY = theme.palette.primary.contrastText;
+
+  // Same approved Dark Mode rule as the normal sidebar and HR pages.
+  const BORDER = isDarkMode ? '#67C99D' : 'rgba(5,117,70,.12)';
+  const SURFACE_TINT = isDarkMode ? theme.palette.surfaces.nested : 'rgba(5,117,70,0.05)';
+  const SURFACE_TINT_BORDER = isDarkMode ? '#67C99D' : 'rgba(5,117,70,0.12)';
+  const HOVER_TINT = isDarkMode ? theme.palette.surfaces.hover : 'rgba(5,117,70,0.09)';
+  const CHIP_TINT = isDarkMode ? theme.palette.surfaces.nested : 'rgba(5,117,70,0.04)';
+  const CHIP_TINT_HOVER = isDarkMode ? theme.palette.surfaces.hover : 'rgba(5,117,70,0.08)';
   const [currentUser, setCurrentUser] = useState(null);
   const [localCollapsed, setLocalCollapsed] = useState(false);
   const collapsed = controlledCollapsed ?? localCollapsed;
@@ -1542,40 +1801,67 @@ function AdminSidebar({
   };
 
   const itemSx = (active) => ({
-    borderRadius: 2,
+    borderRadius: 2.4,
     mb: 0.75,
     mx: 1,
     px: collapsed ? 1 : 1.5,
     py: 1.1,
-    transition: "all .25s ease",
-    color: "white",
+    color: active ? ON_PRIMARY : TEXT,
     position: "relative",
-    overflow: "hidden",
+    overflow: "visible",
+    isolation: "isolate",
+    border: active
+      ? (isDarkMode ? '2px solid #67C99D' : '1px solid rgba(5,117,70,.24)')
+      : `1px solid ${isDarkMode ? '#67C99D' : SURFACE_TINT_BORDER}`,
     ...(active
       ? {
           background: `linear-gradient(135deg, ${PRIMARY} 0%, ${PRIMARY_DARK} 100%)`,
-          boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+          boxShadow: isDarkMode
+            ? "0 9px 24px rgba(0,0,0,0.24)"
+            : "0 9px 24px rgba(5,117,70,0.16)",
+          animation: isDarkMode
+            ? `${activeTabBreathe} 3.8s ease-in-out infinite`
+            : 'none',
         }
       : {
-          backgroundColor: "rgba(255,255,255,0.04)",
+          backgroundColor: CHIP_TINT,
           "&:hover": {
-            backgroundColor: "rgba(255,255,255,0.09)",
-            transform: "translateY(-1px)",
+            backgroundColor: CHIP_TINT_HOVER,
           },
         }),
-    "&::after": active
+
+    // Soft irregular outline, based on the sketch, without distorting the actual button.
+    "&::after": (active && isDarkMode)
       ? {
           content: '""',
           position: "absolute",
-          top: -40,
-          right: -40,
-          width: 120,
-          height: 120,
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 60%)",
-          transform: "rotate(20deg)",
+          inset: 2,
+          zIndex: -1,
+          pointerEvents: "none",
+          border: '1px solid rgba(179,241,213,.48)',
+          borderRadius: "18px 14px 19px 13px / 14px 19px 13px 18px",
+          animation: `${organicRingMorph} 5.8s ease-in-out infinite`,
         }
       : {},
+
+    "&:hover": {
+      transform: isDarkMode ? "translateY(-1px)" : "none",
+      boxShadow: isDarkMode ? "0 8px 22px rgba(0,0,0,.20)" : "none",
+      "& .MuiListItemIcon-root svg": {
+        animation: isDarkMode ? `${iconMicroMotion} .55s ease both` : 'none',
+      },
+    },
+    "&:active": {
+      transform: isDarkMode ? "scale(.992)" : "none",
+    },
+    "@media (prefers-reduced-motion: reduce)": {
+      animation: "none",
+      transition: "none",
+      "&::after": { animation: "none" },
+      "&:hover": { transform: "none" },
+    },
+    transition:
+      "background-color .22s ease, color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s ease",
   });
 
   const adminContent = (
@@ -1591,13 +1877,13 @@ function AdminSidebar({
         position: isDesktop ? "fixed" : "relative",
         top: 0,
         zIndex: 1200,
-        color: "white",
+        color: isDarkMode ? theme.palette.text.primary : '#24372f',
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         background: `linear-gradient(180deg, ${BG} 0%, ${BG2} 100%)`,
-        borderInlineEnd: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 18px 45px rgba(0,0,0,0.35)",
+        borderInlineEnd: isDarkMode ? "1px solid #67C99D" : `1px solid rgba(5,117,70,.12)`,
+        boxShadow: isDarkMode ? "0 18px 45px rgba(0,0,0,0.35)" : softShadow,
         transition: "width .25s ease",
         overflow: "hidden",
       }, uiLayout.sidebarSurfaceSx)}
@@ -1624,11 +1910,13 @@ function AdminSidebar({
               alignItems: "center",
               justifyContent: "center",
               background: `linear-gradient(135deg, ${PRIMARY} 0%, ${PRIMARY_DARK} 100%)`,
-              boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+              boxShadow: isDarkMode
+                ? "0 10px 25px rgba(0,0,0,0.3)"
+                : "0 10px 25px rgba(5,117,70,0.22)",
               flexShrink: 0,
             }}
           >
-            <SchoolRoundedIcon />
+            <SchoolRoundedIcon sx={{ color: ON_PRIMARY }} />
           </Box>
 
           <Collapse orientation="horizontal" in={!collapsed} unmountOnExit>
@@ -1653,10 +1941,11 @@ function AdminSidebar({
                 aria-label={collapsed ? "توسيع القائمة" : "تصغير القائمة"}
                 onClick={() => setCollapsed((p) => !p)}
                 sx={{
-                  color: "white",
-                  backgroundColor: "rgba(255,255,255,0.06)",
+                  color: TEXT,
+                  backgroundColor: SURFACE_TINT,
                   borderRadius: 2,
-                  "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+                  border: `1px solid ${SURFACE_TINT_BORDER}`,
+                  "&:hover": { backgroundColor: HOVER_TINT, borderColor: isDarkMode ? '#67C99D' : SURFACE_TINT_BORDER },
                 }}
               >
                 {collapsed ? <ChevronLeftRoundedIcon /> : <ChevronRightRoundedIcon />}
@@ -1671,8 +1960,8 @@ function AdminSidebar({
             mt: 1,
             p: 1.5,
             borderRadius: 3,
-            backgroundColor: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            backgroundColor: SURFACE_TINT,
+            border: `1px solid ${SURFACE_TINT_BORDER}`,
             display: "flex",
             alignItems: "center",
             gap: 1.3,
@@ -1681,7 +1970,7 @@ function AdminSidebar({
           <Avatar
             sx={{
               bgcolor: PRIMARY,
-              color: "#0b1220",
+              color: ON_PRIMARY,
               fontWeight: 900,
               width: 42,
               height: 42,
@@ -1693,7 +1982,7 @@ function AdminSidebar({
 
           <Collapse orientation="horizontal" in={!collapsed} unmountOnExit>
             <Box>
-              <Typography sx={{ fontWeight: 800, maxWidth: 170 }} noWrap>
+              <Typography sx={{ fontWeight: 800, maxWidth: 170, color: TEXT }} noWrap>
                 {displayName}
               </Typography>
               <Chip
@@ -1703,9 +1992,11 @@ function AdminSidebar({
                   mt: 0.7,
                   height: 22,
                   fontWeight: 700,
-                  bgcolor: "rgba(128,180,158,0.18)",
-                  color: "#d8fff0",
-                  border: "1px solid rgba(128,180,158,0.35)",
+                  bgcolor: isDarkMode ? "rgba(128,180,158,0.18)" : "rgba(5,117,70,0.10)",
+                  color: isDarkMode ? "#d8fff0" : primaryDark,
+                  border: isDarkMode
+                    ? "1px solid #67C99D"
+                    : "1px solid rgba(5,117,70,0.22)",
                 }}
               />
             </Box>
@@ -1715,7 +2006,7 @@ function AdminSidebar({
         <Divider
           sx={{
             my: 2.2,
-            borderColor: "rgba(148,163,184,0.25)",
+            borderColor: BORDER,
           }}
         />
 
@@ -1740,7 +2031,7 @@ function AdminSidebar({
                     sx={{
                       minWidth: 0,
                       marginInlineEnd: collapsed ? 0 : 1.3,
-                      color: "white",
+                      color: active ? ON_PRIMARY : TEXT,
                       opacity: active ? 1 : 0.9,
                     }}
                   >
@@ -1766,9 +2057,13 @@ function AdminSidebar({
                         height: 20,
                         fontSize: "0.75rem",
                         fontWeight: 900,
-                        bgcolor: "rgba(255,255,255,0.12)",
-                        color: "white",
-                        border: "1px solid rgba(255,255,255,0.16)",
+                        bgcolor: active
+                          ? "rgba(255,255,255,0.18)"
+                          : (isDarkMode ? "rgba(255,255,255,0.12)" : "rgba(5,117,70,0.10)"),
+                        color: active ? ON_PRIMARY : TEXT,
+                        border: active
+                          ? `1px solid ${isDarkMode ? '#67C99D' : 'rgba(255,255,255,0.28)'}`
+                          : `1px solid ${SURFACE_TINT_BORDER}`,
                       }}
                     />
                   )}
@@ -1781,7 +2076,7 @@ function AdminSidebar({
 
       {/* ====== Bottom / Logout ====== */}
       <Box sx={{ p: 2 }}>
-        <Divider sx={{ mb: 2, borderColor: "rgba(148,163,184,0.25)" }} />
+        <Divider sx={{ mb: 2, borderColor: BORDER }} />
 
         <Tooltip title={collapsed ? "تسجيل الخروج" : ""} placement="left" arrow>
           <ListItemButton
@@ -1792,12 +2087,14 @@ function AdminSidebar({
               py: 1.2,
               backgroundColor: "rgba(244,67,54,0.10)",
               border: "1px solid rgba(244,67,54,0.25)",
-              color: "white",
+              color: isDarkMode ? "#ffdad6" : accentColor,
               transition: "all .25s ease",
               "&:hover": {
                 backgroundColor: "rgba(244,67,54,0.18)",
                 transform: "translateY(-1px)",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+                boxShadow: isDarkMode
+                  ? "0 10px 25px rgba(0,0,0,0.25)"
+                  : "0 10px 25px rgba(174,30,33,0.18)",
               },
             }}
           >
@@ -1805,7 +2102,7 @@ function AdminSidebar({
               sx={{
                 minWidth: 0,
                 marginInlineEnd: collapsed ? 0 : 1.3,
-                color: "#ffb4ae",
+                color: isDarkMode ? "#ffb4ae" : accentColor,
               }}
             >
               <LogoutRoundedIcon />
@@ -1853,8 +2150,11 @@ function AdminSidebar({
           width: SIDEBAR_MOBILE_WIDTH,
           maxWidth: SIDEBAR_MOBILE_MAX_WIDTH,
           height: "100dvh",
-          background: "transparent",
-          boxShadow: "-14px 0 38px rgba(0,0,0,0.30)",
+          background: isDarkMode ? theme.palette.surfaces.card : '#f7fbf9',
+          borderInlineStart: isDarkMode ? '1px solid #67C99D' : 'none',
+          boxShadow: isDarkMode
+            ? "-14px 0 38px rgba(0,0,0,0.30)"
+            : "-14px 0 38px rgba(3,77,49,0.16)",
           overflow: "hidden",
           borderRadius: 0,
         },
@@ -1866,6 +2166,24 @@ function AdminSidebar({
 }
 
 
+// Registers --border-angle as a real, animatable <angle> so browsers can
+// smoothly interpolate the conic-gradient highlights used for the logo ring
+// and the active sub-tab's traveling border (see tabBorderOrbit/logoRingOrbit
+// above). Declared once here since @property is a global at-rule; without
+// it those two rings still render, just without the smooth sweep animation.
+const borderAngleProperty = `
+  @property --border-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+`;
+
 export default function Sidebar({ variant = "standard", ...props }) {
-  return variant === "admin" ? <AdminSidebar {...props} /> : <StandardSidebar {...props} />;
+  return (
+    <>
+      <GlobalStyles styles={borderAngleProperty} />
+      {variant === "admin" ? <AdminSidebar {...props} /> : <StandardSidebar {...props} />}
+    </>
+  );
 }

@@ -675,7 +675,7 @@ const AdminBranchesReports = () => {
 
   /* ============== Render ============== */
   return (
-    <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: colorPalette.background, minHeight: '100vh' }}>
+    <NavigationShell variant="standard" ><Box sx={{ direction: 'rtl', backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : colorPalette.background, minHeight: '100vh' }}>
       
 
       <PageContainer component="main" sx={{

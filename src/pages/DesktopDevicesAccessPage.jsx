@@ -26,6 +26,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import SecurityIcon from "@mui/icons-material/Security";
@@ -689,6 +690,7 @@ const AccessResultChip = ({ row }) => {
 };
 
 export default function DesktopDevicesAccessPage() {
+  const theme = useTheme();
   const user = getCurrentUser();
   const userGuid = normalizeGuid(user?.guid || user?.Guid);
 
@@ -1203,7 +1205,7 @@ export default function DesktopDevicesAccessPage() {
         sx={{
           minHeight: "100vh",
           
-          bgcolor: colors.page,
+          bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : colors.page,
           direction: "rtl",
           textAlign: "start",
           fontFamily: "Cairo, Arial, sans-serif",

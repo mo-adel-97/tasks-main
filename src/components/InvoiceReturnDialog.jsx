@@ -34,6 +34,14 @@ import Swal from "sweetalert2";
 
 const primaryColor = "#057546";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 
 const getCurrentUser = () => {
   try {
@@ -630,7 +638,7 @@ export default function InvoiceReturnDialog({
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -716,10 +724,11 @@ export default function InvoiceReturnDialog({
         <Stack spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}>
           <Paper
             variant="outlined"
-            sx={{
+            sx={(theme) => ({
               p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
-              borderRadius: isCompact ? 1.4 : undefined
-            }}
+              borderRadius: isCompact ? 1.4 : undefined,
+              borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+            })}
           >
             <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
               <Grid item xs={12} sm={6} md={4}>
@@ -1082,7 +1091,7 @@ export default function InvoiceReturnDialog({
                 <Table size="small">
                   <TableHead>
                     <TableRow
-                      sx={{ backgroundColor: "#f7d38a" }}
+                      sx={{ backgroundColor: (theme) => theme.palette.mode === "dark" ? "rgba(237,137,54,.18)" : "#f7d38a" }}
                     >
                       <TableCell
                         align="right"
@@ -1258,12 +1267,13 @@ export default function InvoiceReturnDialog({
                 <Grid item xs={4} sm={4} md={4}>
                   <Paper
                     variant="outlined"
-                    sx={{
+                    sx={(theme) => ({
                       p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
                       minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
                       borderRadius: isCompact ? 1.3 : undefined,
-                      textAlign: "center"
-                    }}
+                      textAlign: "center",
+                      borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+                    })}
                   >
                     <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
                       الإجمالي
@@ -1284,12 +1294,13 @@ export default function InvoiceReturnDialog({
                 <Grid item xs={4} sm={4} md={4}>
                   <Paper
                     variant="outlined"
-                    sx={{
+                    sx={(theme) => ({
                       p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
                       minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
                       borderRadius: isCompact ? 1.3 : undefined,
-                      textAlign: "center"
-                    }}
+                      textAlign: "center",
+                      borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+                    })}
                   >
                     <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
                       الضريبة
@@ -1310,12 +1321,13 @@ export default function InvoiceReturnDialog({
                 <Grid item xs={4} sm={4} md={4}>
                   <Paper
                     variant="outlined"
-                    sx={{
+                    sx={(theme) => ({
                       p: isPhone ? 0.45 : isTablet ? 0.65 : 2,
                       minHeight: isPhone ? 54 : isTablet ? 60 : undefined,
                       borderRadius: isCompact ? 1.3 : undefined,
-                      textAlign: "center"
-                    }}
+                      textAlign: "center",
+                      borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+                    })}
                   >
                     <Typography sx={{ fontWeight: 900, fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined }}>
                       الصافي

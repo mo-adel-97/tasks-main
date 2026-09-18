@@ -35,6 +35,14 @@ const logoImage = new URL(
 
 const primaryColor = "#057546";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 
 const REFUND_POLICY_URL =
   "https://sstli.com/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/";
@@ -448,7 +456,20 @@ const RegisterDocumentDialog = ({
       sx={uiLayout.withUiSx({
         // لازم استمارة التسجيل تظهر فوق كشف الحساب المفتوح تحتها.
         zIndex: 1800
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
+      PaperProps={{
+        sx: (theme) => ({
+          backgroundImage: "none",
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? (theme.palette.surfaces?.card || "#13251d")
+              : "#f2f5f3",
+          border:
+            theme.palette.mode === "dark"
+              ? "1px solid #67C99D"
+              : "1px solid #d9e5df"
+        })
+      }}
     >
       <DialogTitle
         className="no-print"
@@ -483,14 +504,17 @@ const RegisterDocumentDialog = ({
       </DialogTitle>
 
       <DialogContent
-        sx={{
-          backgroundColor: "#eeeeee",
+        sx={(theme) => ({
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? (theme.palette.surfaces?.section || "#172b22")
+              : "#eeeeee",
           p: isPhone ? 0.25 : isTablet ? 0.5 : 1.5,
           overflow: "auto",
           "& > .MuiBox-root": {
             marginInline: "auto"
           }
-        }}
+        })}
       >
         {loading ? (
           <Box
@@ -544,7 +568,11 @@ const RegisterDocumentDialog = ({
               p: "10mm",
               overflow: "hidden",
               backgroundColor: "#fff",
+              backgroundImage: "none",
               color: "#111",
+              colorScheme: "light",
+              border: "1px solid #d7ddd9",
+              boxShadow: "0 14px 42px rgba(0,0,0,0.22)",
               position: previewScale === 1 ? "relative" : "absolute",
               top: 0,
               left: previewScale === 1 ? "auto" : "50%",

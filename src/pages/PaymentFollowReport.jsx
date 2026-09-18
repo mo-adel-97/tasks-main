@@ -406,6 +406,7 @@ const TotalItem = ({
   accent = "#057546"
 }) => (
   <Box
+    className="payment-total-item"
     sx={{
       minWidth: 0,
       px: 1.25,
@@ -818,6 +819,204 @@ const MultiValueFilter = ({
 
 const PaymentFollowReport = () => {
   const theme = useTheme();
+
+  const isDark = theme.palette.mode === "dark";
+  const uiColors = {
+    page: isDark ? theme.palette.background.default : "#f5faf7",
+    card: isDark ? (theme.palette.surfaces?.card || "#10251d") : "#ffffff",
+    section: isDark ? (theme.palette.surfaces?.section || "#133126") : "#f7fbf9",
+    nested: isDark ? (theme.palette.surfaces?.nested || "#173b2d") : "#fbfdfc",
+    hover: isDark ? (theme.palette.surfaces?.hover || "#1b4735") : "#eef8f3",
+    selected: isDark ? (theme.palette.surfaces?.selected || "#20543e") : "#e7f5ee",
+    text: isDark ? (theme.palette.text?.primary || "#eef8f3") : "#173b2b",
+    muted: isDark ? (theme.palette.text?.secondary || "#b7cfc3") : "#667a70",
+    border: "#67C99D"
+  };
+
+  const darkContractStyles = isDark
+    ? {
+        ".payment-follow-ui": {
+          backgroundColor: `${uiColors.page} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".payment-follow-ui .MuiPaper-root, .payment-follow-ui .MuiCard-root, .payment-follow-ui .MuiTableContainer-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          backgroundImage: "none !important",
+          border: `1px solid ${uiColors.border} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".payment-follow-ui .MuiOutlinedInput-root": {
+          backgroundColor: `${uiColors.nested} !important`,
+          color: `${uiColors.text} !important`,
+          borderRadius: "10px !important"
+        },
+        ".payment-follow-ui .MuiOutlinedInput-notchedOutline": {
+          borderColor: `${uiColors.border} !important`,
+          borderWidth: "1px !important"
+        },
+        ".payment-follow-ui .MuiInputBase-input, .payment-follow-ui .MuiSelect-select": {
+          color: `${uiColors.text} !important`
+        },
+        ".payment-follow-ui .MuiInputLabel-root, .payment-follow-ui .MuiFormHelperText-root": {
+          color: `${uiColors.muted} !important`
+        },
+        ".payment-follow-ui .MuiInputLabel-root.Mui-focused": {
+          color: `${uiColors.border} !important`
+        },
+        ".payment-follow-ui .MuiDivider-root": {
+          borderColor: "rgba(103,201,157,.45) !important"
+        },
+        ".payment-follow-ui .MuiButton-root": {
+          border: `1px solid ${uiColors.border} !important`,
+          borderRadius: "9px !important"
+        },
+        ".payment-follow-ui .MuiIconButton-root": {
+          border: `1px solid ${uiColors.border} !important`,
+          borderRadius: "9px !important"
+        },
+        ".payment-follow-ui .MuiChip-root": {
+          borderColor: `${uiColors.border} !important`
+        },
+        ".payment-follow-ui .MuiDataGrid-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".payment-follow-ui .MuiDataGrid-columnHeaders": {
+          backgroundColor: `${uiColors.section} !important`,
+          color: `${uiColors.text} !important`,
+          borderBottom: `1px solid ${uiColors.border} !important`
+        },
+        ".payment-follow-ui .MuiDataGrid-columnHeader, .payment-follow-ui .MuiDataGrid-cell": {
+          borderColor: "rgba(103,201,157,.34) !important"
+        },
+        ".payment-follow-ui .MuiDataGrid-row": {
+          backgroundColor: `${uiColors.card} !important`
+        },
+        ".payment-follow-ui .MuiDataGrid-row:hover": {
+          backgroundColor: `${uiColors.hover} !important`
+        },
+        ".payment-follow-ui .MuiDataGrid-footerContainer": {
+          backgroundColor: `${uiColors.section} !important`,
+          borderTop: `1px solid ${uiColors.border} !important`
+        },
+        ".payment-follow-ui .MuiTable-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".payment-follow-ui .MuiTableCell-root": {
+          color: `${uiColors.text} !important`,
+          borderColor: "rgba(103,201,157,.34) !important"
+        },
+        ".payment-follow-ui .MuiPaginationItem-root": {
+          color: `${uiColors.text} !important`,
+          borderColor: `${uiColors.border} !important`
+        },
+        ".payment-follow-ui .MuiPaginationItem-root.Mui-selected": {
+          backgroundColor: `${uiColors.selected} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper, .MuiPopover-paper, .MuiMenu-paper, .MuiAutocomplete-paper": {
+          backgroundColor: `${uiColors.card} !important`,
+          backgroundImage: "none !important",
+          color: `${uiColors.text} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".MuiDialogTitle-root, .MuiDialogContent-root, .MuiDialogActions-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiMenuItem-root": {
+          color: `${uiColors.text} !important`
+        },
+        ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+          backgroundColor: `${uiColors.hover} !important`
+        },
+        ".payment-follow-ui .payment-total-item": {
+          background: `${uiColors.nested} !important`,
+          backgroundImage: "none !important",
+          border: `1px solid ${uiColors.border} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".payment-follow-ui .payment-total-item .MuiTypography-root": {
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiTableContainer-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          backgroundImage: "none !important",
+          borderColor: `${uiColors.border} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper .MuiOutlinedInput-root": {
+          backgroundColor: `${uiColors.nested} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper .MuiOutlinedInput-notchedOutline": {
+          borderColor: `${uiColors.border} !important`
+        },
+        ".MuiDialog-paper .MuiInputLabel-root, .MuiDialog-paper .MuiFormHelperText-root": {
+          color: `${uiColors.muted} !important`
+        }
+      }
+    : {};
+
+
+  const layoutSafetyStyles = {
+    ".payment-follow-ui": {
+      width: "100%",
+      maxWidth: "100vw",
+      overflowX: "hidden"
+    },
+    ".payment-follow-ui .MuiPaper-root, .payment-follow-ui .MuiTableContainer-root, .payment-follow-ui .MuiDataGrid-root": {
+      boxSizing: "border-box",
+      minWidth: 0,
+      maxWidth: "100%"
+    },
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+      ".payment-follow-ui .MuiDataGrid-virtualScroller": {
+        overflowX: "hidden !important"
+      },
+      ".payment-follow-ui .MuiDataGrid-scrollbar--horizontal": {
+        display: "none !important"
+      },
+      ".MuiDialog-paper": {
+        width: "calc(100vw - 16px) !important",
+        maxWidth: "calc(100vw - 16px) !important",
+        margin: "8px !important",
+        overflowX: "hidden !important"
+      },
+      ".MuiDialog-paper .MuiDialogContent-root": {
+        overflowX: "hidden !important",
+        boxSizing: "border-box !important"
+      },
+      ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiBox-root, .MuiDialog-paper .MuiStack-root, .MuiDialog-paper .MuiFormControl-root, .MuiDialog-paper .MuiAutocomplete-root": {
+        minWidth: "0 !important",
+        maxWidth: "100% !important",
+        boxSizing: "border-box !important"
+      },
+      ".MuiDialog-paper .MuiTable-root": {
+        width: "100% !important",
+        maxWidth: "100% !important",
+        tableLayout: "fixed !important"
+      },
+      ".MuiDialog-paper .MuiTableCell-root": {
+        minWidth: "0 !important",
+        maxWidth: "100% !important",
+        overflow: "hidden !important",
+        textOverflow: "ellipsis !important",
+        overflowWrap: "anywhere !important"
+      },
+      ".MuiDialog-paper .MuiDialogActions-root": {
+        maxWidth: "100% !important",
+        flexWrap: "wrap !important",
+        gap: "8px !important",
+        boxSizing: "border-box !important"
+      },
+      ".MuiPopover-paper, .MuiMenu-paper, .MuiAutocomplete-paper": {
+        maxWidth: "calc(100vw - 16px) !important"
+      }
+    }
+  };
 
   const isPhone = useMediaQuery(
     theme.breakpoints.down("sm")
@@ -2024,12 +2223,7 @@ const PaymentFollowReport = () => {
                   : column.field === "diplomName"
                     ? 1.35
                     : 1,
-              minWidth:
-                column.field === "studentName"
-                  ? 120
-                  : column.field === "diplomName"
-                    ? 130
-                    : 82,
+              minWidth: 0,
               maxWidth: undefined,
               width: undefined
             })
@@ -3208,13 +3402,17 @@ const exportExcel = () => {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
             setMobileSidebarOpen(false)
           }><Box
+      className="payment-follow-ui"
       sx={{
         minHeight: "100vh",
-        background: "#f4f8f6",
+        background: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f4f8f6",
         direction: "rtl",
         overflowX: "hidden"
       }}
     >
+      <GlobalStyles styles={darkContractStyles} />
+      <GlobalStyles styles={layoutSafetyStyles} />
+
       {!isDesktop && (
         <>
           <GlobalStyles
@@ -3239,12 +3437,10 @@ const exportExcel = () => {
               left: 0,
               right: 0,
               zIndex: 1400,
-              background:
-                "rgba(255,255,255,.97)",
+              background: isDark ? uiColors.section : "rgba(255,255,255,.97)",
               backdropFilter: "blur(14px)",
-              color: "#173b2b",
-              borderBottom:
-                "1px solid rgba(5,117,70,.12)",
+              color: isDark ? uiColors.text : "#173b2b",
+              borderBottom: `1px solid ${isDark ? uiColors.border : "rgba(5,117,70,.12)"}`,
               direction: "rtl"
             }}
           >
@@ -3293,7 +3489,7 @@ const exportExcel = () => {
                     xs: "0.75rem",
                     sm: "0.78rem"
                   },
-                  color: "#173b2b",
+                  color: isDark ? uiColors.text : "#173b2b",
                   textAlign: "start"
                 }}
               >
@@ -3309,12 +3505,13 @@ const exportExcel = () => {
       <PageContainer
         component="main"
         sx={{
+          ...navigationContentSx,
           mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
-          
           direction: "rtl",
+          minWidth: 0,
+          maxWidth: "100%",
           boxSizing: "border-box",
-          overflowX: "hidden",
-          ...navigationContentSx
+          overflowX: "hidden"
         }}
       >
         <Paper
@@ -3333,8 +3530,9 @@ const exportExcel = () => {
                 : isPhone
                   ? 0.75
                   : 1,
-              background:
-                "linear-gradient(135deg,#fff,#eaf7f1)",
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(135deg,#fff,#eaf7f1)",
               borderBottom:
                 "4px solid #057546"
             }}
@@ -3404,12 +3602,12 @@ const exportExcel = () => {
                 borderRadius: 3,
                 border:
                   "1px solid #dcebe4",
-                background: "#fbfdfc"
+                background: isDark ? uiColors.nested : "#fbfdfc"
               }}
             >
               <Stack
                 direction={isDesktop ? "row" : "row"}
-                spacing={isDesktop ? 1.2 : 0.5}
+                spacing={isDesktop ? 1.2 : isPhone ? 0.9 : 1.05}
                 useFlexGap
                 flexWrap={isDesktop ? "nowrap" : "wrap"}
                 sx={uiLayout.withUiSx({
@@ -4096,7 +4294,7 @@ const exportExcel = () => {
                         border:
                           "1px solid rgba(5,117,70,.14)",
                         borderRadius: 1.3,
-                        backgroundColor: "#fbfdfc"
+                        backgroundColor: isDark ? uiColors.nested : "#fbfdfc"
                       }}
                     >
                       <Typography
@@ -4272,7 +4470,7 @@ const exportExcel = () => {
             dividers
             sx={{
               p: 2,
-              background: "#f7faf8"
+              background: isDark ? uiColors.section : "#f7faf8"
             }}
           >
             <Box
@@ -4579,7 +4777,9 @@ const exportExcel = () => {
             dividers
             sx={{
               p: 2.2,
-              background: "linear-gradient(180deg,#faf8ff 0%,#ffffff 100%)",
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(180deg,#faf8ff 0%,#ffffff 100%)",
               maxHeight: "74vh"
             }}
           >
@@ -4825,8 +5025,9 @@ const exportExcel = () => {
             dividers
             sx={{
               p: 2.5,
-              background:
-                "linear-gradient(180deg,#f7fbf9 0%,#ffffff 100%)",
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(180deg,#f7fbf9 0%,#ffffff 100%)",
               maxHeight: "72vh"
             }}
           >
@@ -5330,8 +5531,9 @@ const exportExcel = () => {
               px: 3,
               py: 4,
               textAlign: "center",
-              background:
-                "linear-gradient(180deg,#ffffff 0%,#eef9f3 100%)"
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(180deg,#ffffff 0%,#eef9f3 100%)"
             }}
           >
             <Box
@@ -5484,8 +5686,9 @@ const exportExcel = () => {
           <DialogContent
             sx={{
               p: 2.5,
-              background:
-                "linear-gradient(180deg,#f7fbf9,#ffffff)"
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(180deg,#f7fbf9,#ffffff)"
             }}
           >
             <Box
@@ -5827,8 +6030,9 @@ const exportExcel = () => {
               px: 3,
               py: 4,
               textAlign: "center",
-              background:
-                "linear-gradient(180deg,#ffffff 0%,#f0faf5 100%)"
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(180deg,#ffffff 0%,#f0faf5 100%)"
             }}
           >
             <Box
@@ -5989,7 +6193,7 @@ const exportExcel = () => {
               <TextField InputLabelProps={{ shrink: true }}
                 fullWidth
                 multiline
-                minRows={5}
+                minRows={4}
                 label="سبب طلب طي القيد"
                 value={reason}
                 onChange={(event) =>

@@ -118,7 +118,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
   }, []);
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100%", overflowX: "hidden", background: "#f5f8f7", direction: "rtl" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100%", overflowX: "hidden", background: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f5f8f7", direction: "rtl" }}>
       {!isDesktop && (
         <GlobalStyles
           styles={{

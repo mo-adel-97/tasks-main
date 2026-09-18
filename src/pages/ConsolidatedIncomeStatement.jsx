@@ -781,7 +781,7 @@ export default function ConsolidatedIncomeStatement() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        bgcolor: soft
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
       }}
     >
       

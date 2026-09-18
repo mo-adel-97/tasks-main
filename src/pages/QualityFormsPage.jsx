@@ -18,6 +18,7 @@ import {
   Button,
   CircularProgress,
   Checkbox,
+  createTheme,
   Divider,
   IconButton,
   FormControlLabel,
@@ -28,6 +29,7 @@ import {
   Select,
   Stack,
   TextField,
+  ThemeProvider,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -46,10 +48,54 @@ import { QRCodeSVG } from "qrcode.react";
 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { mt } from "date-fns/locale";
 
-
-
+// Print/export output must always read as a clean, official document —
+// white paper with dark ink — no matter which theme (dark or light) the
+// user is browsing the app in. Every print-sheet component below is
+// rendered under this fixed theme instead of the live app theme, so a
+// Typography with no explicit color (or any component reading
+// theme.palette.*) never inherits the app's light-on-dark palette and
+// goes invisible on the forced-white print page.
+const PRINT_THEME = createTheme({
+  palette: {
+    mode: "light",
+    primary: { main: "#057546", dark: "#034d31", light: "#dff2e9" },
+    secondary: { main: "#ae1e21" },
+    text: { primary: "#111111", secondary: "#4b5a53" },
+    background: { default: "#ffffff", paper: "#ffffff" },
+    divider: "#9eb9ad"
+  },
+  typography: {
+    fontFamily: "Cairo, Tahoma, Arial, sans-serif"
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: "#ffffff",
+          color: "#111111",
+          colorScheme: "light"
+        }
+      }
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: "#111111"
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+          backgroundColor: "#ffffff",
+          color: "#111111"
+        }
+      }
+    }
+  }
+});
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
@@ -1085,6 +1131,42 @@ const QualityFormsPage = () => {
     }
   };
 
+// Keep every intentionally single A4 print page on ONE page without clipping.
+// If a template is a little taller than its reserved A4 body, shrink only the
+// page body just enough to fit; the footer stays fixed and is never cut.
+const fitPrintPagesForExport = (rootNode) => {
+  if (!rootNode) return;
+
+  const pageNodes = rootNode.matches?.(".print-page, .print-sheet")
+    ? [rootNode, ...rootNode.querySelectorAll(".print-page, .print-sheet")]
+    : Array.from(rootNode.querySelectorAll(".print-page, .print-sheet"));
+
+  const uniquePages = Array.from(new Set(pageNodes));
+
+  uniquePages.forEach((pageNode) => {
+    const body = pageNode.querySelector(":scope > .print-page-body") ||
+      pageNode.querySelector(".print-page-body");
+
+    if (!body) return;
+
+    body.style.transform = "none";
+    body.style.width = "100%";
+
+    const availableHeight = body.clientHeight;
+    const neededHeight = body.scrollHeight;
+
+    if (!availableHeight || neededHeight <= availableHeight + 1) return;
+
+    // Small safety margin prevents the last pixels from being eaten by
+    // browser/PDF rounding. Never create a second page to solve overflow.
+    const scale = Math.max(0.90, Math.min(0.995, (availableHeight - 4) / neededHeight));
+
+    body.style.transformOrigin = "top right";
+    body.style.transform = `scale(${scale})`;
+    body.style.width = `${100 / scale}%`;
+  });
+};
+
 const exportPdfDirect = async () => {
   if (!form.documentGuid) {
     await showError("احفظ النموذج أولًا قبل التصدير");
@@ -1248,19 +1330,16 @@ const exportPdfDirect = async () => {
               width: 210mm !important;
               min-width: 210mm !important;
               max-width: 210mm !important;
-
               margin: 0 !important;
               padding: 0 !important;
-
               background: #ffffff !important;
+              color: #111111 !important;
+              color-scheme: light !important;
               overflow: visible !important;
-
-              font-family:
-                Cairo,
-                Tahoma,
-                Arial,
-                sans-serif !important;
-
+              font-family: Cairo, Tahoma, Arial, sans-serif !important;
+              font-synthesis: none !important;
+              text-rendering: geometricPrecision !important;
+              -webkit-font-smoothing: antialiased !important;
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
             }
@@ -1269,7 +1348,6 @@ const exportPdfDirect = async () => {
             *::before,
             *::after {
               box-sizing: border-box !important;
-
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
             }
@@ -1278,33 +1356,36 @@ const exportPdfDirect = async () => {
               display: block !important;
             }
 
-            .print-sheet,
-            .print-page {
-              width: 210mm !important;
-              min-width: 210mm !important;
-              max-width: 210mm !important;
-
-              height: 297mm !important;
-              min-height: 297mm !important;
-              max-height: 297mm !important;
-
-              margin: 0 !important;
-              padding: 0 !important;
-
-              overflow: hidden !important;
-              box-shadow: none !important;
-
-              page-break-inside: avoid !important;
-              break-inside: avoid-page !important;
+            .print-page-body {
+              transform-origin: top right !important;
+              box-sizing: border-box !important;
             }
 
             .print-document {
               width: 210mm !important;
               min-width: 210mm !important;
               max-width: 210mm !important;
-
               margin: 0 !important;
               padding: 0 !important;
+              background: #ffffff !important;
+              color: #111111 !important;
+            }
+
+            .print-sheet,
+            .print-page {
+              width: 210mm !important;
+              min-width: 210mm !important;
+              max-width: 210mm !important;
+              height: 297mm !important;
+              min-height: 297mm !important;
+              max-height: 297mm !important;
+              margin: 0 !important;
+              background: #ffffff !important;
+              color: #111111 !important;
+              box-shadow: none !important;
+              overflow: hidden !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid-page !important;
             }
 
             .print-page {
@@ -1317,7 +1398,8 @@ const exportPdfDirect = async () => {
               break-after: auto !important;
             }
 
-            img {
+            img,
+            svg {
               print-color-adjust: exact !important;
               -webkit-print-color-adjust: exact !important;
             }
@@ -1328,6 +1410,8 @@ const exportPdfDirect = async () => {
                 width: 210mm !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                background: #ffffff !important;
+                color: #111111 !important;
               }
             }
           </style>
@@ -1383,10 +1467,46 @@ const exportPdfDirect = async () => {
                   } catch {}
                 }
 
+                const fitPrintPages = () => {
+                  const pages = Array.from(
+                    document.querySelectorAll('.print-page, .print-sheet')
+                  );
+
+                  pages.forEach((page) => {
+                    const body = page.querySelector(':scope > .print-page-body') ||
+                      page.querySelector('.print-page-body');
+
+                    if (!body) return;
+
+                    body.style.transform = 'none';
+                    body.style.width = '100%';
+
+                    const available = body.clientHeight;
+                    const needed = body.scrollHeight;
+
+                    if (!available || needed <= available + 1) return;
+
+                    const scale = Math.max(
+                      0.90,
+                      Math.min(0.995, (available - 4) / needed)
+                    );
+
+                    body.style.transformOrigin = 'top right';
+                    body.style.transform = 'scale(' + scale + ')';
+                    body.style.width = (100 / scale) + '%';
+                  });
+                };
+
+                fitPrintPages();
+
+                await new Promise((resolve) =>
+                  requestAnimationFrame(() => requestAnimationFrame(resolve))
+                );
+
                 setTimeout(() => {
                   window.focus();
                   printWhenReady();
-                }, 700);
+                }, 350);
               }
             );
           </script>
@@ -1438,7 +1558,9 @@ const exportPdfMobile = async () => {
       top: "0",
       left: "0",
       width: "210mm",
-      background: "#fff",
+      background: "#ffffff",
+      color: "#111111",
+      colorScheme: "light",
       opacity: "1",
       pointerEvents: "none",
       zIndex: "-10000",
@@ -1452,6 +1574,9 @@ const exportPdfMobile = async () => {
     clonedNode.style.pointerEvents = "none";
     clonedNode.style.transform = "none";
     clonedNode.style.margin = "0";
+    clonedNode.style.background = "#ffffff";
+    clonedNode.style.color = "#111111";
+    clonedNode.style.colorScheme = "light";
 
     clonedNode
       .querySelectorAll("img")
@@ -1507,6 +1632,14 @@ const exportPdfMobile = async () => {
       )
     );
 
+    // The export host is rendered, so we can measure the real A4 content and
+    // fit any slightly-overflowing page before html2canvas captures it.
+    fitPrintPagesForExport(clonedNode);
+
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
+
     const explicitPages = Array.from(
       clonedNode.querySelectorAll(".print-page")
     );
@@ -1533,7 +1666,7 @@ const exportPdfMobile = async () => {
       const canvas = await html2canvas(
         pageNode,
         {
-          scale: isPhone ? 2 : 2.25,
+          scale: isPhone ? 3.1 : 3.25,
           useCORS: true,
           allowTaint: false,
           backgroundColor: "#ffffff",
@@ -1555,10 +1688,7 @@ const exportPdfMobile = async () => {
       );
 
       const imageData =
-        canvas.toDataURL(
-          "image/jpeg",
-          0.96
-        );
+        canvas.toDataURL("image/png");
 
       if (index > 0) {
         pdf.addPage("a4", "portrait");
@@ -1566,7 +1696,7 @@ const exportPdfMobile = async () => {
 
       pdf.addImage(
         imageData,
-        "JPEG",
+        "PNG",
         0,
         0,
         210,
@@ -1622,29 +1752,29 @@ const handleExportPdf = () => {
           setMobileSidebarOpen(false)
         }><Box
       dir="rtl"
-      sx={{
+      sx={(theme) => ({
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
-        background:
-          "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)",
+        background: theme.palette.mode === "dark"
+          ? theme.palette.background.default
+          : "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)",
         position: "relative"
-      }}
+      })}
     >
       {!isDesktop && (
         <AppBar
           position="sticky"
           elevation={0}
-          sx={{
+          sx={(theme) => ({
             top: 0,
-            background: "rgba(255,255,255,.96)",
+            background: theme.palette.mode === "dark" ? theme.palette.surfaces.card : "rgba(255,255,255,.96)",
             backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom:
-              "1px solid rgba(5,117,70,.12)"
-          }}
+            color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
+            borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.12)"
+          })}
         >
           <Toolbar
             sx={{
@@ -1749,14 +1879,14 @@ const handleExportPdf = () => {
       >
         <Paper
           elevation={0}
-          sx={{
+          sx={(theme) => ({
             p: isPhone ? 0.65 : isTablet ? 0.9 : 1.15,
             mb: isPhone ? 0.55 : isTablet ? 0.75 : 1,
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 2.5,
-            border:
-              "1px solid rgba(5,117,70,.14)",
+            border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.14)",
+            backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : undefined,
             direction: "rtl"
-          }}
+          })}
         >
           <Stack
             direction="row"
@@ -1798,14 +1928,14 @@ const handleExportPdf = () => {
 
         <Paper
           elevation={0}
-          sx={{
+          sx={(theme) => ({
             p: isPhone ? 0.55 : isTablet ? 0.8 : 1,
             mb: isPhone ? 0.55 : isTablet ? 0.75 : 1,
             borderRadius: isPhone ? 1.4 : isTablet ? 2 : 2.5,
-            border:
-              "1px solid rgba(5,117,70,.14)",
+            border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.14)",
+            backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : undefined,
             direction: "rtl"
-          }}
+          })}
         >
           <FormControl
             fullWidth
@@ -2074,7 +2204,10 @@ const handleExportPdf = () => {
                   fontSize: "0.75rem"
                 }
               }
-            }, uiLayout.pageHeaderSx)}
+            }, uiLayout.pageHeaderSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+              border: "1px solid #67C99D",
+              backgroundColor: theme.palette.surfaces.card
+            }))}
           >
             <Typography
               align="center"
@@ -2142,46 +2275,11 @@ const handleExportPdf = () => {
                 }}
                 sx={uiLayout.withUiSx({
                   ...fieldSx,
-                  "& .MuiInputBase-root": {
-                    ...fieldSx["& .MuiInputBase-root"],
-                    gap: 0.5
-                  },
                   "& .MuiInputBase-input": {
-                    paddingInlineEnd: "8px"
+                    paddingInline: "10px",
+                    textAlign: "right"
                   }
                 }, uiLayout.formFieldSx)}
-                InputProps={{
-                  endAdornment: loadingStudent ? (
-                    <Box
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        flexShrink: 0,
-                        display: "grid",
-                        placeItems: "center"
-                      }}
-                    >
-                      <CircularProgress size={18} />
-                    </Box>
-                  ) : (
-                    <IconButton
-                      size="small"
-                      aria-label="تحميل بيانات المتدرب"
-                      onClick={() => loadStudent()}
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        flexShrink: 0,
-                        color: "#057546",
-                        border: "1px solid rgba(5,117,70,.18)",
-                        bgcolor: "#f7fbf9",
-                        "&:hover": { bgcolor: "#edf7f2" }
-                      }}
-                    >
-                      <SearchIcon sx={{ fontSize: 18 }} />
-                    </IconButton>
-                  )
-                }}
               />
 
               <ReadOnlyField
@@ -2602,6 +2700,10 @@ const handleExportPdf = () => {
           opacity: 0
         }}
       >
+        {/* Print output is always rendered under the fixed, light-only
+            PRINT_THEME (see definition above) so exported/printed documents
+            never inherit the app's current dark-mode colors. */}
+        <ThemeProvider theme={PRINT_THEME}>
         {selectedTemplate ===
         "REGISTERED_LETTER" ? (
           <RegisteredLetterPrint
@@ -2652,6 +2754,7 @@ const handleExportPdf = () => {
             model={form}
           />
         )}
+        </ThemeProvider>
       </Box>
     </Box></NavigationShell>
   );
@@ -2781,1464 +2884,982 @@ const ReadOnlyField = ({
   />
 );
 
-const HoursStatementPrint =
-  React.forwardRef(
-    ({ model }, ref) => {
-      const verificationUrl =
-        model.verificationUrl ||
-        `${window.location.origin}/quality-forms/verify/${model.documentGuid}`;
-
-      return (
-        <Box
-          ref={ref}
-          className="print-sheet"
-          sx={{
-            width: "210mm",
-            height: "297mm",
-            minHeight: "297mm",
-            maxHeight: "297mm",
-            margin: 0,
-            background: "#fff",
-            position: "relative",
-            overflow: "hidden",
-            direction: "rtl",
-            color: "#111",
-            fontFamily:
-              "Cairo, Tahoma, Arial, sans-serif"
-          }}
-        >
-          <Box
-            component="img"
-            src="/watermark-logo.png"
-            alt=""
-            sx={{
-              position: "absolute",
-              left: "50%",
-              top: "148mm",
-              transform: "translate(-50%, -50%)",
-              width: "124mm",
-              height: "155mm",
-              objectFit: "contain",
-              opacity: 0.11,
-              zIndex: 0,
-              pointerEvents: "none"
-            }}
-          />
-
-          <Box
-            component="img"
-            src="/headerveno.png"
-            alt="الهيدر"
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "210mm",
-              height: "43mm",
-              objectFit: "fill",
-              zIndex: 1,
-              display: "block"
-            }}
-          />
-
-          <Box
-            sx={{
-              position: "absolute",
-              top: "30mm",
-              right: "1mm",
-              width: "52mm",
-              zIndex: 3,
-              direction: "rtl",
-              textAlign: "start",
-              fontSize: "9.5pt",
-              fontWeight: 900,
-              lineHeight: 1.55,
-              whiteSpace: "nowrap"
-            }}
-          >
-            <div>
-              التاريخ: {model.hijriDate || "-"}
-            </div>
-            <div>
-              صـــــادر رقـــــــم / {model.documentNo || "-"}
-            </div>
-          </Box>
-
-          <Box
-            sx={{
-              position: "absolute",
-              top: "52mm",
-              left: "18mm",
-              right: "18mm",
-              bottom: "39mm",
-              zIndex: 2,
-              fontSize: "10.4pt",
-              fontWeight: 700,
-              lineHeight: 1.82
-            }}
-          >
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 900,
-                fontSize: "12.6pt",
-                lineHeight: 1.6
-              }}
-            >
-              {model.toText || "إلى من يهمه الأمر"}
-            </Typography>
-
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 900,
-                fontSize: "12.2pt",
-                mt: 0.7,
-                lineHeight: 1.6
-              }}
-            >
-              السلام عليكم ورحمة الله وبركاته
-            </Typography>
-
-            <Box
-              sx={{
-                mt: 3.2,
-                borderBottom: "1.2px solid #222"
-              }}
-            >
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "1.6fr 1fr 1fr 1fr",
-                  textAlign: "center",
-                  pb: 0.55,
-                  fontWeight: 900,
-                  fontSize: "10.5pt"
-                }}
-              >
-                <strong>الاسم</strong>
-                <strong>السجل المدني</strong>
-                <strong>الجنسية</strong>
-                <strong>الرقم التدريبي</strong>
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "1.6fr 1fr 1fr 1fr",
-                textAlign: "center",
-                pt: 0.8,
-                fontWeight: 800,
-                fontSize: "10.5pt"
-              }}
-            >
-              <span>{model.studentName || "-"}</span>
-              <span><bdi dir="ltr">{model.nationalId || "-"}</bdi></span>
-              <span>{model.nationality || "-"}</span>
-              <span>{model.trainingNo || "-"}</span>
-            </Box>
-
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 700,
-                fontSize: "10.45pt",
-                mt: 3.1,
-                lineHeight: 2.02
-              }}
-            >
-              نفيد سعادتكم علمًا بأن المتدرب المذكور بعاليه أحد متدربي المعهد بدبلوم
-              {" "}
-              «{model.specialization || "-"}»
-              <br />
-              ومدة الدبلوم سنتين ونصف كما نفيدكم بالتالي
-            </Typography>
-
-            <Divider
-              sx={{
-                my: 1.55,
-                borderColor: "#777"
-              }}
-            />
-
-            <PrintPair
-              title="نظام الدراسة الملتحق به"
-              value={model.studySystem}
-            />
-            <PrintPair
-              title="تخصص المتدرب الدقيق"
-              value={`«${model.specialization || "-"}»`}
-            />
-            <PrintPair
-              title="تاريخ بداية الدراسة"
-              value={model.studyStartDate}
-            />
-            <PrintPair
-              title="حالة المتدرب الدراسية"
-              value={model.studentStatus}
-            />
-            <PrintPair
-              title="عدد الساعات المقررة على الدبلوم"
-              value={model.totalHours}
-            />
-            <PrintPair
-              title="عدد الساعات المكتسبة"
-              value={model.earnedHours}
-            />
-
-            <Divider
-              sx={{
-                my: 1.55,
-                borderColor: "#777"
-              }}
-            />
-
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 900,
-                fontSize: "12.5pt",
-                lineHeight: 1.55
-              }}
-            >
-              وهـــذا للـــعـــلــم والــلــه الــمــوفــق،،،،،،
-            </Typography>
-
-<Box
-  sx={{
-    position: "absolute",
-    left: 0,
-    right: 0,
-
-    // ارفع الجزء كله لفوق
-    bottom: "8mm",
-
-    height: "48mm",
-    display: "flex",
-
-    // يخلي كل بوكس في أقصى جهة
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-
-    // عكس ترتيب البوكسين عندك
-    flexDirection: "row",
-
-    // تقليل المسافات الجانبية عشان يوصلوا للأطراف
-    px: "2mm"
-  }}
->
-  {/* التوقيع والختم */}
-  <Box
-    sx={{
-      width: "100mm",
-      height: "48mm",
-      ml:"230px"
-    }}
-  >
-    <Typography
-      sx={{
-        fontFamily: "inherit",
-        fontWeight: 900,
-        fontSize: "10.2pt",
-        lineHeight: 1.4,
-        textAlign: "center",
-        whiteSpace: "nowrap",
-        mb: 1
-      }}
-    >
-      {model.managerName || "مدير المعهد السعودي"}{" "}
-      {model.managerTitle || "المتخصص العالي للتدريب"}
-    </Typography>
-
-    {/* التوقيع */}
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "4mm",
-        height: "14mm",
-        mb: "1mm"
-      }}
-    >
-      <Typography
-        component="strong"
-        sx={{
-          fontFamily: "inherit",
-          fontWeight: 900,
-          fontSize: "10.5pt",
-          whiteSpace: "nowrap"
-        }}
-      >
-        التوقيع:
-      </Typography>
-
-      <Box
-        component="img"
-        src="/signveno.png"
-        alt="التوقيع"
-        sx={{
-          width: "43mm",
-          height: "14mm",
-          objectFit: "contain"
-        }}
-      />
-    </Box>
-
-    {/* الختم */}
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "4mm",
-        height: "25mm"
-      }}
-    >
-      <Typography
-        component="strong"
-        sx={{
-          fontFamily: "inherit",
-          fontWeight: 900,
-          fontSize: "10.5pt",
-          whiteSpace: "nowrap"
-        }}
-      >
-        الختم:
-      </Typography>
-
-      <Box
-        component="img"
-        src="/stampveno.jpeg"
-        onError={(event) => {
-          event.currentTarget.src = "/stampveno.png";
-        }}
-        alt="الختم"
-        sx={{
-          width: "46mm",
-          height: "25mm",
-          objectFit: "contain"
-        }}
-      />
-    </Box>
-  </Box>
-
-  {/* موثوقية المشهد */}
-  <Box
-    sx={{
-      width: "48mm",
-      flexShrink: 0,
-      textAlign: "center",
-      mb:"30px",
-
-      // يزقه لأقصى الجهة
-      transform: "translateX(6mm)"
-    }}
-  >
-    <QRCodeSVG
-      value={verificationUrl}
-      size={88}
-      level="M"
-    />
-
-    <Typography
-      component="div"
-      sx={{
-        mt: 0.5,
-        fontFamily: "inherit",
-        fontWeight: 900,
-        fontSize: "10pt",
-        textAlign: "center",
-        whiteSpace: "nowrap"
-      }}
-    >
-      موثوقية المشهد
-    </Typography>
-  </Box>
-</Box>
-          </Box>
-
-          <Box
-            component="img"
-            src="/footerveno.png"
-            alt="الفوتر"
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              width: "210mm",
-              height: "34mm",
-              objectFit: "fill",
-              zIndex: 1,
-              display: "block"
-            }}
-          />
-        </Box>
-      );
-    }
-  );
-
-
-
-const CoopTrainingPrint =
-  React.forwardRef(
-    ({ model }, ref) => {
-      const verificationUrl =
-        model.verificationUrl ||
-        `${window.location.origin}/quality-forms/verify/${model.documentGuid}`;
-
-      const coopEmail =
-        model.email ||
-        "Saudi_board@sstli.com";
-
-      const coopPhone =
-        model.coopPhone ||
-        model.earnedHours ||
-        "";
-
-      const pageSx = {
-        width: "210mm",
-        height: "297mm",
-        minHeight: "297mm",
-        maxHeight: "297mm",
-        margin: 0,
-        background: "#fff",
-        position: "relative",
-        overflow: "hidden",
-        direction: "rtl",
-        color: "#111",
-        fontFamily:
-          "Cairo, Tahoma, Arial, sans-serif"
-      };
-
-      return (
-        <Box
-          ref={ref}
-          className="print-document"
-          sx={{
-            width: "210mm",
-            margin: 0,
-            padding: 0,
-            background: "#fff"
-          }}
-        >
-          {/* الصفحة الأولى */}
-          <Box
-            className="print-page"
-            sx={pageSx}
-          >
-            <Box
-              component="img"
-              src="/watermark-logo.png"
-              alt=""
-              sx={{
-                position: "absolute",
-                left: "50%",
-                top: "151mm",
-                transform:
-                  "translate(-50%, -50%)",
-                width: "126mm",
-                height: "160mm",
-                objectFit: "contain",
-                opacity: 0.1,
-                zIndex: 0,
-                pointerEvents: "none"
-              }}
-            />
-
-            <Box
-              component="img"
-              src="/headerveno.png"
-              alt="الهيدر"
-              sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "210mm",
-                height: "43mm",
-                objectFit: "fill",
-                zIndex: 1
-              }}
-            />
-
-            <Box
-              sx={{
-                position: "absolute",
-                top: "29mm",
-                right: "2mm",
-                width: "54mm",
-                zIndex: 3,
-                direction: "rtl",
-                textAlign: "start",
-                fontSize: "9.4pt",
-                fontWeight: 900,
-                lineHeight: 1.55,
-                whiteSpace: "nowrap"
-              }}
-            >
-              <div>
-                التاريخ: {model.hijriDate || "-"}
-              </div>
-              <div>
-                صــــــادر رقــــــم / {model.documentNo || "-"}
-              </div>
-            </Box>
-
-            <Box
-              sx={{
-                position: "absolute",
-                top: "47mm",
-                left: "19mm",
-                right: "19mm",
-                bottom: "35mm",
-                zIndex: 2,
-                fontSize: "10.35pt",
-                fontWeight: 700,
-                lineHeight: 1.75,
-                direction: "rtl"
-              }}
-            >
-              <Typography
-                align="center"
-                sx={{
-                  fontFamily: "inherit",
-                  fontWeight: 900,
-                  fontSize: "15pt",
-                  mb: 2.1
-                }}
-              >
-                نموذج البحث عن فرصة تدريبية
-              </Typography>
-
-              <Typography
-                sx={{
-                  fontFamily: "inherit",
-                  fontWeight: 900,
-                  fontSize: "10.8pt",
-                  textAlign: "start",
-                  mb: 2.2
-                }}
-              >
-                {model.toText || "سعادة /"}
-              </Typography>
-
-              <Typography
-                sx={{
-                  fontFamily: "inherit",
-                  fontWeight: 800,
-                  fontSize: "10.6pt",
-                  textAlign: "start",
-                  lineHeight: 1.9,
-                  mb: 2.3
-                }}
-              >
-                نفيد سعادتكم أن المتدرب / {model.studentName || "-"}
-                {" "} هوية رقم / <bdi dir="ltr">{model.nationalId || "-"}</bdi>
-              </Typography>
-
-              <Typography
-                sx={{
-                  fontFamily: "inherit",
-                  fontWeight: 800,
-                  fontSize: "10.45pt",
-                  textAlign: "justify",
-                  textAlignLast: "start",
-                  lineHeight: 1.95,
-                  mb: 2.4
-                }}
-              >
-                هو أحد متدربي المعهد المسجلين بدبلوم تخصص
-                {" "}«{model.specialization || "-"}»
-                {" "}ويرغب في إكمال متطلب التدريب التعاوني لديكم
-                بدوام كامل دون أن يترتب على ذلك أي التزامات مالية على
-                المنشأة، وذلك لاستكمال متطلبات التخرج
-              </Typography>
-
-              <Box
-                sx={{
-                  direction: "rtl"
-                }}
-              >
-                <Typography sx={coopBulletSx}>
-                  • فترة التدريب: {model.studySystem || "-"}
-                </Typography>
-
-                <Typography sx={coopBulletSx}>
-                  • ساعات التدريب: {model.totalHours || "-"}
-                </Typography>
-
-                <Typography sx={coopBulletSx}>
-                  • {model.studentStatus || "مستمر"}، مع الالتزام بساعات العمل الرسمية لديكم.
-                </Typography>
-              </Box>
-
-             <Typography
-  sx={{
-    mt: "50px",
-    fontFamily: "inherit",
-    fontWeight: 800,
-    fontSize: "10.25pt",
-    lineHeight: 1.9,
-    direction: "rtl",
-    textAlign: "justify",
-    textAlignLast: "start"
-  }}
->
-  في حال الموافقة، نرجو من سعادتكم تزويدنا بالرد، ولأي استفسارات يمكنكم
-  التواصل مع إدارة التدريب التعاوني عبر البريد الإلكتروني:{" "}
-  <Box
-    component="span"
-    dir="ltr"
-    sx={{
-      display: "inline-block",
-      direction: "ltr",
-      unicodeBidi: "isolate",
-      fontWeight: 900,
-      whiteSpace: "nowrap"
-    }}
-  >
-    {coopEmail}
-  </Box>
-</Typography>
-
-              <Typography
-                align="center"
-                sx={{
-                  mt: 5,
-                  fontFamily: "inherit",
-                  fontWeight: 900,
-                  fontSize: "10.7pt",
-                  direction: "rtl"
-                }}
-              >
-                للاستفسار والتواصل مع مشرف التدريب التعاوني بالمعهد /      جوال رقم {coopPhone || "-"}
-              </Typography>
-
-              <Typography
-                align="center"
-                sx={{
-                  mt: 1.4,
-                  fontFamily: "inherit",
-                  fontWeight: 900,
-                  fontSize: "10.8pt"
-                }}
-              >
-                وتفضلوا بقبول وافر التحية والتقدير
-              </Typography>
-
-              <Box
-  sx={{
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: "8mm",
-    height: "48mm",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    flexDirection: "row",
-    px: "2mm",
-    direction: "rtl"
-  }}
->
-  {/* التوقيع والختم */}
-  <Box
-    sx={{
-      width: "100mm",
-      height: "48mm",
-      ml: "230px"
-    }}
-  >
-    {/* التوقيع */}
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "4mm",
-        height: "14mm",
-        mb: "1mm"
-      }}
-    >
-      <Typography
-        component="strong"
-        sx={{
-          fontFamily: "inherit",
-          fontWeight: 900,
-          fontSize: "10.5pt",
-          whiteSpace: "nowrap"
-        }}
-      >
-        التوقيع:
-      </Typography>
-
-      <Box
-        component="img"
-        src="/signveno.png"
-        alt="التوقيع"
-        sx={{
-          width: "43mm",
-          height: "14mm",
-          objectFit: "contain"
-        }}
-      />
-    </Box>
-
-    {/* الختم */}
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "4mm",
-        height: "25mm"
-      }}
-    >
-      <Typography
-        component="strong"
-        sx={{
-          fontFamily: "inherit",
-          fontWeight: 900,
-          fontSize: "10.5pt",
-          whiteSpace: "nowrap"
-        }}
-      >
-        الختم:
-      </Typography>
-
-      <Box
-        component="img"
-        src="/stampveno.jpeg"
-        onError={(event) => {
-          event.currentTarget.src =
-            "/stampveno.png";
-        }}
-        alt="الختم"
-        sx={{
-          width: "46mm",
-          height: "25mm",
-          objectFit: "contain"
-        }}
-      />
-    </Box>
-  </Box>
-
-  {/* موثوقية المشهد */}
-  <Box
-    sx={{
-      width: "48mm",
-      flexShrink: 0,
-      textAlign: "center",
-      mb: "30px",
-      transform: "translateX(6mm)"
-    }}
-  >
-    <QRCodeSVG
-      value={verificationUrl}
-      size={88}
-      level="M"
-    />
-
-    <Typography
-      component="div"
-      sx={{
-        mt: 0.5,
-        fontFamily: "inherit",
-        fontWeight: 900,
-        fontSize: "10pt",
-        textAlign: "center",
-        whiteSpace: "nowrap"
-      }}
-    >
-      موثوقية المشهد
-    </Typography>
-  </Box>
-</Box>
-            </Box>
-
-            <Box
-              component="img"
-              src="/footerveno.png"
-              alt="الفوتر"
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                width: "210mm",
-                height: "34mm",
-                objectFit: "fill",
-                zIndex: 1
-              }}
-            />
-          </Box>
-
-          {/* الصفحة الثانية */}
-          <Box
-            className="print-page"
-            sx={pageSx}
-          >
-            <Box
-              sx={{
-                position: "absolute",
-                top: "28mm",
-                left: "25mm",
-                right: "25mm",
-                bottom: "25mm",
-                fontSize: "10.7pt",
-                fontWeight: 700,
-                lineHeight: 1.9,
-                direction: "rtl"
-              }}
-            >
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  alignItems: "center",
-                  mb: 5,
-                  direction: "rtl"
-                }}
-              >
-                <Typography
-                  sx={{
-                    ...coopPageTwoTitleSx,
-                    textAlign: "start",
-                    direction: "rtl"
-                  }}
-                >
-                  المحترم
-                </Typography>
-
-                <Typography
-                  sx={{
-                    ...coopPageTwoTitleSx,
-                    textAlign: "right",
-                    direction: "rtl"
-                  }}
-                >
-                  سعادة مشرف التدريب بالمعهد
-                </Typography>
-              </Box>
-
-              <Typography
-                align="center"
-                sx={{
-                  fontFamily: "inherit",
-                  fontWeight: 900,
-                  fontSize: "11pt",
-                  mb: 4.5
-                }}
-              >
-                السلام عليكم ورحمة الله وبركاته وبعد،
-              </Typography>
-
-              <Typography
-                sx={{
-                  fontFamily: "inherit",
-                  fontWeight: 800,
-                  fontSize: "10.6pt",
-                  textAlign: "justify",
-                  textAlignLast: "start",
-                  lineHeight: 2,
-                  mb: 4
-                }}
-              >
-                إشارة إلى خطابكم أعلاه حول قبول المتدرب في برنامج التدريب
-                التعاوني للفصل التدريبي، عليه نفيد سعادتكم
-              </Typography>
-
-              <Typography sx={coopPageTwoLineSx}>
-                • بالموافقة على قبول المتدرب في برنامج التدريب التعاوني، عليه نفيد سعادتكم
-              </Typography>
-
-              <Typography sx={coopPageTwoLineSx}>
-                • بالاعتذار عن قبول المتدرب في برنامج التدريب التعاوني
-              </Typography>
-
-              <Typography
-                sx={{
-                  ...coopPageTwoLineSx,
-                  mt: 10
-                }}
-              >
-                معلومات منشأة التدريب: اسم المنشأة التدريبية:
-                .................................... عنوان المنشأة:
-                ....................................
-              </Typography>
-
-              <Typography
-                sx={{
-                  ...coopPageTwoLineSx,
-                  mt: 4.5
-                }}
-              >
-                معلومات مشرف التدريب بالمنشأة:
-              </Typography>
-
-              <Box
-                sx={{
-                  mt: 5,
-                  minHeight: "60mm",
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gridTemplateRows: "24mm 24mm",
-                  direction: "rtl",
-                  alignItems: "start"
-                }}
-              >
-                <Typography
-                  sx={{
-                    gridColumn: "1",
-                    gridRow: "1",
-                    fontFamily: "inherit",
-                    fontWeight: 900,
-                    fontSize: "10.8pt",
-                    textAlign: "start",
-                    direction: "rtl"
-                  }}
-                >
-                  الختم:
-                </Typography>
-
-                <Typography
-                  sx={{
-                    gridColumn: "2",
-                    gridRow: "1",
-                    fontFamily: "inherit",
-                    fontWeight: 900,
-                    fontSize: "10.8pt",
-                    textAlign: "start",
-                    direction: "rtl"
-                  }}
-                >
-                  اسم المسؤول:
-                </Typography>
-
-                <Typography
-                  sx={{
-                    gridColumn: "2",
-                    gridRow: "2",
-                    fontFamily: "inherit",
-                    fontWeight: 900,
-                    fontSize: "10.8pt",
-                    textAlign: "start",
-                    direction: "rtl"
-                  }}
-                >
-                  التوقيع:
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      );
-    }
-  );
-
-const coopBulletSx = {
-  fontFamily: "inherit",
-  fontWeight: 900,
-  fontSize: "10.45pt",
-  lineHeight: 1.9,
-  mb: 1.1,
-  textAlign: "start"
+const PRINT_COLORS = {
+  green: "#057546",
+  greenDark: "#034d31",
+  greenSoft: "#eef8f3",
+  greenLine: "#78a993",
+  ink: "#101512",
+  muted: "#4c5f56",
+  line: "#9fbaae",
+  paper: "#ffffff",
+  warning: "#9a6511",
+  warningSoft: "#fff7e7"
 };
 
-const coopSignLabelSx = {
-  fontFamily: "inherit",
-  fontWeight: 900,
-  fontSize: "10.5pt",
-  whiteSpace: "nowrap"
-};
-
-const coopPageTwoTitleSx = {
-  fontFamily: "inherit",
-  fontWeight: 900,
-  fontSize: "11.4pt",
-  direction: "rtl"
-};
-
-const coopPageTwoLineSx = {
-  fontFamily: "inherit",
-  fontWeight: 800,
-  fontSize: "9.55pt",
-  lineHeight: 2,
-  textAlign: "start",
+const PRINT_PAGE_SX = {
+  width: "210mm",
+  height: "297mm",
+  minWidth: "210mm",
+  maxWidth: "210mm",
+  minHeight: "297mm",
+  maxHeight: "297mm",
+  margin: 0,
+  padding: 0,
+  position: "relative",
+  overflow: "hidden",
+  backgroundColor: PRINT_COLORS.paper,
+  color: PRINT_COLORS.ink,
+  colorScheme: "light",
   direction: "rtl",
-  mb: 3,
-  mt:5,
+  fontFamily: "Cairo, Tahoma, Arial, sans-serif",
+  boxSizing: "border-box"
 };
 
+const PrintPage = React.forwardRef(
+  ({ children, className = "print-sheet" }, ref) => (
+    <Box ref={ref} className={className} sx={PRINT_PAGE_SX}>
+      {children}
+    </Box>
+  )
+);
 
-const RegisteredLetterPrint =
-  React.forwardRef(
-    ({ model }, ref) => {
-      const verificationUrl =
-        model.verificationUrl ||
-        `${window.location.origin}/quality-forms/verify/${model.documentGuid}`;
-
-      const hoursNumber =
-        String(model.totalHours || "")
-          .replace(/[^\d]/g, "") ||
-        "79";
-
-      return (
-        <Box
-          ref={ref}
-          className="print-sheet"
-          sx={{
-            width: "210mm",
-            height: "297mm",
-            minHeight: "297mm",
-            maxHeight: "297mm",
-            margin: 0,
-            background: "#fff",
-            position: "relative",
-            overflow: "hidden",
-            direction: "rtl",
-            color: "#111",
-            fontFamily:
-              "Cairo, Tahoma, Arial, sans-serif"
-          }}
-        >
-          <Box
-            component="img"
-            src="/watermark-logo.png"
-            alt=""
-            sx={{
-              position: "absolute",
-              left: "50%",
-              top: "150mm",
-              transform: "translate(-50%, -50%)",
-              width: "126mm",
-              height: "160mm",
-              objectFit: "contain",
-              opacity: 0.11,
-              zIndex: 0,
-              pointerEvents: "none"
-            }}
-          />
-
-          <Box
-            component="img"
-            src="/headerveno.png"
-            alt="الهيدر"
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "210mm",
-              height: "43mm",
-              objectFit: "fill",
-              zIndex: 1,
-              display: "block"
-            }}
-          />
-
-          <Box
-            sx={{
-              position: "absolute",
-              top: "29mm",
-              right: "2mm",
-              width: "54mm",
-              zIndex: 3,
-              direction: "rtl",
-              textAlign: "start",
-              fontSize: "9.5pt",
-              fontWeight: 900,
-              lineHeight: 1.55,
-              whiteSpace: "nowrap"
-            }}
-          >
-            <div>
-              التاريخ: {model.hijriDate || "-"}
-            </div>
-            <div>
-              صــــــادر رقــــــم / {model.documentNo || "-"}
-            </div>
-          </Box>
-
-          <Box
-            sx={{
-              position: "absolute",
-              top: "54mm",
-              left: "17mm",
-              right: "17mm",
-              bottom: "38mm",
-              zIndex: 2,
-              fontSize: "10.35pt",
-              fontWeight: 700,
-              lineHeight: 1.85,
-              direction: "rtl"
-            }}
-          >
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 900,
-                fontSize: "12.6pt"
-              }}
-            >
-              {model.toText || "إلى من يهمه الأمر"}
-            </Typography>
-
-            <Box
-              sx={{
-                mt: 2.2,
-                display: "grid",
-                gridTemplateColumns:
-                  "1.15fr 1fr 1.35fr",
-                border: "1.2px solid #222",
-                borderBottom: 0,
-                textAlign: "center",
-                fontWeight: 900,
-                fontSize: "10.5pt"
-              }}
-            >
-              <Box sx={{ p: 0.8, borderInlineEnd: "1.2px solid #222" }}>
-                الاسم
-              </Box>
-              <Box sx={{ p: 0.8, borderInlineEnd: "1.2px solid #222" }}>
-                رقم السجل المدني
-              </Box>
-              <Box sx={{ p: 0.8 }}>
-                الدبلوم
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "1.15fr 1fr 1.35fr",
-                border: "1.2px solid #222",
-                textAlign: "center",
-                fontWeight: 800,
-                fontSize: "10.4pt"
-              }}
-            >
-              <Box sx={{ p: 1, borderInlineEnd: "1.2px solid #222" }}>
-                {model.studentName || "-"}
-              </Box>
-              <Box sx={{ p: 1, borderInlineEnd: "1.2px solid #222" }}>
-                {model.nationalId || "-"}
-              </Box>
-              <Box sx={{ p: 1 }}>
-                {model.specialization || "-"}
-              </Box>
-            </Box>
-
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 800,
-                fontSize: "11pt",
-                mt: 2.4
-              }}
-            >
-              السلام عليكم ورحمة الله وبركاته
-            </Typography>
-
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 800,
-                fontSize: "11pt",
-                mt: 0.7
-              }}
-            >
-              تحية طيبة وبعد ،،،
-            </Typography>
-
-            <Divider sx={{ my: 1.5, borderColor: "#333" }} />
-
-<Box
-  sx={{
-    mx: "auto",
-    width: "100%",
-    maxWidth: "172mm",
-    px: "6mm",
-    py: "3mm",
-    borderTop: "1px solid #333",
-    borderBottom: "1px solid #333",
-    direction: "rtl"
-  }}
->
-  <Typography
-    component="div"
-    dir="rtl"
+const PrintWatermark = () => (
+  <Box
+    component="img"
+    src="/watermark-logo.png"
+    alt=""
     sx={{
-      fontFamily: "inherit",
-      fontWeight: 800,
-      fontSize: "11.2pt",
-      lineHeight: 2,
-      textAlign: "justify",
-      textAlignLast: "center",
-      direction: "rtl",
-      unicodeBidi: "plaintext",
-      whiteSpace: "normal"
+      position: "absolute",
+      left: "50%",
+      top: "49%",
+      transform: "translate(-50%, -50%)",
+      width: "92mm",
+      height: "104mm",
+      objectFit: "contain",
+      opacity: 0.042,
+      zIndex: 0,
+      pointerEvents: "none"
     }}
-  >
-    نفيد سعادتكم بأن الموضح بياناته أعلاه مسجل لدينا في{" "}
+  />
+);
 
-    <strong>
-      {model.specialization || "الدبلوم"}
-    </strong>
-
-    ، والدبلوم معتمد من المؤسسة العامة للتدريب التقني والمهني بعدد ساعات{" "}
-
-    <strong>
-      {model.totalHours || "-"}
-    </strong>
-
-    ، والدراسة بالفترة{" "}
-
-    <strong>
-      {model.studyPeriod === "صباحية"
-        ? "الصباحية"
-        : "المسائية"}
-    </strong>
-
-    {" "}ولا تتعارض مع أوقات العمل الرسمية، وتاريخ بداية الدراسة{" "}
+const PrintHeader = ({ model, title, subtitle }) => (
+  <Box sx={{ position: "relative", zIndex: 2, flexShrink: 0 }}>
+    <Box
+      component="img"
+      src="/headerveno.png"
+      alt="الهيدر"
+      sx={{
+        width: "100%",
+        height: "29mm",
+        display: "block",
+        objectFit: "contain"
+      }}
+    />
 
     <Box
-      component="span"
       sx={{
-        display: "inline-flex",
-        direction: "ltr",
-        unicodeBidi: "isolate",
+        mt: "1.2mm",
+        pb: "1.8mm",
+        display: "flex",
+        justifyContent: "space-between",
         alignItems: "center",
-        gap: "4px",
-        fontWeight: 900,
-        whiteSpace: "nowrap"
+        gap: "6mm",
+        borderBottom: `1px solid ${PRINT_COLORS.greenLine}`,
+        direction: "rtl"
       }}
     >
-      <span>{model.studyStartDate || "-"}</span>
-      <span>هـ</span>
+      <Typography
+        sx={{
+          fontSize: "8.4pt",
+          fontWeight: 800,
+          color: PRINT_COLORS.ink,
+          whiteSpace: "nowrap"
+        }}
+      >
+        التاريخ: {model.hijriDate || "-"}
+      </Typography>
+
+      <Typography
+        sx={{
+          fontSize: "8.4pt",
+          fontWeight: 800,
+          color: PRINT_COLORS.ink,
+          whiteSpace: "nowrap"
+        }}
+      >
+        صادر رقم / {model.documentNo || "-"}
+      </Typography>
     </Box>
-  </Typography>
-</Box>
 
-            <Divider sx={{ my: 1.5, borderColor: "#333" }} />
+    {title && (
+      <Typography
+        align="center"
+        sx={{
+          mt: "2.6mm",
+          fontSize: "12.4pt",
+          lineHeight: 1.45,
+          fontWeight: 900,
+          color: PRINT_COLORS.greenDark
+        }}
+      >
+        {title}
+      </Typography>
+    )}
 
-            <Typography
-              align="center"
-              sx={{
-                fontFamily: "inherit",
-                fontWeight: 900,
-                fontSize: "12.2pt"
-              }}
-            >
-              وهذا للــعـــلــم والــلــه الـــمـــوفــــق،،،،،،
-            </Typography>
-
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                mb:"60px",
-                right: 0,
-                bottom: "8mm",
-                height: "48mm",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                flexDirection: "row",
-                px: "2mm",
-                direction: "rtl"
-              }}
-            >
-              <Box
-                sx={{
-                  width: "100mm",
-                  height: "48mm",
-                  ml: "230px"
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "inherit",
-                    fontWeight: 900,
-                    fontSize: "10.2pt",
-                    lineHeight: 1.4,
-                    textAlign: "center",
-                    whiteSpace: "nowrap",
-                    mb: 1
-                  }}
-                >
-                  {model.managerName || "مدير المعهد السعودي"}{" "}
-                  {model.managerTitle || "المتخصص العالي للتدريب"}
-                </Typography>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "4mm",
-                    height: "14mm",
-                    mb: "1mm"
-                  }}
-                >
-                  <Typography
-                    component="strong"
-                    sx={{
-                      fontFamily: "inherit",
-                      fontWeight: 900,
-                      fontSize: "10.5pt",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    التوقيع:
-                  </Typography>
-
-                  <Box
-                    component="img"
-                    src="/signveno.png"
-                    alt="التوقيع"
-                    sx={{
-                      width: "43mm",
-                      height: "14mm",
-                      objectFit: "contain"
-                    }}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "4mm",
-                    height: "25mm"
-                  }}
-                >
-                  <Typography
-                    component="strong"
-                    sx={{
-                      fontFamily: "inherit",
-                      fontWeight: 900,
-                      fontSize: "10.5pt",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    الختم:
-                  </Typography>
-
-                  <Box
-                    component="img"
-                    src="/stampveno.jpeg"
-                    onError={(event) => {
-                      event.currentTarget.src =
-                        "/stampveno.png";
-                    }}
-                    alt="الختم"
-                    sx={{
-                      width: "46mm",
-                      height: "25mm",
-                      objectFit: "contain"
-                    }}
-                  />
-                </Box>
-              </Box>
-
-              <Box
-                sx={{
-                  width: "48mm",
-                  flexShrink: 0,
-                  textAlign: "center",
-                  mb: "30px",
-                  transform: "translateX(6mm)"
-                }}
-              >
-                <QRCodeSVG
-                  value={verificationUrl}
-                  size={88}
-                  level="M"
-                />
-
-                <Typography
-                  component="div"
-                  sx={{
-                    mt: 0.5,
-                    fontFamily: "inherit",
-                    fontWeight: 900,
-                    fontSize: "10pt",
-                    textAlign: "center",
-                    whiteSpace: "nowrap"
-                  }}
-                >
-                  موثوقية المشهد
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box
-            component="img"
-            src="/footerveno.png"
-            alt="الفوتر"
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              width: "210mm",
-              height: "34mm",
-              objectFit: "fill",
-              zIndex: 1,
-              display: "block"
-            }}
-          />
-        </Box>
-      );
-    }
-  );
-
-const PrintPair = ({
-  title,
-  value
-}) => (
-  <Box
-    sx={{
-      display: "grid",
-      gridTemplateColumns:
-        "1fr 1fr",
-      minHeight: "8.8mm",
-      alignItems: "center",
-      direction: "rtl",
-      fontSize: "10.25pt"
-    }}
-  >
-    <strong
-      style={{
-        textAlign: "right"
-      }}
-    >
-      {title}
-    </strong>
-
-    <span
-      style={{
-        textAlign: "center",
-        fontWeight: 800
-      }}
-    >
-      {value || "-"}
-    </span>
+    {subtitle && (
+      <Typography
+        align="center"
+        sx={{
+          mt: "0.7mm",
+          fontSize: "8pt",
+          lineHeight: 1.5,
+          fontWeight: 700,
+          color: PRINT_COLORS.muted
+        }}
+      >
+        {subtitle}
+      </Typography>
+    )}
   </Box>
 );
 
+const PrintFooter = () => (
+  <Box
+    component="img"
+    src="/footerveno.png"
+    alt="الفوتر"
+    sx={{
+      position: "absolute",
+      bottom: "11mm",
+      left: "12mm",
+      right: "12mm",
+      width: "calc(100% - 24mm)",
+      height: "17.5mm",
+      objectFit: "contain",
+      objectPosition: "center bottom",
+      display: "block",
+      zIndex: 2
+    }}
+  />
+);
 
+const PrintPageBody = ({ children, sx = {} }) => (
+  <Box
+    className="print-page-body"
+    sx={{
+      position: "relative",
+      zIndex: 1,
+      height: "100%",
+      minHeight: 0,
+      px: "12mm",
+      pt: "7mm",
+      pb: "35mm",
+      display: "flex",
+      flexDirection: "column",
+      boxSizing: "border-box",
+      transformOrigin: "top right",
+      ...sx
+    }}
+  >
+    {children}
+  </Box>
+);
+
+const PrintTable = ({ columns, values, mt = "5mm" }) => (
+  <Box
+    component="table"
+    sx={{
+      width: "100%",
+      tableLayout: "fixed",
+      borderCollapse: "collapse",
+      mt,
+      direction: "rtl",
+      border: `1px solid ${PRINT_COLORS.greenLine}`,
+      "& th, & td": {
+        border: `1px solid ${PRINT_COLORS.greenLine}`,
+        py: "1.7mm",
+        px: "1.5mm",
+        textAlign: "center",
+        verticalAlign: "middle",
+        overflowWrap: "anywhere"
+      },
+      "& th": {
+        fontSize: "8.2pt",
+        fontWeight: 900,
+        color: PRINT_COLORS.greenDark,
+        backgroundColor: PRINT_COLORS.greenSoft
+      },
+      "& td": {
+        fontSize: "8.25pt",
+        fontWeight: 800,
+        color: PRINT_COLORS.ink,
+        backgroundColor: "#ffffff"
+      }
+    }}
+  >
+    <thead>
+      <tr>
+        {columns.map((column) => (
+          <th key={column}>{column}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {values.map((value, index) => (
+          <td key={`${columns[index]}-${index}`}>{value || "-"}</td>
+        ))}
+      </tr>
+    </tbody>
+  </Box>
+);
+
+const PrintBodyCard = ({ children, sx = {} }) => (
+  <Box
+    sx={{
+      mt: "3.5mm",
+      p: "3.2mm 4.2mm",
+      border: `1px solid ${PRINT_COLORS.line}`,
+      borderRadius: "2.2mm",
+      backgroundColor: "rgba(255,255,255,.94)",
+      color: PRINT_COLORS.ink,
+      direction: "rtl",
+      ...sx
+    }}
+  >
+    {children}
+  </Box>
+);
+
+const PrintVerificationAndSignature = ({
+  model,
+  verificationUrl,
+  verificationLabel = "موثوقية المستند",
+  supervisorLabel = "مشرف التدريب"
+}) => (
+  <Box
+    sx={{
+      mt: "6mm",
+      pt: "4mm",
+      borderTop: `1px solid ${PRINT_COLORS.greenLine}`,
+      display: "grid",
+      gridTemplateColumns: "minmax(0, 1.65fr) minmax(40mm, .92fr) 36mm",
+      columnGap: "5mm",
+      alignItems: "stretch",
+      direction: "rtl",
+      minHeight: "43mm",
+      flexShrink: 0,
+      breakInside: "avoid",
+      pageBreakInside: "avoid"
+    }}
+  >
+    {/* Manager approval: text and signature are deliberately separated into
+        independent zones so the signature can never touch the title/name. */}
+    <Box
+      sx={{
+        minWidth: 0,
+        minHeight: "40mm",
+        px: "5mm",
+        py: "3.4mm",
+        border: `1px solid ${PRINT_COLORS.line}`,
+        borderRadius: "2.2mm",
+        backgroundColor: "#ffffff",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        boxSizing: "border-box",
+        overflow: "hidden"
+      }}
+    >
+      <Typography
+        sx={{
+          fontSize: "7.3pt",
+          lineHeight: 1.35,
+          fontWeight: 850,
+          color: PRINT_COLORS.muted,
+          mb: "1.2mm"
+        }}
+      >
+        اعتماد مدير المعهد
+      </Typography>
+
+      <Box
+        sx={{
+          width: "100%",
+          minHeight: "10.5mm",
+          px: "2mm",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          rowGap: "0.7mm",
+          boxSizing: "border-box"
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "8.8pt",
+            lineHeight: 1.45,
+            fontWeight: 900,
+            color: PRINT_COLORS.greenDark,
+            maxWidth: "68mm",
+            overflowWrap: "break-word"
+          }}
+        >
+          {model.managerName || "مدير المعهد السعودي"}
+        </Typography>
+
+        {model.managerTitle && (
+          <Typography
+            sx={{
+              fontSize: "7.7pt",
+              lineHeight: 1.4,
+              fontWeight: 750,
+              color: PRINT_COLORS.muted,
+              maxWidth: "68mm",
+              overflowWrap: "break-word"
+            }}
+          >
+            {model.managerTitle}
+          </Typography>
+        )}
+      </Box>
+
+      {/* Dedicated signature zone with real breathing room above it. */}
+      <Box
+        sx={{
+          mt: "4.5mm",
+          width: "48mm",
+          minHeight: "13mm",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          boxSizing: "border-box"
+        }}
+      >
+        <Box
+          sx={{
+            width: "44mm",
+            height: "9.8mm",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pb: "1mm",
+            borderBottom: `1px solid ${PRINT_COLORS.greenLine}`,
+            boxSizing: "border-box"
+          }}
+        >
+          <Box
+            component="img"
+            src="/signveno.png"
+            alt="التوقيع"
+            sx={{
+              width: "29mm",
+              height: "7.8mm",
+              objectFit: "contain",
+              objectPosition: "center",
+              display: "block",
+              flexShrink: 0
+            }}
+          />
+        </Box>
+
+        <Typography
+          sx={{
+            mt: "1.1mm",
+            fontSize: "6.8pt",
+            lineHeight: 1.2,
+            fontWeight: 800,
+            color: PRINT_COLORS.muted
+          }}
+        >
+          التوقيع
+        </Typography>
+      </Box>
+    </Box>
+
+    {/* Official stamp: independent and centered with safe padding. */}
+    <Box
+      sx={{
+        minWidth: 0,
+        minHeight: "40mm",
+        px: "3.5mm",
+        py: "3.4mm",
+        border: `1px solid ${PRINT_COLORS.line}`,
+        borderRadius: "2.2mm",
+        backgroundColor: "#ffffff",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        textAlign: "center",
+        boxSizing: "border-box",
+        overflow: "hidden"
+      }}
+    >
+      <Typography
+        sx={{
+          fontSize: "7.2pt",
+          lineHeight: 1.3,
+          fontWeight: 900,
+          color: PRINT_COLORS.greenDark,
+          mb: "2.8mm"
+        }}
+      >
+        الختم الرسمي
+      </Typography>
+
+      <Box
+        sx={{
+          flex: 1,
+          width: "100%",
+          minHeight: "24mm",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          px: "1.5mm",
+          boxSizing: "border-box"
+        }}
+      >
+        <Box
+          component="img"
+          src="/stampveno.jpeg"
+          onError={(event) => {
+            event.currentTarget.src = "/stampveno.png";
+          }}
+          alt="الختم الرسمي"
+          sx={{
+            width: "32mm",
+            height: "16mm",
+            maxWidth: "100%",
+            objectFit: "contain",
+            objectPosition: "center",
+            display: "block",
+            flexShrink: 0
+          }}
+        />
+      </Box>
+    </Box>
+
+    {/* Verification QR: same card height, compact content, no visual crowding. */}
+    <Box
+      sx={{
+        width: "36mm",
+        minHeight: "40mm",
+        px: "3mm",
+        py: "3.4mm",
+        border: `1px solid ${PRINT_COLORS.line}`,
+        borderRadius: "2.2mm",
+        backgroundColor: PRINT_COLORS.greenSoft,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        textAlign: "center",
+        boxSizing: "border-box",
+        overflow: "hidden"
+      }}
+    >
+      <Typography
+        sx={{
+          fontSize: "7.1pt",
+          lineHeight: 1.3,
+          fontWeight: 900,
+          color: PRINT_COLORS.greenDark,
+          mb: "2mm",
+          maxWidth: "29mm"
+        }}
+      >
+        {supervisorLabel}
+      </Typography>
+
+      <Box
+        sx={{
+          p: "1.2mm",
+          backgroundColor: "#ffffff",
+          border: `1px solid ${PRINT_COLORS.greenLine}`,
+          borderRadius: "1.5mm",
+          lineHeight: 0,
+          flexShrink: 0
+        }}
+      >
+        <QRCodeSVG
+          value={String(verificationUrl || " ")}
+          size={48}
+          level="M"
+          bgColor="#ffffff"
+          fgColor="#111111"
+        />
+      </Box>
+
+      <Typography
+        sx={{
+          mt: "1.5mm",
+          fontSize: "6.55pt",
+          lineHeight: 1.25,
+          fontWeight: 800,
+          color: PRINT_COLORS.muted,
+          maxWidth: "29mm",
+          overflowWrap: "break-word"
+        }}
+      >
+        {verificationLabel}
+      </Typography>
+    </Box>
+  </Box>
+);
+
+const HoursStatementPrint = React.forwardRef(
+  ({ model }, ref) => {
+    const verificationUrl =
+      model.verificationUrl ||
+      `${window.location.origin}/quality-forms/verify/${model.documentGuid}`;
+
+    const detailRows = [
+      ["نظام الدراسة الملتحق به", model.studySystem],
+      ["تخصص المتدرب الدقيق", model.specialization],
+      ["تاريخ بداية الدراسة", model.studyStartDate],
+      ["حالة المتدرب الدراسية", model.studentStatus],
+      ["عدد الساعات المقررة على الدبلوم", model.totalHours],
+      ["عدد الساعات المكتسبة", model.earnedHours]
+    ];
+
+    return (
+      <PrintPage ref={ref}>
+        <PrintWatermark />
+        <PrintPageBody>
+          <PrintHeader
+            model={model}
+            title={model.toText || "إلى من يهمه الأمر"}
+            subtitle="مشهد ساعات تدريبي"
+          />
+
+          <PrintTable
+            columns={["الاسم", "السجل المدني", "الجنسية", "الرقم التدريبي"]}
+            values={[
+              model.studentName,
+              <bdi dir="ltr">{model.nationalId || "-"}</bdi>,
+              model.nationality,
+              model.trainingNo
+            ]}
+          />
+
+          <Typography
+            align="center"
+            sx={{
+              mt: "4mm",
+              fontSize: "9pt",
+              fontWeight: 900,
+              lineHeight: 1.7
+            }}
+          >
+            السلام عليكم ورحمة الله وبركاته، وبعد
+          </Typography>
+
+          <PrintBodyCard sx={{ mt: "3mm", py: "3.5mm" }}>
+            <Typography
+              sx={{
+                fontSize: "8.7pt",
+                fontWeight: 800,
+                lineHeight: 1.85,
+                textAlign: "center"
+              }}
+            >
+              نفيد سعادتكم بأن المتدرب الموضح بياناته أعلاه أحد متدربي المعهد
+              بدبلوم «{model.specialization || "-"}»، ومدة الدبلوم سنتان ونصف،
+              ونفيدكم بالبيانات الدراسية التالية:
+            </Typography>
+          </PrintBodyCard>
+
+          <Box
+            sx={{
+              mt: "3mm",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              borderTop: `1px solid ${PRINT_COLORS.greenLine}`,
+              borderInlineStart: `1px solid ${PRINT_COLORS.greenLine}`
+            }}
+          >
+            {detailRows.map(([title, value]) => (
+              <Box
+                key={title}
+                sx={{
+                  minHeight: "11mm",
+                  px: "3mm",
+                  py: "2mm",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  gap: "1mm",
+                  borderInlineEnd: `1px solid ${PRINT_COLORS.greenLine}`,
+                  borderBottom: `1px solid ${PRINT_COLORS.greenLine}`,
+                  backgroundColor: "rgba(255,255,255,.94)"
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: "7.7pt",
+                    fontWeight: 900,
+                    color: PRINT_COLORS.greenDark
+                  }}
+                >
+                  {title}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "8.4pt",
+                    fontWeight: 800,
+                    color: PRINT_COLORS.ink
+                  }}
+                >
+                  {value || "-"}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+
+          <Typography
+            align="center"
+            sx={{
+              mt: "4mm",
+              fontSize: "9.2pt",
+              fontWeight: 900,
+              color: PRINT_COLORS.greenDark
+            }}
+          >
+            وهذا للعلم، والله الموفق،،،
+          </Typography>
+
+          <PrintVerificationAndSignature
+            model={model}
+            verificationUrl={verificationUrl}
+            verificationLabel="موثوقية المشهد"
+          />
+        </PrintPageBody>
+        <PrintFooter />
+      </PrintPage>
+    );
+  }
+);
+
+const CoopTrainingPrint = React.forwardRef(
+  ({ model }, ref) => {
+    const verificationUrl =
+      model.verificationUrl ||
+      `${window.location.origin}/quality-forms/verify/${model.documentGuid}`;
+
+    const coopEmail = model.email || "Saudi_board@sstli.com";
+    const coopPhone = model.coopPhone || model.earnedHours || "";
+
+    return (
+      <Box
+        ref={ref}
+        className="print-document"
+        sx={{
+          width: "210mm",
+          margin: 0,
+          padding: 0,
+          backgroundColor: "#ffffff",
+          color: "#111111",
+          colorScheme: "light"
+        }}
+      >
+        <PrintPage className="print-page">
+          <PrintWatermark />
+          <PrintPageBody>
+            <PrintHeader
+              model={model}
+              title="نموذج البحث عن فرصة تدريبية"
+              subtitle="خطاب تدريب تعاوني"
+            />
+
+            <Typography
+              sx={{
+                mt: "5mm",
+                fontSize: "9pt",
+                fontWeight: 900,
+                textAlign: "right"
+              }}
+            >
+              {model.toText || "سعادة /"}
+            </Typography>
+
+            <PrintBodyCard sx={{ mt: "3mm" }}>
+              <Typography
+                sx={{
+                  fontSize: "8.8pt",
+                  fontWeight: 800,
+                  lineHeight: 1.9,
+                  textAlign: "justify"
+                }}
+              >
+                نفيد سعادتكم أن المتدرب / {model.studentName || "-"}، هوية رقم /{" "}
+                <bdi dir="ltr">{model.nationalId || "-"}</bdi>، أحد متدربي المعهد
+                المسجلين بدبلوم تخصص «{model.specialization || "-"}»، ويرغب في إكمال
+                متطلب التدريب التعاوني لديكم بدوام كامل دون أن يترتب على ذلك أي
+                التزامات مالية على المنشأة، وذلك لاستكمال متطلبات التخرج.
+              </Typography>
+            </PrintBodyCard>
+
+            <Box
+              sx={{
+                mt: "3mm",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: "2.5mm"
+              }}
+            >
+              {[
+                ["فترة التدريب", model.studySystem || "-"],
+                ["ساعات التدريب", model.totalHours || "-"],
+                ["الحالة", model.studentStatus || "مستمر"]
+              ].map(([label, value]) => (
+                <Box
+                  key={label}
+                  sx={{
+                    p: "2.5mm",
+                    border: `1px solid ${PRINT_COLORS.greenLine}`,
+                    borderRadius: "2mm",
+                    backgroundColor: PRINT_COLORS.greenSoft,
+                    textAlign: "center"
+                  }}
+                >
+                  <Typography sx={{ fontSize: "7.6pt", fontWeight: 900, color: PRINT_COLORS.greenDark }}>
+                    {label}
+                  </Typography>
+                  <Typography sx={{ mt: ".8mm", fontSize: "8.2pt", fontWeight: 800 }}>
+                    {value}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Typography
+              sx={{
+                mt: "4mm",
+                fontSize: "8.6pt",
+                fontWeight: 800,
+                lineHeight: 1.9,
+                textAlign: "justify"
+              }}
+            >
+              في حال الموافقة، نرجو من سعادتكم تزويدنا بالرد. ولأي استفسارات يمكنكم
+              التواصل مع إدارة التدريب التعاوني عبر البريد الإلكتروني:{" "}
+              <Box component="span" dir="ltr" sx={{ display: "inline-block", fontWeight: 900 }}>
+                {coopEmail}
+              </Box>
+            </Typography>
+
+            <Typography
+              align="center"
+              sx={{ mt: "3mm", fontSize: "8.7pt", fontWeight: 900 }}
+            >
+              للاستفسار والتواصل مع مشرف التدريب التعاوني بالمعهد / جوال رقم{" "}
+              <bdi dir="ltr">{coopPhone || "-"}</bdi>
+            </Typography>
+
+            <Typography
+              align="center"
+              sx={{ mt: "2mm", fontSize: "8.8pt", fontWeight: 900, color: PRINT_COLORS.greenDark }}
+            >
+              وتفضلوا بقبول وافر التحية والتقدير
+            </Typography>
+
+            <PrintVerificationAndSignature
+              model={model}
+              verificationUrl={verificationUrl}
+              verificationLabel="موثوقية الخطاب"
+            />
+          </PrintPageBody>
+          <PrintFooter />
+        </PrintPage>
+
+        <PrintPage className="print-page">
+          <PrintWatermark />
+          <PrintPageBody>
+            <PrintHeader
+              model={model}
+              title="اعتماد جهة التدريب"
+              subtitle="الصفحة الثانية من نموذج التدريب التعاوني"
+            />
+
+            <Typography
+              align="center"
+              sx={{ mt: "5mm", fontSize: "9pt", fontWeight: 900 }}
+            >
+              السلام عليكم ورحمة الله وبركاته، وبعد
+            </Typography>
+
+            <PrintBodyCard sx={{ mt: "4mm" }}>
+              <Typography
+                sx={{
+                  fontSize: "8.8pt",
+                  fontWeight: 800,
+                  lineHeight: 1.9,
+                  textAlign: "justify"
+                }}
+              >
+                إشارة إلى خطابكم أعلاه حول قبول المتدرب في برنامج التدريب التعاوني
+                للفصل التدريبي، نأمل تحديد حالة الطلب واستكمال بيانات منشأة التدريب
+                ومشرف التدريب أدناه.
+              </Typography>
+            </PrintBodyCard>
+
+            <Box sx={{ mt: "4mm", display: "grid", gap: "2.5mm" }}>
+              {["الموافقة على قبول المتدرب في برنامج التدريب التعاوني", "الاعتذار عن قبول المتدرب في برنامج التدريب التعاوني"].map((item) => (
+                <Box
+                  key={item}
+                  sx={{
+                    p: "3mm",
+                    border: `1px solid ${PRINT_COLORS.greenLine}`,
+                    borderRadius: "2mm",
+                    fontSize: "8.7pt",
+                    fontWeight: 800,
+                    backgroundColor: "#ffffff"
+                  }}
+                >
+                  □ {item}
+                </Box>
+              ))}
+            </Box>
+
+            <Box
+              sx={{
+                mt: "5mm",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "3mm"
+              }}
+            >
+              {["اسم المنشأة التدريبية", "عنوان المنشأة", "اسم المسؤول", "جوال المسؤول"].map((label) => (
+                <Box
+                  key={label}
+                  sx={{
+                    minHeight: "17mm",
+                    p: "3mm",
+                    border: `1px solid ${PRINT_COLORS.line}`,
+                    borderRadius: "2mm"
+                  }}
+                >
+                  <Typography sx={{ fontSize: "8pt", fontWeight: 900, color: PRINT_COLORS.greenDark }}>
+                    {label}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Box
+              sx={{
+                mt: "5mm",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "6mm"
+              }}
+            >
+              <Box sx={{ minHeight: "42mm", p: "3mm", border: `1px solid ${PRINT_COLORS.line}`, borderRadius: "2mm" }}>
+                <Typography sx={{ fontSize: "8.4pt", fontWeight: 900, color: PRINT_COLORS.greenDark }}>
+                  التوقيع
+                </Typography>
+              </Box>
+              <Box sx={{ minHeight: "42mm", p: "3mm", border: `1px solid ${PRINT_COLORS.line}`, borderRadius: "2mm" }}>
+                <Typography sx={{ fontSize: "8.4pt", fontWeight: 900, color: PRINT_COLORS.greenDark }}>
+                  الختم
+                </Typography>
+              </Box>
+            </Box>
+          </PrintPageBody>
+          <PrintFooter />
+        </PrintPage>
+      </Box>
+    );
+  }
+);
+
+const RegisteredLetterPrint = React.forwardRef(
+  ({ model }, ref) => {
+    const verificationUrl =
+      model.verificationUrl ||
+      `${window.location.origin}/quality-forms/verify/${model.documentGuid}`;
+
+    return (
+      <PrintPage ref={ref}>
+        <PrintWatermark />
+        <PrintPageBody>
+          <PrintHeader
+            model={model}
+            title={model.toText || "إلى من يهمه الأمر"}
+            subtitle="إفادة تسجيل متدرب"
+          />
+
+          <PrintTable
+            columns={["الاسم", "رقم السجل المدني", "الدبلوم"]}
+            values={[
+              model.studentName,
+              <bdi dir="ltr">{model.nationalId || "-"}</bdi>,
+              model.specialization
+            ]}
+          />
+
+          <Typography
+            align="center"
+            sx={{ mt: "4mm", fontSize: "9.8pt", fontWeight: 900, lineHeight: 1.85 }}
+          >
+            السلام عليكم ورحمة الله وبركاته
+            <br />
+            تحية طيبة وبعد،،،
+          </Typography>
+
+          <PrintBodyCard sx={{ mt: "3mm" }}>
+            <Typography
+              component="div"
+              dir="rtl"
+              sx={{
+                fontSize: "8.9pt",
+                fontWeight: 800,
+                lineHeight: 2,
+                textAlign: "justify",
+                direction: "rtl"
+              }}
+            >
+              نفيد سعادتكم بأن الموضح بياناته أعلاه مسجل لدينا في{" "}
+              <strong>{model.specialization || "الدبلوم"}</strong>، والدبلوم معتمد من
+              المؤسسة العامة للتدريب التقني والمهني بعدد ساعات{" "}
+              <strong>{model.totalHours || "-"}</strong>، والدراسة بالفترة{" "}
+              <strong>{model.studyPeriod === "صباحية" ? "الصباحية" : "المسائية"}</strong>،
+              ولا تتعارض مع أوقات العمل الرسمية، وتاريخ بداية الدراسة{" "}
+              <Box component="span" dir="ltr" sx={{ display: "inline-block", fontWeight: 900 }}>
+                {model.studyStartDate || "-"} هـ
+              </Box>.
+            </Typography>
+          </PrintBodyCard>
+
+          <Typography
+            align="center"
+            sx={{
+              mt: "4mm",
+              fontSize: "9.2pt",
+              fontWeight: 900,
+              color: PRINT_COLORS.greenDark
+            }}
+          >
+            وهذا للعلم، والله الموفق،،،
+          </Typography>
+
+          <PrintVerificationAndSignature
+            model={model}
+            verificationUrl={verificationUrl}
+            verificationLabel="موثوقية الخطاب"
+          />
+        </PrintPageBody>
+        <PrintFooter />
+      </PrintPage>
+    );
+  }
+);
 
 const StudentLookupFields = ({
   form,
@@ -4256,19 +3877,13 @@ const StudentLookupFields = ({
         maxLength: 10,
         inputMode: "numeric"
       , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-      sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
-      InputProps={{
-        endAdornment: loadingStudent ? (
-          <CircularProgress size={20} />
-        ) : (
-          <Button sx={uiLayout.withUiSx({ flexShrink: 0, minWidth: 62, px: 0.5 }, uiLayout.buttonSx)}
-            onClick={() => loadStudent()}
-            startIcon={<SearchIcon />}
-          >
-            تحميل
-          </Button>
-        )
-      }}
+      sx={uiLayout.withUiSx({
+        ...fieldSx,
+        "& .MuiInputBase-input": {
+          paddingInline: "10px",
+          textAlign: "right"
+        }
+      }, uiLayout.formFieldSx)}
     />
 
     <ReadOnlyField
@@ -5228,8 +4843,8 @@ const CourseListEditor = ({
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 0.25,
-                border: "1px solid #cfe7dc",
-                background: "#f4fbf7",
+                border: (theme) => theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid #cfe7dc",
+                background: (theme) => theme.palette.mode === "dark" ? theme.palette.surfaces.nested : "#f4fbf7",
                 borderRadius: 999,
                 py: {
                   xs: 0.2,
@@ -5744,16 +5359,7 @@ const GeneralLetterEditor = ({
   );
 };
 
-const SheetFrame = React.forwardRef(({children}, ref) => <Box ref={ref} className="print-sheet" sx={{width:"210mm",height:"297mm",position:"relative",background:"#fff",direction: "rtl",fontFamily:"Cairo, Tahoma, Arial",overflow:"hidden",p:"12mm 16mm 15mm"}}>{children}</Box>);
 
-const PrintHeader = ({model,title}) => <>
-  <Box component="img" src="/headerveno.png" sx={{width:"100%",height:"34mm",objectFit:"fill"}}/>
-  <Typography align="right" sx={{fontSize:"9pt",fontWeight:800,mt:"-14mm",direction: "rtl",mr:"40px"}}>التاريخ: {model.hijriDate}</Typography>
-  <Typography align="right" sx={{fontSize:"9pt",fontWeight:800,mr:"60px"}}>صادر رقم / {model.documentNo}</Typography>
-  <Typography align="center" sx={{fontSize:"16pt",fontWeight:900,mt:"13mm"}}>{title}</Typography>
-</>;
-
-const PrintFooter = () => <Box component="img" src="/footerveno.png" sx={{position:"absolute",bottom:"5mm",left:"12mm",right:"12mm",width:"calc(100% - 24mm)",height:"22mm",objectFit:"fill"}}/>;
 
 const ExamSchedulePrint = React.forwardRef(
   ({ model }, ref) => {
@@ -5762,312 +5368,100 @@ const ExamSchedulePrint = React.forwardRef(
       String(model.documentGuid || "");
 
     return (
-      <Box
-        ref={ref}
-        className="print-sheet"
-        sx={{
-          width: "210mm",
-          height: "297mm",
-          minHeight: "297mm",
-          maxHeight: "297mm",
-          position: "relative",
-          overflow: "hidden",
-          background: "#fff",
-          direction: "rtl",
-          fontFamily:
-            "Cairo, Tahoma, Arial, sans-serif",
+      <PrintPage ref={ref}>
+        <PrintWatermark />
+        <PrintPageBody>
+          <PrintHeader
+            model={model}
+            title={model.toText || "إلى من يهمه الأمر"}
+            subtitle="جدول اختبارات معتمد"
+          />
 
-          // هامش داخلي أعلى وأسفل خاص بصفحة جدول الاختبارات فقط
-          pt: "14mm",
-          px: "16mm",
-          pb: "38mm",
-          boxSizing: "border-box"
-        }}
-      >
-        <PrintHeader
-          model={model}
-          title={
-            model.toText ||
-            "إلى من يهمه الأمر"
-          }
-        />
+          <PrintTable
+            columns={["اسم المتدرب", "رقم الهوية", "الدبلوم", "المستوى"]}
+            values={[
+              model.studentName,
+              <bdi dir="ltr">{model.nationalId || "-"}</bdi>,
+              model.specialization,
+              model.levelName
+            ]}
+          />
 
-        <Box
-          component="table"
-          sx={{
-            width: "100%",
-            borderCollapse: "collapse",
-            mt: "8mm",
-            "& td": {
-              border: "1px solid #111",
-              p: "2mm",
-              fontSize: "8.5pt",
-              fontWeight: 800
-            }
-          }}
-        >
-          <tbody>
-            <tr>
-              <td>
-                جدول اختبارات دبلوم:{" "}
-                {model.specialization}
-              </td>
-              <td>
-                المستوى: {model.levelName}
-              </td>
-            </tr>
+          {model.statementText && (
+            <Typography
+              sx={{
+                mt: "4mm",
+                fontSize: "8.5pt",
+                fontWeight: 800,
+                lineHeight: 1.7,
+                textAlign: "right"
+              }}
+            >
+              {model.statementText}
+            </Typography>
+          )}
 
-            <tr>
-              <td>
-                اسم المتدرب:{" "}
-                {model.studentName}
-              </td>
-              <td>
-                هوية رقم: <bdi dir="ltr">{model.nationalId}</bdi>
-              </td>
-            </tr>
-          </tbody>
-        </Box>
-
-        <Typography
-          sx={{
-            fontSize: "9pt",
-            fontWeight: 800,
-            mt: "6mm",
-            mb: "5mm"
-          }}
-        >
-          {model.statementText}
-        </Typography>
-
-        <Box
-          component="table"
-          sx={{
-            width: "100%",
-            borderCollapse: "collapse",
-            "& th, & td": {
-              border: "1px solid #111",
-              p: "2mm",
-              textAlign: "center",
-              fontSize: "8pt",
-              fontWeight: 800
-            },
-            "& th": {
-              background: "#e5e5e5"
-            }
-          }}
-        >
-          <thead>
-            <tr>
-              <th>اليوم / التاريخ</th>
-              <th>المقرر الأول</th>
-              <th>التوقيت الأول</th>
-              <th>المقرر الثاني</th>
-              <th>التوقيت الثاني</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {(model.examRows || [])
-              .slice(0, 4)
-              .map((row, index) => (
-                <tr
-                  key={index}
-                  style={{
-                    height: "14mm"
-                  }}
-                >
-                  <td>{row.dayDate}</td>
-                  <td>{row.courseName}</td>
-                  <td>{row.timeOne}</td>
-                  <td>{row.courseTwo}</td>
-                  <td>{row.timeTwo}</td>
+          <Box
+            component="table"
+            sx={{
+              width: "100%",
+              tableLayout: "fixed",
+              borderCollapse: "collapse",
+              mt: "4mm",
+              border: `1px solid ${PRINT_COLORS.greenLine}`,
+              "& th, & td": {
+                border: `1px solid ${PRINT_COLORS.greenLine}`,
+                px: "1mm",
+                py: "2mm",
+                textAlign: "center",
+                verticalAlign: "middle",
+                fontSize: "7.6pt",
+                fontWeight: 800
+              },
+              "& th": {
+                backgroundColor: PRINT_COLORS.greenSoft,
+                color: PRINT_COLORS.greenDark,
+                fontWeight: 900
+              }
+            }}
+          >
+            <thead>
+              <tr>
+                <th>اليوم / التاريخ</th>
+                <th>المقرر الأول</th>
+                <th>التوقيت الأول</th>
+                <th>المقرر الثاني</th>
+                <th>التوقيت الثاني</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(model.examRows || []).slice(0, 4).map((row, index) => (
+                <tr key={index} style={{ height: "12mm" }}>
+                  <td>{row.dayDate || "-"}</td>
+                  <td>{row.courseName || "-"}</td>
+                  <td>{row.timeOne || "-"}</td>
+                  <td>{row.courseTwo || "-"}</td>
+                  <td>{row.timeTwo || "-"}</td>
                 </tr>
               ))}
-          </tbody>
-        </Box>
-
-        <Typography
-          align="center"
-          sx={{
-            fontSize: "9pt",
-            fontWeight: 800,
-            mt: "13mm"
-          }}
-        >
-          وتفضلوا بقبول وافر التحية،،،
-        </Typography>
-
-        {/* الجزء السفلي الخاص بجدول الاختبارات فقط */}
-        <Box
-          sx={{
-            position: "absolute",
-            left: "18mm",
-            right: "18mm",
-
-            // تنزيل الجزء قليلًا مع تركه أعلى الفوتر
-            bottom: "60mm",
-
-            minHeight: "49mm",
-            display: "grid",
-            gridTemplateColumns:
-              "64mm 1fr",
-            columnGap: "18mm",
-            alignItems: "end",
-            direction: "rtl"
-          }}
-        >
-          {/* موثوقية الجدول */}
-          <Box
-            sx={{
-              width: "50mm",
-              textAlign: "center",
-              justifySelf: "start"
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                mb: "2mm",
-                textAlign: "center"
-              }}
-            >
-              مشرف التدريب
-            </Typography>
-
-            <QRCodeSVG
-              value={verificationUrl}
-              size={88}
-              level="M"
-            />
-
-            <Typography
-              sx={{
-                mt: "1mm",
-                fontSize: "8.8pt",
-                fontWeight: 900,
-                textAlign: "center",
-                whiteSpace: "nowrap"
-              }}
-            >
-              موثوقية الجدول
-            </Typography>
+            </tbody>
           </Box>
 
-          {/* التوقيع والختم */}
-          <Box
-            sx={{
-              width: "105mm",
-              justifySelf: "end",
-              direction: "rtl"
-            }}
+          <Typography
+            align="center"
+            sx={{ mt: "4mm", fontSize: "8.7pt", fontWeight: 900, color: PRINT_COLORS.greenDark }}
           >
-            <Typography
-              sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                textAlign: "center",
-                mb: "2.5mm",
-                whiteSpace: "nowrap"
-              }}
-            >
-              المعهد السعودي المتخصص العالي للتدريب
-            </Typography>
+            وتفضلوا بقبول وافر التحية،،،
+          </Typography>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "14mm",
-                mb: "1.5mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  textAlign: "right",
-                  mr:"-45px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                التوقيع:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/signveno.png"
-                alt="التوقيع"
-                sx={{
-                  width: "42mm",
-                  height: "13mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "28mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                   mr:"-30px",
-                   mt:"-40px",
-                  textAlign: "right",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                الختم:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/stampveno.jpeg"
-                onError={(event) => {
-                  event.currentTarget.src =
-                    "/stampveno.png";
-                }}
-                alt="الختم"
-                sx={{
-                  width: "48mm",
-                  height: "28mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        {/* فوتر أكبر مع مسافة سفلية مرتبة */}
-        <Box
-          component="img"
-          src="/footerveno.png"
-          alt="الفوتر"
-          sx={{
-            position: "absolute",
-            bottom: "4mm",
-            left: "8mm",
-            right: "8mm",
-            width: "calc(100% - 16mm)",
-            height: "29mm",
-            objectFit: "fill",
-            display: "block"
-          }}
-        />
-      </Box>
+          <PrintVerificationAndSignature
+            model={model}
+            verificationUrl={verificationUrl}
+            verificationLabel="موثوقية الجدول"
+          />
+        </PrintPageBody>
+        <PrintFooter />
+      </PrintPage>
     );
   }
 );
@@ -6078,29 +5472,19 @@ const GeneralLetterPrint = React.forwardRef(
       model.verificationUrl ||
       String(model.documentGuid || "");
 
-    const formCode =
-      model.formCode || "";
+    const formCode = model.formCode || "";
+    const isRejected = formCode === "REGISTRATION_REJECTED";
+    const isDropped = formCode === "DROPPED_STATEMENT";
+    const isCourseWaiting = formCode === "COURSE_STUDIED_WAITING_EXAM";
+    const isNotRegistered = formCode === "NOT_REGISTERED_LETTER";
 
-    const isRejected =
-      formCode === "REGISTRATION_REJECTED";
-
-    const isDropped =
-      formCode === "DROPPED_STATEMENT";
-
-    const isCourseWaiting =
-      formCode === "COURSE_STUDIED_WAITING_EXAM";
-
-    const isNotRegistered =
-      formCode === "NOT_REGISTERED_LETTER";
-
-    const programTitle =
-      isCourseWaiting
-        ? "الدورة"
-        : isNotRegistered
-          ? "الدبلوم / دورة"
-          : isDropped
-            ? "الدبلوم"
-            : "الدورة / الدبلوم";
+    const programTitle = isCourseWaiting
+      ? "الدورة"
+      : isNotRegistered
+        ? "الدبلوم / دورة"
+        : isDropped
+          ? "الدبلوم"
+          : "الدورة / الدبلوم";
 
     const mainText = isDropped
       ? `نفيد سعادتكم بأن الموضح بياناته أعلاه كان مسجلاً لدينا في دبلوم ${model.specialization || ""} وتقدم بطلب طي قيده بتاريخ ${model.letterRegisterDate || ""} بناءً على طلبه، وقد تم إنهاء جميع إجراءات طي قيده بالمعهد، وتم طي قيده من موقع المؤسسة العامة للتدريب التقني والمهني.`
@@ -6110,333 +5494,88 @@ const GeneralLetterPrint = React.forwardRef(
           ? `نفيد سعادتكم بأن الموضح بياناته أعلاه تقدم بطلب للمعهد للحصول على موافقة لدبلوم / دورة ${model.letterProgramName || ""}، ولم يستكمل إجراءات القبول والتسجيل لدينا وسداد الرسوم الدراسية، مما ترتب على ذلك عدم تسجيل المتدرب بأنظمة المؤسسة العامة للتدريب التقني والمهني. وبناءً على ما سبق نؤكد عدم تسجيل المتدرب لدى المعهد السعودي المتخصص العالي للتدريب بأي برنامج تدريبي حتى تاريخه.`
           : `نفيد سعادتكم بأن الموضح بياناته أعلاه تعذر تسجيله بالدورة / الدبلوم المقرر اعتماده له والموضحة له تاريخ البدء لها في خطاب الموافقة لدورة / دبلوم ${model.letterApprovedProgramName || ""} والمحدد بتاريخ ${model.letterStartDate || ""}.`;
 
+    const columns = isDropped
+      ? ["رقم السجل المدني", "الاسم"]
+      : [programTitle, "رقم السجل المدني", "الاسم"];
+
+    const values = isDropped
+      ? [<bdi dir="ltr">{model.nationalId || "-"}</bdi>, model.studentName]
+      : [
+          isRejected ? model.specialization : model.letterProgramName,
+          <bdi dir="ltr">{model.nationalId || "-"}</bdi>,
+          model.studentName
+        ];
+
     return (
-      <Box
-        ref={ref}
-        className="print-sheet"
-        sx={{
-          width: "210mm",
-          height: "297mm",
-          minHeight: "297mm",
-          maxHeight: "297mm",
-          position: "relative",
-          overflow: "hidden",
-          background: "#fff",
-          direction: "rtl",
-          fontFamily:
-            "Cairo, Tahoma, Arial, sans-serif",
-          pt: "14mm",
-          px: "16mm",
-          pb: "38mm",
-          boxSizing: "border-box"
-        }}
-      >
-        <PrintHeader
-          model={model}
-          title="إلى من يهمه الأمر"
-        />
+      <PrintPage ref={ref}>
+        <PrintWatermark />
+        <PrintPageBody>
+          <PrintHeader
+            model={model}
+            title="إلى من يهمه الأمر"
+            subtitle={model.formName || "خطاب جودة"}
+          />
 
-        <Box
-          component="table"
-          sx={{
-            width: "100%",
-            borderCollapse: "collapse",
-            mt: "8mm",
-            direction: "rtl",
-            "& th, & td": {
-              border: "1px solid #111",
-              p: "3mm",
-              fontSize: "9pt",
-              fontWeight: 800,
-              textAlign: "center"
-            }
-          }}
-        >
-          <tbody>
-            <tr>
-              {!isDropped && (
-                <th>{programTitle}</th>
-              )}
-              <th>رقم السجل المدني</th>
-              <th>الاسم</th>
-            </tr>
+          <PrintTable columns={columns} values={values} />
 
-            <tr>
-              {!isDropped && (
-                <td>
-                  {isRejected || isDropped
-                    ? model.specialization
-                    : model.letterProgramName}
-                </td>
-              )}
-              <td><bdi dir="ltr">{model.nationalId}</bdi></td>
-              <td>{model.studentName}</td>
-            </tr>
-          </tbody>
-        </Box>
-
-        <Typography
-          align="center"
-          sx={{
-            fontSize: "10pt",
-            fontWeight: 900,
-            mt: "6mm",
-            lineHeight: 2
-          }}
-        >
-          السلام عليكم ورحمة الله وبركاته
-          <br />
-          تحية طيبة وبعد ،،،
-        </Typography>
-
-        <Divider
-          sx={{
-            my: "4mm",
-            borderColor: "#111"
-          }}
-        />
-
-        <Typography
-          sx={{
-            fontSize: "9.5pt",
-            fontWeight: 800,
-            lineHeight: 2.35,
-            textAlign: "justify",
-            direction: "rtl"
-          }}
-        >
-          {mainText}
-        </Typography>
-
-        {isRejected && (
-          <Box
-            sx={{
-              mt: "4mm",
-              direction: "rtl"
-            }}
+          <Typography
+            align="center"
+            sx={{ mt: "4mm", fontSize: "9pt", fontWeight: 900, lineHeight: 1.8 }}
           >
-            {model.letterReasonFees && (
-              <Typography
-                sx={{
-                  fontSize: "9.3pt",
-                  fontWeight: 800,
-                  lineHeight: 2
-                }}
-              >
-                □ وذلك لعدم استكمال المتدرب إجراءات التسجيل وسداد الرسوم الدراسية.
-              </Typography>
-            )}
+            السلام عليكم ورحمة الله وبركاته
+            <br />
+            تحية طيبة وبعد،،،
+          </Typography>
 
-            {model.letterReasonCapacity && (
-              <Typography
-                sx={{
-                  fontSize: "9.3pt",
-                  fontWeight: 800,
-                  lineHeight: 2
-                }}
-              >
-                □ وذلك لاكتمال أعداد المتدربين وزيادة الطاقة الاستيعابية بالمعهد.
-              </Typography>
-            )}
-
-            {!model.letterReasonFees &&
-              !model.letterReasonCapacity && (
-              <Typography
-                sx={{
-                  fontSize: "9.3pt",
-                  fontWeight: 800,
-                  lineHeight: 2
-                }}
-              >
-                □ وذلك حسب أنظمة القبول والتسجيل المعمول بها.
-              </Typography>
-            )}
-          </Box>
-        )}
-
-        <Divider
-          sx={{
-            my: "5mm",
-            borderColor: "#111"
-          }}
-        />
-
-        <Typography
-          align="center"
-          sx={{
-            fontSize: "9pt",
-            fontWeight: 800
-          }}
-        >
-          وقد أعطي هذا المشهد بناءً على طلبه دون أدنى مسؤولية على المعهد.
-        </Typography>
-
-        {/* نفس الاستايل والاتجاهات الحالية بدون تعديل */}
-        <Box
-          sx={{
-            position: "absolute",
-            left: "18mm",
-            right: "18mm",
-            bottom: "40mm",
-            minHeight: "49mm",
-            display: "grid",
-            gridTemplateColumns:
-              "64mm 1fr",
-            columnGap: "18mm",
-            alignItems: "end",
-            direction: "rtl"
-          }}
-        >
-          <Box
-            sx={{
-              width: "50mm",
-              textAlign: "center",
-              justifySelf: "start",
-              position: "relative",
-              top: "-15mm"
-            }}
-          >
+          <PrintBodyCard sx={{ mt: "3mm" }}>
             <Typography
               sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                mb: "2mm",
-                textAlign: "center"
-              }}
-            >
-              مشرف التدريب
-            </Typography>
-
-            <QRCodeSVG
-              value={verificationUrl}
-              size={88}
-              level="M"
-            />
-
-            <Typography
-              sx={{
-                mt: "1mm",
                 fontSize: "8.8pt",
-                fontWeight: 900,
-                textAlign: "center",
-                whiteSpace: "nowrap"
+                fontWeight: 800,
+                lineHeight: 2,
+                textAlign: "justify",
+                direction: "rtl"
               }}
             >
-              موثوقية الخطاب
+              {mainText}
             </Typography>
-          </Box>
 
-          <Box
-            sx={{
-              width: "105mm",
-              justifySelf: "end",
-              direction: "rtl"
-            }}
+            {isRejected && (
+              <Box sx={{ mt: "2.5mm", display: "grid", gap: "1.5mm" }}>
+                {model.letterReasonFees && (
+                  <Typography sx={{ fontSize: "8.4pt", fontWeight: 800 }}>
+                    □ وذلك لعدم استكمال المتدرب إجراءات التسجيل وسداد الرسوم الدراسية.
+                  </Typography>
+                )}
+                {model.letterReasonCapacity && (
+                  <Typography sx={{ fontSize: "8.4pt", fontWeight: 800 }}>
+                    □ وذلك لاكتمال أعداد المتدربين وزيادة الطاقة الاستيعابية بالمعهد.
+                  </Typography>
+                )}
+                {!model.letterReasonFees && !model.letterReasonCapacity && (
+                  <Typography sx={{ fontSize: "8.4pt", fontWeight: 800 }}>
+                    □ وذلك حسب أنظمة القبول والتسجيل المعمول بها.
+                  </Typography>
+                )}
+              </Box>
+            )}
+          </PrintBodyCard>
+
+          <Typography
+            align="center"
+            sx={{ mt: "4mm", fontSize: "8.6pt", fontWeight: 800, color: PRINT_COLORS.muted }}
           >
-            <Typography
-              sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                textAlign: "center",
-                mb: "2.5mm",
-                whiteSpace: "nowrap"
-              }}
-            >
-              المعهد السعودي المتخصص العالي للتدريب
-            </Typography>
+            وقد أعطي هذا المشهد بناءً على طلبه دون أدنى مسؤولية على المعهد.
+          </Typography>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "16mm",
-                mb: "1.5mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  textAlign: "right",
-                  mr: "-45px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                التوقيع:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/signveno.png"
-                alt="التوقيع"
-                sx={{
-                  width: "50mm",
-                  height: "16mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "28mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  mr: "-30px",
-                  mt: "-40px",
-                  textAlign: "right",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                الختم:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/stampveno.jpeg"
-                onError={(event) => {
-                  event.currentTarget.src =
-                    "/stampveno.png";
-                }}
-                alt="الختم"
-                sx={{
-                  width: "48mm",
-                  height: "28mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        <Box
-          component="img"
-          src="/footerveno.png"
-          alt="الفوتر"
-          sx={{
-            position: "absolute",
-            bottom: "4mm",
-            left: "8mm",
-            right: "8mm",
-            width: "calc(100% - 16mm)",
-            height: "29mm",
-            objectFit: "fill",
-            display: "block"
-          }}
-        />
-      </Box>
+          <PrintVerificationAndSignature
+            model={model}
+            verificationUrl={verificationUrl}
+            verificationLabel="موثوقية الخطاب"
+          />
+        </PrintPageBody>
+        <PrintFooter />
+      </PrintPage>
     );
   }
 );
@@ -6447,314 +5586,97 @@ const FinancialWarningPrint = React.forwardRef(
       model.verificationUrl ||
       String(model.documentGuid || "");
 
-    const isSecond =
-      model.formCode === "FINANCIAL_WARNING_2";
-
-    const title = isSecond
-      ? "الإنذار المالي رقم (2) الأخير"
-      : "إنذار مالي رقم (1)";
+    const isSecond = model.formCode === "FINANCIAL_WARNING_2";
+    const title = isSecond ? "الإنذار المالي رقم (2) الأخير" : "إنذار مالي رقم (1)";
 
     return (
-      <Box
-        ref={ref}
-        className="print-sheet"
-        sx={{
-          width: "210mm",
-          height: "297mm",
-          minHeight: "297mm",
-          maxHeight: "297mm",
-          position: "relative",
-          overflow: "hidden",
-          background: "#fff",
-          direction: "rtl",
-          fontFamily:
-            "Cairo, Tahoma, Arial, sans-serif",
-          pt: "14mm",
-          px: "16mm",
-          pb: "38mm",
-          boxSizing: "border-box"
-        }}
-      >
-        <PrintHeader
-          model={model}
-          title={title}
-        />
+      <PrintPage ref={ref}>
+        <PrintWatermark />
+        <PrintPageBody>
+          <PrintHeader
+            model={model}
+            title={title}
+            subtitle="إشعار مالي رسمي"
+          />
 
-        <Typography
-          sx={{
-            mt: "11mm",
-            fontSize: "10pt",
-            fontWeight: 800,
-            textAlign: "center",
-            direction: "rtl"
-          }}
-        >
-          السلام عليكم ورحمة الله وبركاته.
-        </Typography>
-
-        <Box
-          sx={{
-            mt: "8mm",
-            direction: "rtl",
-            display: "grid",
-            rowGap: "5mm"
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: "10pt",
-              fontWeight: 800,
-              borderBottom:
-                "1px dotted #111",
-              pb: "1.5mm"
-            }}
-          >
-            السيد / {model.studentName || "........................"}
-          </Typography>
-
-          <Typography
-            sx={{
-              fontSize: "10pt",
-              fontWeight: 800,
-              borderBottom:
-                "1px dotted #111",
-              pb: "1.5mm"
-            }}
-          >
-            هوية رقم / <bdi dir="ltr">{model.nationalId || "........................"}</bdi>
-          </Typography>
-
-          <Typography
-            sx={{
-              fontSize: "10pt",
-              fontWeight: 800,
-              borderBottom:
-                "1px dotted #111",
-              pb: "1.5mm"
-            }}
-          >
-            المسجل بدبلوم /{" "}
-            {model.specialization || "........................"}
-          </Typography>
+          <PrintTable
+            columns={["الاسم", "رقم السجل المدني", "الدبلوم"]}
+            values={[
+              model.studentName,
+              <bdi dir="ltr">{model.nationalId || "-"}</bdi>,
+              model.specialization
+            ]}
+          />
 
           {isSecond && (
             <Typography
               sx={{
-                fontSize: "10pt",
+                mt: "3mm",
+                fontSize: "8.3pt",
                 fontWeight: 800,
-                borderBottom:
-                  "1px dotted #111",
-                pb: "1.5mm"
-              }}
-            >
-              بناءً على الإنذار الأول والمرسل بتاريخ:{" "}
-              {model.firstWarningDate || "/      /      هـ"}
-            </Typography>
-          )}
-        </Box>
-
-        <Typography
-          sx={{
-            mt: "8mm",
-            fontSize: "9.6pt",
-            fontWeight: 800,
-            lineHeight: 3.3,
-            textAlign: "justify",
-            direction: "rtl"
-          }}
-        >
-          {isSecond ? (
-            <>
-              ونظراً لتوقفكم عن سداد مستحقات مالية متأخرة عليكم بقيمة{" "}
-              {model.financialAmount || "0"} ريال سعودي، ورغم تواصل
-              المعهد المستمر وإرسال الإنذار الأول والتنبيه بوجوب البدء
-              في خطة جدولة المديونية، ورغم التسهيلات المقدمة من المعهد
-              إلا أن انقطاعكم عن البدء في خطة السداد وعدم الالتزام تجاه
-              حقوق المعهد المالية، نعلمكم أنه في حال عدم الاستجابة
-              للإنذار الثاني خلال 15 يومًا فإن المعهد سيتخذ الإجراء
-              النهائي وإيقاف خدماتكم التدريبية مع الاستمرار بالمطالبة
-              بالمستحقات عبر الطرق القانونية التي يوفرها النظام. نرجو
-              الاستجابة والالتزام ولكم منا التقدير.
-            </>
-          ) : (
-            <>
-              نظراً لانقطاعكم عن التواصل مع المعهد وعدم الوفاء
-              بالتزاماتكم ووجود مستحقات مالية متأخرة بقيمة{" "}
-              {model.financialAmount || "0"} ريال سعودي، ورغم تواصل
-              المعهد معكم أكثر من مرة دون جدوى، نعلمكم أنه في حالة عدم
-              البدء في جدولة وسداد هذه المستحقات في موعد أقصاه 15 يومًا
-              من تاريخ الإنذار الأول سيتم استكمال الإجراءات القانونية.
-              نأمل سرعة الاستجابة ولكم كل التقدير.
-            </>
-          )}
-        </Typography>
-
-        {/* نفس مكان واستايل الجزء السفلي الحالي */}
-        <Box
-          sx={{
-            position: "absolute",
-            left: "18mm",
-            right: "18mm",
-            bottom: "40mm",
-            minHeight: "49mm",
-            display: "grid",
-            gridTemplateColumns:
-              "64mm 1fr",
-            columnGap: "18mm",
-            alignItems: "end",
-            direction: "rtl"
-          }}
-        >
-          <Box
-            sx={{
-              width: "50mm",
-              textAlign: "center",
-              justifySelf: "start",
-              position: "relative",
-              top: "-15mm"
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                mb: "2mm",
+                color: PRINT_COLORS.warning,
                 textAlign: "center"
               }}
             >
-              مشرف التدريب
+              بناءً على الإنذار الأول المرسل بتاريخ: {model.firstWarningDate || "/      /      هـ"}
             </Typography>
+          )}
 
-            <QRCodeSVG
-              value={verificationUrl}
-              size={88}
-              level="M"
-            />
+          <Typography
+            align="center"
+            sx={{ mt: "4mm", fontSize: "9pt", fontWeight: 900 }}
+          >
+            السلام عليكم ورحمة الله وبركاته، وبعد
+          </Typography>
 
-            <Typography
-              sx={{
-                mt: "1mm",
-                fontSize: "8.8pt",
-                fontWeight: 900,
-                textAlign: "center",
-                whiteSpace: "nowrap"
-              }}
-            >
-              موثوقية الإنذار المالي
-            </Typography>
-          </Box>
-
-          <Box
+          <PrintBodyCard
             sx={{
-              width: "105mm",
-              justifySelf: "end",
-              direction: "rtl"
+              mt: "3mm",
+              borderColor: "#d6b36f",
+              backgroundColor: PRINT_COLORS.warningSoft
             }}
           >
             <Typography
               sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                textAlign: "center",
-                mb: "2.5mm",
-                whiteSpace: "nowrap"
+                fontSize: "8.8pt",
+                fontWeight: 800,
+                lineHeight: 2,
+                textAlign: "justify",
+                color: PRINT_COLORS.ink
               }}
             >
-              المعهد السعودي المتخصص العالي للتدريب
+              {isSecond ? (
+                <>
+                  ونظراً لتوقفكم عن سداد مستحقات مالية متأخرة عليكم بقيمة{" "}
+                  <strong>{model.financialAmount || "0"} ريال سعودي</strong>، ورغم تواصل
+                  المعهد المستمر وإرسال الإنذار الأول والتنبيه بوجوب البدء في خطة جدولة
+                  المديونية، ورغم التسهيلات المقدمة من المعهد إلا أن انقطاعكم عن البدء في
+                  خطة السداد وعدم الالتزام تجاه حقوق المعهد المالية، نعلمكم أنه في حال
+                  عدم الاستجابة للإنذار الثاني خلال 15 يومًا فإن المعهد سيتخذ الإجراء
+                  النهائي وإيقاف خدماتكم التدريبية مع الاستمرار بالمطالبة بالمستحقات عبر
+                  الطرق القانونية التي يوفرها النظام. نرجو الاستجابة والالتزام ولكم منا التقدير.
+                </>
+              ) : (
+                <>
+                  نظراً لانقطاعكم عن التواصل مع المعهد وعدم الوفاء بالتزاماتكم ووجود
+                  مستحقات مالية متأخرة بقيمة <strong>{model.financialAmount || "0"} ريال سعودي</strong>،
+                  ورغم تواصل المعهد معكم أكثر من مرة دون جدوى، نعلمكم أنه في حالة عدم
+                  البدء في جدولة وسداد هذه المستحقات في موعد أقصاه 15 يومًا من تاريخ
+                  الإنذار الأول سيتم استكمال الإجراءات القانونية. نأمل سرعة الاستجابة
+                  ولكم كل التقدير.
+                </>
+              )}
             </Typography>
+          </PrintBodyCard>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "16mm",
-                mb: "1.5mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  textAlign: "right",
-                  mr: "-45px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                التوقيع:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/signveno.png"
-                alt="التوقيع"
-                sx={{
-                  width: "50mm",
-                  height: "16mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "28mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  mr: "-30px",
-                  mt: "-40px",
-                  textAlign: "right",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                الختم:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/stampveno.jpeg"
-                onError={(event) => {
-                  event.currentTarget.src =
-                    "/stampveno.png";
-                }}
-                alt="الختم"
-                sx={{
-                  width: "48mm",
-                  height: "28mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        <Box
-          component="img"
-          src="/footerveno.png"
-          alt="الفوتر"
-          sx={{
-            position: "absolute",
-            bottom: "4mm",
-            left: "8mm",
-            right: "8mm",
-            width: "calc(100% - 16mm)",
-            height: "29mm",
-            objectFit: "fill",
-            display: "block"
-          }}
-        />
-      </Box>
+          <PrintVerificationAndSignature
+            model={model}
+            verificationUrl={verificationUrl}
+            verificationLabel="موثوقية الإنذار المالي"
+          />
+        </PrintPageBody>
+        <PrintFooter />
+      </PrintPage>
     );
   }
 );
@@ -6765,9 +5687,7 @@ const AbsenceWarningPrint = React.forwardRef(
       model.verificationUrl ||
       String(model.documentGuid || "");
 
-    const isCourseDeprivation =
-      model.formCode === "COURSE_DEPRIVATION";
-
+    const isCourseDeprivation = model.formCode === "COURSE_DEPRIVATION";
     const isGradeWarning = [
       "GRADE_WARNING_1",
       "GRADE_WARNING_2",
@@ -6785,338 +5705,123 @@ const AbsenceWarningPrint = React.forwardRef(
               ? "3"
               : model.warningNo || "1";
 
-    const absencePercent =
-      isCourseDeprivation
-        ? model.absencePercent || "25"
-        : model.absencePercent || "10";
+    const absencePercent = isCourseDeprivation
+      ? model.absencePercent || "25"
+      : model.absencePercent || "10";
 
-    const verificationLabel =
-      isCourseDeprivation
-        ? "موثوقية الحرمان"
-        : "موثوقية الإنذار";
+    const verificationLabel = isCourseDeprivation
+      ? "موثوقية الحرمان"
+      : "موثوقية الإنذار";
 
-    const printTitle =
-      isGradeWarning
-        ? `إنذار رقم (${warningNumber}) - انخفاض المعدل`
+    const printTitle = isGradeWarning
+      ? `إنذار رقم (${warningNumber}) - انخفاض المعدل`
+      : isCourseDeprivation
+        ? "إشعار حرمان من مقرر"
         : `إنذار رقم (${warningNumber}) - تعليمات الانتظام`;
 
     return (
-      <Box
-        ref={ref}
-        className="print-sheet"
-        sx={{
-          width: "210mm",
-          height: "297mm",
-          minHeight: "297mm",
-          maxHeight: "297mm",
-          position: "relative",
-          overflow: "hidden",
-          background: "#fff",
-          direction: "rtl",
-          fontFamily:
-            "Cairo, Tahoma, Arial, sans-serif",
-          pt: "14mm",
-          px: "16mm",
-          pb: "38mm",
-          boxSizing: "border-box"
-        }}
-      >
-        <PrintHeader
-          model={model}
-          title={printTitle}
-        />
+      <PrintPage ref={ref}>
+        <PrintWatermark />
+        <PrintPageBody>
+          <PrintHeader
+            model={model}
+            title={printTitle}
+            subtitle={isCourseDeprivation ? "إشعار أكاديمي" : "إنذار تدريبي رسمي"}
+          />
 
-        <Box
-          component="table"
-          sx={{
-            width: "100%",
-            borderCollapse: "collapse",
-            mt: "8mm",
-            "th,td": {
-              border: "1px solid #111",
-              p: "3mm",
-              fontSize: "9pt",
-              fontWeight: 800,
-              textAlign: "center"
-            }
-          }}
-        >
-          <tbody>
-            <tr>
-              <th>الاسم</th>
-              <th>رقم السجل المدني</th>
-              <th>الدبلوم</th>
-            </tr>
+          <PrintTable
+            columns={["الاسم", "رقم السجل المدني", "الدبلوم"]}
+            values={[
+              model.studentName,
+              <bdi dir="ltr">{model.nationalId || "-"}</bdi>,
+              model.specialization
+            ]}
+          />
 
-            <tr>
-              <td>{model.studentName}</td>
-              <td><bdi dir="ltr">{model.nationalId}</bdi></td>
-              <td>{model.specialization}</td>
-            </tr>
-          </tbody>
-        </Box>
+          <Typography
+            align="center"
+            sx={{ mt: "4mm", fontSize: "9.8pt", fontWeight: 900, lineHeight: 1.85 }}
+          >
+            السلام عليكم ورحمة الله وبركاته
+            <br />
+            تحية طيبة وبعد،،،
+          </Typography>
 
-        <Typography
-          align="center"
-          sx={{
-            fontSize: "10pt",
-            fontWeight: 900,
-            mt: "6mm",
-            lineHeight: 2
-          }}
-        >
-          السلام عليكم ورحمة الله وبركاته
-          <br />
-          تحية طيبة وبعد ،،،
-        </Typography>
-
-        <Divider
-          sx={{
-            my: "4mm",
-            borderColor: "#111"
-          }}
-        />
-
-        <Typography
-          sx={{
-            fontSize: "9.3pt",
-            fontWeight: 800,
-            lineHeight: 2.3,
-            textAlign: "justify"
-          }}
-        >
-          بعد الاطلاع على اللائحة التدريبية الأهلية المعتمدة من مجلس
-          الإدارة بالجلسة رقم ({model.sessionNo || 108}) وتاريخ{" "}
-          {model.sessionHijriDate || "1440/11/02 هـ"}، والاطلاع على دليل
-          تعليمات التدريب لمنشآت التدريب الأهلية، وتم الإشارة إليها في
-          اتفاقية التدريب مسبقاً؛ وفقاً للمادة ({model.articleNo ||
-            (isGradeWarning ? 15 : 13)}) من دليل تعليمات التدريب لمنشآت
-          التدريب الأهلية:{" "}
-          {isGradeWarning ? (
-            <>
-              تعليمات الإنذارات وطي القيد. نفيدكم أن معدلكم التراكمي
-              انخفض عن ({model.gradeValue || "2.00"} من{" "}
-              {model.gradeMax || "5.00"}) خلال الفترة التدريبية{" "}
-              {model.periodHijriText || "-"}، وذلك{" "}
-              {model.reasonText ||
-                "نظراً لحرمانك / غيابك عن أداء الاختبارات"}. لذا نأمل
-              الالتزام خلال الفترة التدريبية الحالية، وإلا سنضطر آسفين
-              إلى إنهاء إجراءات طي القيد.
-            </>
-          ) : (
-            <>
-              تعليمات الانتظام والانسحاب والانتقال. نحيطكم بأن نسبة
-              غيابكم قد تجاوزت {absencePercent}% من إجمالي ساعات
-              المقررات الآتية:{" "}
-              {model.courses ||
-                "المقررات المسجلة بالفصل التدريبي"}، بالفصل التدريبي{" "}
-              {model.termName || "-"}.{" "}
-              {isCourseDeprivation ? (
+          <PrintBodyCard sx={{ mt: "3.5mm", p: "4mm 5mm" }}>
+            <Typography
+              sx={{
+                fontSize: "10pt",
+                fontWeight: 750,
+                lineHeight: 1.85,
+                textAlign: "justify",
+                direction: "rtl",
+                color: PRINT_COLORS.ink,
+                letterSpacing: 0,
+                overflowWrap: "break-word"
+              }}
+            >
+              بعد الاطلاع على اللائحة التدريبية الأهلية المعتمدة من مجلس الإدارة
+              بالجلسة رقم ({model.sessionNo || 108}) وتاريخ{" "}
+              {model.sessionHijriDate || "1440/11/02 هـ"}، والاطلاع على دليل تعليمات
+              التدريب لمنشآت التدريب الأهلية، وتم الإشارة إليها في اتفاقية التدريب
+              مسبقاً؛ وفقاً للمادة ({model.articleNo || (isGradeWarning ? 15 : 13)}) من
+              دليل تعليمات التدريب لمنشآت التدريب الأهلية:{" "}
+              {isGradeWarning ? (
                 <>
-                  ولذلك تم اعتباركم محرومين في المقررات، ولا يحق لكم
-                  دخول اختبار هذه المقررات في نهاية الفترة التدريبية.
-                  لذا نأمل منكم الالتزام بالحضور وفق الجدول التدريبي
-                  للمحاضرات في الفصل التدريبي القادم.
+                  تعليمات الإنذارات وطي القيد. نفيدكم أن معدلكم التراكمي انخفض عن
+                  ({model.gradeValue || "2.00"} من {model.gradeMax || "5.00"}) خلال
+                  الفترة التدريبية {model.periodHijriText || "-"}، وذلك{" "}
+                  {model.reasonText || "نظراً لحرمانك / غيابك عن أداء الاختبارات"}.
+                  لذا نأمل الالتزام خلال الفترة التدريبية الحالية، وإلا سنضطر آسفين
+                  إلى إنهاء إجراءات طي القيد.
                 </>
               ) : (
                 <>
-                  وفي حال عدم الالتزام بالحضور وزيادة نسبة الغياب عن{" "}
-                  {model.denialPercent || 25}% من إجمالي ساعات المقرر
-                  فإنه يتم اعتباركم محرومين في المقررات، ولا يحق لكم
-                  دخول اختبار المقرر في نهاية الفترة التدريبية. لذا
-                  نأمل منكم الالتزام بالحضور وفق الجدول التدريبي
-                  للمحاضرات.
+                  تعليمات الانتظام والانسحاب والانتقال. نحيطكم بأن نسبة غيابكم قد
+                  تجاوزت <strong>{absencePercent}%</strong> من إجمالي ساعات المقررات الآتية:{" "}
+                  {model.courses || "المقررات المسجلة بالفصل التدريبي"}، بالفصل التدريبي{" "}
+                  {model.termName || "-"}.{" "}
+                  {isCourseDeprivation ? (
+                    <>
+                      ولذلك تم اعتباركم محرومين في المقررات، ولا يحق لكم دخول اختبار
+                      هذه المقررات في نهاية الفترة التدريبية. لذا نأمل منكم الالتزام
+                      بالحضور وفق الجدول التدريبي للمحاضرات في الفصل التدريبي القادم.
+                    </>
+                  ) : (
+                    <>
+                      وفي حال عدم الالتزام بالحضور وزيادة نسبة الغياب عن{" "}
+                      {model.denialPercent || 25}% من إجمالي ساعات المقرر فإنه يتم
+                      اعتباركم محرومين في المقررات، ولا يحق لكم دخول اختبار المقرر في
+                      نهاية الفترة التدريبية. لذا نأمل منكم الالتزام بالحضور وفق الجدول
+                      التدريبي للمحاضرات.
+                    </>
+                  )}
                 </>
               )}
-            </>
-          )}
-        </Typography>
-
-        <Divider
-          sx={{
-            my: "5mm",
-            borderColor: "#111"
-          }}
-        />
-
-        <Typography
-          align="center"
-          sx={{
-            fontSize: "9pt",
-            fontWeight: 800
-          }}
-        >
-          هذا لإحاطتكم والتنبيه، والله ولي التوفيق
-        </Typography>
-
-        {/* الجزء السفلي للإنذار بنفس استايل جدول الاختبارات */}
-        <Box
-          sx={{
-            position: "absolute",
-            left: "18mm",
-            right: "18mm",
-            bottom: "40mm",
-            minHeight: "49mm",
-            display: "grid",
-            gridTemplateColumns:
-              "64mm 1fr",
-            columnGap: "18mm",
-            alignItems: "end",
-            direction: "rtl"
-          }}
-        >
-          {/* موثوقية الإنذار */}
-<Box
-  sx={{
-    width: "50mm",
-    textAlign: "center",
-    justifySelf: "start",
-    position: "relative",
-    top: "-15mm"
-  }}
->
-            <Typography
-              sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                mb: "2mm",
-                textAlign: "center"
-              }}
-            >
-              مشرف التدريب
             </Typography>
+          </PrintBodyCard>
 
-            <QRCodeSVG
-              value={verificationUrl}
-              size={88}
-              level="M"
-            />
-
-            <Typography
-              sx={{
-                mt: "1mm",
-                fontSize: "8.8pt",
-                fontWeight: 900,
-                textAlign: "center",
-                whiteSpace: "nowrap"
-              }}
-            >
-              {verificationLabel}
-            </Typography>
-          </Box>
-
-          {/* التوقيع والختم */}
-          <Box
+          <Typography
+            align="center"
             sx={{
-              width: "105mm",
-              justifySelf: "end",
-              direction: "rtl"
+              mt: "4mm",
+              fontSize: "9.6pt",
+              lineHeight: 1.5,
+              fontWeight: 900,
+              color: PRINT_COLORS.greenDark
             }}
           >
-            <Typography
-              sx={{
-                fontSize: "9.5pt",
-                fontWeight: 900,
-                textAlign: "center",
-                mb: "2.5mm",
-                whiteSpace: "nowrap"
-              }}
-            >
-              المعهد السعودي المتخصص العالي للتدريب
-            </Typography>
+            هذا لإحاطتكم والتنبيه، والله ولي التوفيق
+          </Typography>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "16mm",
-                mb: "1.5mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  textAlign: "right",
-                  mr: "-45px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                التوقيع:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/signveno.png"
-                alt="التوقيع"
-                sx={{
-                  width: "50mm",
-                  height: "16mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns:
-                  "20mm 1fr",
-                alignItems: "center",
-                minHeight: "28mm"
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "9.5pt",
-                  fontWeight: 900,
-                  mr: "-30px",
-                  mt: "-40px",
-                  textAlign: "right",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                الختم:
-              </Typography>
-
-              <Box
-                component="img"
-                src="/stampveno.jpeg"
-                onError={(event) => {
-                  event.currentTarget.src =
-                    "/stampveno.png";
-                }}
-                alt="الختم"
-                sx={{
-                  width: "48mm",
-                  height: "28mm",
-                  objectFit: "contain",
-                  justifySelf: "center"
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        <Box
-          component="img"
-          src="/footerveno.png"
-          alt="الفوتر"
-          sx={{
-            position: "absolute",
-            bottom: "4mm",
-            left: "8mm",
-            right: "8mm",
-            width: "calc(100% - 16mm)",
-            height: "29mm",
-            objectFit: "fill",
-            display: "block"
-          }}
-        />
-      </Box>
+          <PrintVerificationAndSignature
+            model={model}
+            verificationUrl={verificationUrl}
+            verificationLabel={verificationLabel}
+          />
+        </PrintPageBody>
+        <PrintFooter />
+      </PrintPage>
     );
   }
 );

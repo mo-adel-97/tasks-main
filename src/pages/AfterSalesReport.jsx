@@ -1113,7 +1113,7 @@ const AfterSalesReport = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: "#f5f8f7",
+        background: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f5f8f7",
         direction: "rtl"
       }}
     >

@@ -1838,7 +1838,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
-        background: softBg,
+        background: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : softBg,
         fontFamily: "Cairo, Arial, sans-serif",
         direction: "rtl",
         overflowX: "hidden"

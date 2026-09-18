@@ -1,4 +1,4 @@
-import { adaptiveInlineStyle } from '../config/themeColors';
+import { adaptiveInlineStyle, pinColor } from '../config/themeColors';
 import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
@@ -49,6 +49,54 @@ const PHP_BASE = 'https://filesregsiteration.sstli.com';
 const PRIMARY_COLOR = '#80b49e';
 const PRIMARY_COLOR_DARK = '#6a9a87';
 const PRIMARY_COLOR_LIGHT = '#9ac8b5';
+
+// Every stat card at the top of this page ("متابعة الطلاب والسداد") shared the
+// same hardcoded light-only border/background, so in dark mode they all
+// flattened into near-identical black boxes instead of the bright green,
+// clearly-bordered card look used on the HR home page. This gives every card
+// that same treatment while keeping each card's own top accent stripe (its
+// only way of telling "late" from "paid" from "commission" at a glance) --
+// pinned so a non-green accent color doesn't get muddied by the shared
+// dark-color plugin's generic border-darkening fallback.
+// Used by the student-actions dialog's Cards (student info / status / quick
+// actions / add-note). Their border was already brand green at only 10%
+// alpha -- technically "not black", but far too dim to read as green at all,
+// which is exactly why the dialog still looked flat/black next to the rest
+// of the page. Same fix as everywhere else: the home page's bright,
+// on-brand-saturation accent border plus its dark card surface.
+const dialogCardSx = (theme) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    boxShadow: 'none',
+    borderRadius: 3,
+    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)',
+    background: isDark ? theme.palette.surfaces.card : undefined
+  };
+};
+
+// The small stat tiles inside the "student info" card (balance/installment/
+// program/previous balance) were hardcoded to a plain white fill.
+const dialogTileSx = (theme) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    bgcolor: isDark ? theme.palette.surfaces.nested : 'white',
+    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.09)'
+  };
+};
+
+const metricCardSx = (theme, topColor) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    flex: 1,
+    bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
+    color: isDark ? theme.palette.text.primary : '#17372b',
+    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.14)',
+    boxShadow: isDark
+      ? '0 0 0 1px #67C99D, 0 0 20px rgba(103,201,157,.06), 0 10px 24px rgba(0,0,0,.4)'
+      : 'none',
+    borderTop: `3px solid ${pinColor(topColor)}`
+  };
+};
 
 // الحد الأدنى للقسط الشهري لاعتباره مدفوع
 const MINIMUM_MONTHPAY_THRESHOLD = 250;
@@ -2282,14 +2330,14 @@ const getStatusDisplayText = (status) => {
         <IconButton
           size="small"
           onClick={() => handleOpenActionDialog(params.row)}
-          sx={{
-            border: '1px solid #e0e0e0',
+          sx={(theme) => ({
+            border: theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid #e0e0e0',
             borderRadius: 2,
             '&:hover': {
-              backgroundColor: PRIMARY_COLOR_LIGHT,
-              borderColor: PRIMARY_COLOR,
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(103,201,157,.14)' : PRIMARY_COLOR_LIGHT,
+              borderColor: theme.palette.mode === 'dark' ? '#67C99D' : pinColor(PRIMARY_COLOR),
             }
-          }}
+          })}
         >
           <MoreVertIcon sx={{ fontSize: isDesktop ? 20 : { xs: 15, sm: 17, md: 18 } }} />
         </IconButton>
@@ -2363,7 +2411,7 @@ const getStatusDisplayText = (status) => {
     <SpecialComponent onBack={() => setShowSpecial(false)} />
   ) : (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f6faf8' }}>
+      <Box sx={(theme) => ({ display: 'flex', minHeight: '100vh', backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : '#f6faf8' })}>
         {/* Sidebar */}
         {!isDesktop && (
         <AppBar
@@ -2504,13 +2552,18 @@ const getStatusDisplayText = (status) => {
         >
           {/* Header Section */}
           <Card
-            sx={{
-              mb: isDesktop ? 1.5 : { xs: 0.6, sm: 0.9, md: 1.2 },
-              boxShadow: 'none',
-              border: '1px solid rgba(5,117,70,0.12)',
-              borderRadius: isDesktop ? 3 : 1.5,
-              overflow: 'hidden',
-              bgcolor: '#fff'
+            sx={(theme) => {
+              const isDark = theme.palette.mode === 'dark';
+              return {
+                mb: isDesktop ? 1.5 : { xs: 0.6, sm: 0.9, md: 1.2 },
+                boxShadow: isDark
+                  ? `0 0 0 1px #67C99D, 0 0 26px rgba(103,201,157,.05), 0 18px 40px rgba(0,0,0,.45)`
+                  : 'none',
+                border: isDark ? `1px solid #67C99D` : '1px solid rgba(5,117,70,0.12)',
+                borderRadius: isDesktop ? 3 : 1.5,
+                overflow: 'hidden',
+                bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
+              };
             }}
           >
             <CardContent sx={{ p: isDesktop ? 1.5 : { xs: 0.7, sm: 1, md: 1.4 } }}>
@@ -2572,11 +2625,11 @@ const getStatusDisplayText = (status) => {
                       startIcon={<SummarizeIcon />}
                       onClick={handlePreviewReport}
                       sx={uiLayout.withUiSx({
-                        borderColor: PRIMARY_COLOR,
+                        borderColor: pinColor(PRIMARY_COLOR),
                         color: PRIMARY_COLOR,
                         '&:hover': {
-                          borderColor: PRIMARY_COLOR_DARK,
-                          backgroundColor: PRIMARY_COLOR_LIGHT + '20',
+                          borderColor: pinColor(PRIMARY_COLOR_DARK),
+                          backgroundColor: pinColor(PRIMARY_COLOR_LIGHT + '20'),
                         }
                       }, uiLayout.buttonSx)}
                     >
@@ -2607,9 +2660,9 @@ const getStatusDisplayText = (status) => {
                       onClick={handleExportExcelReport}
                       disabled={exportLoading}
                       sx={uiLayout.withUiSx({
-                        backgroundColor: PRIMARY_COLOR,
+                        backgroundColor: pinColor(PRIMARY_COLOR),
                         px: 3,
-                        '&:hover': { backgroundColor: PRIMARY_COLOR_DARK }
+                        '&:hover': { backgroundColor: pinColor(PRIMARY_COLOR_DARK) }
                       }, uiLayout.buttonSx)}
                     >
                       {exportLoading ? 'جاري التصدير...' : 'تصدير Excel'}
@@ -2648,44 +2701,20 @@ const getStatusDisplayText = (status) => {
                   },
                 }}
               >
-                <Card sx={{
-                  flex: 1,
-                  minWidth: isDesktop ? 150 : 0,
-                  bgcolor: '#fff',
-                  color: '#17372b',
-                  border: '1px solid rgba(5,117,70,.14)',
-                  boxShadow: 'none',
-                  borderTop: '3px solid #057546'
-                }}>
+                <Card sx={(theme) => ({ ...metricCardSx(theme, '#057546'), minWidth: isDesktop ? 150 : 0 })}>
                   <CardContent sx={{ textAlign: 'center', p: isDesktop ? 1.15 : { xs: 0.48, sm: 0.68, md: 0.9 } }}>
                     <Typography variant="h4" fontWeight="bold" sx={{ color: '#057546' }}>{totalStudents}</Typography>
                     <Typography variant="body2">إجمالي الطلاب</Typography>
                   </CardContent>
                 </Card>
-                <Card sx={{
-                  flex: 1,
-                  minWidth: isDesktop ? 150 : 0,
-                  bgcolor: '#fff',
-                  color: '#17372b',
-                  border: '1px solid rgba(5,117,70,.14)',
-                  boxShadow: 'none',
-                  borderTop: '3px solid #2e7d32'
-                }}>
+                <Card sx={(theme) => ({ ...metricCardSx(theme, '#2e7d32'), minWidth: isDesktop ? 150 : 0 })}>
                   <CardContent sx={{ textAlign: 'center', p: isDesktop ? 1.15 : { xs: 0.48, sm: 0.68, md: 0.9 } }}>
                     <Typography variant="h4" fontWeight="bold" sx={{ color: '#2e7d32' }}>{paidStudents}</Typography>
                     <Typography variant="body2">مسددين (مستوفين للشروط)</Typography>
                   </CardContent>
                 </Card>
                 {isDesktop && (
-                  <Card sx={{
-                    flex: 1,
-                    minWidth: 150,
-                    bgcolor: '#fff',
-                    color: '#17372b',
-                    border: '1px solid rgba(5,117,70,.14)',
-                    boxShadow: 'none',
-                    borderTop: '3px solid #ed9b22'
-                  }}>
+                  <Card sx={(theme) => ({ ...metricCardSx(theme, '#ed9b22'), minWidth: 150 })}>
                     <CardContent sx={{ textAlign: 'center', p: 1.15 }}>
                       <Typography variant="h4" fontWeight="bold" sx={{ color: '#b26a00' }}>{notedStudents}</Typography>
                       <Typography variant="body2">متابعة</Typography>
@@ -2693,34 +2722,21 @@ const getStatusDisplayText = (status) => {
                   </Card>
                 )}
                 {isDesktop && (
-                  <Card sx={{
-                    flex: 1,
-                    minWidth: 150,
-                    bgcolor: '#fff',
-                    color: '#17372b',
-                    border: '1px solid rgba(5,117,70,.14)',
-                    boxShadow: 'none',
-                    borderTop: '3px solid #c62828'
-                  }}>
+                  <Card sx={(theme) => ({ ...metricCardSx(theme, '#c62828'), minWidth: 150 })}>
                     <CardContent sx={{ textAlign: 'center', p: 1.15 }}>
                       <Typography variant="h4" fontWeight="bold" sx={{ color: '#c62828' }}>{lateStudents}</Typography>
                       <Typography variant="body2">متأخرين</Typography>
                     </CardContent>
                   </Card>
                 )}
-                
+
                 {/* ✅ كارد النسبة والعمولة */}
-                <Card sx={{ 
-                  flex: 1,
+                <Card sx={(theme) => ({
+                  ...metricCardSx(theme, getPercentageColor(commissionData.percentage)),
                   minWidth: isDesktop ? 200 : 0,
-                  bgcolor: '#fff',
-                  color: '#17372b',
                   position: 'relative',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(5,117,70,.14)',
-                  boxShadow: 'none',
-                  borderTop: `3px solid ${getPercentageColor(commissionData.percentage)}`
-                }}>
+                  overflow: 'hidden'
+                })}>
                   <CardContent sx={{ textAlign: 'center', p: isDesktop ? 1.15 : { xs: 0.48, sm: 0.68, md: 0.9 }, position: 'relative', zIndex: 1 }}>
                     <Box display="flex" alignItems="center" justifyContent="center" gap={1} mb={0.35}>
                       <TrendingUpIcon sx={{ color: getPercentageColor(commissionData.percentage) }} />
@@ -2740,15 +2756,7 @@ const getStatusDisplayText = (status) => {
                 </Card>
 
                 {/* ✅ كارد العمولة الإجمالية */}
-                <Card sx={{ 
-                  flex: 1,
-                  minWidth: isDesktop ? 200 : 0,
-                  bgcolor: '#fff',
-                  color: '#17372b',
-                  border: '1px solid rgba(5,117,70,.14)',
-                  boxShadow: 'none',
-                  borderTop: '3px solid #6a1b9a'
-                }}>
+                <Card sx={(theme) => ({ ...metricCardSx(theme, '#6a1b9a'), minWidth: isDesktop ? 200 : 0 })}>
                   <CardContent sx={{ textAlign: 'center', p: isDesktop ? 1.15 : { xs: 0.48, sm: 0.68, md: 0.9 } }}>
                     <Box display="flex" alignItems="center" justifyContent="center" gap={1} mb={0.35}>
                       <AttachMoneyIcon sx={{ color: '#6a1b9a' }} />
@@ -2798,7 +2806,11 @@ const getStatusDisplayText = (status) => {
                     width: isDesktop ? 'auto' : '100%',
                     minHeight: isDesktop ? undefined : { xs: 32, sm: 36, md: 38 },
                   },
-                }, uiLayout.filterBarSx)}
+                }, uiLayout.filterBarSx, (theme) => (theme.palette.mode !== 'dark' ? {} : {
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+                }))}
               >
                 <DatePicker
                   label="من تاريخ"
@@ -2837,15 +2849,15 @@ const getStatusDisplayText = (status) => {
   <MenuItem value="none">بدون</MenuItem>
 </Select>
                 </FormControl>
-                <Button 
-                  variant="contained" 
-                  onClick={fetchData} 
+                <Button
+                  variant="contained"
+                  onClick={fetchData}
                   sx={uiLayout.withUiSx({
                     px: isDesktop ? 3 : { xs: 0.8, sm: 1.2 },
                     gridColumn: isPhone ? '1 / -1' : 'auto',
-                    backgroundColor: PRIMARY_COLOR,
+                    backgroundColor: pinColor(PRIMARY_COLOR),
                     '&:hover': {
-                      backgroundColor: PRIMARY_COLOR_DARK,
+                      backgroundColor: pinColor(PRIMARY_COLOR_DARK),
                     }
                   }, uiLayout.buttonSx)}
                 >
@@ -2857,14 +2869,19 @@ const getStatusDisplayText = (status) => {
 
           {/* Data Grid Section */}
           <Card
-            sx={{
-              boxShadow: 'none',
-              border: '1px solid rgba(5,117,70,0.12)',
-              borderRadius: isDesktop ? 3 : 1.2,
-              width: '100%',
-              maxWidth: '100%',
-              overflow: 'hidden',
-              bgcolor: '#fff'
+            sx={(theme) => {
+              const isDark = theme.palette.mode === 'dark';
+              return {
+                boxShadow: isDark
+                  ? `0 0 0 1px #67C99D, 0 0 26px rgba(103,201,157,.05), 0 18px 40px rgba(0,0,0,.45)`
+                  : 'none',
+                border: isDark ? `1px solid #67C99D` : '1px solid rgba(5,117,70,0.12)',
+                borderRadius: isDesktop ? 3 : 1.2,
+                width: '100%',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
+              };
             }}
           >
             <CardContent sx={{ p: 0 }}>
@@ -2964,7 +2981,7 @@ const getStatusDisplayText = (status) => {
                       minHeight: '0 !important'
                     },
                     '& .MuiDataGrid-cell': {
-                      borderBottom: '1px solid #e0e0e0',
+                      borderBottom: (theme) => theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid #e0e0e0',
                       fontWeight: 500,
                       fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                       px: isDesktop ? undefined : { xs: 0.18, sm: 0.45 },
@@ -2984,6 +3001,7 @@ const getStatusDisplayText = (status) => {
                       minHeight: isDesktop ? undefined : { xs: 42, sm: 44 },
                       fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
                       px: isDesktop ? undefined : { xs: 0.3, sm: 0.6 },
+                      borderTop: (theme) => theme.palette.mode === 'dark' ? '1px solid #67C99D' : undefined,
                     },
                     '& .MuiTablePagination-root': {
                       fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
@@ -3002,9 +3020,9 @@ const getStatusDisplayText = (status) => {
                       fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
                     },
                     '& .MuiDataGrid-columnHeaders': {
-                      backgroundColor: '#edf7f2',
-                      color: '#17372b',
-                      borderBottom: '1px solid rgba(5,117,70,.18)',
+                      backgroundColor: (theme) => theme.palette.mode === 'dark' ? theme.palette.surfaces.section : '#edf7f2',
+                      color: (theme) => theme.palette.mode === 'dark' ? theme.palette.text.primary : '#17372b',
+                      borderBottom: (theme) => theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid rgba(5,117,70,.18)',
                     },
                   '& .row-paid': {
   backgroundColor: 'rgba(76, 175, 80, 0.12)',
@@ -3035,23 +3053,26 @@ const getStatusDisplayText = (status) => {
             fullScreen={isPhone}
             transitionDuration={{ enter: 120, exit: 90 }}
             PaperProps={{
-              sx: {
-                width: isPhone
-                  ? '100vw'
-                  : isTablet
-                    ? 'calc(100vw - 24px)'
-                    : 'min(1080px, calc(100vw - 64px))',
-                maxWidth: isPhone ? '100vw' : '1080px',
-                height: isPhone ? '100dvh' : 'auto',
-                maxHeight: isPhone ? '100dvh' : '88dvh',
-                m: isPhone ? 0 : 1.5,
-                borderRadius: isPhone ? 0 : 2.5,
-                overflow: 'hidden',
-                direction: 'rtl',
-                boxSizing: 'border-box',
-                bgcolor: '#f7faf8',
-                boxShadow: isPhone ? 'none' : '0 18px 50px rgba(15,23,42,.20)',
-                border: isPhone ? 'none' : '1px solid rgba(5,117,70,.10)'
+              sx: (theme) => {
+                const isDark = theme.palette.mode === 'dark';
+                return {
+                  width: isPhone
+                    ? '100vw'
+                    : isTablet
+                      ? 'calc(100vw - 24px)'
+                      : 'min(1080px, calc(100vw - 64px))',
+                  maxWidth: isPhone ? '100vw' : '1080px',
+                  height: isPhone ? '100dvh' : 'auto',
+                  maxHeight: isPhone ? '100dvh' : '88dvh',
+                  m: isPhone ? 0 : 1.5,
+                  borderRadius: isPhone ? 0 : 2.5,
+                  overflow: 'hidden',
+                  direction: 'rtl',
+                  boxSizing: 'border-box',
+                  bgcolor: isDark ? theme.palette.surfaces.card : '#f7faf8',
+                  boxShadow: isPhone ? 'none' : (isDark ? '0 18px 50px rgba(0,0,0,.5)' : '0 18px 50px rgba(15,23,42,.20)'),
+                  border: isPhone ? 'none' : (isDark ? `1px solid #67C99D` : '1px solid rgba(5,117,70,.10)')
+                };
               }
             }}
             BackdropProps={{
@@ -3059,12 +3080,17 @@ const getStatusDisplayText = (status) => {
                 backgroundColor: 'rgba(15,23,42,.42)'
               }
             }}
-            sx={{
+            sx={(theme) => ({
               '& .MuiDialog-container': {
                 alignItems: isPhone ? 'stretch' : 'center',
                 justifyContent: 'center'
-              }
-            }}
+              },
+              ...(theme.palette.mode === 'dark' ? {
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+              } : {}),
+            })}
           >
             <DialogTitle
               sx={{
@@ -3161,12 +3187,12 @@ const getStatusDisplayText = (status) => {
             >
               {/* التبويبات */}
               <Box
-                sx={{
+                sx={(theme) => ({
                   borderBottom: 1,
-                  borderColor: 'divider',
+                  borderColor: theme.palette.mode === 'dark' ? '#67C99D' : 'divider',
                   flexShrink: 0,
                   overflowX: 'hidden',
-                }}
+                })}
               >
                 <Tabs
                   value={currentTab}
@@ -3174,9 +3200,9 @@ const getStatusDisplayText = (status) => {
                   variant={isPhone ? 'scrollable' : 'fullWidth'}
                   scrollButtons={isPhone ? 'auto' : false}
                   allowScrollButtonsMobile
-                  sx={{
+                  sx={(theme) => ({
                     minHeight: 42,
-                    bgcolor: '#fff',
+                    bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fff',
                     '& .MuiTabs-flexContainer': {
                       minHeight: 42
                     },
@@ -3200,14 +3226,14 @@ const getStatusDisplayText = (status) => {
                     },
                     '& .Mui-selected': {
                       color: '#057546 !important',
-                      bgcolor: '#f7fbf9'
+                      bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.selected : '#f7fbf9'
                     },
                     '& .MuiTabs-indicator': {
                       backgroundColor: '#057546',
                       height: 2.5,
                       borderRadius: 999
                     }
-                  }}
+                  })}
                 >
                   {tabs.map((tab, index) => (
                     <Tab
@@ -3222,7 +3248,9 @@ const getStatusDisplayText = (status) => {
 
               {/* محتوى التبويبات */}
               <Box
-                sx={{
+                sx={(theme) => {
+                  const isDark = theme.palette.mode === 'dark';
+                  return {
                   width: '100%',
                   maxWidth: '100%',
                   minWidth: 0,
@@ -3232,13 +3260,22 @@ const getStatusDisplayText = (status) => {
                   overflowY: 'auto',
                   flex: 1,
                   minHeight: 0,
-                  bgcolor: '#f7faf8',
+                  // This wrapper's own background is what actually shows
+                  // through around/behind every card (the cards' own dark
+                  // surface color only covers the cards themselves) -- it was
+                  // hardcoded near-white, which flattened to plain black in
+                  // dark mode instead of the layered page->section->card look
+                  // used everywhere else. And every Card's background/border
+                  // below was pinned white with !important, which silently
+                  // overrode the cards' own theme-aware sx (dialogCardSx /
+                  // metricCardSx) no matter what those set.
+                  bgcolor: isDark ? theme.palette.surfaces.page : '#f7faf8',
 
                   '& .MuiCard-root': {
                     boxShadow: 'none !important',
                     backgroundImage: 'none !important',
-                    background: '#fff !important',
-                    border: '1px solid rgba(5,117,70,.10) !important',
+                    background: isDark ? `${theme.palette.surfaces.card} !important` : '#fff !important',
+                    border: isDark ? `1px solid #67C99D !important` : '1px solid rgba(5,117,70,.10) !important',
                     borderRadius: '10px !important'
                   },
 
@@ -3307,6 +3344,7 @@ const getStatusDisplayText = (status) => {
                     padding: isPhone ? '6px' : '7px',
                     wordBreak: 'break-word'
                   }
+                  };
                 }}
               >
                 {/* التبويب 1: المعلومات الرئيسية */}
@@ -3329,12 +3367,7 @@ const getStatusDisplayText = (status) => {
                     >
                       {/* Student Info Card */}
                       <Card
-                        sx={{
-                          boxShadow: 'none',
-                          borderRadius: 2,
-                          background: '#fff',
-                          border: '1px solid rgba(5,117,70,.10)'
-                        }}
+                        sx={(theme) => ({ ...dialogCardSx(theme), borderRadius: 2 })}
                       >
                         <CardContent sx={{ p: 3 }}>
                           <Typography
@@ -3360,14 +3393,13 @@ const getStatusDisplayText = (status) => {
                             }}
                           >
                             <Box
-                              sx={{
+                              sx={(theme) => ({
+                                ...dialogTileSx(theme),
                                 textAlign: 'center',
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
-                                bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 'none',
-                                border: '1px solid rgba(5,117,70,.09)',
-                              }}
+                                boxShadow: 'none'
+                              })}
                             >
                               <PaymentIcon sx={{ color: '#057546', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -3379,14 +3411,13 @@ const getStatusDisplayText = (status) => {
                             </Box>
 
                             <Box
-                              sx={{
+                              sx={(theme) => ({
+                                ...dialogTileSx(theme),
                                 textAlign: 'center',
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
-                                bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 'none',
-                                border: '1px solid rgba(5,117,70,.09)',
-                              }}
+                                boxShadow: 'none'
+                              })}
                             >
                               <PaymentIcon sx={{ color: isValidMonthpay(currentActionRow?.monthpay) ? '#2196f3' : '#ff9800', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -3403,14 +3434,13 @@ const getStatusDisplayText = (status) => {
                             </Box>
 
                             <Box
-                              sx={{
+                              sx={(theme) => ({
+                                ...dialogTileSx(theme),
                                 textAlign: 'center',
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
-                                bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 'none',
-                                border: '1px solid rgba(5,117,70,.09)',
-                              }}
+                                boxShadow: 'none'
+                              })}
                             >
                               <PaymentIcon sx={{ color: '#ff9800', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -3422,14 +3452,13 @@ const getStatusDisplayText = (status) => {
                             </Box>
 
                             <Box
-                              sx={{
+                              sx={(theme) => ({
+                                ...dialogTileSx(theme),
                                 textAlign: 'center',
                                 p: isDesktop ? 2 : { xs: 0.38, sm: 0.52, md: 0.7 },
-                                bgcolor: 'white',
                                 borderRadius: 2,
-                                boxShadow: 'none',
-                                border: '1px solid rgba(5,117,70,.09)',
-                              }}
+                                boxShadow: 'none'
+                              })}
                             >
                               <SchoolIcon sx={{ color: '#057546', fontSize: isDesktop ? 32 : { xs: 15, sm: 18, md: 20 }, mb: isDesktop ? 1 : 0.22 }} />
                               <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -3444,8 +3473,7 @@ const getStatusDisplayText = (status) => {
                       </Card>
 
                       {/* Current Status Card */}
-                      <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
+                      <Card sx={dialogCardSx}>
                         <CardContent sx={{ p: 3 }}>
                           <Typography
                             variant="h6"
@@ -3463,29 +3491,30 @@ const getStatusDisplayText = (status) => {
                           </Typography>
 
                           <Box
-                            sx={{
-                              p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.9 },
-                             bgcolor:
-  rowStatuses[currentActionRow?.id] === 'paid'
-    ? '#dcfce7'
-    : rowStatuses[currentActionRow?.id] === 'has_order'
-    ? '#e3f2fd'
-    : rowStatuses[currentActionRow?.id] === 'note'
-    ? '#fef9c3'
-    : rowStatuses[currentActionRow?.id] === 'late'
-    ? '#fee2e2'
-    : '#f8fafc',
-borderColor:
-  rowStatuses[currentActionRow?.id] === 'paid'
-    ? '#4caf50'
-    : rowStatuses[currentActionRow?.id] === 'has_order'
-    ? '#2196f3'
-    : rowStatuses[currentActionRow?.id] === 'note'
-    ? '#ff9800'
-    : rowStatuses[currentActionRow?.id] === 'late'
-    ? '#f44336'
-    : 'grey.300',
-                              textAlign: 'center',
+                            sx={(theme) => {
+                              const isDark = theme.palette.mode === 'dark';
+                              const status = rowStatuses[currentActionRow?.id];
+                              // No `border` width/style was ever set alongside
+                              // `borderColor` below, so this box had no visible
+                              // border at all -- its only signal was the pastel
+                              // background, which is exactly what flattens to a
+                              // near-identical black box once dark mode's
+                              // auto-color plugin inverts a near-white literal.
+                              const tones = {
+                                paid: { bg: '#dcfce7', border: '#4caf50', darkBg: 'rgba(103,201,157,.14)', darkBorder: '#67C99D' },
+                                has_order: { bg: '#e3f2fd', border: '#2196f3', darkBg: 'rgba(90,160,229,.14)', darkBorder: pinColor('rgba(90,160,229,.5)') },
+                                note: { bg: '#fef9c3', border: '#ff9800', darkBg: 'rgba(237,137,54,.14)', darkBorder: pinColor('rgba(237,137,54,.5)') },
+                                late: { bg: '#fee2e2', border: '#f44336', darkBg: 'rgba(229,90,90,.14)', darkBorder: pinColor('rgba(229,90,90,.5)') }
+                              };
+                              const tone = tones[status] || { bg: '#f8fafc', border: 'grey.300', darkBg: theme.palette.surfaces.nested, darkBorder: '#67C99D' };
+                              return {
+                                p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.9 },
+                                bgcolor: isDark ? tone.darkBg : tone.bg,
+                                border: '1px solid',
+                                borderColor: isDark ? tone.darkBorder : tone.border,
+                                borderRadius: 2,
+                                textAlign: 'center'
+                              };
                             }}
                           >
                             <Chip
@@ -3517,8 +3546,7 @@ borderColor:
                       </Card>
 
                       {/* Actions Card */}
-                      <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
+                      <Card sx={dialogCardSx}>
                         <CardContent sx={{ p: 3 }}>
                           <Typography variant="h6" gutterBottom sx={{ color: '#057546', mb: 3, fontWeight: 'bold' }}>
                             الإجراءات السريعة
@@ -3589,8 +3617,7 @@ borderColor:
                       gap={isPhone ? 0.65 : 0.85}
                     >
                       {/* Add Note Card */}
-                      <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
+                      <Card sx={dialogCardSx}>
                         <CardContent sx={{ p: 3 }}>
                           <Typography
                             variant="h6"
@@ -3647,8 +3674,7 @@ borderColor:
 
                 {/* التبويب 2: كشف الحساب */}
                 {currentTab === 1 && (
-                  <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
+                  <Card sx={dialogCardSx}>
                     <CardContent sx={{ p: 3 }}>
                       <Typography
                         variant="h6"
@@ -3674,10 +3700,10 @@ borderColor:
                           لا توجد بيانات كشف حساب.
                         </Typography>
                       ) : (
-                        <Box sx={{ overflowX: 'auto', border: '1px solid #eee', borderRadius: 2 }}>
-                          <table style={adaptiveInlineStyle({ width: '100%', borderCollapse: 'collapse', direction: 'rtl' })}>
+                        <Box sx={{ overflowX: 'auto', border: `1px solid ${TABLE_BORDER_COLOR}`, borderRadius: 2 }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
                             <thead>
-                              <tr style={adaptiveInlineStyle({ backgroundColor: PRIMARY_COLOR_LIGHT })}>
+                              <tr style={{ backgroundColor: TABLE_HEADER_BG }}>
                                 <th style={adaptiveInlineStyle(thCell)}>📅 التاريخ</th>
                                 <th style={adaptiveInlineStyle(thCell)}>➖ دفعة الشهر</th>
                                 <th style={adaptiveInlineStyle(thCell)}>💰 الرصيد المتبقي عليه</th>
@@ -3686,7 +3712,7 @@ borderColor:
                             </thead>
                             <tbody>
                               {statements.map((item, idx) => (
-                                <tr key={idx} style={adaptiveInlineStyle({ borderTop: '1px solid #eee' })}>
+                                <tr key={idx} style={{ borderTop: `1px solid ${TABLE_BORDER_COLOR}` }}>
                                   <td style={adaptiveInlineStyle(tdCell)}>{item.dayDate ? item.dayDate.split('T')[0] : '-'}</td>
                                   <td style={adaptiveInlineStyle(tdCell)}>{item.daen}</td>
                                   <td style={adaptiveInlineStyle(tdCell)}>{item.balance}</td>
@@ -3705,8 +3731,7 @@ borderColor:
 
                 {/* التبويب 3: الملف التدريبي */}
                 {currentTab === 2 && (
-                  <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
+                  <Card sx={dialogCardSx}>
                     <CardContent sx={{ p: 3 }}>
                       <Typography
                         variant="h6"
@@ -3732,46 +3757,46 @@ borderColor:
                           لا توجد بيانات متاحة.
                         </Typography>
                       ) : (
-                        <Box sx={{ overflowX: 'auto', border: '1px solid #eee', borderRadius: 2 }}>
-                          <table style={adaptiveInlineStyle({ width: '100%', borderCollapse: 'collapse', direction: 'rtl' })}>
+                        <Box sx={{ overflowX: 'auto', border: `1px solid ${TABLE_BORDER_COLOR}`, borderRadius: 2 }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
                             <tbody>
                               {trainingFile.map((item, index) => (
                                 <React.Fragment key={index}>
-                                  <tr style={adaptiveInlineStyle({ borderTop: '1px solid #eee' })}>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الفرع</td>
+                                  <tr style={{ borderTop: `1px solid ${TABLE_BORDER_COLOR}` }}>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>الفرع</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.branch}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>البرنامج</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>البرنامج</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.diplom}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الدفعة</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>الدفعة</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.batch}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>المستوى</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>المستوى</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.level}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>تاريخ البداية</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>تاريخ البداية</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.dateStart || '---'}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>تاريخ النهاية</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>تاريخ النهاية</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.dateEnd || '---'}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>الحالة</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>الحالة</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.status}</td>
                                   </tr>
                                   <tr>
-                                    <td style={adaptiveInlineStyle({ ...tdCell, fontWeight: 'bold', backgroundColor: PRIMARY_COLOR_LIGHT })}>ملاحظات</td>
+                                    <td style={{ ...adaptiveInlineStyle(tdCell), fontWeight: 'bold', backgroundColor: TABLE_HEADER_BG }}>ملاحظات</td>
                                     <td style={adaptiveInlineStyle(tdCell)}>{item.notes}</td>
                                   </tr>
                                   {index < trainingFile.length - 1 && (
                                     <tr>
-                                      <td colSpan="2" style={adaptiveInlineStyle({ padding: '15px', backgroundColor: '#f8f9fa' })}></td>
+                                      <td colSpan="2" style={{ padding: '15px', backgroundColor: 'light-dark(#f8f9fa, rgba(103,201,157,.06))' }}></td>
                                     </tr>
                                   )}
                                 </React.Fragment>
@@ -3786,8 +3811,7 @@ borderColor:
 
                 {/* ✅ التبويب 4: آخر طلب سداد */}
                 {currentTab === 3 && (
-                  <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3 }}>
+                  <Card sx={dialogCardSx}>
                     <CardContent sx={{ p: 3 }}>
                       <Typography
                         variant="h6"
@@ -3817,10 +3841,14 @@ borderColor:
                         </Box>
                       ) : (
                         <Box sx={{ maxWidth: isDesktop ? 600 : '100%', mx: 'auto' }}>
-                          <Card sx={{ 
-                            bgcolor: lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0 ? '#fff3e0' : '#e8f5e8',
-                            border: `2px solid ${lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0 ? '#ff9800' : '#4caf50'}`,
-                            borderRadius: 3
+                          <Card sx={(theme) => {
+                            const isDark = theme.palette.mode === 'dark';
+                            const pending = lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0;
+                            return {
+                              bgcolor: isDark ? (pending ? 'rgba(237,137,54,.1)' : 'rgba(103,201,157,.1)') : (pending ? '#fff3e0' : '#e8f5e8'),
+                              border: `2px solid ${pending ? pinColor('#ff9800') : '#67C99D'}`,
+                              borderRadius: 3
+                            };
                           }}>
                             <CardContent sx={{ p: 3 }}>
                               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -3851,7 +3879,7 @@ borderColor:
                                   gap: isDesktop ? 2 : { xs: 0.45, sm: 0.65, md: 0.9 },
                                 }}
                               >
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
+                                <Box sx={(theme) => ({ p: 2, ...dialogTileSx(theme), borderRadius: 2, boxShadow: theme.palette.mode === 'dark' ? 'none' : 1 })}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     رقم الطلب
                                   </Typography>
@@ -3860,7 +3888,7 @@ borderColor:
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
+                                <Box sx={(theme) => ({ p: 2, ...dialogTileSx(theme), borderRadius: 2, boxShadow: theme.palette.mode === 'dark' ? 'none' : 1 })}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     تاريخ الطلب
                                   </Typography>
@@ -3870,7 +3898,7 @@ borderColor:
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
+                                <Box sx={(theme) => ({ p: 2, ...dialogTileSx(theme), borderRadius: 2, boxShadow: theme.palette.mode === 'dark' ? 'none' : 1 })}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     وصف السداد
                                   </Typography>
@@ -3879,8 +3907,7 @@ borderColor:
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 'none',
-                                border: '1px solid rgba(5,117,70,.09)', gridColumn: '1 / -1' }}>
+                                <Box sx={(theme) => ({ p: 2, ...dialogTileSx(theme), borderRadius: 2, boxShadow: 'none', gridColumn: '1 / -1' })}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     حالة الطلب
                                   </Typography>
@@ -3893,8 +3920,7 @@ borderColor:
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 'none',
-                                border: '1px solid rgba(5,117,70,.09)', gridColumn: '1 / -1' }}>
+                                <Box sx={(theme) => ({ p: 2, ...dialogTileSx(theme), borderRadius: 2, boxShadow: 'none', gridColumn: '1 / -1' })}>
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     اسم المسدد
                                   </Typography>
@@ -3906,13 +3932,13 @@ borderColor:
 
                               {/* ✅ ملاحظة إذا كان هناك طلب معلق */}
                               {lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0 && (
-                                <Box sx={{ 
-                                  mt: 2, 
-                                  p: 2, 
-                                  bgcolor: '#fff8e1', 
+                                <Box sx={(theme) => ({
+                                  mt: 2,
+                                  p: 2,
+                                  bgcolor: theme.palette.mode === 'dark' ? 'rgba(237,137,54,.12)' : '#fff8e1',
                                   borderRadius: 2,
-                                  border: '1px solid #ffd54f'
-                                }}>
+                                  border: `1px solid ${pinColor('#ffd54f')}`
+                                })}>
                                   <Typography variant="body2" sx={{ color: '#e65100', fontWeight: 'bold' }}>
                                     ⚠️ ملاحظة: يوجد طلب سداد معلق بقيمة {
                                       Number(lastOrderData[currentActionRow?.id]?.data?.orderSubTotal).toLocaleString('ar-EG')
@@ -3922,13 +3948,13 @@ borderColor:
                               )}
 
                               {/* ✅ عرض تاريخ الطلب ومقارنته بالفترة */}
-                              <Box sx={{ 
-                                mt: 2, 
-                                p: 2, 
-                                bgcolor: '#e3f2fd', 
+                              <Box sx={(theme) => ({
+                                mt: 2,
+                                p: 2,
+                                bgcolor: theme.palette.mode === 'dark' ? 'rgba(90,160,229,.12)' : '#e3f2fd',
                                 borderRadius: 2,
-                                border: '1px solid #90caf9'
-                              }}>
+                                border: `1px solid ${pinColor('#90caf9')}`
+                              })}>
                                 <Typography variant="body2" sx={{ color: '#0d47a1', fontWeight: 'bold' }}>
                                   📅 تاريخ الطلب: {lastOrderData[currentActionRow?.id]?.data?.orderDate ? 
                                     dayjs(lastOrderData[currentActionRow?.id]?.data?.orderDate).format('YYYY/MM/DD HH:mm') : '-'}
@@ -3956,8 +3982,7 @@ borderColor:
 
                 {/* التبويب 5: سجل المتابعات */}
                 {currentTab === 4 && (
-                  <Card sx={{ boxShadow: 'none',
-                          border: '1px solid rgba(5,117,70,.10)', borderRadius: 3, flex: 1 }}>
+                  <Card sx={(theme) => ({ ...dialogCardSx(theme), flex: 1 })}>
                     <CardContent sx={{ p: 3, height: '100%' }}>
                       <Typography
                         variant="h6"
@@ -3987,13 +4012,16 @@ borderColor:
                               <React.Fragment key={index}>
                                 <ListItem
                                   alignItems="flex-start"
-                                  sx={{
-                                    p: isDesktop ? 2 : { xs: 0.55, sm: 0.75, md: 1 },
-                                    mb: isDesktop ? 2 : { xs: 0.45, sm: 0.6, md: 0.8 },
-                                    bgcolor: index === 0 ? '#f0f9ff' : 'transparent',
-                                    borderRadius: 2,
-                                    border: index === 0 ? '2px solid' : '1px solid',
-                                    borderColor: index === 0 ? PRIMARY_COLOR : 'grey.200',
+                                  sx={(theme) => {
+                                    const isDark = theme.palette.mode === 'dark';
+                                    return {
+                                      p: isDesktop ? 2 : { xs: 0.55, sm: 0.75, md: 1 },
+                                      mb: isDesktop ? 2 : { xs: 0.45, sm: 0.6, md: 0.8 },
+                                      bgcolor: index === 0 ? (isDark ? 'rgba(103,201,157,.1)' : '#f0f9ff') : 'transparent',
+                                      borderRadius: 2,
+                                      border: index === 0 ? '2px solid' : '1px solid',
+                                      borderColor: index === 0 ? pinColor(PRIMARY_COLOR) : (isDark ? '#67C99D' : 'grey.200'),
+                                    };
                                   }}
                                 >
                                   <ListItemText
@@ -4028,7 +4056,7 @@ borderColor:
                                           />
                                         </Box>
 
-                                        <Box display="flex" alignItems="center" gap={1} sx={{ bgcolor: '#f8fafc', p: 1, borderRadius: 1, width: '100%' }}>
+                                        <Box display="flex" alignItems="center" gap={1} sx={(theme) => ({ bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.nested : '#f8fafc', p: 1, borderRadius: 1, width: '100%' })}>
                                           <PersonIcon fontSize="small" sx={{ color: PRIMARY_COLOR }} />
                                           <Typography variant="body2" sx={{ color: PRIMARY_COLOR }} fontWeight="500">
                                             المدرب: {getTrainerName(record.trainerGuid)}
@@ -4099,6 +4127,16 @@ borderColor:
     </LocalizationProvider></NavigationShell>
   );
 };
+
+// These raw <table> tags (invoices / training file tabs) render their inline
+// `style` through adaptiveInlineStyle, which auto-guesses a dark alternative
+// per color -- fine for plain text, but its background/border fallback for a
+// non-brand color is either muddy or barely-there. Spelling out the exact
+// dark-mode pair here (and passing it straight through, since the plugin
+// skips any value that already contains "light-dark(") gives these tables
+// the same bright, visible green used everywhere else instead.
+const TABLE_HEADER_BG = `light-dark(${PRIMARY_COLOR_LIGHT}, rgba(103,201,157,.16))`;
+const TABLE_BORDER_COLOR = 'light-dark(#eee, rgba(103,201,157,.35))';
 
 /** @type {import('react').CSSProperties} */
 const thCell = {

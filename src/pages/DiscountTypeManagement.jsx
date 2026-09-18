@@ -21,7 +21,8 @@ import {
   Paper,
   TextField,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
@@ -256,6 +257,7 @@ function DiscountTypeLookupDialog({
 }
 
 export default function DiscountTypeManagement() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -1084,7 +1086,7 @@ export default function DiscountTypeManagement() {
             }><Box
       sx={{
         minHeight: "100vh",
-        bgcolor: soft
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
       }}
     >
       {isDesktop ? (

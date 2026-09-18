@@ -39,6 +39,14 @@ import Swal from "sweetalert2";
 
 const primaryColor = "#057546";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 
 const getCurrentUser = () => {
   try {
@@ -281,7 +289,7 @@ const PromoStudentsDialog = ({
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
@@ -551,7 +559,7 @@ const PromoDetailsDialog = ({
           px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : "92vw",
@@ -591,12 +599,12 @@ const PromoDetailsDialog = ({
           <>
             <Paper
               variant="outlined"
-              sx={{
+              sx={(theme) => ({
                 p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
                 mb: isCompact ? 0.4 : 2,
                 textAlign: "center",
-                backgroundColor: "#fffafa"
-              }}
+                backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.1)" : "#fffafa"
+              })}
             >
               <Typography
                 sx={{
@@ -1021,7 +1029,7 @@ const DiscountOrderDialog = ({
             pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }, uiLayout.dialogLayoutSx)}
+        }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : "94vw",
@@ -1083,7 +1091,7 @@ const DiscountOrderDialog = ({
             </Alert>
           ) : null}
 
-          <Paper variant="outlined" sx={{ p: isPhone ? 0.4 : isTablet ? 0.6 : 2, mb: isCompact ? 0.45 : 2, borderRadius: isCompact ? 1.4 : undefined }}>
+          <Paper variant="outlined" sx={(theme) => ({ p: isPhone ? 0.4 : isTablet ? 0.6 : 2, mb: isCompact ? 0.45 : 2, borderRadius: isCompact ? 1.4 : undefined, borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined })}>
             <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
               <Grid item xs={12} sm={6} md={4}>
                 <StudentField

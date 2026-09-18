@@ -1,4 +1,5 @@
 import { PRINT_READY_SCRIPT } from '../utils/printReady';
+import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useState } from "react";
@@ -44,6 +45,14 @@ const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const primaryLight = "#e6f3ee";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const whiteColor = "#fefefe";
 const softBg = "#fefefe";
 const textColor = "#1f2d3d";
@@ -972,11 +981,13 @@ const SectionTitle = ({ children, color = dangerColor }) => (
 const DetailBox = ({ label, value, color = textColor }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
       p: 1.2,
       borderRadius: 2,
-      border: "1px solid #e6f3ee",
-      backgroundColor: whiteColor,
+      border: isDark ? `1px solid #67C99D` : "1px solid #e6f3ee",
+      backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
       height: "100%",
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.48,
@@ -987,6 +998,7 @@ const DetailBox = ({ label, value, color = textColor }) => (
         p: 0.34,
         minHeight: 44
       }
+      };
     }}
   >
     <Typography
@@ -1053,9 +1065,9 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
       textAlign: "start",
       direction: "rtl",
       fontWeight: 950,
-      borderColor: active ? color : "#d7eee4",
-      backgroundColor: active ? color : "#fff",
-      color: active ? "#fff" : color,
+      borderColor: active ? pinColor(color) : pinColor("#d7eee4"),
+      backgroundColor: (theme) => (active ? pinColor(color) : (theme.palette.mode === "dark" ? theme.palette.surfaces.card : "#fff")),
+      color: active ? pinColor("#fff") : color,
       "& .MuiButton-startIcon": {
         ml: 1,
         mr: 0,
@@ -1069,8 +1081,8 @@ const ActionChoiceButton = ({ active, icon, title, subtitle, onClick, color }) =
         }
       },
       "&:hover": {
-        borderColor: color,
-        backgroundColor: active ? color : "#f8fbfa"
+        borderColor: pinColor(color),
+        backgroundColor: (theme) => (active ? pinColor(color) : (theme.palette.mode === "dark" ? theme.palette.surfaces.hover : "#f8fbfa"))
       }
     }, uiLayout.buttonSx)}
   >
@@ -1114,6 +1126,7 @@ const StudentPaymentOrderDialog = ({
   onSaved
 }) => {
   const theme = useTheme();
+  const isDarkGrid = theme.palette.mode === "dark";
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(
     `(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`,
@@ -1238,11 +1251,17 @@ const StudentPaymentOrderDialog = ({
             <Chip
               label={safeText(value)}
               size="small"
-              sx={{
-                fontWeight: 950,
-                borderRadius: 2,
-                color: String(value).includes("مؤكد") ? "#2e7d32" : warningColor,
-                backgroundColor: String(value).includes("مؤكد") ? "#e8f5e9" : "#fff3e0"
+              sx={(theme) => {
+                const isDark = theme.palette.mode === "dark";
+                const confirmed = String(value).includes("مؤكد");
+                return {
+                  fontWeight: 950,
+                  borderRadius: 2,
+                  color: confirmed ? (isDark ? "#67c99d" : "#2e7d32") : (isDark ? "#f0ad4e" : warningColor),
+                  backgroundColor: confirmed
+                    ? (isDark ? "rgba(103,201,157,.14)" : "#e8f5e9")
+                    : (isDark ? "rgba(237,137,54,.14)" : "#fff3e0")
+                };
               }}
             />
           );
@@ -2278,7 +2297,7 @@ const StudentPaymentOrderDialog = ({
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -2304,10 +2323,15 @@ const StudentPaymentOrderDialog = ({
       }}
     >
       <DialogTitle
-        sx={{
-          p: 0,
-          background: `linear-gradient(135deg, ${whiteColor} 0%, #f1faf6 55%, ${primaryLight} 100%)`,
-          borderBottom: `1px solid ${primaryLight}`
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            p: 0,
+            background: isDark
+              ? `linear-gradient(135deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+              : `linear-gradient(135deg, ${whiteColor} 0%, #f1faf6 55%, ${primaryLight} 100%)`,
+            borderBottom: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`
+          };
         }}
       >
         <Stack
@@ -2329,14 +2353,17 @@ const StudentPaymentOrderDialog = ({
                 onClose?.();
               }}
               disabled={disabled}
-              sx={{
-                color: dangerColor,
-                backgroundColor: "#ffebee",
-                width: isPhone ? 26 : isTablet ? 30 : undefined,
-                height: isPhone ? 26 : isTablet ? 30 : undefined,
-                p: isCompact ? 0.25 : undefined,
-                "& svg": { fontSize: isPhone ? 15 : isTablet ? 17 : undefined },
-                "&:hover": { backgroundColor: "#ffcdd2" }
+              sx={(theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  color: dangerColor,
+                  backgroundColor: isDark ? "rgba(229,90,90,.14)" : "#ffebee",
+                  width: isPhone ? 26 : isTablet ? 30 : undefined,
+                  height: isPhone ? 26 : isTablet ? 30 : undefined,
+                  p: isCompact ? 0.25 : undefined,
+                  "& svg": { fontSize: isPhone ? 15 : isTablet ? 17 : undefined },
+                  "&:hover": { backgroundColor: isDark ? "rgba(229,90,90,.24)" : "#ffcdd2" }
+                };
               }}
             >
               <CloseIcon />
@@ -2437,8 +2464,8 @@ const StudentPaymentOrderDialog = ({
               sx={{
                 p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
                 borderRadius: isCompact ? 1.45 : 3,
-                border: "1px solid #d7eee4",
-                backgroundColor: whiteColor
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #d7eee4",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
               }}
             >
               <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
@@ -2481,8 +2508,8 @@ const StudentPaymentOrderDialog = ({
                   sx={{
                     p: isTablet ? 0.5 : 1.4,
                     borderRadius: isTablet ? 1.4 : 3,
-                    border: "1px solid #d7eee4",
-                    backgroundColor: whiteColor
+                    border: isDarkGrid ? `1px solid #67C99D` : "1px solid #d7eee4",
+                    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
                   }}
                 >
                   <SectionTitle>آخر طلب سداد</SectionTitle>
@@ -2507,8 +2534,8 @@ const StudentPaymentOrderDialog = ({
                   sx={{
                     p: isTablet ? 0.5 : 1.4,
                     borderRadius: isTablet ? 1.4 : 3,
-                    border: "1px solid #d7eee4",
-                    backgroundColor: whiteColor
+                    border: isDarkGrid ? `1px solid #67C99D` : "1px solid #d7eee4",
+                    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
                   }}
                 >
                   <SectionTitle>آخر فاتورة سداد</SectionTitle>
@@ -2533,8 +2560,8 @@ const StudentPaymentOrderDialog = ({
               sx={{
                 p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
                 borderRadius: isCompact ? 1.45 : 3,
-                border: "1px solid #d7eee4",
-                backgroundColor: whiteColor
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #d7eee4",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
               }}
             >
               <Grid container spacing={isPhone ? 0.32 : isTablet ? 0.5 : 1.2}>
@@ -2601,8 +2628,8 @@ const StudentPaymentOrderDialog = ({
               sx={{
                 p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
                 borderRadius: isCompact ? 1.45 : 3,
-                border: "1px solid #d7eee4",
-                backgroundColor: whiteColor
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #d7eee4",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
               }}
             >
               <SectionTitle color={primaryDark}>بيانات التنفيذ</SectionTitle>
@@ -2728,8 +2755,8 @@ const StudentPaymentOrderDialog = ({
               sx={{
                 p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
                 borderRadius: isCompact ? 1.45 : 3,
-                border: "1px solid #d7eee4",
-                backgroundColor: whiteColor
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #d7eee4",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
               }}
             >
               <Stack
@@ -2773,32 +2800,32 @@ const StudentPaymentOrderDialog = ({
                   {!isPhone && (
                     <Chip
                       label={`الإجمالي: ${money(totals.total)}`}
-                      sx={{
-                        ...chipStyle,
+                      sx={(theme) => ({
+                        ...chipStyle(theme),
                         fontSize: isTablet ? "0.75rem" : undefined,
                         height: isTablet ? 22 : undefined
-                      }}
+                      })}
                     />
                   )}
                   {!isPhone && (
                     <Chip
                       label={`الضريبة: ${money(totals.tax)}`}
-                      sx={{
-                        ...chipStyle,
+                      sx={(theme) => ({
+                        ...chipStyle(theme),
                         fontSize: isTablet ? "0.75rem" : undefined,
                         height: isTablet ? 22 : undefined
-                      }}
+                      })}
                     />
                   )}
                   <Chip
                     label={`الصافي: ${money(totals.subTotal)}`}
-                    sx={{
-                      ...chipStyle,
-                      backgroundColor: "#ffebee",
+                    sx={(theme) => ({
+                      ...chipStyle(theme),
+                      backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.14)" : "#ffebee",
                       color: dangerColor,
                       fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                       height: isPhone ? 20 : isTablet ? 22 : undefined
-                    }}
+                    })}
                   />
                 </Stack>
               </Stack>
@@ -2844,7 +2871,7 @@ const StudentPaymentOrderDialog = ({
                   px: isPhone ? 0 : isTablet ? 0.5 : 1.5,
                   pb: isPhone ? 0 : isTablet ? 0.5 : 1.5
                 }
-              }, uiLayout.dialogLayoutSx)}
+              }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
               PaperProps={{
                 sx: {
                   width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,
@@ -3147,21 +3174,24 @@ const StudentPaymentOrderDialog = ({
                 )
               }
               onClick={() => openPrintPreview(savedPrintResult)}
-              sx={uiLayout.withUiSx({
-                minWidth: isPhone ? 90 : isTablet ? 110 : 150,
-                minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
-                px: isPhone ? 0.65 : isTablet ? 0.9 : undefined,
-                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
-                borderRadius: isCompact ? 1.2 : 2,
-                fontWeight: 950,
-                direction: "rtl",
-                borderColor: "#1565c0",
-                color: "#1565c0",
-                backgroundColor: "#eef6ff",
-                "&:hover": {
-                  borderColor: "#0d47a1",
-                  backgroundColor: "#e3f2fd"
-                }
+              sx={uiLayout.withUiSx((theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  minWidth: isPhone ? 90 : isTablet ? 110 : 150,
+                  minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
+                  px: isPhone ? 0.65 : isTablet ? 0.9 : undefined,
+                  fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
+                  borderRadius: isCompact ? 1.2 : 2,
+                  fontWeight: 950,
+                  direction: "rtl",
+                  borderColor: isDark ? pinColor("#1565c0") : "#1565c0",
+                  color: "#1565c0",
+                  backgroundColor: isDark ? "rgba(90,160,229,.12)" : "#eef6ff",
+                  "&:hover": {
+                    borderColor: isDark ? pinColor("#0d47a1") : "#0d47a1",
+                    backgroundColor: isDark ? "rgba(90,160,229,.2)" : "#e3f2fd"
+                  }
+                };
               }, uiLayout.buttonSx)}
             >
               {isCompact ? "تصدير PDF" : "طباعة الطلب"}
@@ -3198,52 +3228,59 @@ const StudentPaymentOrderDialog = ({
   );
 };
 
-const gridStyle = {
-  border: "none",
-  direction: "rtl",
-  "& .MuiDataGrid-columnHeaders": {
-    background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-    color: whiteColor,
-    fontWeight: 950,
-    borderBottom: `1px solid ${primaryDark}`
-  },
-  "& .MuiDataGrid-columnHeaderTitle": {
-    fontWeight: 950,
-    fontSize: "0.78rem",
-    textAlign: "center",
-    color: whiteColor,
-    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.5rem", lineHeight: 1.05 },
-    "@media (max-width:599px)": { fontSize: "0.42rem" }
-  },
-  "& .MuiDataGrid-cell": {
-    borderBottom: "1px solid #edf4f1",
-    fontWeight: 900,
-    outline: "none !important",
-    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.5rem", px: 0.28 },
-    "@media (max-width:599px)": { fontSize: "0.42rem", px: 0.1 }
-  },
-  "& .MuiDataGrid-row:hover": {
-    backgroundColor: "#f0faf5"
-  },
-  "& .MuiDataGrid-footerContainer": {
-    direction: "rtl"
-  }
+const gridStyle = (theme) => {
+  const isDark = theme.palette.mode === "dark";
+  return {
+    border: isDark ? "1px solid #67C99D" : "none",
+    direction: "rtl",
+    "& .MuiDataGrid-columnHeaders": {
+      background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+      color: whiteColor,
+      fontWeight: 950,
+      borderBottom: isDark ? "1px solid #67C99D" : `1px solid ${primaryDark}`
+    },
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: 950,
+      fontSize: "0.78rem",
+      textAlign: "center",
+      color: whiteColor,
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.5rem", lineHeight: 1.05 },
+      "@media (max-width:599px)": { fontSize: "0.42rem" }
+    },
+    "& .MuiDataGrid-cell": {
+      borderBottom: isDark ? `1px solid #67C99D` : "1px solid #edf4f1",
+      fontWeight: 900,
+      outline: "none !important",
+      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.5rem", px: 0.28 },
+      "@media (max-width:599px)": { fontSize: "0.42rem", px: 0.1 }
+    },
+    "& .MuiDataGrid-row:hover": {
+      backgroundColor: isDark ? theme.palette.surfaces.hover : "#f0faf5"
+    },
+    "& .MuiDataGrid-footerContainer": {
+      direction: "rtl",
+      borderTop: isDark ? "1px solid #67C99D" : undefined
+    }
+  };
 };
 
-const chipStyle = {
-  fontWeight: 950,
-  borderRadius: 2,
-  backgroundColor: primaryLight,
-  color: primaryColor,
-  border: `1px solid ${primaryLight}`,
-  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-    height: 22,
-    fontSize: "0.48rem"
-  },
-  "@media (max-width:599px)": {
-    height: 20,
-    fontSize: "0.42rem"
-  }
+const chipStyle = (theme) => {
+  const isDark = theme.palette.mode === "dark";
+  return {
+    fontWeight: 950,
+    borderRadius: 2,
+    backgroundColor: isDark ? "rgba(103,201,157,.14)" : primaryLight,
+    color: isDark ? theme.palette.primary.main : primaryColor,
+    border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+      height: 22,
+      fontSize: "0.48rem"
+    },
+    "@media (max-width:599px)": {
+      height: 20,
+      fontSize: "0.42rem"
+    }
+  };
 };
 
 export default StudentPaymentOrderDialog;

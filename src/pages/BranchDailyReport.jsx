@@ -21,6 +21,7 @@ import {
   TextField,
   Typography
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   DataGrid,
   GridToolbar
@@ -418,6 +419,7 @@ const normalizePayOrderRow = (
 });
 
 const BranchDailyReport = () => {
+  const theme = useTheme();
   const currentUser = useMemo(() => {
     try {
       return JSON.parse(
@@ -786,7 +788,7 @@ const BranchDailyReport = () => {
         minHeight: "100vh",
         direction: "rtl",
         background:
-          "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
+          theme.palette.mode === 'dark' ? theme.palette.background.default : "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
     >
       

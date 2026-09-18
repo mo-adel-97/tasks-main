@@ -930,7 +930,7 @@ export default function BalanceReviewPage() {
   };
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ direction: "rtl", minHeight: "100vh", bgcolor: "#f4f7f6", overflowX: "hidden" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ direction: "rtl", minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f4f7f6", overflowX: "hidden" }}>
       
 
       <PageContainer

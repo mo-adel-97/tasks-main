@@ -116,10 +116,11 @@ const DocumentHistoryDialog = ({
       maxWidth="md"
       dir="rtl"
       PaperProps={{
-        sx: {
+        sx: (theme) => ({
           borderRadius: 3,
-          overflow: "hidden"
-        }
+          overflow: "hidden",
+          border: theme.palette.mode === "dark" ? "1px solid #67C99D" : undefined
+        })
       }}
     >
       <DialogTitle
@@ -198,8 +199,8 @@ const DocumentHistoryDialog = ({
                 borderRadius: 2,
                 direction: "rtl",
                 "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: "#f7ead0",
-                  color: "#1f2d3d",
+                  backgroundColor: (theme) => theme.palette.mode === "dark" ? "rgba(237,137,54,.16)" : "#f7ead0",
+                  color: (theme) => theme.palette.mode === "dark" ? theme.palette.text.primary : "#1f2d3d",
                   fontWeight: 950
                 },
                 "& .MuiDataGrid-columnHeaderTitle": {
@@ -209,7 +210,12 @@ const DocumentHistoryDialog = ({
                   textAlign: "center",
                   fontWeight: 750
                 }
-              }, uiLayout.dataGridSx)}
+              }, uiLayout.dataGridSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+                border: "1px solid #67C99D",
+                "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
+                "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
+                "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #67C99D" }
+              }))}
             />
           </Box>
         )}

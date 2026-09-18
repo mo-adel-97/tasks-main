@@ -9,15 +9,12 @@ import {
   Button,
   CircularProgress,
   IconButton,
-  InputAdornment,
   Paper,
   TextField,
   Typography,
   useMediaQuery
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -73,9 +70,6 @@ export default function ChangeUserPassword() {
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showNew, setShowNew] = useState(false);
 
   const [saving, setSaving] = useState(false);
 
@@ -190,27 +184,39 @@ export default function ChangeUserPassword() {
     }
   };
 
+  // Always-visible focus-green outline on every field, in every state (idle,
+  // hover, focused) — matches the reference styling adopted on the Home page.
+  const fieldBorderSx = (theme) => (theme.palette.mode !== "dark" ? {} : {
+    "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+  });
+
   const page = (
     <Box
       dir="rtl"
-      sx={{
+      sx={(theme) => ({
         minHeight: "100vh",
-        bgcolor: soft,
+        bgcolor: theme.palette.mode === "dark" ? theme.palette.background.default : soft,
         p: { xs: 0.35, sm: 0.9 },
         display: "grid",
         placeItems: "start center",
         overflowX: "hidden"
-      }}
+      })}
     >
       <Paper
         elevation={0}
-        sx={{
-          mt: { xs: 0.3, sm: 2 },
-          width: "100%",
-          maxWidth: 760,
-          border: `1px solid ${border}`,
-          borderRadius: { xs: 1.2, sm: 2.4 },
-          overflow: "hidden"
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            mt: { xs: 0.3, sm: 2 },
+            width: "100%",
+            maxWidth: 760,
+            border: isDark ? "1px solid #67C99D" : `1px solid ${border}`,
+            borderRadius: { xs: 1.2, sm: 2.4 },
+            overflow: "hidden",
+            boxShadow: isDark ? "0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.45)" : "none"
+          };
         }}
       >
         <Box
@@ -279,16 +285,12 @@ export default function ChangeUserPassword() {
               "& .MuiTextField-root": fieldSx
             }, uiLayout.formSectionSx)}
           >
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+            <TextField sx={uiLayout.withUiSx(uiLayout.formFieldSx, fieldBorderSx)} InputLabelProps={{ shrink: true }}
               autoFocus
               fullWidth
               size="small"
               label="كلمة المرور الحالية"
-              type={
-                showCurrent
-                  ? "text"
-                  : "password"
-              }
+              type="password"
               value={currentPassword}
               onChange={(e) =>
                 setCurrentPassword(e.target.value)
@@ -305,54 +307,14 @@ export default function ChangeUserPassword() {
                   newField?.focus();
                 }
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      edge="end"
-                      size="small"
-                      onMouseDown={() =>
-                        setShowCurrent(true)
-                      }
-                      onMouseUp={() =>
-                        setShowCurrent(false)
-                      }
-                      onMouseLeave={() =>
-                        setShowCurrent(false)
-                      }
-                      onTouchStart={() =>
-                        setShowCurrent(true)
-                      }
-                      onTouchEnd={() =>
-                        setShowCurrent(false)
-                      }
-                      onClick={() =>
-                        setShowCurrent(
-                          (current) => !current
-                        )
-                      }
-                    >
-                      {showCurrent ? (
-                        <VisibilityOffIcon fontSize="small" />
-                      ) : (
-                        <VisibilityIcon fontSize="small" />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
             />
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+            <TextField sx={uiLayout.withUiSx(uiLayout.formFieldSx, fieldBorderSx)} InputLabelProps={{ shrink: true }}
               id="new-password-field"
               fullWidth
               size="small"
               label="كلمة المرور الجديدة"
-              type={
-                showNew
-                  ? "text"
-                  : "password"
-              }
+              type="password"
               value={newPassword}
               onChange={(e) =>
                 setNewPassword(e.target.value)
@@ -362,42 +324,6 @@ export default function ChangeUserPassword() {
                   e.preventDefault();
                   submit();
                 }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      edge="end"
-                      size="small"
-                      onMouseDown={() =>
-                        setShowNew(true)
-                      }
-                      onMouseUp={() =>
-                        setShowNew(false)
-                      }
-                      onMouseLeave={() =>
-                        setShowNew(false)
-                      }
-                      onTouchStart={() =>
-                        setShowNew(true)
-                      }
-                      onTouchEnd={() =>
-                        setShowNew(false)
-                      }
-                      onClick={() =>
-                        setShowNew(
-                          (current) => !current
-                        )
-                      }
-                    >
-                      {showNew ? (
-                        <VisibilityOffIcon fontSize="small" />
-                      ) : (
-                        <VisibilityIcon fontSize="small" />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                )
               }}
             />
           </Box>
@@ -467,10 +393,10 @@ export default function ChangeUserPassword() {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
               setMobileSidebarOpen(false)
             }><Box
-      sx={{
+      sx={(theme) => ({
         minHeight: "100vh",
-        bgcolor: soft
-      }}
+        bgcolor: theme.palette.mode === "dark" ? theme.palette.background.default : soft
+      })}
     >
       {isDesktop ? (
         <>

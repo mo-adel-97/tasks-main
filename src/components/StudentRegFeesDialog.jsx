@@ -1,4 +1,5 @@
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
+import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -37,6 +38,14 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
 const primaryColor = "#80b49e";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const primaryDark = "#5f947e";
 const primaryLight = "#d8eee5";
 const textColor = "#1f2d3d";
@@ -156,11 +165,13 @@ const getStudentValue = (student, ...keys) => {
 const InfoCard = ({ label, value }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
       p: 1.2,
       borderRadius: 2,
-      border: "1px solid #e4eeea",
-      backgroundColor: "#fff",
+      border: isDark ? `1px solid #67C99D` : "1px solid #e4eeea",
+      backgroundColor: isDark ? theme.palette.surfaces.card : "#fff",
       height: "100%",
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.48,
@@ -171,6 +182,7 @@ const InfoCard = ({ label, value }) => (
         p: 0.34,
         minHeight: 42
       }
+      };
     }}
   >
     <Typography
@@ -205,11 +217,13 @@ const InfoCard = ({ label, value }) => (
 const TotalBox = ({ label, value, color = textColor }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
       p: 1.2,
       borderRadius: 2,
-      border: "1px solid #e4eeea",
-      backgroundColor: "#fff",
+      border: isDark ? `1px solid #67C99D` : "1px solid #e4eeea",
+      backgroundColor: isDark ? theme.palette.surfaces.card : "#fff",
       minWidth: 150,
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         minWidth: 0,
@@ -220,6 +234,7 @@ const TotalBox = ({ label, value, color = textColor }) => (
       "@media (max-width:599px)": {
         p: 0.32
       }
+      };
     }}
   >
     <Typography
@@ -257,6 +272,7 @@ const StudentRegFeesDialog = ({
   onSaved
 }) => {
   const theme = useTheme();
+  const isDarkGrid = theme.palette.mode === "dark";
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isCompact = isPhone || isTablet;
@@ -727,11 +743,11 @@ const StudentRegFeesDialog = ({
           <IconButton
             size="small"
             onClick={() => handleAddFee(params.row)}
-            sx={{
+            sx={(theme) => ({
               color: primaryDark,
-              backgroundColor: primaryLight,
-              "&:hover": { backgroundColor: "#c8e5d8" }
-            }}
+              backgroundColor: theme.palette.mode === "dark" ? "rgba(103,201,157,.14)" : primaryLight,
+              "&:hover": { backgroundColor: theme.palette.mode === "dark" ? "rgba(103,201,157,.24)" : "#c8e5d8" }
+            })}
           >
             <AddCircleIcon fontSize="small" />
           </IconButton>
@@ -775,11 +791,11 @@ const StudentRegFeesDialog = ({
           <IconButton
             size="small"
             onClick={() => handleRemoveFee(params.row.feeGuid)}
-            sx={{
+            sx={(theme) => ({
               color: "#d32f2f",
-              backgroundColor: "#ffebee",
-              "&:hover": { backgroundColor: "#ffcdd2" }
-            }}
+              backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.14)" : "#ffebee",
+              "&:hover": { backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.24)" : "#ffcdd2" }
+            })}
           >
             <DeleteIcon fontSize="small" />
           </IconButton>
@@ -948,7 +964,7 @@ const StudentRegFeesDialog = ({
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -975,9 +991,9 @@ const StudentRegFeesDialog = ({
       <DialogTitle
         sx={{
           p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
-          borderBottom: "1px solid #e5efea",
+          borderBottom: isDarkGrid ? `1px solid #67C99D` : "1px solid #e5efea",
           flexShrink: 0,
-          backgroundColor: softBg
+          backgroundColor: isDarkGrid ? theme.palette.surfaces.card : softBg
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
@@ -1023,7 +1039,7 @@ const StudentRegFeesDialog = ({
       <DialogContent
         sx={{
           p: isPhone ? 0.3 : isTablet ? 0.55 : 2,
-          backgroundColor: "#fbfdfc",
+          backgroundColor: isDarkGrid ? theme.palette.surfaces.page : "#fbfdfc",
           overflowY: "auto",
           flex: 1,
           minHeight: 0,
@@ -1066,8 +1082,8 @@ const StudentRegFeesDialog = ({
               sx={{
                 p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: "1px solid #e1eee8",
-                backgroundColor: "#fff"
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e1eee8",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : "#fff"
               }}
             >
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
@@ -1108,8 +1124,8 @@ const StudentRegFeesDialog = ({
               sx={{
                 p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: "1px solid #e1eee8",
-                backgroundColor: "#fff"
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e1eee8",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : "#fff"
               }}
             >
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5} alignItems="center">
@@ -1218,10 +1234,15 @@ const StudentRegFeesDialog = ({
                   <Stack direction="row" gap={1} justifyContent="flex-start">
                     <Chip
                       label={docInfo?.chkVat ? "ضريبة مفعلة" : "بدون ضريبة"}
-                      sx={{
-                        fontWeight: 900,
-                        color: docInfo?.chkVat ? "#0b6b3a" : "#795548",
-                        backgroundColor: docInfo?.chkVat ? "#e3f5ec" : "#fff4e5"
+                      sx={(theme) => {
+                        const dark = theme.palette.mode === "dark";
+                        return {
+                          fontWeight: 900,
+                          color: docInfo?.chkVat ? (dark ? "#67c99d" : "#0b6b3a") : (dark ? "#c8a385" : "#795548"),
+                          backgroundColor: docInfo?.chkVat
+                            ? (dark ? "rgba(103,201,157,.14)" : "#e3f5ec")
+                            : (dark ? "rgba(121,85,72,.2)" : "#fff4e5")
+                        };
                       }}
                     />
                   </Stack>
@@ -1274,8 +1295,8 @@ const StudentRegFeesDialog = ({
                   sx={{
                     p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                     borderRadius: isCompact ? 1.5 : 3,
-                    border: "1px solid #e1eee8",
-                    backgroundColor: "#fff",
+                    border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e1eee8",
+                    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : "#fff",
                     height: "100%"
                   }}
                 >
@@ -1356,23 +1377,25 @@ const StudentRegFeesDialog = ({
                         }
                       }}
                       sx={uiLayout.withUiSx({
-                        border: "1px solid #e4eeea",
+                        border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e4eeea",
                         borderRadius: isCompact ? 1.2 : 2,
                         direction: "rtl",
                         width: "100%",
                         minWidth: 0,
                         overflow: "hidden",
                         fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
+                        backgroundColor: isDarkGrid ? theme.palette.surfaces.card : undefined,
 
                         "& .MuiDataGrid-main": {
                           minWidth: 0
                         },
 
                         "& .MuiDataGrid-columnHeaders": {
-                          backgroundColor: softBg,
+                          backgroundColor: isDarkGrid ? theme.palette.surfaces.section : softBg,
                           fontWeight: 900,
                           minHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`,
-                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`
+                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`,
+                          borderBottom: isDarkGrid ? "1px solid #67C99D" : undefined
                         },
 
                         "& .MuiDataGrid-columnHeader": {
@@ -1394,7 +1417,8 @@ const StudentRegFeesDialog = ({
                           fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           px: isPhone ? 0.12 : isTablet ? 0.28 : undefined,
                           lineHeight: 1.1,
-                          overflow: "hidden"
+                          overflow: "hidden",
+                          borderColor: isDarkGrid ? "#67C99D" : undefined
                         },
 
                         "& .MuiDataGrid-cellContent": {
@@ -1419,7 +1443,8 @@ const StudentRegFeesDialog = ({
                         },
 
                         "& .MuiDataGrid-footerContainer": {
-                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined
+                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined,
+                          borderTop: isDarkGrid ? "1px solid #67C99D" : undefined
                         },
 
                         "& .MuiTablePagination-toolbar": {
@@ -1442,8 +1467,8 @@ const StudentRegFeesDialog = ({
                   sx={{
                     p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                     borderRadius: isCompact ? 1.5 : 3,
-                    border: "1px solid #e1eee8",
-                    backgroundColor: "#fff",
+                    border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e1eee8",
+                    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : "#fff",
                     height: "100%"
                   }}
                 >
@@ -1476,7 +1501,7 @@ const StudentRegFeesDialog = ({
                         px: isPhone ? 0.45 : isTablet ? 0.65 : undefined,
                         fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                         color: "#d32f2f",
-                        borderColor: "#ffcdd2",
+                        borderColor: pinColor("#ffcdd2"),
                         direction: "rtl"
                       }, uiLayout.buttonSx)}
                     >
@@ -1507,23 +1532,25 @@ const StudentRegFeesDialog = ({
                         }
                       }}
                       sx={uiLayout.withUiSx({
-                        border: "1px solid #e4eeea",
+                        border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e4eeea",
                         borderRadius: isCompact ? 1.2 : 2,
                         direction: "rtl",
                         width: "100%",
                         minWidth: 0,
                         overflow: "hidden",
                         fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
+                        backgroundColor: isDarkGrid ? theme.palette.surfaces.card : undefined,
 
                         "& .MuiDataGrid-main": {
                           minWidth: 0
                         },
 
                         "& .MuiDataGrid-columnHeaders": {
-                          backgroundColor: softBg,
+                          backgroundColor: isDarkGrid ? theme.palette.surfaces.section : softBg,
                           fontWeight: 900,
                           minHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`,
-                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`
+                          maxHeight: `${isPhone ? 30 : isTablet ? 36 : 56}px !important`,
+                          borderBottom: isDarkGrid ? "1px solid #67C99D" : undefined
                         },
 
                         "& .MuiDataGrid-columnHeader": {
@@ -1545,7 +1572,8 @@ const StudentRegFeesDialog = ({
                           fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           px: isPhone ? 0.12 : isTablet ? 0.28 : undefined,
                           lineHeight: 1.1,
-                          overflow: "hidden"
+                          overflow: "hidden",
+                          borderColor: isDarkGrid ? "#67C99D" : undefined
                         },
 
                         "& .MuiDataGrid-cellContent": {
@@ -1570,7 +1598,8 @@ const StudentRegFeesDialog = ({
                         },
 
                         "& .MuiDataGrid-footerContainer": {
-                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined
+                          minHeight: isPhone ? 34 : isTablet ? 38 : undefined,
+                          borderTop: isDarkGrid ? "1px solid #67C99D" : undefined
                         },
 
                         "& .MuiTablePagination-toolbar": {
@@ -1593,8 +1622,8 @@ const StudentRegFeesDialog = ({
               sx={{
                 p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: "1px solid #e1eee8",
-                backgroundColor: "#fff"
+                border: isDarkGrid ? `1px solid #67C99D` : "1px solid #e1eee8",
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : "#fff"
               }}
             >
               <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.5}>
@@ -1634,7 +1663,7 @@ const StudentRegFeesDialog = ({
         sx={uiLayout.withUiSx({
           p: isPhone ? 0.35 : isTablet ? 0.55 : 2,
           gap: isCompact ? 0.4 : 1,
-          backgroundColor: "#fff",
+          backgroundColor: isDarkGrid ? theme.palette.surfaces.card : "#fff",
           flexShrink: 0,
           justifyContent: "space-between",
           direction: "rtl"
@@ -1651,7 +1680,7 @@ const StudentRegFeesDialog = ({
             px: isPhone ? 1 : isTablet ? 1.3 : undefined,
             fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             color: "#d32f2f",
-            borderColor: "#ffcdd2"
+            borderColor: pinColor("#ffcdd2")
           }, uiLayout.buttonSx)}
         >
           إغلاق

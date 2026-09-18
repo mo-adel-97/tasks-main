@@ -976,7 +976,7 @@ ${PRINT_READY_SCRIPT}</head>
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: "#f7faf8",
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f7faf8",
         fontFamily: '"Cairo","Tahoma",sans-serif'
       }}
     >

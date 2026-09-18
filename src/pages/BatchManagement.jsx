@@ -27,6 +27,7 @@ import {
   Typography,
   useMediaQuery
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -310,6 +311,7 @@ function BatchLookupDialog({
 }
 
 export default function BatchManagement() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -1295,7 +1297,7 @@ export default function BatchManagement() {
   );
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ display: "flex", minHeight: "100vh", bgcolor: soft }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ display: "flex", minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft }}>
       
 
       

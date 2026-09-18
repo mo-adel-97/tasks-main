@@ -21,7 +21,8 @@ import {
   Switch,
   TextField,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
@@ -278,6 +279,7 @@ function ServiceLookupDialog({
 }
 
 export default function ServiceManagement() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -1234,7 +1236,7 @@ export default function ServiceManagement() {
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
               setMobileSidebarOpen(false)
-            }><Box sx={{ minHeight: "100vh", bgcolor: soft }}>
+            }><Box sx={{ minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft }}>
       {isDesktop ? (
         <>
           

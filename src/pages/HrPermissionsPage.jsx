@@ -3,6 +3,7 @@ import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
+import { useTheme } from '@mui/material/styles';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -375,6 +376,7 @@ const apiError = (result, fallback) =>
     : result?.message || fallback;
 
 export default function HrPermissionsPage() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, {
     noSsr: true
   });
@@ -777,7 +779,7 @@ export default function HrPermissionsPage() {
   );
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: bg }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : bg }}>
       
 
       <PageContainer

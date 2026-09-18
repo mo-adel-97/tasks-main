@@ -21,6 +21,7 @@ import {
   Tabs,
   Tab
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { 
   Error, 
   CheckCircle
@@ -92,6 +93,7 @@ const theme = createTheme(deepmerge(appTheme, {
 }));
 
 const AttendancePage = () => {
+  const muiTheme = useTheme();
   const [studentId, setStudentId] = useState("");
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -266,7 +268,7 @@ const AttendancePage = () => {
             flexGrow: 1,
             
             minHeight: "100vh",
-            backgroundColor: "#f5f7fa",
+            backgroundColor: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f5f7fa",
             direction: 'rtl',
             ...navigationContentSx
           }}

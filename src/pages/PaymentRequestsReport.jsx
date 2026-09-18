@@ -1917,7 +1917,7 @@ export default function PaymentRequestsReport() {
   );
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: "#f7faf8" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f7faf8" }}>
       {!isDesktop && (
         <AppBar
           position="fixed"

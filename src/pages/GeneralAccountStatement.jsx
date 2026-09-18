@@ -1330,7 +1330,7 @@ export default function GeneralAccountStatement() {
         }><Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#f4f7f6",
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f4f7f6",
         direction: "rtl",
         overflowX: "hidden"
       }}

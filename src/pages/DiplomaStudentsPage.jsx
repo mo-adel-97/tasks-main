@@ -2723,15 +2723,16 @@ const DiplomaStudentsPage = () => {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
-      sx={{
+      sx={(theme) => ({
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
-        background:
-          "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
-      }}
+        background: theme.palette.mode === "dark"
+          ? theme.palette.background.default
+          : "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
+      })}
     >
       {!isDesktop && (
         <GlobalStyles
@@ -2760,14 +2761,14 @@ const DiplomaStudentsPage = () => {
         <AppBar
           position="fixed"
           elevation={0}
-          sx={{
+          sx={(theme) => ({
             top: 0, left: 0, right: 0, width: "100%",
-            background: "rgba(255,255,255,.97)",
+            background: theme.palette.mode === "dark" ? theme.palette.surfaces.card : "rgba(255,255,255,.97)",
             backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom: "1px solid rgba(5,117,70,.12)",
+            color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
+            borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.12)",
             direction: "rtl"
-          }}
+          })}
         >
           <Toolbar
             sx={{
@@ -2847,13 +2848,13 @@ const DiplomaStudentsPage = () => {
           <>
         <Paper
           elevation={0}
-          sx={{
+          sx={(theme) => ({
             p: isPhone ? .7 : isTablet ? .9 : 1.05,
             mb: isPhone ? .55 : isTablet ? .7 : .8,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 2,
-            border:
-              "1px solid rgba(5,117,70,.14)"
-          }}
+            border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.14)",
+            backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : undefined
+          })}
         >
           <Stack
             direction="row"
@@ -3093,13 +3094,13 @@ const DiplomaStudentsPage = () => {
           <>
         <Paper
           elevation={0}
-          sx={{
+          sx={(theme) => ({
             p: isPhone ? 0.75 : isTablet ? 1 : 1.25,
             mb: isPhone ? 0.6 : isTablet ? 0.8 : 1,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
-            border:
-              "1px solid rgba(5,117,70,.14)"
-          }}
+            border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.14)",
+            backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : undefined
+          })}
         >
           <Box
             sx={uiLayout.withUiSx({
@@ -3434,7 +3435,10 @@ const DiplomaStudentsPage = () => {
             mb: isPhone ? 0.6 : isTablet ? 0.8 : 1,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
             border: "1px solid rgba(5,117,70,.14)"
-          }, uiLayout.pageHeaderSx)}
+          }, uiLayout.pageHeaderSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+            border: "1px solid #67C99D",
+            backgroundColor: theme.palette.surfaces.card
+          }))}
         >
           <Stack
             direction="row"
@@ -3468,15 +3472,15 @@ const DiplomaStudentsPage = () => {
                 event.stopPropagation();
                 setAdvancedFiltersOpen(true);
               }}
-              sx={{
+              sx={(theme) => ({
                 width: isPhone ? 30 : isTablet ? 34 : 36,
                 height: isPhone ? 30 : isTablet ? 34 : 36,
-                border: "1px solid #9fcfb9",
+                border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid #9fcfb9",
                 borderRadius: 1.2,
-                color: "#057546",
+                color: theme.palette.mode === "dark" ? theme.palette.primary.main : "#057546",
                 position: "relative",
                 pointerEvents: "auto"
-              }}
+              })}
             >
               <FilterAltIcon
                 sx={{
@@ -3614,7 +3618,9 @@ const DiplomaStudentsPage = () => {
                 "& .MuiSvgIcon-root": {
                   fontSize: isPhone ? 13 : isTablet ? 15 : 17
                 }
-              }, uiLayout.filterBarSx)}
+              }, uiLayout.filterBarSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+                borderTop: "1px dashed #67C99D"
+              }))}
             >
               <TextField InputLabelProps={{ shrink: true }}
                 select
@@ -3763,7 +3769,10 @@ const DiplomaStudentsPage = () => {
               "1px solid rgba(5,117,70,.14)",
             overflow: "hidden",
             minHeight: isPhone ? 360 : isTablet ? 430 : "calc(100vh - 155px)"
-          }, uiLayout.tableContainerSx)}
+          }, uiLayout.tableContainerSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+            border: "1px solid #67C99D",
+            backgroundColor: theme.palette.surfaces.card
+          }))}
         >
           <DataGrid
             autoHeight
@@ -3882,7 +3891,12 @@ const DiplomaStudentsPage = () => {
               "& .MuiDataGrid-footerContainer": {
                 minHeight: isPhone ? 31 : isTablet ? 36 : 48
               }
-            }, uiLayout.dataGridSx)}
+            }, uiLayout.dataGridSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+              border: "1px solid #67C99D",
+              "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
+              "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
+              "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #67C99D" }
+            }))}
           />
         </Paper>
 

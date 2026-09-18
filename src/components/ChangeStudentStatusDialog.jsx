@@ -29,6 +29,14 @@ import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 const primaryColor = "#057546";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 
 const getCurrentUser = () => {
   try {
@@ -286,7 +294,7 @@ const ChangeStudentStatusDialog = ({
             ? "stretch"
             : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone
@@ -447,7 +455,7 @@ const ChangeStudentStatusDialog = ({
 
         <Paper
           variant="outlined"
-          sx={{
+          sx={(theme) => ({
             p: isPhone
               ? 0.4
               : isTablet
@@ -460,8 +468,10 @@ const ChangeStudentStatusDialog = ({
 
             borderRadius: isCompact
               ? 1.4
-              : undefined
-          }}
+              : undefined,
+
+            borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+          })}
         >
           <Grid
             container
@@ -533,7 +543,7 @@ const ChangeStudentStatusDialog = ({
 
         <Paper
           variant="outlined"
-          sx={{
+          sx={(theme) => ({
             maxHeight: isPhone
               ? 190
               : isTablet
@@ -542,6 +552,8 @@ const ChangeStudentStatusDialog = ({
 
             overflowY: "auto",
 
+            borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined,
+
             mb: isCompact
               ? 0.45
               : 2,
@@ -549,7 +561,7 @@ const ChangeStudentStatusDialog = ({
             borderRadius: isCompact
               ? 1.3
               : undefined
-          }}
+          })}
         >
           {loading ? (
             <Box
@@ -640,17 +652,23 @@ const ChangeStudentStatusDialog = ({
                       ? 1
                       : 0,
 
-                    borderBottom:
-                      "1px solid #edf1ef",
+                    borderBottom: (theme) =>
+                      theme.palette.mode === "dark"
+                        ? `1px solid #67C99D`
+                        : "1px solid #edf1ef",
 
                     "&.Mui-selected": {
-                      backgroundColor:
-                        "#e6f3ee"
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark"
+                          ? theme.palette.surfaces.selected
+                          : "#e6f3ee"
                     },
 
                     "&.Mui-selected:hover": {
-                      backgroundColor:
-                        "#d9eee5"
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark"
+                          ? theme.palette.surfaces.hover
+                          : "#d9eee5"
                     }
                   }}
                 >

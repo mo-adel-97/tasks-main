@@ -45,6 +45,8 @@ import {
   DialogContentText,
   useMediaQuery,
   Autocomplete,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import {
   AttachFile,
@@ -85,6 +87,8 @@ const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
 const DESKTOP_BREAKPOINT = 1200;
 
 const TechnicalSupport = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const isPhone = useMediaQuery('(max-width:599.95px)');
   const isTablet = useMediaQuery('(min-width:600px) and (max-width:1199.95px)');
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`);
@@ -815,7 +819,7 @@ const TechnicalSupport = () => {
   );
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f6faf8' }}>
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: isDark ? theme.palette.background.default : '#f6faf8' }}>
       
       
       <Box 
@@ -847,12 +851,14 @@ const TechnicalSupport = () => {
                 py: isPhone ? 0.8 : 1,
                 mb: 0.7,
                 borderRadius: isPhone ? 2 : 2.5,
-                bgcolor: '#034d31',
+                bgcolor: isDark ? theme.palette.surfaces.section : '#034d31',
+                border: isDark ? '1px solid #67C99D' : 'none',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexDirection: isPhone ? 'column' : 'row',
+                flexWrap: 'wrap',
                 gap: isPhone ? 0.7 : 1.2
               }}
             >
@@ -939,37 +945,40 @@ const TechnicalSupport = () => {
             </Box>
 
             {!isSupportStaff && !isSupervisor && (
-              <Alert 
-                severity="info" 
+              <Alert
+                severity="info"
                 icon={<Info />}
-                sx={{ 
+                sx={{
                   borderRadius: 2,
-                  bgcolor: '#f7fbf9',
-                  border: '1px solid rgba(5,117,70,.14)',
+                  bgcolor: isDark ? 'rgba(33,150,243,.14)' : '#f7fbf9',
+                  border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.14)',
                   py: 0.1,
                   mb: 0.65,
-                  '& .MuiAlert-icon': { color: '#057546' }
+                  color: isDark ? theme.palette.text.primary : 'inherit',
+                  '& .MuiAlert-icon': { color: isDark ? theme.palette.primary.main : '#057546' }
                 }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
 عادةً تتم مراجعة التذكرة خلال 1 إلى 24 ساعة حسب الأولوية وتوفر فريق الدعم.
                 </Typography>
               </Alert>
             )}
 
             {isSupervisor && !isSupportStaff && (
-              <Alert 
-                severity="success" 
+              <Alert
+                severity="success"
                 icon={<Info />}
-                sx={{ 
+                sx={{
                   borderRadius: 2,
-                  bgcolor: '#f7fbf9',
-                  border: '1px solid rgba(5,117,70,.14)',
+                  bgcolor: isDark ? 'rgba(76,175,80,.14)' : '#f7fbf9',
+                  border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.14)',
                   py: 0.1,
-                  mb: 0.65
+                  mb: 0.65,
+                  color: isDark ? theme.palette.text.primary : 'inherit',
+                  '& .MuiAlert-icon': { color: isDark ? theme.palette.primary.main : undefined }
                 }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                   يمكنك تقديم تذاكر جديدة دون قيود عددية.
                 </Typography>
               </Alert>
@@ -978,12 +987,12 @@ const TechnicalSupport = () => {
 
           {/* نموذج إنشاء تذكرة (للمستخدمين العاديين فقط) */}
           {!isSupportStaff && (
-            <Paper sx={{ 
-              p: isPhone ? 0.8 : isTablet ? 1 : 1.25, 
+            <Paper sx={{
+              p: isPhone ? 0.8 : isTablet ? 1 : 1.25,
               borderRadius: isPhone ? 2 : 2.5,
               boxShadow: 'none',
-              border: '1px solid rgba(5,117,70,.12)',
-              bgcolor: '#fff',
+              border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)',
+              bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
               mb: isPhone ? 0.8 : 1,
               position: 'relative',
               opacity: (hasPendingTicket && !isSupervisor) ? 0.7 : 1,
@@ -996,7 +1005,8 @@ const TechnicalSupport = () => {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  bgcolor: isDark ? alpha(theme.palette.background.default, 0.92) : 'rgba(255, 255, 255, 0.9)',
+                  border: isDark ? '1px solid #67C99D' : 'none',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -1006,37 +1016,42 @@ const TechnicalSupport = () => {
                   p: isPhone ? 1.2 : 2,
                   textAlign: 'center',
                 }}>
-                  <Avatar sx={{ 
-                    bgcolor: '#ff9800', 
-                    width: isPhone ? 46 : 56, 
+                  <Avatar sx={{
+                    bgcolor: '#ff9800',
+                    width: isPhone ? 46 : 56,
                     height: isPhone ? 46 : 56,
                     mb: 1,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}>
                     <Block sx={{ fontSize: isPhone ? 24 : 30 }} />
                   </Avatar>
-                  <Typography sx={{ fontWeight: 900, mb: 0.5, color: '#034d31', fontSize: isPhone ? '0.88rem' : '1rem' }}>
+                  <Typography sx={{ fontWeight: 900, mb: 0.5, color: isDark ? theme.palette.text.primary : '#034d31', fontSize: isPhone ? '0.88rem' : '1rem' }}>
                     ⚠️ لديك طلبين مازال قيد الانتظار
                   </Typography>
-                  <Typography sx={{ mb: 1, maxWidth: 500, lineHeight: 1.6, fontSize: '0.72rem', color: 'text.secondary' }}>
+                  <Typography sx={{ mb: 1, maxWidth: 500, lineHeight: 1.6, fontSize: '0.72rem', color: isDark ? theme.palette.text.secondary : 'text.secondary' }}>
                     لا يمكنك تقديم تذكرة جديدة حتى يتم الرد على تذكرتك الحالية أو تغيير حالتها.
                     يمكنك متابعة حالة التذكرة الحالية في قسم "تذاكري السابقة" أدناه.
                   </Typography>
                   <Button
-                    variant="contained"
+                    variant={isDark ? 'outlined' : 'contained'}
                     onClick={() => {
                       document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     sx={uiLayout.withUiSx({
-                      bgcolor: '#057546',
                       py: 1.5,
                       px: 4,
                       borderRadius: 2,
                       fontSize: '1rem',
                       fontWeight: 'bold',
-                      '&:hover': {
-                        bgcolor: '#034d31',
-                      }
+                      ...(isDark ? {
+                        background: 'transparent',
+                        color: '#67C99D',
+                        borderColor: '#67C99D',
+                        '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                      } : {
+                        bgcolor: '#057546',
+                        '&:hover': { bgcolor: '#034d31' }
+                      })
                     }, uiLayout.buttonSx)}
                   >
                     عرض تذكرتي الحالية
@@ -1046,51 +1061,65 @@ const TechnicalSupport = () => {
               
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.85 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Box sx={{ 
+                  <Box sx={{
                     width: 34,
                     height: 34,
-                    bgcolor: '#edf7f2', 
-                    color: '#057546',
+                    bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
+                    color: isDark ? theme.palette.primary.main : '#057546',
+                    border: isDark ? '1px solid #67C99D' : 'none',
                     borderRadius: 1.8,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    <Add sx={{ color: '#057546', fontSize: 19 }} />
+                    <Add sx={{ color: isDark ? theme.palette.primary.main : '#057546', fontSize: 19 }} />
                   </Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: 900, color: '#034d31', fontSize: isPhone ? '0.85rem' : '0.95rem' }}>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31', fontSize: isPhone ? '0.85rem' : '0.95rem' }}>
                       تقديم تذكرة جديدة
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.secondary : 'text.secondary' }}>
                       املأ النموذج أدناه لرفع تذكرة دعم فني جديدة
                     </Typography>
                   </Box>
                 </Box>
               </Box>
 
-              <Alert 
-                severity="warning" 
-                sx={{ mb: 0.9, borderRadius: 2, py: 0.1 }}
+              <Alert
+                severity="warning"
+                sx={{
+                  mb: 2.5,
+                  borderRadius: 2,
+                  py: 1,
+                  bgcolor: isDark ? 'rgba(255,152,0,.16)' : undefined,
+                  border: isDark ? '1px solid #67C99D' : 'none',
+                  color: isDark ? theme.palette.text.primary : 'inherit'
+                }}
                 icon={<Warning />}
               >
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.primary : 'inherit' }}>
                   صف المشكلة بوضوح وأرفق صورة أو ملفًا عند الحاجة.
                 </Typography>
               </Alert>
 
               <form onSubmit={handleSubmit}>
-                <Grid container spacing={isPhone ? 0.8 : 1.1}>
-                  <Grid item xs={12}>
-                    <Grid container spacing={isPhone ? 0.8 : 1}>
-                      <Grid item xs={12} lg={6}>
-                        <FormControl fullWidth required sx={uiLayout.withUiSx({ bgcolor: 'white', borderRadius: 1 }, uiLayout.formFieldSx)}>
-                          <InputLabel sx={{ fontWeight: 'medium', color: '#555' }}>نوع التذكرة</InputLabel>
+                <Grid container spacing={isPhone ? 2 : 2.5} sx={{ minWidth: 0 }}>
+                  <Grid item xs={12} sx={{ minWidth: 0 }}>
+                    <Grid container spacing={isPhone ? 2 : 2.5} sx={{ minWidth: 0 }}>
+                      <Grid item xs={12} lg={6} sx={{ minWidth: 0 }}>
+                        <FormControl fullWidth required sx={uiLayout.withUiSx({
+                          bgcolor: isDark ? theme.palette.surfaces.input : 'white',
+                          borderRadius: 1,
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: isDark ? '#67C99D !important' : undefined
+                          }
+                        }, uiLayout.formFieldSx)}>
+                          <InputLabel sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.secondary : '#555' }}>نوع التذكرة</InputLabel>
                           <Select
                             value={ticketType}
                             onChange={(e) => setTicketType(e.target.value)}
                             label="نوع التذكرة"
-                            sx={{ height: isPhone ? '40px' : '42px' }}
+                            sx={{ height: isPhone ? '40px' : '42px', color: isDark ? theme.palette.text.primary : 'inherit' }}
                             disabled={hasPendingTicket && !isSupervisor}
                           >
                             {ticketTypes.map((type) => (
@@ -1114,14 +1143,20 @@ const TechnicalSupport = () => {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={12} lg={6}>
-                        <FormControl fullWidth sx={uiLayout.withUiSx({ bgcolor: 'white', borderRadius: 1 }, uiLayout.formFieldSx)}>
-                          <InputLabel sx={{ fontWeight: 'medium', color: '#555' }}>درجة الأولوية</InputLabel>
+                      <Grid item xs={12} lg={6} sx={{ minWidth: 0 }}>
+                        <FormControl fullWidth sx={uiLayout.withUiSx({
+                          bgcolor: isDark ? theme.palette.surfaces.input : 'white',
+                          borderRadius: 1,
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: isDark ? '#67C99D !important' : undefined
+                          }
+                        }, uiLayout.formFieldSx)}>
+                          <InputLabel sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.secondary : '#555' }}>درجة الأولوية</InputLabel>
                           <Select
                             value={priority}
                             onChange={(e) => setPriority(e.target.value)}
                             label="درجة الأولوية"
-                            sx={{ height: isPhone ? '40px' : '42px' }}
+                            sx={{ height: isPhone ? '40px' : '42px', color: isDark ? theme.palette.text.primary : 'inherit' }}
                             disabled={hasPendingTicket && !isSupervisor}
                           >
                             {priorities.map((p) => (
@@ -1149,7 +1184,7 @@ const TechnicalSupport = () => {
                     </Grid>
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sx={{ minWidth: 0 }}>
                     <TextField InputLabelProps={{ shrink: true }}
                       fullWidth
                       required
@@ -1158,10 +1193,16 @@ const TechnicalSupport = () => {
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder="مثال: مشكلة في تسجيل الدخول إلى النظام الأساسي"
                       helperText="اكتب عنواناً واضحاً يصف المشكلة بشكل مختصر"
-                      sx={uiLayout.withUiSx({ 
-                        bgcolor: 'white',
+                      sx={uiLayout.withUiSx({
+                        bgcolor: isDark ? theme.palette.surfaces.input : 'white',
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 1,
+                        },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: isDark ? '#67C99D !important' : undefined
+                        },
+                        '& .MuiInputBase-input': {
+                          color: isDark ? theme.palette.text.primary : 'inherit'
                         }
                       }, uiLayout.formFieldSx)}
                       InputProps={{
@@ -1171,57 +1212,101 @@ const TechnicalSupport = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12}>
-                    <TextField InputLabelProps={{ shrink: true }}
+                  <Grid item xs={12} sx={{ minWidth: 0 }}>
+                    <TextField
+                      InputLabelProps={{ shrink: true }}
                       fullWidth
                       required
                       multiline
-                      minRows={isPhone ? 3 : 4}
+                      minRows={4}
                       label="وصف المشكلة / الاقتراح"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="صف المشكلة بالتفصيل..."
                       helperText="كلما كان الوصف أكثر تفصيلاً، كان حل المشكلة أسرع وأكثر دقة"
-                      sx={uiLayout.withUiSx({ 
-                        bgcolor: 'white',
-                        '& .MuiOutlinedInput-root': {
+                      sx={{
+                        bgcolor: isDark ? theme.palette.surfaces.input : 'white',
+                        borderRadius: 1,
+
+                        // حماية الـ multiline من أي height عام موروث من theme / global styles
+                        '&& .MuiOutlinedInput-root': {
                           borderRadius: 1,
-                        }
-                      }, uiLayout.formFieldSx)}
+                          alignItems: 'flex-start',
+                          bgcolor: isDark ? theme.palette.surfaces.input : 'white',
+                        },
+                        '&& .MuiOutlinedInput-root.MuiInputBase-multiline': {
+                          height: 'auto !important',
+                          minHeight: isPhone ? '112px !important' : '124px !important',
+                          maxHeight: 'none !important',
+                          padding: '12px 14px !important',
+                          alignItems: 'flex-start !important',
+                        },
+                        '&& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: isDark ? '#67C99D !important' : 'rgba(5,117,70,.28)'
+                        },
+                        '&& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, && .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#67C99D !important'
+                        },
+
+                        // استهداف الـ textarea المرئي فقط حتى لا نكسر textarea القياس الداخلي الخاص بـ MUI
+                        '&& textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"])': {
+                          height: 'auto !important',
+                          minHeight: isPhone ? '84px !important' : '96px !important',
+                          maxHeight: 'none !important',
+                          color: isDark ? theme.palette.text.primary : 'inherit',
+                          lineHeight: '1.75 !important',
+                          resize: 'vertical',
+                          overflowY: 'auto !important',
+                          boxSizing: 'border-box',
+                          padding: '0 !important',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0.5,
+                          mt: 0.6,
+                          color: isDark ? theme.palette.text.secondary : 'text.secondary',
+                        },
+                      }}
                       disabled={hasPendingTicket && !isSupervisor}
                     />
                   </Grid>
 
-                  <Grid item xs={12}>
-                    <Box sx={{ 
-                      p: isPhone ? 0.8 : 1,
-                      border: '1px dashed rgba(5,117,70,.28)', 
+                  <Grid item xs={12} sx={{ minWidth: 0 }}>
+                    <Box sx={{
+                      p: isPhone ? 1.5 : 2,
+                      border: isDark ? '1px dashed #67C99D' : '1px dashed rgba(5,117,70,.28)',
                       borderRadius: 2,
-                      bgcolor: '#fbfdfc',
+                      bgcolor: isDark ? theme.palette.surfaces.nested : '#fbfdfc',
                       textAlign: 'center',
+                      minWidth: 0,
                       opacity: (hasPendingTicket && !isSupervisor) ? 0.6 : 1,
                     }}>
-                      <CloudUpload sx={{ fontSize: isPhone ? 25 : 30, color: '#057546', mb: 0.35 }} />
-                      <Typography sx={{ mb: 0.15, color: '#034d31', fontSize: '0.8rem', fontWeight: 900 }}>
+                      <CloudUpload sx={{ fontSize: isPhone ? 25 : 30, color: isDark ? theme.palette.primary.main : '#057546', mb: 0.6 }} />
+                      <Typography sx={{ mb: 0.4, color: isDark ? theme.palette.text.primary : '#034d31', fontSize: '0.8rem', fontWeight: 900 }}>
                         إرفاق ملفات داعمة
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.7, fontSize: '0.68rem' }}>
+                      <Typography variant="body2" sx={{ mb: 0.7, fontSize: '0.68rem', color: isDark ? theme.palette.text.secondary : 'text.secondary' }}>
                         اسحب الملفات هنا أو انقر للرفع. المسموح: صور، PDF، Word. الحد الأقصى 5 ملفات، كل ملف حتى 100MB
                       </Typography>
-                      
+
                       <Button
                         component="label"
-                        variant="contained"
+                        variant={isDark ? 'outlined' : 'contained'}
                         startIcon={<CloudUpload />}
-                        sx={uiLayout.withUiSx({ 
-                          bgcolor: '#057546',
+                        sx={uiLayout.withUiSx({
                           borderRadius: 2,
                           px: 1.4,
                           py: 0.65,
                           fontSize: '0.72rem',
-                          '&:hover': {
-                            bgcolor: '#034d31',
-                          }
+                          fontWeight: 600,
+                          ...(isDark ? {
+                            background: 'transparent',
+                            color: '#67C99D',
+                            borderColor: '#67C99D',
+                            '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                          } : {
+                            bgcolor: '#057546',
+                            '&:hover': { bgcolor: '#034d31' }
+                          })
                         }, uiLayout.buttonSx)}
                         disabled={hasPendingTicket && !isSupervisor}
                       >
@@ -1238,45 +1323,51 @@ const TechnicalSupport = () => {
                     </Box>
 
                     {files.length > 0 && (
-                      <Box sx={{ mt: 0.8 }}>
+                      <Box sx={{ mt: 0.8, minWidth: 0 }}>
                         <Divider sx={{ my: 0.8 }} />
-                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#034d31' }}>
+                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: isDark ? theme.palette.text.primary : '#034d31' }}>
                           📎 الملفات المرفوعة ({files.length}/5)
                         </Typography>
-                        <Grid container spacing={isPhone ? 0.7 : 0.9}>
+                        <Grid container spacing={isPhone ? 1.5 : 2} sx={{ minWidth: 0 }}>
                           {files.map((file) => (
-                            <Grid item xs={12} sm={6} lg={4} key={file.id}>
-                              <Card 
-                                variant="outlined" 
-                                sx={{ 
+                            <Grid item xs={12} sm={6} lg={4} key={file.id} sx={{ minWidth: 0 }}>
+                              <Card
+                                variant="outlined"
+                                sx={{
                                   borderRadius: 2,
+                                  border: isDark ? '1px solid #67C99D' : '1px solid rgba(0,0,0,.12)',
+                                  bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
                                   borderInlineStart: `4px solid ${file.type === 'image' ? '#4caf50' : '#2196f3'}`,
+                                  minWidth: 0,
                                   '&:hover': {
                                     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                                   }
                                 }}
                               >
                                 <CardContent sx={{ p: isPhone ? 0.75 : 1 }}>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
-                                      <Box sx={{ 
-                                        p: 1.5, 
-                                        bgcolor: file.type === 'image' ? '#e8f5e9' : '#e3f2fd',
+                                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0.5, flexWrap: 'wrap' }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9, minWidth: 0 }}>
+                                      <Box sx={{
+                                        p: 1.5,
+                                        bgcolor: isDark
+                                          ? (file.type === 'image' ? 'rgba(76,175,80,.18)' : 'rgba(33,150,243,.18)')
+                                          : (file.type === 'image' ? '#e8f5e9' : '#e3f2fd'),
                                         borderRadius: 2,
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        flexShrink: 0
                                       }}>
-                                        {file.type === 'image' ? 
-                                          <Image sx={{ color: '#4caf50', fontSize: 24 }} /> : 
+                                        {file.type === 'image' ?
+                                          <Image sx={{ color: '#4caf50', fontSize: 24 }} /> :
                                           <AttachFile sx={{ color: '#2196f3', fontSize: 24 }} />
                                         }
                                       </Box>
-                                      <Box sx={{ maxWidth: 120 }}>
-                                        <Typography variant="body2" sx={{ fontWeight: 'medium', wordBreak: 'break-word' }}>
+                                      <Box sx={{ maxWidth: 120, minWidth: 0 }}>
+                                        <Typography variant="body2" sx={{ fontWeight: 'medium', wordBreak: 'break-word', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                                           {file.name}
                                         </Typography>
-                                        <Typography variant="caption" color="text.secondary">
+                                        <Typography variant="caption" sx={{ color: isDark ? theme.palette.text.secondary : 'text.secondary' }}>
                                           {file.size} MB
                                         </Typography>
                                       </Box>
@@ -1299,22 +1390,23 @@ const TechnicalSupport = () => {
                     )}
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sx={{ minWidth: 0 }}>
                     <Box sx={{
-                      p: isPhone ? 0.7 : 0.85,
-                      bgcolor: '#f7fbf9',
+                      p: isPhone ? 1.2 : 1.5,
+                      bgcolor: isDark ? theme.palette.surfaces.nested : '#f7fbf9',
                       borderRadius: 2,
-                      border: '1px solid rgba(5,117,70,.10)',
-                      mb: 0.8
+                      border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)',
+                      mb: 2,
+                      minWidth: 0
                     }}>
                       <Typography
-                        color="text.secondary"
                         sx={{
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 0.55,
                           fontSize: isPhone ? '0.65rem' : '0.7rem',
-                          lineHeight: 1.5
+                          lineHeight: 1.5,
+                          color: isDark ? theme.palette.text.secondary : 'text.secondary'
                         }}
                       >
                         <Info sx={{ fontSize: 16, mt: 0.1, flexShrink: 0 }} />
@@ -1326,8 +1418,9 @@ const TechnicalSupport = () => {
                       sx={uiLayout.withUiSx({
                         display: 'flex',
                         flexDirection: isPhone ? 'column' : 'row',
+                        flexWrap: 'wrap',
                         justifyContent: 'center',
-                        gap: 0.65,
+                        gap: 1.5,
                         width: '100%'
                       }, uiLayout.actionBarSx)}
                     >
@@ -1347,7 +1440,13 @@ const TechnicalSupport = () => {
                           width: isPhone ? '100%' : 'auto',
                           borderRadius: 2,
                           fontSize: '0.72rem',
-                          fontWeight: 750
+                          fontWeight: 750,
+                          ...(isDark ? {
+                            background: 'transparent',
+                            color: '#67C99D',
+                            borderColor: '#67C99D',
+                            '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                          } : {})
                         }, uiLayout.buttonSx)}
                         disabled={hasPendingTicket && !isSupervisor}
                       >
@@ -1355,7 +1454,7 @@ const TechnicalSupport = () => {
                       </Button>
                       <Button
                         type="submit"
-                        variant="contained"
+                        variant={isDark ? 'outlined' : 'contained'}
                         disabled={loading || uploading || (hasPendingTicket && !isSupervisor)}
                         startIcon={(loading || uploading) ? <CircularProgress size={20} color="inherit" /> : <Send />}
                         sx={uiLayout.withUiSx({
@@ -1364,16 +1463,23 @@ const TechnicalSupport = () => {
                           px: 1.6,
                           width: isPhone ? '100%' : 'auto',
                           borderRadius: 2,
-                          bgcolor: (hasPendingTicket && !isSupervisor) ? '#9e9e9e' : '#057546',
                           fontSize: '0.74rem',
                           fontWeight: 850,
                           minWidth: isPhone ? 0 : 150,
                           boxShadow: 'none',
-                          '&:hover': (hasPendingTicket && !isSupervisor) ? {} : {
-                            bgcolor: '#034d31',
-                            boxShadow: 'none'
-                          },
-                          cursor: (hasPendingTicket && !isSupervisor) ? 'not-allowed' : 'pointer'
+                          cursor: (hasPendingTicket && !isSupervisor) ? 'not-allowed' : 'pointer',
+                          ...(isDark ? {
+                            background: 'transparent',
+                            color: (hasPendingTicket && !isSupervisor) ? theme.palette.text.secondary : '#67C99D',
+                            borderColor: (hasPendingTicket && !isSupervisor) ? theme.palette.text.secondary : '#67C99D',
+                            '&:hover': (hasPendingTicket && !isSupervisor) ? {} : { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                          } : {
+                            bgcolor: (hasPendingTicket && !isSupervisor) ? '#9e9e9e' : '#057546',
+                            '&:hover': (hasPendingTicket && !isSupervisor) ? {} : {
+                              bgcolor: '#034d31',
+                              boxShadow: 'none'
+                            }
+                          })
                         }, uiLayout.buttonSx)}
                       >
                         {(hasPendingTicket && !isSupervisor) 
@@ -1390,14 +1496,14 @@ const TechnicalSupport = () => {
           )}
 
           {/* التذاكر السابقة */}
-          <Paper 
+          <Paper
             id="tickets-section"
-            sx={{ 
+            sx={{
               p: isPhone ? 0.7 : isTablet ? 0.9 : 1,
               borderRadius: isPhone ? 2 : 2.5,
               boxShadow: 'none',
-              border: '1px solid rgba(5,117,70,.11)',
-              bgcolor: '#fff',
+              border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+              bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
             }}
           >
             {isSupportStaff && viewAllTickets ? (
@@ -1409,6 +1515,7 @@ const TechnicalSupport = () => {
                     alignItems: isPhone ? 'stretch' : 'center',
                     justifyContent: 'space-between',
                     flexDirection: isPhone ? 'column' : 'row',
+                    flexWrap: 'wrap',
                     gap: 0.75,
                     mb: 0.8
                   }}
@@ -1419,12 +1526,12 @@ const TechnicalSupport = () => {
                         width: 34,
                         height: 34,
                         flexShrink: 0,
-                        bgcolor: '#edf7f2',
-                        color: '#057546',
+                        bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
+                        color: isDark ? theme.palette.primary.main : '#057546',
                         borderRadius: 1.7,
                         display: 'grid',
                         placeItems: 'center',
-                        border: '1px solid rgba(5,117,70,.10)'
+                        border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)'
                       }}
                     >
                       <CalendarToday sx={{ fontSize: 18 }} />
@@ -1434,7 +1541,7 @@ const TechnicalSupport = () => {
                       <Typography
                         sx={{
                           fontWeight: 900,
-                          color: '#034d31',
+                          color: isDark ? theme.palette.text.primary : '#034d31',
                           fontSize: isPhone ? '0.82rem' : '0.96rem',
                           lineHeight: 1.25
                         }}
@@ -1444,7 +1551,7 @@ const TechnicalSupport = () => {
                       <Typography
                         sx={{
                           mt: 0.1,
-                          color: '#70827a',
+                          color: isDark ? theme.palette.text.secondary : '#70827a',
                           fontSize: isPhone ? '0.62rem' : '0.68rem',
                           lineHeight: 1.4
                         }}
@@ -1467,8 +1574,9 @@ const TechnicalSupport = () => {
                       label={`${allUsersTickets.length} إجمالي`}
                       sx={{
                         height: 26,
-                        bgcolor: '#edf7f2',
-                        color: '#057546',
+                        bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
+                        color: isDark ? theme.palette.primary.main : '#057546',
+                        border: isDark ? '1px solid #67C99D' : 'none',
                         fontWeight: 850,
                         fontSize: '0.64rem',
                         '& .MuiChip-label': { px: 0.85 }
@@ -1479,8 +1587,9 @@ const TechnicalSupport = () => {
                       label={`${allUsersTickets.filter((t) => t.status === 'pending').length} انتظار`}
                       sx={{
                         height: 26,
-                        bgcolor: '#fff8e7',
-                        color: '#9a6500',
+                        bgcolor: isDark ? 'rgba(255,152,0,.18)' : '#fff8e7',
+                        color: isDark ? '#ffb74d' : '#9a6500',
+                        border: isDark ? '1px solid #67C99D' : 'none',
                         fontWeight: 800,
                         fontSize: '0.62rem',
                         '& .MuiChip-label': { px: 0.8 }
@@ -1491,8 +1600,9 @@ const TechnicalSupport = () => {
                       label={`${allUsersTickets.filter((t) => t.status === 'in_progress').length} معالجة`}
                       sx={{
                         height: 26,
-                        bgcolor: '#eef5ff',
-                        color: '#31669a',
+                        bgcolor: isDark ? 'rgba(33,150,243,.18)' : '#eef5ff',
+                        color: isDark ? '#64b5f6' : '#31669a',
+                        border: isDark ? '1px solid #67C99D' : 'none',
                         fontWeight: 800,
                         fontSize: '0.62rem',
                         '& .MuiChip-label': { px: 0.8 }
@@ -1506,8 +1616,8 @@ const TechnicalSupport = () => {
                   sx={{
                     p: isPhone ? 0.65 : 0.75,
                     borderRadius: 2,
-                    bgcolor: '#f8fbf9',
-                    border: '1px solid rgba(5,117,70,.10)',
+                    bgcolor: isDark ? theme.palette.surfaces.nested : '#f8fbf9',
+                    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)',
                     display: 'grid',
                     gridTemplateColumns: isDesktop
                       ? 'minmax(250px, 1.55fr) minmax(210px, 1.2fr) minmax(145px, .75fr) auto 38px'
@@ -1518,8 +1628,12 @@ const TechnicalSupport = () => {
                     alignItems: 'center',
                     '& .MuiInputBase-root': {
                       minHeight: 38,
-                      bgcolor: '#fff',
+                      bgcolor: isDark ? theme.palette.surfaces.input : '#fff',
+                      color: isDark ? theme.palette.text.primary : 'inherit',
                       fontSize: '0.72rem'
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: isDark ? '#67C99D !important' : undefined
                     },
                     '& .MuiInputLabel-root': {
                       fontSize: '0.7rem'
@@ -1543,7 +1657,7 @@ const TechnicalSupport = () => {
                         <Search
                           sx={{
                             ml: 0.4,
-                            color: '#6f8179',
+                            color: isDark ? theme.palette.text.secondary : '#6f8179',
                             fontSize: 18,
                             flexShrink: 0
                           }}
@@ -1610,7 +1724,7 @@ const TechnicalSupport = () => {
                   </FormControl>
 
                   <Button
-                    variant="contained"
+                    variant={isDark ? 'outlined' : 'contained'}
                     startIcon={<Download sx={{ fontSize: 17 }} />}
                     onClick={exportTicketsToExcel}
                     disabled={displayedTickets.length === 0}
@@ -1619,15 +1733,19 @@ const TechnicalSupport = () => {
                       width: isTablet || isPhone ? '100%' : 'auto',
                       px: 1.25,
                       borderRadius: 1.7,
-                      bgcolor: '#057546',
                       boxShadow: 'none',
                       whiteSpace: 'nowrap',
                       fontSize: '0.68rem',
                       fontWeight: 850,
-                      '&:hover': {
-                        bgcolor: '#034d31',
-                        boxShadow: 'none'
-                      }
+                      ...(isDark ? {
+                        background: 'transparent',
+                        color: '#67C99D',
+                        borderColor: '#67C99D',
+                        '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                      } : {
+                        bgcolor: '#057546',
+                        '&:hover': { bgcolor: '#034d31', boxShadow: 'none' }
+                      })
                     }}
                   >
                     تصدير Excel
@@ -1640,11 +1758,11 @@ const TechnicalSupport = () => {
                         width: isPhone || isTablet ? '100%' : 38,
                         height: 38,
                         borderRadius: 1.7,
-                        color: '#057546',
-                        bgcolor: '#fff',
-                        border: '1px solid rgba(5,117,70,.18)',
+                        color: isDark ? theme.palette.primary.main : '#057546',
+                        bgcolor: isDark ? theme.palette.surfaces.input : '#fff',
+                        border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.18)',
                         '&:hover': {
-                          bgcolor: '#edf7f2'
+                          bgcolor: isDark ? 'rgba(103,201,157,.1)' : '#edf7f2'
                         },
                         ...(isTablet && {
                           gridColumn: '2 / 3'
@@ -1663,35 +1781,38 @@ const TechnicalSupport = () => {
                   alignItems: isPhone ? 'stretch' : 'center',
                   justifyContent: 'space-between',
                   flexDirection: isPhone ? 'column' : 'row',
+                  flexWrap: 'wrap',
                   gap: 0.7,
                   mb: 0.9
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
                   <Box
                     sx={{
                       width: 34,
                       height: 34,
-                      bgcolor: '#edf7f2',
+                      flexShrink: 0,
+                      bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
+                      border: isDark ? '1px solid #67C99D' : 'none',
                       borderRadius: 1.7,
                       display: 'grid',
                       placeItems: 'center'
                     }}
                   >
-                    <CalendarToday sx={{ color: '#057546', fontSize: 18 }} />
+                    <CalendarToday sx={{ color: isDark ? theme.palette.primary.main : '#057546', fontSize: 18 }} />
                   </Box>
 
-                  <Box>
+                  <Box sx={{ minWidth: 0 }}>
                     <Typography
                       sx={{
                         fontWeight: 900,
-                        color: '#034d31',
+                        color: isDark ? theme.palette.text.primary : '#034d31',
                         fontSize: isPhone ? '0.82rem' : '0.96rem'
                       }}
                     >
                       تذاكري السابقة
                     </Typography>
-                    <Typography sx={{ mt: 0.1, color: '#70827a', fontSize: '0.66rem' }}>
+                    <Typography sx={{ mt: 0.1, color: isDark ? theme.palette.text.secondary : '#70827a', fontSize: '0.66rem' }}>
                       {tickets.length} تذكرة
                     </Typography>
                   </Box>
@@ -1706,10 +1827,17 @@ const TechnicalSupport = () => {
                     width: isPhone ? '100%' : 'auto',
                     px: 1.1,
                     borderRadius: 1.7,
-                    color: '#057546',
-                    borderColor: 'rgba(5,117,70,.26)',
                     fontSize: '0.68rem',
-                    fontWeight: 800
+                    fontWeight: 800,
+                    ...(isDark ? {
+                      background: 'transparent',
+                      color: '#67C99D',
+                      borderColor: '#67C99D',
+                      '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                    } : {
+                      color: '#057546',
+                      borderColor: 'rgba(5,117,70,.26)'
+                    })
                   }}
                 >
                   تحديث
@@ -1728,7 +1856,7 @@ const TechnicalSupport = () => {
                 sx={{
                   mb: 0.8,
                   minHeight: 38,
-                  borderBottom: '1px solid rgba(5,117,70,.10)',
+                  borderBottom: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)',
                   '& .MuiTabs-flexContainer': {
                     gap: isPhone ? 0.1 : 0.35
                   },
@@ -1738,7 +1866,14 @@ const TechnicalSupport = () => {
                     px: isPhone ? 0.7 : 1,
                     py: 0.45,
                     fontWeight: 750,
-                    fontSize: isPhone ? '0.66rem' : '0.72rem'
+                    fontSize: isPhone ? '0.66rem' : '0.72rem',
+                    color: isDark ? theme.palette.text.secondary : undefined
+                  },
+                  '& .MuiTab-root.Mui-selected': {
+                    color: isDark ? '#67C99D' : undefined
+                  },
+                  '& .MuiTabs-indicator': {
+                    backgroundColor: isDark ? '#67C99D' : undefined
                   },
                   '& .MuiTab-iconWrapper': {
                     fontSize: 17
@@ -1780,9 +1915,9 @@ const TechnicalSupport = () => {
                               p: isPhone ? 0.8 : 0.95,
                               minWidth: 0,
                               borderRadius: 2,
-                              borderColor: 'rgba(5,117,70,.12)',
+                              borderColor: isDark ? '#67C99D' : 'rgba(5,117,70,.12)',
                               boxShadow: 'none',
-                              bgcolor: '#fff'
+                              bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
                             }}
                           >
                             <Box
@@ -1799,7 +1934,7 @@ const TechnicalSupport = () => {
                                     sx={{
                                       fontFamily: 'monospace',
                                       fontWeight: 900,
-                                      color: '#057546',
+                                      color: isDark ? theme.palette.primary.main : '#057546',
                                       fontSize: '0.7rem'
                                     }}
                                   >
@@ -1811,10 +1946,11 @@ const TechnicalSupport = () => {
                                     size="small"
                                     sx={{
                                       height: 22,
-                                      bgcolor: getStatusColor(ticket.status) + '12',
+                                      bgcolor: isDark ? alpha(getStatusColor(ticket.status), 0.2) : getStatusColor(ticket.status) + '12',
                                       color: getStatusColor(ticket.status),
                                       fontWeight: 800,
                                       fontSize: '0.62rem',
+                                      border: isDark ? `1px solid ${alpha(getStatusColor(ticket.status), 0.5)}` : 'none',
                                       '& .MuiChip-label': { px: 0.7 }
                                     }}
                                   />
@@ -1823,7 +1959,7 @@ const TechnicalSupport = () => {
                                 <Typography
                                   sx={{
                                     fontWeight: 850,
-                                    color: '#243a31',
+                                    color: isDark ? theme.palette.text.primary : '#243a31',
                                     fontSize: isPhone ? '0.75rem' : '0.8rem',
                                     lineHeight: 1.45,
                                     display: '-webkit-box',
@@ -1844,8 +1980,8 @@ const TechnicalSupport = () => {
                                   width: 30,
                                   height: 30,
                                   flexShrink: 0,
-                                  color: '#057546',
-                                  border: '1px solid rgba(5,117,70,.14)'
+                                  color: isDark ? theme.palette.primary.main : '#057546',
+                                  border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.14)'
                                 }}
                               >
                                 <Visibility sx={{ fontSize: 17 }} />
@@ -1861,13 +1997,14 @@ const TechnicalSupport = () => {
                                   mt: 0.65,
                                   p: 0.6,
                                   borderRadius: 1.5,
-                                  bgcolor: '#f8fbf9'
+                                  bgcolor: isDark ? theme.palette.surfaces.nested : '#f8fbf9',
+                                  border: isDark ? '1px solid #67C99D' : 'none'
                                 }}
                               >
-                                <Typography sx={{ fontSize: '0.64rem', color: '#60736b' }}>
+                                <Typography sx={{ fontSize: '0.64rem', color: isDark ? theme.palette.text.secondary : '#60736b' }}>
                                   <strong>الموظف:</strong> {getUserNameFromGuid(ticket.user_guid)}
                                 </Typography>
-                                <Typography sx={{ fontSize: '0.64rem', color: '#60736b' }}>
+                                <Typography sx={{ fontSize: '0.64rem', color: isDark ? theme.palette.text.secondary : '#60736b' }}>
                                   <strong>الفرع:</strong> {getBranchNameFromGuid(ticket.branch_guid)}
                                 </Typography>
                               </Box>
@@ -1912,7 +2049,7 @@ const TechnicalSupport = () => {
                                 sx={{
                                   marginInlineStart: 'auto',
                                   fontSize: '0.61rem',
-                                  color: '#7b8983',
+                                  color: isDark ? theme.palette.text.secondary : '#7b8983',
                                   whiteSpace: 'nowrap'
                                 }}
                               >
@@ -1924,7 +2061,7 @@ const TechnicalSupport = () => {
                               sx={{
                                 mt: 0.7,
                                 pt: 0.6,
-                                borderTop: '1px solid rgba(5,117,70,.08)',
+                                borderTop: isDark ? '1px solid rgba(103,201,157,.25)' : '1px solid rgba(5,117,70,.08)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 0.35,
@@ -1940,7 +2077,7 @@ const TechnicalSupport = () => {
                                   sx={{
                                     minHeight: 30,
                                     px: 0.65,
-                                    color: '#057546',
+                                    color: isDark ? theme.palette.primary.main : '#057546',
                                     fontSize: '0.64rem',
                                     fontWeight: 800
                                   }}
@@ -1958,7 +2095,7 @@ const TechnicalSupport = () => {
                                   sx={{
                                     minHeight: 30,
                                     px: 0.65,
-                                    color: '#2e7d32',
+                                    color: isDark ? '#66bb6a' : '#2e7d32',
                                     fontSize: '0.64rem',
                                     fontWeight: 800
                                   }}
@@ -1979,7 +2116,7 @@ const TechnicalSupport = () => {
                                     sx={{
                                       minHeight: 30,
                                       px: 0.65,
-                                      color: '#b26a00',
+                                      color: isDark ? '#ffb74d' : '#b26a00',
                                       fontSize: '0.64rem',
                                       fontWeight: 800
                                     }}
@@ -1997,7 +2134,7 @@ const TechnicalSupport = () => {
                                   sx={{
                                     minHeight: 30,
                                     px: 0.65,
-                                    color: '#6f7d77',
+                                    color: isDark ? theme.palette.text.secondary : '#6f7d77',
                                     fontSize: '0.64rem',
                                     fontWeight: 800
                                   }}
@@ -2017,15 +2154,15 @@ const TechnicalSupport = () => {
                           display: 'grid',
                           placeItems: 'center',
                           textAlign: 'center',
-                          border: '1px dashed rgba(5,117,70,.18)',
+                          border: isDark ? '1px dashed #67C99D' : '1px dashed rgba(5,117,70,.18)',
                           borderRadius: 2,
-                          bgcolor: '#fbfdfc',
+                          bgcolor: isDark ? theme.palette.surfaces.nested : '#fbfdfc',
                           p: 1.5
                         }}
                       >
                         <Box>
-                          <Description sx={{ fontSize: 30, color: '#aab9b2', mb: 0.35 }} />
-                          <Typography sx={{ fontWeight: 850, color: '#52645d', fontSize: '0.75rem' }}>
+                          <Description sx={{ fontSize: 30, color: isDark ? theme.palette.text.secondary : '#aab9b2', mb: 0.35 }} />
+                          <Typography sx={{ fontWeight: 850, color: isDark ? theme.palette.text.primary : '#52645d', fontSize: '0.75rem' }}>
                             لا توجد تذاكر
                           </Typography>
                         </Box>
@@ -2040,9 +2177,11 @@ const TechnicalSupport = () => {
                     borderRadius: 2,
                     boxShadow: 'none',
                     overflow: 'hidden',
+                    overflowX: 'auto',
                     width: '100%',
                     maxWidth: '100%',
-                    border: '1px solid rgba(5,117,70,.11)',
+                    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+                    bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
                     '& .MuiTable-root': {
                       width: '100%',
                       minWidth: 0,
@@ -2061,28 +2200,28 @@ const TechnicalSupport = () => {
                   <Table size="small">
                     <TableHead
                       sx={{
-                        bgcolor: '#edf7f2',
+                        bgcolor: isDark ? theme.palette.surfaces.section : '#edf7f2',
                         '& .MuiTableCell-head': {
-                          color: '#27463a',
+                          color: isDark ? theme.palette.text.primary : '#27463a',
                           fontWeight: 900,
-                          borderBottom: '1px solid rgba(5,117,70,.14)'
+                          borderBottom: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.14)'
                         }
                       }}
                     >
                       <TableRow>
                         {isSupportStaff && viewAllTickets && (
-                          <TableCell sx={{ width: '17%', fontWeight: 900, color: '#034d31' }}>المستخدم</TableCell>
+                          <TableCell sx={{ width: '17%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>المستخدم</TableCell>
                         )}
-                        <TableCell sx={{ width: '13%', fontWeight: 900, color: '#034d31' }}>#</TableCell>
-                        <TableCell sx={{ width: '20%', fontWeight: 900, color: '#034d31' }}>التذكرة</TableCell>
-                        <TableCell sx={{ width: '8%', fontWeight: 900, color: '#034d31' }}>النوع</TableCell>
-                        <TableCell sx={{ width: '9%', fontWeight: 900, color: '#034d31' }}>الحالة</TableCell>
-                        <TableCell sx={{ width: '7%', fontWeight: 900, color: '#034d31' }}>الأولوية</TableCell>
+                        <TableCell sx={{ width: '13%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>#</TableCell>
+                        <TableCell sx={{ width: '20%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>التذكرة</TableCell>
+                        <TableCell sx={{ width: '8%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>النوع</TableCell>
+                        <TableCell sx={{ width: '9%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>الحالة</TableCell>
+                        <TableCell sx={{ width: '7%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>الأولوية</TableCell>
                         {isSupportStaff && viewAllTickets && (
-                          <TableCell sx={{ width: '8%', fontWeight: 900, color: '#034d31' }}>الفرع</TableCell>
+                          <TableCell sx={{ width: '8%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>الفرع</TableCell>
                         )}
-                        <TableCell sx={{ width: '8%', fontWeight: 900, color: '#034d31' }}>التاريخ</TableCell>
-                        <TableCell sx={{ width: '10%', fontWeight: 900, color: '#034d31' }}>الإجراءات</TableCell>
+                        <TableCell sx={{ width: '8%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>التاريخ</TableCell>
+                        <TableCell sx={{ width: '10%', fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31' }}>الإجراءات</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -2092,12 +2231,12 @@ const TechnicalSupport = () => {
                           const priorityInfo = priorities.find(p => p.value === ticket.priority);
                           
                           return (
-                            <TableRow 
+                            <TableRow
                               key={ticket.id}
-                              sx={{ 
-                                '&:hover': { bgcolor: '#f8fbf9' },
+                              sx={{
+                                '&:hover': { bgcolor: isDark ? theme.palette.surfaces.hover : '#f8fbf9' },
                                 '& .MuiTableCell-root': {
-                                  borderBottom: '1px solid #eef2f0'
+                                  borderBottom: `1px solid ${theme.palette.divider}`
                                 }
                               }}
                             >
@@ -2106,11 +2245,12 @@ const TechnicalSupport = () => {
                                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
                                     <Avatar
                                       sx={{
-                                        bgcolor: '#edf7f2',
-                                        color: '#057546',
+                                        bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
+                                        color: isDark ? theme.palette.primary.main : '#057546',
                                         width: 27,
                                         height: 27,
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        border: isDark ? '1px solid #67C99D' : 'none'
                                       }}
                                     >
                                       <Person sx={{ fontSize: 17 }} />
@@ -2125,7 +2265,8 @@ const TechnicalSupport = () => {
                                         display: '-webkit-box',
                                         WebkitLineClamp: 2,
                                         WebkitBoxOrient: 'vertical',
-                                        overflow: 'hidden'
+                                        overflow: 'hidden',
+                                        color: isDark ? theme.palette.text.primary : 'inherit'
                                       }}
                                     >
                                       {getUserNameFromGuid(ticket.user_guid)}
@@ -2142,7 +2283,7 @@ const TechnicalSupport = () => {
                                     fontSize: '0.6rem',
                                     lineHeight: 1.3,
                                     overflowWrap: 'anywhere',
-                                    color: '#40574e'
+                                    color: isDark ? theme.palette.text.secondary : '#40574e'
                                   }}
                                 >
                                   #{ticket.ticket_number}
@@ -2153,7 +2294,7 @@ const TechnicalSupport = () => {
                                   title={ticket.subject}
                                   sx={{
                                     fontWeight: 800,
-                                    color: '#30483f',
+                                    color: isDark ? theme.palette.text.primary : '#30483f',
                                     fontSize: '0.67rem',
                                     lineHeight: 1.4,
                                     display: '-webkit-box',
@@ -2177,6 +2318,7 @@ const TechnicalSupport = () => {
                                     color: typeInfo?.color,
                                     fontWeight: 750,
                                     fontSize: '0.58rem',
+                                    bgcolor: isDark ? alpha(typeInfo?.color || '#67C99D', 0.1) : 'transparent',
                                     '& .MuiChip-label': {
                                       px: 0.5,
                                       overflow: 'hidden',
@@ -2192,10 +2334,11 @@ const TechnicalSupport = () => {
                                   sx={{
                                     maxWidth: '100%',
                                     height: 22,
-                                    bgcolor: getStatusColor(ticket.status) + '12',
+                                    bgcolor: isDark ? alpha(getStatusColor(ticket.status), 0.2) : getStatusColor(ticket.status) + '12',
                                     color: getStatusColor(ticket.status),
                                     fontWeight: 800,
                                     fontSize: '0.58rem',
+                                    border: isDark ? `1px solid ${alpha(getStatusColor(ticket.status), 0.5)}` : 'none',
                                     '& .MuiChip-label': {
                                       px: 0.5,
                                       overflow: 'hidden',
@@ -2221,7 +2364,8 @@ const TechnicalSupport = () => {
                                       fontSize: '0.6rem',
                                       fontWeight: 750,
                                       overflow: 'hidden',
-                                      textOverflow: 'ellipsis'
+                                      textOverflow: 'ellipsis',
+                                      color: isDark ? theme.palette.text.primary : 'inherit'
                                     }}
                                   >
                                     {priorityInfo?.label}
@@ -2239,7 +2383,8 @@ const TechnicalSupport = () => {
                                       display: '-webkit-box',
                                       WebkitLineClamp: 2,
                                       WebkitBoxOrient: 'vertical',
-                                      overflow: 'hidden'
+                                      overflow: 'hidden',
+                                      color: isDark ? theme.palette.text.primary : 'inherit'
                                     }}
                                   >
                                     {getBranchNameFromGuid(ticket.branch_guid)}
@@ -2252,7 +2397,7 @@ const TechnicalSupport = () => {
                                     fontWeight: 750,
                                     fontSize: '0.6rem',
                                     lineHeight: 1.3,
-                                    color: '#52645d'
+                                    color: isDark ? theme.palette.text.secondary : '#52645d'
                                   }}
                                 >
                                   {new Date(ticket.created_at).toLocaleDateString('ar-EG')}
@@ -2270,33 +2415,38 @@ const TechnicalSupport = () => {
                                   }}
                                 >
                                   <Tooltip title="مشاهدة التفاصيل">
-                                    <IconButton 
-                                      size="small" 
+                                    <IconButton
+                                      size="small"
                                       sx={{
                                         width: 30,
                                         height: 30,
-                                        color: '#057546',
-                                        border: '1px solid rgba(5,117,70,.12)'
+                                        color: isDark ? theme.palette.primary.main : '#057546',
+                                        border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)'
                                       }}
                                       onClick={() => openTicketDetails(ticket)}
                                     >
                                       <Visibility fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
-                                  
+
                                   {/* إظهار زر الرد لموظفي الدعم فقط */}
                                   {isSupportStaff && (
                                     <Tooltip title="إضافة رد">
-                                      <IconButton 
-                                        size="small" 
-                                        sx={{ width: 27, height: 27, color: '#2e7d32' }}
+                                      <IconButton
+                                        size="small"
+                                        sx={{
+                                          width: 27,
+                                          height: 27,
+                                          color: isDark ? '#66bb6a' : '#2e7d32',
+                                          border: isDark ? '1px solid #67C99D' : 'none'
+                                        }}
                                         onClick={() => openReplyDialog(ticket)}
                                       >
                                         <Reply fontSize="small" />
                                       </IconButton>
                                     </Tooltip>
                                   )}
-                                  
+
                                   {/* إظهار زر الرد للمستخدمين العاديين فقط إذا كانوا هم منشئي التذكرة */}
                                   {!isSupportStaff && ticket.user_guid === userGuid && (
                                     <Tooltip
@@ -2312,7 +2462,10 @@ const TechnicalSupport = () => {
                                           sx={{
                                               width: 27,
                                               height: 27,
-                                              color: ticket.status === 'closed' ? '#9e9e9e' : '#2e7d32'
+                                              color: ticket.status === 'closed'
+                                                ? (isDark ? theme.palette.text.secondary : '#9e9e9e')
+                                                : (isDark ? '#66bb6a' : '#2e7d32'),
+                                              border: isDark ? '1px solid #67C99D' : 'none'
                                             }}
                                           onClick={
                                             ticket.status === 'closed'
@@ -2332,9 +2485,14 @@ const TechnicalSupport = () => {
                                     <>
                                       {ticket.status !== 'resolved' && ticket.status !== 'closed' && (
                                         <Tooltip title="تم الحل">
-                                          <IconButton 
-                                            size="small" 
-                                            sx={{ width: 27, height: 27, color: '#2e7d32' }}
+                                          <IconButton
+                                            size="small"
+                                            sx={{
+                                              width: 27,
+                                              height: 27,
+                                              color: isDark ? '#66bb6a' : '#2e7d32',
+                                              border: isDark ? '1px solid #67C99D' : 'none'
+                                            }}
                                             onClick={() => updateTicketStatus(ticket.id, 'resolved')}
                                           >
                                             <CheckCircle fontSize="small" />
@@ -2343,9 +2501,14 @@ const TechnicalSupport = () => {
                                       )}
                                       {ticket.status !== 'in_progress' && ticket.status !== 'resolved' && ticket.status !== 'closed' && (
                                         <Tooltip title="قيد المعالجة">
-                                          <IconButton 
-                                            size="small" 
-                                            sx={{ width: 27, height: 27, color: '#b26a00' }}
+                                          <IconButton
+                                            size="small"
+                                            sx={{
+                                              width: 27,
+                                              height: 27,
+                                              color: isDark ? '#ffb74d' : '#b26a00',
+                                              border: isDark ? '1px solid #67C99D' : 'none'
+                                            }}
                                             onClick={() => updateTicketStatus(ticket.id, 'in_progress')}
                                           >
                                             <AccessTime fontSize="small" />
@@ -2354,9 +2517,14 @@ const TechnicalSupport = () => {
                                       )}
                                       {ticket.status !== 'closed' && (
                                         <Tooltip title="إغلاق التذكرة">
-                                          <IconButton 
-                                            size="small" 
-                                            sx={{ width: 27, height: 27, color: '#6f7d77' }}
+                                          <IconButton
+                                            size="small"
+                                            sx={{
+                                              width: 27,
+                                              height: 27,
+                                              color: isDark ? theme.palette.text.secondary : '#6f7d77',
+                                              border: isDark ? '1px solid #67C99D' : 'none'
+                                            }}
                                             onClick={() => updateTicketStatus(ticket.id, 'closed')}
                                           >
                                             <Close fontSize="small" />
@@ -2373,13 +2541,13 @@ const TechnicalSupport = () => {
                       ) : (
                         <TableRow>
                           <TableCell colSpan={isSupportStaff && viewAllTickets ? 9 : 7}>
-                            <Box sx={{ 
-                              textAlign: 'center', 
+                            <Box sx={{
+                              textAlign: 'center',
                               py: 1.2,
-                              bgcolor: '#fafafa',
+                              bgcolor: isDark ? theme.palette.surfaces.nested : '#fafafa',
                               borderRadius: 2
                             }}>
-                              <Description sx={{ fontSize: 34, color: '#aab9b2', mb: 0.6 }} />
+                              <Description sx={{ fontSize: 34, color: isDark ? theme.palette.text.secondary : '#aab9b2', mb: 0.6 }} />
                               <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                                 لا توجد تذاكر
                               </Typography>
@@ -2414,7 +2582,8 @@ const TechnicalSupport = () => {
                   sx={uiLayout.withUiSx({
                     direction: 'rtl',
                     mt: 0.55,
-                    borderTop: '1px solid rgba(5,117,70,.08)',
+                    borderTop: isDark ? '1px solid rgba(103,201,157,.25)' : '1px solid rgba(5,117,70,.08)',
+                    color: isDark ? theme.palette.text.secondary : undefined,
                     '& .MuiTablePagination-toolbar': {
                       minHeight: 42,
                       px: isPhone ? 0 : 0.5,
@@ -2453,16 +2622,23 @@ const TechnicalSupport = () => {
               maxHeight: isPhone ? 'calc(100dvh - 16px)' : 'calc(100dvh - 40px)',
               m: isPhone ? 1 : 2,
               borderRadius: isPhone ? 2 : 2.5,
-              overflow: 'hidden'
+              overflow: 'hidden',
+              border: isDark ? '1px solid #67C99D' : 'none',
+              bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
             }
           }}
         >
           {ticketDetails && (
             <>
-              <DialogTitle sx={{ px: isPhone ? 1 : 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
-                  <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              <DialogTitle sx={{
+                px: isPhone ? 1 : 1.5,
+                py: 1,
+                borderBottom: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+                bgcolor: isDark ? theme.palette.surfaces.section : 'transparent'
+              }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                       تفاصيل التذكرة #{ticketDetails.ticket_number}
                     </Typography>
                     {isSupportStaff && (
@@ -2474,60 +2650,77 @@ const TechnicalSupport = () => {
                   <Chip
                     label={getStatusText(ticketDetails.status)}
                     sx={{
-                      bgcolor: getStatusColor(ticketDetails.status) + '15',
+                      bgcolor: isDark ? alpha(getStatusColor(ticketDetails.status), 0.2) : getStatusColor(ticketDetails.status) + '15',
                       color: getStatusColor(ticketDetails.status),
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
+                      border: isDark ? `1px solid ${alpha(getStatusColor(ticketDetails.status), 0.5)}` : 'none'
                     }}
                   />
                 </Box>
               </DialogTitle>
-              <DialogContent dividers sx={{ p: isPhone ? 1 : 1.5, bgcolor: '#fbfdfc' }}>
-                <Grid container spacing={isPhone ? 0.8 : 1}>
+              <DialogContent dividers sx={{ p: isPhone ? 1 : 1.5, bgcolor: isDark ? theme.palette.surfaces.card : '#fbfdfc', borderColor: isDark ? '#67C99D' : undefined }}>
+                <Grid container spacing={isPhone ? 1.5 : 2}>
                   <Grid item xs={12} lg={6}>
                     <Typography variant="subtitle2" color="text.secondary">
                       العنوان
                     </Typography>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
+                    <Typography variant="body1" sx={{ mb: 2, color: isDark ? theme.palette.text.primary : 'inherit' }}>
                       {ticketDetails.subject}
                     </Typography>
                   </Grid>
-                  
+
                   <Grid item xs={12} lg={6}>
                     <Typography variant="subtitle2" color="text.secondary">
                       النوع
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                       {ticketTypes.find(t => t.value === ticketDetails.ticket_type)?.icon}
-                      <Typography variant="body1">
+                      <Typography variant="body1" sx={{ color: isDark ? theme.palette.text.primary : 'inherit' }}>
                         {ticketTypes.find(t => t.value === ticketDetails.ticket_type)?.label}
                       </Typography>
                     </Box>
                   </Grid>
-                  
+
                   <Grid item xs={12}>
                     <Typography variant="subtitle2" color="text.secondary">
                       الوصف
                     </Typography>
-                    <Paper variant="outlined" sx={{ p: 2, mt: 1, mb: 3 }}>
-                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                    <Paper
+                      variant="outlined"
+                      sx={{
+                        p: 2,
+                        mt: 1,
+                        mb: 3,
+                        borderColor: isDark ? '#67C99D' : undefined,
+                        bgcolor: isDark ? theme.palette.surfaces.nested : 'transparent'
+                      }}
+                    >
+                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                         {ticketDetails.description}
                       </Typography>
                     </Paper>
                   </Grid>
-                  
+
                   {/* معلومات المستخدم للموظفين الدعم */}
                   {isSupportStaff && (
                     <Grid item xs={12}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                         معلومات مقدم التذكرة
                       </Typography>
-                      <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f5f5f5' }}>
+                      <Paper
+                        variant="outlined"
+                        sx={{
+                          p: 2,
+                          borderColor: isDark ? '#67C99D' : undefined,
+                          bgcolor: isDark ? theme.palette.surfaces.nested : '#f5f5f5'
+                        }}
+                      >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
-                          <Avatar sx={{ bgcolor: '#057546' }}>
+                          <Avatar sx={{ bgcolor: isDark ? theme.palette.primary.main : '#057546' }}>
                             <Person />
                           </Avatar>
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                               {getUserNameFromGuid(ticketDetails.user_guid)}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
@@ -2538,23 +2731,29 @@ const TechnicalSupport = () => {
                       </Paper>
                     </Grid>
                   )}
-                  
+
                   {/* المرفقات */}
                   {ticketDetails.attachments && ticketDetails.attachments.length > 0 && (
                     <Grid item xs={12}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
                         المرفقات ({ticketDetails.attachments.length})
                       </Typography>
-                      <Grid container spacing={isPhone ? 0.7 : 0.9}>
+                      <Grid container spacing={isPhone ? 1.5 : 2}>
                         {ticketDetails.attachments.map((attachment, index) => (
                           <Grid item xs={12} sm={6} key={index}>
-                            <Card variant="outlined">
+                            <Card
+                              variant="outlined"
+                              sx={{
+                                borderColor: isDark ? '#67C99D' : undefined,
+                                bgcolor: isDark ? theme.palette.surfaces.nested : 'transparent'
+                              }}
+                            >
                               <CardContent sx={{ p: 2 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9 }}>
-                                    <AttachFile />
-                                    <Box>
-                                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.9, minWidth: 0 }}>
+                                    <AttachFile sx={{ color: isDark ? theme.palette.primary.main : 'inherit' }} />
+                                    <Box sx={{ minWidth: 0 }}>
+                                      <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                                         {attachment.file_name}
                                       </Typography>
                                       <Typography variant="caption" color="text.secondary">
@@ -2562,9 +2761,10 @@ const TechnicalSupport = () => {
                                       </Typography>
                                     </Box>
                                   </Box>
-                                  <IconButton 
+                                  <IconButton
                                     size="small"
                                     onClick={() => downloadFile(attachment.file_path, attachment.file_name)}
+                                    sx={{ color: isDark ? theme.palette.primary.main : 'inherit' }}
                                   >
                                     <Download fontSize="small" />
                                   </IconButton>
@@ -2585,28 +2785,37 @@ const TechnicalSupport = () => {
                       </Typography>
                       <List>
                         {ticketDetails.replies.map((reply, index) => (
-                          <ListItem key={index} alignItems="flex-start">
+                          <ListItem
+                            key={index}
+                            alignItems="flex-start"
+                            sx={{
+                              mb: 1,
+                              borderRadius: 2,
+                              border: isDark ? '1px solid #67C99D' : '1px solid transparent',
+                              bgcolor: isDark ? theme.palette.surfaces.nested : 'transparent'
+                            }}
+                          >
                             <ListItemAvatar>
-                              <Avatar sx={{ 
-                                bgcolor: reply.user_guid === userGuid 
-                                  ? '#2196f3' 
-                                  : isSupportStaff 
-                                    ? '#4caf50' 
+                              <Avatar sx={{
+                                bgcolor: reply.user_guid === userGuid
+                                  ? '#2196f3'
+                                  : isSupportStaff
+                                    ? '#4caf50'
                                     : '#ff9800'
                               }}>
-                                {reply.user_guid === userGuid 
-                                  ? 'أنت' 
-                                  : usersData[reply.user_guid] 
+                                {reply.user_guid === userGuid
+                                  ? 'أنت'
+                                  : usersData[reply.user_guid]
                                     ? usersData[reply.user_guid].userName.substring(0, 2)
                                     : 'دعم'}
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText
                               primary={
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                                    {reply.user_guid === userGuid 
-                                      ? 'أنت' 
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 0.5, minWidth: 0 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
+                                    {reply.user_guid === userGuid
+                                      ? 'أنت'
                                       : getUserNameFromGuid(reply.user_guid)}
                                   </Typography>
                                   <Typography variant="caption" color="text.secondary">
@@ -2616,7 +2825,7 @@ const TechnicalSupport = () => {
                               }
                               secondary={
                                 <Box>
-                                  <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
+                                  <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap', color: isDark ? theme.palette.text.secondary : 'inherit' }}>
                                     {reply.message}
                                   </Typography>
                                   {reply.attachments && reply.attachments.length > 0 && (
@@ -2641,9 +2850,25 @@ const TechnicalSupport = () => {
                   py: 1,
                   gap: 0.6,
                   flexWrap: 'wrap',
-                  justifyContent: 'flex-start'
+                  justifyContent: 'flex-start',
+                  bgcolor: isDark ? theme.palette.surfaces.section : 'transparent',
+                  borderTop: isDark ? '1px solid #67C99D' : 'none'
                 }, uiLayout.dialogActionsSx)}>
-                <Button sx={uiLayout.buttonSx} onClick={() => setDetailsDialogOpen(false)}>
+                <Button
+                  variant={isDark ? 'outlined' : 'text'}
+                  sx={uiLayout.withUiSx({
+                    borderRadius: 2,
+                    px: 4,
+                    fontWeight: 600,
+                    ...(isDark ? {
+                      background: 'transparent',
+                      color: '#67C99D',
+                      borderColor: '#67C99D',
+                      '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                    } : {})
+                  }, uiLayout.buttonSx)}
+                  onClick={() => setDetailsDialogOpen(false)}
+                >
                   إغلاق
                 </Button>
                 {(isSupportStaff || ticketDetails.user_guid === userGuid) && (
@@ -2656,14 +2881,24 @@ const TechnicalSupport = () => {
                   >
                     <span>
                       <Button
-                        variant="contained"
+                        variant={isDark ? 'outlined' : 'contained'}
                         onClick={() => {
                           if (!isSupportStaff && ticketDetails.status === 'closed') return;
                           setDetailsDialogOpen(false);
                           openReplyDialog(ticketDetails);
                         }}
                         disabled={!isSupportStaff && ticketDetails.status === 'closed'}
-                        sx={uiLayout.withUiSx({ bgcolor: '#057546' }, uiLayout.buttonSx)}
+                        sx={uiLayout.withUiSx({
+                          borderRadius: 2,
+                          px: 4,
+                          fontWeight: 600,
+                          ...(isDark ? {
+                            background: 'transparent',
+                            color: '#67C99D',
+                            borderColor: '#67C99D',
+                            '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                          } : { bgcolor: '#057546' })
+                        }, uiLayout.buttonSx)}
                       >
                         إضافة رد
                       </Button>
@@ -2688,34 +2923,89 @@ const TechnicalSupport = () => {
               maxWidth: '640px',
               m: isPhone ? 1 : 2,
               borderRadius: isPhone ? 2 : 2.5,
-              overflow: 'hidden'
+              overflow: 'hidden',
+              border: isDark ? '1px solid #67C99D' : 'none',
+              bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
             }
           }}
         >
-          <DialogTitle sx={{ px: isPhone ? 1 : 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
-              <Reply />
+          <DialogTitle sx={{
+            px: isPhone ? 1 : 1.5,
+            py: 1,
+            borderBottom: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+            bgcolor: isDark ? theme.palette.surfaces.section : 'transparent',
+            color: isDark ? theme.palette.text.primary : 'inherit'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6, flexWrap: 'wrap' }}>
+              <Reply sx={{ color: isDark ? theme.palette.primary.main : 'inherit' }} />
               إضافة رد على التذكرة #{selectedTicket?.ticket_number}
             </Box>
           </DialogTitle>
-          <DialogContent dividers sx={{ p: isPhone ? 1 : 1.5, bgcolor: '#fbfdfc' }}>
-            <TextField InputLabelProps={{ shrink: true }}
+          <DialogContent dividers sx={{ p: isPhone ? 1 : 1.5, bgcolor: isDark ? theme.palette.surfaces.card : '#fbfdfc', borderColor: isDark ? '#67C99D' : undefined }}>
+            <TextField
+              InputLabelProps={{ shrink: true }}
               autoFocus
               multiline
-              minRows={isPhone ? 3 : 4}
+              minRows={4}
               fullWidth
               label="رسالة الرد"
               value={replyMessage}
               onChange={(e) => setReplyMessage(e.target.value)}
-              sx={uiLayout.withUiSx({ mb: 0.8 }, uiLayout.formFieldSx)}
+              placeholder="اكتب ردك بالتفصيل..."
+              sx={{
+                mb: 2,
+                bgcolor: isDark ? theme.palette.surfaces.input : 'white',
+                borderRadius: 1,
+
+                // حماية حقل الرد من أي height عام موروث من theme / global styles
+                '&& .MuiOutlinedInput-root': {
+                  borderRadius: 1,
+                  alignItems: 'flex-start',
+                  bgcolor: isDark ? theme.palette.surfaces.input : 'white',
+                },
+                '&& .MuiOutlinedInput-root.MuiInputBase-multiline': {
+                  height: 'auto !important',
+                  minHeight: isPhone ? '112px !important' : '124px !important',
+                  maxHeight: 'none !important',
+                  padding: '12px 14px !important',
+                  alignItems: 'flex-start !important',
+                },
+                '&& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#67C99D !important' : 'rgba(5,117,70,.28)'
+                },
+                '&& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, && .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#67C99D !important'
+                },
+                '&& textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"])': {
+                  height: 'auto !important',
+                  minHeight: isPhone ? '84px !important' : '96px !important',
+                  maxHeight: 'none !important',
+                  color: isDark ? theme.palette.text.primary : 'inherit',
+                  lineHeight: '1.75 !important',
+                  resize: 'vertical',
+                  overflowY: 'auto !important',
+                  boxSizing: 'border-box',
+                  padding: '0 !important',
+                },
+              }}
             />
-            
+
             <Box sx={{ mb: 2 }}>
-              <Button sx={uiLayout.buttonSx}
+              <Button
                 component="label"
                 variant="outlined"
                 startIcon={<CloudUpload />}
                 size="small"
+                sx={uiLayout.withUiSx({
+                  borderRadius: 2,
+                  fontWeight: 600,
+                  ...(isDark ? {
+                    background: 'transparent',
+                    color: '#67C99D',
+                    borderColor: '#67C99D',
+                    '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                  } : {})
+                }, uiLayout.buttonSx)}
               >
                 إرفاق ملفات
                 <input
@@ -2726,29 +3016,32 @@ const TechnicalSupport = () => {
                   style={{ display: 'none' }}
                 />
               </Button>
-              
+
               {replyFiles.length > 0 && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="caption" color="text.secondary">
                     الملفات المرفوعة:
                   </Typography>
                   {replyFiles.map((file) => (
-                    <Box key={file.id} sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                    <Box key={file.id} sx={{
+                      display: 'flex',
+                      alignItems: 'center',
                       justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1,
                       p: 1,
-                      border: '1px solid #e0e0e0',
+                      border: isDark ? '1px solid #67C99D' : '1px solid #e0e0e0',
                       borderRadius: 1,
-                      mt: 1
+                      mt: 1,
+                      bgcolor: isDark ? theme.palette.surfaces.nested : 'transparent'
                     }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <AttachFile fontSize="small" />
-                        <Typography variant="body2">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                        <AttachFile fontSize="small" sx={{ color: isDark ? theme.palette.primary.main : 'inherit' }} />
+                        <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.primary : 'inherit' }}>
                           {file.name}
                         </Typography>
                       </Box>
-                      <IconButton size="small" onClick={() => removeReplyFile(file.id)}>
+                      <IconButton size="small" onClick={() => removeReplyFile(file.id)} sx={{ color: isDark ? theme.palette.text.secondary : 'inherit' }}>
                         <Close fontSize="small" />
                       </IconButton>
                     </Box>
@@ -2762,17 +3055,43 @@ const TechnicalSupport = () => {
                   py: 1,
                   gap: 0.6,
                   flexWrap: 'wrap',
-                  justifyContent: 'flex-start'
+                  justifyContent: 'flex-start',
+                  bgcolor: isDark ? theme.palette.surfaces.section : 'transparent',
+                  borderTop: isDark ? '1px solid #67C99D' : 'none'
                 }, uiLayout.dialogActionsSx)}>
-            <Button sx={uiLayout.buttonSx} onClick={() => setReplyDialogOpen(false)}>
+            <Button
+              variant={isDark ? 'outlined' : 'text'}
+              sx={uiLayout.withUiSx({
+                borderRadius: 2,
+                px: 4,
+                fontWeight: 600,
+                ...(isDark ? {
+                  background: 'transparent',
+                  color: '#67C99D',
+                  borderColor: '#67C99D',
+                  '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                } : {})
+              }, uiLayout.buttonSx)}
+              onClick={() => setReplyDialogOpen(false)}
+            >
               إلغاء
             </Button>
             <Button
-              variant="contained"
+              variant={isDark ? 'outlined' : 'contained'}
               onClick={handleSubmitReply}
               disabled={sendingReply || !replyMessage.trim()}
               startIcon={sendingReply ? <CircularProgress size={20} /> : <Send />}
-              sx={uiLayout.withUiSx({ bgcolor: '#057546' }, uiLayout.buttonSx)}
+              sx={uiLayout.withUiSx({
+                borderRadius: 2,
+                px: 4,
+                fontWeight: 600,
+                ...(isDark ? {
+                  background: 'transparent',
+                  color: '#67C99D',
+                  borderColor: '#67C99D',
+                  '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                } : { bgcolor: '#057546' })
+              }, uiLayout.buttonSx)}
             >
               {sendingReply ? 'جاري الإرسال...' : 'إرسال الرد'}
             </Button>
@@ -2792,36 +3111,60 @@ const TechnicalSupport = () => {
               maxWidth: '600px',
               m: isPhone ? 1 : 2,
               borderRadius: isPhone ? 2 : 2.5,
-              overflow: 'hidden'
+              overflow: 'hidden',
+              border: isDark ? '1px solid #67C99D' : 'none',
+              bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
             }
           }}
         >
-          <DialogTitle sx={{ px: isPhone ? 1 : 1.5, py: 1, textAlign: 'center', borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+          <DialogTitle sx={{
+            px: isPhone ? 1 : 1.5,
+            py: 1,
+            textAlign: 'center',
+            borderBottom: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+            bgcolor: isDark ? theme.palette.surfaces.section : 'transparent'
+          }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.7, mb: 0.35 }}>
-              <Avatar sx={{ bgcolor: '#fff8e7', color: '#c77800', width: 34, height: 34 }}>
+              <Avatar sx={{
+                bgcolor: isDark ? 'rgba(255,152,0,.18)' : '#fff8e7',
+                color: isDark ? '#ffb74d' : '#c77800',
+                width: 34,
+                height: 34,
+                border: isDark ? '1px solid #67C99D' : 'none'
+              }}>
                 <Block sx={{ fontSize: 19 }} />
               </Avatar>
             </Box>
-            <Typography sx={{ fontWeight: 900, color: '#034d31', fontSize: '0.9rem' }}>
+            <Typography sx={{ fontWeight: 900, color: isDark ? theme.palette.text.primary : '#034d31', fontSize: '0.9rem' }}>
               ⚠️ لديك طلب مازال قيد الانتظار
             </Typography>
           </DialogTitle>
-          <DialogContent sx={{ p: isPhone ? 1 : 1.5 }}>
+          <DialogContent sx={{ p: isPhone ? 1 : 1.5, bgcolor: isDark ? theme.palette.surfaces.card : 'transparent' }}>
             <DialogContentText sx={{ textAlign: 'center', mb: 2 }}>
-              <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.8 }}>
+              <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.8, color: isDark ? theme.palette.text.primary : 'inherit' }}>
                 لا يمكنك تقديم تذكرة جديدة حتى يتم الرد على تذكرتك الحالية أو تغيير حالتها.
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 يمكنك متابعة حالة التذكرة الحالية في قسم "تذاكري السابقة" أدناه.
               </Typography>
             </DialogContentText>
-            
+
             {tickets.filter(t => t.status === 'pending' || t.status === 'in_progress').slice(0, 2).map(ticket => (
-              <Card key={ticket.id} variant="outlined" sx={{ mb: 0.7, borderRadius: 2, boxShadow: 'none' }}>
+              <Card
+                key={ticket.id}
+                variant="outlined"
+                sx={{
+                  mb: 0.7,
+                  borderRadius: 2,
+                  boxShadow: 'none',
+                  borderColor: isDark ? '#67C99D' : undefined,
+                  bgcolor: isDark ? theme.palette.surfaces.nested : 'transparent'
+                }}
+              >
                 <CardContent sx={{ p: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
                         #{ticket.ticket_number} - {ticket.subject}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
@@ -2832,9 +3175,10 @@ const TechnicalSupport = () => {
                       label={getStatusText(ticket.status)}
                       size="small"
                       sx={{
-                        bgcolor: getStatusColor(ticket.status) + '15',
+                        bgcolor: isDark ? alpha(getStatusColor(ticket.status), 0.2) : getStatusColor(ticket.status) + '15',
                         color: getStatusColor(ticket.status),
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
+                        border: isDark ? `1px solid ${alpha(getStatusColor(ticket.status), 0.5)}` : 'none'
                       }}
                     />
                   </Box>
@@ -2847,31 +3191,49 @@ const TechnicalSupport = () => {
               py: 1,
               gap: 0.6,
               flexWrap: 'wrap',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              bgcolor: isDark ? theme.palette.surfaces.section : 'transparent',
+              borderTop: isDark ? '1px solid #67C99D' : 'none'
             }, uiLayout.dialogActionsSx)}>
             <Button
-              variant="contained"
+              variant={isDark ? 'outlined' : 'contained'}
               onClick={() => {
                 setPendingTicketDialogOpen(false);
                 document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
               sx={uiLayout.withUiSx({
-                bgcolor: '#057546',
                 minHeight: 36,
                 py: 0.55,
-                px: 1.25,
+                px: 4,
                 width: isPhone ? '100%' : 'auto',
                 borderRadius: 2,
                 fontSize: '0.7rem',
                 fontWeight: 850,
                 minWidth: isPhone ? 0 : 150,
+                ...(isDark ? {
+                  background: 'transparent',
+                  color: '#67C99D',
+                  borderColor: '#67C99D',
+                  '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                } : { bgcolor: '#057546' })
               }, uiLayout.buttonSx)}
             >
               عرض تذكرتي الحالية
             </Button>
             <Button
+              variant={isDark ? 'outlined' : 'text'}
               onClick={() => setPendingTicketDialogOpen(false)}
-              sx={uiLayout.withUiSx({ color: '#666' }, uiLayout.buttonSx)}
+              sx={uiLayout.withUiSx({
+                borderRadius: 2,
+                px: 4,
+                fontWeight: 600,
+                ...(isDark ? {
+                  background: 'transparent',
+                  color: '#67C99D',
+                  borderColor: '#67C99D',
+                  '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                } : { color: '#666' })
+              }, uiLayout.buttonSx)}
             >
               إغلاق
             </Button>
@@ -2891,15 +3253,31 @@ const TechnicalSupport = () => {
           <Alert
             severity={alert.type}
             onClose={() => setAlert({ ...alert, open: false })}
-            sx={{ 
+            sx={{
               minWidth: isPhone ? 0 : 320,
               width: isPhone ? 'calc(100vw - 24px)' : 'auto',
               maxWidth: '100%',
               borderRadius: 2,
-              boxShadow: '0 6px 18px rgba(31,45,61,.12)'
+              boxShadow: '0 6px 18px rgba(31,45,61,.12)',
+              border: isDark ? '1px solid #67C99D' : 'none',
+              ...(isDark ? {
+                bgcolor:
+                  alert.type === 'success' ? 'rgba(76,175,80,.18)' :
+                  alert.type === 'warning' ? 'rgba(255,152,0,.18)' :
+                  alert.type === 'error' ? 'rgba(229,90,90,.18)' :
+                  'rgba(33,150,243,.18)',
+                color: theme.palette.text.primary,
+                '& .MuiAlert-icon': {
+                  color:
+                    alert.type === 'success' ? '#66bb6a' :
+                    alert.type === 'warning' ? '#ffb74d' :
+                    alert.type === 'error' ? '#ef9a9a' :
+                    '#64b5f6'
+                }
+              } : {})
             }}
           >
-            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
               {alert.message}
             </Typography>
           </Alert>

@@ -1217,7 +1217,9 @@ const NewStudentsPage = () => {
         overflowX: "hidden",
         direction: "rtl",
         background:
-          "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
+          theme.palette.mode === 'dark'
+            ? theme.palette.background.default
+            : "linear-gradient(135deg,#f5faf7 0%,#fff 55%,#eef8f3 100%)"
       }}
     >
       {!isDesktop && (

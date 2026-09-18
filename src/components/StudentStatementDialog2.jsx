@@ -1,4 +1,5 @@
 import { PRINT_READY_SCRIPT } from '../utils/printReady';
+import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import React, { useEffect, useMemo, useState } from "react";
@@ -32,6 +33,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import HistoryIcon from "@mui/icons-material/History";
 import SalesInvoiceDialog from "./SalesInvoiceDialog";
+import RegisterDocumentDialog from "./RegisterDocumentDialog";
 import ArchiveIcon from "@mui/icons-material/Archive";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
@@ -40,6 +42,14 @@ const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const primaryLight = "#e6f3ee";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const whiteColor = "#fefefe";
 const textColor = "#1f2d3d";
 const softBg = "#fefefe";
@@ -161,26 +171,29 @@ const MoneyCell = ({ value, color = textColor }) => (
 const SummaryCard = ({ label, value, color = textColor }) => (
   <Paper
     elevation={0}
-    sx={{
-      px: 2,
-      py: 1.4,
-      borderRadius: 3,
-      border: `1px solid ${primaryLight}`,
-      backgroundColor: whiteColor,
-      minWidth: 170,
-      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-        minWidth: 0,
-        px: 0.7,
-        py: 0.55,
-        borderRadius: 1.5,
-        flex: 1
-      },
-      "@media (max-width:599px)": {
-        px: 0.45,
-        py: 0.4
-      },
-      textAlign: "center",
-      boxShadow: "0 8px 22px rgba(5,117,70,0.08)"
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
+        px: 2,
+        py: 1.4,
+        borderRadius: 3,
+        border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+        backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
+        minWidth: 170,
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+          minWidth: 0,
+          px: 0.7,
+          py: 0.55,
+          borderRadius: 1.5,
+          flex: 1
+        },
+        "@media (max-width:599px)": {
+          px: 0.45,
+          py: 0.4
+        },
+        textAlign: "center",
+        boxShadow: isDark ? `0 0 0 1px #67C99D` : "0 8px 22px rgba(5,117,70,0.08)"
+      };
     }}
   >
     <Typography
@@ -280,6 +293,11 @@ const StudentStatementDialog2 = ({
 
   const [salesInvoiceOpen, setSalesInvoiceOpen] = useState(false);
   const [selectedSalesInvoice, setSelectedSalesInvoice] = useState(null);
+
+  // معاينة استمارة التسجيل مباشرة من كشف الحساب.
+  // لا نعتمد على callback خارجي حتى لا يصبح زر "عرض المستند" بلا نتيجة.
+  const [registerDocumentOpen, setRegisterDocumentOpen] = useState(false);
+  const [selectedRegisterDocument, setSelectedRegisterDocument] = useState(null);
 
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [archiveLoading, setArchiveLoading] = useState(false);
@@ -1261,46 +1279,148 @@ const StudentStatementDialog2 = ({
     printWindow.addEventListener("load", releaseBlobUrl, { once: true });
   };
 
+  const resolveRegisterDocumentGuid = (row) => {
+    const candidates = [
+      row?.docGuid,
+      row?.DocGuid,
+      row?.regDocGuid,
+      row?.RegDocGuid,
+      row?.documentGuid,
+      row?.DocumentGuid,
+      row?.actionGuid,
+      row?.ActionGuid,
+      row?.guid,
+      row?.Guid,
+      row?.id
+    ];
+
+    const guidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    return (
+      candidates
+        .map((value) => String(value || "").trim())
+        .find((value) => guidPattern.test(value)) || ""
+    );
+  };
+
+  const openRegisterDocumentPreview = (row) => {
+    const docGuid = resolveRegisterDocumentGuid(row);
+    const documentNo =
+      row?.documentNo ||
+      row?.DocumentNo ||
+      row?.docNo ||
+      row?.DocNo ||
+      "";
+
+    if (!docGuid) {
+      // Backward compatibility: لو الصفحة الأب عندها resolver خاص بها نستخدمه فقط كـ fallback.
+      if (typeof onOpenStatementDocument === "function") {
+        onOpenStatementDocument(row);
+        return;
+      }
+
+      setError(
+        `تعذر قراءة معرف مستند التسجيل${documentNo ? ` رقم ${documentNo}` : ""}`
+      );
+      return;
+    }
+
+    setSelectedRegisterDocument({
+      ...row,
+      docGuid,
+      documentNo
+    });
+    setRegisterDocumentOpen(true);
+  };
+
   const statementColumns = [
     {
       field: "actions",
       headerName: "العمليات",
-      width: 88,
-      minWidth: 88,
-      maxWidth: 88,
+      width: isCompact ? 88 : 178,
+      minWidth: isCompact ? 88 : 178,
+      maxWidth: isCompact ? 88 : 178,
       sortable: false,
       filterable: false,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <Stack direction="row" spacing={0.35} justifyContent="center" sx={{ width: "100%" }}>
-          <Tooltip title="عرض المستند">
-            <IconButton
+        <Stack direction="row" spacing={0.45} justifyContent="center" sx={{ width: "100%" }}>
+          {isCompact ? (
+            <Tooltip title="عرض المستند">
+              <IconButton
+                size="small"
+                aria-label="عرض المستند"
+                onClick={() => openRegisterDocumentPreview(params.row)}
+                sx={(theme) => ({
+                  color: primaryColor,
+                  border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+                  backgroundColor: theme.palette.mode === "dark"
+                    ? (theme.palette.surfaces?.nested || "#1b3328")
+                    : primaryLight,
+                  width: 28,
+                  height: 28,
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === "dark"
+                      ? (theme.palette.surfaces?.hover || "#214333")
+                      : "#d7f0e5"
+                  }
+                })}
+              >
+                <VisibilityIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Button
               size="small"
-              onClick={() => onOpenStatementDocument?.(params.row)}
-              sx={{
-                color: primaryColor,
-                backgroundColor: primaryLight,
-                width: 28,
-                height: 28,
-                "&:hover": { backgroundColor: "#d7f0e5" }
-              }}
+              variant="outlined"
+              startIcon={<VisibilityIcon sx={{ fontSize: 17 }} />}
+              onClick={() => openRegisterDocumentPreview(params.row)}
+              sx={uiLayout.withUiSx((theme) => ({
+                minWidth: 112,
+                height: 30,
+                px: 1.1,
+                borderRadius: 1.8,
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: "0.72rem",
+                color: theme.palette.mode === "dark" ? "#dff8ec" : primaryDark,
+                borderColor: theme.palette.mode === "dark" ? "#67C99D" : primaryColor,
+                backgroundColor: theme.palette.mode === "dark"
+                  ? (theme.palette.surfaces?.nested || "#1b3328")
+                  : "#f4faf7",
+                "&:hover": {
+                  borderColor: theme.palette.mode === "dark" ? "#67C99D" : primaryDark,
+                  backgroundColor: theme.palette.mode === "dark"
+                    ? (theme.palette.surfaces?.hover || "#214333")
+                    : "#e7f5ee"
+                }
+              }), uiLayout.buttonSx)}
             >
-              <VisibilityIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
+              عرض المستند
+            </Button>
+          )}
 
           <Tooltip title="سجل العمليات">
             <IconButton
               size="small"
+              aria-label="سجل العمليات"
               onClick={() => onOpenHistory?.(params.row)}
-              sx={{
+              sx={(theme) => ({
                 color: accentColor,
-                backgroundColor: "#fff4f4",
+                border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid #f3c8c8",
+                backgroundColor: theme.palette.mode === "dark"
+                  ? (theme.palette.surfaces?.nested || "#1b3328")
+                  : "#fff4f4",
                 width: 28,
                 height: 28,
-                "&:hover": { backgroundColor: "#ffe4e4" }
-              }}
+                "&:hover": {
+                  backgroundColor: theme.palette.mode === "dark"
+                    ? (theme.palette.surfaces?.hover || "#214333")
+                    : "#ffe4e4"
+                }
+              })}
             >
               <HistoryIcon sx={{ fontSize: 18 }} />
             </IconButton>
@@ -1426,16 +1546,19 @@ const StudentStatementDialog2 = ({
           size="small"
           variant="outlined"
           onClick={() => openSalesInvoice(params.row)}
-          sx={uiLayout.withUiSx({
-            borderRadius: 2,
-            fontWeight: 900,
-            color: primaryColor,
-            borderColor: primaryLight,
-            backgroundColor: whiteColor,
-            "&:hover": {
-              borderColor: primaryColor,
-              backgroundColor: "#f0faf5"
-            }
+          sx={uiLayout.withUiSx((theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              borderRadius: 2,
+              fontWeight: 900,
+              color: primaryColor,
+              borderColor: isDark ? "#67C99D" : primaryLight,
+              backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
+              "&:hover": {
+                borderColor: primaryColor,
+                backgroundColor: isDark ? "rgba(103,201,157,.14)" : "#f0faf5"
+              }
+            };
           }, uiLayout.buttonSx)}
         >
           عرض
@@ -1503,16 +1626,19 @@ const StudentStatementDialog2 = ({
           size="small"
           variant="outlined"
           onClick={() => onOpenSalesReturn?.(params.row)}
-          sx={uiLayout.withUiSx({
-            borderRadius: 2,
-            fontWeight: 900,
-            color: accentColor,
-            borderColor: "#f3c6c7",
-            backgroundColor: whiteColor,
-            "&:hover": {
-              borderColor: accentColor,
-              backgroundColor: "#fff4f4"
-            }
+          sx={uiLayout.withUiSx((theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              borderRadius: 2,
+              fontWeight: 900,
+              color: accentColor,
+              borderColor: isDark ? pinColor("#f3c6c7") : "#f3c6c7",
+              backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
+              "&:hover": {
+                borderColor: accentColor,
+                backgroundColor: isDark ? "rgba(229,90,90,.14)" : "#fff4f4"
+              }
+            };
           }, uiLayout.buttonSx)}
         >
           عرض
@@ -1609,10 +1735,11 @@ const StudentStatementDialog2 = ({
     width: column.flex ? undefined : Math.min(column.width || 110, isPhone ? 92 : 118)
   });
 
+  const isDarkGrid = theme.palette.mode === "dark";
   const gridSx = {
-    border: `1px solid ${primaryLight}`,
+    border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
     borderRadius: 3,
-    backgroundColor: whiteColor,
+    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
     direction: "rtl",
     overflow: "hidden",
     "& .MuiDataGrid-columnHeaders": {
@@ -1631,19 +1758,19 @@ const StudentStatementDialog2 = ({
     },
     "& .MuiDataGrid-cell": {
       fontWeight: 800,
-      borderColor: "#edf4f1",
+      borderColor: isDarkGrid ? "#67C99D" : "#edf4f1",
       fontSize: isPhone ? "0.44rem" : isTablet ? "0.53rem" : "0.75rem",
       px: isPhone ? 0.15 : isTablet ? 0.35 : 0.45
     },
     "& .MuiDataGrid-row:nth-of-type(even)": {
-      backgroundColor: "#fbfdfc"
+      backgroundColor: isDarkGrid ? theme.palette.surfaces.section : "#fbfdfc"
     },
     "& .MuiDataGrid-row:hover": {
-      backgroundColor: "#f0faf5"
+      backgroundColor: isDarkGrid ? theme.palette.surfaces.hover : "#f0faf5"
     },
     "& .MuiDataGrid-footerContainer": {
       direction: "rtl",
-      borderTop: `1px solid ${primaryLight}`
+      borderTop: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`
     }
   };
 
@@ -1660,18 +1787,18 @@ const StudentStatementDialog2 = ({
     px: isPhone ? 0 : isTablet ? 0.7 : 1.5,
     pb: isPhone ? 0 : isTablet ? 0.7 : 1.5,
   },
-}, uiLayout.dialogLayoutSx)}
+}, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
-        sx: {
+        sx: (theme) => ({
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
           maxWidth: isPhone ? "100vw" : isTablet ? "1200px" : undefined,
           borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
           overflow: "hidden",
           direction: "rtl",
           height: isPhone ? "100dvh" : isTablet ? "94dvh" : "92vh",
-          border: `1px solid ${primaryLight}`,
-          boxShadow: "0 18px 50px rgba(5,117,70,0.18)"
-        }
+          border: theme.palette.mode === "dark" ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+          boxShadow: theme.palette.mode === "dark" ? `0 0 0 1px #67C99D, 0 18px 50px rgba(0,0,0,.5)` : "0 18px 50px rgba(5,117,70,0.18)"
+        })
       }}
     >
       <DialogTitle
@@ -1714,8 +1841,8 @@ const StudentStatementDialog2 = ({
                   label={studentName}
                   sx={{
                     fontWeight: 900,
-                    backgroundColor: whiteColor,
-                    color: primaryColor
+                    backgroundColor: pinColor(whiteColor),
+                    color: pinColor(primaryColor)
                   }}
                 />
               )}
@@ -1724,8 +1851,8 @@ const StudentStatementDialog2 = ({
                 label={nationalId}
                 sx={{
                   fontWeight: 950,
-                  backgroundColor: whiteColor,
-                  color: primaryColor,
+                  backgroundColor: pinColor(whiteColor),
+                  color: pinColor(primaryColor),
                   height: isPhone ? 24 : isTablet ? 27 : undefined,
                   maxWidth: isCompact ? 102 : undefined,
                   "& .MuiChip-label": {
@@ -1843,7 +1970,7 @@ const StudentStatementDialog2 = ({
       <DialogContent
         sx={{
           p: isPhone ? 0.4 : isTablet ? 0.7 : 2.2,
-          background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+          background: theme.palette.mode === "dark" ? theme.palette.surfaces.page : `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -1871,8 +1998,8 @@ const StudentStatementDialog2 = ({
             p: isCompact ? 0.35 : 1.2,
             mb: isCompact ? 0.45 : 1.5,
             borderRadius: 3,
-            border: `1px solid ${primaryLight}`,
-            backgroundColor: whiteColor
+            border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+            backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
           }}
         >
         </Paper>
@@ -1887,10 +2014,10 @@ const StudentStatementDialog2 = ({
           elevation={0}
           sx={{
             borderRadius: 3,
-            border: `1px solid ${primaryLight}`,
-            backgroundColor: whiteColor,
+            border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+            backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
             overflow: "hidden",
-            boxShadow: "0 10px 30px rgba(5,117,70,0.08)",
+            boxShadow: isDarkGrid ? `0 0 0 1px #67C99D` : "0 10px 30px rgba(5,117,70,0.08)",
             display: "flex",
             flexDirection: "column",
             flex: 1,
@@ -1904,7 +2031,7 @@ const StudentStatementDialog2 = ({
             scrollButtons={false}
             sx={{
               px: 1,
-              borderBottom: `1px solid ${primaryLight}`,
+              borderBottom: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
               "& .MuiTab-root": {
                 fontWeight: 1000,
                 minHeight: isPhone ? 34 : isTablet ? 40 : 48,
@@ -2037,8 +2164,8 @@ const StudentStatementDialog2 = ({
         sx={uiLayout.withUiSx({
           px: isPhone ? 0.45 : isTablet ? 0.7 : 2,
           py: isPhone ? 0.35 : isTablet ? 0.55 : 1.5,
-          borderTop: `1px solid ${primaryLight}`,
-          backgroundColor: whiteColor
+          borderTop: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+          backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor
         }, uiLayout.dialogActionsSx)}
       >
         <Button
@@ -2050,11 +2177,11 @@ const StudentStatementDialog2 = ({
             px: isPhone ? 1 : isTablet ? 1.4 : 4,
             fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
             color: accentColor,
-            borderColor: "#f3c6c7",
-            backgroundColor: whiteColor,
+            borderColor: isDarkGrid ? pinColor("#f3c6c7") : "#f3c6c7",
+            backgroundColor: isDarkGrid ? "transparent" : whiteColor,
             "&:hover": {
               borderColor: accentColor,
-              backgroundColor: "#fff4f4"
+              backgroundColor: isDarkGrid ? "rgba(229,90,90,.14)" : "#fff4f4"
             }
           }, uiLayout.buttonSx)}
         >
@@ -2076,7 +2203,7 @@ const StudentStatementDialog2 = ({
             pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }, uiLayout.dialogLayoutSx)}
+        }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -2392,14 +2519,15 @@ const StudentStatementDialog2 = ({
 
                   "& .MuiDataGrid-cell": {
                     fontWeight: 800,
-                    borderColor: "#edf4f1",
+                    borderColor: isDarkGrid ? "#67C99D" : "#edf4f1",
                     fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                     px: isPhone ? 0.1 : isTablet ? 0.3 : undefined
                   },
 
                   "& .MuiDataGrid-footerContainer": {
                     direction: "rtl",
-                    minHeight: isPhone ? 38 : isTablet ? 42 : undefined
+                    minHeight: isPhone ? 38 : isTablet ? 42 : undefined,
+                    borderTop: isDarkGrid ? "1px solid #67C99D" : undefined
                   },
 
                   "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
@@ -2415,7 +2543,7 @@ const StudentStatementDialog2 = ({
           sx={uiLayout.withUiSx({
             flexShrink: 0,
             p: isPhone ? 0.3 : isTablet ? 0.45 : 1,
-            borderTop: `1px solid ${primaryLight}`
+            borderTop: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`
           }, uiLayout.dialogActionsSx)}
         >
           <Button
@@ -2434,7 +2562,7 @@ const StudentStatementDialog2 = ({
         </DialogActions>
       </Dialog>
 
-      <Dialog sx={uiLayout.dialogLayoutSx}
+      <Dialog sx={uiLayout.withUiSx(uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         open={oldStatementOpen}
         onClose={() => !oldStatementLoading && setOldStatementOpen(false)}
         fullWidth
@@ -2597,6 +2725,17 @@ const StudentStatementDialog2 = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <RegisterDocumentDialog
+        open={registerDocumentOpen}
+        onClose={() => {
+          setRegisterDocumentOpen(false);
+          setSelectedRegisterDocument(null);
+        }}
+        docGuid={selectedRegisterDocument?.docGuid || ""}
+        documentNo={selectedRegisterDocument?.documentNo || ""}
+        apiBaseUrl={apiBaseUrl}
+      />
 
       <SalesInvoiceDialog
         open={salesInvoiceOpen}

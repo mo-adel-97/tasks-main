@@ -1,8 +1,22 @@
 // Explicitly opted-in HR presentation contract; no theme or global selectors.
 import * as common from './common/uiLayout';
+import { fluid } from '../config/designTokens';
 export * from './common/uiLayout';
 
-export const hrTokens = Object.freeze({ title: 22, section: 17, control: 13, table: 13, gap: 1, desktopControl: 36 });
+// HR previously froze every one of these at a single flat number for the
+// entire "lg" bucket (1200px all the way to 3440px+), which is exactly why
+// large/ultra-wide HR screens looked "zoomed out": a 1366px laptop and a
+// 3440px ultra-wide rendered identical text. `fluid()` keeps 1366/1440
+// unchanged (they sit at the flat minimum) and grows moderately through
+// 1600/1920/2560 up to a legible-but-not-huge ceiling at 3440.
+export const hrTokens = Object.freeze({
+  title: fluid(22, 30),
+  section: fluid(17, 22),
+  control: fluid(13, 16),
+  table: fluid(13, 15),
+  gap: 1,
+  desktopControl: fluid(36, 42),
+});
 // The application's :root body typography rules outrank ordinary sx. Increase
 // specificity only on opted-in HR surfaces, including their portalled dialogs.
 export const scopeSx = {

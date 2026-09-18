@@ -20,7 +20,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  useTheme
 } from "@mui/material";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
@@ -76,12 +77,21 @@ const fmtTime = (value) => {
 };
 
 function Metric({ title, value, icon, tone = "default", onClick }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const backgrounds = {
     default: "#fff",
     info: "#f3f8ff",
     warning: "#fffaf0",
     danger: "#fff5f5",
     success: "#f3fbf7"
+  };
+  const backgroundsDark = {
+    default: theme.palette.surfaces.card,
+    info: "rgba(90,160,229,.1)",
+    warning: "rgba(237,137,54,.1)",
+    danger: "rgba(229,90,90,.1)",
+    success: "rgba(103,201,157,.1)"
   };
   return (
     <Paper
@@ -90,32 +100,44 @@ function Metric({ title, value, icon, tone = "default", onClick }) {
       sx={{
         p: 1.2,
         borderRadius: 2.5,
-        borderColor: border,
-        bgcolor: backgrounds[tone] || "#fff",
+        border: isDark ? "1px solid #67C99D" : `1px solid ${border}`,
+        bgcolor: isDark ? (backgroundsDark[tone] || backgroundsDark.default) : (backgrounds[tone] || "#fff"),
         cursor: onClick ? "pointer" : "default"
       }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
         <Box>
           <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{title}</Typography>
-          <Typography sx={{ fontWeight: 1000, fontSize: 22, color: primaryDark }}>{value ?? 0}</Typography>
+          <Typography sx={{ fontWeight: 1000, fontSize: 22, color: isDark ? theme.palette.text.primary : primaryDark }}>{value ?? 0}</Typography>
         </Box>
-        <Box sx={{ color: primary }}>{icon}</Box>
+        <Box sx={{ color: isDark ? theme.palette.primary.main : primary }}>{icon}</Box>
       </Stack>
     </Paper>
   );
 }
 
 function UnitCard({ row, onOpen }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   return (
     <Paper
       variant="outlined"
       onClick={() => onOpen(row)}
-      sx={{ p: 1.2, borderRadius: 2.5, borderColor: border, cursor: "pointer", "&:hover": { borderColor: primary, boxShadow: "0 6px 20px rgba(5,117,70,.09)" } }}
+      sx={{
+        p: 1.2,
+        borderRadius: 2.5,
+        border: isDark ? "1px solid #67C99D" : `1px solid ${border}`,
+        bgcolor: isDark ? theme.palette.surfaces.card : undefined,
+        cursor: "pointer",
+        "&:hover": {
+          borderColor: isDark ? theme.palette.primary.main : primary,
+          boxShadow: isDark ? "none" : "0 6px 20px rgba(5,117,70,.09)"
+        }
+      }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={1}>
         <Box sx={{ minWidth: 0 }}>
-          <Typography sx={{ fontWeight: 1000, color: primaryDark }}>{row.unitName}</Typography>
+          <Typography sx={{ fontWeight: 1000, color: isDark ? theme.palette.text.primary : primaryDark }}>{row.unitName}</Typography>
           <Typography sx={{ fontSize: 12, color: "text.secondary" }}>{unitTypeName(row.unitType)}</Typography>
         </Box>
         <Chip size="small" label={`${row.totalEmployees || 0} موظف`} />
@@ -137,6 +159,8 @@ function UnitCard({ row, onOpen }) {
 }
 
 export default function HrOrgOverviewPanel({ userGuid }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -234,18 +258,18 @@ export default function HrOrgOverviewPanel({ userGuid }) {
   const topUnits = Array.isArray(data?.topUnits) ? data.topUnits : [];
   const canManage = data?.enabled && data?.canManage;
 
-  if (loading) return <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, mb: 1.4 }}><Stack alignItems="center"><CircularProgress size={26} /></Stack></Paper>;
+  if (loading) return <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, mb: 1.4, border: isDark ? "1px solid #67C99D" : undefined, bgcolor: isDark ? theme.palette.surfaces.card : undefined }}><Stack alignItems="center"><CircularProgress size={26} /></Stack></Paper>;
   if (!data?.enabled) return null;
   if (!canManage) return null;
 
   return (
     <Box sx={{ mb: 1.4 }} dir="rtl">
-      <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 3, borderColor: border, mb: 1 }}>
+      <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 3, border: isDark ? "1px solid #67C99D" : `1px solid ${border}`, bgcolor: isDark ? theme.palette.surfaces.card : undefined, mb: 1 }}>
         <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems={{ md: "center" }} gap={1}>
           <Box>
             <Stack direction="row" spacing={0.7} alignItems="center">
-              <AccountTreeRoundedIcon sx={{ color: primary }} />
-              <Typography sx={{ fontWeight: 1000, fontSize: 18, color: primaryDark }}>نظرتي الإدارية اليوم</Typography>
+              <AccountTreeRoundedIcon sx={{ color: isDark ? theme.palette.primary.main : primary }} />
+              <Typography sx={{ fontWeight: 1000, fontSize: 18, color: isDark ? theme.palette.text.primary : primaryDark }}>نظرتي الإدارية اليوم</Typography>
             </Stack>
             <Typography sx={{ fontSize: 12, color: "text.secondary", mt: 0.4 }}>
               الرؤية ناتجة من الهيكل الإداري الموحد؛ اضغط على أي وحدة للنزول للتفاصيل.
@@ -269,11 +293,11 @@ export default function HrOrgOverviewPanel({ userGuid }) {
       </Box>
 
       {permissionApprovals.length > 0 && (
-        <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 3, borderColor: border, mb: 1 }}>
-          <Typography sx={{ fontWeight: 950, color: primaryDark, mb: 1 }}>أذونات تنتظر موافقتي</Typography>
+        <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 3, border: isDark ? "1px solid #67C99D" : `1px solid ${border}`, bgcolor: isDark ? theme.palette.surfaces.card : undefined, mb: 1 }}>
+          <Typography sx={{ fontWeight: 950, color: isDark ? theme.palette.text.primary : primaryDark, mb: 1 }}>أذونات تنتظر موافقتي</Typography>
           <Stack spacing={0.7}>
             {permissionApprovals.slice(0, 6).map((row) => (
-              <Paper key={row.permissionGuid} variant="outlined" sx={{ p: 0.9, borderRadius: 2 }}>
+              <Paper key={row.permissionGuid} variant="outlined" sx={{ p: 0.9, borderRadius: 2, border: isDark ? "1px solid #67C99D" : undefined, bgcolor: isDark ? theme.palette.surfaces.nested : undefined }}>
                 <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" gap={1} alignItems={{ md: "center" }}>
                   <Box>
                     <Typography sx={{ fontWeight: 900 }}>{row.employeeName}</Typography>
@@ -304,15 +328,25 @@ export default function HrOrgOverviewPanel({ userGuid }) {
         </Paper>
       )}
 
-      <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 3, borderColor: border }}>
-        <Typography sx={{ fontWeight: 950, color: primaryDark, mb: 1 }}>الوحدات الموجودة تحت نطاقي</Typography>
+      <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 3, border: isDark ? "1px solid #67C99D" : `1px solid ${border}`, bgcolor: isDark ? theme.palette.surfaces.card : undefined }}>
+        <Typography sx={{ fontWeight: 950, color: isDark ? theme.palette.text.primary : primaryDark, mb: 1 }}>الوحدات الموجودة تحت نطاقي</Typography>
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2,1fr)", xl: "repeat(3,1fr)" }, gap: 1 }}>
           {topUnits.map((u) => <UnitCard key={u.orgUnitGuid} row={u} onOpen={openUnit} />)}
         </Box>
         {!topUnits.length && <Alert severity="info">النطاق الإداري موجود ولكن لا توجد وحدات تابعة أو أعضاء حتى الآن.</Alert>}
       </Paper>
 
-      <Dialog sx={uiLayout.dialogLayoutSx} open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="lg" dir="rtl">
+      <Dialog
+        sx={uiLayout.withUiSx(uiLayout.dialogLayoutSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+          "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+        }))}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        fullWidth
+        maxWidth="lg"
+        dir="rtl"
+      >
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={0.6} alignItems="center">
@@ -349,7 +383,14 @@ export default function HrOrgOverviewPanel({ userGuid }) {
 
               <Box>
                 <Typography sx={{ fontWeight: 950, mb: 0.8 }}>حالة الفريق اليوم</Typography>
-                <TableContainer component={Paper} variant="outlined" sx={uiLayout.withUiSx({ maxHeight: 440 }, uiLayout.tableContainerSx)}>
+                <TableContainer
+                  component={Paper}
+                  variant="outlined"
+                  sx={uiLayout.withUiSx({ maxHeight: 440 }, uiLayout.tableContainerSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+                    border: "1px solid #67C99D",
+                    "& .MuiTableCell-root": { borderBottom: "1px solid #67C99D" }
+                  }))}
+                >
                   <Table size="small" stickyHeader>
                     <TableHead><TableRow><TableCell>الموظف</TableCell><TableCell>المسمى</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell></TableRow></TableHead>
                     <TableBody>

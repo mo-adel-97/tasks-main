@@ -109,7 +109,7 @@ const DashboardContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   maxWidth: "100%",
   overflowX: "hidden",
-  backgroundColor: "#f6faf8",
+  backgroundColor: theme.palette.mode === "dark" ? theme.palette.background.default : "#f6faf8",
   fontFamily: "'Tajawal', sans-serif",
   direction: "rtl",
 }));
@@ -125,15 +125,18 @@ const ContentContainer = styled(PageContainer)(() => ({
   overflowX: "hidden"
 }));
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: 10,
-  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { borderRadius: 9 },
-  "@media (max-width:599px)": { borderRadius: 8 },
-  boxShadow: "none",
-  border: "1px solid rgba(5,117,70,0.11)",
-  backgroundColor: "#fff",
-  overflow: "hidden",
-}));
+const StyledCard = styled(Card)(({ theme }) => {
+  const isDark = theme.palette.mode === "dark";
+  return {
+    borderRadius: 10,
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { borderRadius: 9 },
+    "@media (max-width:599px)": { borderRadius: 8 },
+    boxShadow: "none",
+    border: isDark ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.11)",
+    backgroundColor: isDark ? theme.palette.surfaces.card : "#fff",
+    overflow: "hidden",
+  };
+});
 
 const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) => {
   const getColor = (c) => {
@@ -153,16 +156,16 @@ const Panel = ({ children, color = "primary", icon, title, subtitle, actions }) 
   return (
     <StyledCard sx={{ height: "100%" }}>
       <Box
-        sx={{
+        sx={(theme) => ({
           px: { xs: 0.8, sm: 1, md: 1.15 },
           py: { xs: 0.65, sm: 0.75, md: 0.85 },
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 1,
-          bgcolor: "#fbfdfc",
-          borderBottom: "1px solid rgba(5,117,70,.08)"
-        }}
+          bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.section : "#fbfdfc",
+          borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.08)"
+        })}
       >
         <Box display="flex" alignItems="center" gap={0.75} minWidth={0}>
           <Box
@@ -359,7 +362,7 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
   return (
     <Paper
       variant="outlined"
-      sx={{
+      sx={(theme) => ({
         p: 0.75,
         borderRadius: 1.7,
         [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
@@ -370,13 +373,13 @@ const MiniStat = ({ label, value, icon, tone = "neutral" }) => {
           p: 0.4,
           borderRadius: 1.2
         },
-        borderColor: colorPalette.primaryLighter,
-        bgcolor: t.bg,
+        borderColor: theme.palette.mode === "dark" ? "#67C99D" : colorPalette.primaryLighter,
+        bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.nested : t.bg,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         gap: 1,
-      }}
+      })}
     >
       <Box display="flex" alignItems="center" gap={1}>
         <Box
@@ -749,18 +752,18 @@ setData(zeroizeForHamza(json[0]));
           <AppBar
             position="fixed"
             elevation={0}
-            sx={{
+            sx={(theme) => ({
               top: 0,
               left: 0,
               right: 0,
               width: "100%",
               zIndex: 1100,
-              background: "rgba(255,255,255,.97)",
+              background: theme.palette.mode === "dark" ? theme.palette.surfaces.card : "rgba(255,255,255,.97)",
               backdropFilter: "blur(14px)",
-              color: colorPalette.textDark,
-              borderBottom: `1px solid ${colorPalette.primaryLighter}`,
+              color: theme.palette.mode === "dark" ? theme.palette.text.primary : colorPalette.textDark,
+              borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${colorPalette.primaryLighter}`,
               direction: "rtl"
-            }}
+            })}
           >
             <Toolbar
               sx={{
@@ -969,14 +972,14 @@ setData(zeroizeForHamza(json[0]));
             {/* Filters */}
             <Paper
               elevation={0}
-              sx={{
+              sx={(theme) => ({
                 p: isPhone ? 0.55 : isTablet ? 0.8 : 1,
                 borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 2,
-                border: `1px solid ${colorPalette.primaryLighter}`,
-                bgcolor: "white",
+                border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${colorPalette.primaryLighter}`,
+                bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : "white",
                 width: "100%",
                 minWidth: 0,
-              }}
+              })}
             >
               <Box
                 sx={uiLayout.withUiSx({
@@ -1060,13 +1063,13 @@ setData(zeroizeForHamza(json[0]));
                 <Tooltip title="تحديث البيانات">
                   <Box component="span" sx={{ display: "inline-flex", justifyContent: "center", width: "100%" }}>
                     <IconButton
-                      sx={{
-                        color: colorPalette.primary,
-                        border: `1px solid ${colorPalette.primaryLighter}`,
+                      sx={(theme) => ({
+                        color: theme.palette.mode === "dark" ? theme.palette.primary.main : colorPalette.primary,
+                        border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${colorPalette.primaryLighter}`,
                         width: isPhone ? 31 : isTablet ? 34 : undefined,
                         height: isPhone ? 31 : isTablet ? 34 : undefined,
-                        "&:hover": { backgroundColor: colorPalette.primaryLighter },
-                      }}
+                        "&:hover": { backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.hover : colorPalette.primaryLighter },
+                      })}
                       onClick={fetchData}
                     >
                       <RefreshIcon />
@@ -1385,7 +1388,7 @@ setData(zeroizeForHamza(json[0]));
               }
             }, uiLayout.dialogLayoutSx)}
             PaperProps={{
-              sx: {
+              sx: (theme) => ({
                 borderRadius: isPhone ? 0 : isTablet ? 2 : 2.5,
                 overflow: "hidden",
                 width: isPhone ? "100vw" : isTablet ? "95vw" : "min(860px, calc(100vw - 48px))",
@@ -1393,21 +1396,22 @@ setData(zeroizeForHamza(json[0]));
                 height: isPhone ? "calc(100dvh - 52px)" : undefined,
                 maxHeight: isPhone ? "calc(100dvh - 52px)" : isTablet ? "90dvh" : undefined,
                 m: isPhone ? 0 : undefined,
-                border: `1px solid ${colorPalette.primaryLighter}`,
-              },
+                border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${colorPalette.primaryLighter}`,
+                backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : undefined,
+              }),
             }}
           >
             <DialogTitle
-              sx={{
-                bgcolor: "white",
-                borderBottom: `1px solid ${colorPalette.primaryLighter}`,
+              sx={(theme) => ({
+                bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.section : "white",
+                borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${colorPalette.primaryLighter}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: isPhone ? 0.5 : isTablet ? 0.75 : 1,
                 px: isPhone ? 0.7 : isTablet ? 1 : 1.5,
                 py: isPhone ? 0.55 : isTablet ? 0.75 : 1,
-              }}
+              })}
             >
               <Box>
                 <Typography
@@ -1439,11 +1443,11 @@ setData(zeroizeForHamza(json[0]));
             </DialogTitle>
 
             <DialogContent
-              sx={{
-                bgcolor: "white",
+              sx={(theme) => ({
+                bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : "white",
                 px: isPhone ? 0.65 : isTablet ? 1 : 1.5,
                 py: isPhone ? 0.55 : isTablet ? 0.8 : 1.1
-              }}
+              })}
             >
               {/* top controls */}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 0.75 }}>
@@ -1494,7 +1498,6 @@ setData(zeroizeForHamza(json[0]));
                       }, uiLayout.buttonSx)}
                       disabled={detailsLoading}
                     >
-                      تحديث
                     </Button>
                   </Box>
                 </Box>
@@ -1512,8 +1515,9 @@ setData(zeroizeForHamza(json[0]));
                     value={tab}
                     onChange={(_, v) => setTab(v)}
                     variant={isCompact ? "scrollable" : "standard"}
-                    sx={{
+                    sx={(theme) => ({
                       minHeight: isPhone ? 31 : isTablet ? 35 : 42,
+                      borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.12)",
                       "& .MuiTab-root": {
                         minHeight: isPhone ? 31 : isTablet ? 35 : 42,
                         borderRadius: isCompact ? 1.2 : 2,
@@ -1524,7 +1528,7 @@ setData(zeroizeForHamza(json[0]));
                       "& .MuiSvgIcon-root": {
                         fontSize: isPhone ? 14 : isTablet ? 16 : undefined
                       },
-                    }}
+                    })}
                   >
                     <Tab
                       label={
@@ -1628,11 +1632,14 @@ setData(zeroizeForHamza(json[0]));
                       borderRadius: 2,
                       borderColor: colorPalette.primaryLighter,
                       overflow: "hidden",
-                    }, uiLayout.tableContainerSx)}
+                    }, uiLayout.tableContainerSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+                      border: "1px solid #67C99D",
+                      "& .MuiTableCell-root": { borderBottom: "1px solid #67C99D" }
+                    }))}
                   >
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ bgcolor: "#edf7f2" }}>
+                        <TableRow sx={(theme) => ({ bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.section : "#edf7f2" })}>
                           <TableCell
                             sx={{
                               fontWeight: 800,

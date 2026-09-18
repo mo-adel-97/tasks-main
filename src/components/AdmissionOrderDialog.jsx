@@ -1,4 +1,5 @@
 import { PRINT_READY_SCRIPT } from '../utils/printReady';
+import { pinColor } from '../config/themeColors';
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -52,6 +53,14 @@ const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const primaryLight = "#e6f3ee";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const whiteColor = "#fefefe";
 const textColor = "#1f2d3d";
 const softBg = "#fefefe";
@@ -460,11 +469,13 @@ const getStudentField = (student, ...names) => {
 const TextInfo = ({ label, value, strong = false }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
       p: 1.1,
       borderRadius: 2,
-      border: `1px solid ${primaryLight}`,
-      backgroundColor: whiteColor,
+      border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+      backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
       height: "100%",
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
         p: 0.5,
@@ -475,7 +486,8 @@ const TextInfo = ({ label, value, strong = false }) => (
         p: 0.38,
         minHeight: 44
       }
-    }}
+    };
+  }}
   >
     <Typography
       sx={{
@@ -517,12 +529,14 @@ const TextInfo = ({ label, value, strong = false }) => (
 const SummaryCard = ({ label, value, color = textColor }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
       px: 2,
       py: 1.25,
       borderRadius: 3,
-      border: `1px solid ${primaryLight}`,
-      backgroundColor: whiteColor,
+      border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+      backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
       minWidth: 145,
       textAlign: "center",
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
@@ -537,7 +551,8 @@ const SummaryCard = ({ label, value, color = textColor }) => (
         py: 0.3,
         minHeight: 50
       }
-    }}
+    };
+  }}
   >
     <Typography
       sx={{
@@ -671,35 +686,42 @@ const StepPointer = ({ show }) => {
 const StepGuideCard = ({ number, title, hint, active, done, children }) => (
   <Paper
     elevation={0}
-    sx={{
-      p: 1.25,
-      borderRadius: 3,
-      height: "100%",
-      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-        p: 0.5,
-        borderRadius: 1.5,
-        minHeight: 88
-      },
-      "@media (max-width:599px)": {
-        p: 0.38,
-        minHeight: 82
-      },
-      position: "relative",
-      overflow: "hidden",
-      border: active
-        ? `2px solid ${accentColor}`
-        : done
-        ? `1px solid ${primaryColor}`
-        : "1px solid #e4ece8",
-      background: active
-        ? "linear-gradient(135deg, #fff7f7 0%, #ffffff 55%, #f2fbf6 100%)"
-        : done
-        ? "linear-gradient(135deg, #f1fbf6 0%, #ffffff 100%)"
-        : "#ffffff",
-      boxShadow: active
-        ? "0 16px 36px rgba(174,30,33,0.16)"
-        : "0 10px 26px rgba(5,117,70,0.07)",
-      transition: "0.25s ease"
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
+        p: 1.25,
+        borderRadius: 3,
+        height: "100%",
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+          p: 0.5,
+          borderRadius: 1.5,
+          minHeight: 88
+        },
+        "@media (max-width:599px)": {
+          p: 0.38,
+          minHeight: 82
+        },
+        position: "relative",
+        overflow: "hidden",
+        border: active
+          ? `2px solid ${pinColor(accentColor)}`
+          : done
+          ? `1px solid ${primaryColor}`
+          : (isDark ? `1px solid #67C99D` : "1px solid #e4ece8"),
+        background: isDark
+          ? (active ? "rgba(174,30,33,.12)" : done ? "rgba(103,201,157,.12)" : theme.palette.surfaces.card)
+          : (active
+            ? "linear-gradient(135deg, #fff7f7 0%, #ffffff 55%, #f2fbf6 100%)"
+            : done
+            ? "linear-gradient(135deg, #f1fbf6 0%, #ffffff 100%)"
+            : "#ffffff"),
+        boxShadow: isDark
+          ? "none"
+          : (active
+            ? "0 16px 36px rgba(174,30,33,0.16)"
+            : "0 10px 26px rgba(5,117,70,0.07)"),
+        transition: "0.25s ease"
+      };
     }}
   >
     <Stack
@@ -809,18 +831,26 @@ const InlineHint = ({ children, color = primaryColor }) => (
 const FileButton = ({ label, required, file, onChange, onRemove, disabled }) => (
   <Paper
     elevation={0}
-    sx={{
-      p: 1.2,
-      borderRadius: 3,
-      [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-        p: 0.5,
-        borderRadius: 1.4
-      },
-      "@media (max-width:599px)": {
-        p: 0.38
-      },
-      border: required && !file ? "1px solid #ffcdd2" : "1px solid #dfeae5",
-      backgroundColor: required && !file ? "#fff7f7" : "#fff"
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      const missing = required && !file;
+      return {
+        p: 1.2,
+        borderRadius: 3,
+        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+          p: 0.5,
+          borderRadius: 1.4
+        },
+        "@media (max-width:599px)": {
+          p: 0.38
+        },
+        border: isDark
+          ? `1px solid ${missing ? pinColor("rgba(229,90,90,.5)") : "#67C99D"}`
+          : (missing ? "1px solid #ffcdd2" : "1px solid #dfeae5"),
+        backgroundColor: isDark
+          ? (missing ? "rgba(229,90,90,.1)" : theme.palette.surfaces.card)
+          : (missing ? "#fff7f7" : "#fff")
+      };
     }}
   >
     <Stack sx={uiLayout.pageHeaderSx} spacing={1}>
@@ -2805,7 +2835,7 @@ ${PRINT_READY_SCRIPT}</head>
         <IconButton
           size="small"
           onClick={() => removeDiploma(params.row)}
-          sx={{ color: accentColor, backgroundColor: "#fff4f4" }}
+          sx={(theme) => ({ color: accentColor, backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.14)" : "#fff4f4" })}
         >
           <DeleteIcon fontSize="small" />
         </IconButton>
@@ -2937,7 +2967,7 @@ ${PRINT_READY_SCRIPT}</head>
         <IconButton
           size="small"
           onClick={() => removeFee(params.row)}
-          sx={{ color: accentColor, backgroundColor: "#fff4f4" }}
+          sx={(theme) => ({ color: accentColor, backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.14)" : "#fff4f4" })}
         >
           <DeleteIcon fontSize="small" />
         </IconButton>
@@ -3019,10 +3049,11 @@ ${PRINT_READY_SCRIPT}</head>
     }
   ];
 
+  const isDarkGrid = theme.palette.mode === "dark";
   const gridSx = {
-    border: `1px solid ${primaryLight}`,
+    border: isDarkGrid ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
     borderRadius: 3,
-    backgroundColor: whiteColor,
+    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
     direction: "rtl",
     overflow: "hidden",
     width: "100%",
@@ -3031,7 +3062,7 @@ ${PRINT_READY_SCRIPT}</head>
       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
       color: whiteColor,
       fontWeight: 1000,
-      borderBottom: `1px solid ${primaryDark}`
+      borderBottom: isDarkGrid ? "1px solid #67C99D" : `1px solid ${primaryDark}`
     },
     "& .MuiDataGrid-columnHeaderTitle": {
       fontWeight: 1000,
@@ -3043,19 +3074,20 @@ ${PRINT_READY_SCRIPT}</head>
     },
     "& .MuiDataGrid-cell": {
       fontWeight: 800,
-      borderColor: "#edf3f0",
+      borderColor: isDarkGrid ? "#67C99D" : "#edf3f0",
       fontSize: isPhone ? "0.41rem" : isTablet ? "0.51rem" : undefined,
       px: isPhone ? 0.1 : isTablet ? 0.3 : undefined
     },
     "& .MuiDataGrid-row:nth-of-type(even)": {
-      backgroundColor: "#fbfdfc"
+      backgroundColor: isDarkGrid ? theme.palette.surfaces.section : "#fbfdfc"
     },
     "& .MuiDataGrid-row:hover": {
-      backgroundColor: "#f0faf5"
+      backgroundColor: isDarkGrid ? theme.palette.surfaces.hover : "#f0faf5"
     },
     "& .MuiDataGrid-footerContainer": {
       direction: "rtl",
-      minHeight: isPhone ? 36 : isTablet ? 40 : undefined
+      minHeight: isPhone ? 36 : isTablet ? 40 : undefined,
+      borderTop: isDarkGrid ? "1px solid #67C99D" : undefined
     },
     "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
       fontSize: isPhone ? "0.4rem" : isTablet ? "0.48rem" : undefined
@@ -3128,7 +3160,7 @@ ${PRINT_READY_SCRIPT}</head>
             pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
             alignItems: isPhone ? "stretch" : "center"
           }
-        }, uiLayout.dialogLayoutSx)}
+        }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -3149,8 +3181,8 @@ ${PRINT_READY_SCRIPT}</head>
             m: 0,
             display: "flex",
             flexDirection: "column",
-            border: `1px solid ${primaryLight}`,
-            boxShadow: "0 18px 50px rgba(5,117,70,0.18)"
+            border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+            boxShadow: isDarkGrid ? `0 0 0 1px #67C99D, 0 18px 50px rgba(0,0,0,.5)` : "0 18px 50px rgba(5,117,70,0.18)"
           }
         }}
       >
@@ -3185,8 +3217,8 @@ ${PRINT_READY_SCRIPT}</head>
                   label={isCompact ? studentName.split(/\s+/).filter(Boolean).slice(0, 2).join(" ") : studentName}
                   sx={{
                     fontWeight: 900,
-                    backgroundColor: whiteColor,
-                    color: primaryColor,
+                    backgroundColor: pinColor(whiteColor),
+                    color: pinColor(primaryColor),
                     height: isPhone ? 22 : isTablet ? 25 : undefined,
                     maxWidth: isPhone ? 145 : isTablet ? 210 : undefined,
                     "& .MuiChip-label": {
@@ -3201,8 +3233,8 @@ ${PRINT_READY_SCRIPT}</head>
                   label={nationalId}
                   sx={{
                     fontWeight: 900,
-                    backgroundColor: whiteColor,
-                    color: primaryColor,
+                    backgroundColor: pinColor(whiteColor),
+                    color: pinColor(primaryColor),
                     height: isPhone ? 22 : isTablet ? 25 : undefined,
                     "& .MuiChip-label": {
                       px: isPhone ? 0.5 : isTablet ? 0.7 : undefined,
@@ -3215,8 +3247,8 @@ ${PRINT_READY_SCRIPT}</head>
                     label={studentTel}
                     sx={{
                       fontWeight: 900,
-                      backgroundColor: whiteColor,
-                      color: primaryColor,
+                      backgroundColor: pinColor(whiteColor),
+                      color: pinColor(primaryColor),
                       height: isTablet ? 25 : undefined,
                       "& .MuiChip-label": {
                         fontSize: isTablet ? "0.75rem" : undefined
@@ -3300,7 +3332,7 @@ ${PRINT_READY_SCRIPT}</head>
         <DialogContent
           sx={{
             p: isPhone ? 0.3 : isTablet ? 0.55 : 2,
-            background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+            background: isDarkGrid ? theme.palette.surfaces.page : `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
             overflowY: "auto",
             flex: 1,
             minHeight: 0,
@@ -3342,7 +3374,7 @@ ${PRINT_READY_SCRIPT}</head>
             </Alert>
           )}
 
-          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 1.6 }}>
+          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 2.2 }}>
             <Grid item xs={6} sm={6} md={3}>
               <TextInfo label="اسم الطالب" value={studentName} />
             </Grid>
@@ -3367,12 +3399,12 @@ ${PRINT_READY_SCRIPT}</head>
           <Paper
             elevation={0}
             sx={{
-              p: isPhone ? 0.35 : isTablet ? 0.55 : 1.5,
-              mb: isCompact ? 0.45 : 1.5,
+              p: isPhone ? 0.35 : isTablet ? 0.55 : 2,
+              mb: isCompact ? 0.45 : 2.2,
               borderRadius: isCompact ? 1.5 : 3,
-              border: `1px solid ${primaryLight}`,
-              backgroundColor: whiteColor,
-              boxShadow: "0 10px 30px rgba(5,117,70,0.08)"
+              border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+              backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
+              boxShadow: isDarkGrid ? `0 0 0 1px #67C99D` : "0 10px 30px rgba(5,117,70,0.08)"
             }}
           >
             <Stack spacing={isCompact ? 0.4 : 1.4}>
@@ -3572,7 +3604,7 @@ ${PRINT_READY_SCRIPT}</head>
             </Stack>
           </Paper>
 
-          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 1.5 }}>
+          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 2.2 }}>
             <Grid item xs={6} sm={6} md={1.6}>
               <SummaryCard label="الإجمالي" value={totals.total} />
             </Grid>
@@ -3589,8 +3621,8 @@ ${PRINT_READY_SCRIPT}</head>
     px: isPhone ? 0.35 : isTablet ? 0.5 : 2,
     py: isPhone ? 0.3 : isTablet ? 0.4 : 1.25,
     borderRadius: isCompact ? 1.3 : 3,
-    border: `1px solid ${primaryLight}`,
-    backgroundColor: whiteColor,
+    border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+    backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
     minWidth: 0,
     minHeight: isPhone ? 50 : isTablet ? 54 : 0,
     textAlign: "center"
@@ -3650,15 +3682,15 @@ ${PRINT_READY_SCRIPT}</head>
             </Grid>
           </Grid>
 
-          <Stack spacing={isPhone ? 0.45 : isTablet ? 0.65 : 1.5}>
+          <Stack spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2.5}>
             <Paper
               elevation={0}
               sx={{
-                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: `1px solid ${primaryLight}`,
-                backgroundColor: whiteColor,
-                boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
+                border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
+                boxShadow: isDarkGrid ? `0 0 0 1px #67C99D` : "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
               <Stack
@@ -3695,6 +3727,8 @@ ${PRINT_READY_SCRIPT}</head>
                   }}
                 />
               </Stack>
+
+              <Divider sx={{ mb: isCompact ? 0.7 : 1.6, borderColor: isDarkGrid ? "#67C99D" : primaryLight }} />
 
               {!canChooseDiploma && (
                 <Alert
@@ -3791,11 +3825,11 @@ ${PRINT_READY_SCRIPT}</head>
             <Paper
               elevation={0}
               sx={{
-                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: `1px solid ${primaryLight}`,
-                backgroundColor: whiteColor,
-                boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
+                border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
+                boxShadow: isDarkGrid ? `0 0 0 1px #67C99D` : "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
               <Stack
@@ -3823,7 +3857,7 @@ ${PRINT_READY_SCRIPT}</head>
                   sx={{
                     fontWeight: 1000,
                     color: accentColor,
-                    backgroundColor: "#fff4f4",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(229,90,90,.14)" : "#fff4f4",
                     height: isPhone ? 20 : isTablet ? 23 : undefined,
                     "& .MuiChip-label": {
                       px: isPhone ? 0.45 : isTablet ? 0.6 : undefined,
@@ -3832,6 +3866,8 @@ ${PRINT_READY_SCRIPT}</head>
                   }}
                 />
               </Stack>
+
+              <Divider sx={{ mb: isCompact ? 0.7 : 1.6, borderColor: isDarkGrid ? "#67C99D" : primaryLight }} />
 
               <Grid container spacing={1.2}>
                 <Grid item xs={12} lg={contextData?.chkOtherFees ? 7 : 12}>
@@ -3906,11 +3942,11 @@ ${PRINT_READY_SCRIPT}</head>
             <Paper
               elevation={0}
               sx={{
-                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: `1px solid ${primaryLight}`,
-                backgroundColor: whiteColor,
-                boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
+                border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
+                boxShadow: isDarkGrid ? `0 0 0 1px #67C99D` : "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
               <Typography
@@ -3923,6 +3959,8 @@ ${PRINT_READY_SCRIPT}</head>
               >
                 4) السداد وبيانات التعارف
               </Typography>
+
+              <Divider sx={{ mb: isCompact ? 0.7 : 1.6, borderColor: isDarkGrid ? "#67C99D" : primaryLight }} />
 
               <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5} alignItems="center">
                 <Grid item xs={12} sm={6} md={2.2}>
@@ -4078,11 +4116,11 @@ ${PRINT_READY_SCRIPT}</head>
             <Paper
               elevation={0}
               sx={{
-                p: isPhone ? 0.4 : isTablet ? 0.6 : 1.4,
+                p: isPhone ? 0.4 : isTablet ? 0.6 : 2,
                 borderRadius: isCompact ? 1.5 : 3,
-                border: `1px solid ${primaryLight}`,
-                backgroundColor: whiteColor,
-                boxShadow: "0 10px 30px rgba(5,117,70,0.06)"
+                border: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+                backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
+                boxShadow: isDarkGrid ? `0 0 0 1px #67C99D` : "0 10px 30px rgba(5,117,70,0.06)"
               }}
             >
               <Typography
@@ -4095,6 +4133,8 @@ ${PRINT_READY_SCRIPT}</head>
               >
                 5) المرفقات المطلوبة
               </Typography>
+
+              <Divider sx={{ mb: isCompact ? 0.7 : 1.6, borderColor: isDarkGrid ? "#67C99D" : primaryLight }} />
 
               <Grid container spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5}>
                 <Grid item xs={6} sm={6} md={4}>
@@ -4137,8 +4177,8 @@ ${PRINT_READY_SCRIPT}</head>
             px: isPhone ? 0.35 : isTablet ? 0.55 : 2,
             py: isPhone ? 0.3 : isTablet ? 0.45 : 1.5,
             gap: isCompact ? 0.4 : 1,
-            borderTop: `1px solid ${primaryLight}`,
-            backgroundColor: whiteColor,
+            borderTop: isDarkGrid ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+            backgroundColor: isDarkGrid ? theme.palette.surfaces.card : whiteColor,
             flexShrink: 0,
 
             "& .MuiButton-root": {
@@ -4187,7 +4227,7 @@ ${PRINT_READY_SCRIPT}</head>
         fullWidth
         maxWidth="sm"
         fullScreen={isPhone}
-        sx={uiLayout.withUiSx({ zIndex: 1850 }, uiLayout.dialogLayoutSx)}
+        sx={uiLayout.withUiSx({ zIndex: 1850 }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "92vw" : undefined,

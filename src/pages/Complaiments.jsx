@@ -125,31 +125,70 @@ const theme = createTheme(deepmerge(appTheme, {
         },
       },
     },
+    // This page builds its own local theme (merged with the app theme) and
+    // used to hard-code light-only MuiCard/MuiTableHead/MuiTableCell colors
+    // as plain objects, which silently replaced the shared rtlComponents.js
+    // dark-mode overrides for this page's subtree. Made these theme-aware
+    // functions instead, using the same fixed focus-green (#67C99D) border
+    // adopted across the rest of the app in dark mode.
     MuiCard: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           boxShadow: 'none',
-          border: '1px solid rgba(5,117,70,0.11)',
-        },
+          border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,0.11)',
+          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : undefined,
+        }),
       },
     },
     MuiTableHead: {
       styleOverrides: {
-        root: {
-          backgroundColor: '#f8fbf9',
-        },
+        root: ({ theme }) => ({
+          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.surfaces.section : '#f8fbf9',
+        }),
       },
     },
     MuiTableCell: {
       styleOverrides: {
-        head: {
+        root: ({ theme }) => ({
+          borderBottom: theme.palette.mode === 'dark' ? '1px solid #67C99D' : undefined,
+        }),
+        head: ({ theme }) => ({
           fontWeight: 700,
-          color: '#2c3e50',
-          backgroundColor: '#f8fbf9',
-        },
-        body: {
-          color: '#546e7a',
-        },
+          color: theme.palette.mode === 'dark' ? theme.palette.text.primary : '#2c3e50',
+          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.surfaces.section : '#f8fbf9',
+        }),
+        body: ({ theme }) => ({
+          color: theme.palette.mode === 'dark' ? theme.palette.text.primary : '#546e7a',
+        }),
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: ({ theme, ownerState }) => (
+          theme.palette.mode === 'dark' && ownerState.variant === 'outlined'
+            ? { borderColor: '#67C99D', backgroundColor: theme.palette.surfaces.section }
+            : {}
+        ),
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: ({ theme }) => (
+          theme.palette.mode === 'dark' ? { border: '1px solid #67C99D' } : {}
+        ),
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: ({ theme }) => (
+          theme.palette.mode === 'dark' ? { borderColor: '#67C99D' } : {}
+        ),
+        root: ({ theme }) => (
+          theme.palette.mode === 'dark' ? {
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D', borderWidth: '1.5px' },
+          } : {}
+        ),
       },
     },
   },
@@ -166,34 +205,41 @@ const CenteredContainer = styled(Container)({
   background: 'transparent',
 });
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: '12px',
-  boxShadow: 'none',
-  marginBottom: theme.spacing(1.5),
-  overflow: 'hidden',
-  border: '1px solid rgba(5,117,70,0.12)',
-  background: '#ffffff',
-}));
+const StyledCard = styled(Card)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    borderRadius: '12px',
+    boxShadow: 'none',
+    marginBottom: theme.spacing(1.5),
+    overflow: 'hidden',
+    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,0.12)',
+    background: isDark ? theme.palette.surfaces.card : '#ffffff',
+  };
+});
 
-const StyledTable = styled(Table)(() => ({
-  minWidth: 920,
-  '& .MuiTableCell-root': {
-    borderBottom: '1px solid #edf2ef',
-    padding: '9px 10px',
-    fontSize: '0.74rem',
-    color: '#30483f',
-    whiteSpace: 'nowrap',
-  },
-  '& .MuiTableCell-head': {
-    fontWeight: 900,
-    backgroundColor: '#edf7f2',
-    color: '#17372b',
-    borderBottom: '1px solid rgba(5,117,70,.16)',
-  },
-  '& .MuiTableRow-root:hover': {
-    backgroundColor: '#f8fbf9',
-  },
-}));
+const StyledTable = styled(Table)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    minWidth: 920,
+    border: isDark ? '1px solid #67C99D' : undefined,
+    '& .MuiTableCell-root': {
+      borderBottom: isDark ? '1px solid #67C99D' : '1px solid #edf2ef',
+      padding: '9px 10px',
+      fontSize: '0.74rem',
+      color: isDark ? theme.palette.text.primary : '#30483f',
+      whiteSpace: 'nowrap',
+    },
+    '& .MuiTableCell-head': {
+      fontWeight: 900,
+      backgroundColor: isDark ? theme.palette.surfaces.section : '#edf7f2',
+      color: isDark ? theme.palette.text.primary : '#17372b',
+      borderBottom: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.16)',
+    },
+    '& .MuiTableRow-root:hover': {
+      backgroundColor: isDark ? theme.palette.surfaces.hover : '#f8fbf9',
+    },
+  };
+});
 
 const StatusBadge = styled(Box)(({ status }) => ({
   display: 'inline-flex',
@@ -240,13 +286,16 @@ const GradientButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const StyledAvatar = styled(Avatar)(() => ({
-  background: '#edf7f2',
-  color: '#057546',
-  fontWeight: 900,
-  boxShadow: 'none',
-  border: '1px solid rgba(5,117,70,.12)',
-}));
+const StyledAvatar = styled(Avatar)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    background: isDark ? 'rgba(103,201,157,.14)' : '#edf7f2',
+    color: isDark ? theme.palette.primary.main : '#057546',
+    fontWeight: 900,
+    boxShadow: 'none',
+    border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)',
+  };
+});
 
 const Complaints = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -637,26 +686,27 @@ const Complaints = () => {
             </Typography>
           </Box>
 
-          <Box sx={{
+          <Box sx={(theme) => ({
             minWidth: 34, height: 28, px: 0.8, borderRadius: 999,
             display: 'grid', placeItems: 'center',
-            bgcolor: '#edf7f2', color: '#057546',
-            border: '1px solid rgba(5,117,70,.12)',
+            bgcolor: theme.palette.mode === 'dark' ? 'rgba(103,201,157,.14)' : '#edf7f2',
+            color: theme.palette.mode === 'dark' ? theme.palette.primary.main : '#057546',
+            border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)',
             fontWeight: 900, fontSize: '0.72rem'
-          }}>
+          })}>
             {complaintsData.length}
           </Box>
         </Box>
 
         {complaintsData.length > 0 ? (
           <>
-            <Box sx={{
+            <Box sx={(theme) => ({
               overflowX: 'auto',
               borderRadius: 2,
-              border: '1px solid rgba(5,117,70,.11)',
-              background: '#fff',
+              border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+              background: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fff',
               scrollbarWidth: 'thin'
-            }}>
+            })}>
               <StyledTable size="small">
                 <TableHead>
                   <TableRow>
@@ -760,11 +810,11 @@ const Complaints = () => {
                             onClick={(event) => handleMenuOpen(event, complaint)}
                             disabled={statusUpdating}
                             size="small"
-                            sx={{
+                            sx={(theme) => ({
                               width: 30, height: 30,
-                              border: '1px solid rgba(5,117,70,.14)',
-                              color: '#057546'
-                            }}
+                              border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.14)',
+                              color: theme.palette.mode === 'dark' ? theme.palette.primary.main : '#057546'
+                            })}
                           >
                             <MoreVertIcon sx={{ fontSize: 18 }} />
                           </IconButton>
@@ -820,17 +870,17 @@ const Complaints = () => {
             </Box>
           </>
         ) : (
-          <Box sx={{
+          <Box sx={(theme) => ({
             minHeight: 120,
             display: 'grid',
             placeItems: 'center',
             textAlign: 'center',
             borderRadius: 2,
-            border: '1px dashed rgba(5,117,70,.20)',
-            bgcolor: '#fbfdfc',
+            border: theme.palette.mode === 'dark' ? '1px dashed #67C99D' : '1px dashed rgba(5,117,70,.20)',
+            bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fbfdfc',
             px: 2,
             py: 2
-          }}>
+          })}>
             <Box>
               <Typography sx={{ fontWeight: 900, color: '#50645b', fontSize: '0.82rem' }}>
                 لا توجد شكاوى لعرضها
@@ -853,17 +903,17 @@ const Complaints = () => {
       fullWidth
       maxWidth={false}
       PaperProps={{
-        sx: {
+        sx: (theme) => ({
           width: { xs: 'calc(100% - 16px)', sm: 'min(760px, calc(100% - 32px))' },
           maxWidth: '760px !important',
           m: { xs: 1, sm: 2 },
           borderRadius: 2.5,
           overflow: 'hidden',
-          background: '#fff'
-        }
+          background: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fff'
+        })
       }}
     >
-      <DialogTitle sx={{ px: { xs: 1.25, sm: 1.75 }, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+      <DialogTitle sx={(theme) => ({ px: { xs: 1.25, sm: 1.75 }, py: 1, borderBottom: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)' })}>
         <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
           <Box>
             <Typography sx={{ fontWeight: 950, color: '#17372b', fontSize: '1rem' }}>
@@ -879,7 +929,7 @@ const Complaints = () => {
         </Box>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: { xs: 1.25, sm: 1.75 }, bgcolor: '#fbfdfc' }}>
+      <DialogContent dividers sx={(theme) => ({ p: { xs: 1.25, sm: 1.75 }, bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fbfdfc' })}>
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -996,7 +1046,7 @@ const Complaints = () => {
         }
       }}
     >
-      <DialogTitle sx={{ px: 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+      <DialogTitle sx={(theme) => ({ px: 1.5, py: 1, borderBottom: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)' })}>
         <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
           <Box display="flex" alignItems="center" gap={0.7}>
             {selectedStatus === 'resolved' ? (
@@ -1020,7 +1070,7 @@ const Complaints = () => {
         </Box>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+      <DialogContent dividers sx={(theme) => ({ p: 1.5, bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fbfdfc' })}>
         <Typography sx={{ mb: 0.8, color: '#60736b', fontSize: '0.72rem' }}>
           {selectedStatus === 'resolved'
             ? 'يمكن إضافة تعليق مختصر يوضح الإجراء الذي تم.'
@@ -1072,7 +1122,7 @@ const Complaints = () => {
         }
       }}
     >
-      <DialogTitle sx={{ px: 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+      <DialogTitle sx={(theme) => ({ px: 1.5, py: 1, borderBottom: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)' })}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography sx={{ fontWeight: 900, fontSize: '0.92rem', color: '#17372b' }}>
             تعليق على الشكوى
@@ -1082,12 +1132,14 @@ const Complaints = () => {
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
-        <Box sx={{
-          p: 1.25, bgcolor: '#fff', border: '1px solid rgba(5,117,70,.11)',
+      <DialogContent dividers sx={(theme) => ({ p: 1.5, bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fbfdfc' })}>
+        <Box sx={(theme) => ({
+          p: 1.25,
+          bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.nested : '#fff',
+          border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
           borderRadius: 2, minHeight: 80, whiteSpace: 'pre-wrap',
-          color: '#30483f', fontSize: '0.78rem', lineHeight: 1.7
-        }}>
+          color: theme.palette.mode === 'dark' ? theme.palette.text.primary : '#30483f', fontSize: '0.78rem', lineHeight: 1.7
+        })}>
           {selectedComment || 'لا يوجد تعليق'}
         </Box>
       </DialogContent>
@@ -1113,7 +1165,7 @@ const Complaints = () => {
         }
       }}
     >
-      <DialogTitle sx={{ px: 1.5, py: 1, borderBottom: '1px solid rgba(5,117,70,.11)' }}>
+      <DialogTitle sx={(theme) => ({ px: 1.5, py: 1, borderBottom: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)' })}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography sx={{ fontWeight: 900, fontSize: '0.92rem', color: '#17372b' }}>
             تفاصيل الشكوى
@@ -1123,12 +1175,14 @@ const Complaints = () => {
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
-        <Box sx={{
-          p: 1.25, bgcolor: '#fff', border: '1px solid rgba(5,117,70,.11)',
+      <DialogContent dividers sx={(theme) => ({ p: 1.5, bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fbfdfc' })}>
+        <Box sx={(theme) => ({
+          p: 1.25,
+          bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.nested : '#fff',
+          border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
           borderRadius: 2, minHeight: 110, whiteSpace: 'pre-wrap',
-          color: '#30483f', fontSize: '0.78rem', lineHeight: 1.75
-        }}>
+          color: theme.palette.mode === 'dark' ? theme.palette.text.primary : '#30483f', fontSize: '0.78rem', lineHeight: 1.75
+        })}>
           {selectedDetails}
         </Box>
       </DialogContent>
@@ -1142,7 +1196,7 @@ const Complaints = () => {
   return (
     <NavigationShell variant="standard">
       <ThemeProvider theme={(outerTheme) => ({ ...theme, palette: outerTheme.palette })}>
-        <Box sx={{ display: 'flex', minHeight: '100vh', background: '#f6faf8' }}>
+        <Box sx={(theme) => ({ display: 'flex', minHeight: '100vh', background: theme.palette.mode === 'dark' ? theme.palette.background.default : '#f6faf8' })}>
           <PageContainer component="main" sx={{ flexGrow: 1, ...navigationContentSx }}>
             {loading ? (
               <Box sx={{ minHeight: 220, display: 'grid', placeItems: 'center' }}>
@@ -1210,12 +1264,12 @@ const Complaints = () => {
 
                 <Paper
                   elevation={0}
-                  sx={{
+                  sx={(theme) => ({
                     p: 1.25,
                     borderRadius: 2.5,
-                    border: '1px solid rgba(5,117,70,.11)',
-                    bgcolor: '#fff'
-                  }}
+                    border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.11)',
+                    bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : '#fff'
+                  })}
                 >
                   {!([0, 1, 2].includes(user.userJop))
                     ? renderComplaintsTable(previousComplaints, 'الشكاوى التي أرسلتها', false, true)
@@ -1231,11 +1285,12 @@ const Complaints = () => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                   PaperProps={{
-                    sx: {
+                    sx: (theme) => ({
                       mt: 0.4, minWidth: 190, p: 0.4, borderRadius: 2,
                       boxShadow: '0 8px 24px rgba(31,45,61,.12)',
-                      border: '1px solid rgba(5,117,70,.10)'
-                    }
+                      border: theme.palette.mode === 'dark' ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)',
+                      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.surfaces.card : undefined
+                    })
                   }}
                 >
                   <MenuItem

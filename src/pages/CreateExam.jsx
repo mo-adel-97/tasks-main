@@ -1290,6 +1290,7 @@ const AnswerKeyContent = ({ examData }) => {
 // ===== الصفحة الرئيسية =====
 
 export default function CreateExam({ userBranch }) {
+  const theme = useTheme();
   const [metaLoading, setMetaLoading] = useState(false);
   const [metaErr, setMetaErr] = useState("");
   const [studentsData, setStudentsData] = useState([]);
@@ -2361,7 +2362,7 @@ const createExam = async () => {
   const canCreateShared = !!selectedSharedCourse && filteredCombinations.length > 0;
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'grey.50' }}>
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : 'grey.50' }}>
       
 
       <Box sx={{

@@ -7,7 +7,7 @@ import {
   TableHead, TableRow, Paper, CircularProgress, Button, Dialog,
   DialogTitle, DialogContent, DialogActions, TextField, Chip, Avatar,
   IconButton, Collapse, FormControl, InputLabel, Select, MenuItem,
-  Pagination, Stack, Divider, Tooltip, Badge, InputAdornment
+  Pagination, Stack, Divider, Tooltip, Badge, InputAdornment, useTheme
 } from '@mui/material';
 import {
   ExpandLess as ExpandLessIcon,
@@ -35,6 +35,8 @@ import { format } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
 
 const InquiriesPage = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const user = JSON.parse(localStorage.getItem('user'));
   const [calls, setCalls] = useState([]);
   const [followUps, setFollowUps] = useState([]);
@@ -63,14 +65,54 @@ const InquiriesPage = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  // الألوان الجديدة بناءً على اللون المطلوب
-  const primaryColor = '#80b49e';
-  const primaryDark = '#6a9a87';
-  const primaryLight = '#9ac9b5';
-  const backgroundColor = '#f8fbfa';
-  const surfaceColor = '#ffffff';
-  const textPrimary = '#2c3e50';
-  const textSecondary = '#5d6d7e';
+  // Visual contract: shared light/dark surfaces without changing page logic.
+  const darkBorder = '#67C99D';
+  const primaryColor = isDark ? darkBorder : '#80b49e';
+  const primaryDark = isDark ? '#4fb889' : '#6a9a87';
+  const primaryLight = isDark ? darkBorder : '#9ac9b5';
+
+  const backgroundColor = isDark
+    ? (theme.palette.background?.default || '#0b1712')
+    : '#f8fbfa';
+
+  const surfaceColor = isDark
+    ? (theme.palette.surfaces?.card || '#10251d')
+    : '#ffffff';
+
+  const sectionColor = isDark
+    ? (theme.palette.surfaces?.section || '#143026')
+    : '#f0f7f4';
+
+  const nestedColor = isDark
+    ? (theme.palette.surfaces?.nested || '#183a2d')
+    : '#f8fbfa';
+
+  const hoverColor = isDark
+    ? (theme.palette.surfaces?.hover || '#1c4435')
+    : '#e8f4ef';
+
+  const selectedColor = isDark
+    ? (theme.palette.surfaces?.selected || '#20503d')
+    : '#f0f7f4';
+
+  const textPrimary = isDark ? '#F1FAF6' : '#2c3e50';
+  const textSecondary = isDark ? '#BCD6CA' : '#5d6d7e';
+  const permanentBorder = isDark ? darkBorder : primaryLight;
+
+  const menuPaperSx = {
+    backgroundColor: surfaceColor,
+    color: textPrimary,
+    border: `1px solid ${permanentBorder}`,
+    backgroundImage: 'none',
+    '& .MuiMenuItem-root': {
+      color: textPrimary,
+      '&:hover': { backgroundColor: hoverColor },
+      '&.Mui-selected': {
+        backgroundColor: selectedColor,
+        '&:hover': { backgroundColor: hoverColor }
+      }
+    }
+  };
 
 useEffect(() => {
   const fetchData = async () => {
@@ -342,7 +384,42 @@ const submitFollowUp = async () => {
   };
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: backgroundColor }}>
+    <NavigationShell variant="standard" ><Box sx={{
+      display: 'flex',
+      minHeight: '100vh',
+      backgroundColor,
+      color: textPrimary,
+      direction: 'rtl',
+      '& .MuiPaper-root': {
+        backgroundImage: 'none',
+        ...(isDark && {
+          backgroundColor: surfaceColor,
+          color: textPrimary,
+          borderColor: permanentBorder
+        })
+      },
+      '& .MuiOutlinedInput-root': {
+        color: textPrimary,
+        backgroundColor: isDark ? nestedColor : surfaceColor,
+        '& fieldset': { borderColor: permanentBorder },
+        '&:hover fieldset': { borderColor: isDark ? darkBorder : primaryColor },
+        '&.Mui-focused fieldset': { borderColor: isDark ? darkBorder : primaryDark }
+      },
+      '& .MuiInputLabel-root': {
+        color: textSecondary,
+        '&.Mui-focused': { color: primaryColor }
+      },
+      '& .MuiSvgIcon-root': {
+        ...(isDark && { color: 'inherit' })
+      },
+      '& .MuiTableCell-root': {
+        color: textPrimary,
+        borderColor: isDark ? 'rgba(103,201,157,.42)' : 'rgba(128,180,158,.22)'
+      },
+      '& .MuiDivider-root': {
+        borderColor: isDark ? 'rgba(103,201,157,.55)' : primaryLight
+      }
+    }}>
       
       <Box sx={{
         flexGrow: 1,
@@ -355,8 +432,8 @@ const submitFollowUp = async () => {
           mb: 3, 
           borderRadius: 3,
           backgroundColor: surfaceColor,
-          background: `linear-gradient(135deg, ${surfaceColor} 0%, #f0f7f4 100%)`,
-          border: `1px solid ${primaryLight}`
+          background: isDark ? surfaceColor : `linear-gradient(135deg, ${surfaceColor} 0%, ${sectionColor} 100%)`,
+          border: `1px solid ${permanentBorder}`
         }}>
           <Box sx={uiLayout.withUiSx({ 
             display: 'flex', 
@@ -443,13 +520,14 @@ const submitFollowUp = async () => {
                 p: 2, 
                 mb: 2, 
                 borderRadius: 2,
-                backgroundColor: '#f0f7f4',
-                border: `1px solid ${primaryLight}`
+                backgroundColor: sectionColor,
+                border: `1px solid ${permanentBorder}`
               }}>
                 <Box sx={uiLayout.withUiSx({ 
                   display: 'flex', 
                   flexWrap: 'wrap', 
-                  gap: 2,
+                  columnGap: 2,
+                  rowGap: 1.5,
                   alignItems: 'center'
                 }, uiLayout.filterBarSx)}>
                   <FormControl sx={uiLayout.withUiSx({ minWidth: 120 }, uiLayout.formFieldSx)} size="small">
@@ -461,6 +539,7 @@ const submitFollowUp = async () => {
                         setPage(1);
                       }}
                       label="حالة المكالمة"
+                      MenuProps={{ PaperProps: { sx: menuPaperSx } }}
                       sx={{
                         '& .MuiOutlinedInput-notchedOutline': {
                           borderColor: primaryLight
@@ -485,6 +564,7 @@ const submitFollowUp = async () => {
                         setPage(1);
                       }}
                       label="نوع المكالمة"
+                      MenuProps={{ PaperProps: { sx: menuPaperSx } }}
                       sx={{
                         '& .MuiOutlinedInput-notchedOutline': {
                           borderColor: primaryLight
@@ -630,19 +710,19 @@ const submitFollowUp = async () => {
               borderRadius: 2,
               overflow: 'hidden',
               boxShadow: '0 4px 20px rgba(128, 180, 158, 0.1)',
-              border: `1px solid ${primaryLight}`
+              border: `1px solid ${permanentBorder}`
             }, uiLayout.tableContainerSx)}>
               <Table>
                 <TableHead>
                   <TableRow sx={{ 
-                    backgroundColor: primaryDark, // تغيير هنا - استخدام لون ثابت بدل التدرج
+                    backgroundColor: isDark ? nestedColor : primaryDark,
                     '& th': { 
-                      color: 'white',
+                      color: isDark ? textPrimary : 'white',
                       fontWeight: 'bold',
                       fontFamily: 'Cairo, sans-serif',
                       fontSize: '1rem',
                       padding: '16px 8px',
-                      borderBottom: '2px solid #ffffff'
+                      borderBottom: `2px solid ${isDark ? darkBorder : '#ffffff'}`
                     }
                   }}>
                     <TableCell align="center" sx={{ width: '10%'}}>النوع</TableCell>
@@ -665,10 +745,10 @@ const submitFollowUp = async () => {
                         <React.Fragment key={index}>
                           <TableRow hover sx={{ 
                             '&:last-child td': { borderBottom: hasFollowUps ? 0 : undefined },
-                            backgroundColor: expandedRow === call.guid ? '#f0f7f4' : 'inherit',
+                            backgroundColor: expandedRow === call.guid ? selectedColor : surfaceColor,
                             transition: 'background-color 0.2s ease',
                             '&:hover': {
-                              backgroundColor: '#e8f4ef'
+                              backgroundColor: hoverColor
                             }
                           }}>
                             <TableCell align="center">
@@ -695,7 +775,7 @@ const submitFollowUp = async () => {
                                   borderRadius: 2,
                                   borderColor: primaryLight,
                                   color: textPrimary,
-                                  backgroundColor: '#f8fbfa'
+                                  backgroundColor: nestedColor
                                 }}
                               />
                             </TableCell>
@@ -771,10 +851,10 @@ const submitFollowUp = async () => {
     return (
       <Box
         sx={{
-          border: `1px solid ${primaryLight}`,
+          border: `1px solid ${permanentBorder}`,
           borderRadius: 2,
           p: 1.5,
-          backgroundColor: '#f8fbfa',
+          backgroundColor: nestedColor,
           fontFamily: 'Cairo',
           width: '100%',
           display: 'flex',
@@ -783,7 +863,7 @@ const submitFollowUp = async () => {
           transition: 'all 0.2s ease',
           '&:hover': {
             borderColor: primaryColor,
-            backgroundColor: '#f0f7f4'
+            backgroundColor: sectionColor
           }
         }}
       >
@@ -895,8 +975,8 @@ const submitFollowUp = async () => {
                             <TableRow>
                               <TableCell colSpan={6} sx={{ 
                                 p: 0, 
-                                backgroundColor: '#f8fbfa',
-                                borderTop: `1px solid ${primaryLight}`
+                                backgroundColor: nestedColor,
+                                borderTop: `1px solid ${permanentBorder}`
                               }}>
                                 <Collapse in={true} timeout="auto" unmountOnExit>
                                   <Box sx={uiLayout.withUiSx({ p: 2 }, uiLayout.tableContainerSx)}>
@@ -912,13 +992,13 @@ const submitFollowUp = async () => {
                                     </Typography>
                                     
                                     <Table size="small" sx={{ 
-                                      backgroundColor: 'white',
+                                      backgroundColor: surfaceColor,
                                       borderRadius: 1,
                                       overflow: 'hidden',
-                                      border: `1px solid ${primaryLight}`
+                                      border: `1px solid ${permanentBorder}`
                                     }}>
                                       <TableHead>
-                                        <TableRow sx={{ backgroundColor: '#f0f7f4' }}>
+                                        <TableRow sx={{ backgroundColor: sectionColor }}>
                                           <TableCell align="center" sx={{ width: '40%', color: primaryDark, fontWeight: 'bold' }}>الملاحظات</TableCell>
                                           <TableCell align="center" sx={{ width: '15%', color: primaryDark, fontWeight: 'bold' }}>الحالة</TableCell>
                                           <TableCell align="center" sx={{ width: '20%', color: primaryDark, fontWeight: 'bold' }}>المستخدم</TableCell>
@@ -927,7 +1007,7 @@ const submitFollowUp = async () => {
                                       </TableHead>
                                       <TableBody>
                                         {callFollowUps.map((followUp, i) => (
-                                          <TableRow key={i} hover sx={{ '&:hover': { backgroundColor: '#f8fbfa' } }}>
+                                          <TableRow key={i} hover sx={{ '&:hover': { backgroundColor: nestedColor } }}>
                                             <TableCell align="center">
                                               <Typography sx={{ color: textPrimary }}>
                                                 {followUp.followUpNotes || '—'}
@@ -1033,10 +1113,20 @@ const submitFollowUp = async () => {
 
       {/* Follow-up Dialog */}
       <Dialog sx={uiLayout.dialogLayoutSx} open={openFollowForm} onClose={handleCloseFollowForm} fullWidth maxWidth="sm"
-        PaperProps={{ sx: { borderRadius: 3 } }}>
+        PaperProps={{ sx: {
+          borderRadius: 3,
+          backgroundColor: surfaceColor,
+          color: textPrimary,
+          border: `1px solid ${permanentBorder}`,
+          backgroundImage: 'none',
+          overflow: 'hidden'
+        } }}>
         <DialogTitle sx={{ 
-          background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-          color: 'white',
+          background: isDark
+            ? `linear-gradient(135deg, ${nestedColor} 0%, ${sectionColor} 100%)`
+            : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
+          color: isDark ? textPrimary : 'white',
+          borderBottom: `1px solid ${permanentBorder}`,
           display: 'flex',
           alignItems: 'center',
           gap: 1,
@@ -1044,12 +1134,12 @@ const submitFollowUp = async () => {
         }}>
           <AddIcon /> إضافة متابعة جديدة
         </DialogTitle>
-        <DialogContent sx={{ pt: 3 }}>
+        <DialogContent sx={{ pt: 3, pb: 2.5, display: 'grid', gap: 1.75, backgroundColor: surfaceColor, color: textPrimary }}>
           <TextField InputLabelProps={{ shrink: true }}
             label="ملاحظات المتابعة"
             multiline
             fullWidth
-            rows={4}
+            minRows={4}
             margin="normal"
             value={followUpNote}
             onChange={(e) => setFollowUpNote(e.target.value)}
@@ -1061,6 +1151,8 @@ const submitFollowUp = async () => {
               ),
               sx: {
                 borderRadius: 2,
+                backgroundColor: isDark ? nestedColor : surfaceColor,
+                color: textPrimary,
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: primaryLight
                 },
@@ -1077,6 +1169,7 @@ const submitFollowUp = async () => {
               value={followUpStatus}
               onChange={(e) => setFollowUpStatus(e.target.value)}
               label="حالة المتابعة"
+              MenuProps={{ PaperProps: { sx: menuPaperSx } }}
               startAdornment={
                 <InputAdornment position="start">
                   <WatchLaterIcon sx={{ color: primaryColor }} />
@@ -1109,7 +1202,12 @@ const submitFollowUp = async () => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
+        <DialogActions sx={uiLayout.withUiSx({
+          p: 2,
+          gap: 1,
+          backgroundColor: surfaceColor,
+          borderTop: `1px solid ${permanentBorder}`
+        }, uiLayout.dialogActionsSx)}>
           <Button 
             onClick={handleCloseFollowForm} 
             variant="outlined"
@@ -1152,13 +1250,23 @@ const submitFollowUp = async () => {
         onClose={() => setDetailsDialogOpen(false)} 
         maxWidth="md" 
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        PaperProps={{ sx: {
+          borderRadius: 3,
+          backgroundColor: surfaceColor,
+          color: textPrimary,
+          border: `1px solid ${permanentBorder}`,
+          backgroundImage: 'none',
+          overflow: 'hidden'
+        } }}
       >
         {dialogCall && (
           <>
             <DialogTitle sx={{ 
-              background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-              color: 'white',
+              background: isDark
+                ? `linear-gradient(135deg, ${nestedColor} 0%, ${sectionColor} 100%)`
+                : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
+              color: isDark ? textPrimary : 'white',
+              borderBottom: `1px solid ${permanentBorder}`,
               display: 'flex',
               alignItems: 'center',
               gap: 1,
@@ -1166,7 +1274,7 @@ const submitFollowUp = async () => {
             }}>
               <DescriptionIcon /> تفاصيل المكالمة
             </DialogTitle>
-            <DialogContent sx={{ pt: 3 }}>
+            <DialogContent sx={{ pt: 3, pb: 2.5, backgroundColor: surfaceColor, color: textPrimary }}>
               <TableContainer sx={uiLayout.tableContainerSx}>
                 <Table>
                   <TableBody>
@@ -1265,10 +1373,10 @@ const submitFollowUp = async () => {
                     <ArrowForwardIcon sx={{ color: primaryColor }} />
                     المتابعات المسجلة
                   </Typography>
-                  <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, border: `1px solid ${primaryLight}` }, uiLayout.tableContainerSx)}>
+                  <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, border: `1px solid ${permanentBorder}` }, uiLayout.tableContainerSx)}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ backgroundColor: '#f0f7f4' }}>
+                        <TableRow sx={{ backgroundColor: sectionColor }}>
                           <TableCell align="center" sx={{ color: primaryDark, fontWeight: 'bold' }}>الملاحظات</TableCell>
                           <TableCell align="center" sx={{ color: primaryDark, fontWeight: 'bold' }}>الحالة</TableCell>
                           <TableCell align="center" sx={{ color: primaryDark, fontWeight: 'bold' }}>المستخدم</TableCell>
@@ -1277,7 +1385,7 @@ const submitFollowUp = async () => {
                       </TableHead>
                       <TableBody>
                         {dialogCall.followUps.map((followUp, i) => (
-                          <TableRow key={i} hover sx={{ '&:hover': { backgroundColor: '#f8fbfa' } }}>
+                          <TableRow key={i} hover sx={{ '&:hover': { backgroundColor: nestedColor } }}>
                             <TableCell align="center" sx={{ color: textPrimary }}>
                               {followUp.followUpNotes || '—'}
                             </TableCell>
@@ -1315,7 +1423,12 @@ const submitFollowUp = async () => {
                 </>
               )}
             </DialogContent>
-            <DialogActions sx={uiLayout.withUiSx({ p: 2 }, uiLayout.dialogActionsSx)}>
+            <DialogActions sx={uiLayout.withUiSx({
+              p: 2,
+              gap: 1,
+              backgroundColor: surfaceColor,
+              borderTop: `1px solid ${permanentBorder}`
+            }, uiLayout.dialogActionsSx)}>
               <Button 
                 onClick={() => setDetailsDialogOpen(false)} 
                 variant="contained"

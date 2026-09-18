@@ -41,7 +41,7 @@ import {
   Storage as NetworkIcon,
 } from "@mui/icons-material";
 import axios from "axios";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 
 // الألوان الجديدة بناءً على اللون المطلوب
 const primaryColor = '#80b49e';
@@ -91,14 +91,14 @@ const FileSizeChip = styled(Chip)(({ theme }) => ({
   }
 }));
 
-const CenteredContainer = styled(Box)({
+const CenteredContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   minHeight: "calc(100vh - 64px)",
   flexDirection: "column",
-  backgroundColor: backgroundColor,
-});
+  backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : backgroundColor,
+}));
 
 const NetworkCard = styled(Card)(({ theme }) => ({
   width: 320,
@@ -115,6 +115,7 @@ const NetworkCard = styled(Card)(({ theme }) => ({
 }));
 
 const ExplorerNetwork = () => {
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -250,7 +251,7 @@ const ExplorerNetwork = () => {
           @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
           body {
             font-family: 'Cairo', sans-serif !important;
-            background-color: ${backgroundColor};
+            background-color: ${theme.palette.mode === 'dark' ? '#07150f' : backgroundColor};
           }
         `}
       </style>

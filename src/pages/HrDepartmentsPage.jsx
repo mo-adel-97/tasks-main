@@ -40,7 +40,8 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -2488,6 +2489,7 @@ function HrOrganizationDesigner() {
 
 
 const HrDepartmentsPage = () => {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -3489,7 +3491,7 @@ const HrDepartmentsPage = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: "linear-gradient(180deg,#f7fbf9 0%,#ffffff 100%)",
+        background: theme.palette.mode === 'dark' ? theme.palette.background.default : "linear-gradient(180deg,#f7fbf9 0%,#ffffff 100%)",
         fontFamily: "Cairo, Arial, sans-serif",
         textAlign: PAGE_TEXT_ALIGN
       }}

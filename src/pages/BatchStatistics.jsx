@@ -1029,7 +1029,7 @@ const BatchStatistics = () => {
     <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
-        background: COLORS.background,
+        background: theme.palette.mode === 'dark' ? theme.palette.background.default : COLORS.background,
         direction: "rtl"
       }}
     >
@@ -1796,7 +1796,7 @@ const BatchStatistics = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: COLORS.background,
+        background: theme.palette.mode === 'dark' ? theme.palette.background.default : COLORS.background,
         direction: "rtl"
       }}
     >

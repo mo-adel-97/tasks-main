@@ -1,6 +1,11 @@
 // One responsive navigation contract for the whole application.
 // Pages must never calculate their own sidebar gutter.
-export const SIDEBAR_WIDTH = 'clamp(12rem, 15vw, 16rem)';
+import { fluid } from './designTokens';
+
+// The 16rem ceiling stayed fixed all the way to 3440px, which is also why
+// larger sidebar text (see designTokens.sidebar) had no extra room and would
+// truncate sooner on ultra-wide. Let the ceiling itself grow modestly instead.
+export const SIDEBAR_WIDTH = `clamp(12rem, 15vw, ${fluid(256, 288)})`;
 export const SIDEBAR_COLLAPSED_WIDTH = 86;
 
 // >= 1200px: permanent sidebar (desktop/laptop)

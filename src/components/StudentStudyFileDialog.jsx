@@ -1,4 +1,5 @@
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
+import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -37,6 +38,14 @@ const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const primaryLight = "#e6f3ee";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const whiteColor = "#fefefe";
 const softBg = "#fefefe";
 const textColor = "#1f2d3d";
@@ -87,7 +96,9 @@ const showSuccess = (message) =>
 const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => (
   <Paper
     elevation={0}
-    sx={{
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
       p: 1.4,
       borderRadius: 3,
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
@@ -99,13 +110,16 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
         p: 0.35,
         minHeight: 44
       },
-      border: `1px solid ${primaryLight}`,
-      background: strong
-        ? `linear-gradient(135deg, #fff6f6 0%, ${whiteColor} 100%)`
-        : `linear-gradient(135deg, #f4fbf7 0%, ${whiteColor} 100%)`,
+      border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+      background: isDark
+        ? (strong ? "rgba(229,90,90,.1)" : theme.palette.surfaces.card)
+        : (strong
+          ? `linear-gradient(135deg, #fff6f6 0%, ${whiteColor} 100%)`
+          : `linear-gradient(135deg, #f4fbf7 0%, ${whiteColor} 100%)`),
       height: "100%",
       position: "relative",
       overflow: "hidden"
+      };
     }}
   >
     <Stack
@@ -158,18 +172,18 @@ const FieldBox = ({ label, value, icon, strong = false, color = textColor }) => 
   </Paper>
 );
 
-const statusChipSx = (value) => {
+const statusChipSx = (value, isDark = false) => {
   const text = String(value || "");
 
   if (text.includes("مستمر") || text.includes("نشط")) {
-    return { color: primaryColor, backgroundColor: "#e6f3ee" };
+    return { color: isDark ? "#67c99d" : primaryColor, backgroundColor: isDark ? "rgba(103,201,157,.14)" : "#e6f3ee" };
   }
 
   if (text.includes("موقوف") || text.includes("منتهي") || text.includes("منتهى")) {
-    return { color: dangerColor, backgroundColor: "#fff4f4" };
+    return { color: isDark ? "#e57373" : dangerColor, backgroundColor: isDark ? "rgba(229,90,90,.14)" : "#fff4f4" };
   }
 
-  return { color: warningColor, backgroundColor: "#fff4f4" };
+  return { color: isDark ? "#f0ad4e" : warningColor, backgroundColor: isDark ? "rgba(237,137,54,.14)" : "#fff4f4" };
 };
 
 const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
@@ -445,7 +459,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "94vw" : undefined,
@@ -467,7 +481,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          border: `1px solid ${primaryLight}`,
+          border: (theme) => theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
           boxShadow: "0 18px 50px rgba(5,117,70,0.16)"
         }
       }}
@@ -495,12 +509,12 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               disabled={loading || savingClass}
               sx={{
                 color: accentColor,
-                backgroundColor: whiteColor,
+                backgroundColor: pinColor(whiteColor),
                 width: isPhone ? 25 : isTablet ? 29 : undefined,
                 height: isPhone ? 25 : isTablet ? 29 : undefined,
                 p: isCompact ? 0.2 : undefined,
                 "& svg": { fontSize: isPhone ? 14 : isTablet ? 16 : undefined },
-                "&:hover": { backgroundColor: "#fff4f4" }
+                "&:hover": { backgroundColor: pinColor("#fff4f4") }
               }}
             >
               <CloseIcon />
@@ -509,7 +523,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               <Typography
                 sx={{
                   fontWeight: 1000,
-                  color: whiteColor,
+                  color: pinColor(whiteColor),
                   fontSize: isPhone ? "0.75rem" : isTablet ? "0.78rem" : "1.15rem",
                   lineHeight: 1.1
                 }}
@@ -519,7 +533,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
               <Typography
                 sx={{
                   fontWeight: 800,
-                  color: "#e6f3ee",
+                  color: pinColor("#e6f3ee"),
                   fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.82rem",
                   lineHeight: 1.1,
                   display: isPhone ? "none" : "block"
@@ -534,7 +548,7 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
             <Chip
               icon={<SchoolIcon />}
               label={safeText(studyInfo?.stautName || pick(student, "statusName", "stautName"))}
-              sx={{
+              sx={(theme) => ({
                 fontWeight: 950,
                 borderRadius: isCompact ? 1.1 : 2,
                 height: isPhone ? 21 : isTablet ? 24 : undefined,
@@ -545,8 +559,8 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 "& .MuiChip-icon": {
                   fontSize: isPhone ? 13 : isTablet ? 15 : undefined
                 },
-                ...statusChipSx(studyInfo?.stautName)
-              }}
+                ...statusChipSx(studyInfo?.stautName, theme.palette.mode === "dark")
+              })}
             />
             <Button
               size="small"
@@ -562,9 +576,9 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
                 px: isPhone ? 0.4 : isTablet ? 0.6 : undefined,
                 fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 direction: "rtl",
-                color: whiteColor,
-                borderColor: "#e6f3ee",
-                "&:hover": { borderColor: whiteColor, backgroundColor: "rgba(255,255,255,0.10)" }
+                color: pinColor(whiteColor),
+                borderColor: pinColor("#e6f3ee"),
+                "&:hover": { borderColor: pinColor(whiteColor), backgroundColor: "rgba(255,255,255,0.10)" }
               }, uiLayout.buttonSx)}
             >
               تحديث
@@ -575,13 +589,13 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
 
       <DialogContent
         dividers
-        sx={{
-          background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+        sx={(theme) => ({
+          background: theme.palette.mode === "dark" ? theme.palette.surfaces.page : `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
           p: isPhone ? 0.3 : isTablet ? 0.5 : 2,
           overflowY: "auto",
           flex: 1,
           minHeight: 0
-        }}
+        })}
       >
         {loading ? (
           <Stack alignItems="center" justifyContent="center" sx={{ py: isPhone ? 3 : isTablet ? 4 : 7 }}>
@@ -610,12 +624,12 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
           <Stack spacing={isPhone ? 0.4 : isTablet ? 0.6 : 1.5}>
             <Paper
               elevation={0}
-              sx={{
+              sx={(theme) => ({
                 p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
                 borderRadius: isCompact ? 1.4 : 3,
-                border: `1px solid ${primaryLight}`,
-                backgroundColor: whiteColor
-              }}
+                border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+                backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : whiteColor
+              })}
             >
               <Typography
                 sx={{
@@ -649,12 +663,12 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
 
             <Paper
               elevation={0}
-              sx={{
+              sx={(theme) => ({
                 p: isPhone ? 0.38 : isTablet ? 0.58 : 1.5,
                 borderRadius: isCompact ? 1.4 : 3,
-                border: `1px solid ${primaryLight}`,
-                backgroundColor: whiteColor
-              }}
+                border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+                backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.card : whiteColor
+              })}
             >
               <Typography
                 sx={{

@@ -84,6 +84,7 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const isShortScreen = useMediaQuery('(max-height: 760px)');
   const isVerySmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -201,7 +202,9 @@ export default function Login() {
         overflowX: 'hidden',
         overflowY: { xs: 'auto', md: 'hidden' },
         fontFamily: 'Cairo, Arial, sans-serif',
-        background: `
+        background: theme.palette.mode === 'dark'
+          ? theme.palette.background.default
+          : `
           radial-gradient(circle at 15% 15%, rgba(255,255,255,0.18), transparent 28%),
           radial-gradient(circle at 88% 78%, rgba(174,30,33,0.15), transparent 25%),
           linear-gradient(135deg, ${COLORS.primaryDark} 0%, ${COLORS.primary} 52%, #0a8c5a 100%)
@@ -288,8 +291,8 @@ export default function Login() {
               gridTemplateColumns: { xs: '1fr', md: '0.96fr 1.04fr' },
               overflow: 'hidden',
               borderRadius: { xs: 2.25, sm: 3.5, md: 5 },
-              border: '1px solid rgba(255,255,255,0.28)',
-              backgroundColor: 'rgba(255,255,255,0.97)',
+              border: isDark ? '1px solid #67C99D' : '1px solid rgba(255,255,255,0.28)',
+              backgroundColor: isDark ? theme.palette.surfaces.card : 'rgba(255,255,255,0.97)',
               boxShadow: {
                 xs: '0 10px 28px rgba(3, 48, 31, 0.24)',
                 md: '0 35px 90px rgba(3, 48, 31, 0.34)'
@@ -305,7 +308,7 @@ export default function Login() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                backgroundColor: COLORS.white
+                backgroundColor: isDark ? theme.palette.surfaces.card : COLORS.white
               }}
             >
               <Box sx={{ maxWidth: 450, width: '100%', mx: 'auto' }}>
@@ -337,7 +340,7 @@ export default function Login() {
                   component="h1"
                   sx={{
                     textAlign: 'center',
-                    color: COLORS.text,
+                    color: isDark ? theme.palette.text.primary : COLORS.text,
                     fontSize: { xs: '1.02rem', sm: '1.4rem', md: '1.9rem' },
                     fontWeight: 800,
                     lineHeight: 1.35
@@ -351,7 +354,7 @@ export default function Login() {
                     mt: { xs: 0.45, sm: 0.8 },
                     mb: { xs: 1.4, sm: 2.8, md: 3.5 },
                     textAlign: 'center',
-                    color: COLORS.muted,
+                    color: isDark ? theme.palette.text.secondary : COLORS.muted,
                     fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.98rem' },
                     lineHeight: { xs: 1.65, sm: 1.8 }
                   }}
@@ -400,11 +403,11 @@ export default function Login() {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <PersonOutline sx={{ color: COLORS.primary }} />
+                              <PersonOutline sx={{ color: isDark ? theme.palette.primary.main : COLORS.primary }} />
                             </InputAdornment>
                           )
                         }}
-                        sx={uiLayout.withUiSx(fieldStyles, uiLayout.formFieldSx)}
+                        sx={uiLayout.withUiSx(getFieldStyles(theme), uiLayout.formFieldSx)}
                       />
                     </Box>
 
@@ -428,7 +431,7 @@ export default function Login() {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <LockOutlined sx={{ color: COLORS.primary }} />
+                              <LockOutlined sx={{ color: isDark ? theme.palette.primary.main : COLORS.primary }} />
                             </InputAdornment>
                           ),
                           endAdornment: (
@@ -448,7 +451,7 @@ export default function Login() {
                             </InputAdornment>
                           )
                         }}
-                        sx={uiLayout.withUiSx(fieldStyles, uiLayout.formFieldSx)}
+                        sx={uiLayout.withUiSx(getFieldStyles(theme), uiLayout.formFieldSx)}
                       />
                     </Box>
 
@@ -501,13 +504,13 @@ export default function Login() {
                           fontWeight: 800,
                           fontSize: { xs: "0.75rem", sm: '0.84rem', md: '0.95rem' },
                           borderWidth: 1.5,
-                          borderColor: COLORS.primary,
-                          color: COLORS.primary,
-                          backgroundColor: COLORS.primarySoft,
+                          borderColor: isDark ? '#67C99D' : COLORS.primary,
+                          color: isDark ? theme.palette.primary.main : COLORS.primary,
+                          backgroundColor: isDark ? theme.palette.surfaces.hover : COLORS.primarySoft,
                           '&:hover': {
                             borderWidth: 1.5,
-                            borderColor: COLORS.primaryDark,
-                            backgroundColor: '#dff1e9',
+                            borderColor: isDark ? theme.palette.primary.main : COLORS.primaryDark,
+                            backgroundColor: isDark ? theme.palette.surfaces.selected : '#dff1e9',
                             transform: 'translateY(-1px)'
                           }
                         }, uiLayout.buttonSx)}
@@ -522,7 +525,7 @@ export default function Login() {
                   sx={{
                     mt: { xs: 1.35, sm: 2.3, md: 3 },
                     textAlign: 'center',
-                    color: '#83938d',
+                    color: isDark ? theme.palette.text.secondary : '#83938d',
                     fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.78rem' },
                     lineHeight: { xs: 1.6, sm: 1.8 }
                   }}
@@ -715,62 +718,65 @@ const fieldGroupStyles = {
   width: '100%'
 };
 
-const fieldLabelStyles = {
+const fieldLabelStyles = (theme) => ({
   display: 'block',
   marginBottom: '7px',
   paddingRight: '2px',
   textAlign: 'right',
   direction: 'rtl',
-  color: COLORS.text,
+  color: theme.palette.mode === 'dark' ? theme.palette.text.primary : COLORS.text,
   fontFamily: 'Cairo, Arial, sans-serif',
   fontWeight: 800,
   fontSize: '0.88rem',
   lineHeight: 1.6
-};
+});
 
-const fieldStyles = {
-  width: '100%',
-  direction: 'rtl',
-
-  '& .MuiOutlinedInput-root': {
-    minHeight: '52px',
+const getFieldStyles = (theme) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    width: '100%',
     direction: 'rtl',
-    borderRadius: '12px',
-    backgroundColor: '#fbfdfc'
-  },
 
-  '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#dce8e3'
-  },
+    '& .MuiOutlinedInput-root': {
+      minHeight: '52px',
+      direction: 'rtl',
+      borderRadius: '12px',
+      backgroundColor: isDark ? theme.palette.surfaces.input : '#fbfdfc'
+    },
 
-  '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: COLORS.primary
-  },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDark ? '#67C99D' : '#dce8e3'
+    },
 
-  '& .MuiOutlinedInput-root.Mui-focused': {
-    backgroundColor: COLORS.white,
-    boxShadow: '0 0 0 4px rgba(5,117,70,0.09)'
-  },
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDark ? '#67C99D' : COLORS.primary
+    },
 
-  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: COLORS.primary,
-    borderWidth: '1.5px'
-  },
+    '& .MuiOutlinedInput-root.Mui-focused': {
+      backgroundColor: isDark ? theme.palette.surfaces.card : COLORS.white,
+      boxShadow: isDark ? '0 0 0 4px rgba(103,201,157,.35)' : '0 0 0 4px rgba(5,117,70,0.09)'
+    },
 
-  '& .MuiOutlinedInput-input': {
-    direction: 'rtl',
-    textAlign: 'right',
-    fontFamily: 'Cairo, Arial, sans-serif',
-    fontSize: '0.95rem',
-    paddingTop: '13px',
-    paddingBottom: '13px'
-  },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDark ? theme.palette.primary.main : COLORS.primary,
+      borderWidth: '1.5px'
+    },
 
-  '& .MuiInputAdornment-root': {
-    direction: 'ltr'
-  },
+    '& .MuiOutlinedInput-input': {
+      direction: 'rtl',
+      textAlign: 'right',
+      fontFamily: 'Cairo, Arial, sans-serif',
+      fontSize: '0.95rem',
+      paddingTop: '13px',
+      paddingBottom: '13px'
+    },
 
-  '& .MuiInputAdornment-root svg': {
-    fontSize: '1.2rem'
-  }
+    '& .MuiInputAdornment-root': {
+      direction: 'ltr'
+    },
+
+    '& .MuiInputAdornment-root svg': {
+      fontSize: '1.2rem'
+    }
+  };
 };

@@ -252,7 +252,8 @@ const StudentOperationsDialog = ({
         }
       }, uiLayout.dialogLayoutSx)}
       PaperProps={{
-        sx: {
+        sx: (theme) => ({
+          border: theme.palette.mode === "dark" ? "1px solid #67C99D" : undefined,
           width: isPhone
             ? "100vw"
             : isTablet
@@ -289,7 +290,7 @@ const StudentOperationsDialog = ({
           overflow: "hidden",
           display: "flex",
           flexDirection: "column"
-        }
+        })
       }}
     >
       <DialogTitle
@@ -650,8 +651,8 @@ const StudentOperationsDialog = ({
 
                 "& .MuiDataGrid-row:nth-of-type(even)":
                   {
-                    backgroundColor:
-                      "#fbfdfc"
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === "dark" ? theme.palette.surfaces.section : "#fbfdfc"
                   },
 
                 "& .MuiDataGrid-footerContainer":
@@ -704,7 +705,12 @@ const StudentOperationsDialog = ({
                         ? 17
                         : undefined
                   }
-              }, uiLayout.dataGridSx)}
+              }, uiLayout.dataGridSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+                border: "1px solid #67C99D",
+                "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
+                "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
+                "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #67C99D" }
+              }))}
             />
           </Box>
         )}

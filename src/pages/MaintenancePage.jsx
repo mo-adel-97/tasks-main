@@ -54,7 +54,9 @@ const MaintenancePage = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: `linear(135deg, ${alpha(primaryColor, 0.1)} 0%, ${alpha(primaryColor, 0.05)} 100%)`,
+        background: theme.palette.mode === 'dark'
+          ? theme.palette.background.default
+          : `linear(135deg, ${alpha(primaryColor, 0.1)} 0%, ${alpha(primaryColor, 0.05)} 100%)`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

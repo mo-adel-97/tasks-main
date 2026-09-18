@@ -82,6 +82,26 @@ export default function StudentNotes() {
 
   const isCompact = isPhone || isTablet;
 
+  const isDark = muiTheme.palette.mode === "dark";
+
+  const uiColors = useMemo(() => {
+    const surfaces = muiTheme.palette.surfaces || {};
+    return {
+      page: isDark ? (muiTheme.palette.background.default || "#0d1b16") : bg,
+      card: isDark ? (surfaces.card || "#12231b") : "#ffffff",
+      section: isDark ? (surfaces.section || "#163026") : "#f8fbfa",
+      nested: isDark ? (surfaces.nested || "#19382c") : "#ffffff",
+      hover: isDark ? (surfaces.hover || "#1d4435") : "#edf8f3",
+      selected: isDark ? (surfaces.selected || "#21513e") : "rgba(128,180,158,0.15)",
+      text: isDark ? (muiTheme.palette.text.primary || "#f1f7f4") : text,
+      muted: isDark ? (muiTheme.palette.text.secondary || "#b7cdc3") : "#60756c",
+      border: isDark ? "#67C99D" : "rgba(128,180,158,0.25)",
+      borderSoft: isDark ? "#67C99D" : "rgba(128,180,158,0.20)"
+    };
+  }, [muiTheme, isDark]);
+
+  const permanentBorder = `1px solid ${uiColors.border}`;
+
   const [mobileSidebarOpen, setMobileSidebarOpen] =
     useState(false);
 
@@ -189,14 +209,61 @@ export default function StudentNotes() {
         }><Box
       sx={{
         display: "flex",
-        background: bg,
+        background: uiColors.page,
+        color: uiColors.text,
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        direction: "rtl"
+        direction: "rtl",
+        "& .MuiInputLabel-root": {
+          color: uiColors.muted,
+          px: 0.45,
+          backgroundColor: uiColors.card
+        },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: isDark ? "#8BDEB8" : primaryDark
+        },
+        "& .MuiOutlinedInput-root": {
+          color: uiColors.text,
+          backgroundColor: uiColors.nested,
+          borderRadius: 2,
+          "& fieldset": {
+            borderColor: uiColors.border,
+            borderWidth: "1px"
+          },
+          "&:hover fieldset": {
+            borderColor: uiColors.border
+          },
+          "&.Mui-focused fieldset": {
+            borderColor: uiColors.border,
+            borderWidth: "1px"
+          }
+        },
+        "& .MuiInputBase-input, & textarea": {
+          color: uiColors.text,
+          textAlign: "right"
+        },
+        "& .MuiFormHelperText-root": {
+          color: uiColors.muted
+        },
+        "& .MuiDivider-root": {
+          borderColor: uiColors.borderSoft
+        }
       }}
     >
+      <GlobalStyles
+        styles={{
+          ".MuiPopover-paper, .MuiMenu-paper, .MuiTooltip-tooltip": {
+            ...(isDark ? {
+              backgroundColor: `${uiColors.section} !important`,
+              color: `${uiColors.text} !important`,
+              border: `1px solid #67C99D !important`
+            } : {})
+          }
+        }}
+      />
+
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -223,11 +290,10 @@ export default function StudentNotes() {
             right: 0,
             width: "100%",
             zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
+            background: isDark ? uiColors.section : "rgba(255,255,255,.97)",
             backdropFilter: "blur(14px)",
-            color: text,
-            borderBottom:
-              "1px solid rgba(128,180,158,0.25)",
+            color: uiColors.text,
+            borderBottom: permanentBorder,
             direction: "rtl"
           }}
         >
@@ -276,7 +342,7 @@ export default function StudentNotes() {
                   xs: "0.75rem",
                   sm: "0.8rem"
                 },
-                color: text,
+                color: uiColors.text,
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -323,8 +389,12 @@ export default function StudentNotes() {
           sx={{
             p: isPhone ? 0.7 : isTablet ? 0.95 : 2.2,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
-            border: "1px solid rgba(128,180,158,0.25)",
-            background: "linear-gradient(135deg, rgba(128,180,158,0.12) 0%, rgba(248,251,250,1) 60%)"
+            border: permanentBorder,
+            background: isDark
+              ? `linear-gradient(135deg, ${uiColors.section} 0%, ${uiColors.card} 70%)`
+              : "linear-gradient(135deg, rgba(128,180,158,0.12) 0%, rgba(248,251,250,1) 60%)",
+            backgroundImage: isDark ? "none" : undefined,
+            color: uiColors.text
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
@@ -333,7 +403,7 @@ export default function StudentNotes() {
                 variant="h6"
                 sx={{
                   fontWeight: 800,
-                  color: text,
+                  color: uiColors.text,
                   fontSize: isPhone
                     ? "0.75rem"
                     : isTablet
@@ -365,9 +435,9 @@ export default function StudentNotes() {
               sx={{
                 display: isPhone ? "none" : "inline-flex",
                 fontWeight: 700,
-                background: "rgba(128,180,158,0.15)",
-                color: primaryDark,
-                border: "1px solid rgba(128,180,158,0.25)",
+                background: isDark ? uiColors.nested : "rgba(128,180,158,0.15)",
+                color: isDark ? "#A8E5C8" : primaryDark,
+                border: permanentBorder,
                 height: isTablet ? 26 : undefined,
                 fontSize: isTablet ? "0.75rem" : undefined
               }}
@@ -382,10 +452,13 @@ export default function StudentNotes() {
             mt: isPhone ? 0.65 : isTablet ? 0.9 : 2,
             p: isPhone ? 0.7 : isTablet ? 0.95 : 2,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
-            border: "1px solid rgba(128,180,158,0.25)"
+            border: permanentBorder,
+            backgroundColor: uiColors.card,
+            backgroundImage: "none",
+            color: uiColors.text
           }, uiLayout.pageHeaderSx)}
         >
-          <Typography sx={{ fontWeight: 800, color: text, mb: 1 }}>
+          <Typography sx={{ fontWeight: 800, color: uiColors.text, mb: 1.2 }}>
             رفع ملف جديد
           </Typography>
           <Divider sx={{ mb: 2 }} />
@@ -396,8 +469,9 @@ export default function StudentNotes() {
               gridTemplateColumns: isCompact
                 ? "repeat(2,minmax(0,1fr))"
                 : "auto minmax(160px,1fr) minmax(280px,360px) auto",
-              gap: isPhone ? 0.6 : isTablet ? 0.8 : 2,
-              alignItems: "center"
+              columnGap: isPhone ? 0.9 : isTablet ? 1.1 : 1.5,
+              rowGap: isPhone ? 1.25 : isTablet ? 1.4 : 1.7,
+              alignItems: "stretch"
             }, uiLayout.filterBarSx)}
           >
             <Button
@@ -410,7 +484,10 @@ export default function StudentNotes() {
                 borderRadius: 2,
                 px: 2.2,
                 py: 1.1,
-                boxShadow: "0 6px 16px rgba(128,180,158,0.28)",
+                boxShadow: "none",
+                border: permanentBorder,
+                color: "#fff",
+                minHeight: 40,
                 "&:hover": {
                   background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                 }
@@ -428,13 +505,22 @@ export default function StudentNotes() {
             <Box
               sx={{
                 minWidth: 0,
-                gridColumn: isPhone ? "1 / -1" : undefined
+                gridColumn: isPhone ? "1 / -1" : undefined,
+                px: 1.2,
+                py: 0.9,
+                borderRadius: 2,
+                border: permanentBorder,
+                backgroundColor: uiColors.nested,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 0.25
               }}
             >
-              <Typography variant="body2" sx={{ fontWeight: 700, color: text }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: uiColors.text }}>
                 {file ? file.name : "لم يتم اختيار ملف"}
               </Typography>
-              <Typography variant="caption" sx={{ opacity: 0.7 }}>
+              <Typography variant="caption" sx={{ color: uiColors.muted }}>
                 الامتدادات: xlsx / xls / csv — أقصى حجم: 10MB
               </Typography>
             </Box>
@@ -443,14 +529,13 @@ export default function StudentNotes() {
               label="ملاحظة على الملف (اختياري)"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
+              multiline
+              minRows={4}
               sx={uiLayout.withUiSx({
                 minWidth: 0,
                 gridColumn: isCompact ? "1 / -1" : undefined,
                 "& .MuiInputBase-input": {
                   fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
-                },
-                "& .MuiOutlinedInput-root": {
-                  minHeight: isPhone ? 31 : isTablet ? 34 : undefined
                 }
               }, uiLayout.formFieldSx)}
             />
@@ -465,6 +550,10 @@ export default function StudentNotes() {
                 borderRadius: 2,
                 px: 3,
                 py: 1.2,
+                minHeight: 40,
+                border: permanentBorder,
+                color: "#fff",
+                boxShadow: "none",
                 "&:hover": { background: primaryDark }
               }, uiLayout.buttonSx)}
             >
@@ -480,11 +569,14 @@ export default function StudentNotes() {
             mt: isPhone ? 0.65 : isTablet ? 0.9 : 2,
             p: isPhone ? 0.7 : isTablet ? 0.95 : 2,
             borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
-            border: "1px solid rgba(128,180,158,0.25)"
+            border: permanentBorder,
+            backgroundColor: uiColors.card,
+            backgroundImage: "none",
+            color: uiColors.text
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
-            <Typography sx={{ fontWeight: 900, color: text }}>
+            <Typography sx={{ fontWeight: 900, color: uiColors.text }}>
               ملفاتي المرفوعة
             </Typography>
 
@@ -497,7 +589,7 @@ export default function StudentNotes() {
           </Stack>
 
           {!loading && rows.length === 0 && (
-            <Typography variant="body2" sx={{ opacity: 0.7, mt: 2 }}>
+            <Typography variant="body2" sx={{ color: uiColors.muted, mt: 2 }}>
               لا يوجد ملفات مرفوعة حتى الآن.
             </Typography>
           )}
@@ -505,8 +597,8 @@ export default function StudentNotes() {
           <Box
             sx={{
               display: "grid",
-              gap: isPhone ? 0.65 : isTablet ? 0.85 : 1.5,
-              mt: isPhone ? 0.65 : isTablet ? 0.85 : 2
+              gap: isPhone ? 1 : isTablet ? 1.2 : 1.6,
+              mt: isPhone ? 1 : isTablet ? 1.2 : 1.8
             }}
           >
             {rows.map((r) => {
@@ -520,20 +612,24 @@ export default function StudentNotes() {
                   sx={{
                     p: isPhone ? 0.65 : isTablet ? 0.85 : 2,
                     borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
-                    border: "1px solid rgba(128,180,158,0.2)",
-                    background: "linear-gradient(180deg, rgba(128,180,158,0.05) 0%, #fff 45%)"
+                    border: permanentBorder,
+                    background: isDark
+                      ? uiColors.section
+                      : "linear-gradient(180deg, rgba(128,180,158,0.05) 0%, #fff 45%)",
+                    backgroundImage: isDark ? "none" : undefined,
+                    color: uiColors.text
                   }}
                 >
                   <Stack
                     direction={isCompact ? "column" : "row"}
                     justifyContent="space-between"
-                    gap={isPhone ? 0.55 : isTablet ? 0.75 : 2}
+                    gap={isPhone ? 0.9 : isTablet ? 1.1 : 1.5}
                   >
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
                           fontWeight: 900,
-                          color: text,
+                          color: uiColors.text,
                           fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -542,7 +638,7 @@ export default function StudentNotes() {
                       >
                         {r.original_filename}
                       </Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                      <Typography variant="caption" sx={{ color: uiColors.muted }}>
                         {r.created_at}
                       </Typography>
 
@@ -552,8 +648,10 @@ export default function StudentNotes() {
                             size="small"
                             onClick={() => window.open(fileUrl, "_blank", "noreferrer")}
                             sx={{
-                              border: "1px solid rgba(128,180,158,0.35)",
-                              color: primaryDark
+                              border: permanentBorder,
+                              color: isDark ? "#A8E5C8" : primaryDark,
+                              backgroundColor: isDark ? uiColors.nested : "transparent",
+                              "&:hover": { backgroundColor: uiColors.hover }
                             }}
                           >
                             <OpenInNewIcon fontSize="small" />
@@ -567,8 +665,10 @@ export default function StudentNotes() {
                             href={fileUrl}
                             download
                             sx={{
-                              border: "1px solid rgba(128,180,158,0.35)",
-                              color: primaryDark
+                              border: permanentBorder,
+                              color: isDark ? "#A8E5C8" : primaryDark,
+                              backgroundColor: isDark ? uiColors.nested : "transparent",
+                              "&:hover": { backgroundColor: uiColors.hover }
                             }}
                           >
                             <DownloadIcon fontSize="small" />
@@ -580,9 +680,9 @@ export default function StudentNotes() {
                           size="small"
                           sx={{
                             fontWeight: 800,
-                            background: "rgba(128,180,158,0.15)",
-                            color: primaryDark,
-                            border: "1px solid rgba(128,180,158,0.25)"
+                            background: isDark ? uiColors.nested : "rgba(128,180,158,0.15)",
+                            color: isDark ? "#A8E5C8" : primaryDark,
+                            border: permanentBorder
                           }}
                         />
                       </Stack>
@@ -604,29 +704,33 @@ export default function StudentNotes() {
                         variant="outlined"
                         startIcon={<DeleteOutlineIcon />}
                         onClick={() => deleteRow(r.id)}
-                        sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 900 }, uiLayout.buttonSx)}
+                        sx={uiLayout.withUiSx({
+                          borderRadius: 2,
+                          fontWeight: 900,
+                          border: permanentBorder,
+                          backgroundColor: isDark ? uiColors.nested : "transparent"
+                        }, uiLayout.buttonSx)}
                       >
                         حذف
                       </Button>
                     </Stack>
                   </Stack>
 
-                  <Divider sx={{ my: 1.7 }} />
+                  <Divider sx={{ my: isPhone ? 1.1 : 1.5 }} />
 
                   <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                     label="الملاحظة"
                     value={noteVal}
                     onChange={(e) => setEditingNotes(prev => ({ ...prev, [r.id]: e.target.value }))}
                     multiline
-                    minRows={isPhone ? 1 : isTablet ? 1 : 2}
-                    maxRows={isPhone ? 2 : isTablet ? 2 : undefined}
+                    minRows={4}
                     fullWidth
                   />
 
                   <Stack
                     direction="row"
                     justifyContent="flex-end"
-                    sx={{ mt: isPhone ? 0.55 : isTablet ? 0.75 : 1.2 }}
+                    sx={{ mt: isPhone ? 1 : isTablet ? 1.15 : 1.35 }}
                   >
                     <Button
                       onClick={() => updateNote(r.id)}
@@ -639,6 +743,9 @@ export default function StudentNotes() {
                         background: savingId === r.id
                           ? "rgba(128,180,158,0.6)"
                           : `linear-gradient(135deg, ${primary} 0%, ${primaryDark} 100%)`,
+                        border: permanentBorder,
+                        minHeight: 38,
+                        boxShadow: "none",
                         "&:hover": {
                           background: `linear-gradient(135deg, ${primaryDark} 0%, #5a8875 100%)`
                         }

@@ -523,7 +523,7 @@ const AdminViewTasksByBranches = () => {
   };
 
   return (
-    <NavigationShell variant="admin" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.background }}>
+    <NavigationShell variant="admin" ><Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : colors.background }}>
       
       
       <PageContainer component="main" sx={{

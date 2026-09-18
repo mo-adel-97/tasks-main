@@ -49,7 +49,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  useTheme
 } from '@mui/material';
 import { 
   AddCircleOutline, 
@@ -78,17 +79,13 @@ const theme = createTheme(deepmerge(appTheme, {
     fontFamily: '"Cairo", sans-serif',
     h4: {
       fontWeight: 600,
-      color: '#80b49e',
       fontSize: '1.15rem'
     },
     h6: {
       fontWeight: 600,
-      color: '#6a9a87',
       fontSize: '0.9rem'
     },
-    body1: {
-      color: '#2c3e50'
-    }
+    body1: {}
   },
   direction: "rtl",
   palette: {
@@ -117,16 +114,114 @@ const theme = createTheme(deepmerge(appTheme, {
   }
 }));
 
+const DARK_BORDER = '#67C99D';
+
+const surface = (muiTheme, key, fallback) =>
+  muiTheme.palette.surfaces?.[key] || fallback;
+
+const darkScopeSx = (muiTheme) =>
+  muiTheme.palette.mode !== 'dark'
+    ? {}
+    : {
+        color: muiTheme.palette.text.primary,
+        backgroundImage: 'none',
+        '& .MuiPaper-root': {
+          backgroundColor: surface(muiTheme, 'card', '#13251d'),
+          backgroundImage: 'none',
+          borderColor: `${DARK_BORDER} !important`,
+          color: muiTheme.palette.text.primary
+        },
+        '& .MuiCard-root': {
+          backgroundColor: surface(muiTheme, 'card', '#13251d'),
+          backgroundImage: 'none',
+          border: `1px solid ${DARK_BORDER} !important`,
+          color: muiTheme.palette.text.primary
+        },
+        '& .MuiOutlinedInput-root': {
+          backgroundColor: 'transparent !important',
+          color: muiTheme.palette.text.primary
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: `${DARK_BORDER} !important`
+        },
+        '& .MuiInputLabel-root, & .MuiFormHelperText-root': {
+          color: muiTheme.palette.text.secondary
+        },
+        '& .MuiSelect-icon': {
+          color: DARK_BORDER
+        },
+        '& .MuiChip-root': {
+          backgroundColor: 'transparent !important',
+          backgroundImage: 'none !important',
+          border: `1px solid ${DARK_BORDER} !important`,
+          color: `${muiTheme.palette.text.primary} !important`,
+          boxShadow: 'none !important'
+        },
+        '& .MuiButton-root': {
+          backgroundColor: 'transparent !important',
+          backgroundImage: 'none !important',
+          border: `1px solid ${DARK_BORDER} !important`,
+          color: `${DARK_BORDER} !important`,
+          boxShadow: 'none !important'
+        },
+        '& .MuiButton-root:hover': {
+          backgroundColor: 'transparent !important',
+          backgroundImage: 'none !important',
+          borderColor: `${DARK_BORDER} !important`,
+          color: `${muiTheme.palette.text.primary} !important`
+        },
+        '& .MuiButton-root.Mui-disabled': {
+          backgroundColor: 'transparent !important',
+          borderColor: 'rgba(103,201,157,.42) !important',
+          color: 'rgba(103,201,157,.42) !important'
+        },
+        '& .MuiTableContainer-root': {
+          backgroundColor: surface(muiTheme, 'nested', '#1b3328'),
+          border: `1px solid ${DARK_BORDER}`,
+          backgroundImage: 'none'
+        },
+        '& .MuiTableHead-root .MuiTableRow-root': {
+          backgroundColor: surface(muiTheme, 'section', '#172b22')
+        },
+        '& .MuiTableCell-root': {
+          color: muiTheme.palette.text.primary,
+          borderBottomColor: 'rgba(103,201,157,.38)'
+        },
+        '& .MuiTableRow-root.Mui-selected': {
+          backgroundColor: `${surface(muiTheme, 'selected', '#28513f')} !important`
+        },
+        '& .MuiTableRow-root:hover': {
+          backgroundColor: `${surface(muiTheme, 'hover', '#214333')} !important`
+        },
+        '& .MuiStepper-root': {
+          backgroundColor: surface(muiTheme, 'section', '#172b22'),
+          border: `1px solid ${DARK_BORDER}`
+        },
+        '& .MuiStepLabel-label': {
+          color: `${muiTheme.palette.text.secondary} !important`
+        },
+        '& .MuiStepLabel-label.Mui-active, & .MuiStepLabel-label.Mui-completed': {
+          color: `${muiTheme.palette.text.primary} !important`
+        }
+      };
+
 // Enhanced styled components with modern design
 const MainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   minHeight: '100vh',
+  width: '100%',
+  maxWidth: '100%',
+  overflowX: 'hidden',
   backgroundColor: theme.palette.background.default,
-  backgroundImage: 'linear-gradient(to bottom, #f8fbfa 0%, #e8f4ef 100%)'
+  backgroundImage: theme.palette.mode === 'dark' ? 'none' : 'linear-gradient(to bottom, #f8fbfa 0%, #e8f4ef 100%)'
 }));
 
 const ContentContainer = styled(Box)(({ theme }) => ({
   flexGrow: 1,
+  minWidth: 0,
+  width: '100%',
+  maxWidth: '100%',
+  overflowX: 'hidden',
   padding: theme.spacing(4),
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.easeInOut,
@@ -142,38 +237,55 @@ const ContentContainer = styled(Box)(({ theme }) => ({
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: theme.shape.borderRadius * 2,
-  boxShadow: '0px 12px 30px rgba(128, 180, 158, 0.08)',
+  boxShadow: theme.palette.mode === 'dark'
+    ? '0 12px 30px rgba(3, 20, 13, 0.28)'
+    : '0px 12px 30px rgba(128, 180, 158, 0.08)',
   marginBottom: theme.spacing(4),
-  backgroundColor: theme.palette.background.paper,
-  border: '1px solid rgba(128, 180, 158, 0.1)',
+  backgroundColor: theme.palette.mode === 'dark'
+    ? surface(theme, 'card', '#13251d')
+    : theme.palette.background.paper,
+  backgroundImage: 'none',
+  border: theme.palette.mode === 'dark'
+    ? `1px solid ${DARK_BORDER}`
+    : '1px solid rgba(128, 180, 158, 0.1)',
+  minWidth: 0,
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(3)
+    padding: theme.spacing(1.5)
   }
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
-  boxShadow: '0px 4px 20px rgba(128, 180, 158, 0.05)',
+  boxShadow: theme.palette.mode === 'dark'
+    ? '0 5px 18px rgba(3,20,13,.20)'
+    : '0px 4px 20px rgba(128, 180, 158, 0.05)',
   marginTop: theme.spacing(3),
   overflow: 'hidden',
-  border: '1px solid rgba(128, 180, 158, 0.1)',
+  backgroundColor: theme.palette.mode === 'dark'
+    ? surface(theme, 'nested', '#1b3328')
+    : theme.palette.background.paper,
+  backgroundImage: 'none',
+  border: theme.palette.mode === 'dark'
+    ? `1px solid ${DARK_BORDER}`
+    : '1px solid rgba(128, 180, 158, 0.1)',
   '& .MuiTableCell-root': {
-    borderBottom: `1px solid rgba(128, 180, 158, 0.1)`,
+    color: theme.palette.text.primary,
+    borderBottom: theme.palette.mode === 'dark'
+      ? '1px solid rgba(103,201,157,.38)'
+      : '1px solid rgba(128, 180, 158, 0.1)',
     padding: theme.spacing(2),
-    '&:first-of-type': {
-      paddingLeft: theme.spacing(3)
-    },
-    '&:last-of-type': {
-      paddingRight: theme.spacing(3)
-    }
+    '&:first-of-type': { paddingLeft: theme.spacing(3) },
+    '&:last-of-type': { paddingRight: theme.spacing(3) }
   }
 }));
 
 const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  backgroundColor: alpha(theme.palette.primary.main, 0.08),
+  backgroundColor: theme.palette.mode === 'dark'
+    ? surface(theme, 'section', '#172b22')
+    : alpha(theme.palette.primary.main, 0.08),
   '& .MuiTableCell-root': {
     fontWeight: 700,
-    color: theme.palette.primary.dark,
+    color: theme.palette.mode === 'dark' ? '#edf8f3' : theme.palette.primary.dark,
     fontSize: '0.875rem',
     letterSpacing: '0.5px'
   }
@@ -184,19 +296,27 @@ const StatusBadge = styled(Box)(({ theme, active }) => ({
   alignItems: 'center',
   padding: theme.spacing(0.5, 1.5),
   borderRadius: '20px',
-  backgroundColor: active ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
-  border: `1px solid ${active ? theme.palette.primary.main : theme.palette.divider}`,
+  backgroundColor: theme.palette.mode === 'dark'
+    ? 'transparent'
+    : (active ? alpha(theme.palette.primary.main, 0.1) : 'transparent'),
+  border: theme.palette.mode === 'dark'
+    ? `1px solid ${DARK_BORDER}`
+    : `1px solid ${active ? theme.palette.primary.main : theme.palette.divider}`,
   cursor: 'pointer',
   transition: theme.transitions.create(['background-color', 'border-color'], {
     duration: theme.transitions.duration.short
   }),
   '&:hover': {
-    backgroundColor: alpha(theme.palette.primary.main, 0.05),
-    borderColor: active ? theme.palette.primary.main : theme.palette.text.secondary
+    backgroundColor: theme.palette.mode === 'dark'
+      ? 'transparent'
+      : alpha(theme.palette.primary.main, 0.05),
+    borderColor: theme.palette.mode === 'dark' ? DARK_BORDER : (active ? theme.palette.primary.main : theme.palette.text.secondary)
   },
   '& .MuiTypography-root': {
     fontWeight: active ? 600 : 500,
-    color: active ? theme.palette.primary.dark : theme.palette.text.secondary
+    color: theme.palette.mode === 'dark'
+      ? theme.palette.text.primary
+      : (active ? theme.palette.primary.dark : theme.palette.text.secondary)
   }
 }));
 
@@ -208,6 +328,7 @@ const statusOptions = [
 ];
 
 const AttendanceStatus = ({ employeeGuid, attendance, setAttendance }) => {
+  const muiTheme = useTheme();
   const currentStatus = attendance[employeeGuid];
   
   const handleStatusChange = (status) => {
@@ -240,7 +361,12 @@ const AttendanceStatus = ({ employeeGuid, attendance, setAttendance }) => {
             sx={{ 
               padding: 0, 
               marginRight: 1,
-              color: currentStatus === value ? color : theme.palette.action.disabled
+              color: muiTheme.palette.mode === 'dark'
+                ? (currentStatus === value ? DARK_BORDER : 'rgba(103,201,157,.50)')
+                : (currentStatus === value ? color : muiTheme.palette.action.disabled),
+              '&.Mui-checked': {
+                color: muiTheme.palette.mode === 'dark' ? DARK_BORDER : color
+              }
             }}
           />
           <Typography variant="body2">{label}</Typography>
@@ -251,6 +377,7 @@ const AttendanceStatus = ({ employeeGuid, attendance, setAttendance }) => {
 };
 
 const AttendanceReport = ({ employees, attendance, setAttendance, loading, error }) => {
+  const muiTheme = useTheme();
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [bulkStatus, setBulkStatus] = useState('');
@@ -353,6 +480,38 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
               vertical: 'top',
               horizontal: 'right',
             }}
+            PaperProps={{
+              sx: {
+                backgroundColor: muiTheme.palette.mode === 'dark'
+                  ? surface(muiTheme, 'section', '#172b22')
+                  : muiTheme.palette.background.paper,
+                backgroundImage: 'none',
+                color: muiTheme.palette.text.primary,
+                border: muiTheme.palette.mode === 'dark'
+                  ? `1px solid ${DARK_BORDER}`
+                  : undefined,
+                boxShadow: muiTheme.palette.mode === 'dark'
+                  ? '0 12px 30px rgba(3,20,13,.35)'
+                  : undefined,
+                '& .MuiMenuItem-root': {
+                  backgroundColor: 'transparent !important',
+                  color: muiTheme.palette.text.primary,
+                  border: muiTheme.palette.mode === 'dark'
+                    ? '1px solid transparent'
+                    : undefined,
+                  borderRadius: 1
+                },
+                '& .MuiMenuItem-root.Mui-selected, & .MuiMenuItem-root:hover': {
+                  backgroundColor: 'transparent !important',
+                  borderColor: muiTheme.palette.mode === 'dark'
+                    ? DARK_BORDER
+                    : undefined,
+                  color: muiTheme.palette.mode === 'dark'
+                    ? DARK_BORDER
+                    : undefined
+                }
+              }
+            }}
           >
             <Box p={2} width={320}>
               <Typography variant="subtitle1" fontWeight={600} mb={2}>
@@ -366,6 +525,15 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
                     value={bulkStatus}
                     onChange={(e) => setBulkStatus(e.target.value)}
                     label="حالة الحضور"
+                    sx={{
+                      backgroundColor: muiTheme.palette.mode === 'dark'
+                        ? 'transparent'
+                        : undefined,
+                      color: muiTheme.palette.text.primary,
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: muiTheme.palette.mode === 'dark' ? `${DARK_BORDER} !important` : undefined
+                      }
+                    }}
                   >
                     {statusOptions.map(({ label, value }) => (
                       <MenuItem key={value} value={value}>{label}</MenuItem>
@@ -407,12 +575,15 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
           <CircularProgress color="primary" size={60} thickness={4} />
         </Box>
       ) : error ? (
-        <Box 
-          p={2} 
-          borderRadius={1} 
-          bgcolor="error.light" 
-          color="error.contrastText"
+        <Box
+          p={2}
+          borderRadius={1}
           textAlign="center"
+          sx={{
+            backgroundColor: muiTheme.palette.mode === 'dark' ? 'rgba(174,30,33,.16)' : muiTheme.palette.error.light,
+            color: muiTheme.palette.mode === 'dark' ? '#ffd9da' : muiTheme.palette.error.contrastText,
+            border: muiTheme.palette.mode === 'dark' ? `1px solid ${DARK_BORDER}` : undefined
+          }}
         >
           <Typography variant="body1">{error}</Typography>
         </Box>
@@ -452,7 +623,14 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
                     sx={{ 
                       '&:last-child td': { borderBottom: 0 },
                       '&:hover': {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.02)
+                        backgroundColor: muiTheme.palette.mode === 'dark'
+                          ? surface(muiTheme, 'hover', '#214333')
+                          : alpha(muiTheme.palette.primary.main, 0.02)
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: muiTheme.palette.mode === 'dark'
+                          ? `${surface(muiTheme, 'selected', '#28513f')} !important`
+                          : undefined
                       }
                     }}
                   >
@@ -491,6 +669,7 @@ const AttendanceReport = ({ employees, attendance, setAttendance, loading, error
 };
 
 const OrderedListInput = ({ title, items, setItems }) => {
+  const muiTheme = useTheme();
   const handleItemChange = (index, value) => {
     const newItems = [...items];
     newItems[index] = value;
@@ -517,15 +696,22 @@ const OrderedListInput = ({ title, items, setItems }) => {
         {items.map((item, index) => (
           <ListItem 
             key={index} 
-            sx={{ 
-              padding: 0,
+            sx={{
+              padding: muiTheme.palette.mode === 'dark' ? 1 : 0,
               marginBottom: 2,
               alignItems: 'flex-start',
-              transition: theme.transitions.create('background-color', {
-                duration: theme.transitions.duration.shortest
+              borderRadius: 2,
+              border: muiTheme.palette.mode === 'dark' ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
+              backgroundColor: muiTheme.palette.mode === 'dark'
+                ? surface(muiTheme, 'nested', '#1b3328')
+                : 'transparent',
+              transition: muiTheme.transitions.create('background-color', {
+                duration: muiTheme.transitions.duration.shortest
               }),
               '&:hover': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.02)
+                backgroundColor: muiTheme.palette.mode === 'dark'
+                  ? surface(muiTheme, 'hover', '#214333')
+                  : alpha(muiTheme.palette.primary.main, 0.02)
               }
             }}
           >
@@ -537,12 +723,15 @@ const OrderedListInput = ({ title, items, setItems }) => {
                 minWidth={36}
                 height={36}
                 borderRadius="50%"
-                bgcolor={alpha(theme.palette.primary.main, 0.1)}
-                color={theme.palette.primary.dark}
                 marginRight={2}
                 sx={{
                   fontWeight: 600,
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
+                  backgroundColor: muiTheme.palette.mode === 'dark'
+                    ? surface(muiTheme, 'selected', '#28513f')
+                    : alpha(muiTheme.palette.primary.main, 0.1),
+                  color: muiTheme.palette.mode === 'dark' ? '#edf8f3' : muiTheme.palette.primary.dark,
+                  border: muiTheme.palette.mode === 'dark' ? `1px solid ${DARK_BORDER}` : '1px solid transparent'
                 }}
               >
                 {index + 1}
@@ -557,15 +746,27 @@ const OrderedListInput = ({ title, items, setItems }) => {
                 sx={uiLayout.withUiSx({
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '8px',
+                    backgroundColor: muiTheme.palette.mode === 'dark'
+                      ? surface(muiTheme, 'nested', '#1b3328')
+                      : undefined,
+                    color: muiTheme.palette.text.primary,
                     '& fieldset': {
-                      borderColor: alpha(theme.palette.primary.main, 0.3)
+                      borderColor: muiTheme.palette.mode === 'dark'
+                        ? `${DARK_BORDER} !important`
+                        : alpha(muiTheme.palette.primary.main, 0.3)
                     },
                     '&:hover fieldset': {
-                      borderColor: alpha(theme.palette.primary.main, 0.5)
+                      borderColor: muiTheme.palette.mode === 'dark'
+                        ? `${DARK_BORDER} !important`
+                        : alpha(muiTheme.palette.primary.main, 0.5)
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: theme.palette.primary.main,
-                      boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
+                      borderColor: muiTheme.palette.mode === 'dark'
+                        ? `${DARK_BORDER} !important`
+                        : muiTheme.palette.primary.main,
+                      boxShadow: muiTheme.palette.mode === 'dark'
+                        ? '0 0 0 2px rgba(103,201,157,.16)'
+                        : `0 0 0 2px ${alpha(muiTheme.palette.primary.main, 0.2)}`
                     }
                   }
                 }, uiLayout.formFieldSx)}
@@ -578,9 +779,14 @@ const OrderedListInput = ({ title, items, setItems }) => {
                     size="small"
                     sx={{ 
                       marginRight: 1,
-                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                      '&:hover': { 
-                        backgroundColor: alpha(theme.palette.primary.main, 0.2) 
+                      backgroundColor: muiTheme.palette.mode === 'dark'
+                        ? surface(muiTheme, 'selected', '#28513f')
+                        : alpha(muiTheme.palette.primary.main, 0.1),
+                      border: muiTheme.palette.mode === 'dark' ? `1px solid ${DARK_BORDER}` : undefined,
+                      '&:hover': {
+                        backgroundColor: muiTheme.palette.mode === 'dark'
+                          ? surface(muiTheme, 'hover', '#214333')
+                          : alpha(muiTheme.palette.primary.main, 0.2)
                       }
                     }}
                   >
@@ -592,9 +798,14 @@ const OrderedListInput = ({ title, items, setItems }) => {
                   color="error"
                   size="small"
                   sx={{ 
-                    backgroundColor: alpha(theme.palette.error.main, 0.1),
-                    '&:hover': { 
-                      backgroundColor: alpha(theme.palette.error.main, 0.2) 
+                    backgroundColor: muiTheme.palette.mode === 'dark'
+                      ? 'rgba(244,67,54,.12)'
+                      : alpha(muiTheme.palette.error.main, 0.1),
+                    border: muiTheme.palette.mode === 'dark' ? `1px solid ${DARK_BORDER}` : undefined,
+                    '&:hover': {
+                      backgroundColor: muiTheme.palette.mode === 'dark'
+                        ? 'rgba(244,67,54,.20)'
+                        : alpha(muiTheme.palette.error.main, 0.2)
                     }
                   }}
                 >
@@ -622,6 +833,9 @@ const ReportPreview = ({
   submitLoading,
   onCancel
 }) => {
+  const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === 'dark';
+
   const getStatusLabel = (status) => {
     const statusMap = {
       present: 'حاضر',
@@ -644,24 +858,32 @@ const ReportPreview = ({
 
   const getStatusBgColor = (status) => {
     const bgColorMap = {
-      present: 'rgba(76, 175, 80, 0.1)',
-      absent: 'rgba(244, 67, 54, 0.1)',
-      permission: 'rgba(255, 152, 0, 0.1)',
-      leave: 'rgba(33, 150, 243, 0.1)'
+      present: isDark ? 'rgba(76, 175, 80, 0.18)' : 'rgba(76, 175, 80, 0.1)',
+      absent: isDark ? 'rgba(244, 67, 54, 0.18)' : 'rgba(244, 67, 54, 0.1)',
+      permission: isDark ? 'rgba(255, 152, 0, 0.18)' : 'rgba(255, 152, 0, 0.1)',
+      leave: isDark ? 'rgba(33, 150, 243, 0.18)' : 'rgba(33, 150, 243, 0.1)'
     };
     return bgColorMap[status] || 'rgba(158, 158, 158, 0.1)';
   };
 
   return (
-    <Box sx={uiLayout.withUiSx({ p: 3 }, uiLayout.pageHeaderSx)}>
+    <Box
+      sx={uiLayout.withUiSx({
+        p: { xs: 1, sm: 2, md: 3 },
+        minWidth: 0,
+        overflowX: 'hidden',
+        ...darkScopeSx(muiTheme)
+      }, uiLayout.pageHeaderSx)}
+    >
       {/* Header Section */}
       <Box sx={{ 
         textAlign: 'center',
         mb: 4,
         p: 3,
-        backgroundColor: '#f8fafc',
+        backgroundColor: isDark ? surface(muiTheme, 'section', '#172b22') : '#f8fafc',
         borderRadius: 2,
-        borderInlineStart: '4px solid #1976d2'
+        border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
+        borderInlineStart: isDark ? `4px solid ${DARK_BORDER}` : '4px solid #1976d2'
       }}>
         <Typography variant="h4" sx={{ 
           fontWeight: 700,
@@ -670,16 +892,18 @@ const ReportPreview = ({
         }}>
           معاينة التقرير النهائي
         </Typography>
-        <Typography variant="body1" sx={{ color: '#546e7a' }}>
+        <Typography variant="body1" sx={{ color: isDark ? muiTheme.palette.text.secondary : '#546e7a' }}>
           يرجى مراجعة البيانات قبل تأكيد الإرسال
         </Typography>
       </Box>
 
       {/* Attendance Section */}
-      <Card sx={{ 
+      <Card sx={{
         mb: 4,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-        border: '1px solid rgba(0,0,0,0.03)'
+        backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+        backgroundImage: 'none',
+        boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.22)' : '0 4px 20px rgba(0,0,0,0.05)',
+        border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)'
       }}>
         <CardContent>
           <Box sx={{ 
@@ -687,13 +911,14 @@ const ReportPreview = ({
             alignItems: 'center',
             mb: 3,
             pb: 2,
-            borderBottom: '1px solid rgba(0,0,0,0.05)'
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.05)'
           }}>
             <Box sx={{
               width: 40,
               height: 40,
               borderRadius: '50%',
-              backgroundColor: '#e3f2fd',
+              backgroundColor: isDark ? surface(muiTheme, 'nested', '#1b3328') : '#e3f2fd',
+              border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -713,7 +938,7 @@ const ReportPreview = ({
             <Table>
               <TableHead>
                 <TableRow sx={{ 
-                  backgroundColor: '#f5f9fd',
+                  backgroundColor: isDark ? surface(muiTheme, 'section', '#172b22') : '#f5f9fd',
                   '& th': {
                     fontWeight: 700,
                     color: '#1976d2'
@@ -730,7 +955,9 @@ const ReportPreview = ({
                     key={employee.guid}
                     sx={{ 
                       '&:last-child td': { borderBottom: 0 },
-                      '&:hover': { backgroundColor: '#f8fafc' }
+                      '&:hover': {
+                        backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : '#f8fafc'
+                      }
                     }}
                   >
                     <TableCell>
@@ -782,12 +1009,15 @@ const ReportPreview = ({
         <Grid item xs={12} md={6}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)',
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)',
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-2px)',
-              boxShadow: '0 6px 24px rgba(0,0,0,0.08)'
+              backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : undefined,
+              boxShadow: isDark ? '0 8px 26px rgba(3,20,13,.28)' : '0 6px 24px rgba(0,0,0,0.08)'
             }
           }}>
             <CardContent>
@@ -816,14 +1046,18 @@ const ReportPreview = ({
                     sx={{
                       p: '8px 0',
                       alignItems: 'flex-start',
-                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' }
+                      '&:hover': {
+                        backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : 'rgba(0,0,0,0.01)'
+                      }
                     }}
                   >
                     <Box sx={{
                       minWidth: 24,
                       height: 24,
                       borderRadius: '50%',
-                      backgroundColor: '#E8F5E9',
+                      backgroundColor: isDark ? 'transparent' : '#E8F5E9',
+                      border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+                      border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
                       color: '#2E7D32',
                       display: 'flex',
                       alignItems: 'center',
@@ -850,12 +1084,15 @@ const ReportPreview = ({
         <Grid item xs={12} md={6}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)',
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)',
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-2px)',
-              boxShadow: '0 6px 24px rgba(0,0,0,0.08)'
+              backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : undefined,
+              boxShadow: isDark ? '0 8px 26px rgba(3,20,13,.28)' : '0 6px 24px rgba(0,0,0,0.08)'
             }
           }}>
             <CardContent>
@@ -884,14 +1121,18 @@ const ReportPreview = ({
                     sx={{
                       p: '8px 0',
                       alignItems: 'flex-start',
-                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' }
+                      '&:hover': {
+                        backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : 'rgba(0,0,0,0.01)'
+                      }
                     }}
                   >
                     <Box sx={{
                       minWidth: 24,
                       height: 24,
                       borderRadius: '50%',
-                      backgroundColor: '#FFF3E0',
+                      backgroundColor: isDark ? 'transparent' : '#FFF3E0',
+                      border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+                      border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
                       color: '#E65100',
                       display: 'flex',
                       alignItems: 'center',
@@ -918,12 +1159,15 @@ const ReportPreview = ({
         <Grid item xs={12} md={6}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)',
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)',
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-2px)',
-              boxShadow: '0 6px 24px rgba(0,0,0,0.08)'
+              backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : undefined,
+              boxShadow: isDark ? '0 8px 26px rgba(3,20,13,.28)' : '0 6px 24px rgba(0,0,0,0.08)'
             }
           }}>
             <CardContent>
@@ -952,14 +1196,18 @@ const ReportPreview = ({
                     sx={{
                       p: '8px 0',
                       alignItems: 'flex-start',
-                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' }
+                      '&:hover': {
+                        backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : 'rgba(0,0,0,0.01)'
+                      }
                     }}
                   >
                     <Box sx={{
                       minWidth: 24,
                       height: 24,
                       borderRadius: '50%',
-                      backgroundColor: '#F3E5F5',
+                      backgroundColor: isDark ? 'transparent' : '#F3E5F5',
+                      border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+                      border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
                       color: '#6A1B9A',
                       display: 'flex',
                       alignItems: 'center',
@@ -986,12 +1234,15 @@ const ReportPreview = ({
         <Grid item xs={12} md={6}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)',
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)',
             transition: 'all 0.3s ease',
             '&:hover': {
               transform: 'translateY(-2px)',
-              boxShadow: '0 6px 24px rgba(0,0,0,0.08)'
+              backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : undefined,
+              boxShadow: isDark ? '0 8px 26px rgba(3,20,13,.28)' : '0 6px 24px rgba(0,0,0,0.08)'
             }
           }}>
             <CardContent>
@@ -1020,14 +1271,18 @@ const ReportPreview = ({
                     sx={{
                       p: '8px 0',
                       alignItems: 'flex-start',
-                      '&:hover': { backgroundColor: 'rgba(0,0,0,0.01)' }
+                      '&:hover': {
+                        backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : 'rgba(0,0,0,0.01)'
+                      }
                     }}
                   >
                     <Box sx={{
                       minWidth: 24,
                       height: 24,
                       borderRadius: '50%',
-                      backgroundColor: '#E3F2FD',
+                      backgroundColor: isDark ? 'transparent' : '#E3F2FD',
+                      border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+                      border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
                       color: '#1565C0',
                       display: 'flex',
                       alignItems: 'center',
@@ -1069,8 +1324,10 @@ const ReportPreview = ({
         <Grid item xs={12} md={4}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)'
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)'
           }}>
             <CardContent>
               <Typography variant="h6" sx={{ 
@@ -1105,8 +1362,10 @@ const ReportPreview = ({
         <Grid item xs={12} md={4}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)'
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)'
           }}>
             <CardContent>
               <Typography variant="h6" sx={{ 
@@ -1140,8 +1399,10 @@ const ReportPreview = ({
         <Grid item xs={12} md={4}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)'
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)'
           }}>
             <CardContent>
               <Typography variant="h6" sx={{ 
@@ -1191,8 +1452,10 @@ const ReportPreview = ({
         <Grid item xs={12} md={6}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)'
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)'
           }}>
             <CardContent>
               <Typography variant="h6" sx={{ 
@@ -1213,7 +1476,9 @@ const ReportPreview = ({
                       minWidth: 24,
                       height: 24,
                       borderRadius: '50%',
-                      backgroundColor: '#ffebee',
+                      backgroundColor: isDark ? 'transparent' : '#ffebee',
+                      border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+                      border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
                       color: '#f44336',
                       display: 'flex',
                       alignItems: 'center',
@@ -1240,8 +1505,10 @@ const ReportPreview = ({
         <Grid item xs={12} md={6}>
           <Card sx={{ 
             height: '100%',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            border: '1px solid rgba(0,0,0,0.03)'
+            backgroundColor: isDark ? surface(muiTheme, 'card', '#13251d') : undefined,
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 8px 24px rgba(3,20,13,.20)' : '0 4px 20px rgba(0,0,0,0.03)',
+            border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.03)'
           }}>
             <CardContent>
               <Typography variant="h6" sx={{ 
@@ -1262,7 +1529,9 @@ const ReportPreview = ({
                       minWidth: 24,
                       height: 24,
                       borderRadius: '50%',
-                      backgroundColor: '#e8f5e9',
+                      backgroundColor: isDark ? 'transparent' : '#e8f5e9',
+                      border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+                      border: isDark ? `1px solid ${DARK_BORDER}` : '1px solid transparent',
                       color: '#4caf50',
                       display: 'flex',
                       alignItems: 'center',
@@ -1293,7 +1562,7 @@ const ReportPreview = ({
         display: 'flex',
         justifyContent: 'flex-end',
         gap: 2,
-        borderTop: '1px solid rgba(0,0,0,0.1)'
+        borderTop: isDark ? `1px solid ${DARK_BORDER}` : '1px solid rgba(0,0,0,0.1)'
       }, uiLayout.actionBarSx)}>
         <Button
           variant="outlined"
@@ -1307,7 +1576,7 @@ const ReportPreview = ({
             borderWidth: '2px',
             '&:hover': {
               borderWidth: '2px',
-              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+              backgroundColor: isDark ? surface(muiTheme, 'hover', '#214333') : 'rgba(25, 118, 210, 0.04)'
             }
           }, uiLayout.buttonSx)}
         >
@@ -1351,6 +1620,7 @@ const steps = [
 ];
 
 const DailyFollowUpReport = () => {
+  const muiTheme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1551,25 +1821,29 @@ const renderStepContent = (step) => {
       <MainContainer>
         
         <ContentContainer>
-          <StyledPaper>
+          <StyledPaper sx={darkScopeSx(muiTheme)}>
             <Typography variant="h4" gutterBottom fontWeight="bold" color="primary" sx={{ mb: 3 }}>
               تقرير المتابعة اليومي
             </Typography>
             <Divider sx={{ 
               marginBottom: 4,
-              borderColor: alpha(theme.palette.primary.main, 0.2),
+              borderColor: muiTheme.palette.mode === 'dark' ? DARK_BORDER : alpha(muiTheme.palette.primary.main, 0.2),
               borderBottomWidth: 2
             }} />
             
             <Stepper 
               activeStep={activeStep} 
               alternativeLabel
-              sx={{ 
-                padding: 3,
-                backgroundColor: alpha(theme.palette.primary.main, 0.03),
-                borderRadius: theme.shape.borderRadius,
+              sx={{
+                padding: { xs: 1, sm: 2, md: 3 },
+                backgroundColor: muiTheme.palette.mode === 'dark'
+                  ? surface(muiTheme, 'section', '#172b22')
+                  : alpha(muiTheme.palette.primary.main, 0.03),
+                borderRadius: muiTheme.shape.borderRadius,
                 mb: 4,
-                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
+                border: muiTheme.palette.mode === 'dark'
+                  ? `1px solid ${DARK_BORDER}`
+                  : `1px solid ${alpha(muiTheme.palette.primary.main, 0.1)}`
               }}
             >
               {steps.map((label) => (
@@ -1586,17 +1860,17 @@ const renderStepContent = (step) => {
                         '&.Mui-completed': { 
                           color: 'success.main',
                           '& .MuiStepIcon-text': {
-                            fill: theme.palette.success.contrastText
+                            fill: muiTheme.palette.success.contrastText
                           }
                         },
                         '&.Mui-active': { 
                           color: 'primary.main',
                           '& .MuiStepIcon-text': {
-                            fill: theme.palette.primary.contrastText
+                            fill: muiTheme.palette.primary.contrastText
                           }
                         },
                         '&.Mui-disabled': {
-                          color: theme.palette.action.disabledBackground
+                          color: muiTheme.palette.action.disabledBackground
                         }
                       }
                     }}
@@ -1607,7 +1881,15 @@ const renderStepContent = (step) => {
               ))}
             </Stepper>
             
-            <Box mt={4} mb={6}>
+            <Box
+              mt={4}
+              mb={6}
+              sx={{
+                minWidth: 0,
+                overflowX: 'hidden',
+                ...darkScopeSx(muiTheme)
+              }}
+            >
               {renderStepContent(activeStep)}
             </Box>
             
@@ -1618,12 +1900,21 @@ const renderStepContent = (step) => {
               sx={{
                 position: 'sticky',
                 bottom: 20,
-                backgroundColor: 'background.paper',
-                padding: 2,
-                borderRadius: theme.shape.borderRadius,
-                boxShadow: '0px -4px 20px rgba(0, 0, 0, 0.08)',
-                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-                zIndex: 1
+                backgroundColor: muiTheme.palette.mode === 'dark'
+                  ? surface(muiTheme, 'section', '#172b22')
+                  : 'background.paper',
+                backgroundImage: 'none',
+                padding: { xs: 1, sm: 1.5, md: 2 },
+                borderRadius: muiTheme.shape.borderRadius,
+                boxShadow: muiTheme.palette.mode === 'dark'
+                  ? '0 -6px 22px rgba(3,20,13,.30)'
+                  : '0px -4px 20px rgba(0, 0, 0, 0.08)',
+                border: muiTheme.palette.mode === 'dark'
+                  ? `1px solid ${DARK_BORDER}`
+                  : `1px solid ${alpha(muiTheme.palette.primary.main, 0.1)}`,
+                zIndex: 1,
+                gap: 1,
+                flexWrap: 'wrap'
               }}
             >
               <Box>

@@ -1,4 +1,5 @@
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
+import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -36,6 +37,14 @@ const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const primaryLight = "#e6f3ee";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const whiteColor = "#fefefe";
 const softBg = "#fefefe";
 const textColor = "#1f2d3d";
@@ -156,17 +165,17 @@ const inputSx = {
       fontSize: "0.55rem"
     },
     "& fieldset": {
-      borderColor: primaryLight
+      borderColor: (theme) => theme.palette.mode === "dark" ? "#67C99D" : primaryLight
     },
     "&:hover fieldset": {
-      borderColor: primaryColor
+      borderColor: (theme) => theme.palette.mode === "dark" ? "#67C99D" : primaryColor
     },
     "&.Mui-focused fieldset": {
-      borderColor: primaryColor,
+      borderColor: (theme) => theme.palette.mode === "dark" ? "#67C99D" : primaryColor,
       borderWidth: 2
     },
     "&.Mui-disabled fieldset": {
-      borderColor: primaryLight
+      borderColor: (theme) => theme.palette.mode === "dark" ? "#67C99D" : primaryLight
     }
   },
   "& .MuiInputBase-input": {
@@ -201,16 +210,17 @@ const selectSx = {
 const selectMenuProps = {
   disablePortal: false,
   PaperProps: {
-    sx: {
+    sx: (theme) => ({
       maxHeight: 300,
       direction: "rtl",
       borderRadius: 2,
+      border: theme.palette.mode === "dark" ? "1px solid #67C99D" : undefined,
       "& .MuiMenuItem-root": {
         fontWeight: 800,
         textAlign: "right",
         justifyContent: "flex-start"
       }
-    }
+    })
   },
   MenuListProps: {
     sx: {
@@ -651,7 +661,7 @@ const AddStudentDialog = ({
             justifyContent: "center",
             p: isPhone ? 0 : isTablet ? 0.7 : 1.5
           }
-        }, uiLayout.dialogLayoutSx)}
+        }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         PaperProps={{
           sx: {
             width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -694,7 +704,7 @@ const AddStudentDialog = ({
         <DialogContent
           dividers
           sx={{
-            background: `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+            background: (theme) => theme.palette.mode === "dark" ? theme.palette.surfaces.page : `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
             p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
             overflowY: "auto",
             flex: 1,
@@ -736,8 +746,8 @@ const AddStudentDialog = ({
                     mb: isPhone ? 0.5 : isTablet ? 0.7 : 2,
                     p: isPhone ? 0.55 : isTablet ? 0.8 : 1.6,
                     borderRadius: isPhone ? 1.2 : isTablet ? 1.6 : 3,
-                    border: "1px solid #ffcc80",
-                    backgroundColor: "#fff8e1"
+                    border: (theme) => `1px solid ${theme.palette.mode === "dark" ? "rgba(237,137,54,.5)" : "#ffcc80"}`,
+                    backgroundColor: (theme) => theme.palette.mode === "dark" ? "rgba(237,137,54,.12)" : "#fff8e1"
                   }}
                 >
                   <Typography sx={{ fontWeight: 950, color: "#e65100" }}>
@@ -757,8 +767,8 @@ const AddStudentDialog = ({
                 sx={{
                   p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
                   borderRadius: isPhone ? 1.2 : isTablet ? 1.6 : 3,
-                  border: `1px solid ${primaryLight}`,
-                  backgroundColor: whiteColor,
+                  border: (theme) => theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+                  backgroundColor: (theme) => theme.palette.mode === "dark" ? theme.palette.surfaces.card : whiteColor,
                   boxShadow: "0 10px 30px rgba(5,117,70,0.08)"
                 }}
               >
@@ -1133,7 +1143,7 @@ const AddStudentDialog = ({
               borderRadius: 2,
               fontWeight: 900,
               color: accentColor,
-              borderColor: "#ffcdd2"
+              borderColor: pinColor("#ffcdd2")
             }, uiLayout.buttonSx)}
           >
             خروج

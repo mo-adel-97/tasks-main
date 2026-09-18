@@ -33,6 +33,14 @@ import "sweetalert2/dist/sweetalert2.min.css";
 
 const primaryColor = "#057546";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
 const primaryLight = "#e6f3ee";
 
 const emptyForm = {
@@ -628,17 +636,18 @@ const EditStudentDialog = ({
     }
   };
 
+  const isDark = theme.palette.mode === "dark";
   const fieldSx = {
     "& .MuiOutlinedInput-root": {
       borderRadius: 2.2,
-      backgroundColor: "#fff",
+      backgroundColor: isDark ? theme.palette.surfaces.input : "#fff",
       minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
       fontSize: isPhone ? "0.55rem" : isTablet ? "0.62rem" : undefined,
       "& fieldset": {
-        borderColor: primaryLight
+        borderColor: isDark ? "#67C99D" : primaryLight
       },
       "&:hover fieldset": {
-        borderColor: primaryColor
+        borderColor: isDark ? "#67C99D" : primaryColor
       },
       "&.Mui-focused fieldset": {
         borderColor: primaryColor
@@ -673,7 +682,7 @@ const EditStudentDialog = ({
           justifyContent: "center",
           p: isPhone ? 0 : isTablet ? 0.7 : 1.5
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "96vw" : undefined,
@@ -684,7 +693,8 @@ const EditStudentDialog = ({
           borderRadius: isPhone ? 0 : isTablet ? 2 : 3,
           overflow: "hidden",
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
+          border: isDark ? `1px solid #67C99D` : undefined
         }
       }}
     >
@@ -693,8 +703,8 @@ const EditStudentDialog = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: `1px solid ${primaryLight}`,
-          backgroundColor: "#fff",
+          borderBottom: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+          backgroundColor: isDark ? theme.palette.surfaces.card : "#fff",
           py: isPhone ? 0.55 : isTablet ? 0.8 : 1.5,
           px: isPhone ? 0.75 : isTablet ? 1.1 : 2,
           flexShrink: 0
@@ -715,7 +725,7 @@ const EditStudentDialog = ({
       <DialogContent
         sx={{
           p: isPhone ? 0.45 : isTablet ? 0.7 : 2.5,
-          backgroundColor: "#fbfdfc",
+          backgroundColor: isDark ? theme.palette.surfaces.page : "#fbfdfc",
           overflowY: "auto",
           flex: 1,
           minHeight: 0,
@@ -801,9 +811,9 @@ const EditStudentDialog = ({
                     px: isPhone ? 0.45 : isTablet ? 0.7 : 1.5,
                     display: "flex",
                     alignItems: "center",
-                    border: `1px solid ${primaryLight}`,
+                    border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
                     borderRadius: 2.2,
-                    backgroundColor: "#fff"
+                    backgroundColor: isDark ? theme.palette.surfaces.input : "#fff"
                   }}
                 >
                   <FormControlLabel
@@ -980,7 +990,7 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("studentType", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: "#fff" }}
+                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
                   >
                     <MenuItem value={0}>ذكر</MenuItem>
                     <MenuItem value={1}>أنثى</MenuItem>
@@ -999,7 +1009,7 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("studentNational", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: "#fff" }}
+                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
                   >
                     <MenuItem value={0}>مواطن</MenuItem>
                     <MenuItem value={1}>أجنبي</MenuItem>
@@ -1018,7 +1028,7 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("studyType", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: "#fff" }}
+                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
                   >
                     <MenuItem value={0}>حضوري</MenuItem>
                     <MenuItem value={1}>عن بعد</MenuItem>
@@ -1037,7 +1047,7 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("customerType", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: "#fff" }}
+                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
                   >
                     <MenuItem value={0}>فرد</MenuItem>
                     <MenuItem value={1}>شركة</MenuItem>

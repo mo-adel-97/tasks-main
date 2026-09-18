@@ -22,7 +22,8 @@ import {
   Stack,
   TextField,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
@@ -47,6 +48,25 @@ const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";
 const soft = "#f7fbf9";
+const DARK_BORDER = "#67C99D";
+
+const getUiColors = (theme) => {
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+
+  return {
+    isDark,
+    page: isDark ? (theme.palette.background.default || "#0b1712") : soft,
+    card: isDark ? (surfaces.card || "#10251c") : "#ffffff",
+    section: isDark ? (surfaces.section || "#132b21") : "#f9fcfa",
+    nested: isDark ? (surfaces.nested || "#173428") : "#f7fbf9",
+    hover: isDark ? (surfaces.hover || "#1d4031") : "#edf8f3",
+    selected: isDark ? (surfaces.selected || "#22503c") : "#e4f4ec",
+    text: isDark ? (theme.palette.text.primary || "#f3fbf7") : "#17372b",
+    muted: isDark ? (theme.palette.text.secondary || "#c5d8cf") : "#667b71",
+    border: isDark ? DARK_BORDER : border
+  };
+};
 
 /*
  * مهم جدًا:
@@ -117,6 +137,8 @@ const toNumber = (v) => {
 };
 
 function BranchDialog({ open, rows, onClose, onPick }) {
+  const theme = useTheme();
+  const uiColors = getUiColors(theme);
   const [q, setQ] = useState("");
 
   useEffect(() => {
@@ -132,19 +154,59 @@ function BranchDialog({ open, rows, onClose, onPick }) {
   }, [q, rows]);
 
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog
+      sx={[
+        uiLayout.dialogLayoutSx,
+        {
+          "& .MuiDialog-paper": {
+            backgroundImage: "none",
+            bgcolor: uiColors.card,
+            color: uiColors.text,
+            border: `1px solid ${uiColors.border}`
+          }
+        }
+      ]}
       open={open}
       onClose={onClose}
       fullWidth
       maxWidth="sm"
       dir="rtl"
-      PaperProps={{ sx: { borderRadius: { xs: 1.4, sm: 2.4 }, m: { xs: 0.7, sm: 2 }, maxHeight: "90vh" } }}
+      PaperProps={{
+        sx: {
+          borderRadius: { xs: 1.4, sm: 2.4 },
+          m: { xs: 0.7, sm: 2 },
+          maxHeight: "90vh",
+          bgcolor: uiColors.card,
+          color: uiColors.text,
+          border: `1px solid ${uiColors.border}`,
+          backgroundImage: "none"
+        }
+      }}
     >
-      <DialogTitle sx={{ fontWeight: 900, fontSize: { xs: 15, sm: 20 }, py: 1 }}>
+      <DialogTitle
+        sx={{
+          fontWeight: 900,
+          fontSize: { xs: 15, sm: 20 },
+          py: 1,
+          bgcolor: uiColors.section,
+          color: uiColors.text,
+          border: `1px solid ${uiColors.border}`
+        }}
+      >
         قائمة الفروع
       </DialogTitle>
-      <DialogContent dividers sx={{ p: { xs: 0.7, sm: 1.2 } }}>
-        <TextField InputLabelProps={{ shrink: true }}
+      <DialogContent
+        dividers
+        sx={{
+          p: { xs: 0.9, sm: 1.35 },
+          bgcolor: uiColors.card,
+          color: uiColors.text,
+          borderColor: uiColors.border,
+          border: `1px solid ${uiColors.border}`
+        }}
+      >
+        <TextField
+          InputLabelProps={{ shrink: true }}
           fullWidth
           autoFocus
           size="small"
@@ -152,21 +214,37 @@ function BranchDialog({ open, rows, onClose, onPick }) {
           onChange={(e) => setQ(e.target.value)}
           placeholder="بحث بالكود أو اسم الفرع..."
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
-          sx={uiLayout.withUiSx({ mb: 0.7, "& input": { fontSize: { xs: 12, sm: 13 } } }, uiLayout.formFieldSx)}
+          sx={[
+            uiLayout.formFieldSx,
+            {
+              mb: 1.1,
+              "& input": { fontSize: { xs: 12, sm: 13 } },
+              "& .MuiOutlinedInput-root": {
+                bgcolor: uiColors.nested,
+                color: uiColors.text,
+                "& fieldset": { borderColor: uiColors.border },
+                "&:hover fieldset": { borderColor: uiColors.border },
+                "&.Mui-focused fieldset": { borderColor: uiColors.border }
+              },
+              "& .MuiInputAdornment-root .MuiSvgIcon-root": { color: primary }
+            }
+          ]}
         />
 
-        <Box sx={{ display: "grid", gap: 0.45 }}>
+        <Box sx={{ display: "grid", gap: { xs: 0.7, sm: 0.9 } }}>
           {filtered.map((row, index) => (
             <Paper
               key={`${row.guid}-${index}`}
               variant="outlined"
               onDoubleClick={() => onPick(row)}
               sx={{
-                px: { xs: 0.7, sm: 1 },
-                py: { xs: 0.5, sm: 0.7 },
+                px: { xs: 0.8, sm: 1.05 },
+                py: { xs: 0.65, sm: 0.8 },
                 cursor: "pointer",
-                borderColor: border,
-                "&:hover": { bgcolor: "#edf8f3", borderColor: primary }
+                bgcolor: uiColors.nested,
+                color: uiColors.text,
+                border: `1px solid ${uiColors.border}`,
+                "&:hover": { bgcolor: uiColors.hover, borderColor: uiColors.border }
               }}
             >
               <Box sx={{ display: "grid", gridTemplateColumns: "55px minmax(0,1fr) 55px", gap: 0.5, alignItems: "center" }}>
@@ -180,26 +258,84 @@ function BranchDialog({ open, rows, onClose, onPick }) {
           {!filtered.length && <Alert severity="info">لا توجد فروع مطابقة.</Alert>}
         </Box>
       </DialogContent>
-      <DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={onClose}>إغلاق</Button></DialogActions>
+      <DialogActions
+        sx={[
+          uiLayout.dialogActionsSx,
+          { bgcolor: uiColors.section, border: `1px solid ${uiColors.border}`, p: { xs: 0.8, sm: 1 } }
+        ]}
+      >
+        <Button
+          sx={[
+            uiLayout.buttonSx,
+            { border: `1px solid ${uiColors.border}`, color: uiColors.text, bgcolor: uiColors.nested }
+          ]}
+          onClick={onClose}
+        >
+          إغلاق
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }
 
 function TrainerLookupDialog({ open, rows, loading, q, setQ, onClose, onPick }) {
+  const theme = useTheme();
+  const uiColors = getUiColors(theme);
+
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog
+      sx={[
+        uiLayout.dialogLayoutSx,
+        {
+          "& .MuiDialog-paper": {
+            backgroundImage: "none",
+            bgcolor: uiColors.card,
+            color: uiColors.text,
+            border: `1px solid ${uiColors.border}`
+          }
+        }
+      ]}
       open={open}
       onClose={onClose}
       fullWidth
       maxWidth="md"
       dir="rtl"
-      PaperProps={{ sx: { borderRadius: { xs: 1.4, sm: 2.4 }, m: { xs: 0.7, sm: 2 }, maxHeight: "92vh" } }}
+      PaperProps={{
+        sx: {
+          borderRadius: { xs: 1.4, sm: 2.4 },
+          m: { xs: 0.7, sm: 2 },
+          maxHeight: "92vh",
+          bgcolor: uiColors.card,
+          color: uiColors.text,
+          border: `1px solid ${uiColors.border}`,
+          backgroundImage: "none"
+        }
+      }}
     >
-      <DialogTitle sx={{ fontWeight: 900, fontSize: { xs: 15, sm: 20 }, py: 1 }}>
+      <DialogTitle
+        sx={{
+          fontWeight: 900,
+          fontSize: { xs: 15, sm: 20 },
+          py: 1,
+          bgcolor: uiColors.section,
+          color: uiColors.text,
+          border: `1px solid ${uiColors.border}`
+        }}
+      >
         قائمة المدربين
       </DialogTitle>
-      <DialogContent dividers sx={{ p: { xs: 0.7, sm: 1.2 } }}>
-        <TextField InputLabelProps={{ shrink: true }}
+      <DialogContent
+        dividers
+        sx={{
+          p: { xs: 0.9, sm: 1.35 },
+          bgcolor: uiColors.card,
+          color: uiColors.text,
+          borderColor: uiColors.border,
+          border: `1px solid ${uiColors.border}`
+        }}
+      >
+        <TextField
+          InputLabelProps={{ shrink: true }}
           autoFocus
           fullWidth
           size="small"
@@ -207,19 +343,40 @@ function TrainerLookupDialog({ open, rows, loading, q, setQ, onClose, onPick }) 
           onChange={(e) => setQ(e.target.value)}
           placeholder="بحث باسم المدرب..."
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
-          sx={uiLayout.withUiSx({ mb: 0.7 }, uiLayout.formFieldSx)}
+          sx={[
+            uiLayout.formFieldSx,
+            {
+              mb: 1.1,
+              "& .MuiOutlinedInput-root": {
+                bgcolor: uiColors.nested,
+                color: uiColors.text,
+                "& fieldset": { borderColor: uiColors.border },
+                "&:hover fieldset": { borderColor: uiColors.border },
+                "&.Mui-focused fieldset": { borderColor: uiColors.border }
+              },
+              "& .MuiInputAdornment-root .MuiSvgIcon-root": { color: primary }
+            }
+          ]}
         />
 
         {loading ? (
-          <Box sx={{ py: 4, textAlign: "center" }}><CircularProgress size={26} /></Box>
+          <Box sx={{ py: 4, textAlign: "center", color: uiColors.text }}><CircularProgress size={26} /></Box>
         ) : (
-          <Box sx={{ display: "grid", gap: 0.45 }}>
+          <Box sx={{ display: "grid", gap: { xs: 0.7, sm: 0.9 } }}>
             {rows.map((row, index) => (
               <Paper
                 key={`${row.guid || row.code}-${index}`}
                 variant="outlined"
                 onDoubleClick={() => onPick(row)}
-                sx={{ px: 0.8, py: 0.55, cursor: "pointer", borderColor: border, "&:hover": { bgcolor: "#eef8f3", borderColor: primary } }}
+                sx={{
+                  px: { xs: 0.8, sm: 1 },
+                  py: { xs: 0.65, sm: 0.8 },
+                  cursor: "pointer",
+                  bgcolor: uiColors.nested,
+                  color: uiColors.text,
+                  border: `1px solid ${uiColors.border}`,
+                  "&:hover": { bgcolor: uiColors.hover, borderColor: uiColors.border }
+                }}
               >
                 <Box sx={{
                   display: "grid",
@@ -238,12 +395,30 @@ function TrainerLookupDialog({ open, rows, loading, q, setQ, onClose, onPick }) 
           </Box>
         )}
       </DialogContent>
-      <DialogActions sx={uiLayout.dialogActionsSx}><Button sx={uiLayout.buttonSx} onClick={onClose}>إغلاق</Button></DialogActions>
+      <DialogActions
+        sx={[
+          uiLayout.dialogActionsSx,
+          { bgcolor: uiColors.section, border: `1px solid ${uiColors.border}`, p: { xs: 0.8, sm: 1 } }
+        ]}
+      >
+        <Button
+          sx={[
+            uiLayout.buttonSx,
+            { border: `1px solid ${uiColors.border}`, color: uiColors.text, bgcolor: uiColors.nested }
+          ]}
+          onClick={onClose}
+        >
+          إغلاق
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }
 
 export default function TrainerManagement() {
+  const theme = useTheme();
+  const uiColors = getUiColors(theme);
+  const isDark = uiColors.isDark;
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
   const userGuid = useMemo(() => getUserGuid(), []);
 
@@ -493,43 +668,206 @@ export default function TrainerManagement() {
   }
 
   const fieldSx = {
-    "& .MuiInputBase-root": { minHeight: { xs: 33, sm: 38 } },
-    "& .MuiInputBase-input": { fontSize: { xs: 10.6, sm: 13 }, py: { xs: 0.45, sm: 0.7 } },
-    "& .MuiInputLabel-root": { fontSize: { xs: 9.3, sm: 12 } }
+    width: "100%",
+    "& .MuiInputBase-root": {
+      minHeight: { xs: 38, sm: 42 },
+      borderRadius: 1.8,
+      bgcolor: uiColors.nested,
+      color: uiColors.text,
+      backgroundImage: "none"
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": { borderColor: uiColors.border, borderWidth: "1px" },
+      "&:hover fieldset": { borderColor: uiColors.border },
+      "&.Mui-focused fieldset": { borderColor: uiColors.border, borderWidth: "1px" }
+    },
+    "& .MuiInputBase-input": {
+      fontSize: { xs: 11.5, sm: 13 },
+      py: { xs: 0.65, sm: 0.8 },
+      color: uiColors.text
+    },
+    "& .MuiInputBase-root.MuiInputBase-multiline": {
+      alignItems: "flex-start",
+      py: 0.45
+    },
+    "& .MuiInputLabel-root": {
+      fontSize: { xs: 10.5, sm: 12 },
+      color: uiColors.muted,
+      bgcolor: uiColors.section,
+      px: 0.35,
+      borderRadius: 0.5
+    },
+    "& .MuiInputLabel-root.Mui-focused": { color: isDark ? DARK_BORDER : primary },
+    "& .MuiFormHelperText-root": { color: uiColors.muted, mx: 0.35, mt: 0.45 },
+    "& .MuiSvgIcon-root": { color: isDark ? DARK_BORDER : primary },
+    "& .MuiSelect-select": { textAlign: "right" }
+  };
+
+  const selectMenuProps = {
+    PaperProps: {
+      sx: {
+        maxHeight: 240,
+        bgcolor: uiColors.card,
+        color: uiColors.text,
+        border: `1px solid ${uiColors.border}`,
+        backgroundImage: "none",
+        "& .MuiMenuItem-root": {
+          fontFamily: "Cairo",
+          fontSize: { xs: 11.5, sm: 13 },
+          minHeight: { xs: 34, sm: 38 },
+          borderBottom: isDark ? `1px solid ${uiColors.border}` : "none",
+          "&:hover": { bgcolor: uiColors.hover },
+          "&.Mui-selected": { bgcolor: uiColors.selected },
+          "&.Mui-selected:hover": { bgcolor: uiColors.selected }
+        }
+      }
+    }
   };
 
   const page = (
-    <Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: soft, p: { xs: 0.35, sm: 0.8 }, overflowX: "hidden" }}>
-      <Paper elevation={0} sx={{ border: `1px solid ${border}`, borderRadius: { xs: 1.1, sm: 2 }, overflow: "hidden" }}>
-        <Box sx={uiLayout.withUiSx({ bgcolor: primaryDark, color: "#fff", px: { xs: 0.65, sm: 1.4 }, py: { xs: 0.55, sm: 0.9 }, display: "flex", alignItems: "center", gap: 0.55 }, uiLayout.mobileHeaderSx)}>
+    <Box
+      dir="rtl"
+      sx={{
+        minHeight: "100vh",
+        bgcolor: uiColors.page,
+        color: uiColors.text,
+        p: { xs: 0.55, sm: 1 },
+        overflowX: "hidden"
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          bgcolor: uiColors.card,
+          color: uiColors.text,
+          border: `1px solid ${uiColors.border}`,
+          borderRadius: { xs: 1.4, sm: 2.2 },
+          overflow: "hidden",
+          backgroundImage: "none"
+        }}
+      >
+        <Box
+          sx={[
+            uiLayout.mobileHeaderSx,
+            {
+              bgcolor: isDark ? uiColors.section : primaryDark,
+              color: "#fff",
+              px: { xs: 0.8, sm: 1.5 },
+              py: { xs: 0.7, sm: 1 },
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 0.65, sm: 0.8 },
+              border: `1px solid ${uiColors.border}`
+            }
+          ]}
+        >
           {!isDesktop && <IconButton onClick={() => setMobileSidebarOpen(true)} sx={{ color: "#fff", p: 0.3 }}><MenuRoundedIcon /></IconButton>}
           <SchoolIcon />
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography sx={{ fontWeight: 900, fontSize: { xs: 14.5, sm: 20 } }}>إضافة مدرب</Typography>
             <Typography sx={{ opacity: 0.9, fontSize: { xs: 12, sm: 12 } }}>ملف — بيانات المدرب والقسم التدريبي والمقررات</Typography>
           </Box>
-          <Chip label={isEdit ? `تعديل #${model.code}` : "مدرب جديد"} size="small" sx={{ bgcolor: "#fff", color: primaryDark, fontWeight: 900, fontSize: { xs: 12, sm: 12 } }} />
+          <Chip
+            label={isEdit ? `تعديل #${model.code}` : "مدرب جديد"}
+            size="small"
+            sx={{
+              bgcolor: isDark ? uiColors.nested : "#fff",
+              color: isDark ? "#fff" : primaryDark,
+              border: `1px solid ${uiColors.border}`,
+              fontWeight: 900,
+              fontSize: { xs: 12, sm: 12 }
+            }}
+          />
         </Box>
 
-        <Box sx={{ p: { xs: 0.55, sm: 0.9 }, borderBottom: `1px solid ${border}` }}>
-          <Box sx={uiLayout.withUiSx({ display: "grid", gridTemplateColumns: { xs: "repeat(3,minmax(0,1fr))", sm: "repeat(3,max-content)" }, gap: 0.45 }, uiLayout.actionBarSx)}>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={newTrainer} disabled={!ops.canAdd && !isEdit} sx={uiLayout.withUiSx({ bgcolor: "#1976d2", fontWeight: 900, minWidth: 0, fontSize: { xs: 12, sm: 12.5 } }, uiLayout.buttonSx)}>جديد</Button>
-            <Button variant="outlined" startIcon={<SearchIcon />} onClick={openTrainerLookup} disabled={!ops.canFind} sx={uiLayout.withUiSx({ fontWeight: 900, minWidth: 0, fontSize: { xs: 12, sm: 12.5 } }, uiLayout.buttonSx)}>بحث</Button>
-            <Button variant="contained" color="success" startIcon={saving ? <CircularProgress size={14} color="inherit" /> : <SaveIcon />} onClick={save} disabled={saving || loading || (isEdit ? !ops.canEdit : !ops.canAdd)} sx={uiLayout.withUiSx({ fontWeight: 900, minWidth: 0, fontSize: { xs: 12, sm: 12.5 } }, uiLayout.buttonSx)}>{isEdit ? "حفظ التعديل" : "حفظ"}</Button>
+        <Box
+          sx={{
+            p: { xs: 0.75, sm: 1 },
+            border: `1px solid ${uiColors.border}`,
+            bgcolor: uiColors.section
+          }}
+        >
+          <Box
+            sx={[
+              uiLayout.actionBarSx,
+              {
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(3,minmax(0,1fr))", sm: "repeat(3,max-content)" },
+                gap: { xs: 0.65, sm: 0.8 }
+              }
+            ]}
+          >
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={newTrainer}
+              disabled={!ops.canAdd && !isEdit}
+              sx={[uiLayout.buttonSx, { bgcolor: primary, border: `1px solid ${uiColors.border}`, fontWeight: 900, minWidth: 0, fontSize: { xs: 12, sm: 12.5 } }]}
+            >
+              جديد
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<SearchIcon />}
+              onClick={openTrainerLookup}
+              disabled={!ops.canFind}
+              sx={[uiLayout.buttonSx, { bgcolor: uiColors.nested, color: uiColors.text, border: `1px solid ${uiColors.border}`, fontWeight: 900, minWidth: 0, fontSize: { xs: 12, sm: 12.5 } }]}
+            >
+              بحث
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={saving ? <CircularProgress size={14} color="inherit" /> : <SaveIcon />}
+              onClick={save}
+              disabled={saving || loading || (isEdit ? !ops.canEdit : !ops.canAdd)}
+              sx={[uiLayout.buttonSx, { border: `1px solid ${uiColors.border}`, fontWeight: 900, minWidth: 0, fontSize: { xs: 12, sm: 12.5 } }]}
+            >
+              {isEdit ? "حفظ التعديل" : "حفظ"}
+            </Button>
           </Box>
         </Box>
 
-        {loading && <Box sx={{ px: 1, py: 0.5, display: "flex", gap: 0.5, alignItems: "center" }}><CircularProgress size={15} /><Typography sx={{ fontSize: 12 }}>جاري التحميل...</Typography></Box>}
+        {loading && (
+          <Box
+            sx={{
+              mx: { xs: 0.8, sm: 1.1 },
+              mt: { xs: 0.8, sm: 1 },
+              px: 1,
+              py: 0.65,
+              display: "flex",
+              gap: 0.65,
+              alignItems: "center",
+              bgcolor: uiColors.nested,
+              color: uiColors.text,
+              border: `1px solid ${uiColors.border}`,
+              borderRadius: 1.5
+            }}
+          >
+            <CircularProgress size={15} />
+            <Typography sx={{ fontSize: 12 }}>جاري التحميل...</Typography>
+          </Box>
+        )}
 
-        <Box sx={{ p: { xs: 0.55, sm: 1 } }}>
-          <Box sx={uiLayout.withUiSx({
-            display: "grid",
-            gridTemplateColumns: { xs: "repeat(2,minmax(0,1fr))", sm: "repeat(4,minmax(0,1fr))" },
-            gap: { xs: 0.55, sm: 0.8 },
-            "& .MuiTextField-root": fieldSx
-          }, uiLayout.formSectionSx)}>
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="كود" size="small" value={model.code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="اسم المدرب" size="small" value={model.name} onChange={(e) => setField("name", e.target.value)} required />
+        <Box sx={{ p: { xs: 0.8, sm: 1.15 } }}>
+          <Box
+            sx={[
+              uiLayout.formSectionSx,
+              {
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(2,minmax(0,1fr))", sm: "repeat(4,minmax(0,1fr))" },
+                columnGap: { xs: 0.9, sm: 1.15, md: 1.25 },
+                rowGap: { xs: 1.15, sm: 1.35, md: 1.45 },
+                p: { xs: 0.75, sm: 1.1 },
+                bgcolor: uiColors.section,
+                border: `1px solid ${uiColors.border}`,
+                borderRadius: { xs: 1.4, sm: 2 },
+                "& .MuiTextField-root": fieldSx
+              }
+            ]}
+          >
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="كود" size="small" value={model.code} InputProps={{ readOnly: true }}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="اسم المدرب" size="small" value={model.name} onChange={(e) => setField("name", e.target.value)} required />
 
             <TextField InputLabelProps={{ shrink: true }}
               label="الفرع"
@@ -537,30 +875,17 @@ export default function TrainerManagement() {
               value={model.branchName}
               onClick={() => setBranchOpen(true)}
               InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start"><LocationOnIcon fontSize="small" /></InputAdornment> }}
-              sx={uiLayout.withUiSx({ cursor: "pointer" }, uiLayout.formFieldSx)}
+              sx={[uiLayout.formFieldSx, fieldSx, { cursor: "pointer" }]}
             />
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="رقم الهوية" size="small" value={model.nationalId} onChange={(e) => setField("nationalId", e.target.value)} required  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="رقم الهوية" size="small" value={model.nationalId} onChange={(e) => setField("nationalId", e.target.value)} required  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }}
               select
               label="الجنسية"
               size="small"
               value={model.nationalName}
               onChange={(e) => setField("nationalName", e.target.value)}
-              SelectProps={{
-                MenuProps: {
-                  PaperProps: {
-                    sx: {
-                      maxHeight: 220,
-                      "& .MuiMenuItem-root": {
-                        fontFamily: "Cairo",
-                        fontSize: { xs: 11, sm: 13 },
-                        minHeight: { xs: 32, sm: 36 }
-                      }
-                    }
-                  }
-                }
-              }}
+              SelectProps={{ MenuProps: selectMenuProps }}
             >
               <MenuItem value="">-- اختر --</MenuItem>
               {NATIONALITIES.map((name) => (
@@ -569,66 +894,94 @@ export default function TrainerManagement() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="الجوال" size="small" value={model.mob} onChange={(e) => setField("mob", e.target.value)} required />
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="الهاتف" size="small" value={model.tel} onChange={(e) => setField("tel", e.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="الإيميل" size="small" value={model.email} onChange={(e) => setField("email", e.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="الجوال" size="small" value={model.mob} onChange={(e) => setField("mob", e.target.value)} required />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="الهاتف" size="small" value={model.tel} onChange={(e) => setField("tel", e.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="الإيميل" size="small" value={model.email} onChange={(e) => setField("email", e.target.value)}  inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }}
               select
               label="القسم التدريبي"
               size="small"
               value={model.trainerDepart}
               onChange={(e) => setField("trainerDepart", Number(e.target.value))}
+              SelectProps={{ MenuProps: selectMenuProps }}
             >
               <MenuItem value={-1}>-- اختر --</MenuItem>
               {TRAINER_DEPARTMENTS.map((item) => <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>)}
             </TextField>
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }}
               select
               label="المقررات"
               size="small"
               value={model.bookType}
               onChange={(e) => setField("bookType", Number(e.target.value))}
+              SelectProps={{ MenuProps: selectMenuProps }}
             >
               <MenuItem value={-1}>-- اختر --</MenuItem>
               {BOOK_TYPES.map((item) => <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>)}
             </TextField>
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="ساعات العمل اليومية" type="number" size="small" value={model.dailyTime} onChange={(e) => setField("dailyTime", e.target.value)} inputProps={{ min: 0, step: 0.5 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} label="ساعات العمل الأسبوعية" type="number" size="small" value={model.weekTime} onChange={(e) => setField("weekTime", e.target.value)} inputProps={{ min: 0, step: 0.5 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="ساعات العمل اليومية" type="number" size="small" value={model.dailyTime} onChange={(e) => setField("dailyTime", e.target.value)} inputProps={{ min: 0, step: 0.5 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+            <TextField sx={[uiLayout.formFieldSx, fieldSx]} InputLabelProps={{ shrink: true }} label="ساعات العمل الأسبوعية" type="number" size="small" value={model.weekTime} onChange={(e) => setField("weekTime", e.target.value)} inputProps={{ min: 0, step: 0.5 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField InputLabelProps={{ shrink: true }} label="العنوان" size="small" value={model.address} onChange={(e) => setField("address", e.target.value)} sx={uiLayout.withUiSx({ gridColumn: { xs: "1 / -1", sm: "span 2" } }, uiLayout.formFieldSx)} />
+            <TextField InputLabelProps={{ shrink: true }} label="العنوان" size="small" value={model.address} onChange={(e) => setField("address", e.target.value)} sx={[uiLayout.formFieldSx, fieldSx, { gridColumn: { xs: "1 / -1", sm: "span 2" } }]} />
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 0.3, minHeight: 34 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                px: 0.75,
+                py: 0.35,
+                minHeight: 42,
+                bgcolor: uiColors.nested,
+                border: `1px solid ${uiColors.border}`,
+                borderRadius: 1.6
+              }}
+            >
               <FormControlLabel
+                sx={{ m: 0 }}
                 control={<Checkbox checked={model.isUse} onChange={(e) => setField("isUse", e.target.checked)} size="small" />}
                 label={<Typography sx={{ fontSize: { xs: 12, sm: 12.5 }, fontWeight: 800 }}>نشط</Typography>}
               />
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", px: 0.3, minHeight: 34, gridColumn: { xs: "1 / -1", sm: "span 2" } }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                px: 0.75,
+                py: 0.35,
+                minHeight: 42,
+                gridColumn: { xs: "1 / -1", sm: "span 2" },
+                bgcolor: uiColors.nested,
+                border: `1px solid ${uiColors.border}`,
+                borderRadius: 1.6
+              }}
+            >
               <FormControlLabel
+                sx={{ m: 0 }}
                 control={<Checkbox checked={model.useMainAllow} onChange={(e) => setField("useMainAllow", e.target.checked)} size="small" />}
-                label={<Typography sx={{ color: "#d32f2f", fontSize: { xs: 12, sm: 12.5 }, fontWeight: 900 }}>يسمح للمدرب بتدريب أي مقرر من نوع مواد عامة</Typography>}
+                label={<Typography sx={{ color: isDark ? "#ffb4ab" : "#d32f2f", fontSize: { xs: 12, sm: 12.5 }, fontWeight: 900 }}>يسمح للمدرب بتدريب أي مقرر من نوع مواد عامة</Typography>}
               />
             </Box>
 
             <TextField InputLabelProps={{ shrink: true }}
               label="المؤهل العلمي"
               multiline
-              minRows={3}
+              minRows={4}
               value={model.eduction}
               onChange={(e) => setField("eduction", e.target.value)}
-              sx={uiLayout.withUiSx({ gridColumn: { xs: "1 / -1", sm: "span 2" } }, uiLayout.formFieldSx)}
+              sx={[uiLayout.formFieldSx, fieldSx, { gridColumn: { xs: "1 / -1", sm: "span 2" } }]}
             />
             <TextField InputLabelProps={{ shrink: true }}
               label="مؤهلات أخرى"
               multiline
-              minRows={3}
+              minRows={4}
               value={model.otherEduction}
               onChange={(e) => setField("otherEduction", e.target.value)}
-              sx={uiLayout.withUiSx({ gridColumn: { xs: "1 / -1", sm: "span 2" } }, uiLayout.formFieldSx)}
+              sx={[uiLayout.formFieldSx, fieldSx, { gridColumn: { xs: "1 / -1", sm: "span 2" } }]}
             />
           </Box>
         </Box>
@@ -637,7 +990,7 @@ export default function TrainerManagement() {
   );
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100vh", bgcolor: soft }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100vh", bgcolor: uiColors.page, color: uiColors.text }}>
       {isDesktop ? (
         <>
           

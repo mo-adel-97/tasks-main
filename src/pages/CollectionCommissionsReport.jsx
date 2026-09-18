@@ -944,11 +944,11 @@ const CollectionCommissionsReport = () => {
     <NavigationShell variant="standard" ><Box
       sx={{
         minHeight: "100vh",
-        background: "#f5f8f7",
+        background: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f5f8f7",
         direction: "rtl"
       }}
     >
-      
+
 
       <PageContainer
         component="main"
@@ -1431,7 +1431,7 @@ const CollectionCommissionsReport = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: "#f5f8f7",
+        background: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f5f8f7",
         direction: "rtl"
       }}
     >

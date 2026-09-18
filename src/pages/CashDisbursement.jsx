@@ -618,7 +618,7 @@ export default function CashDisbursement() {
   if (!authorized) return <Box sx={{ p: 2 }}><Alert severity="error">لا توجد لديك صلاحية سند صرف ضمن الحسابات العامة.</Alert></Box>;
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: soft, fontFamily: '"Cairo","Tahoma",sans-serif' }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft, fontFamily: '"Cairo","Tahoma",sans-serif' }}>
       {!isDesktop && <AppBar position="sticky" sx={{ bgcolor: primary }}><Toolbar variant="dense"><IconButton color="inherit" onClick={() => setMobileSidebarOpen(true)}><MenuRoundedIcon /></IconButton><Typography sx={{ flex: 1, fontWeight: 900 }}>سند صرف</Typography><Chip size="small" label={code ? `سند ${code}` : "جديد"} sx={{ bgcolor: "white", color: primaryDark, fontWeight: 900 }} /></Toolbar></AppBar>}
       
 

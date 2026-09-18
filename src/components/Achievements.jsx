@@ -123,6 +123,7 @@ const getFileIcon = (fileType) => {
 
 const AchievementsPage = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [achievements, setAchievements] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDetailModal, setOpenDetailModal] = useState(false);
@@ -168,6 +169,9 @@ const AchievementsPage = () => {
 
   const getStatusBgColor = (status) => {
     const statusObj = statusOptions.find(s => s.value === status);
+    if (isDark) {
+      return statusObj ? 'rgba(76,175,80,.18)' : theme.palette.surfaces.nested;
+    }
     return statusObj ? statusObj.bgColor : '#f5f5f5';
   };
 
@@ -639,7 +643,7 @@ const AchievementsPage = () => {
   }, [isCurrentWeekAlreadySubmitted]);
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
+    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: isDark ? theme.palette.background.default : '#f8fafc' }}>
       
 
       <Box
@@ -658,11 +662,11 @@ const AchievementsPage = () => {
               p: 1.25,
               mb: 1.25,
               borderRadius: 3,
-              background: '#fff',
+              background: isDark ? theme.palette.surfaces.card : '#fff',
               color: '#17372b',
               position: 'relative',
               overflow: 'hidden',
-              border: '1px solid rgba(5,117,70,.12)',
+              border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)',
               boxShadow: 'none'
             }}
           >
@@ -675,8 +679,8 @@ const AchievementsPage = () => {
                         width: 40,
                         height: 40,
                         marginInlineEnd: 1.25,
-                        bgcolor: '#edf7f2',
-                        color: '#057546'
+                        bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
+                        color: isDark ? theme.palette.primary.main : '#057546'
                       }}
                     >
                       <EmojiEventsIcon sx={{ fontSize: 22 }} />
@@ -698,8 +702,8 @@ const AchievementsPage = () => {
                       mt: 0.75,
                       p: 0.75,
                       borderRadius: 2,
-                      bgcolor: '#f7fbf9',
-                      border: '1px solid rgba(5,117,70,.10)'
+                      bgcolor: isDark ? theme.palette.surfaces.section : '#f7fbf9',
+                      border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.10)'
                     }}
                   >
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -748,7 +752,7 @@ const AchievementsPage = () => {
                 borderRadius: 3,
                 borderTop: '3px solid #057546',
                 boxShadow: 'none',
-                border: '1px solid rgba(5,117,70,.12)'
+                border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)'
               }}>
                 <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -760,7 +764,7 @@ const AchievementsPage = () => {
                         إجمالي الأسابيع
                       </Typography>
                     </Box>
-                    <Avatar sx={{ bgcolor: alpha('#667eea', 0.1), color: '#667eea' }}>
+                    <Avatar sx={{ bgcolor: alpha('#667eea', isDark ? 0.18 : 0.1), color: '#667eea' }}>
                       <EmojiEventsIcon />
                     </Avatar>
                   </Box>
@@ -773,7 +777,7 @@ const AchievementsPage = () => {
                 borderRadius: 3,
                 borderTop: '3px solid #2e7d32',
                 boxShadow: 'none',
-                border: '1px solid rgba(5,117,70,.12)'
+                border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)'
               }}>
                 <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -785,7 +789,7 @@ const AchievementsPage = () => {
                         بنود مكتملة
                       </Typography>
                     </Box>
-                    <Avatar sx={{ bgcolor: alpha('#4caf50', 0.1), color: '#4caf50' }}>
+                    <Avatar sx={{ bgcolor: alpha('#4caf50', isDark ? 0.18 : 0.1), color: '#4caf50' }}>
                       <CheckCircleIcon />
                     </Avatar>
                   </Box>
@@ -798,7 +802,7 @@ const AchievementsPage = () => {
                 borderRadius: 3,
                 borderTop: '3px solid #1976d2',
                 boxShadow: 'none',
-                border: '1px solid rgba(5,117,70,.12)'
+                border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)'
               }}>
                 <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -810,7 +814,7 @@ const AchievementsPage = () => {
                         إجمالي البنود
                       </Typography>
                     </Box>
-                    <Avatar sx={{ bgcolor: alpha('#2196f3', 0.1), color: '#2196f3' }}>
+                    <Avatar sx={{ bgcolor: alpha('#2196f3', isDark ? 0.18 : 0.1), color: '#2196f3' }}>
                       <BarChartIcon />
                     </Avatar>
                   </Box>
@@ -823,7 +827,7 @@ const AchievementsPage = () => {
                 borderRadius: 3,
                 borderTop: '3px solid #ed9b22',
                 boxShadow: 'none',
-                border: '1px solid rgba(5,117,70,.12)'
+                border: isDark ? '1px solid #67C99D' : '1px solid rgba(5,117,70,.12)'
               }}>
                 <CardContent sx={{ p: 1.25 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -835,7 +839,7 @@ const AchievementsPage = () => {
                         متوسط التقدم
                       </Typography>
                     </Box>
-                    <Avatar sx={{ bgcolor: alpha('#ff9800', 0.1), color: '#ff9800' }}>
+                    <Avatar sx={{ bgcolor: alpha('#ff9800', isDark ? 0.18 : 0.1), color: '#ff9800' }}>
                       <TimelineIcon />
                     </Avatar>
                   </Box>
@@ -849,7 +853,7 @@ const AchievementsPage = () => {
             p: 3,
             mb: 4,
             borderRadius: 3,
-            bgcolor: 'white'
+            bgcolor: isDark ? theme.palette.surfaces.card : 'white'
           }}>
             <Grid container spacing={3} alignItems="center">
               <Grid item xs={12} md={6}>
@@ -864,7 +868,7 @@ const AchievementsPage = () => {
                         <SearchIcon color="action" />
                       </InputAdornment>
                     ),
-                    sx: { borderRadius: 2, bgcolor: '#f8fafc' }
+                    sx: { borderRadius: 2, bgcolor: isDark ? theme.palette.surfaces.input : '#f8fafc' }
                   }}
                   size="medium"
                 />
@@ -910,7 +914,7 @@ const AchievementsPage = () => {
               p: 8,
               textAlign: 'center',
               borderRadius: 3,
-              bgcolor: 'white'
+              bgcolor: isDark ? theme.palette.surfaces.card : 'white'
             }}>
               <Box sx={{ mb: 3 }}>
                 <EmojiEventsIcon sx={{ fontSize: 80, color: '#e0e0e0', mb: 2 }} />
@@ -1007,7 +1011,7 @@ const AchievementsPage = () => {
                             sx={{
                               height: 10,
                               borderRadius: 5,
-                              bgcolor: '#e0e0e0',
+                              bgcolor: isDark ? theme.palette.surfaces.nested : '#e0e0e0',
                               '& .MuiLinearProgress-bar': {
                                 borderRadius: 5,
                                 background: `linear-gradient(90deg, ${getProgressColor(progress)} 0%, ${alpha(getProgressColor(progress), 0.8)} 100%)`
@@ -1031,7 +1035,7 @@ const AchievementsPage = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          bgcolor: '#f8fafc',
+                          bgcolor: isDark ? theme.palette.surfaces.section : '#f8fafc',
                           p: 2,
                           borderRadius: 2,
                           mb: 2
@@ -1159,7 +1163,7 @@ const AchievementsPage = () => {
                                   sx={{
                                     height: 6,
                                     borderRadius: 3,
-                                    bgcolor: '#e0e0e0',
+                                    bgcolor: isDark ? theme.palette.surfaces.nested : '#e0e0e0',
                                     '& .MuiLinearProgress-bar': {
                                       borderRadius: 3,
                                       background: `linear-gradient(90deg, ${getProgressColor(progress)} 0%, ${alpha(getProgressColor(progress), 0.8)} 100%)`
@@ -1255,20 +1259,23 @@ const AchievementsPage = () => {
           sx: {
             borderRadius: 3,
             maxHeight: '90vh',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            minWidth: 0,
+            boxSizing: 'border-box'
           }
         }}
       >
         <DialogTitle sx={{
           bgcolor: 'primary.main',
           color: 'white',
-          py: 2.5
+          py: 2.5,
+          overflowWrap: 'anywhere'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ bgcolor: 'white', color: 'primary.main' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
+            <Avatar sx={{ bgcolor: 'white', color: 'primary.main', flexShrink: 0 }}>
               <EmojiEventsIcon />
             </Avatar>
-            <Box>
+            <Box sx={{ minWidth: 0 }}>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 {editingIndex !== null ? 'تعديل الإنتاجية الأسبوعية' : 'إضافة الإنتاجية الأسبوعية'}
               </Typography>
@@ -1286,12 +1293,14 @@ const AchievementsPage = () => {
           </Box>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ p: 0 }}>
-          <Box sx={{ p: 3 }}>
+        <DialogContent dividers sx={{ p: 0, minWidth: 0, overflowX: 'hidden', boxSizing: 'border-box' }}>
+          <Box sx={{ p: { xs: 2, sm: 3 }, minWidth: 0, boxSizing: 'border-box' }}>
             <Box sx={{
               display: 'flex',
+              flexWrap: 'wrap',
               justifyContent: 'space-between',
               alignItems: 'center',
+              gap: 1.5,
               mb: 3
             }}>
               <Typography variant="subtitle1" sx={{
@@ -1299,34 +1308,44 @@ const AchievementsPage = () => {
                 color: 'primary.main',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1
+                gap: 1,
+                minWidth: 0
               }}>
                 <TrendingUpIcon fontSize="small" />
                 بنود الأسبوع ({achievementItems.length})
               </Typography>
 
               <Button
-                variant="contained"
-                size="small"
+                variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={addAchievementItem}
-                sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
+                sx={uiLayout.withUiSx({
+                  borderRadius: 2,
+                  px: 4,
+                  fontWeight: 600,
+                  ...(isDark ? {
+                    background: 'transparent',
+                    color: '#67C99D',
+                    borderColor: '#67C99D',
+                    '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                  } : {})
+                }, uiLayout.buttonSx)}
               >
                 إضافة بند
               </Button>
             </Box>
 
-            <Grid container spacing={3}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
               {achievementItems.map((item, index) => (
-                <Grid item xs={12} key={item.id}>
-                  <Paper elevation={0} sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    border: '2px solid',
-                    borderColor: 'divider',
-                    bgcolor: '#fafafa',
-                    position: 'relative'
-                  }}>
+                <Paper key={item.id} elevation={0} sx={{
+                  p: 3,
+                  borderRadius: 2,
+                  border: '2px solid',
+                  borderColor: 'divider',
+                  bgcolor: isDark ? theme.palette.surfaces.nested : '#fafafa',
+                  position: 'relative',
+                  minWidth: 0
+                }}>
                     <Box sx={{
                       position: 'absolute',
                       top: -10,
@@ -1356,8 +1375,13 @@ const AchievementsPage = () => {
                       </IconButton>
                     </Box>
 
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
+                    <Box sx={{
+                      display: 'grid',
+                      gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                      gap: 2.5,
+                      minWidth: 0
+                    }}>
+                      <Box sx={{ gridColumn: '1 / -1', minWidth: 0 }}>
                         <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           label="عنوان البند"
@@ -1367,9 +1391,9 @@ const AchievementsPage = () => {
                           size="small"
                           sx={uiLayout.withUiSx({ '& .MuiOutlinedInput-root': { borderRadius: 2 } }, uiLayout.formFieldSx)}
                         />
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12}>
+                      <Box sx={{ gridColumn: '1 / -1', minWidth: 0 }}>
                         <TextField InputLabelProps={{ shrink: true }}
                           fullWidth
                           label="وصف البند"
@@ -1380,9 +1404,9 @@ const AchievementsPage = () => {
                           size="small"
                           sx={uiLayout.withUiSx({ '& .MuiOutlinedInput-root': { borderRadius: 2 } }, uiLayout.formFieldSx)}
                         />
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12} md={6}>
+                      <Box sx={{ minWidth: 0 }}>
                         <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
                           <InputLabel>حالة البند</InputLabel>
                           <Select
@@ -1401,31 +1425,30 @@ const AchievementsPage = () => {
                             ))}
                           </Select>
                         </FormControl>
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12} md={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', pl: 2 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={item.completed}
-                                onChange={(e) => updateAchievementItem(item.id, 'completed', e.target.checked)}
-                                color="success"
-                                sx={{ '&.Mui-checked': { color: 'success.main' } }}
-                              />
-                            }
-                            label="تم إكمال البند"
-                            sx={{ m: 0 }}
-                          />
-                        </Box>
-                      </Grid>
+                      <Box sx={{ minWidth: 0, display: 'flex', alignItems: 'center', height: '100%' }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={item.completed}
+                              onChange={(e) => updateAchievementItem(item.id, 'completed', e.target.checked)}
+                              color="success"
+                              sx={{ '&.Mui-checked': { color: 'success.main' } }}
+                            />
+                          }
+                          label="تم إكمال البند"
+                          sx={{ m: 0 }}
+                        />
+                      </Box>
 
-                      <Grid item xs={12}>
+                      <Box sx={{ gridColumn: '1 / -1', minWidth: 0 }}>
                         <Paper variant="outlined" sx={{
                           p: 2,
                           borderRadius: 2,
-                          bgcolor: 'white',
-                          borderStyle: 'dashed'
+                          bgcolor: isDark ? theme.palette.surfaces.card : 'white',
+                          borderStyle: 'dashed',
+                          minWidth: 0
                         }}>
                           <input
                             type="file"
@@ -1436,8 +1459,8 @@ const AchievementsPage = () => {
                             style={{ display: 'none' }}
                           />
 
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 1.5, mb: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
                               <AttachFileIcon color="primary" />
                               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                 مرفقات البند
@@ -1446,10 +1469,19 @@ const AchievementsPage = () => {
 
                             <Button
                               variant="outlined"
-                              size="small"
                               startIcon={<PhotoCameraIcon />}
                               onClick={() => fileInputRefs.current[item.id]?.click()}
-                              sx={uiLayout.withUiSx({ borderRadius: 2 }, uiLayout.buttonSx)}
+                              sx={uiLayout.withUiSx({
+                                borderRadius: 2,
+                                px: 4,
+                                fontWeight: 600,
+                                ...(isDark ? {
+                                  background: 'transparent',
+                                  color: '#67C99D',
+                                  borderColor: '#67C99D',
+                                  '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                                } : {})
+                              }, uiLayout.buttonSx)}
                             >
                               إضافة ملفات
                             </Button>
@@ -1484,16 +1516,15 @@ const AchievementsPage = () => {
                             </Stack>
                           )}
                         </Paper>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
+                      </Box>
+                    </Box>
+                </Paper>
               ))}
-            </Grid>
+            </Box>
           </Box>
         </DialogContent>
 
-        <DialogActions sx={uiLayout.withUiSx({ p: 3, pt: 2, bgcolor: '#f8fafc' }, uiLayout.dialogActionsSx)}>
+        <DialogActions sx={uiLayout.withUiSx({ p: 3, pt: 2, bgcolor: isDark ? theme.palette.surfaces.section : '#f8fafc' }, uiLayout.dialogActionsSx)}>
           <Box sx={uiLayout.withUiSx({ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }, uiLayout.pageHeaderSx)}>
             <Typography variant="body2" color="textSecondary">
               إجمالي البنود: <strong>{achievementItems.length}</strong>
@@ -1502,24 +1533,42 @@ const AchievementsPage = () => {
             <Box sx={uiLayout.withUiSx({ display: 'flex', gap: 2 }, uiLayout.actionBarSx)}>
               <Button
                 onClick={handleCloseDialog}
+                variant="outlined"
                 startIcon={<CancelIcon />}
-                sx={uiLayout.withUiSx({ color: 'text.secondary', borderRadius: 2, px: 3 }, uiLayout.buttonSx)}
+                sx={uiLayout.withUiSx({
+                  borderRadius: 2,
+                  px: 4,
+                  fontWeight: 600,
+                  ...(isDark ? {
+                    background: 'transparent',
+                    color: '#67C99D',
+                    borderColor: '#67C99D',
+                    '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                  } : { color: 'text.secondary' })
+                }, uiLayout.buttonSx)}
               >
                 إلغاء
               </Button>
               <Button
                 onClick={handleSubmit}
-                variant="contained"
+                variant={isDark ? 'outlined' : 'contained'}
                 startIcon={<SaveIcon />}
                 disabled={loading}
                 sx={uiLayout.withUiSx({
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   borderRadius: 2,
                   px: 4,
                   fontWeight: 600,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
-                  }
+                  ...(isDark ? {
+                    background: 'transparent',
+                    color: '#67C99D',
+                    borderColor: '#67C99D',
+                    '&:hover': { background: 'rgba(103,201,157,.1)', borderColor: '#67C99D' }
+                  } : {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
+                    }
+                  })
                 }, uiLayout.buttonSx)}
               >
                 {editingIndex !== null ? 'تحديث الإنتاجية الأسبوعية' : 'حفظ الإنتاجية الأسبوعية'}
@@ -1662,7 +1711,7 @@ const AchievementsPage = () => {
                           </Typography>
                           <Grid container spacing={2}>
                             <Grid item xs={6}>
-                              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
+                              <Box sx={{ textAlign: 'center', p: 2, bgcolor: isDark ? theme.palette.surfaces.nested : '#f5f5f5', borderRadius: 2 }}>
                                 <Typography variant="h3" color="primary" sx={{ fontWeight: 800 }}>
                                   {selectedAchievement.itemCount || 0}
                                 </Typography>
@@ -1670,7 +1719,7 @@ const AchievementsPage = () => {
                               </Box>
                             </Grid>
                             <Grid item xs={6}>
-                              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
+                              <Box sx={{ textAlign: 'center', p: 2, bgcolor: isDark ? theme.palette.surfaces.nested : '#f5f5f5', borderRadius: 2 }}>
                                 <Typography variant="h3" color="success" sx={{ fontWeight: 800 }}>
                                   {selectedAchievement.completedItems || 0}
                                 </Typography>
@@ -1688,7 +1737,7 @@ const AchievementsPage = () => {
                                   sx={{
                                     height: 10,
                                     borderRadius: 5,
-                                    bgcolor: '#e0e0e0',
+                                    bgcolor: isDark ? theme.palette.surfaces.nested : '#e0e0e0',
                                     '& .MuiLinearProgress-bar': {
                                       borderRadius: 5,
                                       background: `linear-gradient(90deg, ${getProgressColor(calculateProgress(selectedAchievement))} 0%, ${alpha(getProgressColor(calculateProgress(selectedAchievement)), 0.8)} 100%)`
@@ -1746,7 +1795,7 @@ const AchievementsPage = () => {
                                 </Box>
 
                                 {item.description && (
-                                  <Typography variant="body2" color="textSecondary" sx={{ mb: 3, p: 2, bgcolor: '#f9f9f9', borderRadius: 1 }}>
+                                  <Typography variant="body2" color="textSecondary" sx={{ mb: 3, p: 2, bgcolor: isDark ? theme.palette.surfaces.nested : '#f9f9f9', borderRadius: 1 }}>
                                     {item.description}
                                   </Typography>
                                 )}
@@ -1761,7 +1810,7 @@ const AchievementsPage = () => {
                                         <Grid item xs={12} sm={6} md={4} key={file.id}>
                                           <Card
                                             variant="outlined"
-                                            sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#f5f5f5' } }}
+                                            sx={{ cursor: 'pointer', '&:hover': { bgcolor: isDark ? theme.palette.surfaces.nested : '#f5f5f5' } }}
                                             onClick={() => {
                                               const u = resolveFileUrl(file.url || file.preview);
                                               if (u) window.open(u, '_blank');
@@ -1878,7 +1927,7 @@ const AchievementsPage = () => {
                 )}
               </Box>
 
-              <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', bgcolor: '#f8fafc' }}>
+              <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', bgcolor: isDark ? theme.palette.surfaces.section : '#f8fafc' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography variant="body2" color="textSecondary">
                     معرف الإنجاز: {selectedAchievement.id}

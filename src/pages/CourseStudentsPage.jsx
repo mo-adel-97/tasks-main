@@ -741,7 +741,7 @@ export default function CourseStudentsPage() {
         maxWidth: "100%",
         overflowX: "hidden",
         direction: "rtl",
-        bgcolor: "#f6faf8"
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f6faf8"
       }}
     >
       {!isDesktop && (

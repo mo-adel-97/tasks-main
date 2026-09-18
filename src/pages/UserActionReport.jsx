@@ -17,7 +17,8 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -253,6 +254,7 @@ const uniqueSorted = (values) =>
   );
 
 export default function UserActionReport() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -1619,7 +1621,7 @@ export default function UserActionReport() {
             }><Box
       sx={{
         minHeight: "100vh",
-        bgcolor: soft
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
       }}
     >
       {isDesktop ? (

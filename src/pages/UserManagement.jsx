@@ -2498,7 +2498,7 @@ export default function UserManagement() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        bgcolor: soft
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
       }}
     >
       

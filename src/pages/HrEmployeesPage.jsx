@@ -3315,7 +3315,9 @@ const HrEmployeesPage = () => {
         maxWidth: "100%",
         overflowX: "hidden",
         background:
-          "linear-gradient(180deg, #f7fbf9 0%, #ffffff 100%)",
+          theme.palette.mode === 'dark'
+            ? theme.palette.background.default
+            : "linear-gradient(180deg, #f7fbf9 0%, #ffffff 100%)",
         fontFamily:
           'Cairo, Arial, "Noto Sans Arabic", sans-serif',
 

@@ -3,6 +3,7 @@ import * as uiLayout from '../components/hrLayout';
 import './rtl-forms-fix.css';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
+import { useTheme } from '@mui/material/styles';
 import React, {
   useCallback,
   useEffect,
@@ -468,6 +469,7 @@ const emptyHoliday = () => ({
 });
 
 export default function HrLeavesPage() {
+  const theme = useTheme();
 
   const [mobileSidebarOpen, setMobileSidebarOpen] =
     useState(false);
@@ -2000,7 +2002,7 @@ export default function HrLeavesPage() {
       dir={LEAVES_PAGE_DIRECTION}
       sx={{
         minHeight: "100vh",
-        bgcolor: bg,
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : bg,
         textAlign: LEAVES_TEXT_ALIGN
       }}
     >

@@ -23,6 +23,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
@@ -172,6 +173,7 @@ const showErrorAlert = (message) =>
   });
 
 const CircularsUpload = () => {
+  const theme = useTheme();
   const userGuid = getUserGuid();
 
   const [tree, setTree] = useState([]);
@@ -688,7 +690,7 @@ const CircularsUpload = () => {
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: PAGE_BG,
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : PAGE_BG,
         fontFamily: "Cairo, Arial, sans-serif",
       }}
     >

@@ -33,6 +33,7 @@ import {
   Typography,
   useMediaQuery
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -401,6 +402,7 @@ const normalizeJobTitle = (row) => ({
 });
 
 export default function HrJobTitlesPage() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -2033,7 +2035,7 @@ export default function HrJobTitlesPage() {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
-      <Box sx={{ ...navigationContentSx, ...uiLayout.scopeSx, bgcolor: soft, minHeight: "100vh" }}>{content}</Box>
+      <Box sx={{ ...navigationContentSx, ...uiLayout.scopeSx, bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft, minHeight: "100vh" }}>{content}</Box>
 
       {/* =======================================================
           Create / Edit dialog

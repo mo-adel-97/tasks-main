@@ -34,7 +34,8 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  useTheme
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -92,11 +93,14 @@ import HrOrgOverviewPanel from "./components/HrOrgOverviewPanel";
 // Keeps Arabic labels above controls instead of floating on the outline,
 // normalizes spacing/alignment, and preserves LTR rendering for date/time.
 // ============================================================
-const RTL_DIALOG_SX = {
+const RTL_DIALOG_SX = (theme) => {
+  const isDark = theme.palette.mode === "dark";
+  return {
   "& .MuiDialog-paper": {
     direction: "rtl",
     textAlign: "right",
-    backgroundImage: "none"
+    backgroundImage: "none",
+    border: isDark ? "1px solid #67C99D" : undefined
   },
   "& .MuiDialogTitle-root": {
     direction: "rtl",
@@ -131,11 +135,11 @@ const RTL_DIALOG_SX = {
       fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif',
       fontSize: "0.78rem",
       fontWeight: 800,
-      color: "#52635c",
+      color: isDark ? theme.palette.text.secondary : "#52635c",
       pointerEvents: "auto"
     },
     "& .MuiInputLabel-root.Mui-focused": {
-      color: "#057546"
+      color: isDark ? theme.palette.primary.main : "#057546"
     },
     "& .MuiInputLabel-root.Mui-error": {
       color: "#d32f2f"
@@ -144,23 +148,29 @@ const RTL_DIALOG_SX = {
       color: "rgba(0,0,0,.42)"
     },
 
+    // Unfocused/hover borders used to be light-mode-only literals
+    // ("#d7e3dd" / "#9fc7b5"): the shared dark-color plugin doesn't
+    // recognize either as "brand green" so it silently re-muddied them to a
+    // flat gray in real dark rendering. Pinning the dark values with
+    // pinColor() locks in an actually-visible, actually-green border here.
     "& .MuiOutlinedInput-root": {
       direction: "rtl",
       textAlign: "right",
       borderRadius: "10px",
-      backgroundColor: "#fff",
+      backgroundColor: isDark ? theme.palette.surfaces.input : "#fff",
       transition: "border-color .18s ease, box-shadow .18s ease, background-color .18s ease",
       "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#d7e3dd"
+        borderColor: isDark ? pinColor("#67C99D") : "#d7e3dd",
+        borderWidth: isDark ? "1.5px" : "1px"
       },
       "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#9fc7b5"
+        borderColor: isDark ? pinColor("#67C99D") : "#9fc7b5"
       },
       "&.Mui-focused": {
-        boxShadow: "0 0 0 3px rgba(5,117,70,.08)"
+        boxShadow: isDark ? `0 0 0 3px ${pinColor("rgba(103,201,157,.16)")}` : "0 0 0 3px rgba(5,117,70,.08)"
       },
       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#057546",
+        borderColor: isDark ? "#67C99D" : "#057546",
         borderWidth: "1.5px"
       },
       "&.Mui-error .MuiOutlinedInput-notchedOutline": {
@@ -238,7 +248,7 @@ const RTL_DIALOG_SX = {
     gap: "8px",
     flexWrap: "wrap",
     padding: { xs: "12px 14px", sm: "14px 20px" },
-    borderTop: "1px solid #edf2ef",
+    borderTop: isDark ? `1px solid #67C99D` : "1px solid #edf2ef",
     "& .MuiButton-root": {
       minHeight: 38,
       borderRadius: "10px",
@@ -255,16 +265,18 @@ const RTL_DIALOG_SX = {
       marginRight: "6px !important"
     }
   }
+  };
 };
 
 const RTL_MENU_PROPS = {
   PaperProps: {
-    sx: {
+    sx: (theme) => ({
       direction: "rtl",
       textAlign: "right",
       mt: 0.5,
       borderRadius: "10px",
       maxHeight: 360,
+      border: theme.palette.mode === "dark" ? "1px solid #67C99D" : undefined,
       "& .MuiMenuItem-root": {
         direction: "rtl",
         textAlign: "right",
@@ -272,13 +284,20 @@ const RTL_MENU_PROPS = {
         minHeight: 40,
         fontFamily: 'Cairo, "Segoe UI", Tahoma, Arial, sans-serif'
       }
-    }
+    })
   },
   MenuListProps: {
     dir: "rtl",
     sx: { py: 0.5 }
   }
 };
+
+// Outer frame + header + every row/cell line of this page's HTML tables, all
+// pinned to the same always-visible focus green (never hover/focus-only).
+const TABLE_DARK_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  border: "1px solid #67C99D",
+  "& .MuiTableCell-root": { borderBottom: "1px solid #67C99D" }
+});
 
 const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
   dir: "rtl",
@@ -383,6 +402,41 @@ const permissionButtonSx = (theme) => {
   };
 };
 
+// The emotion cache's dark-color plugin (adaptiveColorsPlugin) rewrites every
+// literal border-category color it sees into light-dark(original, autoDark) —
+// and for any color it doesn't recognize as brand green, autoDark is a flat
+// muddy gray-green, not the color we actually picked for dark mode. Locking a
+// value with light-dark(x, x) (both slots identical) makes the plugin's regex
+// skip it entirely, so non-green dark-mode borders (amber/red/blue) actually
+// render as chosen instead of being silently re-muddied.
+const pinColor = (color) => `light-dark(${color}, ${color})`;
+
+// MUI's built-in dark-mode Alert colors (a generic darken() of the stock
+// Material severity color) render as a near-black/brown box that clashes
+// with this page's actual dark surfaces + bright green-bordered design
+// language. Give every severity a tinted-dark background and a visible,
+// on-brand-saturation border instead, matching the same surfaces/borders
+// system already used for cards on this page.
+const darkAlertSx = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+  const tones = {
+    Warning: { bg: "rgba(237,137,54,.12)", border: pinColor("rgba(237,137,54,.42)"), color: "#f0ad4e" },
+    Error: { bg: "rgba(229,90,90,.12)", border: pinColor("rgba(229,90,90,.42)"), color: "#e57373" },
+    Info: { bg: "rgba(90,160,229,.12)", border: pinColor("rgba(90,160,229,.42)"), color: "#78bdf5" },
+    Success: { bg: "rgba(103,201,157,.12)", border: "#67C99D", color: theme.palette.primary.main }
+  };
+  return Object.fromEntries(
+    Object.entries(tones).map(([severity, tone]) => [
+      `&.MuiAlert-standard${severity}`,
+      {
+        backgroundColor: tone.bg,
+        border: `1px solid ${tone.border}`,
+        color: tone.color,
+        "& .MuiAlert-icon": { color: tone.color }
+      }
+    ])
+  );
+};
 
 const readUser = () => {
   try {
@@ -587,36 +641,50 @@ function Section({ title, subtitle, action, children, sectionRef }) {
     <Paper
       ref={sectionRef}
       elevation={0}
-      sx={{
-        border: `1px solid ${border}`,
-        borderRadius: 3,
-        overflow: "hidden",
-        background: "#fff",
-        scrollMarginTop: 18
+      sx={(theme) => {
+        const isDark = theme.palette.mode === "dark";
+        return {
+          border: isDark
+            ? `1px solid #67C99D`
+            : `1px solid ${border}`,
+          borderRadius: 3,
+          overflow: "hidden",
+          background: isDark ? theme.palette.surfaces.card : "#fff",
+          boxShadow: isDark
+            ? `0 0 0 1px #67C99D, 0 0 26px rgba(103,201,157,.05), 0 18px 40px rgba(0,0,0,.45)`
+            : "none",
+          scrollMarginTop: 18
+        };
       }}
     >
       <Box
-        sx={{
-          px: { xs: 0.95, sm: 1.2, md: 1.6 },
-          py: { xs: 0.85, sm: 1, md: 1.2 },
-          display: "flex",
-          alignItems: { xs: "stretch", sm: "center" },
-          justifyContent: "space-between",
-          flexDirection: { xs: "column", sm: "row" },
-          gap: { xs: 0.65, sm: 1 },
-          borderBottom: `1px solid ${border}`,
-          background:
-            "linear-gradient(180deg, rgba(246,250,248,.96), rgba(255,255,255,.98))"
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            px: { xs: 0.95, sm: 1.2, md: 1.6 },
+            py: { xs: 0.85, sm: 1, md: 1.2 },
+            display: "flex",
+            alignItems: { xs: "stretch", sm: "center" },
+            justifyContent: "space-between",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: { xs: 0.65, sm: 1 },
+            borderBottom: isDark
+              ? `1px solid #67C99D`
+              : `1px solid ${border}`,
+            background: isDark
+              ? `linear-gradient(180deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+              : "linear-gradient(180deg, rgba(246,250,248,.96), rgba(255,255,255,.98))"
+          };
         }}
       >
         <Box sx={{ minWidth: 0 }}>
           <Typography variant="h6"
-            sx={{
+            sx={(theme) => ({
               fontWeight: 950,
-              color: "#17372b",
+              color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
               lineHeight: 1.35,
               textAlign: SECTION_TEXT_ALIGN
-            }}
+            })}
           >
             {title}
           </Typography>
@@ -667,34 +735,49 @@ function DetailTile({
   return (
     <>
       <Box
-        sx={{
-          gridColumn: wide ? { md: "span 2" } : "auto",
-          minHeight: { xs: 68, sm: 74, md: 78 },
-          height: "100%",
-          p: { xs: 0.7, sm: 0.82, md: 0.95 },
-          border: `1px solid ${border}`,
-          borderRadius: 2,
-          background: soft,
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "26px minmax(0,1fr)",
-            sm: "29px minmax(0,1fr)",
-            md: "32px minmax(0,1fr)"
-          },
-          gap: { xs: 0.5, sm: 0.65, md: 0.75 },
-          alignItems: "start",
-          overflow: "hidden"
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            gridColumn: wide ? { md: "span 2" } : "auto",
+            minHeight: { xs: 68, sm: 74, md: 78 },
+            height: "100%",
+            p: { xs: 0.7, sm: 0.82, md: 0.95 },
+            border: isDark
+              ? `1px solid #67C99D`
+              : `1px solid ${border}`,
+            borderRadius: 2,
+            background: isDark ? theme.palette.surfaces.nested : soft,
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "26px minmax(0,1fr)",
+              sm: "29px minmax(0,1fr)",
+              md: "32px minmax(0,1fr)"
+            },
+            gap: { xs: 0.5, sm: 0.65, md: 0.75 },
+            alignItems: "start",
+            overflow: "hidden",
+            transition: "border-color .18s ease, box-shadow .18s ease",
+            "&:hover": isDark
+              ? {
+                  borderColor: "#67C99D",
+                  boxShadow: `0 0 0 1px #67C99D`
+                }
+              : undefined
+          };
         }}
       >
         <Box
-          sx={{
-            width: { xs: 25, sm: 28, md: 30 },
-            height: { xs: 25, sm: 28, md: 30 },
-            borderRadius: 1.4,
-            display: "grid",
-            placeItems: "center",
-            color: primary,
-            background: "rgba(5,117,70,.09)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              width: { xs: 25, sm: 28, md: 30 },
+              height: { xs: 25, sm: 28, md: 30 },
+              borderRadius: 1.4,
+              display: "grid",
+              placeItems: "center",
+              color: isDark ? theme.palette.primary.main : primary,
+              background: isDark ? theme.palette.borders.subtle : "rgba(5,117,70,.09)"
+            };
           }}
         >
           {icon}
@@ -724,9 +807,9 @@ function DetailTile({
           <Typography
             dir={ltr ? DATE_DIRECTION : VALUE_DIRECTION}
             title={!canOpenDetails ? displayValue : undefined}
-            sx={{
+            sx={(theme) => ({
               mt: 0.2,
-              color: "#17372b",
+              color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
               fontSize: { xs: 12, sm: 12, md: 12 },
               lineHeight: 1.4,
               fontWeight: 900,
@@ -738,7 +821,7 @@ function DetailTile({
               WebkitLineClamp: canOpenDetails ? 1 : 2,
               WebkitBoxOrient: "vertical",
               overflowWrap: "anywhere"
-            }}
+            })}
           >
             {displayValue}
           </Typography>
@@ -801,12 +884,14 @@ function DetailTile({
           }}
         >
           <DialogTitle
-            sx={{
+            sx={(theme) => ({
               px: { xs: 1.2, sm: 1.5 },
               py: { xs: 0.9, sm: 1.05 },
-              borderBottom: `1px solid ${border}`,
+              borderBottom: theme.palette.mode === "dark"
+                ? `1px solid #67C99D`
+                : `1px solid ${border}`,
               textAlign: DETAIL_DIALOG_TEXT_ALIGN
-            }}
+            })}
           >
             <Stack
               direction="row"
@@ -816,12 +901,12 @@ function DetailTile({
             >
               <Box sx={{ minWidth: 0 }}>
                 <Typography
-                  sx={{
+                  sx={(theme) => ({
                     fontSize: 15,
                     fontWeight: 950,
-                    color: "#17372b",
+                    color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
                     textAlign: DETAIL_DIALOG_TEXT_ALIGN
-                  }}
+                  })}
                 >
                   {label}
                 </Typography>
@@ -856,17 +941,22 @@ function DetailTile({
           >
             <Paper
               elevation={0}
-              sx={{
-                p: { xs: 1, sm: 1.2 },
-                borderRadius: 2.2,
-                border: `1px solid ${border}`,
-                background: soft
+              sx={(theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  p: { xs: 1, sm: 1.2 },
+                  borderRadius: 2.2,
+                  border: isDark
+                    ? `1px solid #67C99D`
+                    : `1px solid ${border}`,
+                  background: isDark ? theme.palette.surfaces.nested : soft
+                };
               }}
             >
               <Typography
                 dir={ltr ? DATE_DIRECTION : VALUE_DIRECTION}
-                sx={{
-                  color: "#17372b",
+                sx={(theme) => ({
+                  color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
                   fontSize: 12.3,
                   lineHeight: 1.9,
                   fontWeight: 800,
@@ -875,7 +965,7 @@ function DetailTile({
                     : DETAIL_DIALOG_TEXT_ALIGN,
                   whiteSpace: "pre-wrap",
                   overflowWrap: "anywhere"
-                }}
+                })}
               >
                 {displayValue}
               </Typography>
@@ -903,8 +993,8 @@ function DetailTile({
               justifyContent: "flex-start"
             }, uiLayout.dialogActionsSx)}
           >
-            <Button sx={uiLayout.buttonSx}
-              variant="contained"
+            <Button sx={[uiLayout.buttonSx, permissionButtonSx]}
+              variant="outlined"
               onClick={() => setDetailsOpen(false)}
             >
               إغلاق
@@ -916,16 +1006,35 @@ function DetailTile({
   );
 }
 
-function DetailGrid({ children }) {
+function DetailGrid({ children, compact = false }) {
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: {
-          xs: "repeat(2,minmax(0,1fr))",
-          sm: "repeat(2,minmax(0,1fr))"
-        },
-        gridAutoRows: { xs: "68px", sm: "74px", md: "78px" },
+        // Fixed at 2 columns forever regardless of width used to leave 8-tile
+        // sections as one cramped, tall column even on a 1200-1440px laptop
+        // (this section only sits side-by-side with its sibling from xl up).
+        // More columns unlock as width allows instead.
+        // `compact` is the 4-tile "preview" grid used on the home cards: it
+        // always lands as a clean 2x2 (mobile) or single row of 4 (tablet+)
+        // instead of the fuller grid's 3-then-4 column ramp, which would
+        // leave an orphan tile dangling on its own row for exactly 4 items.
+        gridTemplateColumns: compact
+          ? {
+              xs: "repeat(2,minmax(0,1fr))",
+              sm: "repeat(4,minmax(0,1fr))"
+            }
+          : {
+              xs: "repeat(2,minmax(0,1fr))",
+              sm: "repeat(2,minmax(0,1fr))",
+              md: "repeat(3,minmax(0,1fr))",
+              lg: "repeat(3,minmax(0,1fr))",
+              xl: "repeat(4,minmax(0,1fr))"
+            },
+        // A fixed row height clipped any tile whose value/helper needed more
+        // room (long department names, the "N مديرين" helper line). `auto`
+        // lets the row grow to fit its tallest tile instead of cropping text.
+        gridAutoRows: { xs: "minmax(68px,auto)", sm: "minmax(74px,auto)", md: "minmax(78px,auto)" },
         gap: { xs: 0.55, sm: 0.7, md: 0.8 },
         alignItems: "stretch"
       }}
@@ -968,13 +1077,19 @@ function ProfileDetailsDialog({
       }}
     >
       <DialogTitle
-        sx={{
-          px: { xs: 1.15, sm: 1.5 },
-          py: { xs: 0.85, sm: 1 },
-          borderBottom: `1px solid ${border}`,
-          background:
-            "linear-gradient(180deg,#ffffff 0%,#f7fbf9 100%)",
-          textAlign: DETAIL_DIALOG_TEXT_ALIGN
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            px: { xs: 1.15, sm: 1.5 },
+            py: { xs: 0.85, sm: 1 },
+            borderBottom: isDark
+              ? `1px solid #67C99D`
+              : `1px solid ${border}`,
+            background: isDark
+              ? `linear-gradient(180deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+              : "linear-gradient(180deg,#ffffff 0%,#f7fbf9 100%)",
+            textAlign: DETAIL_DIALOG_TEXT_ALIGN
+          };
         }}
       >
         <Stack
@@ -985,12 +1100,12 @@ function ProfileDetailsDialog({
         >
           <Box sx={{ minWidth: 0 }}>
             <Typography
-              sx={{
+              sx={(theme) => ({
                 fontSize: { xs: 14, sm: 16 },
                 fontWeight: 950,
-                color: "#17372b",
+                color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
                 textAlign: DETAIL_DIALOG_TEXT_ALIGN
-              }}
+              })}
             >
               {title}
             </Typography>
@@ -1012,10 +1127,15 @@ function ProfileDetailsDialog({
           <IconButton
             size="small"
             onClick={onClose}
-            sx={{
-              flexShrink: 0,
-              border: `1px solid ${border}`,
-              background: soft
+            sx={(theme) => {
+              const isDark = theme.palette.mode === "dark";
+              return {
+                flexShrink: 0,
+                border: isDark
+                  ? `1px solid #67C99D`
+                  : `1px solid ${border}`,
+                background: isDark ? theme.palette.surfaces.nested : soft
+              };
             }}
           >
             <CloseRoundedIcon fontSize="small" />
@@ -1024,36 +1144,41 @@ function ProfileDetailsDialog({
       </DialogTitle>
 
       <DialogContent
-        sx={{
+        sx={(theme) => ({
           p: {
             xs: "8px !important",
             sm: "10px !important"
           },
-          background: "#fff",
+          background: theme.palette.mode === "dark" ? theme.palette.surfaces.card : "#fff",
           direction: DETAIL_DIALOG_DIRECTION,
           textAlign: DETAIL_DIALOG_TEXT_ALIGN
-        }}
+        })}
       >
         {children}
       </DialogContent>
 
       <DialogActions
-        sx={uiLayout.withUiSx({
-          px: { xs: 1.15, sm: 1.5 },
-          py: { xs: 0.65, sm: 0.75 },
-          borderTop: `1px solid ${border}`,
-          background: "#fbfdfc",
-          justifyContent: "flex-start"
+        sx={uiLayout.withUiSx((theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            px: { xs: 1.15, sm: 1.5 },
+            py: { xs: 0.65, sm: 0.75 },
+            borderTop: isDark
+              ? `1px solid #67C99D`
+              : `1px solid ${border}`,
+            background: isDark ? theme.palette.surfaces.section : "#fbfdfc",
+            justifyContent: "flex-start"
+          };
         }, uiLayout.dialogActionsSx)}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           size="small"
           onClick={onClose}
           sx={uiLayout.withUiSx({
             minWidth: 90,
             fontWeight: 900
-          }, uiLayout.buttonSx)}
+          }, uiLayout.buttonSx, permissionButtonSx)}
         >
           إغلاق
         </Button>
@@ -1101,7 +1226,7 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
           backgroundImage: "none",
           backgroundColor: theme.palette.mode === "dark" ? "#111916" : "#ffffff",
           border: theme.palette.mode === "dark"
-            ? "1px solid rgba(143,201,172,.22)"
+            ? "1px solid #67C99D"
             : "1px solid rgba(5,117,70,.13)",
           boxShadow: theme.palette.mode === "dark"
             ? "0 26px 70px rgba(0,0,0,.56)"
@@ -1116,7 +1241,7 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
           pt: { xs: 2, sm: 2.4 },
           pb: { xs: 1.45, sm: 1.7 },
           borderBottom: theme.palette.mode === "dark"
-            ? "1px solid rgba(255,255,255,.08)"
+            ? "1px solid #67C99D"
             : "1px solid rgba(5,117,70,.10)",
           background: theme.palette.mode === "dark"
             ? "linear-gradient(135deg, rgba(16,52,38,.95), rgba(17,25,22,.98))"
@@ -1137,7 +1262,7 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
                 ? "rgba(75,166,118,.16)"
                 : `${toneColor}12`,
               border: theme.palette.mode === "dark"
-                ? "1px solid rgba(129,205,168,.28)"
+                ? "1px solid #67C99D"
                 : `1px solid ${toneColor}28`
             })}
           >
@@ -1167,7 +1292,7 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
                     ? "rgba(69,168,121,.12)"
                     : "rgba(5,117,70,.07)",
                   border: theme.palette.mode === "dark"
-                    ? "1px solid rgba(128,201,167,.28)"
+                    ? "1px solid #67C99D"
                     : "1px solid rgba(5,117,70,.16)"
                 })}
               />
@@ -1199,7 +1324,7 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
             borderRadius: 2.4,
             backgroundColor: theme.palette.mode === "dark" ? "#151f1b" : "#f8fbf9",
             border: theme.palette.mode === "dark"
-              ? "1px solid rgba(255,255,255,.07)"
+              ? "1px solid #67C99D"
               : "1px solid rgba(5,117,70,.09)"
           })}
         >
@@ -1225,7 +1350,7 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
           justifyContent: "flex-start",
           backgroundColor: theme.palette.mode === "dark" ? "#0f1714" : "#fbfdfc",
           borderTop: theme.palette.mode === "dark"
-            ? "1px solid rgba(255,255,255,.07)"
+            ? "1px solid #67C99D"
             : "1px solid rgba(5,117,70,.09)"
         })}
       >
@@ -1255,13 +1380,23 @@ function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
 }
 
 function MetricCard({ title, value, subtitle, icon, tone = "default", onClick }) {
-  const tones = {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
+  const tonesLight = {
     default: ["#fff", "rgba(5,117,70,.14)", "rgba(5,117,70,.09)", primary],
     warning: ["#fffaf0", "rgba(237,137,54,.22)", "rgba(237,137,54,.12)", warning],
     danger: ["#fff6f6", "rgba(197,48,48,.18)", "rgba(197,48,48,.09)", danger],
     info: ["#f5fbff", "rgba(49,130,206,.18)", "rgba(49,130,206,.09)", "#2b6cb0"]
   };
+  const tonesDark = {
+    default: [theme.palette.surfaces.card, "#67C99D", theme.palette.borders.subtle, theme.palette.primary.main],
+    warning: [theme.palette.surfaces.card, pinColor("rgba(237,137,54,.42)"), "rgba(237,137,54,.14)", "#f0ad4e"],
+    danger: [theme.palette.surfaces.card, pinColor("rgba(229,90,90,.42)"), "rgba(229,90,90,.14)", "#e57373"],
+    info: [theme.palette.surfaces.card, pinColor("rgba(90,160,229,.42)"), "rgba(90,160,229,.14)", "#64b5f6"]
+  };
 
+  const tones = isDark ? tonesDark : tonesLight;
   const palette = tones[tone] || tones.default;
 
   return (
@@ -1274,12 +1409,16 @@ function MetricCard({ title, value, subtitle, icon, tone = "default", onClick })
         borderRadius: 2.8,
         border: `1px solid ${palette[1]}`,
         background: palette[0],
+        boxShadow: isDark ? `0 0 0 1px #67C99D` : "none",
         cursor: onClick ? "pointer" : "default",
-        transition: "transform .16s ease, box-shadow .16s ease",
+        transition: "transform .16s ease, box-shadow .16s ease, border-color .16s ease",
         "&:hover": onClick
           ? {
               transform: "translateY(-2px)",
-              boxShadow: "0 10px 24px rgba(5,117,70,.09)"
+              borderColor: palette[1],
+              boxShadow: isDark
+                ? `0 12px 28px rgba(0,0,0,.5), 0 0 0 1px ${palette[1]}`
+                : "0 10px 24px rgba(5,117,70,.09)"
             }
           : undefined
       }}
@@ -1317,7 +1456,7 @@ function MetricCard({ title, value, subtitle, icon, tone = "default", onClick })
               fontSize: { xs: 17, sm: 19, md: 21 },
               lineHeight: 1.2,
               fontWeight: 950,
-              color: "#17372b",
+              color: isDark ? theme.palette.text.primary : "#17372b",
               mt: 0.15,
               textAlign: SECTION_TEXT_ALIGN
             }}
@@ -1378,7 +1517,7 @@ function HomeSkeleton() {
         }}
       >
         {[1, 2, 3, 4].map((item) => (
-          <Paper key={item} elevation={0} sx={{ p: 1.4, borderRadius: 2.8, border: `1px solid ${border}` }}>
+          <Paper key={item} elevation={0} sx={(theme) => ({ p: 1.4, borderRadius: 2.8, border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${border}` })}>
             <Skeleton width="45%" />
             <Skeleton width="70%" height={38} />
             <Skeleton width="82%" />
@@ -1388,7 +1527,7 @@ function HomeSkeleton() {
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" }, gap: 1.5 }}>
         {[1, 2, 3, 4].map((item) => (
-          <Paper key={item} elevation={0} sx={{ p: 1.5, borderRadius: 3, border: `1px solid ${border}` }}>
+          <Paper key={item} elevation={0} sx={(theme) => ({ p: 1.5, borderRadius: 3, border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${border}` })}>
             <Skeleton width="30%" height={30} />
             <Divider sx={{ my: 1 }} />
             <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
@@ -1421,7 +1560,7 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
         }
       }}
     >
-      <DialogTitle sx={{ py: 1.2, borderBottom: `1px solid ${border}` }}>
+      <DialogTitle sx={(theme) => ({ py: 1.2, borderBottom: theme.palette.mode === "dark" ? `1px solid #67C99D` : `1px solid ${border}` })}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
           <Box sx={{ minWidth: 0 }}>
             <Typography sx={{ fontWeight: 950, fontSize: 15 }}>{preview.title || "معاينة الملف"}</Typography>
@@ -1433,7 +1572,7 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
         </Stack>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0, bgcolor: "#f4f7f5", minHeight: 0 }}>
+      <DialogContent sx={(theme) => ({ p: 0, bgcolor: theme.palette.mode === "dark" ? theme.palette.surfaces.page : "#f4f7f5", minHeight: 0 })}>
         {preview.loading && (
           <Box sx={{ height: "100%", display: "grid", placeItems: "center" }}>
             <Stack spacing={1} alignItems="center">
@@ -1445,7 +1584,7 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
 
         {!preview.loading && preview.error && (
           <Box sx={{ p: 2 }}>
-            <Alert severity="warning">{preview.error}</Alert>
+            <Alert severity="warning" sx={darkAlertSx}>{preview.error}</Alert>
           </Box>
         )}
 
@@ -1460,7 +1599,7 @@ function FilePreviewDialog({ preview, onClose, onDownload }) {
         )}
       </DialogContent>
 
-      <DialogActions sx={uiLayout.withUiSx({ px: 1.5, py: 1, borderTop: `1px solid ${border}` }, uiLayout.dialogActionsSx)}>
+      <DialogActions sx={uiLayout.withUiSx((theme) => ({ px: 1.5, py: 1, borderTop: theme.palette.mode === "dark" ? `1px solid #67C99D` : `1px solid ${border}` }), uiLayout.dialogActionsSx)}>
         <Button sx={uiLayout.buttonSx} onClick={onDownload} startIcon={<DownloadRoundedIcon />} disabled={!preview.requestUrl}>
           تحميل الملف
         </Button>
@@ -2542,8 +2681,8 @@ const decideLeaveApproval = async (
 
   if (error && !home) {
     return (
-      <Paper elevation={0} sx={{ p: 2, borderRadius: 3, border: "1px solid rgba(197,48,48,.15)" }}>
-        <Alert severity="error" action={<Button sx={uiLayout.buttonSx} size="small" onClick={() => loadData({ initial: true })}>إعادة المحاولة</Button>}>
+      <Paper elevation={0} sx={(theme) => ({ p: 2, borderRadius: 3, border: theme.palette.mode === "dark" ? `1px solid ${pinColor("rgba(229,90,90,.4)")}` : "1px solid rgba(197,48,48,.15)" })}>
+        <Alert severity="error" sx={darkAlertSx} action={<Button sx={uiLayout.buttonSx} size="small" onClick={() => loadData({ initial: true })}>إعادة المحاولة</Button>}>
           {error}
         </Alert>
       </Paper>
@@ -2571,14 +2710,14 @@ const decideLeaveApproval = async (
         <Alert
           severity={notice.severity || "info"}
           onClose={() => setNotice(null)}
-          sx={{ mb: 1 }}
+          sx={uiLayout.withUiSx(darkAlertSx, { mb: 1 })}
         >
           {notice.text}
         </Alert>
       )}
 
       {error && home && (
-        <Alert severity="warning" sx={{ mb: 1 }}>
+        <Alert severity="warning" sx={uiLayout.withUiSx(darkAlertSx, { mb: 1 })}>
           تعذر تحديث بعض البيانات: {error}
         </Alert>
       )}
@@ -2592,15 +2731,29 @@ const decideLeaveApproval = async (
 
       <Paper
         elevation={0}
-        sx={{
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: 3.3,
-          p: { xs: 1, sm: 1.35, md: 2 },
-          mb: { xs: 0.85, sm: 1.05, md: 1.25 },
-          color: "#fff",
-          background: "linear-gradient(125deg,#034d31 0%,#057546 52%,#0b8b58 100%)",
-          boxShadow: "0 15px 35px rgba(3,77,49,.15)"
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            position: "relative",
+            overflow: "hidden",
+            borderRadius: 3.3,
+            p: { xs: 1, sm: 1.35, md: 2 },
+            mb: { xs: 0.85, sm: 1.05, md: 1.25 },
+            color: "#fff",
+            // The light-mode gradient's bright, saturated green looked out of
+            // place dropped straight onto the dark page (too neon next to
+            // the muted dark cards below it), so dark mode gets its own
+            // deeper, richer blend of the same brand green instead of reusing
+            // the light one as-is, plus the glow border used on every other
+            // card so the header reads as "handled for dark mode" too.
+            background: isDark
+              ? "linear-gradient(125deg,#0a2118 0%,#155c3d 55%,#1f8058 100%)"
+              : "linear-gradient(125deg,#034d31 0%,#057546 52%,#0b8b58 100%)",
+            border: isDark ? "1px solid rgba(103,201,157,.28)" : "none",
+            boxShadow: isDark
+              ? "0 0 32px rgba(103,201,157,.10), 0 18px 40px rgba(0,0,0,.55)"
+              : "0 15px 35px rgba(3,77,49,.15)"
+          };
         }}
       >
         <Box
@@ -2699,14 +2852,23 @@ const decideLeaveApproval = async (
             }}
             disabled={refreshing}
             sx={uiLayout.withUiSx({
-              color: primaryDark,
-              background: "#fff",
+              // Pinned (not auto-darkened): this button keeps a white
+              // background in both themes (see below), so its text must stay
+              // dark green too instead of the auto dark-mode lightening a
+              // plain literal color would otherwise get.
+              color: `light-dark(${primaryDark}, ${primaryDark})`,
+              // This button sits on the header's fixed brand-green gradient in
+              // both themes, so its background must stay light-dark()-pinned
+              // white — a literal "#fff" would otherwise get auto-darkened by
+              // the dark-mode color plugin and vanish into a near-black chip
+              // against the still-green banner.
+              background: "light-dark(#ffffff, #ffffff)",
               fontWeight: 950,
               minHeight: { xs: 34, sm: 38 },
               fontSize: { xs: 12, sm: 12 },
               gridColumn: { xs: "1 / -1", sm: "auto" },
               justifySelf: { xs: "stretch", sm: "end" },
-              "&:hover": { background: "#f3fbf7" }
+              "&:hover": { background: "light-dark(#f3fbf7, #f3fbf7)" }
             }, uiLayout.buttonSx)}
           >
             تحديث الملف
@@ -2716,12 +2878,18 @@ const decideLeaveApproval = async (
 
       <Paper
         elevation={0}
-        sx={{
-          p: { xs: 0.65, sm: 0.85, md: 1 },
-          mb: { xs: 0.85, sm: 1, md: 1.25 },
-          borderRadius: 2.7,
-          border: `1px solid ${border}`,
-          background: "rgba(255,255,255,.86)"
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            p: { xs: 0.65, sm: 0.85, md: 1 },
+            mb: { xs: 0.85, sm: 1, md: 1.25 },
+            borderRadius: 2.7,
+            border: isDark
+              ? `1px solid #67C99D`
+              : `1px solid ${border}`,
+            background: isDark ? theme.palette.surfaces.card : "rgba(255,255,255,.86)",
+            boxShadow: isDark ? `0 0 0 1px #67C99D` : "none"
+          };
         }}
       >
         <Box
@@ -2740,7 +2908,7 @@ const decideLeaveApproval = async (
             }
           }, uiLayout.actionBarSx)}
         >
-          <Button sx={uiLayout.buttonSx} size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog} disabled={!capabilities?.canRequestLeave}>
+          <Button sx={[uiLayout.buttonSx, permissionButtonSx]} size="small" variant="outlined" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog} disabled={!capabilities?.canRequestLeave}>
             طلب إجازة جديد
           </Button>
           <Button
@@ -2801,12 +2969,18 @@ const decideLeaveApproval = async (
                   <Paper
                     key={row.leaveRequestGuid}
                     elevation={0}
-                    sx={{
-                      p: { xs: 0.9, sm: 1.1 },
-                      borderRadius: 2.2,
-                      border: `1px solid ${border}`,
-                      background:
-                        "linear-gradient(180deg,#fff 0%,#fbfdfc 100%)"
+                    sx={(theme) => {
+                      const isDark = theme.palette.mode === "dark";
+                      return {
+                        p: { xs: 0.9, sm: 1.1 },
+                        borderRadius: 2.2,
+                        border: isDark
+                          ? `1px solid #67C99D`
+                          : `1px solid ${border}`,
+                        background: isDark
+                          ? theme.palette.surfaces.nested
+                          : "linear-gradient(180deg,#fff 0%,#fbfdfc 100%)"
+                      };
                     }}
                   >
                     <Box
@@ -3034,7 +3208,7 @@ const decideLeaveApproval = async (
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr" }, gap: 1.4 }}>
               {hrPermissions?.attendance && (
                 <Section title="حالة الفريق اليوم" subtitle="الموظفون داخل نطاقك حسب صلاحية الحضور" action={<Button sx={uiLayout.buttonSx} size="small" endIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/dashboard/hr-attendance")}>شاشة الحضور</Button>}>
-                  <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx)}>
+                  <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx, TABLE_DARK_BORDER_SX)}>
                     <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
                       <TableHead><TableRow><TableCell>الموظف</TableCell><TableCell>المسمى</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell></TableRow></TableHead>
                       <TableBody>
@@ -3058,7 +3232,7 @@ const decideLeaveApproval = async (
                 <Section title="موافقات الإجازات" subtitle="الطلبات الموجودة عند خطوتك الحالية">
                   <Stack spacing={0.75}>
                     {(management?.pendingApprovals || []).map((row) => (
-                      <Paper key={row.leaveRequestGuid} variant="outlined" sx={{ p: 1, borderRadius: 2, borderColor: border }}>
+                      <Paper key={row.leaveRequestGuid} variant="outlined" sx={(theme) => ({ p: 1, borderRadius: 2, borderColor: theme.palette.mode === "dark" ? "#67C99D" : border })}>
                         <Stack direction="row" justifyContent="space-between" gap={1}>
                           <Box sx={{ minWidth: 0, textAlign: SECTION_TEXT_ALIGN }}>
                             <Typography sx={{ fontSize: 12, fontWeight: 950 }}>{row.employeeName}</Typography>
@@ -3068,7 +3242,7 @@ const decideLeaveApproval = async (
                         </Stack>
                       </Paper>
                     ))}
-                    {!management?.pendingApprovals?.length && <Alert severity="success">لا توجد طلبات تنتظر موافقتك حاليًا.</Alert>}
+                    {!management?.pendingApprovals?.length && <Alert severity="success" sx={darkAlertSx}>لا توجد طلبات تنتظر موافقتك حاليًا.</Alert>}
                   </Stack>
                 </Section>
               )}
@@ -3106,17 +3280,11 @@ const decideLeaveApproval = async (
             </Button>
           }
         >
-          <DetailGrid>
+          <DetailGrid compact>
             <DetailTile
               icon={<BadgeRoundedIcon fontSize="small" />}
               label="كود الموظف"
               value={employee?.employeeCode}
-              ltr
-            />
-            <DetailTile
-              icon={<PersonRoundedIcon fontSize="small" />}
-              label="اسم المستخدم"
-              value={employee?.userName}
               ltr
             />
             <DetailTile
@@ -3133,39 +3301,6 @@ const decideLeaveApproval = async (
               icon={<BusinessRoundedIcon fontSize="small" />}
               label="الفرع"
               value={employee?.branchName}
-            />
-            <DetailTile
-              icon={<ManageAccountsRoundedIcon fontSize="small" />}
-              label="المدير المباشر"
-              value={
-                resolvedManagers.length > 0
-                  ? resolvedManagers
-                      .map((manager) => manager.managerName)
-                      .filter(Boolean)
-                      .join(" / ")
-                  : profile?.directManagerName || "غير محدد"
-              }
-              helper={
-                resolvedManagers.length > 1
-                  ? `${resolvedManagers.length} مديرين حسب الهيكل الإداري`
-                  : resolvedManagerSource
-                    ? `حسب الهيكل: ${resolvedManagerSource}`
-                    : undefined
-              }
-            />
-            <DetailTile
-              icon={<ScheduleRoundedIcon fontSize="small" />}
-              label="نوع الدوام"
-              value={profile?.workTypeName || "غير محدد"}
-            />
-            <DetailTile
-              icon={<AccessTimeRoundedIcon fontSize="small" />}
-              label="ساعات الدوام اليومية"
-              value={
-                profile?.dailyWorkingHours != null
-                  ? `${profile.dailyWorkingHours} ساعة`
-                  : "غير محدد"
-              }
             />
           </DetailGrid>
         </Section>
@@ -3190,7 +3325,7 @@ const decideLeaveApproval = async (
             </Button>
           }
         >
-          <DetailGrid>
+          <DetailGrid compact>
             <DetailTile
               icon={<FingerprintRoundedIcon fontSize="small" />}
               label="رقم الهوية"
@@ -3204,43 +3339,9 @@ const decideLeaveApproval = async (
               ltr
             />
             <DetailTile
-              icon={<PersonRoundedIcon fontSize="small" />}
-              label="الجنس"
-              value={genderText(profile?.gender)}
-            />
-            <DetailTile
-              icon={<PersonRoundedIcon fontSize="small" />}
-              label="الجنسية"
-              value={profile?.nationality}
-            />
-            <DetailTile
-              icon={<PersonRoundedIcon fontSize="small" />}
-              label="الحالة الاجتماعية"
-              value={maritalText(profile?.maritalStatus)}
-            />
-            <DetailTile
-              icon={<SchoolRoundedIcon fontSize="small" />}
-              label="المؤهل"
-              value={educationLevelText(
-                profile?.educationLevel,
-                profile?.educationLevelName
-              )}
-            />
-            <DetailTile
-              icon={<SchoolRoundedIcon fontSize="small" />}
-              label="التخصص"
-              value={profile?.specialization || "غير محدد"}
-            />
-            <DetailTile
               icon={<PhoneRoundedIcon fontSize="small" />}
               label="الجوال"
               value={employee?.mobile}
-              ltr
-            />
-            <DetailTile
-              icon={<PhoneRoundedIcon fontSize="small" />}
-              label="جوال إضافي"
-              value={employee?.mobile2}
               ltr
             />
             <DetailTile
@@ -3267,7 +3368,7 @@ const decideLeaveApproval = async (
           {contract?.hasContract ? (
             <>
               <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: ".55fr 1.45fr" }, gap: 1.1 }}>
-                <Paper elevation={0} sx={{ p: 1.5, borderRadius: 2.5, color: "#fff", background: "linear-gradient(135deg,#057546,#034d31)" }}>
+                <Paper elevation={0} sx={(theme) => ({ p: 1.5, borderRadius: 2.5, color: "#fff", background: "linear-gradient(135deg,#057546,#034d31)", border: theme.palette.mode === "dark" ? "1px solid #67C99D" : "none" })}>
                   <Typography sx={{ fontSize: 12, opacity: 0.82 }}>الراتب الأساسي حسب العقد</Typography>
                   <Typography sx={{ fontSize: 28, fontWeight: 950, mt: 0.4 }}>{money(contract?.basicSalary)}</Typography>
                   <Divider sx={{ my: 1.2, borderColor: "rgba(255,255,255,.16)" }} />
@@ -3295,7 +3396,7 @@ const decideLeaveApproval = async (
               {(contract?.history || []).length > 1 && (
                 <Box sx={{ mt: 1.4 }}>
                   <Typography sx={{ fontSize: 12, fontWeight: 950, mb: 0.7 }}>سجل العقود السابقة</Typography>
-                  <TableContainer sx={uiLayout.withUiSx({ border: `1px solid ${border}`, borderRadius: 2 }, uiLayout.tableContainerSx)}>
+                  <TableContainer sx={uiLayout.withUiSx((theme) => ({ border: theme.palette.mode === "dark" ? `1px solid #67C99D` : `1px solid ${border}`, borderRadius: 2 }), uiLayout.tableContainerSx, TABLE_DARK_BORDER_SX)}>
                     <Table size="small" dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
                       <TableHead><TableRow><TableCell>رقم العقد</TableCell><TableCell>النوع</TableCell><TableCell>البداية</TableCell><TableCell>النهاية</TableCell><TableCell>الراتب الأساسي</TableCell><TableCell>الحالة</TableCell></TableRow></TableHead>
                       <TableBody>
@@ -3316,7 +3417,7 @@ const decideLeaveApproval = async (
               )}
             </>
           ) : (
-            <Alert severity="warning">لا يوجد عقد حالي محفوظ على ملفك الوظيفي.</Alert>
+            <Alert severity="warning" sx={darkAlertSx}>لا يوجد عقد حالي محفوظ على ملفك الوظيفي.</Alert>
           )}
         </Section>
       </Box>
@@ -3350,7 +3451,7 @@ const decideLeaveApproval = async (
             <Chip label={`غير مكتمل ${attendance?.incompleteDays || 0}`} variant="outlined" />
           </Box>
 
-          <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx)}>
+          <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx, TABLE_DARK_BORDER_SX)}>
             <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
               <TableHead><TableRow><TableCell>التاريخ</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell><TableCell>التأخير</TableCell><TableCell>الخروج المبكر</TableCell><TableCell>الإضافي</TableCell></TableRow></TableHead>
               <TableBody>
@@ -3371,10 +3472,23 @@ const decideLeaveApproval = async (
           </TableContainer>
         </Section>
 
-        <Section title="أرصدة الإجازات" subtitle={`السنة ${leave?.year || new Date().getFullYear()}`} action={<Button sx={uiLayout.buttonSx} size="small" variant="contained" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog}>طلب إجازة</Button>}>
+        <Section title="أرصدة الإجازات" subtitle={`السنة ${leave?.year || new Date().getFullYear()}`} action={<Button sx={[uiLayout.buttonSx, permissionButtonSx]} size="small" variant="outlined" startIcon={<AddRoundedIcon />} onClick={openLeaveDialog}>طلب إجازة</Button>}>
           <Stack spacing={0.75}>
             {(leave?.balances || []).map((row) => (
-              <Box key={row.leaveTypeGuid} sx={{ p: 1, borderRadius: 2, border: `1px solid ${border}`, background: soft }}>
+              <Box
+                key={row.leaveTypeGuid}
+                sx={(theme) => {
+                  const isDark = theme.palette.mode === "dark";
+                  return {
+                    p: 1,
+                    borderRadius: 2,
+                    border: isDark
+                      ? `1px solid #67C99D`
+                      : `1px solid ${border}`,
+                    background: isDark ? theme.palette.surfaces.nested : soft
+                  };
+                }}
+              >
                 <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
                   <Box sx={{ textAlign: SECTION_TEXT_ALIGN }}>
                     <Typography sx={{ fontSize: 12, fontWeight: 950 }}>{row.leaveTypeName}</Typography>
@@ -3384,7 +3498,7 @@ const decideLeaveApproval = async (
                 </Stack>
               </Box>
             ))}
-            {!leave?.balances?.length && <Alert severity="info">لا توجد أرصدة إجازات معرفة للسنة الحالية.</Alert>}
+            {!leave?.balances?.length && <Alert severity="info" sx={darkAlertSx}>لا توجد أرصدة إجازات معرفة للسنة الحالية.</Alert>}
           </Stack>
         </Section>
       </Box>
@@ -3393,7 +3507,20 @@ const decideLeaveApproval = async (
         <Section title="آخر طلبات الإجازة" subtitle="المسار والحالة الحالية لكل طلب">
           <Stack spacing={0.7}>
             {(leave?.requests || []).map((row) => (
-              <Box key={row.leaveRequestGuid} sx={{ p: 1, border: `1px solid ${border}`, borderRadius: 2 }}>
+              <Box
+                key={row.leaveRequestGuid}
+                sx={(theme) => {
+                  const isDark = theme.palette.mode === "dark";
+                  return {
+                    p: 1,
+                    border: isDark
+                      ? `1px solid #67C99D`
+                      : `1px solid ${border}`,
+                    borderRadius: 2,
+                    background: isDark ? theme.palette.surfaces.nested : "transparent"
+                  };
+                }}
+              >
                 <Stack direction="row" justifyContent="space-between" gap={1} alignItems="flex-start">
                   <Box sx={{ minWidth: 0, textAlign: SECTION_TEXT_ALIGN }}>
                     <Typography sx={{ fontSize: 12, fontWeight: 950 }}>#{row.requestNumber || "-"} • {row.leaveTypeName}</Typography>
@@ -3420,7 +3547,7 @@ const decideLeaveApproval = async (
                 </Stack>
               </Box>
             ))}
-            {!leave?.requests?.length && <Alert severity="info">لا توجد طلبات إجازة مسجلة حتى الآن.</Alert>}
+            {!leave?.requests?.length && <Alert severity="info" sx={darkAlertSx}>لا توجد طلبات إجازة مسجلة حتى الآن.</Alert>}
           </Stack>
         </Section>
 
@@ -3449,10 +3576,16 @@ const decideLeaveApproval = async (
               {myPermissions.map((row) => (
                 <Box
                   key={row.permissionGuid}
-                  sx={{
-                    p: 1,
-                    border: `1px solid ${border}`,
-                    borderRadius: 2
+                  sx={(theme) => {
+                    const isDark = theme.palette.mode === "dark";
+                    return {
+                      p: 1,
+                      border: isDark
+                        ? `1px solid #67C99D`
+                        : `1px solid ${border}`,
+                      borderRadius: 2,
+                      background: isDark ? theme.palette.surfaces.nested : "transparent"
+                    };
                   }}
                 >
                   <Stack
@@ -3510,7 +3643,7 @@ const decideLeaveApproval = async (
               ))}
 
               {!myPermissions.length && (
-                <Alert severity="info">
+                <Alert severity="info" sx={darkAlertSx}>
                   لا توجد طلبات أذونات مسجلة حتى الآن.
                 </Alert>
               )}
@@ -3521,7 +3654,15 @@ const decideLeaveApproval = async (
         <Section sectionRef={documentsRef} title="مرفقاتي" subtitle={`إجمالي المرفقات: ${documents?.count || 0} — يمكنك المعاينة أو التحميل`}>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 0.75 }}>
             {(documents?.recent || []).map((row) => (
-              <Paper key={row.documentGuid} variant="outlined" sx={{ p: 1, borderRadius: 2.2, borderColor: border }}>
+              <Paper
+                key={row.documentGuid}
+                variant="outlined"
+                sx={(theme) => ({
+                  p: 1,
+                  borderRadius: 2.2,
+                  borderColor: theme.palette.mode === "dark" ? "#67C99D" : border
+                })}
+              >
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Box sx={{ width: 38, height: 38, display: "grid", placeItems: "center", borderRadius: 1.5, color: primary, background: "rgba(5,117,70,.08)", flexShrink: 0 }}>
                     <InsertDriveFileRoundedIcon fontSize="small" />
@@ -3540,7 +3681,7 @@ const decideLeaveApproval = async (
               </Paper>
             ))}
           </Box>
-          {!documents?.recent?.length && <Alert severity="info">لا توجد مرفقات على الملف الوظيفي.</Alert>}
+          {!documents?.recent?.length && <Alert severity="info" sx={darkAlertSx}>لا توجد مرفقات على الملف الوظيفي.</Alert>}
         </Section>
       </Box>
 
@@ -3548,7 +3689,21 @@ const decideLeaveApproval = async (
         <Section title="إدارة الموارد البشرية" subtitle="تظهر فقط الشاشات التي يملك المستخدم صلاحية عرضها">
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4,1fr)" }, gap: 0.8 }}>
             {quickLinks.map((item) => (
-              <Button key={item.path} variant="outlined" startIcon={item.icon} onClick={() => navigate(item.path)} sx={uiLayout.withUiSx({ justifyContent: "flex-start", minHeight: 46, borderColor: border, color: "#17372b", fontWeight: 900, fontSize: 12, "&:hover": { borderColor: primary, background: "rgba(5,117,70,.04)" } }, uiLayout.buttonSx)}>
+              <Button key={item.path} variant="outlined" startIcon={item.icon} onClick={() => navigate(item.path)} sx={uiLayout.withUiSx((theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  justifyContent: "flex-start",
+                  minHeight: 46,
+                  borderColor: isDark ? "#67C99D" : border,
+                  color: isDark ? theme.palette.text.primary : "#17372b",
+                  fontWeight: 900,
+                  fontSize: 12,
+                  "&:hover": {
+                    borderColor: isDark ? "#67C99D" : primary,
+                    background: isDark ? theme.palette.surfaces.hover : "rgba(5,117,70,.04)"
+                  }
+                };
+              }, uiLayout.buttonSx)}>
                 {item.label}
               </Button>
             ))}
@@ -3563,6 +3718,45 @@ const decideLeaveApproval = async (
         subtitle="بيانات إضافية"
       >
         <DetailGrid>
+          <DetailTile
+            icon={<PersonRoundedIcon fontSize="small" />}
+            label="اسم المستخدم"
+            value={employee?.userName}
+            ltr
+          />
+          <DetailTile
+            icon={<ManageAccountsRoundedIcon fontSize="small" />}
+            label="المدير المباشر"
+            value={
+              resolvedManagers.length > 0
+                ? resolvedManagers
+                    .map((manager) => manager.managerName)
+                    .filter(Boolean)
+                    .join(" / ")
+                : profile?.directManagerName || "غير محدد"
+            }
+            helper={
+              resolvedManagers.length > 1
+                ? `${resolvedManagers.length} مديرين حسب الهيكل الإداري`
+                : resolvedManagerSource
+                  ? `حسب الهيكل: ${resolvedManagerSource}`
+                  : undefined
+            }
+          />
+          <DetailTile
+            icon={<ScheduleRoundedIcon fontSize="small" />}
+            label="نوع الدوام"
+            value={profile?.workTypeName || "غير محدد"}
+          />
+          <DetailTile
+            icon={<AccessTimeRoundedIcon fontSize="small" />}
+            label="ساعات الدوام اليومية"
+            value={
+              profile?.dailyWorkingHours != null
+                ? `${profile.dailyWorkingHours} ساعة`
+                : "غير محدد"
+            }
+          />
           <DetailTile
             icon={<TodayRoundedIcon fontSize="small" />}
             label="أيام العمل الأسبوعية"
@@ -3602,6 +3796,27 @@ const decideLeaveApproval = async (
         subtitle="بيانات إضافية"
       >
         <DetailGrid>
+          <DetailTile
+            icon={<PersonRoundedIcon fontSize="small" />}
+            label="الجنس"
+            value={genderText(profile?.gender)}
+          />
+          <DetailTile
+            icon={<PersonRoundedIcon fontSize="small" />}
+            label="الجنسية"
+            value={profile?.nationality}
+          />
+          <DetailTile
+            icon={<PersonRoundedIcon fontSize="small" />}
+            label="الحالة الاجتماعية"
+            value={maritalText(profile?.maritalStatus)}
+          />
+          <DetailTile
+            icon={<PhoneRoundedIcon fontSize="small" />}
+            label="جوال إضافي"
+            value={employee?.mobile2}
+            ltr
+          />
           <DetailTile
             icon={<AccountBalanceRoundedIcon fontSize="small" />}
             label="IBAN"
@@ -3670,13 +3885,15 @@ const decideLeaveApproval = async (
         }}
       >
         <DialogTitle
-          sx={{
+          sx={(theme) => ({
             px: { xs: 1.2, sm: 2 },
             py: { xs: 1, sm: 1.4 },
-            borderBottom: `1px solid ${border}`,
+            borderBottom: theme.palette.mode === "dark"
+              ? `1px solid #67C99D`
+              : `1px solid ${border}`,
             textAlign:
               LEAVE_TRACKING_DIALOG_TEXT_ALIGN
-          }}
+          })}
         >
           <Stack
             direction="row"
@@ -3744,11 +3961,16 @@ const decideLeaveApproval = async (
             <Stack spacing={1}>
               <Paper
                 elevation={0}
-                sx={{
-                  p:{xs:.9,sm:1.1},
-                  borderRadius:2.2,
-                  border:`1px solid ${border}`,
-                  background:soft
+                sx={(theme) => {
+                  const isDark = theme.palette.mode === "dark";
+                  return {
+                    p: { xs: .9, sm: 1.1 },
+                    borderRadius: 2.2,
+                    border: isDark
+                      ? `1px solid #67C99D`
+                      : `1px solid ${border}`,
+                    background: isDark ? theme.palette.surfaces.nested : soft
+                  };
                 }}
               >
                 <Box
@@ -3822,17 +4044,20 @@ const decideLeaveApproval = async (
                     <Paper
                       key={stage.requestStageGuid}
                       elevation={0}
-                      sx={{
-                        p:{xs:.8,sm:1},
-                        borderRadius:2,
-                        border:`1px solid ${
-                          isCurrent
-                            ? "rgba(237,137,54,.55)"
-                            : border
-                        }`,
-                        background:isCurrent
-                          ? "rgba(255,247,237,.72)"
-                          : "#fff"
+                      sx={(theme) => {
+                        const isDark = theme.palette.mode === "dark";
+                        return {
+                          p: { xs: .8, sm: 1 },
+                          borderRadius: 2,
+                          border: `1px solid ${
+                            isCurrent
+                              ? pinColor("rgba(237,137,54,.55)")
+                              : (isDark ? "#67C99D" : border)
+                          }`,
+                          background: isCurrent
+                            ? (isDark ? "rgba(237,137,54,.12)" : "rgba(255,247,237,.72)")
+                            : (isDark ? theme.palette.surfaces.nested : "#fff")
+                        };
                       }}
                     >
                       <Stack
@@ -3958,11 +4183,16 @@ const decideLeaveApproval = async (
                   <Paper
                     key={item.approvalHistoryGuid}
                     elevation={0}
-                    sx={{
-                      p:.75,
-                      borderRadius:1.8,
-                      border:`1px solid ${border}`,
-                      background:"#fbfdfc"
+                    sx={(theme) => {
+                      const isDark = theme.palette.mode === "dark";
+                      return {
+                        p: .75,
+                        borderRadius: 1.8,
+                        border: isDark
+                          ? `1px solid #67C99D`
+                          : `1px solid ${border}`,
+                        background: isDark ? theme.palette.surfaces.nested : "#fbfdfc"
+                      };
                     }}
                   >
                     <Stack
@@ -4006,7 +4236,7 @@ const decideLeaveApproval = async (
               </Stack>
             </Stack>
           ) : (
-            <Alert severity="info">
+            <Alert severity="info" sx={darkAlertSx}>
               لا توجد بيانات متابعة لهذا الطلب.
             </Alert>
           )}
@@ -4020,8 +4250,8 @@ const decideLeaveApproval = async (
             justifyContent:"flex-start"
           }, uiLayout.dialogActionsSx)}
         >
-          <Button sx={uiLayout.buttonSx}
-            variant="contained"
+          <Button sx={[uiLayout.buttonSx, permissionButtonSx]}
+            variant="outlined"
             onClick={() =>
               setLeaveTrackingOpen(false)
             }
@@ -4060,11 +4290,18 @@ const decideLeaveApproval = async (
         }}
       >
         <DialogTitle
-          sx={{
-            px: { xs: 1.1, sm: 1.5 },
-            py: { xs: 0.85, sm: 1 },
-            borderBottom: `1px solid ${border}`,
-            background: "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              px: { xs: 1.1, sm: 1.5 },
+              py: { xs: 0.85, sm: 1 },
+              borderBottom: isDark
+                ? `1px solid #67C99D`
+                : `1px solid ${border}`,
+              background: isDark
+                ? `linear-gradient(180deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+                : "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)"
+            };
           }}
         >
           <Stack
@@ -4075,11 +4312,11 @@ const decideLeaveApproval = async (
           >
             <Box sx={{ minWidth: 0 }}>
               <Typography
-                sx={{
+                sx={(theme) => ({
                   fontSize: { xs: 14.5, sm: 17 },
                   fontWeight: 950,
-                  color: "#17372b"
-                }}
+                  color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b"
+                })}
               >
                 طلب إذن جديد
               </Typography>
@@ -4095,12 +4332,17 @@ const decideLeaveApproval = async (
               size="small"
               onClick={() => setPermissionDialogOpen(false)}
               disabled={permissionSubmitting}
-              sx={{
-                flexShrink: 0,
-                width: 34,
-                height: 34,
-                border: `1px solid ${border}`,
-                background: soft
+              sx={(theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  flexShrink: 0,
+                  width: 34,
+                  height: 34,
+                  border: isDark
+                    ? `1px solid #67C99D`
+                    : `1px solid ${border}`,
+                  background: isDark ? theme.palette.surfaces.nested : soft
+                };
               }}
             >
               <CloseRoundedIcon />
@@ -4110,15 +4352,15 @@ const decideLeaveApproval = async (
 
         <DialogContent
           dividers
-          sx={{
+          sx={(theme) => ({
             px: { xs: 1.25, sm: 2.3 },
             py: { xs: "12px !important", sm: "18px !important" },
-            background: "#fbfdfc",
+            background: theme.palette.mode === "dark" ? theme.palette.surfaces.page : "#fbfdfc",
             overflowX: "hidden"
-          }}
+          })}
         >
           <Stack spacing={1.2}>
-            <Alert severity="info" sx={{ borderRadius: 2, py: 0.35 }}>
+            <Alert severity="info" sx={uiLayout.withUiSx(darkAlertSx, { borderRadius: 2, py: 0.35 })}>
               لن يتم إرسال الإذن إذا لم تكن هناك وردية فعالة أو إذا كان التاريخ ليس يوم عمل في ورديتك.
             </Alert>
 
@@ -4262,7 +4504,7 @@ const decideLeaveApproval = async (
             )}
 
             {permissionForm.permissionType === 4 && (
-              <Alert severity="info" sx={{ borderRadius: 2, py: 0.35 }}>
+              <Alert severity="info" sx={uiLayout.withUiSx(darkAlertSx, { borderRadius: 2, py: 0.35 })}>
                 إذن يوم كامل، لكن يجب أن يكون اليوم ضمن أيام العمل الفعلية في ورديتك.
               </Alert>
             )}
@@ -4310,7 +4552,7 @@ const decideLeaveApproval = async (
             </Box>
 
             {permissionError && (
-              <Alert severity="error" sx={{ borderRadius: 2 }}>
+              <Alert severity="error" sx={uiLayout.withUiSx(darkAlertSx, { borderRadius: 2 })}>
                 {permissionError}
               </Alert>
             )}
@@ -4318,27 +4560,33 @@ const decideLeaveApproval = async (
         </DialogContent>
 
         <DialogActions
-          sx={uiLayout.withUiSx({
-            px: { xs: 1.1, sm: 2.3 },
-            py: { xs: 0.9, sm: 1.25 },
-            borderTop: `1px solid ${border}`,
-            background: "#fff",
-            gap: 0.7,
-            justifyContent: "flex-start"
+          sx={uiLayout.withUiSx((theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              px: { xs: 1.1, sm: 2.3 },
+              py: { xs: 0.9, sm: 1.25 },
+              borderTop: isDark
+                ? `1px solid #67C99D`
+                : `1px solid ${border}`,
+              background: isDark ? theme.palette.surfaces.section : "#fff",
+              gap: 0.7,
+              justifyContent: "flex-start"
+            };
           }, uiLayout.dialogActionsSx)}
         >
           <Button
-            variant="contained"
+            variant="outlined"
             startIcon={<SaveRoundedIcon />}
             onClick={submitPermissionRequest}
             disabled={permissionSubmitting}
-            sx={uiLayout.withUiSx({ fontWeight: 900, minWidth: 118 }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ fontWeight: 900, minWidth: 118 }, uiLayout.buttonSx, permissionButtonSx)}
           >
             {permissionSubmitting ? "جاري الإرسال..." : "إرسال الطلب"}
           </Button>
 
           <Button
-            sx={uiLayout.buttonSx}
+            variant="outlined"
+            sx={[uiLayout.buttonSx, permissionButtonSx]}
             onClick={() => setPermissionDialogOpen(false)}
             disabled={permissionSubmitting}
           >
@@ -4374,13 +4622,19 @@ const decideLeaveApproval = async (
         }}
       >
         <DialogTitle
-          sx={{
-            px: { xs: 1.1, sm: 1.5 },
-            py: { xs: 0.85, sm: 1 },
-            borderBottom: `1px solid ${border}`,
-            background:
-              "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)",
-            textAlign: LEAVE_DIALOG_TEXT_ALIGN
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              px: { xs: 1.1, sm: 1.5 },
+              py: { xs: 0.85, sm: 1 },
+              borderBottom: isDark
+                ? `1px solid #67C99D`
+                : `1px solid ${border}`,
+              background: isDark
+                ? `linear-gradient(180deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+                : "linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%)",
+              textAlign: LEAVE_DIALOG_TEXT_ALIGN
+            };
           }}
         >
           <Stack
@@ -4391,12 +4645,12 @@ const decideLeaveApproval = async (
           >
             <Box sx={{ minWidth: 0 }}>
               <Typography
-                sx={{
+                sx={(theme) => ({
                   fontSize: { xs: 14.5, sm: 17 },
                   fontWeight: 950,
-                  color: "#17372b",
+                  color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#17372b",
                   textAlign: LEAVE_DIALOG_TEXT_ALIGN
-                }}
+                })}
               >
                 طلب إجازة جديد
               </Typography>
@@ -4408,13 +4662,18 @@ const decideLeaveApproval = async (
                 setLeaveDialogOpen(false)
               }
               disabled={leaveSubmitting}
-              sx={{
-                mt: { xs: -0.15, sm: -0.35 },
-                flexShrink: 0,
-                width: { xs: 32, sm: 36 },
-                height: { xs: 32, sm: 36 },
-                border: `1px solid ${border}`,
-                background: soft
+              sx={(theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  mt: { xs: -0.15, sm: -0.35 },
+                  flexShrink: 0,
+                  width: { xs: 32, sm: 36 },
+                  height: { xs: 32, sm: 36 },
+                  border: isDark
+                    ? `1px solid #67C99D`
+                    : `1px solid ${border}`,
+                  background: isDark ? theme.palette.surfaces.nested : soft
+                };
               }}
             >
               <CloseRoundedIcon />
@@ -4424,32 +4683,35 @@ const decideLeaveApproval = async (
 
         <DialogContent
           dir={LEAVE_DIALOG_DIRECTION}
-          sx={{
-            px: { xs: 1.25, sm: 2.3 },
-            py: { xs: "12px !important", sm: "20px !important" },
-            direction: LEAVE_DIALOG_DIRECTION,
-            textAlign: LEAVE_DIALOG_TEXT_ALIGN,
-            background: "#fff",
-            overflowY: "auto",
-
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              minHeight: { xs: 42, sm: 46 },
-              background: "#fff"
-            },
-
-            "& .MuiInputBase-input, & .MuiSelect-select, & textarea": {
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              px: { xs: 1.25, sm: 2.3 },
+              py: { xs: "12px !important", sm: "20px !important" },
+              direction: LEAVE_DIALOG_DIRECTION,
               textAlign: LEAVE_DIALOG_TEXT_ALIGN,
-              fontSize: { xs: 12.5, sm: 14 }
-            },
+              background: isDark ? theme.palette.surfaces.page : "#fff",
+              overflowY: "auto",
 
-            "& .MuiSelect-select": {
-              py: { xs: 1.05, sm: 1.2 }
-            },
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                minHeight: { xs: 42, sm: 46 },
+                background: isDark ? theme.palette.surfaces.input : "#fff"
+              },
 
-            "& textarea": {
-              lineHeight: 1.55
-            }
+              "& .MuiInputBase-input, & .MuiSelect-select, & textarea": {
+                textAlign: LEAVE_DIALOG_TEXT_ALIGN,
+                fontSize: { xs: 12.5, sm: 14 }
+              },
+
+              "& .MuiSelect-select": {
+                py: { xs: 1.05, sm: 1.2 }
+              },
+
+              "& textarea": {
+                lineHeight: 1.55
+              }
+            };
           }}
         >
           <Stack spacing={{ xs: 1.25, sm: 1.8 }}>
@@ -4723,7 +4985,7 @@ const decideLeaveApproval = async (
             {leaveCalcError && (
               <Alert
                 severity="error"
-                sx={{
+                sx={uiLayout.withUiSx(darkAlertSx, {
                   borderRadius: 2,
                   alignItems: "center",
                   py: { xs: 0.35, sm: 0.6 },
@@ -4731,7 +4993,7 @@ const decideLeaveApproval = async (
                     fontSize: { xs: 12, sm: 12 },
                     lineHeight: 1.5
                   }
-                }}
+                })}
               >
                 {leaveCalcError}
               </Alert>
@@ -4741,14 +5003,14 @@ const decideLeaveApproval = async (
               !leaveCalcError && (
                 <Alert
                   severity="info"
-                  sx={{
+                  sx={uiLayout.withUiSx(darkAlertSx, {
                     borderRadius: 2,
                     alignItems: "flex-start",
                     py: { xs: 0.35, sm: 0.6 },
                     "& .MuiAlert-message": {
                       width: "100%"
                     }
-                  }}
+                  })}
                 >
                   <Stack spacing={0.35}>
                     <Typography
@@ -4804,20 +5066,25 @@ const decideLeaveApproval = async (
 
         <DialogActions
           dir={LEAVE_DIALOG_DIRECTION}
-          sx={uiLayout.withUiSx({
-            px: { xs: 1.1, sm: 2.3 },
-            py: { xs: 0.9, sm: 1.35 },
-            borderTop: `1px solid ${border}`,
-            background: "#fbfdfc",
-                    gap: { xs: 0.55, sm: 0.7 },
-            "& .MuiButton-root": {
-              minHeight: { xs: 38, sm: 40 },
-              fontSize: { xs: 12, sm: 12 }
-            }
+          sx={uiLayout.withUiSx((theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              px: { xs: 1.1, sm: 2.3 },
+              py: { xs: 0.9, sm: 1.35 },
+              borderTop: isDark
+                ? `1px solid #67C99D`
+                : `1px solid ${border}`,
+              background: isDark ? theme.palette.surfaces.section : "#fbfdfc",
+              gap: { xs: 0.55, sm: 0.7 },
+              "& .MuiButton-root": {
+                minHeight: { xs: 38, sm: 40 },
+                fontSize: { xs: 12, sm: 12 }
+              }
+            };
           }, uiLayout.dialogActionsSx)}
         >
           <Button
-            variant="contained"
+            variant="outlined"
             // startIcon={<SaveRoundedIcon />}
             onClick={submitLeaveRequest}
             disabled={
@@ -4829,7 +5096,7 @@ const decideLeaveApproval = async (
               minWidth: { xs: 0, sm: 122 },
               flex: { xs: 1, sm: "0 0 auto" },
               fontWeight: 900
-            }, uiLayout.buttonSx)}
+            }, uiLayout.buttonSx, permissionButtonSx)}
           >
             {leaveSubmitting
               ? "جاري الإرسال..."
@@ -4837,13 +5104,14 @@ const decideLeaveApproval = async (
           </Button>
 
           <Button
+            variant="outlined"
             onClick={() =>
               setLeaveDialogOpen(false)
             }
             disabled={leaveSubmitting}
             sx={uiLayout.withUiSx({
               flex: { xs: 1, sm: "0 0 auto" }
-            }, uiLayout.buttonSx)}
+            }, uiLayout.buttonSx, permissionButtonSx)}
           >
             إلغاء
           </Button>

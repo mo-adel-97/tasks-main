@@ -30,6 +30,7 @@ import {
   Tooltip,
   Typography
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -126,6 +127,7 @@ const money = (value) =>
   );
 
 const CashPaymentOrder = () => {
+  const theme = useTheme();
   const currentUser = useMemo(() => {
     try {
       return JSON.parse(
@@ -616,7 +618,7 @@ const CashPaymentOrder = () => {
         minHeight: "100vh",
         direction: "rtl",
         background:
-          "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)"
+          theme.palette.mode === 'dark' ? theme.palette.background.default : "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)"
       }}
     >
       

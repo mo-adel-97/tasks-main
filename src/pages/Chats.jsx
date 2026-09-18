@@ -10,6 +10,7 @@ import {
   List, ListItem, Divider, Badge, TextField, InputAdornment,
   Button, Paper, IconButton, Popover, ClickAwayListener
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import EmojiPicker from 'emoji-picker-react';
 import notificationSoundFile from "../../src/notification-sound-effect-372475.mp3";
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -46,6 +47,7 @@ const colorPalette = {
 };
 
 const Chats = () => {
+  const theme = useTheme();
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -594,7 +596,7 @@ if (loading) {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: colorPalette.background,
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : colorPalette.background,
         ...navigationContentSx
       }}>
         <Typography sx={{ color: colorPalette.textDark }}>جاري التحميل...</Typography>

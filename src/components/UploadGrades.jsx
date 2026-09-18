@@ -14,6 +14,7 @@ import {
   Stack,
   Chip,
   CircularProgress,
+  useTheme,
 } from "@mui/material";
 
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -28,6 +29,35 @@ import * as XLSX from "xlsx";
 const UPLOAD_URL = "https://filesregsiteration.sstli.com/erp/grades.php";
 
 const UploadGrades = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+
+  const pageBg = isDark
+    ? (theme.palette.background?.default || "#0d1b15")
+    : "#f8fbfa";
+
+  const cardBg = isDark
+    ? (surfaces.card || "#13251d")
+    : "#ffffff";
+
+  const sectionBg = isDark
+    ? (surfaces.section || "#172b22")
+    : "#fbfdfc";
+
+  const nestedBg = isDark
+    ? (surfaces.nested || "#1b3328")
+    : "#ffffff";
+
+  const textMain = isDark
+    ? (theme.palette.text?.primary || "#edf8f3")
+    : "#2c3e50";
+
+  const textMuted = isDark
+    ? (theme.palette.text?.secondary || "#bdd2c8")
+    : "#607080";
+
+  const borderColor = isDark ? "#67C99D" : "#9ac9b5";
   const user = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "{}");
@@ -396,225 +426,449 @@ const UploadGrades = () => {
   };
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fbfa" }}>
-      
-
+    <NavigationShell variant="standard">
       <Box
         sx={{
-          flex: 1,
-          p: {
-            xs: 2,
-            md: 4
-          },
+          display: "flex",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          minHeight: "100vh",
+          bgcolor: pageBg,
           direction: "rtl",
-          ...navigationContentSx
+          overflowX: "hidden",
+
+          ...(isDark && {
+            "& .MuiPaper-root": {
+              backgroundImage: "none",
+            },
+
+            "& .MuiChip-root": {
+              backgroundColor: "transparent !important",
+              color: "#edf8f3 !important",
+              border: "1px solid #67C99D !important",
+              boxShadow: "none !important",
+            },
+
+            "& .MuiButton-root": {
+              background: "transparent !important",
+              backgroundColor: "transparent !important",
+              color: "#67C99D !important",
+              border: "1px solid #67C99D !important",
+              boxShadow: "none !important",
+
+              "&:hover": {
+                background: "transparent !important",
+                backgroundColor: "transparent !important",
+                color: "#edf8f3 !important",
+                borderColor: "#67C99D !important",
+                boxShadow: "0 0 0 2px rgba(103,201,157,.10) !important",
+                transform: "none !important",
+              },
+
+              "&.Mui-disabled": {
+                background: "transparent !important",
+                backgroundColor: "transparent !important",
+                color: "rgba(103,201,157,.48) !important",
+                borderColor: "rgba(103,201,157,.42) !important",
+              },
+            },
+
+            "& .MuiAlert-root": {
+              backgroundColor: "transparent !important",
+              color: "#edf8f3 !important",
+              border: "1px solid #67C99D !important",
+              boxShadow: "none !important",
+            },
+
+            "& .MuiAlert-icon": {
+              color: "#67C99D !important",
+            },
+
+            "& .MuiDivider-root": {
+              borderColor: "rgba(103,201,157,.55) !important",
+            },
+
+            "& .MuiCircularProgress-root": {
+              color: "#67C99D !important",
+            },
+          }),
         }}
       >
-        <Paper
+        <Box
           sx={{
-            p: { xs: 2.5, md: 4 },
-            borderRadius: 3,
-            boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
-            overflow: "hidden",
+            flex: 1,
+            width: "100%",
+            maxWidth: "100%",
+            minWidth: 0,
+            boxSizing: "border-box",
+            overflowX: "hidden",
+            p: {
+              xs: 0.75,
+              sm: 1.25,
+              md: 2.5,
+            },
+            ...navigationContentSx,
           }}
         >
-          {/* Header */}
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            spacing={2}
-            alignItems={{ xs: "flex-start", md: "center" }}
-            justifyContent="space-between"
+          <Paper
+            elevation={0}
+            sx={{
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+              boxSizing: "border-box",
+              overflow: "hidden",
+              p: { xs: 1.1, sm: 1.75, md: 2.75 },
+              borderRadius: { xs: 1.5, sm: 2, md: 3 },
+              bgcolor: cardBg,
+              border: `1px solid ${borderColor}`,
+              boxShadow: isDark
+                ? "0 12px 30px rgba(3,20,13,.24)"
+                : "0 10px 25px rgba(0,0,0,.06)",
+            }}
           >
-            <Box>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <SchoolIcon sx={{ color: "#80b49e" }} />
+            {/* Header */}
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={{ xs: 1.25, md: 2 }}
+              alignItems={{ xs: "stretch", md: "center" }}
+              justifyContent="space-between"
+              sx={{ minWidth: 0 }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  flexWrap="wrap"
+                  useFlexGap
+                >
+                  <SchoolIcon sx={{ color: isDark ? "#67C99D" : "#80b49e" }} />
+
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      color: textMain,
+                      fontSize: { xs: "1rem", sm: "1.15rem", md: "1.35rem" },
+                    }}
+                  >
+                    رفع الدرجات
+                  </Typography>
+
+                  <Chip
+                    label="Excel"
+                    size="small"
+                    variant="outlined"
+                    sx={{
+                      ml: 1,
+                      bgcolor: isDark ? "transparent" : "#e8f5ef",
+                      color: isDark ? "#67C99D" : "#2c3e50",
+                      border: `1px solid ${borderColor}`,
+                      fontFamily: "Cairo",
+                      fontWeight: 800,
+                    }}
+                  />
+                </Stack>
+
                 <Typography
-                  variant="h5"
+                  variant="body2"
                   sx={{
+                    mt: 0.8,
+                    fontFamily: "Cairo",
+                    color: textMuted,
+                    fontSize: { xs: "0.75rem", sm: "0.8rem" },
+                  }}
+                >
+                  اختر ملف الإكسل ثم تأكد من الهيكل قبل الرفع.
+                </Typography>
+              </Box>
+
+              {progress.total > 0 && (
+                <Chip
+                  label={`تم: ${progress.done} / ${progress.total} | فشل: ${progress.failed}`}
+                  variant="outlined"
+                  sx={{
+                    alignSelf: { xs: "flex-start", md: "center" },
+                    maxWidth: "100%",
+                    bgcolor: isDark ? "transparent" : "#f4faf7",
+                    color: textMain,
+                    border: `1px solid ${borderColor}`,
                     fontFamily: "Cairo",
                     fontWeight: 800,
-                    color: "#2c3e50",
-                  }}
-                >
-                  رفع الدرجات
-                </Typography>
-                <Chip
-                  label="Excel"
-                  size="small"
-                  sx={{
-                    ml: 1,
-                    bgcolor: "#e8f5ef",
-                    color: "#2c3e50",
-                    fontFamily: "Cairo",
-                    fontWeight: 700,
                   }}
                 />
-              </Stack>
-
-              <Typography
-                variant="body2"
-                sx={{ mt: 1, fontFamily: "Cairo", color: "#607080" }}
-              >
-                اختر ملف الإكسل ثم تأكد من الهيكل قبل الرفع.
-              </Typography>
-            </Box>
-
-            {progress.total > 0 && (
-              <Chip
-                label={`تم: ${progress.done} / ${progress.total} | فشل: ${progress.failed}`}
-                sx={{ fontFamily: "Cairo", fontWeight: 700 }}
-              />
-            )}
-          </Stack>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Upload Area */}
-          <Typography
-            sx={{
-              fontFamily: "Cairo",
-              fontWeight: 800,
-              mb: 1,
-              color: "#2c3e50",
-            }}
-          >
-            رفع ملف الإكسل
-          </Typography>
-
-          <Paper
-            variant="outlined"
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              borderStyle: "dashed",
-              bgcolor: "#fbfdfc",
-            }}
-          >
-            <Stack sx={uiLayout.pageHeaderSx} spacing={1.5}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <UploadFileIcon sx={{ color: "#80b49e" }} />
-                <Typography sx={{ fontFamily: "Cairo", fontWeight: 700 }}>
-                  ارفع ملف Excel (.xls / .xlsx)
-                </Typography>
-              </Stack>
-
-              <Button
-                component="label"
-                variant="contained"
-                disabled={loading}
-                startIcon={<UploadFileIcon />}
-                sx={uiLayout.withUiSx({
-                  fontFamily: "Cairo",
-                  fontWeight: 800,
-                  borderRadius: 2,
-                  py: 1.2,
-                  bgcolor: "#80b49e",
-                  "&:hover": { bgcolor: "#6a9a87" },
-                  width: { xs: "100%", md: "fit-content" },
-                }, uiLayout.buttonSx)}
-              >
-                اختيار ملف
-                <input
-                  hidden
-                  type="file"
-                  accept=".xls,.xlsx"
-                  onChange={handleFileChange}
-                />
-              </Button>
-
-              {file && (
-                <Alert severity="success" sx={{ fontFamily: "Cairo" }}>
-                  تم اختيار الملف: <b>{file.name}</b>
-                </Alert>
               )}
+            </Stack>
 
-              {file && structureOk && structureInfo && (
-                <Alert severity="success" sx={{ fontFamily: "Cairo" }}>
-                  ✅ الاستراكتشر صحيح — عدد الأعمدة بعد الهوية:{" "}
-                  <b>{structureInfo.subjectsCount}</b>
-                </Alert>
-              )}
+            <Divider sx={{ my: { xs: 1.5, md: 2.25 }, borderColor }} />
 
-              <Divider />
+            {/* Upload Area */}
+            <Typography
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                mb: 1,
+                color: textMain,
+              }}
+            >
+              رفع ملف الإكسل
+            </Typography>
 
-              <Typography sx={{ fontFamily: "Cairo", fontWeight: 800 }}>
-                هيكل الشيت المطلوب (Columns)
-              </Typography>
-
-              <Alert severity="warning" sx={{ fontFamily: "Cairo" }}>
-                لابد أول صف يكون عناوين الأعمدة، والعمود الأول يكون:
-                <b> nationalid </b> أو <b> national id </b>
-                <Box
-                  sx={{
-                    mt: 1,
-                    p: 1.5,
-                    borderRadius: 2,
-                    bgcolor: "#fff",
-                    border: "1px solid #eee",
-                    fontFamily:
-                      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                    fontSize: 13,
-                    overflowX: "auto",
-                    direction: "ltr",
-                  }}
-                >
-                  national id | إدارة المستشفيات | التوجيه المهني والتميز | ...
-                </Box>
-              </Alert>
-
-              <Divider />
-
+            <Paper
+              variant="outlined"
+              elevation={0}
+              sx={{
+                width: "100%",
+                maxWidth: "100%",
+                minWidth: 0,
+                boxSizing: "border-box",
+                p: { xs: 1, sm: 1.5, md: 2 },
+                borderRadius: 2,
+                border: `1px dashed ${borderColor}`,
+                bgcolor: sectionBg,
+                backgroundImage: "none",
+                overflowX: "hidden",
+              }}
+            >
               <Stack
-                direction={{ xs: "column", md: "row" }}
-                spacing={2}
-                alignItems={{ xs: "stretch", md: "center" }}
-                justifyContent="space-between"
+                sx={uiLayout.pageHeaderSx}
+                spacing={{ xs: 1.15, sm: 1.5 }}
               >
-                <Box>
-                  {successMsg && (
-                    <Alert severity="success" sx={{ fontFamily: "Cairo" }}>
-                      {successMsg}
-                    </Alert>
-                  )}
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <UploadFileIcon sx={{ color: isDark ? "#67C99D" : "#80b49e" }} />
 
-                  {errorMsg && (
-                    <Alert severity="error" sx={{ fontFamily: "Cairo" }}>
-                      ❌ {errorMsg}
-                    </Alert>
-                  )}
-                </Box>
+                  <Typography
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 800,
+                      color: textMain,
+                    }}
+                  >
+                    ارفع ملف Excel (.xls / .xlsx)
+                  </Typography>
+                </Stack>
 
                 <Button
-                  onClick={handleUpload}
-                  disabled={loading || !file || !structureOk}
-                  variant="contained"
-                  startIcon={
-                    loading ? (
-                      <CircularProgress size={18} />
-                    ) : (
-                      <UploadFileIcon />
-                    )
-                  }
-                  sx={uiLayout.withUiSx({
+                  component="label"
+                  variant={isDark ? "outlined" : "contained"}
+                  disabled={loading}
+                  startIcon={<UploadFileIcon />}
+                  sx={uiLayout.withUiSx(
+                    {
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      borderRadius: 2,
+                      minHeight: 40,
+                      py: 0.8,
+                      px: 2,
+                      width: { xs: "100%", md: "fit-content" },
+                      bgcolor: isDark ? "transparent" : "#80b49e",
+                      color: isDark ? "#67C99D" : "#fff",
+                      border: `1px solid ${isDark ? "#67C99D" : "#80b49e"}`,
+                      boxShadow: "none",
+
+                      "&:hover": {
+                        bgcolor: isDark ? "transparent" : "#6a9a87",
+                        borderColor: isDark ? "#67C99D" : "#6a9a87",
+                        color: isDark ? "#edf8f3" : "#fff",
+                        boxShadow: isDark
+                          ? "0 0 0 2px rgba(103,201,157,.10)"
+                          : "none",
+                      },
+                    },
+                    uiLayout.buttonSx
+                  )}
+                >
+                  اختيار ملف
+
+                  <input
+                    hidden
+                    type="file"
+                    accept=".xls,.xlsx"
+                    onChange={handleFileChange}
+                  />
+                </Button>
+
+                {file && (
+                  <Alert
+                    severity="success"
+                    variant="outlined"
+                    sx={{
+                      fontFamily: "Cairo",
+                      bgcolor: isDark ? "transparent" : undefined,
+                      color: isDark ? textMain : undefined,
+                      borderColor: isDark ? "#67C99D" : undefined,
+                    }}
+                  >
+                    تم اختيار الملف: <b>{file.name}</b>
+                  </Alert>
+                )}
+
+                {file && structureOk && structureInfo && (
+                  <Alert
+                    severity="success"
+                    variant="outlined"
+                    sx={{
+                      fontFamily: "Cairo",
+                      bgcolor: isDark ? "transparent" : undefined,
+                      color: isDark ? textMain : undefined,
+                      borderColor: isDark ? "#67C99D" : undefined,
+                    }}
+                  >
+                    ✅ الاستراكتشر صحيح — عدد الأعمدة بعد الهوية:{" "}
+                    <b>{structureInfo.subjectsCount}</b>
+                  </Alert>
+                )}
+
+                <Divider sx={{ borderColor }} />
+
+                <Typography
+                  sx={{
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    borderRadius: 2,
-                    py: 1.2,
-                    px: 3,
-                    bgcolor: "#80b49e",
-                    "&:hover": { bgcolor: "#6a9a87" },
-                    whiteSpace: "nowrap",
-                    minWidth: { xs: "100%", md: 220 },
-                  }, uiLayout.buttonSx)}
+                    color: textMain,
+                  }}
                 >
-                  {loading ? "جاري الرفع..." : "رفع الدرجات"}
-                </Button>
+                  هيكل الشيت المطلوب (Columns)
+                </Typography>
+
+                <Alert
+                  severity="warning"
+                  variant="outlined"
+                  sx={{
+                    fontFamily: "Cairo",
+                    bgcolor: isDark ? "transparent" : undefined,
+                    color: isDark ? textMain : undefined,
+                    borderColor: isDark ? "#67C99D" : undefined,
+                  }}
+                >
+                  لابد أول صف يكون عناوين الأعمدة، والعمود الأول يكون:
+                  <b> nationalid </b> أو <b> national id </b>
+
+                  <Box
+                    sx={{
+                      mt: 1,
+                      p: 1.25,
+                      width: "100%",
+                      maxWidth: "100%",
+                      minWidth: 0,
+                      boxSizing: "border-box",
+                      borderRadius: 2,
+                      bgcolor: isDark ? nestedBg : "#fff",
+                      color: textMain,
+                      border: `1px solid ${borderColor}`,
+                      fontFamily:
+                        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                      fontSize: { xs: 11, sm: 12, md: 13 },
+                      direction: "ltr",
+                      textAlign: "left",
+                      whiteSpace: "normal",
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word",
+                      overflowX: "hidden",
+                    }}
+                  >
+                    national id | إدارة المستشفيات | التوجيه المهني والتميز | ...
+                  </Box>
+                </Alert>
+
+                <Divider sx={{ borderColor }} />
+
+                <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  spacing={{ xs: 1.25, md: 2 }}
+                  alignItems={{ xs: "stretch", md: "center" }}
+                  justifyContent="space-between"
+                  sx={{ minWidth: 0 }}
+                >
+                  <Box sx={{ minWidth: 0, flex: 1 }}>
+                    {successMsg && (
+                      <Alert
+                        severity="success"
+                        variant="outlined"
+                        sx={{
+                          fontFamily: "Cairo",
+                          bgcolor: isDark ? "transparent" : undefined,
+                          color: isDark ? textMain : undefined,
+                          borderColor: isDark ? "#67C99D" : undefined,
+                        }}
+                      >
+                        {successMsg}
+                      </Alert>
+                    )}
+
+                    {errorMsg && (
+                      <Alert
+                        severity="error"
+                        variant="outlined"
+                        sx={{
+                          fontFamily: "Cairo",
+                          bgcolor: isDark ? "transparent" : undefined,
+                          color: isDark ? textMain : undefined,
+                          borderColor: isDark ? "#67C99D" : undefined,
+                          "& .MuiAlert-icon": {
+                            color: isDark ? "#67C99D" : undefined,
+                          },
+                        }}
+                      >
+                        ❌ {errorMsg}
+                      </Alert>
+                    )}
+                  </Box>
+
+                  <Button
+                    onClick={handleUpload}
+                    disabled={loading || !file || !structureOk}
+                    variant={isDark ? "outlined" : "contained"}
+                    startIcon={
+                      loading ? (
+                        <CircularProgress
+                          size={18}
+                          sx={{ color: isDark ? "#67C99D" : "inherit" }}
+                        />
+                      ) : (
+                        <UploadFileIcon />
+                      )
+                    }
+                    sx={uiLayout.withUiSx(
+                      {
+                        fontFamily: "Cairo",
+                        fontWeight: 900,
+                        borderRadius: 2,
+                        minHeight: 40,
+                        py: 0.8,
+                        px: 2.5,
+                        bgcolor: isDark ? "transparent" : "#80b49e",
+                        color: isDark ? "#67C99D" : "#fff",
+                        border: `1px solid ${isDark ? "#67C99D" : "#80b49e"}`,
+                        boxShadow: "none",
+                        whiteSpace: "nowrap",
+                        minWidth: { xs: "100%", md: 220 },
+
+                        "&:hover": {
+                          bgcolor: isDark ? "transparent" : "#6a9a87",
+                          borderColor: isDark ? "#67C99D" : "#6a9a87",
+                          color: isDark ? "#edf8f3" : "#fff",
+                          boxShadow: isDark
+                            ? "0 0 0 2px rgba(103,201,157,.10)"
+                            : "none",
+                        },
+                      },
+                      uiLayout.buttonSx
+                    )}
+                  >
+                    {loading ? "جاري الرفع..." : "رفع الدرجات"}
+                  </Button>
+                </Stack>
               </Stack>
-            </Stack>
+            </Paper>
           </Paper>
-        </Paper>
+        </Box>
       </Box>
-    </Box></NavigationShell>
+    </NavigationShell>
   );
 };
 

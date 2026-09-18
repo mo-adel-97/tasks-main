@@ -19,6 +19,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import FolderOpenRoundedIcon from "@mui/icons-material/FolderOpenRounded";
@@ -137,6 +138,7 @@ const showErrorAlert = (message) =>
   });
 
 const CircularsList = () => {
+  const theme = useTheme();
   const userGuid = getUserGuid();
 
   const [tree, setTree] = useState([]);
@@ -328,7 +330,7 @@ const CircularsList = () => {
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: PAGE_BG,
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : PAGE_BG,
         fontFamily: "Cairo, Arial, sans-serif",
       }}
     >

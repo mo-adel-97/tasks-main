@@ -55,7 +55,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Divider
+  Divider,
+  useTheme
 } from '@mui/material';
 import { 
   Add, 
@@ -95,6 +96,7 @@ const primaryDark = '#034d31';
 const primaryLight = '#80b49e';
 const backgroundColor = '#f6faf8';
 const textColor = '#17372b';
+const focusBorderColor = '#67C99D';
 
 const IMAGE_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php';
 const SURVEY_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/survey_api.php';
@@ -585,6 +587,15 @@ const generateAnswerAnalysis = (responses, options, type) => {
 };
 
 const HRCreateSurvey = () => {
+  // This whole file predates the app's dark-mode theme system and never
+  // referenced it -- every background here was a plain light hex, so
+  // switching to dark mode fell through to the generic auto-dark-color
+  // fallback (a flat gray/near-black) instead of the app's real dark
+  // surfaces. isDark below drives the shared style objects (containerStyle,
+  // cardStyle, textFieldStyle, etc.) so this page finally follows the same
+  // dark palette as the rest of the app.
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [activeStep, setActiveStep] = useState(0);
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
@@ -2572,9 +2583,27 @@ async function chartToPngBase64({
   // Styles
   const containerStyle = {
     minHeight: '100vh',
-    background: '#f6faf8',
+    background: isDark ? theme.palette.background.default : '#f6faf8',
     padding: 0,
-    margin: 0
+    margin: 0,
+    '& .MuiPaper-root, & .MuiCard-root, & .MuiTableContainer-root, & .MuiAccordion-root': {
+      border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)'
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDark ? `${focusBorderColor} !important` : undefined
+    },
+    '& .MuiDataGrid-root': {
+      border: isDark ? `1px solid ${focusBorderColor} !important` : undefined
+    },
+    '& .MuiDataGrid-columnHeaders, & .MuiDataGrid-footerContainer': {
+      borderColor: isDark ? `${focusBorderColor} !important` : undefined
+    },
+    '& .MuiDataGrid-cell': {
+      borderBottomColor: isDark ? `${focusBorderColor} !important` : undefined
+    },
+    '& .MuiTableCell-root': {
+      borderColor: isDark ? `${focusBorderColor} !important` : undefined
+    }
   };
 
   const mainPaperStyle = {
@@ -2582,7 +2611,7 @@ async function chartToPngBase64({
     background: 'transparent',
     borderRadius: 0,
     boxShadow: 'none',
-    border: 'none',
+    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
     width: '100%',
     maxWidth: 'none',
     my: 0,
@@ -2592,9 +2621,10 @@ async function chartToPngBase64({
   const textFieldStyle = {
     '& .MuiOutlinedInput-root': {
       borderRadius: 2,
-      backgroundColor: '#fff',
-      '&:hover fieldset': { borderColor: primaryColor },
-      '&.Mui-focused fieldset': { borderColor: primaryColor, borderWidth: '1px' },
+      backgroundColor: isDark ? theme.palette.surfaces.input : '#fff',
+      '& fieldset': { borderColor: isDark ? focusBorderColor : 'rgba(5,117,70,0.16)' },
+      '&:hover fieldset': { borderColor: isDark ? focusBorderColor : 'rgba(5,117,70,0.16)' },
+      '&.Mui-focused fieldset': { borderColor: isDark ? focusBorderColor : primaryColor, borderWidth: '1px' },
     },
     '& .MuiInputLabel-root': {
       fontFamily: '"Cairo", sans-serif',
@@ -2612,7 +2642,7 @@ async function chartToPngBase64({
   const fieldStyle = textFieldStyle;
 
   const subtitleStyle = {
-    color: primaryDark,
+    color: isDark ? theme.palette.text.primary : primaryDark,
     fontWeight: 850,
     fontSize: '0.86rem',
     lineHeight: 1.35,
@@ -2623,43 +2653,43 @@ async function chartToPngBase64({
     width: 34,
     height: 34,
     borderRadius: 1.7,
-    border: '1px solid rgba(211,47,47,.16)',
-    color: '#c62828',
-    backgroundColor: '#fff',
+    border: isDark ? '1px solid rgba(229,90,90,.4)' : '1px solid rgba(211,47,47,.16)',
+    color: isDark ? '#e57373' : '#c62828',
+    backgroundColor: isDark ? theme.palette.surfaces.card : '#fff',
     '&:hover': {
-      backgroundColor: 'rgba(211,47,47,.06)',
-      borderColor: 'rgba(211,47,47,.28)'
+      backgroundColor: isDark ? 'rgba(229,90,90,.12)' : 'rgba(211,47,47,.06)',
+      borderColor: isDark ? 'rgba(229,90,90,.6)' : 'rgba(211,47,47,.28)'
     }
   };
 
   const cardStyle = {
-    border: '1px solid rgba(5,117,70,0.11)',
+    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
     borderRadius: 2,
-    background: '#fff',
+    background: isDark ? theme.palette.surfaces.card : '#fff',
     mb: 1,
     boxShadow: 'none'
   };
 
   const chipStyle = {
-    backgroundColor: '#f4f8f6',
-    color: '#456056',
-    border: '1px solid #e0ebe6',
+    backgroundColor: isDark ? theme.palette.surfaces.nested : '#f4f8f6',
+    color: isDark ? theme.palette.text.primary : '#456056',
+    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid #e0ebe6',
     fontFamily: '"Cairo", sans-serif',
     fontSize: '0.67rem'
   };
 
   const primaryChipStyle = {
-    backgroundColor: '#edf7f2',
-    color: primaryDark,
-    border: '1px solid rgba(5,117,70,0.16)',
+    backgroundColor: isDark ? 'rgba(103,201,157,.14)' : '#edf7f2',
+    color: isDark ? theme.palette.primary.main : primaryDark,
+    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)',
     fontFamily: '"Cairo", sans-serif',
     fontWeight: 800,
     fontSize: '0.67rem'
   };
 
   const outlinedButtonStyle = {
-    borderColor: 'rgba(5,117,70,.35)',
-    color: primaryDark,
+    borderColor: isDark ? focusBorderColor : 'rgba(5,117,70,0.16)',
+    color: isDark ? theme.palette.primary.main : primaryDark,
     mt: 0,
     px: 1.25,
     py: 0.65,
@@ -2671,7 +2701,7 @@ async function chartToPngBase64({
     boxShadow: 'none',
     '&:hover': {
       borderColor: primaryColor,
-      backgroundColor: '#edf7f2'
+      backgroundColor: isDark ? 'rgba(103,201,157,.12)' : '#edf7f2'
     }
   };
 
@@ -2693,7 +2723,7 @@ async function chartToPngBase64({
   };
 
   const reviewTextStyle = {
-    color: textColor,
+    color: isDark ? theme.palette.text.primary : textColor,
     lineHeight: 1.6,
     fontSize: '0.78rem',
     fontFamily: '"Cairo", sans-serif'
@@ -3047,8 +3077,8 @@ async function chartToPngBase64({
     sx={{
       p: 2,
       borderRadius: 2,
-      border: `1px solid ${primaryLight}`,
-      backgroundColor: '#fff'
+      border: isDark ? `1px solid ${focusBorderColor}` : `1px solid ${primaryLight}`,
+      backgroundColor: isDark ? theme.palette.surfaces.card : '#fff'
     }}
   >
     <FormControlLabel
@@ -3518,7 +3548,7 @@ async function chartToPngBase64({
       elevation={0}
       sx={uiLayout.withUiSx({
         borderRadius: 2,
-        border: '1px solid rgba(5,117,70,.11)',
+        border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
         overflowX: 'auto'
       }, uiLayout.tableContainerSx)}
     >
@@ -3577,11 +3607,11 @@ async function chartToPngBase64({
               <TableCell>
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, flexWrap: 'nowrap' }}>
     <IconButton size="small" title="عرض الردود" onClick={() => handleViewResponses(survey, false)}
-      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      sx={{ width: 30, height: 30, color: primaryColor, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)' }}>
       <Visibility sx={{ fontSize: 17 }} />
     </IconButton>
     <IconButton size="small" title="تعديل" onClick={() => handleEditSurvey(survey)}
-      sx={{ width: 30, height: 30, color: primaryDark, border: '1px solid rgba(5,117,70,.14)' }}>
+      sx={{ width: 30, height: 30, color: primaryDark, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)' }}>
       <Edit sx={{ fontSize: 17 }} />
     </IconButton>
     <IconButton size="small" title="نسخ" onClick={() => handleDuplicateSurvey(survey, false)}
@@ -3594,7 +3624,7 @@ async function chartToPngBase64({
     </IconButton>
     <IconButton size="small" title="تصدير التقرير" onClick={() => handleExportReport(survey, false)}
       disabled={!surveyResponses[survey.id] || surveyResponses[survey.id].length === 0}
-      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      sx={{ width: 30, height: 30, color: primaryColor, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)' }}>
       <Download sx={{ fontSize: 17 }} />
     </IconButton>
   </Box>
@@ -3612,7 +3642,7 @@ const renderExternalSurveysTable = () => (
     elevation={0}
     sx={uiLayout.withUiSx({
       borderRadius: 2,
-      border: '1px solid rgba(5,117,70,.11)',
+      border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
       overflowX: 'auto'
     }, uiLayout.tableContainerSx)}
   >
@@ -3809,9 +3839,9 @@ const renderExternalSurveysTable = () => (
   key={trainer.trainerGuid}
   sx={uiLayout.withUiSx({
     p: 1,
-    border: `1px solid ${primaryLight}`,
+    border: isDark ? `1px solid ${focusBorderColor}` : `1px solid ${primaryLight}`,
     borderRadius: 2,
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? theme.palette.surfaces.card : '#fff',
     display: 'grid',
     gridTemplateColumns: '1fr auto auto auto',
     alignItems: 'center',
@@ -3959,11 +3989,11 @@ const renderExternalSurveysTable = () => (
               <TableCell>
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, flexWrap: 'nowrap' }}>
     <IconButton size="small" title="عرض الردود" onClick={() => handleViewResponses(survey, true)}
-      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      sx={{ width: 30, height: 30, color: primaryColor, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)' }}>
       <Visibility sx={{ fontSize: 17 }} />
     </IconButton>
     <IconButton size="small" title="تعديل" onClick={() => handleEditExternalSurvey(survey)}
-      sx={{ width: 30, height: 30, color: primaryDark, border: '1px solid rgba(5,117,70,.14)' }}>
+      sx={{ width: 30, height: 30, color: primaryDark, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)' }}>
       <Edit sx={{ fontSize: 17 }} />
     </IconButton>
     <IconButton size="small" title="نسخ" onClick={() => handleDuplicateSurvey(survey, true)}
@@ -3976,7 +4006,7 @@ const renderExternalSurveysTable = () => (
     </IconButton>
     <IconButton size="small" title="تصدير التقرير" onClick={() => handleExportReport(survey, true)}
       disabled={!externalSurveyResponses[survey.id] || externalSurveyResponses[survey.id].length === 0}
-      sx={{ width: 30, height: 30, color: primaryColor, border: '1px solid rgba(5,117,70,.14)' }}>
+      sx={{ width: 30, height: 30, color: primaryColor, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.16)' }}>
       <Download sx={{ fontSize: 17 }} />
     </IconButton>
   </Box>
@@ -4027,7 +4057,7 @@ const renderExternalSurveysTable = () => (
             </Box>
             
             {surveyResponses[survey.id]?.map((response, index) => (
-              <Accordion key={index} sx={{ mb: 0.75, border: '1px solid rgba(5,117,70,.11)', borderRadius: '8px !important', boxShadow: 'none' }}>
+              <Accordion key={index} sx={{ mb: 0.75, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)', borderRadius: '8px !important', boxShadow: 'none' }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
                     <EmployeeAvatar 
@@ -4095,7 +4125,7 @@ const renderExternalSurveysTable = () => (
             </Box>
             
             {externalSurveyResponses[survey.id]?.map((response, index) => (
-              <Accordion key={index} sx={{ mb: 0.75, border: '1px solid rgba(5,117,70,.11)', borderRadius: '8px !important', boxShadow: 'none' }}>
+              <Accordion key={index} sx={{ mb: 0.75, border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)', borderRadius: '8px !important', boxShadow: 'none' }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
                     <Avatar sx={{ 
@@ -4265,7 +4295,7 @@ const renderExternalSurveysTable = () => (
                   sx={{
                     minHeight: 36,
                     px: 1.1,
-                    bgcolor: '#fff',
+                    bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
                     color: primaryDark,
                     fontFamily: '"Cairo", sans-serif',
                     fontSize: '0.7rem',
@@ -4284,8 +4314,8 @@ const renderExternalSurveysTable = () => (
               sx={{
                 mb: 1,
                 px: 0.5,
-                bgcolor: '#fff',
-                border: '1px solid rgba(5,117,70,.11)',
+                bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
+                border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                 borderRadius: 2,
                 overflowX: 'auto'
               }}
@@ -4329,7 +4359,7 @@ const renderExternalSurveysTable = () => (
 
             {/* Create Internal Survey Dialog */}
             <Dialog
-              sx={uiLayout.dialogLayoutSx}
+              sx={[uiLayout.dialogLayoutSx, { '& .MuiDialog-paper': { border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? `${focusBorderColor} !important` : undefined } }]}
               open={showCreateDialog}
               onClose={handleCloseCreateDialog}
               fullWidth
@@ -4341,7 +4371,7 @@ const renderExternalSurveysTable = () => (
                   m: { xs: 1, sm: 2 },
                   borderRadius: 2.5,
                   overflow: 'hidden',
-                  background: '#fff'
+                  background: isDark ? theme.palette.surfaces.card : '#fff'
                 }
               }}
             >
@@ -4352,19 +4382,19 @@ const renderExternalSurveysTable = () => (
                 color: primaryDark,
                 fontWeight: 900,
                 fontSize: '0.98rem',
-                borderBottom: '1px solid rgba(5,117,70,.11)'
+                borderBottom: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)'
               }}>
   {isEditMode ? 'تعديل الاستبيان الداخلي' : 'إضافة استبيان داخلي'}
 </DialogTitle>
 
-              <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+              <DialogContent dividers sx={{ p: 1.5, bgcolor: isDark ? theme.palette.surfaces.section : '#fbfdfc' }}>
                 <Stepper
                   activeStep={activeStep}
                   sx={{
                     mb: 1.25,
                     p: 0.8,
-                    bgcolor: '#fff',
-                    border: '1px solid rgba(5,117,70,.10)',
+                    bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
+                    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                     borderRadius: 2,
                     overflowX: 'auto'
                   }}
@@ -4397,7 +4427,7 @@ const renderExternalSurveysTable = () => (
                 py: 1,
                 gap: 0.65,
                 justifyContent: 'space-between',
-                bgcolor: '#fff'
+                bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
               }, uiLayout.dialogActionsSx)}>
                 <Box sx={uiLayout.actionBarSx}>
                   <Button
@@ -4433,7 +4463,7 @@ const renderExternalSurveysTable = () => (
 
             {/* Create External Survey Dialog */}
             <Dialog
-              sx={uiLayout.dialogLayoutSx}
+              sx={[uiLayout.dialogLayoutSx, { '& .MuiDialog-paper': { border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? `${focusBorderColor} !important` : undefined } }]}
               open={showCreateExternalDialog}
               onClose={handleCloseCreateExternalDialog}
               fullWidth
@@ -4445,7 +4475,7 @@ const renderExternalSurveysTable = () => (
                   m: { xs: 1, sm: 2 },
                   borderRadius: 2.5,
                   overflow: 'hidden',
-                  background: '#fff'
+                  background: isDark ? theme.palette.surfaces.card : '#fff'
                 }
               }}
             >
@@ -4456,19 +4486,19 @@ const renderExternalSurveysTable = () => (
                 color: primaryDark,
                 fontWeight: 900,
                 fontSize: '0.98rem',
-                borderBottom: '1px solid rgba(5,117,70,.11)'
+                borderBottom: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)'
               }}>
   {isExternalEditMode ? 'تعديل الاستبيان الخارجي' : 'إضافة استبيان خارجي'}
 </DialogTitle>
 
-              <DialogContent dividers sx={{ p: 1.5, bgcolor: '#fbfdfc' }}>
+              <DialogContent dividers sx={{ p: 1.5, bgcolor: isDark ? theme.palette.surfaces.section : '#fbfdfc' }}>
                 <Stepper
                   activeStep={activeStep}
                   sx={{
                     mb: 1.25,
                     p: 0.8,
-                    bgcolor: '#fff',
-                    border: '1px solid rgba(5,117,70,.10)',
+                    bgcolor: isDark ? theme.palette.surfaces.card : '#fff',
+                    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                     borderRadius: 2,
                     overflowX: 'auto'
                   }}
@@ -4501,7 +4531,7 @@ const renderExternalSurveysTable = () => (
                 py: 1,
                 gap: 0.65,
                 justifyContent: 'space-between',
-                bgcolor: '#fff'
+                bgcolor: isDark ? theme.palette.surfaces.card : '#fff'
               }, uiLayout.dialogActionsSx)}>
                 <Box sx={uiLayout.actionBarSx}>
                   <Button
@@ -4537,7 +4567,7 @@ const renderExternalSurveysTable = () => (
             </Dialog>
 
             {/* Responses Details Dialog */}
-           <Dialog sx={uiLayout.dialogLayoutSx}
+           <Dialog sx={[uiLayout.dialogLayoutSx, { '& .MuiDialog-paper': { border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? `${focusBorderColor} !important` : undefined } }]}
   open={responsesDialogOpen}
   onClose={() => setResponsesDialogOpen(false)}
   maxWidth={false}
@@ -4554,13 +4584,13 @@ const renderExternalSurveysTable = () => (
 >
   <DialogTitle
     sx={{
-      background: '#fff',
-      color: primaryDark,
+      background: isDark ? theme.palette.surfaces.card : '#fff',
+      color: isDark ? theme.palette.text.primary : primaryDark,
       fontFamily: '"Cairo", sans-serif',
       fontWeight: 900,
       px: 1.5,
       py: 1,
-      borderBottom: '1px solid rgba(5,117,70,.11)'
+      borderBottom: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)'
     }}
   >
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>

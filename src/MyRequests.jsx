@@ -69,6 +69,28 @@ const API_BASE_URL = "https://api4.sstli.com";
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const accentColor = "#ae1e21";
+// Always-visible focus-green outline (never hover/focus-only) for every field
+// and the dialog frame itself — matches the reference styling on the Home page.
+const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  "& .MuiDialog-paper": { border: "1px solid #67C99D" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+});
+
+// Rides along as an extra entry in the DataGrid's sx array (see gridDarkModeSx
+// in BatchSeatsCounter.jsx for the same pattern) instead of rewriting the
+// large inline sx object above it: only the rules that were hardcoded to
+// light-mode-only white/near-white need a dark-mode alternative here.
+const requestsGridDarkSx = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  border: "1px solid #67C99D",
+  backgroundColor: theme.palette.surfaces.card,
+  "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
+  "& .MuiDataGrid-row:nth-of-type(even)": { backgroundColor: theme.palette.surfaces.section },
+  "& .MuiDataGrid-row:hover": { backgroundColor: theme.palette.surfaces.hover },
+  "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
+  "& .MuiDataGrid-footerContainer": { borderTop: `1px solid #67C99D` }
+});
 
 const readCurrentUser = () => {
   try {
@@ -498,10 +520,11 @@ function GenericItemsTable({ title, rows }) {
   return (
     <Paper
       variant="outlined"
-      sx={{
+      sx={(theme) => ({
         p: isPhone ? 0.4 : isTablet ? 0.65 : 1.5,
-        borderRadius: isCompact ? 1.4 : 3
-      }}
+        borderRadius: isCompact ? 1.4 : 3,
+        borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+      })}
     >
       <Typography
         sx={{
@@ -517,22 +540,25 @@ function GenericItemsTable({ title, rows }) {
       <Box sx={{ overflowX: "auto", width: "100%" }}>
         <Box
           component="table"
-          sx={{
-            width: "100%",
-            minWidth: isPhone ? 300 : isTablet ? 420 : undefined,
-            borderCollapse: "collapse",
-            "& th, & td": {
-              border: "1px solid #ddd",
-              px: isPhone ? 0.25 : isTablet ? 0.4 : 1,
-              py: isPhone ? 0.35 : isTablet ? 0.5 : 0.8,
-              whiteSpace: "nowrap",
-              textAlign: "center",
-              fontSize: designTokens.typography.table
-            },
-            "& th": {
-              backgroundColor: "#edf8f2",
-              fontWeight: 950
-            }
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              width: "100%",
+              minWidth: isPhone ? 300 : isTablet ? 420 : undefined,
+              borderCollapse: "collapse",
+              "& th, & td": {
+                border: isDark ? `1px solid #67C99D` : "1px solid #ddd",
+                px: isPhone ? 0.25 : isTablet ? 0.4 : 1,
+                py: isPhone ? 0.35 : isTablet ? 0.5 : 0.8,
+                whiteSpace: "nowrap",
+                textAlign: "center",
+                fontSize: designTokens.typography.table
+              },
+              "& th": {
+                backgroundColor: isDark ? theme.palette.surfaces.section : "#edf8f2",
+                fontWeight: 950
+              }
+            };
           }}
         >
           <thead>
@@ -608,7 +634,7 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
@@ -688,10 +714,11 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
           <Stack spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}>
             <Paper
               variant="outlined"
-              sx={{
+              sx={(theme) => ({
                 p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
-                borderRadius: isCompact ? 1.4 : 3
-              }}
+                borderRadius: isCompact ? 1.4 : 3,
+                borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+              })}
             >
               <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.5}>
                 <Grid item xs={12} sm={6} md={4}>
@@ -776,11 +803,12 @@ function AdmissionDetailsDialog({ open, data, loading, error, onClose, onPrint }
                 <Grid item xs={6} sm={3} md={3} key={label}>
                   <Paper
                     variant="outlined"
-                    sx={{
+                    sx={(theme) => ({
                       p: isPhone ? 0.45 : isTablet ? 0.65 : 1.5,
                       textAlign: "center",
-                      borderRadius: isCompact ? 1.2 : 3
-                    }}
+                      borderRadius: isCompact ? 1.2 : 3,
+                      borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+                    })}
                   >
                     <Typography sx={{ fontWeight: 900, fontSize: designTokens.typography.helper }}>
                       {label}
@@ -926,7 +954,7 @@ function PaymentDetailsDialog({
           pb: isPhone ? 0 : isTablet ? 0.5 : 1.5,
           alignItems: isPhone ? "stretch" : "center"
         }
-      }, uiLayout.dialogLayoutSx)}
+      }, uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       PaperProps={{
         sx: {
           width: isPhone ? "100vw" : isTablet ? "95vw" : undefined,
@@ -1006,10 +1034,11 @@ function PaymentDetailsDialog({
           <Stack spacing={isPhone ? 0.65 : isTablet ? 0.9 : 2}>
             <Paper
               variant="outlined"
-              sx={{
+              sx={(theme) => ({
                 p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
-                borderRadius: isCompact ? 1.4 : 3
-              }}
+                borderRadius: isCompact ? 1.4 : 3,
+                borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+              })}
             >
               <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.5}>
                 <Grid item xs={12} sm={6} md={4}>
@@ -1089,22 +1118,26 @@ function PaymentDetailsDialog({
             <Box sx={{ overflowX: "auto", width: "100%" }}>
               <Box
                 component="table"
-                sx={{
-                  width: "100%",
-                  minWidth: isPhone ? 310 : isTablet ? 500 : 760,
-                  borderCollapse: "collapse",
-                  "& th, & td": {
-                    border: "1px solid #ddd",
-                    px: isPhone ? 0.25 : isTablet ? 0.45 : 1,
-                    py: isPhone ? 0.35 : isTablet ? 0.5 : 0.9,
-                    whiteSpace: "nowrap",
-                    textAlign: "center",
-                    fontSize: designTokens.typography.table
-                  },
-                  "& th": {
-                    backgroundColor: "#f7d58b",
-                    fontWeight: 950
-                  }
+                sx={(theme) => {
+                  const isDark = theme.palette.mode === "dark";
+                  return {
+                    width: "100%",
+                    minWidth: isPhone ? 310 : isTablet ? 500 : 760,
+                    borderCollapse: "collapse",
+                    "& th, & td": {
+                      border: isDark ? `1px solid #67C99D` : "1px solid #ddd",
+                      px: isPhone ? 0.25 : isTablet ? 0.45 : 1,
+                      py: isPhone ? 0.35 : isTablet ? 0.5 : 0.9,
+                      whiteSpace: "nowrap",
+                      textAlign: "center",
+                      fontSize: designTokens.typography.table
+                    },
+                    "& th": {
+                      backgroundColor: isDark ? "rgba(237,137,54,.16)" : "#f7d58b",
+                      color: isDark ? "#f0ad4e" : undefined,
+                      fontWeight: 950
+                    }
+                  };
                 }}
               >
                 <thead>
@@ -1152,11 +1185,12 @@ function PaymentDetailsDialog({
                 <Grid item xs={4} md={4} key={label}>
                   <Paper
                     variant="outlined"
-                    sx={{
+                    sx={(theme) => ({
                       p: isPhone ? 0.4 : isTablet ? 0.6 : 1.5,
                       textAlign: "center",
-                      borderRadius: isCompact ? 1.2 : 3
-                    }}
+                      borderRadius: isCompact ? 1.2 : 3,
+                      borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+                    })}
                   >
                     <Typography sx={{ fontWeight: 900, fontSize: designTokens.typography.helper }}>
                       {label}
@@ -1257,7 +1291,7 @@ function ConvertVipDialog({
   }, [open, row?.id]);
 
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog sx={uiLayout.withUiSx(uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
       open={open}
       onClose={saving ? undefined : onClose}
       maxWidth="sm"
@@ -1287,12 +1321,13 @@ function ConvertVipDialog({
 
         <Paper
           variant="outlined"
-          sx={{
+          sx={(theme) => ({
             p: 2,
             mb: 2,
             borderRadius: 3,
-            backgroundColor: "#fafafa"
-          }}
+            backgroundColor: theme.palette.mode === "dark" ? theme.palette.surfaces.section : "#fafafa",
+            borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+          })}
         >
           <Stack spacing={0.8}>
             <Typography><strong>رقم الطلب:</strong> {row?.code || "-"}</Typography>
@@ -2930,27 +2965,30 @@ ${PRINT_READY_SCRIPT}</head>
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       dir="rtl"
-      sx={{
+      sx={(theme) => ({
         height: isDesktop ? "100dvh" : "auto",
         minHeight: isDesktop ? 0 : "100dvh",
         width: "100%",
         maxWidth: "100%",
         overflow: isDesktop ? "hidden" : "visible",
-        background: "linear-gradient(180deg, #f8fcfa 0%, #eef8f3 100%)",
+        background: theme.palette.mode === "dark" ? theme.palette.background.default : "linear-gradient(180deg, #f8fcfa 0%, #eef8f3 100%)",
         fontFamily: "Cairo, Arial, sans-serif",
         position: "relative"
-      }}
+      })}
     >
       {!isDesktop && (
         <AppBar
           position="sticky"
           elevation={0}
-          sx={{
-            top: 0,
-            background: "rgba(255,255,255,0.96)",
-            backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom: "1px solid rgba(5,117,70,0.12)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              top: 0,
+              background: isDark ? theme.palette.surfaces.card : "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(14px)",
+              color: isDark ? theme.palette.text.primary : "#17372b",
+              borderBottom: isDark ? `1px solid #67C99D` : "1px solid rgba(5,117,70,0.12)"
+            };
           }}
         >
           <Toolbar
@@ -3003,14 +3041,20 @@ ${PRINT_READY_SCRIPT}</head>
       >
         <Paper
           elevation={0}
-          sx={{
-            height: isDesktop ? "100%" : "auto",
-            display: "flex",
-            flexDirection: "column",
-            borderRadius: `${designTokens.radius}px`,
-            overflow: "hidden",
-            border: "1px solid rgba(5,117,70,0.14)",
-            boxShadow: "0 18px 45px rgba(5,117,70,0.10)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              height: isDesktop ? "100%" : "auto",
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: `${designTokens.radius}px`,
+              overflow: "hidden",
+              border: isDark ? `1px solid #67C99D` : "1px solid rgba(5,117,70,0.14)",
+              boxShadow: isDark
+                ? `0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.45)`
+                : "0 18px 45px rgba(5,117,70,0.10)",
+              background: isDark ? theme.palette.surfaces.card : undefined
+            };
           }}
         >
           <Box
@@ -3064,8 +3108,8 @@ ${PRINT_READY_SCRIPT}</head>
             variant={isPhone ? "scrollable" : "standard"}
             scrollButtons={isPhone ? "auto" : false}
             dir="rtl"
-            sx={{
-              borderBottom: "1px solid rgba(5,117,70,0.12)",
+            sx={(theme) => ({
+              borderBottom: theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.12)",
               flexShrink: 0,
               "& .MuiTab-root": {
                 minHeight: isPhone ? 38 : 38,
@@ -3086,7 +3130,7 @@ ${PRINT_READY_SCRIPT}</head>
                 height: isCompact ? 2.5 : 4,
                 backgroundColor: accentColor
               }
-            }}
+            })}
           >
             {tabs.map((tab) => (
               <Tab
@@ -3326,7 +3370,7 @@ ${PRINT_READY_SCRIPT}</head>
                       "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
                         fontSize: isDesktop ? "0.6875rem" : designTokens.typography.label
                       }
-                    }, uiLayout.dataGridSx)}
+                    }, uiLayout.dataGridSx, requestsGridDarkSx)}
                   />
                 </Box>
               </>
@@ -3334,15 +3378,16 @@ ${PRINT_READY_SCRIPT}</head>
               <Paper
                 variant="outlined"
                 dir="rtl"
-                sx={{
+                sx={(theme) => ({
                   minHeight: 450,
                   borderRadius: 3,
                   borderStyle: "dashed",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center"
-                }}
+                  justifyContent: "center",
+                  borderColor: theme.palette.mode === "dark" ? "#67C99D" : undefined
+                })}
               >
                 <Typography variant="h6" sx={{ fontWeight: 950 }}>
                   {selectedTab?.label}

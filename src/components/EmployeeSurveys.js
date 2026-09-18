@@ -40,6 +40,7 @@ import {
 } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
 
 
@@ -49,8 +50,11 @@ const primaryDark = '#034d31';
 const primaryLight = '#80b49e';
 const backgroundColor = '#f6faf8';
 const textColor = '#17372b';
+const focusBorderColor = '#67C99D';
 
 const EmployeeSurveys = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [surveys, setSurveys] = useState([]);
   const [submittedSurveys, setSubmittedSurveys] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -274,7 +278,7 @@ const fetchSubmittedSurveys = async (user) => {
                     padding: '5px 8px',
                     borderRadius: '8px',
                     backgroundColor: responses[index] === option ? `${primaryColor}15` : 'transparent',
-                    border: responses[index] === option ? `1px solid ${primaryColor}` : '1px solid transparent',
+                    border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                     transition: 'background-color .15s ease, border-color .15s ease',
                     '&:hover': {
                       backgroundColor: `${primaryColor}10`
@@ -315,7 +319,7 @@ const fetchSubmittedSurveys = async (user) => {
                   padding: '5px 8px',
                   borderRadius: '8px',
                   backgroundColor: (responses[index] || []).includes(option) ? `${primaryColor}15` : 'transparent',
-                  border: (responses[index] || []).includes(option) ? `1px solid ${primaryColor}` : '1px solid transparent',
+                  border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                   transition: 'background-color .15s ease, border-color .15s ease',
                   '&:hover': {
                     backgroundColor: `${primaryColor}10`
@@ -388,12 +392,12 @@ const fetchSubmittedSurveys = async (user) => {
                 height: '100%',
                 cursor: 'pointer',
                 borderRadius: 2.5,
-                border: '1px solid rgba(5,117,70,.12)',
+                border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                 boxShadow: 'none',
                 bgcolor: '#fff',
                 transition: 'border-color .15s ease, background-color .15s ease',
                 '&:hover': {
-                  borderColor: 'rgba(5,117,70,.32)',
+                  borderColor: isDark ? focusBorderColor : 'rgba(5,117,70,0.11)',
                   bgcolor: '#fbfdfc'
                 }
               }}
@@ -509,7 +513,7 @@ const fetchSubmittedSurveys = async (user) => {
             sx={{
               height: '100%',
               borderRadius: 2.5,
-              border: '1px solid rgba(5,117,70,.10)',
+              border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
               boxShadow: 'none',
               bgcolor: '#fff'
             }}
@@ -574,7 +578,14 @@ const fetchSubmittedSurveys = async (user) => {
   if (loading) {
     return (
       <NavigationShell variant="standard">
-        <Box sx={{ display: 'flex', minHeight: '100vh', background: '#f6faf8' }}>
+        <Box sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        background: isDark ? theme.palette.background.default : '#f6faf8',
+        '& .MuiPaper-root, & .MuiCard-root': { border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)' },
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? `${focusBorderColor} !important` : undefined },
+        '& .MuiTableCell-root': { borderColor: isDark ? `${focusBorderColor} !important` : undefined }
+      }} >
           <Container
             maxWidth={false}
             disableGutters
@@ -599,7 +610,14 @@ const fetchSubmittedSurveys = async (user) => {
 
   return (
     <NavigationShell variant="standard">
-      <Box sx={{ display: 'flex', minHeight: '100vh', background: '#f6faf8' }}>
+      <Box sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        background: isDark ? theme.palette.background.default : '#f6faf8',
+        '& .MuiPaper-root, & .MuiCard-root': { border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)' },
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? `${focusBorderColor} !important` : undefined },
+        '& .MuiTableCell-root': { borderColor: isDark ? `${focusBorderColor} !important` : undefined }
+      }} >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Container
             maxWidth={false}
@@ -671,7 +689,7 @@ const fetchSubmittedSurveys = async (user) => {
               sx={{
                 p: { xs: 0.75, sm: 1, md: 1.15 },
                 borderRadius: 2.5,
-                border: '1px solid rgba(5,117,70,.11)',
+                border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                 bgcolor: '#fff'
               }}
             >
@@ -761,7 +779,7 @@ const fetchSubmittedSurveys = async (user) => {
             </Paper>
 
             <Dialog
-              sx={uiLayout.dialogLayoutSx}
+              sx={[uiLayout.dialogLayoutSx, { '& .MuiDialog-paper': { border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? `${focusBorderColor} !important` : undefined } }]}
               open={responseDialog}
               onClose={() => !submitting && setResponseDialog(false)}
               fullWidth
@@ -781,7 +799,7 @@ const fetchSubmittedSurveys = async (user) => {
                 sx={{
                   px: { xs: 1.25, sm: 1.5 },
                   py: 1,
-                  borderBottom: '1px solid rgba(5,117,70,.11)',
+                  borderBottom: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,.08)',
                   bgcolor: '#fff'
                 }}
               >
@@ -844,7 +862,7 @@ const fetchSubmittedSurveys = async (user) => {
                           p: 1,
                           borderRadius: 2,
                           bgcolor: '#edf7f2',
-                          border: '1px solid rgba(5,117,70,.10)'
+                          border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)'
                         }}
                       >
                         <Typography
@@ -866,7 +884,7 @@ const fetchSubmittedSurveys = async (user) => {
                           key={index}
                           sx={{
                             p: { xs: 0.9, sm: 1.1 },
-                            border: '1px solid rgba(5,117,70,.11)',
+                            border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                             borderRadius: 2,
                             bgcolor: '#fff'
                           }}

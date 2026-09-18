@@ -55,6 +55,7 @@ const PRIMARY_COLOR = '#80b49e';
 const PRIMARY_COLOR_DARK = '#6a9a87';
 const PRIMARY_COLOR_LIGHT = '#9ac8b5';
 const PRIMARY_COLOR_SUPER_LIGHT = '#e8f3ef';
+const DARK_MODE_BORDER = '#67C99D';
 
 // تعريف الـ API base
 const PHP_BASE = 'https://filesregsiteration.sstli.com';
@@ -69,19 +70,25 @@ const SpecialComponent = () => {
   const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`, { noSsr: true });
   const isDark = theme.palette.mode === 'dark';
 
-  const dashboardColors = useMemo(() => ({
-    page: isDark ? '#0b110f' : '#f4f7f5',
-    surface: isDark ? '#111a16' : '#ffffff',
-    surfaceSoft: isDark ? '#16231d' : '#f8fbf9',
-    surfaceRaised: isDark ? '#192820' : '#f1f7f4',
-    text: isDark ? '#f1f7f4' : '#17372b',
-    muted: isDark ? '#9fb4aa' : '#6f8178',
-    border: isDark ? 'rgba(128,180,158,.18)' : 'rgba(5,117,70,.11)',
-    borderStrong: isDark ? 'rgba(128,180,158,.32)' : 'rgba(5,117,70,.19)',
-    shadow: isDark
-      ? '0 12px 34px rgba(0,0,0,.28)'
-      : '0 12px 34px rgba(29,78,56,.07)',
-  }), [isDark]);
+  const dashboardColors = useMemo(() => {
+    const surfaces = theme.palette.surfaces || {};
+
+    return {
+      page: isDark ? (theme.palette.background?.default || '#0d1b15') : '#f4f7f5',
+      surface: isDark ? (surfaces.card || '#13251d') : '#ffffff',
+      surfaceSoft: isDark ? (surfaces.section || '#172b22') : '#f8fbf9',
+      surfaceRaised: isDark ? (surfaces.nested || '#1b3328') : '#f1f7f4',
+      hover: isDark ? (surfaces.hover || '#214333') : '#eef7f2',
+      selected: isDark ? (surfaces.selected || '#28513f') : '#e5f4ec',
+      text: isDark ? '#edf8f3' : '#17372b',
+      muted: isDark ? '#bdd2c8' : '#6f8178',
+      border: isDark ? DARK_MODE_BORDER : 'rgba(5,117,70,.11)',
+      borderStrong: isDark ? DARK_MODE_BORDER : 'rgba(5,117,70,.19)',
+      shadow: isDark
+        ? '0 12px 34px rgba(3,20,13,.30)'
+        : '0 12px 34px rgba(29,78,56,.07)',
+    };
+  }, [isDark, theme]);
 
   const sectionCardSx = {
     background: dashboardColors.surface,
@@ -99,14 +106,117 @@ const SpecialComponent = () => {
       borderRadius: 2.25,
       color: dashboardColors.text,
       backgroundColor: dashboardColors.surfaceSoft,
-      '& fieldset': { borderColor: dashboardColors.borderStrong },
-      '&:hover fieldset': { borderColor: alpha(PRIMARY_COLOR, .55) },
-      '&.Mui-focused fieldset': { borderColor: PRIMARY_COLOR_DARK },
+      '& fieldset': {
+        borderColor: dashboardColors.borderStrong,
+        borderWidth: '1px !important',
+      },
+      '&:hover fieldset': {
+        borderColor: isDark ? DARK_MODE_BORDER : alpha(PRIMARY_COLOR, .55),
+      },
+      '&.Mui-focused': {
+        boxShadow: isDark ? `0 0 0 2px ${alpha(DARK_MODE_BORDER, .12)}` : 'none',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR_DARK,
+        borderWidth: '1px !important',
+      },
+      '& input': {
+        color: dashboardColors.text,
+        textAlign: 'right',
+      },
     },
     '& .MuiInputLabel-root': { color: dashboardColors.muted },
-    '& .MuiInputLabel-root.Mui-focused': { color: PRIMARY_COLOR },
-    '& .MuiSvgIcon-root': { color: PRIMARY_COLOR },
+    '& .MuiInputLabel-root.Mui-focused': { color: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR },
+    '& .MuiSvgIcon-root': { color: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR },
   };
+
+  const selectFieldSx = {
+    minWidth: isDesktop ? 200 : 0,
+    width: isDesktop ? 'auto' : '100%',
+    direction: 'rtl',
+    '& .MuiInputLabel-root': {
+      color: dashboardColors.muted,
+      right: 0,
+      left: 'auto',
+      transformOrigin: 'top right',
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR,
+    },
+    '& .MuiOutlinedInput-root': {
+      minHeight: isDesktop ? 42 : 38,
+      borderRadius: 2.1,
+      color: dashboardColors.text,
+      backgroundColor: dashboardColors.surfaceSoft,
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: dashboardColors.borderStrong,
+        borderWidth: '1px !important',
+      },
+      '&:hover .MuiOutlinedInput-notchedOutline': {
+        borderColor: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR,
+      },
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR_DARK,
+        borderWidth: '1px !important',
+      },
+    },
+    '& .MuiSelect-select': {
+      textAlign: 'right',
+      pr: '14px !important',
+      pl: '36px !important',
+      py: isDesktop ? 1.05 : .8,
+    },
+    '& .MuiSelect-icon': {
+      color: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR,
+      right: 'auto',
+      left: 10,
+    },
+  };
+
+  const selectMenuProps = {
+    PaperProps: {
+      sx: {
+        mt: .5,
+        color: dashboardColors.text,
+        backgroundColor: dashboardColors.surfaceRaised,
+        backgroundImage: 'none',
+        border: `1px solid ${dashboardColors.border}`,
+        borderRadius: 2,
+        boxShadow: dashboardColors.shadow,
+        '& .MuiMenuItem-root': {
+          minHeight: 38,
+          justifyContent: 'flex-start',
+          textAlign: 'right',
+          direction: 'rtl',
+          borderRadius: 1.25,
+          mx: .5,
+          my: .25,
+          '&:hover': {
+            backgroundColor: dashboardColors.hover,
+          },
+          '&.Mui-selected': {
+            backgroundColor: dashboardColors.selected,
+            '&:hover': { backgroundColor: dashboardColors.selected },
+          },
+        },
+      },
+    },
+  };
+
+  const dialogMetricCardSx = (accent) => ({
+    textAlign: 'center',
+    p: isDesktop ? 2 : { xs: .65, sm: .8, md: 1 },
+    minHeight: isDesktop ? 92 : 70,
+    display: 'grid',
+    alignContent: 'center',
+    gap: .2,
+    color: dashboardColors.text,
+    backgroundColor: isDark ? dashboardColors.surfaceRaised : alpha(accent, .08),
+    backgroundImage: 'none',
+    border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(accent, .24)}`,
+    borderRadius: 2,
+    boxShadow: 'none',
+  });
 
   const metricCardSx = (color, featured = false) => ({
     minHeight: isDesktop ? 132 : 96,
@@ -117,7 +227,7 @@ const SpecialComponent = () => {
     background: featured
       ? `linear-gradient(135deg, ${alpha(color, isDark ? .22 : .11)} 0%, ${dashboardColors.surface} 72%)`
       : dashboardColors.surface,
-    border: `1px solid ${featured ? alpha(color, .42) : dashboardColors.border}`,
+    border: `1px solid ${isDark ? DARK_MODE_BORDER : (featured ? alpha(color, .42) : dashboardColors.border)}`,
     boxShadow: featured
       ? `0 14px 32px ${alpha(color, isDark ? .10 : .08)}`
       : (isDark ? '0 8px 24px rgba(0,0,0,.16)' : '0 8px 22px rgba(31,81,59,.045)'),
@@ -135,7 +245,7 @@ const SpecialComponent = () => {
     },
     '&:hover': {
       transform: 'translateY(-2px)',
-      borderColor: alpha(color, .38),
+      borderColor: isDark ? DARK_MODE_BORDER : alpha(color, .38),
       boxShadow: `0 14px 30px ${alpha(color, isDark ? .11 : .075)}`,
     },
   });
@@ -585,7 +695,7 @@ const SpecialComponent = () => {
                 placeItems: 'center',
                 color: PRIMARY_COLOR,
                 background: alpha(PRIMARY_COLOR, isDark ? .14 : .10),
-                border: `1px solid ${alpha(PRIMARY_COLOR, .18)}`,
+                border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(PRIMARY_COLOR, .18)}`,
                 flexShrink: 0,
               }}
             >
@@ -624,7 +734,7 @@ const SpecialComponent = () => {
               fontWeight: 900,
               color: getPercentageColor(overallPercentage),
               backgroundColor: alpha(getPercentageColor(overallPercentage), isDark ? .13 : .08),
-              border: `1px solid ${alpha(getPercentageColor(overallPercentage), .28)}`,
+              border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(getPercentageColor(overallPercentage), .28)}`,
               '& .MuiChip-icon': {
                 color: 'inherit',
                 fontSize: 17,
@@ -663,7 +773,7 @@ const SpecialComponent = () => {
                     : dashboardColors.surfaceSoft,
                   border: `1px solid ${
                     active
-                      ? alpha(tier.color, .55)
+                      ? (isDark ? DARK_MODE_BORDER : alpha(tier.color, .55))
                       : dashboardColors.border
                   }`,
                   boxShadow: active
@@ -751,7 +861,7 @@ const SpecialComponent = () => {
             gap: .8,
             color: isDark ? '#b9d8ca' : '#315e4b',
             backgroundColor: alpha(PRIMARY_COLOR, isDark ? .08 : .055),
-            border: `1px solid ${alpha(PRIMARY_COLOR, .13)}`,
+            border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(PRIMARY_COLOR, .13)}`,
           }}
         >
           <InfoIcon sx={{ fontSize: 17, color: PRIMARY_COLOR, flexShrink: 0 }} />
@@ -890,10 +1000,16 @@ const SpecialComponent = () => {
           size="small"
           onClick={() => handleOpenTrainerDialog(params.row)}
           sx={{
+            width: isDesktop ? 34 : 30,
+            height: isDesktop ? 34 : 30,
             border: `1px solid ${dashboardColors.borderStrong}`,
-            color: dashboardColors.text,
+            color: isDark ? DARK_MODE_BORDER : dashboardColors.text,
+            backgroundColor: isDark ? dashboardColors.surfaceRaised : 'transparent',
             borderRadius: 2,
-            '&:hover': { backgroundColor: PRIMARY_COLOR_LIGHT, borderColor: PRIMARY_COLOR }
+            '&:hover': {
+              backgroundColor: isDark ? dashboardColors.hover : PRIMARY_COLOR_LIGHT,
+              borderColor: isDark ? DARK_MODE_BORDER : PRIMARY_COLOR,
+            },
           }}
         >
           <VisibilityIcon fontSize="small" />
@@ -1116,7 +1232,7 @@ const SpecialComponent = () => {
             left: 0,
             right: 0,
             zIndex: 1401,
-            background: isDark ? 'rgba(11,17,15,.94)' : 'rgba(255,255,255,.96)',
+            background: isDark ? alpha(dashboardColors.surface, .96) : 'rgba(255,255,255,.96)',
             backdropFilter: 'blur(14px)',
             color: dashboardColors.text,
             borderBottom: `1px solid ${dashboardColors.border}`,
@@ -1142,8 +1258,13 @@ const SpecialComponent = () => {
               sx={{
                 width: { xs: 36, sm: 40, md: 42 },
                 height: { xs: 36, sm: 40, md: 42 },
-                color: '#fff',
-                background: 'linear-gradient(135deg, #057546, #034d31)',
+                color: isDark ? DARK_MODE_BORDER : '#fff',
+                background: isDark ? dashboardColors.surfaceRaised : 'linear-gradient(135deg, #057546, #034d31)',
+                border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
+                borderRadius: 2,
+                '&:hover': {
+                  background: isDark ? dashboardColors.hover : 'linear-gradient(135deg, #04663e, #034d31)',
+                },
               }}
             >
               <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22, md: 23 } }} />
@@ -1225,6 +1346,18 @@ const SpecialComponent = () => {
                 md: "0.75rem"
               }
             },
+            '& .MuiCard-root, & .MuiPaper-root': {
+              backgroundImage: 'none',
+            },
+            '& .MuiFormHelperText-root': {
+              color: dashboardColors.muted,
+              marginInlineStart: 0,
+              marginInlineEnd: 0,
+            },
+            '& .MuiOutlinedInput-input, & .MuiSelect-select, & textarea': {
+              color: dashboardColors.text,
+              textAlign: 'right',
+            },
             '& .MuiChip-root': {
               fontSize: isDesktop ? undefined : {
                 xs: "0.75rem",
@@ -1249,7 +1382,7 @@ const SpecialComponent = () => {
               position: 'relative',
               overflow: 'hidden',
               background: isDark
-                ? `linear-gradient(120deg, #13231c 0%, #172b22 58%, ${alpha(PRIMARY_COLOR, .16)} 100%)`
+                ? `linear-gradient(120deg, ${dashboardColors.surface} 0%, ${dashboardColors.surfaceRaised} 58%, ${alpha(PRIMARY_COLOR, .16)} 100%)`
                 : `linear-gradient(120deg, #ffffff 0%, #f8fcfa 58%, ${alpha(PRIMARY_COLOR, .14)} 100%)`,
               '&::before': {
                 content: '""',
@@ -1298,8 +1431,9 @@ const SpecialComponent = () => {
                       display: 'grid',
                       placeItems: 'center',
                       flexShrink: 0,
-                      color: '#fff',
-                      background: 'linear-gradient(135deg, #057546, #034d31)',
+                      color: isDark ? DARK_MODE_BORDER : '#fff',
+                      background: isDark ? dashboardColors.surfaceRaised : 'linear-gradient(135deg, #057546, #034d31)',
+                      border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
                       boxShadow: '0 10px 22px rgba(5,117,70,.18)',
                     }}
                   >
@@ -1357,7 +1491,7 @@ const SpecialComponent = () => {
                           maxWidth: { xs: 190, sm: 260 },
                           color: PRIMARY_COLOR,
                           bgcolor: alpha(PRIMARY_COLOR, isDark ? .10 : .07),
-                          border: `1px solid ${alpha(PRIMARY_COLOR, .17)}`,
+                          border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(PRIMARY_COLOR, .17)}`,
                           fontWeight: 800,
                           '& .MuiChip-label': {
                             overflow: 'hidden',
@@ -1392,6 +1526,7 @@ const SpecialComponent = () => {
                       placeItems: 'center',
                       color: PRIMARY_COLOR,
                       bgcolor: alpha(PRIMARY_COLOR, isDark ? .12 : .08),
+                      border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(PRIMARY_COLOR, .12)}`,
                       flexShrink: 0,
                     }}
                   >
@@ -1517,12 +1652,14 @@ const SpecialComponent = () => {
                       borderRadius: 2.1,
                       whiteSpace: 'nowrap',
                       fontWeight: 900,
-                      color: '#fff',
-                      background: 'linear-gradient(135deg, #057546, #04633d)',
+                      color: isDark ? '#edf8f3' : '#fff',
+                      background: isDark ? dashboardColors.surfaceRaised : 'linear-gradient(135deg, #057546, #04633d)',
+                      border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
                       boxShadow: 'none',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #04663e, #034d31)',
-                        boxShadow: '0 7px 17px rgba(5,117,70,.18)',
+                        background: isDark ? dashboardColors.hover : 'linear-gradient(135deg, #04663e, #034d31)',
+                        borderColor: isDark ? DARK_MODE_BORDER : 'transparent',
+                        boxShadow: isDark ? `0 0 0 2px ${alpha(DARK_MODE_BORDER, .10)}` : '0 7px 17px rgba(5,117,70,.18)',
                       },
                     }, uiLayout.buttonSx)}
                   >
@@ -1586,7 +1723,7 @@ const SpecialComponent = () => {
                         placeItems: 'center',
                         color: metric.color,
                         backgroundColor: alpha(metric.color, isDark ? .13 : .085),
-                        border: `1px solid ${alpha(metric.color, .13)}`,
+                        border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(metric.color, .13)}`,
                         flexShrink: 0,
                       }}
                     >
@@ -1686,7 +1823,7 @@ const SpecialComponent = () => {
                       fontWeight: 900,
                       color: PRIMARY_COLOR,
                       bgcolor: alpha(PRIMARY_COLOR, isDark ? .11 : .07),
-                      border: `1px solid ${alpha(PRIMARY_COLOR, .16)}`,
+                      border: `1px solid ${isDark ? DARK_MODE_BORDER : alpha(PRIMARY_COLOR, .16)}`,
                     }}
                   />
                   {fetching && (
@@ -1701,6 +1838,9 @@ const SpecialComponent = () => {
                   height: isDesktop ? 560 : { xs: '72dvh', sm: '74dvh', md: '76dvh' },
                   minWidth: 0,
                   backgroundColor: dashboardColors.surface,
+                  border: `1px solid ${dashboardColors.border}`,
+                  borderRadius: 2,
+                  overflow: 'hidden',
                 }, uiLayout.tableContainerSx)}
               >
                 <DataGrid
@@ -1718,7 +1858,8 @@ const SpecialComponent = () => {
                   sx={uiLayout.withUiSx({
                     fontFamily: "'Tajawal', 'Cairo', sans-serif",
                     color: dashboardColors.text,
-                    border: 'none',
+                    border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
+                    borderRadius: 2,
                     backgroundColor: dashboardColors.surface,
                     '& .MuiDataGrid-columnHeaders': {
                       backgroundColor: dashboardColors.surfaceRaised,
@@ -1749,11 +1890,14 @@ const SpecialComponent = () => {
                       backgroundColor: dashboardColors.surface,
                       transition: 'background-color .15s ease',
                       '&:nth-of-type(even)': {
-                        backgroundColor: isDark ? 'rgba(255,255,255,.012)' : 'rgba(5,117,70,.012)',
+                        backgroundColor: isDark ? dashboardColors.surfaceSoft : 'rgba(5,117,70,.012)',
                       },
                       '&:hover': {
-                        backgroundColor: alpha(PRIMARY_COLOR, isDark ? .07 : .045),
+                        backgroundColor: isDark ? dashboardColors.hover : alpha(PRIMARY_COLOR, .045),
                       },
+                    },
+                    '& .MuiDataGrid-row.Mui-selected, & .MuiDataGrid-row.Mui-selected:hover': {
+                      backgroundColor: dashboardColors.selected,
                     },
                     '& .MuiDataGrid-footerContainer': {
                       color: dashboardColors.text,
@@ -1762,6 +1906,9 @@ const SpecialComponent = () => {
                     },
                     '& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
                       color: dashboardColors.muted,
+                    },
+                    '& .MuiTablePagination-actions .MuiIconButton-root, & .MuiDataGrid-menuIconButton': {
+                      color: isDark ? DARK_MODE_BORDER : dashboardColors.text,
                     },
                     '& .MuiDataGrid-overlay': {
                       backgroundColor: dashboardColors.surface,
@@ -1793,17 +1940,27 @@ const SpecialComponent = () => {
                 minHeight: isDesktop ? '80vh' : isPhone ? '100dvh' : '86dvh',
                 maxHeight: isPhone ? '100dvh' : '92dvh',
                 m: isPhone ? 0 : 1,
-              }
+                color: dashboardColors.text,
+                backgroundColor: dashboardColors.surface,
+                backgroundImage: 'none',
+                border: `1px solid ${dashboardColors.border}`,
+                boxShadow: dashboardColors.shadow,
+                overflow: 'hidden',
+              },
+              '& .MuiBackdrop-root': {
+                backgroundColor: isDark ? 'rgba(3, 14, 9, .72)' : 'rgba(0, 0, 0, .36)',
+              },
             }, uiLayout.dialogLayoutSx)}
           >
             <DialogTitle sx={{
-              bgcolor: PRIMARY_COLOR,
-              color: 'white',
-              py: isDesktop ? 3 : { xs: 0.6, sm: 0.8, md: 1 },
-              px: isDesktop ? 3 : { xs: 0.75, sm: 1, md: 1.2 },
+              bgcolor: isDark ? dashboardColors.surfaceRaised : PRIMARY_COLOR,
+              color: isDark ? dashboardColors.text : 'white',
+              py: isDesktop ? 2 : { xs: .75, sm: .9, md: 1 },
+              px: isDesktop ? 2.2 : { xs: .9, sm: 1.1, md: 1.3 },
               textAlign: 'center',
-              fontSize: isDesktop ? '1.5rem' : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
-              fontWeight: 'bold',
+              fontSize: isDesktop ? '1.15rem' : { xs: "0.75rem", sm: '0.78rem', md: '0.9rem' },
+              fontWeight: 900,
+              borderBottom: `1px solid ${dashboardColors.border}`,
             }}>
               <Box display="flex" alignItems="center" justifyContent="center" gap={isDesktop ? 2 : 0.45}>
                 <PersonIcon fontSize="large" />
@@ -1811,41 +1968,46 @@ const SpecialComponent = () => {
               </Box>
             </DialogTitle>
 
-            <DialogContent sx={{ p: isDesktop ? 3 : { xs: 0.45, sm: 0.7, md: 0.95 } }}>
+            <DialogContent sx={{
+              p: isDesktop ? 2.2 : { xs: .75, sm: .9, md: 1.1 },
+              color: dashboardColors.text,
+              backgroundColor: dashboardColors.surface,
+            }}>
               <Grid container spacing={isDesktop ? 2 : 0.35} sx={{ mb: isDesktop ? 3 : 0.5 }}>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha(PRIMARY_COLOR, 0.1) }}>
+                  <Card elevation={0} sx={dialogMetricCardSx(PRIMARY_COLOR)}>
                     <Typography variant="h6" fontWeight="bold" color={PRIMARY_COLOR_DARK}>{dialogTotalStudents}</Typography>
-                    <Typography variant="body2" color="text.secondary">إجمالي الطلاب</Typography>
+                    <Typography variant="body2" sx={{ color: dashboardColors.muted }}>إجمالي الطلاب</Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha('#4caf50', 0.1) }}>
-                    <Typography variant="h6" fontWeight="bold" color="#2e7d32">{dialogPaidStudents}</Typography>
-                    <Typography variant="body2" color="text.secondary">مسددين</Typography>
+                  <Card elevation={0} sx={dialogMetricCardSx('#4caf50')}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ color: isDark ? '#8be9ad' : '#2e7d32' }}>{dialogPaidStudents}</Typography>
+                    <Typography variant="body2" sx={{ color: dashboardColors.muted }}>مسددين</Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha('#ff9800', 0.1) }}>
-                    <Typography variant="h6" fontWeight="bold" color="#ed6c02">{dialogNotedStudents}</Typography>
-                    <Typography variant="body2" color="text.secondary">متابعة</Typography>
+                  <Card elevation={0} sx={dialogMetricCardSx('#ff9800')}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ color: isDark ? '#fdba74' : '#ed6c02' }}>{dialogNotedStudents}</Typography>
+                    <Typography variant="body2" sx={{ color: dashboardColors.muted }}>متابعة</Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Card sx={{ textAlign: 'center', p: isDesktop ? 2 : { xs: 0.35, sm: 0.5, md: 0.65 }, bgcolor: alpha('#f44336', 0.1) }}>
-                    <Typography variant="h6" fontWeight="bold" color="#c62828">{dialogLateStudents}</Typography>
-                    <Typography variant="body2" color="text.secondary">متأخرين</Typography>
+                  <Card elevation={0} sx={dialogMetricCardSx('#f44336')}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ color: isDark ? '#fca5a5' : '#c62828' }}>{dialogLateStudents}</Typography>
+                    <Typography variant="body2" sx={{ color: dashboardColors.muted }}>متأخرين</Typography>
                   </Card>
                 </Grid>
               </Grid>
 
               <Box sx={{ mb: isDesktop ? 3 : 0.5 }}>
-                <FormControl sx={uiLayout.withUiSx({ minWidth: isDesktop ? 200 : 0, width: isDesktop ? 'auto' : '100%' }, uiLayout.formFieldSx)}>
+                <FormControl sx={uiLayout.withUiSx(selectFieldSx, uiLayout.formFieldSx)}>
                   <InputLabel>فلتر حسب الحالة</InputLabel>
                   <Select
                     value={filterStatus}
                     label="فلتر حسب الحالة"
                     onChange={(e) => setFilterStatus(e.target.value)}
+                    MenuProps={selectMenuProps}
                   >
                     <MenuItem value="">جميع الطلاب</MenuItem>
                     <MenuItem value="paid">مسددين</MenuItem>
@@ -1861,11 +2023,11 @@ const SpecialComponent = () => {
                   <CircularProgress size={40} sx={{ color: PRIMARY_COLOR }} />
                 </Box>
               ) : filteredStudents.length === 0 ? (
-                <Typography align="center" py={4} color="text.secondary">
+                <Typography align="center" py={4} sx={{ color: dashboardColors.muted }}>
                   لا توجد بيانات للطلاب
                 </Typography>
               ) : (
-                <Box sx={uiLayout.withUiSx({ height: isDesktop ? 500 : { xs: '72dvh', sm: '70dvh', md: '72dvh' }, width: '100%', minWidth: 0 }, uiLayout.tableContainerSx)}>
+                <Box sx={uiLayout.withUiSx({ height: isDesktop ? 500 : { xs: '72dvh', sm: '70dvh', md: '72dvh' }, width: '100%', minWidth: 0, backgroundColor: dashboardColors.surface, border: `1px solid ${dashboardColors.border}`, borderRadius: 2, overflow: 'hidden' }, uiLayout.tableContainerSx)}>
                   <DataGrid
                     rows={filteredStudents}
                     columns={responsiveStudentColumns}
@@ -1878,26 +2040,59 @@ const SpecialComponent = () => {
                     onPaginationModelChange={setStudentPaginationModel}
                     sx={uiLayout.withUiSx({
                       fontFamily: "'Tajawal', 'Cairo', sans-serif",
-                      border: 'none',
+                      color: dashboardColors.text,
+                      border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
+                      borderRadius: 2,
+                      backgroundColor: dashboardColors.surface,
                       '& .MuiDataGrid-columnHeaders': {
-                        backgroundColor: PRIMARY_COLOR_SUPER_LIGHT,
-                        borderBottom: `2px solid ${PRIMARY_COLOR}`,
+                        backgroundColor: isDark ? dashboardColors.surfaceRaised : PRIMARY_COLOR_SUPER_LIGHT,
+                        borderBottom: `1px solid ${isDark ? DARK_MODE_BORDER : PRIMARY_COLOR}`,
                       },
                       '& .MuiDataGrid-columnHeaderTitle': {
-                        fontWeight: 700,
-                        color: PRIMARY_COLOR_DARK,
-                        fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                        fontWeight: 800,
+                        color: isDark ? '#d8eee4' : PRIMARY_COLOR_DARK,
+                        fontSize: isDesktop ? '13px' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                         whiteSpace: 'normal',
                         lineHeight: 1.15,
                       },
                       '& .MuiDataGrid-cell': {
-                        borderBottom: `1px solid ${alpha(PRIMARY_COLOR, 0.1)}`,
-                        fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-                        px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
+                        color: dashboardColors.text,
+                        borderBottom: `1px solid ${dashboardColors.border}`,
+                        fontSize: isDesktop ? '13px' : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                        px: isDesktop ? 1 : { xs: 0.2, sm: 0.45 },
+                        '&:focus, &:focus-within': { outline: 'none' },
                       },
-                      '& .status-paid': { backgroundColor: '#dcfce7 !important' },
-                      '& .status-note': { backgroundColor: '#fef9c3 !important' },
-                      '& .status-late': { backgroundColor: '#fee2e2 !important' },
+                      '& .MuiDataGrid-row': {
+                        backgroundColor: dashboardColors.surface,
+                        '&:hover': { backgroundColor: dashboardColors.hover },
+                      },
+                      '& .MuiDataGrid-row.Mui-selected, & .MuiDataGrid-row.Mui-selected:hover': {
+                        backgroundColor: dashboardColors.selected,
+                      },
+                      '& .status-paid': {
+                        backgroundColor: `${isDark ? alpha('#4caf50', .10) : '#dcfce7'} !important`,
+                      },
+                      '& .status-note': {
+                        backgroundColor: `${isDark ? alpha('#ff9800', .10) : '#fef9c3'} !important`,
+                      },
+                      '& .status-late': {
+                        backgroundColor: `${isDark ? alpha('#f44336', .10) : '#fee2e2'} !important`,
+                      },
+                      '& .MuiDataGrid-footerContainer': {
+                        color: dashboardColors.text,
+                        backgroundColor: dashboardColors.surfaceSoft,
+                        borderTop: `1px solid ${dashboardColors.border}`,
+                      },
+                      '& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                        color: dashboardColors.muted,
+                      },
+                      '& .MuiTablePagination-actions .MuiIconButton-root, & .MuiDataGrid-menuIconButton': {
+                        color: isDark ? DARK_MODE_BORDER : dashboardColors.text,
+                      },
+                      '& .MuiDataGrid-overlay': {
+                        color: dashboardColors.muted,
+                        backgroundColor: dashboardColors.surface,
+                      },
                     }, uiLayout.dataGridSx)}
                     getRowClassName={(params) => {
                       const studentId = params.row.nationalId || params.row.id;
@@ -1915,11 +2110,27 @@ const SpecialComponent = () => {
               )}
             </DialogContent>
 
-            <DialogActions sx={uiLayout.withUiSx({ p: isDesktop ? 3 : { xs: 0.45, sm: 0.65, md: 0.8 } }, uiLayout.dialogActionsSx)}>
+            <DialogActions sx={uiLayout.withUiSx({
+              p: isDesktop ? 1.6 : { xs: .65, sm: .8, md: .9 },
+              backgroundColor: dashboardColors.surfaceSoft,
+              borderTop: `1px solid ${dashboardColors.border}`,
+            }, uiLayout.dialogActionsSx)}>
               <Button
                 onClick={() => setTrainerDialogOpen(false)}
                 variant="contained"
-                sx={uiLayout.withUiSx({ backgroundColor: PRIMARY_COLOR, '&:hover': { backgroundColor: PRIMARY_COLOR_DARK } }, uiLayout.buttonSx)}
+                sx={uiLayout.withUiSx({
+                  minHeight: isDesktop ? 38 : 34,
+                  px: isDesktop ? 2.2 : 1.5,
+                  color: isDark ? dashboardColors.text : '#fff',
+                  backgroundColor: isDark ? dashboardColors.surfaceRaised : PRIMARY_COLOR,
+                  border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
+                  boxShadow: 'none',
+                  '&:hover': {
+                    backgroundColor: isDark ? dashboardColors.hover : PRIMARY_COLOR_DARK,
+                    borderColor: isDark ? DARK_MODE_BORDER : 'transparent',
+                    boxShadow: 'none',
+                  },
+                }, uiLayout.buttonSx)}
               >
                 إغلاق
               </Button>
@@ -1934,14 +2145,16 @@ const SpecialComponent = () => {
                 py: isDesktop ? 1.8 : { xs: 0.45, sm: 0.6, md: 0.75 },
                 fontSize: isDesktop ? 16 : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
                 borderRadius: 3,
-                bgcolor: PRIMARY_COLOR,
-                color: "#fff",
-                boxShadow: `0 4px 14px ${alpha(PRIMARY_COLOR, 0.3)}`,
-                transition: "all 0.3s ease",
+                bgcolor: isDark ? dashboardColors.surfaceRaised : PRIMARY_COLOR,
+                color: isDark ? dashboardColors.text : "#fff",
+                border: `1px solid ${isDark ? DARK_MODE_BORDER : 'transparent'}`,
+                boxShadow: isDark ? 'none' : `0 4px 14px ${alpha(PRIMARY_COLOR, 0.3)}`,
+                transition: "all 0.2s ease",
                 "&:hover": {
-                  bgcolor: PRIMARY_COLOR_DARK,
-                  transform: "translateY(-2px)",
-                  boxShadow: `0 6px 20px ${alpha(PRIMARY_COLOR, 0.4)}`,
+                  bgcolor: isDark ? dashboardColors.hover : PRIMARY_COLOR_DARK,
+                  borderColor: isDark ? DARK_MODE_BORDER : 'transparent',
+                  transform: "translateY(-1px)",
+                  boxShadow: isDark ? `0 0 0 2px ${alpha(DARK_MODE_BORDER, .10)}` : `0 6px 20px ${alpha(PRIMARY_COLOR, 0.4)}`,
                 },
               }, uiLayout.buttonSx)}
               size="large"

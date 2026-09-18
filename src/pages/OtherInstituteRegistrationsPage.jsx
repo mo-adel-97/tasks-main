@@ -406,7 +406,7 @@ export default function OtherInstituteRegistrationsPage() {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        backgroundColor: "#f7faf9",
+        backgroundColor: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f7faf9",
         direction: "rtl"
       }}
     >

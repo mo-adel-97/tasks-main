@@ -572,7 +572,7 @@ export default function SidebarSettings() {
         minHeight: "100vh",
         width: "100%",
         direction: "rtl",
-        bgcolor: soft
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
       }}
     >
       

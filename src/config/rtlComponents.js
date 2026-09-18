@@ -1,7 +1,8 @@
 // Shared MUI geometry for the non-mirroring cache. Logical spacing follows the
 // element's direction; physical anchors are set deliberately, never mirrored.
-import { designTokens, mobileHeaderStyles } from './designTokens';
+import { designTokens, mobileHeaderStyles, fluid } from './designTokens';
 import { DESKTOP_BREAKPOINT } from './sidebarLayout';
+import { pinColor } from './themeColors';
 
 // Labels behave like placeholders while a field is empty, then float to the
 // physical left edge on focus / when the field contains a value. This keeps the
@@ -43,7 +44,13 @@ const labelPosition = ({ ownerState, theme }) => {
 };
 
 export const rtlComponents = {
-  MuiDataGrid: { defaultProps: { density: "compact" } },
+  // MUI's default icon sizes (24/20/35px) never grew on large screens, unlike
+  // the sidebar's own icon tokens. Grow them moderately too, app-wide.
+  MuiSvgIcon: { styleOverrides: {
+    fontSizeSmall: { fontSize: fluid(20, 22) },
+    fontSizeMedium: { fontSize: fluid(24, 28) },
+    fontSizeLarge: { fontSize: fluid(35, 40) },
+  } },
   MuiAppBar: { styleOverrides: { root: ({ ownerState }) =>
     ['fixed', 'sticky'].includes(ownerState.position) ? {
       [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
@@ -79,14 +86,114 @@ export const rtlComponents = {
       marginInlineStart: ownerState.size === 'small' ? -2 : -4, marginInlineEnd: 8 }),
     endIcon: ({ ownerState }) => ({ marginLeft: 0, marginRight: 0,
       marginInlineStart: 8, marginInlineEnd: ownerState.size === 'small' ? -2 : -4 }),
+    // Dark mode's primary.main ('#80c9a7') is bright enough that the shared
+    // dark-color plugin treats it as an unconverted *light-mode* background
+    // and auto-darkens it again -- turning every default "contained" button
+    // (this app never overrides Button color, so it's always primary) into a
+    // muddy off-hue plum instead of the intended solid mint-green fill.
+    // Pinning it here, once, fixes every such button app-wide instead of
+    // requiring every call site to work around it individually.
+    containedPrimary: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      backgroundColor: pinColor(theme.palette.primary.main),
+    } : {}),
+    // "outlined" border colors go through the dark-color plugin's generic
+    // border branch, which only recognizes brand green as "already fine" --
+    // every non-green severity color (error/warning/info/success) falls
+    // through to a flat muddy gray instead, so e.g. an outlined error button
+    // loses its red border entirely in dark mode. Give each severity the
+    // same bright, on-brand-saturation border used for Alerts everywhere else.
+    outlinedError: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      borderColor: pinColor('rgba(229,90,90,.5)'), color: '#e57373',
+    } : {}),
+    outlinedWarning: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      borderColor: pinColor('rgba(237,137,54,.5)'), color: '#f0ad4e',
+    } : {}),
+    outlinedInfo: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      borderColor: pinColor('rgba(90,160,229,.5)'), color: '#78bdf5',
+    } : {}),
+    outlinedSuccess: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      borderColor: theme.palette.borders.accent, color: theme.palette.primary.main,
+    } : {}),
+  } },
+  // Same root cause as MuiButton's containedPrimary above: the moving bar
+  // paints with theme.palette.primary.main as a literal background, so it
+  // gets the same unwanted re-darkening (the track itself already uses
+  // darken(primary.main, 0.5) in dark mode, which lands under the plugin's
+  // brightness threshold on its own and needs no help here).
+  MuiLinearProgress: { styleOverrides: {
+    barColorPrimary: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      backgroundColor: pinColor(theme.palette.primary.main),
+    } : {}),
   } },
   MuiCardContent: { styleOverrides: { root: {
     padding: designTokens.cardPadding,
     '&:last-child': { paddingBottom: designTokens.cardPadding },
   } } },
-  MuiCard: { styleOverrides: { root: {
+  // Every card/container/grid across the app shares one fixed, always-visible
+  // focus-green border (#67C99D) in dark mode, matching the Home page — not a
+  // low-alpha token, so it reads the same everywhere without depending on
+  // hover/focus state.
+  MuiCard: { styleOverrides: { root: ({ theme }) => ({
     borderRadius: `${designTokens.radius}px`,
-  } } },
+    ...(theme.palette.mode === 'dark' ? { border: '1px solid #67C99D' } : {}),
+  }) } },
+  // TableContainer renders as a plain div by default (no Paper), so tables
+  // otherwise have no visible boundary in the dark enterprise theme. Tables
+  // sit at the "section" surface tier: a step above the page, a step below a
+  // card's own background.
+  MuiTableContainer: { styleOverrides: { root: ({ theme }) => (
+    theme.palette.mode === 'dark'
+      ? {
+        border: '1px solid #67C99D',
+        borderRadius: `${designTokens.radius}px`,
+        backgroundColor: theme.palette.surfaces.section,
+      }
+      : {}
+  ) } },
+  // Dialogs are form containers and get the same fixed border: they are
+  // almost always the most important surface on screen while open.
+  MuiDialog: { styleOverrides: { paper: ({ theme }) => (
+    theme.palette.mode === 'dark' ? { border: '1px solid #67C99D' } : {}
+  ) } },
+  // Dropdowns/menus/popovers (selects, autocomplete lists, notification
+  // popovers) render on every page and previously had zero boundary against
+  // the page in dark mode — a big part of the "everything is flat black" look.
+  MuiPopover: { styleOverrides: { paper: ({ theme }) => (
+    theme.palette.mode === 'dark'
+      ? { border: '1px solid #67C99D', backgroundColor: theme.palette.surfaces.card }
+      : {}
+  ) } },
+  MuiMenu: { styleOverrides: { paper: ({ theme }) => (
+    theme.palette.mode === 'dark'
+      ? { border: '1px solid #67C99D', backgroundColor: theme.palette.surfaces.card }
+      : {}
+  ) } },
+  // A bare <Paper variant="outlined"> is the app's most common hand-rolled
+  // "section" wrapper (HR pages use it constantly). Give it the same visible
+  // dark-mode boundary as Card instead of relying only on the page's literal
+  // border color surviving the auto dark-color transform.
+  MuiPaper: { styleOverrides: { root: ({ theme, ownerState }) => (
+    theme.palette.mode === 'dark' && ownerState.variant === 'outlined'
+      ? { borderColor: '#67C99D', backgroundColor: theme.palette.surfaces.section }
+      : {}
+  ) } },
+  // DataGrid ("الجريدات") gets the same fixed border on its shell, header,
+  // cells and footer — it previously had no dark-mode boundary of its own,
+  // the one container type left unstyled next to the green-bordered rest.
+  MuiDataGrid: { defaultProps: { density: 'compact' }, styleOverrides: {
+    root: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      border: '1px solid #67C99D',
+      borderRadius: `${designTokens.radius}px`,
+      backgroundColor: theme.palette.surfaces.section,
+      '& .MuiDataGrid-columnHeaders': {
+        borderBottom: '1px solid #67C99D',
+        backgroundColor: theme.palette.surfaces.card,
+      },
+      '& .MuiDataGrid-cell': { borderBottom: '1px solid #67C99D' },
+      '& .MuiDataGrid-footerContainer': { borderTop: '1px solid #67C99D' },
+      '& .MuiDataGrid-withBorderColor': { borderColor: '#67C99D' },
+    } : {}),
+  } },
   MuiDialogTitle: { styleOverrides: { root: { padding: '9px 14px', fontSize: designTokens.typography.sectionTitle, fontWeight: 600 } } },
   MuiDialogContent: { styleOverrides: { root: { padding: '10px 14px', overflowX: 'hidden' } } },
   MuiDialogActions: { styleOverrides: { root: { padding: '8px 14px', gap: 6 } } },
@@ -97,13 +204,26 @@ export const rtlComponents = {
     marginInlineEnd: ownerState.position === 'start' ? 8 : 0,
   }) } },
   MuiOutlinedInput: { styleOverrides: {
-    root: ({ ownerState }) => {
+    root: ({ ownerState, theme }) => {
+      const isDark = theme.palette.mode === 'dark';
+      // Inputs sit one level "recessed" from their card/dialog in dark mode,
+      // so a form reads as a coherent surface instead of same-tone boxes.
+      const recessed = isDark ? { backgroundColor: theme.palette.surfaces.input } : {};
+      // MUI's own unfocused/hover outline colors are neutral grays with no
+      // relation to this app's brand green, so every text field on every
+      // page looked like a plain, unstyled dark box. Give the outline the
+      // same visible green ladder used everywhere else in dark mode instead.
+      const darkBorders = isDark ? {
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D', borderWidth: '1.5px' },
+      } : {};
       // Autocomplete manages its own control gutter, including the compact size.
       if (ownerState.className?.includes('MuiAutocomplete-inputRoot')) {
-        return { paddingRight: ownerState.size === 'small' ? 6 : 9 };
+        return { ...recessed, ...darkBorders, paddingRight: ownerState.size === 'small' ? 6 : 9 };
       }
-      if (ownerState.multiline) return {};
-      return { paddingRight: ownerState.startAdornment ? 14 : 0,
+      if (ownerState.multiline) return { ...recessed, ...darkBorders };
+      return { ...recessed, ...darkBorders, paddingRight: ownerState.startAdornment ? 14 : 0,
         paddingLeft: ownerState.endAdornment ? 14 : 0 };
     },
     input: ({ ownerState }) => ownerState.multiline || ownerState.className?.includes('MuiAutocomplete-inputRoot') ? {} : {
@@ -179,10 +299,33 @@ export const rtlComponents = {
     }),
     head: { fontWeight: 600 },
   } },
+  // MUI's built-in dark-mode "standard" Alert colors are a generic
+  // darken()/lighten() of the stock Material severity color -- they render
+  // as a near-black/brown box that clashes with this app's actual dark
+  // surfaces + bright green-bordered design language (first noticed, then
+  // fixed page-locally, on the HR home page). Doing it once here instead
+  // gives every Alert on every page a tinted-dark background and a visible,
+  // on-brand-saturation border matching the app's surfaces/borders system.
   MuiAlert: { styleOverrides: {
     icon: { marginRight: 0, marginInlineEnd: 12 },
     action: { marginLeft: 0, marginRight: 0, marginInlineStart: 'auto', marginInlineEnd: -8,
       paddingLeft: 0, paddingInlineStart: 16 },
+    standardWarning: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      backgroundColor: 'rgba(237,137,54,.12)', border: `1px solid ${pinColor('rgba(237,137,54,.42)')}`,
+      color: '#f0ad4e', '& .MuiAlert-icon': { color: '#f0ad4e' },
+    } : {}),
+    standardError: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      backgroundColor: 'rgba(229,90,90,.12)', border: `1px solid ${pinColor('rgba(229,90,90,.42)')}`,
+      color: '#e57373', '& .MuiAlert-icon': { color: '#e57373' },
+    } : {}),
+    standardInfo: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      backgroundColor: 'rgba(90,160,229,.12)', border: `1px solid ${pinColor('rgba(90,160,229,.42)')}`,
+      color: '#78bdf5', '& .MuiAlert-icon': { color: '#78bdf5' },
+    } : {}),
+    standardSuccess: ({ theme }) => (theme.palette.mode === 'dark' ? {
+      backgroundColor: 'rgba(103,201,157,.12)', border: '1px solid #67C99D',
+      color: theme.palette.primary.main, '& .MuiAlert-icon': { color: theme.palette.primary.main },
+    } : {}),
   } },
   MuiInputBase: { styleOverrides: {
     root: { minHeight: { xs: 44, lg: designTokens.controlHeight }, fontSize: designTokens.typography.control },

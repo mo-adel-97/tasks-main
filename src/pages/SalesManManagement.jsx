@@ -22,7 +22,8 @@ import {
   Stack,
   TextField,
   Typography,
-  useMediaQuery
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -274,6 +275,7 @@ function SalesManLookupDialog({
 }
 
 export default function SalesManManagement() {
+  const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -1243,7 +1245,7 @@ export default function SalesManManagement() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        bgcolor: soft
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
       }}
     >
       

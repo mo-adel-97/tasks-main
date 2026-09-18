@@ -770,26 +770,29 @@ const BatchSeatsCounter = () => {
           setMobileSidebarOpen(false)
         }><Box
       dir="rtl"
-      sx={{
+      sx={(muiTheme) => ({
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: "#f5f8f7",
+        background: muiTheme.palette.mode === "dark" ? muiTheme.palette.background.default : "#f5f8f7",
         fontFamily: "Cairo, Arial, sans-serif",
         position: "relative"
-      }}
+      })}
     >
       {!isDesktop && (
         <AppBar
           position="sticky"
           elevation={0}
-          sx={{
-            top: 0,
-            background: "rgba(255,255,255,0.96)",
-            backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom: "1px solid rgba(5,117,70,0.12)"
+          sx={(muiTheme) => {
+            const isDark = muiTheme.palette.mode === "dark";
+            return {
+              top: 0,
+              background: isDark ? muiTheme.palette.surfaces.card : "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(14px)",
+              color: isDark ? muiTheme.palette.text.primary : "#17372b",
+              borderBottom: isDark ? `1px solid #67C99D` : "1px solid rgba(5,117,70,0.12)"
+            };
           }}
         >
           <Toolbar
@@ -881,40 +884,52 @@ const BatchSeatsCounter = () => {
       >
         <Paper
           elevation={0}
-          sx={{
-            width: "100%",
-            maxWidth: "100%",
-            mx: "auto",
-            borderRadius: isPhone
-              ? 1.6
-              : isTablet
-                ? 2.2
-                : 2,
-            overflow: "hidden",
-            border:
-              "1px solid rgba(5,117,70,0.14)",
-            background: "#fff"
+          sx={(muiTheme) => {
+            const isDark = muiTheme.palette.mode === "dark";
+            return {
+              width: "100%",
+              maxWidth: "100%",
+              mx: "auto",
+              borderRadius: isPhone
+                ? 1.6
+                : isTablet
+                  ? 2.2
+                  : 2,
+              overflow: "hidden",
+              border: isDark
+                ? `1px solid #67C99D`
+                : "1px solid rgba(5,117,70,0.14)",
+              background: isDark ? muiTheme.palette.surfaces.card : "#fff",
+              boxShadow: isDark
+                ? `0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.45)`
+                : "none"
+            };
           }}
         >
           {/* Header */}
           <Box
-            sx={{
-              px: isPhone
-                ? 0.7
-                : isTablet
-                  ? 1.1
-                  : 1.25,
-              py: isPhone
-                ? 0.65
-                : isTablet
-                  ? 0.9
-                  : 1.25,
+            sx={(muiTheme) => {
+              const isDark = muiTheme.palette.mode === "dark";
+              return {
+                px: isPhone
+                  ? 0.7
+                  : isTablet
+                    ? 1.1
+                    : 1.25,
+                py: isPhone
+                  ? 0.65
+                  : isTablet
+                    ? 0.9
+                    : 1.25,
 
-              background:
-                "linear-gradient(135deg,#ffffff 0%,#edf8f3 45%,#dff3ea 100%)",
+                background: isDark
+                  ? `linear-gradient(135deg, ${muiTheme.palette.surfaces.section}, ${muiTheme.palette.surfaces.card})`
+                  : "linear-gradient(135deg,#ffffff 0%,#edf8f3 45%,#dff3ea 100%)",
 
-              borderBottom:
-                "1px solid rgba(5,117,70,0.14)"
+                borderBottom: isDark
+                  ? `1px solid #67C99D`
+                  : "1px solid rgba(5,117,70,0.14)"
+              };
             }}
           >
             <Stack
@@ -1039,11 +1054,9 @@ const BatchSeatsCounter = () => {
                     ? 2
                     : 1.5,
 
-                border:
-                  "1px solid rgba(5,117,70,0.14)",
+                border: (theme) => theme.palette.mode === "dark" ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.14)",
 
-                background:
-                  "linear-gradient(135deg,#ffffff 0%,#f3faf6 100%)"
+                background: (theme) => theme.palette.mode === "dark" ? theme.palette.surfaces.card : "linear-gradient(135deg,#ffffff 0%,#f3faf6 100%)"
               }, uiLayout.pageHeaderSx)}
             >
               <Typography
@@ -1082,7 +1095,11 @@ const BatchSeatsCounter = () => {
                       ? 0.65
                       : 0.7,
                   alignItems: "center"
-                }, uiLayout.filterBarSx)}
+                }, uiLayout.filterBarSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#67C99D" }
+                }))}
               >
                 <TextField InputLabelProps={{ shrink: true }}
                   select
@@ -1378,51 +1395,60 @@ const BatchSeatsCounter = () => {
                   label: "إجمالي المقاعد",
                   value: totals.totalSeats,
                   bg: "#eef4ff",
-                  color: "#184f90"
+                  color: "#184f90",
+                  darkBg: "rgba(90,160,229,.12)",
+                  darkColor: "#78bdf5"
                 },
                 {
                   label: "المسجلين",
                   value: totals.registeredSeats,
                   bg: "#fff7cc",
-                  color: "#735c00"
+                  color: "#735c00",
+                  darkBg: "rgba(237,137,54,.12)",
+                  darkColor: "#f0ad4e"
                 },
                 {
                   label: "المتاح",
                   value: totals.availableSeats,
                   bg: "#e6f3ee",
-                  color: "#057546"
+                  color: "#057546",
+                  darkBg: "rgba(103,201,157,.12)",
+                  darkColor: null
                 }
               ].map((item) => (
                 <Paper
                   key={item.label}
                   variant="outlined"
-                  sx={{
-                    py: isPhone
-                      ? 0.35
-                      : isTablet
-                        ? 0.5
-                        : 0.75,
+                  sx={(muiTheme) => {
+                    const isDark = muiTheme.palette.mode === "dark";
+                    return {
+                      py: isPhone
+                        ? 0.35
+                        : isTablet
+                          ? 0.5
+                          : 0.75,
 
-                    px: isPhone
-                      ? 0.2
-                      : isTablet
-                        ? 0.4
-                        : 0.75,
+                      px: isPhone
+                        ? 0.2
+                        : isTablet
+                          ? 0.4
+                          : 0.75,
 
-                    textAlign: "center",
-                    borderRadius: isPhone
-                      ? 1.2
-                      : 2,
+                      textAlign: "center",
+                      borderRadius: isPhone
+                        ? 1.2
+                        : 2,
 
-                    background: item.bg,
-                    borderColor: "transparent"
+                      background: isDark ? item.darkBg : item.bg,
+                      borderColor: isDark ? "#67C99D" : "transparent"
+                    };
                   }}
                 >
                   <Typography
-                    sx={{
+                    sx={(muiTheme) => ({
                       fontFamily: "Cairo",
                       fontWeight: 950,
-                      color: item.color,
+                      color: muiTheme.palette.mode === "dark" ? (item.darkColor || muiTheme.palette.primary.main) : item.color,
                       fontSize: isPhone
                         ? "0.75rem"
                         : isTablet
@@ -1430,23 +1456,23 @@ const BatchSeatsCounter = () => {
                           : "0.78rem",
 
                       lineHeight: 1.2
-                    }}
+                    })}
                   >
                     {item.label}
                   </Typography>
 
                   <Typography
-                    sx={{
+                    sx={(muiTheme) => ({
                       mt: 0.15,
                       fontFamily: "Cairo",
                       fontWeight: 950,
-                      color: item.color,
+                      color: muiTheme.palette.mode === "dark" ? (item.darkColor || muiTheme.palette.primary.main) : item.color,
                       fontSize: isPhone
                         ? "0.75rem"
                         : isTablet
                           ? "0.75rem"
                           : "1rem"
-                    }}
+                    })}
                   >
                     {item.value}
                   </Typography>
@@ -1456,32 +1482,36 @@ const BatchSeatsCounter = () => {
 
             <Paper
               variant="outlined"
-              sx={{
-                mb: isPhone
-                  ? 0.6
-                  : isTablet
-                    ? 0.85
-                    : 1.3,
+              sx={(muiTheme) => {
+                const isDark = muiTheme.palette.mode === "dark";
+                return {
+                  mb: isPhone
+                    ? 0.6
+                    : isTablet
+                      ? 0.85
+                      : 1.3,
 
-                py: isPhone
-                  ? 0.4
-                  : isTablet
+                  py: isPhone
+                    ? 0.4
+                    : isTablet
+                      ? 0.55
+                      : 1,
+
+                  px: isPhone
                     ? 0.55
-                    : 1,
+                    : isTablet
+                      ? 0.75
+                      : 1.2,
 
-                px: isPhone
-                  ? 0.55
-                  : isTablet
-                    ? 0.75
-                    : 1.2,
+                  borderRadius: isPhone
+                    ? 1.3
+                    : 2.2,
 
-                borderRadius: isPhone
-                  ? 1.3
-                  : 2.2,
-
-                background: selectedBatch
-                  ? "#edf8f3"
-                  : "#f7f9f8"
+                  background: isDark
+                    ? (selectedBatch ? "rgba(103,201,157,.12)" : muiTheme.palette.surfaces.section)
+                    : (selectedBatch ? "#edf8f3" : "#f7f9f8"),
+                  borderColor: isDark ? "#67C99D" : undefined
+                };
               }}
             >
               <Stack
@@ -1496,34 +1526,34 @@ const BatchSeatsCounter = () => {
                 alignItems="center"
               >
                 <CheckCircleIcon
-                  sx={{
+                  sx={(muiTheme) => ({
                     color: selectedBatch
-                      ? "#057546"
-                      : "#9aa7a1",
+                      ? (muiTheme.palette.mode === "dark" ? muiTheme.palette.primary.main : "#057546")
+                      : (muiTheme.palette.mode === "dark" ? muiTheme.palette.text.secondary : "#9aa7a1"),
 
                     fontSize: isPhone
                       ? 15
                       : isTablet
                         ? 18
                         : undefined
-                  }}
+                  })}
                 />
 
                 <Box sx={{ minWidth: 0 }}>
                   <Typography
-                    sx={{
+                    sx={(muiTheme) => ({
                       fontFamily: "Cairo",
                       fontWeight: 900,
                       color: selectedBatch
-                        ? "#034d31"
-                        : "#71837c",
+                        ? (muiTheme.palette.mode === "dark" ? muiTheme.palette.text.primary : "#034d31")
+                        : (muiTheme.palette.mode === "dark" ? muiTheme.palette.text.secondary : "#71837c"),
 
                       fontSize: isPhone
                         ? "0.75rem"
                         : isTablet
                           ? "0.75rem"
                           : undefined
-                    }}
+                    })}
                   >
                     {selectedBatch
                       ? "الدفعة المختارة"
@@ -1532,10 +1562,10 @@ const BatchSeatsCounter = () => {
 
                   {selectedBatch ? (
                     <Typography
+                      color="text.secondary"
                       sx={{
                         mt: 0.1,
                         fontFamily: "Cairo",
-                        color: "#71837c",
                         fontSize: isPhone
                           ? "0.75rem"
                           : isTablet
@@ -1675,7 +1705,7 @@ const BatchSeatsCounter = () => {
 
                 overflow: "hidden",
                 background: "#fff"
-              }, uiLayout.tableContainerSx)}
+              }, uiLayout.tableContainerSx, darkBoxWrapperSx)}
             >
               <DataGrid
                 rows={summaryRows}
@@ -1864,38 +1894,44 @@ const BatchSeatsCounter = () => {
                     color: "#7a4d00",
                     fontWeight: 900
                   }
-                }, uiLayout.dataGridSx)}
+                }, uiLayout.dataGridSx, gridDarkModeSx)}
               />
             </Box>
 
             {/* Details heading */}
             <Paper
               elevation={0}
-              sx={{
-                mb: isPhone
-                  ? 0.45
-                  : isTablet
-                    ? 0.65
-                    : 1.3,
+              sx={(muiTheme) => {
+                const isDark = muiTheme.palette.mode === "dark";
+                return {
+                  mb: isPhone
+                    ? 0.45
+                    : isTablet
+                      ? 0.65
+                      : 1.3,
 
-                p: isPhone
-                  ? 0.5
-                  : isTablet
-                    ? 0.7
-                    : 1.5,
+                  p: isPhone
+                    ? 0.5
+                    : isTablet
+                      ? 0.7
+                      : 1.5,
 
-                borderRadius: isPhone
-                  ? 1.4
-                  : isTablet
-                    ? 2
-                    : 3.5,
+                  borderRadius: isPhone
+                    ? 1.4
+                    : isTablet
+                      ? 2
+                      : 3.5,
 
-                border:
-                  "1px solid rgba(5,117,70,0.12)",
+                  border: isDark
+                    ? "1px solid #67C99D"
+                    : "1px solid rgba(5,117,70,0.12)",
 
-                background: selectedBatch
-                  ? "linear-gradient(135deg,#edf8f3 0%,#ffffff 55%,#f8fdfa 100%)"
-                  : "#f7f9f8"
+                  background: isDark
+                    ? (selectedBatch ? "rgba(103,201,157,.1)" : muiTheme.palette.surfaces.section)
+                    : (selectedBatch
+                      ? "linear-gradient(135deg,#edf8f3 0%,#ffffff 55%,#f8fdfa 100%)"
+                      : "#f7f9f8")
+                };
               }}
             >
               <Stack
@@ -1910,44 +1946,44 @@ const BatchSeatsCounter = () => {
                 alignItems="center"
               >
                 <CheckCircleIcon
-                  sx={{
+                  sx={(muiTheme) => ({
                     color: selectedBatch
-                      ? "#057546"
-                      : "#9aa7a1",
+                      ? (muiTheme.palette.mode === "dark" ? muiTheme.palette.primary.main : "#057546")
+                      : (muiTheme.palette.mode === "dark" ? muiTheme.palette.text.secondary : "#9aa7a1"),
 
                     fontSize: isPhone
                       ? 15
                       : isTablet
                         ? 18
                         : undefined
-                  }}
+                  })}
                 />
 
                 <Box sx={{ minWidth: 0 }}>
                   <Typography
-                    sx={{
+                    sx={(muiTheme) => ({
                       fontFamily: "Cairo",
                       fontWeight: 950,
 
                       color: selectedBatch
-                        ? "#034d31"
-                        : "#71837c",
+                        ? (muiTheme.palette.mode === "dark" ? muiTheme.palette.text.primary : "#034d31")
+                        : (muiTheme.palette.mode === "dark" ? muiTheme.palette.text.secondary : "#71837c"),
 
                       fontSize: isPhone
                         ? "0.75rem"
                         : isTablet
                           ? "0.75rem"
                           : undefined
-                    }}
+                    })}
                   >
                     تفاصيل المقاعد للدفعة المختارة
                   </Typography>
 
                   <Typography
+                    color="text.secondary"
                     sx={{
                       mt: 0.1,
                       fontFamily: "Cairo",
-                      color: "#71837c",
 
                       fontSize: isPhone
                         ? "0.75rem"
@@ -1990,7 +2026,7 @@ const BatchSeatsCounter = () => {
 
                 overflow: "hidden",
                 background: "#fff"
-              }, uiLayout.tableContainerSx)}
+              }, uiLayout.tableContainerSx, darkBoxWrapperSx)}
             >
               <DataGrid
                 rows={detailsRows}
@@ -2164,7 +2200,7 @@ const BatchSeatsCounter = () => {
                         ? "0.75rem"
                         : undefined
                   }
-                }, uiLayout.dataGridSx)}
+                }, uiLayout.dataGridSx, gridDarkModeSx)}
               />
             </Box>
           </Box>
@@ -2173,6 +2209,58 @@ const BatchSeatsCounter = () => {
     </Box></NavigationShell>
   );
 };
+
+// gridSx below is a plain object: call sites spread it (`...gridSx`) and
+// index individual rule keys (`gridSx['& .MuiDataGrid-cell']`) to merge with
+// per-breakpoint overrides, so it can't become a theme-aware function without
+// breaking every call site. This sibling function instead rides along as an
+// extra entry in the same sx array (MUI merges array entries in order, later
+// wins), only filling in the DataGrid rows/cells that were hardcoded to
+// light-mode-only white/near-white and would otherwise flatten into
+// near-identical dark boxes.
+// Small tack-on for the plain <Box> wrappers around each DataGrid: they
+// reuse uiLayout.tableContainerSx for layout but were never given the real
+// MuiTableContainer component (so the app-wide dark-mode override for that
+// component never applies), and hardcode a white background directly.
+const darkBoxWrapperSx = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  border: "1px solid #67C99D",
+  background: theme.palette.surfaces.card
+});
+
+const gridDarkModeSx = (theme) => (theme.palette.mode !== "dark" ? {} : {
+  border: "1px solid #67C99D",
+  "& .MuiDataGrid-cell": {
+    borderColor: "#67C99D",
+    color: theme.palette.text.primary
+  },
+  "& .MuiDataGrid-row:nth-of-type(even)": {
+    backgroundColor: theme.palette.surfaces.section
+  },
+  "& .MuiDataGrid-row:nth-of-type(odd)": {
+    backgroundColor: theme.palette.surfaces.card
+  },
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: theme.palette.surfaces.hover,
+    boxShadow: `inset 4px 0 0 ${theme.palette.primary.main}`
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    color: "#67C99D"
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    borderBottom: "1px solid #67C99D"
+  },
+  "& .MuiDataGrid-toolbarContainer": {
+    borderBottom: "1px solid #67C99D",
+    background: `linear-gradient(135deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+  },
+  "& .MuiDataGrid-footerContainer": {
+    borderTop: "1px solid #67C99D"
+  },
+  "& .selected-batch-row": {
+    background: "rgba(237,137,54,.16) !important",
+    color: "#f0ad4e"
+  }
+});
 
 const gridSx = {
   border: 0,

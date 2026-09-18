@@ -1,4 +1,5 @@
 import { PRINT_READY_SCRIPT } from '../utils/printReady';
+import { pinColor } from '../config/themeColors';
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import { designTokens } from '../config/designTokens';
@@ -303,26 +304,30 @@ const HeaderButton = ({ icon, label, onClick, color = primaryColor }) => (
     variant="outlined"
     startIcon={icon}
     onClick={onClick}
-    sx={uiLayout.withUiSx({
-      height: "auto",
-      minWidth: 0,
-      width: { xs: "100%", sm: "auto" },
-      borderRadius: 2.5,
-      fontWeight: 950,
-      color,
-      borderColor: color,
-      backgroundColor: whiteColor,
-      direction: "rtl",
-      boxShadow: "0 8px 20px rgba(5,117,70,0.08)",
-      "& .MuiButton-startIcon": {
-        ml: 0.5,
-        mr: 0
-      },
-      "&:hover": {
-        borderColor: color,
-        backgroundColor: color === accentColor ? "#fff4f4" : "#f0faf5",
-        boxShadow: "0 10px 24px rgba(5,117,70,0.14)"
-      }
+    sx={uiLayout.withUiSx((theme) => {
+      const isDark = theme.palette.mode === "dark";
+      const darkHoverBg = `${color}26`;
+      return {
+        height: "auto",
+        minWidth: 0,
+        width: { xs: "100%", sm: "auto" },
+        borderRadius: 2.5,
+        fontWeight: 950,
+        color,
+        borderColor: pinColor(color),
+        backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
+        direction: "rtl",
+        boxShadow: isDark ? "none" : "0 8px 20px rgba(5,117,70,0.08)",
+        "& .MuiButton-startIcon": {
+          ml: 0.5,
+          mr: 0
+        },
+        "&:hover": {
+          borderColor: pinColor(color),
+          backgroundColor: isDark ? darkHoverBg : (color === accentColor ? "#fff4f4" : "#f0faf5"),
+          boxShadow: isDark ? "none" : "0 10px 24px rgba(5,117,70,0.14)"
+        }
+      };
     }, uiLayout.buttonSx)}
   >
     {label}
@@ -334,19 +339,27 @@ const ActionButton = ({ title, icon, color, bg, onClick }) => (
     <IconButton
       size="small"
       onClick={onClick}
-      sx={{
-        color,
-        backgroundColor: bg,
-        width: 28,
-        height: 28,
-        p: 0.4,
-        "& svg": {
-          fontSize: "1rem"
-        },
-        "&:hover": {
-          backgroundColor: bg,
-          filter: "brightness(0.95)"
-        }
+      sx={(theme) => {
+        // `bg` is always a near-white tint of `color` (e.g. "#e8f5e9" next to
+        // "#2e7d32"): safe as a light-mode pastel, but its brightness makes
+        // the shared dark-color plugin flatten it to near-black in dark mode.
+        // A translucent version of `color` itself keeps the same hue instead.
+        const isDark = theme.palette.mode === "dark";
+        const darkBg = `${color}26`;
+        return {
+          color,
+          backgroundColor: isDark ? darkBg : bg,
+          width: 28,
+          height: 28,
+          p: 0.4,
+          "& svg": {
+            fontSize: "1rem"
+          },
+          "&:hover": {
+            backgroundColor: isDark ? darkBg : bg,
+            filter: isDark ? "brightness(1.2)" : "brightness(0.95)"
+          }
+        };
       }}
     >
       {icon}
@@ -356,27 +369,30 @@ const ActionButton = ({ title, icon, color, bg, onClick }) => (
 const DetailItem = ({ label, value, strong = false }) => (
   <Paper
     elevation={0}
-    sx={{
-      p: 1.3,
-      borderRadius: 2,
-      border: `1px solid ${primaryLight}`,
-      backgroundColor: whiteColor,
-      height: "100%",
-      direction: "rtl",
-      textAlign: "start"
+    sx={(theme) => {
+      const isDark = theme.palette.mode === "dark";
+      return {
+        p: 1.3,
+        borderRadius: 2,
+        border: isDark ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+        backgroundColor: isDark ? theme.palette.surfaces.nested : whiteColor,
+        height: "100%",
+        direction: "rtl",
+        textAlign: "start"
+      };
     }}
   >
-    <Typography sx={{ color: primaryColor, fontWeight: 900, fontSize: "0.78rem", mb: 0.4 }}>
+    <Typography sx={(theme) => ({ color: theme.palette.mode === "dark" ? theme.palette.primary.main : primaryColor, fontWeight: 900, fontSize: "0.78rem", mb: 0.4 })}>
       {label}
     </Typography>
     <Typography
-      sx={{
-        color: strong ? "#d32f2f" : textColor,
+      sx={(theme) => ({
+        color: strong ? "#d32f2f" : (theme.palette.mode === "dark" ? theme.palette.text.primary : textColor),
         fontWeight: 900,
         lineHeight: 1.7,
         wordBreak: "break-word",
         fontSize: strong ? "1rem" : "0.9rem"
-      }}
+      })}
     >
       {value || "-"}
     </Typography>
@@ -680,16 +696,29 @@ const OldStudentStatementDialog = ({
   };
 
   const table = (title, rows, type) => (
-    <Paper elevation={0} sx={{ border: `1px solid ${primaryLight}`, borderRadius: 3, overflow: "hidden" }}>
-      <Typography sx={{ p: 1.2, fontWeight: 950, color: primaryColor, backgroundColor: "#f4fbf7" }}>
+    <Paper elevation={0} sx={(theme) => ({
+      border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+      borderRadius: 3,
+      overflow: "hidden"
+    })}>
+      <Typography sx={(theme) => ({
+        p: 1.2,
+        fontWeight: 950,
+        color: primaryColor,
+        backgroundColor: theme.palette.mode === "dark" ? "rgba(103,201,157,.12)" : "#f4fbf7"
+      })}>
         {title}
       </Typography>
       <Box sx={{ overflowX: "auto" }}>
-        <Box component="table" sx={{
-          width: "100%",
-          borderCollapse: "collapse",
-          "& th": { backgroundColor: primaryColor, color: "#fff", fontWeight: 950, p: 1, whiteSpace: "nowrap" },
-          "& td": { borderBottom: "1px solid #e7efeb", p: 0.9, textAlign: "center", fontWeight: 800 }
+        <Box component="table" sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
+          return {
+            width: "100%",
+            borderCollapse: "collapse",
+            backgroundColor: isDark ? theme.palette.surfaces.card : undefined,
+            "& th": { backgroundColor: primaryColor, color: "#fff", fontWeight: 950, p: 1, whiteSpace: "nowrap" },
+            "& td": { borderBottom: isDark ? "1px solid #67C99D" : "1px solid #e7efeb", p: 0.9, textAlign: "center", fontWeight: 800 }
+          };
         }}>
           <thead>
             <tr>
@@ -733,7 +762,14 @@ const OldStudentStatementDialog = ({
   );
 
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={loading ? undefined : onClose} maxWidth="xl" fullWidth dir="rtl">
+    <Dialog
+      sx={uiLayout.withUiSx(uiLayout.dialogLayoutSx, (theme) => (theme.palette.mode === "dark" ? { "& .MuiDialog-paper": { border: "1px solid #67C99D" } } : {}))}
+      open={open}
+      onClose={loading ? undefined : onClose}
+      maxWidth="xl"
+      fullWidth
+      dir="rtl"
+    >
       <DialogTitle sx={{ fontWeight: 950, color: primaryColor }}>كشف حساب سابق</DialogTitle>
       <DialogContent dividers>
         {loading ? (
@@ -759,7 +795,13 @@ const OldStudentStatementDialog = ({
                 ["افتتاحي دائن", data.opening?.credit]
               ].map(([label, value]) => (
                 <Grid item xs={12} sm={6} md key={label}>
-                  <Paper elevation={0} sx={{ p: 1.5, textAlign: "center", borderRadius: 3, border: `1px solid ${primaryLight}` }}>
+                  <Paper elevation={0} sx={(theme) => ({
+                    p: 1.5,
+                    textAlign: "center",
+                    borderRadius: 3,
+                    border: theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+                    background: theme.palette.mode === "dark" ? theme.palette.surfaces.card : undefined
+                  })}>
                     <Typography sx={{ color: primaryColor, fontWeight: 950 }}>{label}</Typography>
                     <Typography variant="h6" sx={{ mt: 0.4, fontWeight: 950, color: label === "الرصيد" ? accentColor : textColor }}>
                       {oldMoney(value)}
@@ -2121,6 +2163,8 @@ const handleAcceptOrder = (row) => {
 
     let color = "#2e7d32";
     let backgroundColor = "#e8f5e9";
+    let darkColor = "#67c99d";
+    let darkBackgroundColor = "rgba(103,201,157,.14)";
 
     if (
       text.includes("منتهي") ||
@@ -2131,6 +2175,8 @@ const handleAcceptOrder = (row) => {
     ) {
       color = "#ef6c00";
       backgroundColor = "#fff3e0";
+      darkColor = "#f0ad4e";
+      darkBackgroundColor = "rgba(237,137,54,.14)";
     }
 
     if (
@@ -2141,18 +2187,20 @@ const handleAcceptOrder = (row) => {
     ) {
       color = "#c62828";
       backgroundColor = "#ffebee";
+      darkColor = "#e57373";
+      darkBackgroundColor = "rgba(229,90,90,.14)";
     }
 
     return (
       <Chip
         label={text}
         size="small"
-        sx={{
+        sx={(theme) => ({
           fontWeight: 900,
-          color,
-          backgroundColor,
+          color: theme.palette.mode === "dark" ? darkColor : color,
+          backgroundColor: theme.palette.mode === "dark" ? darkBackgroundColor : backgroundColor,
           borderRadius: 2
-        }}
+        })}
       />
     );
   };
@@ -2553,8 +2601,8 @@ const handleAcceptOrder = (row) => {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
-      sx={{
-        background: `
+      sx={(theme) => ({
+        background: theme.palette.mode === "dark" ? theme.palette.background.default : `
           radial-gradient(circle at 18% 8%, rgba(174,30,33,0.075) 0%, transparent 24%),
           radial-gradient(circle at 82% 6%, rgba(5,117,70,0.13) 0%, transparent 28%),
           linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)
@@ -2572,21 +2620,24 @@ const handleAcceptOrder = (row) => {
         '& .MuiTypography-body2': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } },
         '& .MuiButton-root': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } },
         '& .MuiChip-root': { fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" } }
-      }}
+      })}
     >
       {!isDesktop && (
         <AppBar
           position="fixed"
           elevation={0}
-          sx={{
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1401,
-            background: "rgba(255,255,255,0.96)",
-            backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom: "1px solid rgba(5,117,70,0.12)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1401,
+              background: isDark ? theme.palette.surfaces.card : "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(14px)",
+              color: isDark ? theme.palette.text.primary : "#17372b",
+              borderBottom: isDark ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.12)"
+            };
           }}
         >
           <Toolbar
@@ -2667,72 +2718,85 @@ const handleAcceptOrder = (row) => {
         <Box sx={{ width: "100%", maxWidth: "100%", mx: "auto", minWidth: 0 }}>
         <Paper
           elevation={0}
-          sx={{
-            mb: isDesktop ? 1.8 : { xs: 0.45, sm: 0.7, md: 0.9 },
-            borderRadius: isDesktop ? `${designTokens.radius}px` : { xs: 1.6, sm: 2, md: 2.4 },
-            border: `1px solid rgba(5,117,70,0.16)`,
-            overflow: "hidden",
-            backgroundColor: whiteColor,
-            boxShadow: "0 14px 32px rgba(5,117,70,0.10)",
-            position: "relative"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              mb: isDesktop ? 1.8 : { xs: 0.45, sm: 0.7, md: 0.9 },
+              borderRadius: isDesktop ? `${designTokens.radius}px` : { xs: 1.6, sm: 2, md: 2.4 },
+              border: isDark ? "1px solid #67C99D" : `1px solid rgba(5,117,70,0.16)`,
+              overflow: "hidden",
+              backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
+              boxShadow: isDark
+                ? "0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.45)"
+                : "0 14px 32px rgba(5,117,70,0.10)",
+              position: "relative"
+            };
           }}
         >
           <Box
-            sx={{
-              minHeight: "auto",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "space-between",
-              px: isDesktop ? 1.25 : { xs: 0.45, sm: 0.7, md: 1 },
-              py: isDesktop ? 0.8 : { xs: 0.45, sm: 0.6, md: 0.8 },
-              gap: isDesktop ? 1 : { xs: 0.35, sm: 0.55, md: 0.75 },
-              background: `
-                radial-gradient(circle at 12% 0%, rgba(174,30,33,0.10), transparent 30%),
-                radial-gradient(circle at 88% 0%, rgba(5,117,70,0.16), transparent 34%),
-                linear-gradient(135deg, ${whiteColor} 0%, #f1faf6 55%, #e8f5ef 100%)
-              `,
-              position: "relative",
-              "&:after": {
-                content: '""',
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: 3,
-                background: `linear-gradient(90deg, ${accentColor}, #f4c542, ${primaryColor})`
-              }
+            sx={(theme) => {
+              const isDark = theme.palette.mode === "dark";
+              return {
+                minHeight: "auto",
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                px: isDesktop ? 1.25 : { xs: 0.45, sm: 0.7, md: 1 },
+                py: isDesktop ? 0.8 : { xs: 0.45, sm: 0.6, md: 0.8 },
+                gap: isDesktop ? 1 : { xs: 0.35, sm: 0.55, md: 0.75 },
+                background: isDark
+                  ? `linear-gradient(135deg, ${theme.palette.surfaces.section}, ${theme.palette.surfaces.card})`
+                  : `
+                    radial-gradient(circle at 12% 0%, rgba(174,30,33,0.10), transparent 30%),
+                    radial-gradient(circle at 88% 0%, rgba(5,117,70,0.16), transparent 34%),
+                    linear-gradient(135deg, ${whiteColor} 0%, #f1faf6 55%, #e8f5ef 100%)
+                  `,
+                position: "relative",
+                "&:after": {
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 3,
+                  background: `linear-gradient(90deg, ${pinColor(accentColor)}, ${pinColor("#f4c542")}, ${primaryColor})`
+                }
+              };
             }}
           >
             <Box
-              sx={{
-                display: isDesktop ? "flex" : "none",
-                width: "clamp(7.5rem, 11vw, 9rem)",
-                maxWidth: "100%",
-                minWidth: 0,
-                padding: "0.5rem 0.75rem",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: `${designTokens.radius}px`,
-                border: `2px solid rgba(5,117,70,0.26)`,
-                background: `linear-gradient(145deg, ${whiteColor} 0%, #edf9f3 100%)`,
-                color: primaryDark,
-                fontWeight: 1000,
-                textAlign: "center",
-                fontSize: designTokens.typography.control,
-                letterSpacing: "0.3px",
-                boxShadow: "0 16px 35px rgba(5,117,70,0.17)",
-                position: "relative",
-                overflow: "hidden",
-                "&:before": {
-                  content: '"★"',
-                  position: "absolute",
-                  top: 6,
-                  right: 10,
-                  color: accentColor,
-                  fontSize: "1rem"
-                }
+              sx={(theme) => {
+                const isDark = theme.palette.mode === "dark";
+                return {
+                  display: isDesktop ? "flex" : "none",
+                  width: "clamp(7.5rem, 11vw, 9rem)",
+                  maxWidth: "100%",
+                  minWidth: 0,
+                  padding: "0.5rem 0.75rem",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: `${designTokens.radius}px`,
+                  border: isDark ? "2px solid #67C99D" : `2px solid rgba(5,117,70,0.26)`,
+                  background: isDark ? theme.palette.surfaces.nested : `linear-gradient(145deg, ${whiteColor} 0%, #edf9f3 100%)`,
+                  color: primaryDark,
+                  fontWeight: 1000,
+                  textAlign: "center",
+                  fontSize: designTokens.typography.control,
+                  letterSpacing: "0.3px",
+                  boxShadow: isDark ? "none" : "0 16px 35px rgba(5,117,70,0.17)",
+                  position: "relative",
+                  overflow: "hidden",
+                  "&:before": {
+                    content: '"★"',
+                    position: "absolute",
+                    top: 6,
+                    right: 10,
+                    color: accentColor,
+                    fontSize: "1rem"
+                  }
+                };
               }}
             >
               SSTLI
@@ -2773,11 +2837,13 @@ const handleAcceptOrder = (row) => {
           <Divider />
 
           <Box
-            sx={{
+            sx={(theme) => ({
               px: isDesktop ? 1.25 : { xs: 0.45, sm: 0.7, md: 1 },
               py: isDesktop ? 0.9 : { xs: 0.45, sm: 0.6, md: 0.8 },
-              background: `linear-gradient(180deg, ${whiteColor} 0%, #fbfffd 100%)`
-            }}
+              background: theme.palette.mode === "dark"
+                ? theme.palette.surfaces.card
+                : `linear-gradient(180deg, ${whiteColor} 0%, #fbfffd 100%)`
+            })}
           >
             <Grid
               container
@@ -2914,7 +2980,12 @@ const handleAcceptOrder = (row) => {
     textAlign: "left"
   }
 
-}, uiLayout.formFieldSx)}
+}, uiLayout.formFieldSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+  backgroundColor: theme.palette.surfaces.input,
+  "& .MuiOutlinedInput-root fieldset": { borderColor: "#67C99D" },
+  "& .MuiOutlinedInput-root:hover fieldset": { borderColor: "#67C99D" },
+  "& .MuiOutlinedInput-root.Mui-focused fieldset": { borderColor: "#67C99D" }
+}))}
                 />
               </Grid>
 
@@ -3015,17 +3086,20 @@ const handleAcceptOrder = (row) => {
                   <Button
                     variant="outlined"
                     onClick={handleRefresh}
-                    sx={uiLayout.withUiSx({
-                      minWidth: isDesktop ? 0 : 0,
-                      borderRadius: 2,
-                      fontWeight: 900,
-                      color: accentColor,
-                      borderColor: accentColor,
-                      backgroundColor: whiteColor,
-                      "&:hover": {
+                    sx={uiLayout.withUiSx((theme) => {
+                      const isDark = theme.palette.mode === "dark";
+                      return {
+                        minWidth: isDesktop ? 0 : 0,
+                        borderRadius: 2,
+                        fontWeight: 900,
+                        color: accentColor,
                         borderColor: accentColor,
-                        backgroundColor: "#fff4f4"
-                      }
+                        backgroundColor: isDark ? "rgba(229,90,90,.1)" : whiteColor,
+                        "&:hover": {
+                          borderColor: accentColor,
+                          backgroundColor: isDark ? "rgba(229,90,90,.18)" : "#fff4f4"
+                        }
+                      };
                     }, uiLayout.buttonSx)}
                   >
                     مسح
@@ -3080,16 +3154,20 @@ const handleAcceptOrder = (row) => {
 
         <Paper
           elevation={0}
-          sx={{
-            minHeight: isDesktop ? 430 : { xs: "68dvh", sm: "72dvh", md: "74dvh" },
-            width: "100%",
-            overflow: "hidden",
-            maxWidth: "100%",
-            borderRadius: `${designTokens.radius}px`,
-            border: `1px solid rgba(5,117,70,0.16)`,
-            overflow: "hidden",
-            backgroundColor: whiteColor,
-            boxShadow: "0 20px 50px rgba(5,117,70,0.10)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              minHeight: isDesktop ? 430 : { xs: "68dvh", sm: "72dvh", md: "74dvh" },
+              width: "100%",
+              overflow: "hidden",
+              maxWidth: "100%",
+              borderRadius: `${designTokens.radius}px`,
+              border: isDark ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.16)",
+              backgroundColor: isDark ? theme.palette.surfaces.card : whiteColor,
+              boxShadow: isDark
+                ? "0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.45)"
+                : "0 20px 50px rgba(5,117,70,0.10)"
+            };
           }}
         >
           <Box
@@ -3202,7 +3280,14 @@ const handleAcceptOrder = (row) => {
               "& .MuiDataGrid-footerContainer": {
                 direction: "rtl"
               }
-            }, uiLayout.dataGridSx)}
+            }, uiLayout.dataGridSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+              border: "1px solid #67C99D",
+              "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
+              "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
+              "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #67C99D" },
+              "& .MuiDataGrid-row:hover": { backgroundColor: theme.palette.surfaces.hover },
+              "& .MuiDataGrid-row.Mui-selected": { backgroundColor: `${theme.palette.surfaces.selected} !important` }
+            }))}
           />
 
           </Box>        </Paper>
@@ -3215,7 +3300,9 @@ const handleAcceptOrder = (row) => {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
-          sx: {
+          sx: (theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
               width: isDesktop ? 310 : { xs: 205, sm: 230, md: 245 },
               maxWidth: isDesktop ? 310 : "72vw",
               maxHeight: isDesktop ? "76vh" : { xs: "67dvh", sm: "70dvh", md: "72dvh" },
@@ -3223,19 +3310,22 @@ const handleAcceptOrder = (row) => {
               borderRadius: isDesktop ? 3.2 : 1.8,
               direction: "rtl",
               textAlign: "right",
-              border: "1px solid rgba(5,117,70,0.15)",
-              background: "linear-gradient(180deg, #ffffff 0%, #fbfefc 100%)",
-              boxShadow: isDesktop
-                ? "0 24px 60px rgba(31,45,61,0.22)"
-                : "0 12px 28px rgba(31,45,61,0.18)",
+              border: isDark ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.15)",
+              background: isDark ? theme.palette.surfaces.card : "linear-gradient(180deg, #ffffff 0%, #fbfefc 100%)",
+              boxShadow: isDark
+                ? "0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.5)"
+                : (isDesktop
+                  ? "0 24px 60px rgba(31,45,61,0.22)"
+                  : "0 12px 28px rgba(31,45,61,0.18)"),
               overflowY: "auto",
               overflowX: "hidden",
               "&::-webkit-scrollbar": { width: isDesktop ? 7 : 4 },
               "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "rgba(5,117,70,0.25)",
+                backgroundColor: isDark ? "#67C99D" : "rgba(5,117,70,0.25)",
                 borderRadius: 10
               }
-            }
+            };
+          }
         }}
         MenuListProps={{
           sx: {
@@ -3369,7 +3459,7 @@ const handleAcceptOrder = (row) => {
         onClose={() => !detailsLoading && setDetailsOpen(false)}
         fullWidth
         maxWidth="lg"
-        PaperProps={{ sx: { borderRadius: `${designTokens.radius}px`, direction: "rtl", textAlign: "start" } }}
+        PaperProps={{ sx: (theme) => ({ borderRadius: `${designTokens.radius}px`, direction: "rtl", textAlign: "start", border: theme.palette.mode === "dark" ? "1px solid #67C99D" : undefined }) }}
       >
         <DialogTitle sx={{ fontWeight: 900, color: textColor }}>
           بيانات تسجيل طالب

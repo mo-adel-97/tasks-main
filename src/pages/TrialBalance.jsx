@@ -1076,7 +1076,7 @@ export default function TrialBalance() {
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: "#f6f8f7",
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f6f8f7",
         fontFamily:
           "Tahoma, Arial, sans-serif"
       }}

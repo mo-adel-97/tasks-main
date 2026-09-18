@@ -3,14 +3,15 @@ import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
 import Chats from '../pages/Chats';
 import GroupChat from '../components/GroupChat';
-import { 
-    Box, 
-    Tabs, 
-    Tab, 
-    Divider, 
+import {
+    Box,
+    Tabs,
+    Tab,
+    Divider,
     Typography,
-    styled 
+    styled
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 
 // تعريف الألوان الجديدة
@@ -54,6 +55,7 @@ const ChatContainer = styled(Box)({
 });
 
 const ChatSystem = () => {
+  const theme = useTheme();
   const [activeTab, setActiveTab] = useState('individual');
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -99,7 +101,7 @@ if (loading) {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: colorPalette.background,
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : colorPalette.background,
         ...navigationContentSx
       }}>
         <Typography sx={{ color: colorPalette.textDark }}>جاري التحميل...</Typography>
@@ -109,7 +111,7 @@ if (loading) {
 }
 
   return (
-    <NavigationShell><Box sx={{ ...navigationContentSx, display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: colorPalette.background }}>
+    <NavigationShell><Box sx={{ ...navigationContentSx, display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : colorPalette.background }}>
       {/* Horizontal Tabs at the top */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'white', boxShadow: 2 }}>
         <StyledTabs 

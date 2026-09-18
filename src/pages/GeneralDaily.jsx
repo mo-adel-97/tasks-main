@@ -1447,7 +1447,7 @@ export default function GeneralDaily() {
         }><Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#f4f7f6",
+        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f4f7f6",
 
         // مهم: الاتجاه كما هو LTR
         direction: "rtl",

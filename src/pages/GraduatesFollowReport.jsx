@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useState
 } from "react";
+import * as XLSX from "xlsx";
 import {
   AppBar,
   Autocomplete,
@@ -418,6 +419,195 @@ const MultiValueFilter = ({
 
 const GraduatesFollowReport = () => {
   const theme = useTheme();
+
+  const isDark = theme.palette.mode === "dark";
+  const uiColors = {
+    page: isDark ? theme.palette.background.default : "#f5faf7",
+    card: isDark ? (theme.palette.surfaces?.card || "#10251d") : "#ffffff",
+    section: isDark ? (theme.palette.surfaces?.section || "#133126") : "#f7fbf9",
+    nested: isDark ? (theme.palette.surfaces?.nested || "#173b2d") : "#fbfdfc",
+    hover: isDark ? (theme.palette.surfaces?.hover || "#1b4735") : "#eef8f3",
+    selected: isDark ? (theme.palette.surfaces?.selected || "#20543e") : "#e7f5ee",
+    text: isDark ? (theme.palette.text?.primary || "#eef8f3") : "#173b2b",
+    muted: isDark ? (theme.palette.text?.secondary || "#b7cfc3") : "#667a70",
+    border: "#67C99D"
+  };
+
+  const darkContractStyles = isDark
+    ? {
+        ".graduates-follow-ui": {
+          backgroundColor: `${uiColors.page} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".graduates-follow-ui .MuiPaper-root, .graduates-follow-ui .MuiCard-root, .graduates-follow-ui .MuiTableContainer-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          backgroundImage: "none !important",
+          border: `1px solid ${uiColors.border} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".graduates-follow-ui .MuiOutlinedInput-root": {
+          backgroundColor: `${uiColors.nested} !important`,
+          color: `${uiColors.text} !important`,
+          borderRadius: "10px !important"
+        },
+        ".graduates-follow-ui .MuiOutlinedInput-notchedOutline": {
+          borderColor: `${uiColors.border} !important`,
+          borderWidth: "1px !important"
+        },
+        ".graduates-follow-ui .MuiInputBase-input, .graduates-follow-ui .MuiSelect-select": {
+          color: `${uiColors.text} !important`
+        },
+        ".graduates-follow-ui .MuiInputLabel-root, .graduates-follow-ui .MuiFormHelperText-root": {
+          color: `${uiColors.muted} !important`
+        },
+        ".graduates-follow-ui .MuiInputLabel-root.Mui-focused": {
+          color: `${uiColors.border} !important`
+        },
+        ".graduates-follow-ui .MuiDivider-root": {
+          borderColor: "rgba(103,201,157,.45) !important"
+        },
+        ".graduates-follow-ui .MuiButton-root": {
+          border: `1px solid ${uiColors.border} !important`,
+          borderRadius: "9px !important"
+        },
+        ".graduates-follow-ui .MuiIconButton-root": {
+          border: `1px solid ${uiColors.border} !important`,
+          borderRadius: "9px !important"
+        },
+        ".graduates-follow-ui .MuiChip-root": {
+          borderColor: `${uiColors.border} !important`
+        },
+        ".graduates-follow-ui .MuiDataGrid-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".graduates-follow-ui .MuiDataGrid-columnHeaders": {
+          backgroundColor: `${uiColors.section} !important`,
+          color: `${uiColors.text} !important`,
+          borderBottom: `1px solid ${uiColors.border} !important`
+        },
+        ".graduates-follow-ui .MuiDataGrid-columnHeader, .graduates-follow-ui .MuiDataGrid-cell": {
+          borderColor: "rgba(103,201,157,.34) !important"
+        },
+        ".graduates-follow-ui .MuiDataGrid-row": {
+          backgroundColor: `${uiColors.card} !important`
+        },
+        ".graduates-follow-ui .MuiDataGrid-row:hover": {
+          backgroundColor: `${uiColors.hover} !important`
+        },
+        ".graduates-follow-ui .MuiDataGrid-footerContainer": {
+          backgroundColor: `${uiColors.section} !important`,
+          borderTop: `1px solid ${uiColors.border} !important`
+        },
+        ".graduates-follow-ui .MuiTable-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".graduates-follow-ui .MuiTableCell-root": {
+          color: `${uiColors.text} !important`,
+          borderColor: "rgba(103,201,157,.34) !important"
+        },
+        ".graduates-follow-ui .MuiPaginationItem-root": {
+          color: `${uiColors.text} !important`,
+          borderColor: `${uiColors.border} !important`
+        },
+        ".graduates-follow-ui .MuiPaginationItem-root.Mui-selected": {
+          backgroundColor: `${uiColors.selected} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper, .MuiPopover-paper, .MuiMenu-paper, .MuiAutocomplete-paper": {
+          backgroundColor: `${uiColors.card} !important`,
+          backgroundImage: "none !important",
+          color: `${uiColors.text} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".MuiDialogTitle-root, .MuiDialogContent-root, .MuiDialogActions-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiMenuItem-root": {
+          color: `${uiColors.text} !important`
+        },
+        ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+          backgroundColor: `${uiColors.hover} !important`
+        },
+        ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiTableContainer-root": {
+          backgroundColor: `${uiColors.card} !important`,
+          backgroundImage: "none !important",
+          borderColor: `${uiColors.border} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper .MuiOutlinedInput-root": {
+          backgroundColor: `${uiColors.nested} !important`,
+          color: `${uiColors.text} !important`
+        },
+        ".MuiDialog-paper .MuiOutlinedInput-notchedOutline": {
+          borderColor: `${uiColors.border} !important`
+        },
+        ".MuiDialog-paper .MuiInputLabel-root, .MuiDialog-paper .MuiFormHelperText-root": {
+          color: `${uiColors.muted} !important`
+        }
+      }
+    : {};
+
+
+  const layoutSafetyStyles = {
+    ".graduates-follow-ui": {
+      width: "100%",
+      maxWidth: "100vw",
+      overflowX: "hidden"
+    },
+    ".graduates-follow-ui .MuiPaper-root, .graduates-follow-ui .MuiTableContainer-root, .graduates-follow-ui .MuiDataGrid-root": {
+      boxSizing: "border-box",
+      minWidth: 0,
+      maxWidth: "100%"
+    },
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+      ".graduates-follow-ui .MuiDataGrid-virtualScroller": {
+        overflowX: "hidden !important"
+      },
+      ".graduates-follow-ui .MuiDataGrid-scrollbar--horizontal": {
+        display: "none !important"
+      },
+      ".MuiDialog-paper": {
+        width: "calc(100vw - 16px) !important",
+        maxWidth: "calc(100vw - 16px) !important",
+        margin: "8px !important",
+        overflowX: "hidden !important"
+      },
+      ".MuiDialog-paper .MuiDialogContent-root": {
+        overflowX: "hidden !important",
+        boxSizing: "border-box !important"
+      },
+      ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiBox-root, .MuiDialog-paper .MuiStack-root, .MuiDialog-paper .MuiFormControl-root, .MuiDialog-paper .MuiAutocomplete-root": {
+        minWidth: "0 !important",
+        maxWidth: "100% !important",
+        boxSizing: "border-box !important"
+      },
+      ".MuiDialog-paper .MuiTable-root": {
+        width: "100% !important",
+        maxWidth: "100% !important",
+        tableLayout: "fixed !important"
+      },
+      ".MuiDialog-paper .MuiTableCell-root": {
+        minWidth: "0 !important",
+        maxWidth: "100% !important",
+        overflow: "hidden !important",
+        textOverflow: "ellipsis !important",
+        overflowWrap: "anywhere !important"
+      },
+      ".MuiDialog-paper .MuiDialogActions-root": {
+        maxWidth: "100% !important",
+        flexWrap: "wrap !important",
+        gap: "8px !important",
+        boxSizing: "border-box !important"
+      },
+      ".MuiPopover-paper, .MuiMenu-paper, .MuiAutocomplete-paper": {
+        maxWidth: "calc(100vw - 16px) !important"
+      }
+    }
+  };
 
   const isPhone = useMediaQuery(
     theme.breakpoints.down("sm")
@@ -1208,12 +1398,7 @@ const GraduatesFollowReport = () => {
                   : column.field === "diplomName"
                     ? 1.25
                     : 1,
-              minWidth:
-                column.field === "studentName"
-                  ? 125
-                  : column.field === "diplomName"
-                    ? 135
-                    : 90
+              minWidth: 0
             }),
 
         renderCell:
@@ -1869,77 +2054,130 @@ const GraduatesFollowReport = () => {
     }
   };
 
-  const exportCsv = () => {
+  const exportExcel = () => {
     if (filteredGridRows.length === 0) {
       showError("لا توجد بيانات للتصدير");
       return;
     }
 
-    const headers = [
-      "نوع التسجيل",
-      "الدبلوم/الدورة",
-      "اسم الطالب",
-      "رقم الجوال",
-      "رقم الهوية",
-      "الرصيد السابق",
-      "مدين",
-      "دفعة مقدمة",
-      "قسط شهري",
-      "سداد رسوم",
-      "قيد مدين",
-      "قيد دائن",
-      "الرصيد الحالي",
-      "مسؤول الاتصال",
-      "نوع الطالب"
-    ];
+    try {
+      const headers = [
+        "نوع التسجيل",
+        "الدبلوم / الدورة",
+        "اسم الطالب",
+        "رقم الجوال",
+        "رقم الهوية",
+        "الرصيد السابق",
+        "مدين",
+        "دفعة مقدمة",
+        "قسط شهري",
+        "سداد رسوم",
+        "قيد مدين",
+        "قيد دائن",
+        "الرصيد الحالي",
+        "مسؤول الاتصال",
+        "نوع الطالب"
+      ];
 
-    const values = filteredGridRows.map((row) => [
-      row.regTypeName,
-      row.diplomName,
-      row.studentName,
-      row.studentTel,
-      row.nationalId,
-      row.preBalance,
-      row.debit,
-      row.startPay,
-      row.monthPay,
-      row.feesPay,
-      row.mDaily,
-      row.dDaily,
-      row.balance,
-      row.trainerName,
-      row.studentType
-    ]);
+      const dataRows = filteredGridRows.map((row) => [
+        String(row.regTypeName || ""),
+        String(row.diplomName || ""),
+        String(row.studentName || ""),
+        String(row.studentTel || ""),
+        String(row.nationalId || ""),
+        Number(row.preBalance || 0),
+        Number(row.debit || 0),
+        Number(row.startPay || 0),
+        Number(row.monthPay || 0),
+        Number(row.feesPay || 0),
+        Number(row.mDaily || 0),
+        Number(row.dDaily || 0),
+        Number(row.balance || 0),
+        String(row.trainerName || ""),
+        String(row.studentType || "")
+      ]);
 
-    const escape = (value) =>
-      `"${String(value ?? "")
-        .replace(/"/g, '""')}"`;
+      const worksheet = XLSX.utils.aoa_to_sheet([
+        headers,
+        ...dataRows
+      ]);
 
-    const csv =
-      "\uFEFF" +
-      [headers, ...values]
-        .map((row) =>
-          row.map(escape).join(",")
-        )
-        .join("\n");
+      worksheet["!cols"] = [
+        { wch: 16 },
+        { wch: 34 },
+        { wch: 30 },
+        { wch: 16 },
+        { wch: 16 },
+        { wch: 16 },
+        { wch: 14 },
+        { wch: 15 },
+        { wch: 14 },
+        { wch: 14 },
+        { wch: 14 },
+        { wch: 14 },
+        { wch: 16 },
+        { wch: 26 },
+        { wch: 16 }
+      ];
 
-    const blob = new Blob([csv], {
-      type:
-        "text/csv;charset=utf-8;"
-    });
+      worksheet["!autofilter"] = {
+        ref: `A1:O${dataRows.length + 1}`
+      };
 
-    const url =
-      URL.createObjectURL(blob);
+      worksheet["!freeze"] = {
+        xSplit: 0,
+        ySplit: 1,
+        topLeftCell: "A2",
+        activePane: "bottomLeft",
+        state: "frozen"
+      };
 
-    const anchor =
-      document.createElement("a");
+      ["F", "G", "H", "I", "J", "K", "L", "M"].forEach((columnLetter) => {
+        for (let rowIndex = 2; rowIndex <= dataRows.length + 1; rowIndex += 1) {
+          const cell = worksheet[`${columnLetter}${rowIndex}`];
+          if (cell) {
+            cell.t = "n";
+            cell.z = '#,##0.00';
+          }
+        }
+      });
 
-    anchor.href = url;
-    anchor.download =
-      `متابعة-الخريجين-${today()}.csv`;
+      ["D", "E"].forEach((columnLetter) => {
+        for (let rowIndex = 2; rowIndex <= dataRows.length + 1; rowIndex += 1) {
+          const cell = worksheet[`${columnLetter}${rowIndex}`];
+          if (cell) {
+            cell.t = "s";
+            cell.v = String(cell.v ?? "");
+          }
+        }
+      });
 
-    anchor.click();
-    URL.revokeObjectURL(url);
+      const workbook = XLSX.utils.book_new();
+      workbook.Workbook = {
+        Views: [{ RTL: true }]
+      };
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "متابعة الخريجين"
+      );
+
+      const safeBranchName = String(branch?.name || "الفرع")
+        .replace(/[\\/:*?"<>|]/g, "-")
+        .trim();
+
+      XLSX.writeFile(
+        workbook,
+        `متابعة الخريجين - ${safeBranchName} - ${fromDate} إلى ${toDate}.xlsx`,
+        { compression: true }
+      );
+    } catch (error) {
+      showError(
+        error?.message ||
+        "حدث خطأ أثناء تصدير ملف Excel"
+      );
+    }
   };
 
 
@@ -1947,15 +2185,21 @@ const GraduatesFollowReport = () => {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
             setMobileSidebarOpen(false)
           }><Box
+      className="graduates-follow-ui"
       sx={{
         minHeight: "100vh",
         maxWidth: "100%",
         overflowX: "hidden",
         background:
-          "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
+          theme.palette.mode === 'dark'
+            ? theme.palette.background.default
+            : "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
         direction: "rtl"
       }}
     >
+      <GlobalStyles styles={darkContractStyles} />
+      <GlobalStyles styles={layoutSafetyStyles} />
+
       {!isDesktop && (
         <>
           <GlobalStyles
@@ -1980,12 +2224,10 @@ const GraduatesFollowReport = () => {
               left: 0,
               right: 0,
               zIndex: 1400,
-              background:
-                "rgba(255,255,255,.97)",
+              background: isDark ? uiColors.section : "rgba(255,255,255,.97)",
               backdropFilter: "blur(14px)",
-              color: "#173b2b",
-              borderBottom:
-                "1px solid rgba(5,117,70,.12)",
+              color: isDark ? uiColors.text : "#173b2b",
+              borderBottom: `1px solid ${isDark ? uiColors.border : "rgba(5,117,70,.12)"}`,
               direction: "rtl"
             }}
           >
@@ -2043,7 +2285,7 @@ const GraduatesFollowReport = () => {
                     xs: "0.75rem",
                     sm: "0.78rem"
                   },
-                  color: "#173b2b",
+                  color: isDark ? uiColors.text : "#173b2b",
                   textAlign: "start"
                 }}
               >
@@ -2059,11 +2301,12 @@ const GraduatesFollowReport = () => {
       <PageContainer
         component="main"
         sx={{
+          ...navigationContentSx,
           mt: isDesktop ? 0 : isPhone ? "var(--app-header-height, 56px)" : "var(--app-header-height, 56px)",
-          
+          minWidth: 0,
+          maxWidth: "100%",
           boxSizing: "border-box",
-          overflowX: "hidden",
-          ...navigationContentSx
+          overflowX: "hidden"
         }}
       >
         <Paper
@@ -2240,13 +2483,13 @@ const GraduatesFollowReport = () => {
             <Button
               variant="outlined"
               startIcon={<FileDownloadIcon />}
-              onClick={exportCsv}
+              onClick={exportExcel}
               sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 800
               }, uiLayout.buttonSx)}
             >
-              تصدير
+              تصدير Excel
             </Button>
 
             <Button
@@ -2319,11 +2562,16 @@ const GraduatesFollowReport = () => {
                 : isPhone
                   ? "repeat(2,minmax(0,1fr))"
                   : "repeat(4,minmax(0,1fr))",
-              gap: isDesktop
+              columnGap: isDesktop
                 ? 1.2
                 : isPhone
-                  ? 0.3
-                  : 0.45,
+                  ? 0.8
+                  : 1,
+              rowGap: isDesktop
+                ? 1.2
+                : isPhone
+                  ? 1
+                  : 1.1,
               alignItems: "center",
               "& .MuiInputLabel-root": {
                 fontFamily: "Cairo",
@@ -2615,10 +2863,10 @@ const GraduatesFollowReport = () => {
                     },
                     "& .MuiDataGrid-virtualScroller": {
                       direction: "rtl",
-                      overflowX: "auto"
+                      overflowX: "hidden"
                     },
                     "& .MuiDataGrid-scrollbar--horizontal": {
-                      display: "block"
+                      display: "none"
                     }
                   }
                 : {}),
@@ -2752,7 +3000,7 @@ const GraduatesFollowReport = () => {
                           "1px solid rgba(5,117,70,.14)",
                         borderRadius: 1.3,
                         backgroundColor:
-                          "#fbfdfc"
+                          isDark ? uiColors.nested : "#fbfdfc"
                       }}
                     >
                       <Typography
@@ -2938,8 +3186,9 @@ const GraduatesFollowReport = () => {
           <DialogContent
             dividers
             sx={{
-              background:
-                "linear-gradient(135deg,#f7fbf9,#ffffff)"
+              background: isDark
+                ? uiColors.section
+                : "linear-gradient(135deg,#f7fbf9,#ffffff)"
             }}
           >
             <Box
