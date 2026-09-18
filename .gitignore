@@ -10,8 +10,16 @@
 
 # production
 /build
-/ui-review/preview-build
-/ui-review/layout-inventory.json
+
+# scratch/audit output from local review sessions -- never meant to be
+# committed (one such session previously got swept in via a broad `git add`)
+/ui-review
+/tmp_*.txt
+/hr-*.txt
+/hr-*.log
+/print-audit.txt
+/responsive-audit.txt
+/build-run.log
 
 # misc
 .DS_Store
