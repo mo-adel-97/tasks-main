@@ -3,6 +3,8 @@ import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  useTheme,
+  GlobalStyles,
   Box,
   Card,
   CardContent,
@@ -62,6 +64,14 @@ const statusColor = (status) => {
 const toBool = (v) => String(v) === "1" || v === 1 || v === true;
 
 export default function ExceptionsListsAdmin() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
+
   // user from localStorage
   const user = useMemo(() => {
     try {
@@ -286,15 +296,176 @@ export default function ExceptionsListsAdmin() {
   }, [rows, branches]);
 
   return (
-    <NavigationShell variant="standard" ><Box
-      sx={{
-        direction: "rtl",
-        fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
-        minHeight: "100vh",
-        background: "#f8fbfa",
-        display: "flex",
-      }}
-    >
+    <NavigationShell variant="standard" >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".exceptions-admin-dark-root": {
+                  backgroundColor: `${theme.palette.background.default} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".exceptions-admin-dark-root .MuiPaper-root, .exceptions-admin-dark-root .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".exceptions-admin-dark-root .MuiCardContent-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".exceptions-admin-dark-root .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".exceptions-admin-dark-root .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  background: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: "#67C99D !important",
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".exceptions-admin-dark-root .MuiButton-root.Mui-disabled": {
+                  background: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".exceptions-admin-dark-root .MuiIconButton-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".exceptions-admin-dark-root .MuiIconButton-root:hover": {
+                  background: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+                ".exceptions-admin-dark-root .MuiIconButton-root.Mui-disabled": {
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".exceptions-admin-dark-root .MuiChip-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+
+                ".exceptions-admin-dark-root .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".exceptions-admin-dark-root .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#67C99D !important",
+                  borderWidth: "1px !important"
+                },
+                ".exceptions-admin-dark-root .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".exceptions-admin-dark-root .MuiInputLabel-root.Mui-focused": {
+                  color: "#9BE0C1 !important"
+                },
+                ".exceptions-admin-dark-root .MuiInputAdornment-root, .exceptions-admin-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .exceptions-admin-dark-root .MuiSelect-icon": {
+                  color: "#9BE0C1 !important"
+                },
+
+                ".exceptions-admin-dark-root .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  border: "1px solid #67C99D !important"
+                },
+                ".exceptions-admin-dark-root .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".exceptions-admin-dark-root .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".exceptions-admin-dark-root .MuiTableRow-root:hover .MuiTableCell-root": {
+                  backgroundColor: `${darkHover} !important`
+                },
+
+                ".exceptions-admin-dark-root .MuiPaginationItem-root": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important"
+                },
+                ".exceptions-admin-dark-root .MuiPaginationItem-root.Mui-selected": {
+                  background: "transparent !important",
+                  color: "#C9F2DF !important",
+                  boxShadow: "inset 0 0 0 1px #67C99D !important"
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiListItemIcon-root": {
+                  color: "#9BE0C1 !important"
+                },
+
+                ".exceptions-admin-dark-root .MuiAlert-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".exceptions-admin-dark-root .MuiAlert-icon, .exceptions-admin-dark-root .MuiCircularProgress-root": {
+                  color: "#67C99D !important"
+                },
+                ".MuiSnackbar-root .MuiAlert-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                }
+              }
+            : {})
+        }}
+      />
+
+      <Box
+        className="exceptions-admin-dark-root"
+        sx={{
+          direction: "rtl",
+          fontFamily: 'Cairo, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif',
+          minHeight: "100vh",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          overflowX: "hidden",
+          boxSizing: "border-box",
+          background: isDark ? theme.palette.background.default : "#f8fbfa",
+          color: isDark ? theme.palette.text.primary : "inherit",
+          display: "flex"
+        }}
+      >
       {/* Sidebar */}
       
 
@@ -302,10 +473,13 @@ export default function ExceptionsListsAdmin() {
       <Box sx={{
         flex: 1,
         width: "100%",
+        minWidth: 0,
+        maxWidth: "100%",
         p: {
           xs: 2,
           md: 3
         },
+        color: isDark ? theme.palette.text.primary : "inherit",
         ...navigationContentSx
       }}>
         {/* Header */}
@@ -337,19 +511,43 @@ export default function ExceptionsListsAdmin() {
                 fetchListAll({ page });
               }}
               disabled={loading || loadingBranches}
-              sx={uiLayout.withUiSx({ borderRadius: 2, fontWeight: 800, whiteSpace: "nowrap" }, uiLayout.buttonSx)}
+              sx={uiLayout.withUiSx({
+                borderRadius: 2,
+                fontWeight: 800,
+                whiteSpace: "nowrap",
+                backgroundColor: "transparent",
+                color: isDark ? "#9BE0C1" : undefined,
+                borderColor: isDark ? "#67C99D" : undefined
+              }, uiLayout.buttonSx)}
             >
               تحديث الكل
             </Button>
 
-            <Chip label={`${branches.length} فرع`} color="primary" variant="outlined" size="small" />
+            <Chip
+              label={`${branches.length} فرع`}
+              color={isDark ? "default" : "primary"}
+              variant="outlined"
+              size="small"
+              sx={{
+                backgroundColor: "transparent",
+                color: isDark ? "#9BE0C1" : undefined,
+                borderColor: isDark ? "#67C99D" : undefined
+              }}
+            />
           </Box>
         </Box>
 
         <Grid container spacing={2}>
           {/* Filters */}
           <Grid item xs={12}>
-            <Card sx={{ borderRadius: 3, boxShadow: "0 8px 25px rgba(0,0,0,0.06)" }}>
+            <Card
+              sx={{
+                borderRadius: 2,
+                backgroundColor: isDark ? darkCard : undefined,
+                border: isDark ? "1px solid #67C99D" : undefined,
+                boxShadow: isDark ? "none" : "0 8px 25px rgba(0,0,0,0.06)"
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "start" }}>
                   فلاتر
@@ -405,9 +603,36 @@ export default function ExceptionsListsAdmin() {
                 </Box>
 
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", alignItems: "center" }}>
-                  <Chip label={`إجمالي السجلات: ${totalCount}`} color="primary" />
-                  <Chip color="success" label={`حرمان: ${stats.pageGraduated}`} />
-                  <Chip color="warning" label={`أرصدة صفرية: ${stats.pageZero}`} />
+                  <Chip
+                    label={`إجمالي السجلات: ${totalCount}`}
+                    color={isDark ? "default" : "primary"}
+                    variant={isDark ? "outlined" : "filled"}
+                    sx={{
+                      backgroundColor: isDark ? "transparent" : undefined,
+                      color: isDark ? "#9BE0C1" : undefined,
+                      borderColor: isDark ? "#67C99D" : undefined
+                    }}
+                  />
+                  <Chip
+                    color={isDark ? "default" : "success"}
+                    variant={isDark ? "outlined" : "filled"}
+                    label={`حرمان: ${stats.pageGraduated}`}
+                    sx={{
+                      backgroundColor: isDark ? "transparent" : undefined,
+                      color: isDark ? "#9BE0C1" : undefined,
+                      borderColor: isDark ? "#67C99D" : undefined
+                    }}
+                  />
+                  <Chip
+                    color={isDark ? "default" : "warning"}
+                    variant={isDark ? "outlined" : "filled"}
+                    label={`أرصدة صفرية: ${stats.pageZero}`}
+                    sx={{
+                      backgroundColor: isDark ? "transparent" : undefined,
+                      color: isDark ? "#9BE0C1" : undefined,
+                      borderColor: isDark ? "#67C99D" : undefined
+                    }}
+                  />
                 </Box>
               </CardContent>
             </Card>
@@ -415,23 +640,47 @@ export default function ExceptionsListsAdmin() {
 
           {/* List */}
           <Grid item xs={12}>
-            <Card sx={{ borderRadius: 3, boxShadow: "0 8px 25px rgba(0,0,0,0.06)" }}>
+            <Card
+              sx={{
+                borderRadius: 2,
+                backgroundColor: isDark ? darkCard : undefined,
+                border: isDark ? "1px solid #67C99D" : undefined,
+                boxShadow: isDark ? "none" : "0 8px 25px rgba(0,0,0,0.06)"
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, textAlign: "start" }}>
                   القائمة (كل الفروع)
                 </Typography>
 
-                <TableContainer component={Paper} sx={uiLayout.withUiSx({ borderRadius: 2, overflow: "hidden" }, uiLayout.tableContainerSx)}>
+                <TableContainer
+                  component={Paper}
+                  sx={uiLayout.withUiSx({
+                    borderRadius: 2,
+                    overflowX: "auto",
+                    overflowY: "hidden",
+                    backgroundColor: isDark ? darkCard : undefined,
+                    border: isDark ? "1px solid #67C99D" : undefined,
+                    boxShadow: "none"
+                  }, uiLayout.tableContainerSx)}
+                >
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ fontWeight: 800 }}>كود الفرع</TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>اسم الفرع</TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>رقم الهوية</TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>الحالة</TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>ملاحظات</TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>اطلاع</TableCell>
-                        <TableCell sx={{ fontWeight: 800, width: 120 }} align="center">
+                        <TableCell sx={{ fontWeight: 800, backgroundColor: isDark ? darkNested : undefined }}>كود الفرع</TableCell>
+                        <TableCell sx={{ fontWeight: 800, backgroundColor: isDark ? darkNested : undefined }}>اسم الفرع</TableCell>
+                        <TableCell sx={{ fontWeight: 800, backgroundColor: isDark ? darkNested : undefined }}>رقم الهوية</TableCell>
+                        <TableCell sx={{ fontWeight: 800, backgroundColor: isDark ? darkNested : undefined }}>الحالة</TableCell>
+                        <TableCell sx={{ fontWeight: 800, backgroundColor: isDark ? darkNested : undefined }}>ملاحظات</TableCell>
+                        <TableCell sx={{ fontWeight: 800, backgroundColor: isDark ? darkNested : undefined }}>اطلاع</TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: 800,
+                            width: 120,
+                            backgroundColor: isDark ? darkNested : undefined
+                          }}
+                          align="center"
+                        >
                           الإجراءات
                         </TableCell>
                       </TableRow>
@@ -463,7 +712,16 @@ export default function ExceptionsListsAdmin() {
                               key={x.id}
                               hover
                               sx={{
-                                backgroundColor: seen ? "rgba(46, 125, 50, 0.06)" : "transparent",
+                                backgroundColor: isDark
+                                  ? darkCard
+                                  : seen
+                                    ? "rgba(46, 125, 50, 0.06)"
+                                    : "transparent",
+                                "&:hover": {
+                                  backgroundColor: isDark
+                                    ? darkHover
+                                    : undefined
+                                },
                               }}
                             >
                               <TableCell sx={{ fontWeight: 700, opacity: 0.9 }}>{branchCode}</TableCell>
@@ -473,16 +731,45 @@ export default function ExceptionsListsAdmin() {
                               <TableCell sx={{ fontWeight: 700 }}>{x.national_id ?? x.nationalId}</TableCell>
 
                               <TableCell>
-                                <Chip size="small" color={statusColor(x.status)} label={x.status} />
+                                <Chip
+                                  size="small"
+                                  color={isDark ? "default" : statusColor(x.status)}
+                                  variant={isDark ? "outlined" : "filled"}
+                                  label={x.status}
+                                  sx={{
+                                    backgroundColor: isDark ? "transparent" : undefined,
+                                    color: isDark ? "#9BE0C1" : undefined,
+                                    borderColor: isDark ? "#67C99D" : undefined
+                                  }}
+                                />
                               </TableCell>
 
                               <TableCell sx={{ opacity: x.notes ? 1 : 0.5 }}>{x.notes || "—"}</TableCell>
 
                               <TableCell>
                                 {seen ? (
-                                  <Chip size="small" color="success" label="تم الاطلاع" />
+                                  <Chip
+                                    size="small"
+                                    color={isDark ? "default" : "success"}
+                                    variant={isDark ? "outlined" : "filled"}
+                                    label="تم الاطلاع"
+                                    sx={{
+                                      backgroundColor: isDark ? "transparent" : undefined,
+                                      color: isDark ? "#9BE0C1" : undefined,
+                                      borderColor: isDark ? "#67C99D" : undefined
+                                    }}
+                                  />
                                 ) : (
-                                  <Chip size="small" variant="outlined" label="غير مطّلع" />
+                                  <Chip
+                                    size="small"
+                                    variant="outlined"
+                                    label="غير مطّلع"
+                                    sx={{
+                                      backgroundColor: "transparent",
+                                      color: isDark ? "#9BE0C1" : undefined,
+                                      borderColor: isDark ? "#67C99D" : undefined
+                                    }}
+                                  />
                                 )}
                               </TableCell>
 
@@ -495,7 +782,16 @@ export default function ExceptionsListsAdmin() {
 
                                 <Tooltip title="حذف (Admin)" arrow>
                                   <span>
-                                    <IconButton onClick={() => deleteItem(x.id)} color="error" disabled={loading}>
+                                    <IconButton
+                                      onClick={() => deleteItem(x.id)}
+                                      color={isDark ? "default" : "error"}
+                                      disabled={loading}
+                                      sx={{
+                                        color: isDark ? "#9BE0C1" : undefined,
+                                        borderColor: isDark ? "#67C99D" : undefined,
+                                        backgroundColor: "transparent"
+                                      }}
+                                    >
                                       <DeleteOutlineIcon />
                                     </IconButton>
                                   </span>
@@ -519,8 +815,19 @@ export default function ExceptionsListsAdmin() {
                     count={Math.max(1, totalPages)}
                     page={page}
                     onChange={(_, v) => setPage(v)}
-                    color="primary"
+                    color={isDark ? "standard" : "primary"}
                     shape="rounded"
+                    sx={{
+                      "& .MuiPaginationItem-root": {
+                        backgroundColor: "transparent",
+                        color: isDark ? "#9BE0C1" : undefined,
+                        border: isDark ? "1px solid #67C99D" : undefined
+                      },
+                      "& .MuiPaginationItem-root.Mui-selected": {
+                        backgroundColor: isDark ? "transparent" : undefined,
+                        color: isDark ? "#C9F2DF" : undefined
+                      }
+                    }}
                   />
                 </Box>
               </CardContent>
@@ -552,7 +859,16 @@ export default function ExceptionsListsAdmin() {
           onClose={() => setToast((p) => ({ ...p, open: false }))}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          <Alert severity={toast.type} variant="filled" onClose={() => setToast((p) => ({ ...p, open: false }))}>
+          <Alert
+            severity={toast.type}
+            variant={isDark ? "outlined" : "filled"}
+            onClose={() => setToast((p) => ({ ...p, open: false }))}
+            sx={{
+              backgroundColor: isDark ? darkSection : undefined,
+              color: isDark ? theme.palette.text.primary : undefined,
+              borderColor: isDark ? "#67C99D" : undefined
+            }}
+          >
             {toast.msg}
           </Alert>
         </Snackbar>

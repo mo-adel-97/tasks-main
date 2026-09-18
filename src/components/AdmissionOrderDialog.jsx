@@ -9,6 +9,7 @@ import sstliLogo from "../images/logo.jpg";
 import {
   Alert,
   Box,
+  GlobalStyles,
   Button,
   Chip,
   CircularProgress,
@@ -64,6 +65,121 @@ const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
 const whiteColor = "#fefefe";
 const textColor = "#1f2d3d";
 const softBg = "#fefefe";
+
+const DARK_ACTION_GLOBAL_STYLES = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const darkBorder = "#67C99D";
+  const darkText = "#9BE0C1";
+
+  return {
+    ".MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important",
+      fontWeight: "800 !important"
+    },
+    ".MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${darkBorder} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    ".MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    ".MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+    ".MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiIconButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.38) !important",
+      borderColor: "rgba(103,201,157,.30) !important"
+    },
+    ".MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiChip-icon, .MuiChip-deleteIcon": {
+      color: `${darkText} !important`
+    },
+    ".MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important"
+    },
+    ".MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiSelect-icon": {
+      color: `${darkText} !important`
+    },
+    ".MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiAlert-icon": {
+      color: `${darkText} !important`
+    },
+    ".MuiPaginationItem-root": {
+      backgroundColor: "transparent !important",
+      color: `${darkText} !important`,
+      border: "1px solid transparent !important"
+    },
+    ".MuiPaginationItem-root.Mui-selected": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      border: `1px solid ${darkBorder} !important`
+    },
+    ".MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      border: `1px solid ${darkBorder} !important`,
+      opacity: "1 !important"
+    },
+    ".MuiSwitch-thumb": {
+      backgroundColor: `${darkBorder} !important`
+    },
+    ".MuiSwitch-switchBase.Mui-checked": {
+      color: `${darkBorder} !important`
+    },
+    ".MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      borderColor: `${darkBorder} !important`,
+      opacity: "1 !important"
+    }
+  };
+};
+
 
 const NO_GUID = "00000000-0000-0000-0000-000000000000";
 
@@ -647,39 +763,18 @@ const StepPointer = ({ show }) => {
   if (!show) return null;
 
   return (
-    <Box
+    <Typography
       component="span"
       sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 36,
-        height: 36,
-        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-          width: 22,
-          height: 22,
-          fontSize: "0.85rem"
-        },
-        "@media (max-width:599px)": {
-          width: 19,
-          height: 19,
-          fontSize: "0.75rem"
-        },
-        borderRadius: "50%",
-        background: "linear-gradient(135deg, #fff7e6, #fff)",
-        border: "1px solid #ffd28a",
-        boxShadow: "0 10px 22px rgba(174,30,33,0.16)",
-        fontSize: "1.45rem",
-        transform: "rotate(-18deg)",
-        animation: "sstliFingerMove 0.95s ease-in-out infinite alternate",
-        "@keyframes sstliFingerMove": {
-          "0%": { transform: "translateY(0) rotate(-18deg) scale(1)" },
-          "100%": { transform: "translateY(-7px) rotate(-18deg) scale(1.08)" }
-        }
+        fontSize: "0.72rem",
+        fontWeight: 900,
+        color: "#67C99D",
+        lineHeight: 1,
+        whiteSpace: "nowrap"
       }}
     >
-      ☝️
-    </Box>
+      الحالية
+    </Typography>
   );
 };
 
@@ -689,38 +784,18 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
     sx={(theme) => {
       const isDark = theme.palette.mode === "dark";
       return {
-        p: 1.25,
-        borderRadius: 3,
+        p: { xs: 0.85, sm: 1, md: 1.15 },
+        borderRadius: 2,
         height: "100%",
-        [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-          p: 0.5,
-          borderRadius: 1.5,
-          minHeight: 88
-        },
-        "@media (max-width:599px)": {
-          p: 0.38,
-          minHeight: 82
-        },
+        minHeight: 0,
         position: "relative",
         overflow: "hidden",
         border: active
-          ? `2px solid ${pinColor(accentColor)}`
-          : done
-          ? `1px solid ${primaryColor}`
-          : (isDark ? `1px solid #67C99D` : "1px solid #e4ece8"),
-        background: isDark
-          ? (active ? "rgba(174,30,33,.12)" : done ? "rgba(103,201,157,.12)" : theme.palette.surfaces.card)
-          : (active
-            ? "linear-gradient(135deg, #fff7f7 0%, #ffffff 55%, #f2fbf6 100%)"
-            : done
-            ? "linear-gradient(135deg, #f1fbf6 0%, #ffffff 100%)"
-            : "#ffffff"),
-        boxShadow: isDark
-          ? "none"
-          : (active
-            ? "0 16px 36px rgba(174,30,33,0.16)"
-            : "0 10px 26px rgba(5,117,70,0.07)"),
-        transition: "0.25s ease"
+          ? `2px solid ${isDark ? "#67C99D" : primaryColor}`
+          : `1px solid ${isDark ? "#67C99D" : (done ? primaryColor : "#dce8e2")}`,
+        background: isDark ? theme.palette.surfaces.section : "#ffffff",
+        boxShadow: "none",
+        transition: "border-color 0.18s ease"
       };
     }}
   >
@@ -758,12 +833,9 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
               alignItems: "center",
               justifyContent: "center",
               fontWeight: 1000,
-              color: whiteColor,
-              background: done
-                ? `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
-                : active
-                ? `linear-gradient(135deg, ${accentColor}, #7d1113)`
-                : "linear-gradient(135deg, #98a2b3, #667085)"
+              color: "#67C99D",
+              border: "1px solid #67C99D",
+              background: "transparent"
             }}
           >
             {done ? "✓" : number}
@@ -773,7 +845,7 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
             <Typography
               sx={{
                 fontWeight: 1000,
-                color: active ? accentColor : textColor,
+                color: active ? "#67C99D" : "text.primary",
                 fontSize: "0.95rem",
                 lineHeight: 1.1,
                 [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
@@ -785,7 +857,8 @@ const StepGuideCard = ({ number, title, hint, active, done, children }) => (
             <Typography
               sx={{
                 fontWeight: 800,
-                color: "#667085",
+                color: "text.secondary",
+                display: { xs: "none", sm: "block" },
                 fontSize: "0.75rem",
                 lineHeight: 1.1,
                 [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: { fontSize: "0.75rem" },
@@ -3060,7 +3133,7 @@ ${PRINT_READY_SCRIPT}</head>
     minWidth: 0,
     "& .MuiDataGrid-columnHeaders": {
       background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-      color: whiteColor,
+      color: isDarkGrid ? theme.palette.text.primary : whiteColor,
       fontWeight: 1000,
       borderBottom: isDarkGrid ? "1px solid #67C99D" : `1px solid ${primaryDark}`
     },
@@ -3105,6 +3178,7 @@ ${PRINT_READY_SCRIPT}</head>
 
   return (
     <>
+      <GlobalStyles styles={DARK_ACTION_GLOBAL_STYLES} />
       <style>{`
         .sstli-swal-popup {
           border-radius: 22px !important;
@@ -3188,8 +3262,10 @@ ${PRINT_READY_SCRIPT}</head>
       >
         <DialogTitle
           sx={{
-            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-            borderBottom: `1px solid ${primaryDark}`,
+            background: isDarkGrid
+              ? theme.palette.surfaces.section
+              : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+            borderBottom: isDarkGrid ? "1px solid #67C99D" : `1px solid ${primaryDark}`,
             py: isPhone ? 0.38 : isTablet ? 0.55 : 1.4,
             px: isPhone ? 0.5 : isTablet ? 0.8 : 2,
             flexShrink: 0
@@ -3374,8 +3450,8 @@ ${PRINT_READY_SCRIPT}</head>
             </Alert>
           )}
 
-          <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 2.2 }}>
-            <Grid item xs={6} sm={6} md={3}>
+          <Grid container spacing={isPhone ? 0.6 : isTablet ? 0.8 : 1.1} sx={{ mb: isCompact ? 0.7 : 1.5 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextInfo label="اسم الطالب" value={studentName} />
             </Grid>
             <Grid item xs={6} sm={6} md={2}>
@@ -3384,10 +3460,10 @@ ${PRINT_READY_SCRIPT}</head>
             <Grid item xs={6} sm={6} md={2}>
               <TextInfo label="الجوال" value={studentTel} />
             </Grid>
-            <Grid item xs={6} sm={6} md={2.5} sx={{ display: isPhone ? "none" : "block" }}>
+            <Grid item xs={6} sm={6} md={2} sx={{ display: isPhone ? "none" : "block" }}>
               <TextInfo label="دفتر التسجيل" value={contextData?.regDocName || "-"} />
             </Grid>
-            <Grid item xs={6} sm={6} md={2.5} sx={{ display: isPhone ? "none" : "block" }}>
+            <Grid item xs={6} sm={6} md={2} sx={{ display: isPhone ? "none" : "block" }}>
               <TextInfo
                 label="قائمة السعر"
                 value={contextData?.priceSaleNotes || contextData?.priceSource || "-"}
@@ -3431,8 +3507,8 @@ ${PRINT_READY_SCRIPT}</head>
                 )}
               </Stack>
 
-              <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.2} alignItems="stretch">
-                <Grid item xs={6} sm={6} md={3.2} ref={branchStepRef}>
+              <Grid container spacing={isPhone ? 0.8 : isTablet ? 1 : 1.25} alignItems="stretch">
+                <Grid item xs={12} sm={6} md={4} ref={branchStepRef}>
                   <StepGuideCard
                     number={1}
                     title="اختار الفرع"
@@ -3464,7 +3540,7 @@ ${PRINT_READY_SCRIPT}</head>
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={2.1} ref={regTypeStepRef}>
+                <Grid item xs={12} sm={6} md={4} ref={regTypeStepRef}>
                   <StepGuideCard
                     number={2}
                     title="نوع التسجيل"
@@ -3491,7 +3567,7 @@ ${PRINT_READY_SCRIPT}</head>
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={2.1} ref={studyTypeStepRef}>
+                <Grid item xs={12} sm={6} md={4} ref={studyTypeStepRef}>
                   <StepGuideCard
                     number={3}
                     title="نوع الدراسة"
@@ -3521,7 +3597,7 @@ ${PRINT_READY_SCRIPT}</head>
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={2.6} ref={batchStepRef}>
+                <Grid item xs={12} sm={6} md={6} ref={batchStepRef}>
                   <StepGuideCard
                     number={4}
                     title="اختار الدفعة"
@@ -3570,7 +3646,7 @@ ${PRINT_READY_SCRIPT}</head>
                   </StepGuideCard>
                 </Grid>
 
-                <Grid item xs={6} sm={6} md={1.9} ref={diplomaStepRef}>
+                <Grid item xs={12} sm={6} md={6} ref={diplomaStepRef}>
                   <StepGuideCard
                     number={5}
                     title="اختار التخصص"
@@ -3582,15 +3658,19 @@ ${PRINT_READY_SCRIPT}</head>
                       sx={{
                         p: isPhone ? 0.4 : isTablet ? 0.55 : 1.1,
                         borderRadius: isCompact ? 1.2 : 2,
-                        backgroundColor: currentStep === 5 ? "#fff7f7" : primaryLight,
-                        border: currentStep === 5 ? `1px dashed ${accentColor}` : `1px dashed ${primaryColor}`,
+                        backgroundColor: isDarkGrid
+                          ? "transparent"
+                          : (currentStep === 5 ? "#fff7f7" : primaryLight),
+                        border: isDarkGrid
+                          ? "1px dashed #67C99D"
+                          : (currentStep === 5 ? `1px dashed ${accentColor}` : `1px dashed ${primaryColor}`),
                         textAlign: "center"
                       }}
                     >
                       <Typography
                         sx={{
                           fontWeight: 1000,
-                          color: currentStep === 5 ? accentColor : primaryColor,
+                          color: isDarkGrid ? "#67C99D" : (currentStep === 5 ? accentColor : primaryColor),
                           fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                           lineHeight: 1.2
                         }}
@@ -3605,16 +3685,16 @@ ${PRINT_READY_SCRIPT}</head>
           </Paper>
 
           <Grid container spacing={isPhone ? 0.35 : isTablet ? 0.55 : 1.4} sx={{ mb: isCompact ? 0.45 : 2.2 }}>
-            <Grid item xs={6} sm={6} md={1.6}>
+            <Grid item xs={6} sm={6} md={3}>
               <SummaryCard label="الإجمالي" value={totals.total} />
             </Grid>
-            <Grid item xs={6} sm={6} md={1.6}>
+            <Grid item xs={6} sm={6} md={3}>
               <SummaryCard label="الضريبة" value={totals.tax} />
             </Grid>
-            <Grid item xs={6} sm={6} md={1.6}>
+            <Grid item xs={6} sm={6} md={3}>
               <SummaryCard label="الصافي" value={totals.subTotal} color={primaryDark} />
             </Grid>
-            <Grid item xs={6} sm={6} md={1.8}>
+            <Grid item xs={6} sm={6} md={3}>
               <Paper
   elevation={0}
   sx={{
@@ -3654,10 +3734,10 @@ ${PRINT_READY_SCRIPT}</head>
   </Typography>
 </Paper>
             </Grid>
-            <Grid item xs={6} sm={6} md={2}>
+            <Grid item xs={12} sm={4} md={4}>
               <TextInfo label="نوع السداد الحالي" value={currentPaymentName} />
             </Grid>
-            <Grid item xs={12} md={3.4}>
+            <Grid item xs={12} sm={8} md={8}>
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
                 fullWidth
                 size="small"

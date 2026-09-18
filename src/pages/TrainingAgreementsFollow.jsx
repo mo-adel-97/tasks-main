@@ -43,6 +43,9 @@ const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "https://api4.sstli.com";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
 const getToday = () =>
   new Date()
     .toISOString()
@@ -218,6 +221,12 @@ const showError = async (
 
 const TrainingAgreementsFollow = () => {
   const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     muiTheme.breakpoints.down("sm")
@@ -776,8 +785,65 @@ const TrainingAgreementsFollow = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f5f8f7",
-        direction: "rtl"
+        background: isDark ? muiTheme.palette.background.default : "#f5f8f7",
+        color: "text.primary",
+        direction: "rtl",
+
+        ...(isDark && {
+          "& .MuiButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important",
+            fontWeight: "800 !important"
+          },
+          "& .MuiButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important",
+            borderColor: `${DARK_BORDER} !important`,
+            boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+          },
+          "& .MuiButton-root.Mui-disabled": {
+            backgroundColor: "transparent !important",
+            color: "rgba(155,224,193,.42) !important",
+            borderColor: "rgba(103,201,157,.34) !important",
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important"
+          },
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "transparent !important",
+            color: `${muiTheme.palette.text.primary} !important`
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiInputLabel-root": {
+            color: `${muiTheme.palette.text.secondary} !important`
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& .MuiSelect-icon": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& input[type='date']": {
+            colorScheme: "dark"
+          }
+        })
       }}
     >
       {!isDesktop && (
@@ -791,7 +857,28 @@ const TrainingAgreementsFollow = () => {
             },
             ".MuiDrawer-root .MuiDrawer-paper": {
               zIndex: "2101 !important"
-            }
+            },
+            ...(isDark
+              ? {
+                  ".MuiMenu-paper, .MuiPopover-paper, .MuiDataGrid-panel": {
+                    backgroundColor: `${darkSection} !important`,
+                    backgroundImage: "none !important",
+                    color: `${muiTheme.palette.text.primary} !important`,
+                    border: `1px solid ${DARK_BORDER} !important`
+                  },
+                  ".MuiMenuItem-root": {
+                    backgroundColor: "transparent !important",
+                    color: `${muiTheme.palette.text.primary} !important`
+                  },
+                  ".MuiMenuItem-root:hover": {
+                    backgroundColor: `${darkHover} !important`
+                  },
+                  ".MuiMenuItem-root.Mui-selected": {
+                    backgroundColor: "transparent !important",
+                    color: `${DARK_TEXT} !important`
+                  }
+                }
+              : {})
           }}
         />
       )}
@@ -806,11 +893,12 @@ const TrainingAgreementsFollow = () => {
             right: 0,
             width: "100%",
             zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
+            background: isDark ? darkSection : "rgba(255,255,255,.97)",
             backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom:
-              "1px solid rgba(5,117,70,.12)",
+            color: isDark ? muiTheme.palette.text.primary : "#17372b",
+            borderBottom: isDark
+              ? `1px solid ${DARK_BORDER}`
+              : "1px solid rgba(5,117,70,.12)",
             direction: "rtl"
           }}
         >
@@ -845,11 +933,14 @@ const TrainingAgreementsFollow = () => {
                   xs: 36,
                   sm: 40
                 },
-                color: "#fff",
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)",
-                boxShadow:
-                  "0 5px 14px rgba(5,117,70,.20)"
+                color: isDark ? DARK_TEXT : "#fff",
+                background: isDark
+                  ? "transparent"
+                  : "linear-gradient(135deg,#057546,#034d31)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none",
+                boxShadow: isDark
+                  ? "none"
+                  : "0 5px 14px rgba(5,117,70,.20)"
               }}
             >
               <MenuRoundedIcon
@@ -871,7 +962,7 @@ const TrainingAgreementsFollow = () => {
                   xs: "0.75rem",
                   sm: "0.79rem"
                 },
-                color: "#17372b",
+                color: isDark ? muiTheme.palette.text.primary : "#17372b",
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -914,9 +1005,11 @@ const TrainingAgreementsFollow = () => {
           sx={{
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             overflow: "hidden",
-            border:
-              "1px solid rgba(5,117,70,0.14)",
-            background: "#fff"
+            border: isDark
+              ? `1px solid ${DARK_BORDER}`
+              : "1px solid rgba(5,117,70,0.14)",
+            background: isDark ? darkCard : "#fff",
+            backgroundImage: "none"
           }}
         >
           <Box
@@ -927,11 +1020,13 @@ const TrainingAgreementsFollow = () => {
                   ? 1
                   : 2.5,
 
-              background:
-                "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
+              background: isDark
+                ? darkSection
+                : "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
 
-              borderBottom:
-                "1px solid rgba(5,117,70,0.12)"
+              borderBottom: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid rgba(5,117,70,0.12)"
             }}
           >
             <Typography
@@ -939,7 +1034,7 @@ const TrainingAgreementsFollow = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#034d31",
+                color: isDark ? muiTheme.palette.text.primary : "#034d31",
                 fontSize: isPhone
                   ? "0.75rem"
                   : isTablet
@@ -954,7 +1049,7 @@ const TrainingAgreementsFollow = () => {
               sx={{
                 mt: isPhone ? 0.15 : 0.5,
                 fontFamily: "Cairo",
-                color: "#61756d",
+                color: isDark ? muiTheme.palette.text.secondary : "#61756d",
                 fontSize: isPhone
                   ? "0.75rem"
                   : isTablet
@@ -985,7 +1080,7 @@ const TrainingAgreementsFollow = () => {
                   ? "repeat(2,minmax(0,1fr))"
                   : isTablet
                     ? "repeat(4,minmax(0,1fr))"
-                    : "repeat(5,minmax(120px,1fr)) auto auto auto auto auto",
+                    : "repeat(5,minmax(120px,1fr))",
                 gap: isPhone
                   ? 0.5
                   : isTablet
@@ -1108,6 +1203,13 @@ const TrainingAgreementsFollow = () => {
                   MenuProps: {
                     PaperProps: {
                       sx: {
+                        backgroundColor: isDark ? darkSection : "#fff",
+                        color: isDark
+                          ? muiTheme.palette.text.primary
+                          : "inherit",
+                        border: isDark
+                          ? `1px solid ${DARK_BORDER}`
+                          : "none",
                         "& .MuiMenuItem-root": {
                           minHeight: isPhone
                             ? 28
@@ -1152,6 +1254,13 @@ const TrainingAgreementsFollow = () => {
                   MenuProps: {
                     PaperProps: {
                       sx: {
+                        backgroundColor: isDark ? darkSection : "#fff",
+                        color: isDark
+                          ? muiTheme.palette.text.primary
+                          : "inherit",
+                        border: isDark
+                          ? `1px solid ${DARK_BORDER}`
+                          : "none",
                         "& .MuiMenuItem-root": {
                           minHeight: isPhone
                             ? 28
@@ -1201,91 +1310,78 @@ const TrainingAgreementsFollow = () => {
                 }, uiLayout.formFieldSx)}
               />
 
-              <Button
-                variant="contained"
-                startIcon={<SearchIcon />}
-                onClick={loadData}
-                disabled={loading}
-                sx={uiLayout.withUiSx({
-                  background: "#057546"
-                }, uiLayout.buttonSx)}
-              >
-                عرض
-              </Button>
-
-              <Button sx={uiLayout.buttonSx}
-                variant="outlined"
-                startIcon={<RefreshIcon />}
-                onClick={loadData}
-                disabled={loading}
-              >
-                تحديث
-              </Button>
-
-              <Button
-                variant="outlined"
-                startIcon={<FileDownloadIcon />}
-                onClick={exportToExcel}
-                disabled={
-                  loading ||
-                  filteredRows.length === 0
-                }
-                sx={uiLayout.withUiSx({
-                  color: "#ae1e21",
-                  borderColor: "#ae1e21",
-                  gridColumn: isPhone
-                    ? "1 / -1"
-                    : undefined
-                }, uiLayout.buttonSx)}
-              >
-                تصدير Excel
-              </Button>
-
-              <Button
-                variant="outlined"
-                startIcon={<ClearAllIcon />}
-                onClick={clearFilters}
-                sx={uiLayout.withUiSx({
-                  gridColumn: isPhone
-                    ? "1 / -1"
-                    : undefined
-                }, uiLayout.buttonSx)}
-              >
-                مسح الفلاتر
-              </Button>
-
               <Box
                 sx={{
-                  px: isPhone
-                    ? 0.6
-                    : isTablet
-                      ? 0.8
-                      : 1.2,
-                  py: isPhone
-                    ? 0.5
-                    : isTablet
-                      ? 0.6
-                      : 0.8,
-                  borderRadius: isCompact
-                    ? 1.1
-                    : 2,
-                  background: "#fff9c4",
-                  color: "#ae1e21",
-                  fontFamily: "Cairo",
-                  fontWeight: 900,
-                  fontSize: isPhone
-                    ? "0.75rem"
-                    : isTablet
-                      ? "0.75rem"
-                      : undefined,
-                  textAlign: "center",
-                  whiteSpace: "nowrap",
-                  gridColumn: isPhone
-                    ? "1 / -1"
-                    : undefined
+                  gridColumn: "1 / -1",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                  gap: 0.55,
+                  pt: isCompact ? 0 : 0.25
                 }}
               >
-                العدد: {filteredRows.length}
+                <Button
+                  variant="outlined"
+                  startIcon={<SearchIcon />}
+                  onClick={loadData}
+                  disabled={loading}
+                  sx={uiLayout.buttonSx}
+                >
+                  عرض
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshIcon />}
+                  onClick={loadData}
+                  disabled={loading}
+                  sx={uiLayout.buttonSx}
+                >
+                  تحديث
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<FileDownloadIcon />}
+                  onClick={exportToExcel}
+                  disabled={loading || filteredRows.length === 0}
+                  sx={uiLayout.withUiSx({
+                    color: isDark ? DARK_TEXT : "#ae1e21",
+                    borderColor: isDark ? DARK_BORDER : "#ae1e21"
+                  }, uiLayout.buttonSx)}
+                >
+                  تصدير Excel
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<ClearAllIcon />}
+                  onClick={clearFilters}
+                  sx={uiLayout.buttonSx}
+                >
+                  مسح الفلاتر
+                </Button>
+
+                <Box sx={{ flex: 1 }} />
+
+                <Box
+                  sx={{
+                    px: 1,
+                    py: 0.55,
+                    borderRadius: 1.4,
+                    background: isDark ? "transparent" : "#f3f8f5",
+                    border: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : "1px solid rgba(5,117,70,.10)",
+                    color: isDark ? DARK_TEXT : "#034d31",
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    fontSize: "0.75rem",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  العدد: {filteredRows.length}
+                </Box>
               </Box>
             </Box>
 
@@ -1302,10 +1398,12 @@ const TrainingAgreementsFollow = () => {
                   : isTablet
                     ? 430
                     : 520,
-                border:
-                  "1px solid rgba(5,117,70,0.14)",
-                borderRadius: 3,
-                overflow: "hidden"
+                border: isDark
+                  ? `1px solid ${DARK_BORDER}`
+                  : "1px solid rgba(5,117,70,0.14)",
+                borderRadius: 2,
+                overflow: "hidden",
+                backgroundColor: isDark ? darkSection : "#fff"
               }, uiLayout.tableContainerSx)}
             >
               <DataGrid
@@ -1457,17 +1555,21 @@ const TrainingAgreementsFollow = () => {
                   },
 
                   "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor:
-                      "#057546",
-                    color: "#ffffff",
+                    backgroundColor: isDark
+                      ? darkNested
+                      : "#057546",
+                    color: isDark
+                      ? muiTheme.palette.text.primary
+                      : "#ffffff",
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     borderBottom: 0
                   },
 
                   "& .MuiDataGrid-columnHeader": {
-                    backgroundColor:
-                      "#057546"
+                    backgroundColor: isDark
+                      ? darkNested
+                      : "#057546"
                   },
 
                   "& .MuiDataGrid-columnHeaderTitle": {
@@ -1484,8 +1586,9 @@ const TrainingAgreementsFollow = () => {
                   },
 
                   "& .MuiDataGrid-columnSeparator": {
-                    color:
-                      "rgba(255,255,255,0.55)",
+                    color: isDark
+                      ? "rgba(103,201,157,.55)"
+                      : "rgba(255,255,255,0.55)",
                     visibility: "visible"
                   },
 
@@ -1495,7 +1598,12 @@ const TrainingAgreementsFollow = () => {
                     justifyContent: "center",
                     whiteSpace: "normal",
                     lineHeight: 1.35,
-                    borderColor: "#e6ece9",
+                    borderColor: isDark
+                      ? "rgba(103,201,157,.22)"
+                      : "#e6ece9",
+                    color: isDark
+                      ? muiTheme.palette.text.primary
+                      : "inherit",
                     px: isPhone
                       ? 0.35
                       : isTablet
@@ -1509,30 +1617,34 @@ const TrainingAgreementsFollow = () => {
                   },
 
                   "& .MuiDataGrid-row:nth-of-type(even)": {
-                    backgroundColor:
-                      "#fbfdfc"
+                    backgroundColor: isDark
+                      ? darkCard
+                      : "#fbfdfc"
                   },
 
                   "& .MuiDataGrid-row:hover": {
-                    backgroundColor:
-                      "#fff3d6"
+                    backgroundColor: isDark
+                      ? darkHover
+                      : "#f1faf6"
                   },
 
                   "& .MuiDataGrid-toolbarContainer": {
                     display: isPhone ? "none" : "flex",
                     p: isTablet ? 0.45 : 1,
                     gap: isTablet ? 0.45 : 1,
-                    borderBottom:
-                      "1px solid #e6ece9",
-                    backgroundColor:
-                      "#f8fbf9",
+                    borderBottom: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : "1px solid #e6ece9",
+                    backgroundColor: isDark
+                      ? darkSection
+                      : "#f8fbf9",
                     direction: "rtl"
                   },
 
                   "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
                     fontFamily: "Cairo",
                     fontWeight: 800,
-                    color: "#057546",
+                    color: isDark ? DARK_TEXT : "#057546",
                     fontSize: isTablet
                       ? "0.75rem"
                       : undefined,
@@ -1567,6 +1679,13 @@ const TrainingAgreementsFollow = () => {
                   "& .MuiDataGrid-footerContainer": {
                     direction: "rtl",
                     fontFamily: "Cairo",
+                    backgroundColor: isDark ? darkSection : "#fff",
+                    color: isDark
+                      ? muiTheme.palette.text.primary
+                      : "inherit",
+                    borderTop: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : undefined,
                     minHeight: isPhone
                       ? 34
                       : isTablet

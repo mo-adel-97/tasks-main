@@ -103,6 +103,22 @@ const normalizeArabic = (value) =>
     .replace(/\s+/g, " ")
     .trim();
 
+
+const BLANK_FILTER_VALUE = "__SSTLI_BLANK__";
+const BLANK_FILTER_LABEL = "بدون قيمة";
+
+const normalizeFilterValue = (value) => {
+  const normalized = String(value ?? "").trim();
+  return normalized === ""
+    ? BLANK_FILTER_VALUE
+    : normalized;
+};
+
+const getFilterOptionLabel = (option) =>
+  option === BLANK_FILTER_VALUE
+    ? BLANK_FILTER_LABEL
+    : String(option || "");
+
 const getFixedCompanyTrainer = (
   branchName
 ) => {
@@ -477,9 +493,9 @@ const PaymentTotalsSection = ({
   <Paper
     elevation={0}
     sx={{
-      mt: 1.5,
-      p: 1.5,
-      borderRadius: 3.5,
+      mt: 0.9,
+      p: 0.9,
+      borderRadius: 2,
       border:
         "1px solid rgba(5,117,70,0.14)",
       background:
@@ -494,7 +510,7 @@ const PaymentTotalsSection = ({
         xs: "column",
         lg: "row"
       }}
-      spacing={1.3}
+      spacing={0.7}
       alignItems={{
         xs: "stretch",
         lg: "center"
@@ -684,8 +700,8 @@ const MultiValueFilter = ({
     <Paper
       elevation={0}
       sx={{
-        p: 1.35,
-        borderRadius: 3,
+        p: 0.9,
+        borderRadius: 2,
         border: "1px solid #dce8e2",
         background: "#fff"
       }}
@@ -749,6 +765,7 @@ const MultiValueFilter = ({
         disableCloseOnSelect
         options={options}
         value={selected}
+        getOptionLabel={getFilterOptionLabel}
         onChange={(event, newValue) =>
           onChange(newValue)
         }
@@ -773,7 +790,7 @@ const MultiValueFilter = ({
                 fontWeight: 700
               }}
             >
-              {option}
+              {getFilterOptionLabel(option)}
             </Typography>
           </li>
         )}
@@ -782,7 +799,7 @@ const MultiValueFilter = ({
             <Chip
               {...getTagProps({ index })}
               key={option}
-              label={option}
+              label={getFilterOptionLabel(option)}
               size="small"
               sx={{
                 fontFamily: "Cairo",
@@ -823,11 +840,11 @@ const PaymentFollowReport = () => {
   const isDark = theme.palette.mode === "dark";
   const uiColors = {
     page: isDark ? theme.palette.background.default : "#f5faf7",
-    card: isDark ? (theme.palette.surfaces?.card || "#10251d") : "#ffffff",
-    section: isDark ? (theme.palette.surfaces?.section || "#133126") : "#f7fbf9",
-    nested: isDark ? (theme.palette.surfaces?.nested || "#173b2d") : "#fbfdfc",
-    hover: isDark ? (theme.palette.surfaces?.hover || "#1b4735") : "#eef8f3",
-    selected: isDark ? (theme.palette.surfaces?.selected || "#20543e") : "#e7f5ee",
+    card: isDark ? (theme.palette.surfaces?.card || "#13251d") : "#ffffff",
+    section: isDark ? (theme.palette.surfaces?.section || "#172b22") : "#f7fbf9",
+    nested: isDark ? (theme.palette.surfaces?.nested || "#1b3328") : "#fbfdfc",
+    hover: isDark ? (theme.palette.surfaces?.hover || "#214333") : "#eef8f3",
+    selected: isDark ? (theme.palette.surfaces?.selected || "#28513f") : "#e7f5ee",
     text: isDark ? (theme.palette.text?.primary || "#eef8f3") : "#173b2b",
     muted: isDark ? (theme.palette.text?.secondary || "#b7cfc3") : "#667a70",
     border: "#67C99D"
@@ -867,15 +884,28 @@ const PaymentFollowReport = () => {
           borderColor: "rgba(103,201,157,.45) !important"
         },
         ".payment-follow-ui .MuiButton-root": {
+          background: "transparent !important",
+          backgroundColor: "transparent !important",
+          backgroundImage: "none !important",
+          color: `${uiColors.border} !important`,
           border: `1px solid ${uiColors.border} !important`,
-          borderRadius: "9px !important"
+          borderRadius: "9px !important",
+          boxShadow: "none !important"
+        },
+        ".payment-follow-ui .MuiButton-root:hover": {
+          background: "transparent !important",
+          color: "#C9F2DF !important"
         },
         ".payment-follow-ui .MuiIconButton-root": {
+          background: "transparent !important",
+          color: `${uiColors.border} !important`,
           border: `1px solid ${uiColors.border} !important`,
           borderRadius: "9px !important"
         },
         ".payment-follow-ui .MuiChip-root": {
-          borderColor: `${uiColors.border} !important`
+          background: "transparent !important",
+          color: `${uiColors.border} !important`,
+          border: `1px solid ${uiColors.border} !important`
         },
         ".payment-follow-ui .MuiDataGrid-root": {
           backgroundColor: `${uiColors.card} !important`,
@@ -913,8 +943,9 @@ const PaymentFollowReport = () => {
           borderColor: `${uiColors.border} !important`
         },
         ".payment-follow-ui .MuiPaginationItem-root.Mui-selected": {
-          backgroundColor: `${uiColors.selected} !important`,
-          color: `${uiColors.text} !important`
+          backgroundColor: "transparent !important",
+          color: `${uiColors.border} !important`,
+          boxShadow: `inset 0 0 0 1px ${uiColors.border} !important`
         },
         ".MuiDialog-paper, .MuiPopover-paper, .MuiMenu-paper, .MuiAutocomplete-paper": {
           backgroundColor: `${uiColors.card} !important`,
@@ -956,6 +987,44 @@ const PaymentFollowReport = () => {
         },
         ".MuiDialog-paper .MuiInputLabel-root, .MuiDialog-paper .MuiFormHelperText-root": {
           color: `${uiColors.muted} !important`
+        },
+        ".MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+          background: "transparent !important",
+          backgroundColor: "transparent !important",
+          backgroundImage: "none !important",
+          color: `${uiColors.border} !important`,
+          border: `1px solid ${uiColors.border} !important`,
+          boxShadow: "none !important"
+        },
+        ".MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+          background: "transparent !important",
+          color: "#C9F2DF !important"
+        },
+        ".MuiDialog-paper .MuiIconButton-root": {
+          background: "transparent !important",
+          color: `${uiColors.border} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".MuiDialog-paper .MuiChip-root": {
+          background: "transparent !important",
+          color: `${uiColors.border} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".swal2-popup": {
+          background: `${uiColors.card} !important`,
+          color: `${uiColors.text} !important`,
+          border: `1px solid ${uiColors.border} !important`
+        },
+        ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+          background: "transparent !important",
+          color: `${uiColors.border} !important`,
+          border: `1px solid ${uiColors.border} !important`,
+          boxShadow: "none !important"
+        },
+        ".swal2-input, .swal2-textarea, .swal2-select": {
+          background: "transparent !important",
+          color: `${uiColors.text} !important`,
+          border: `1px solid ${uiColors.border} !important`
         }
       }
     : {};
@@ -1112,6 +1181,8 @@ const PaymentFollowReport = () => {
     useState({
       regTypeName: [],
       diplomName: [],
+      levelName: [],
+      sectionName: [],
       batchName: [],
       trainerName: [],
       studentType: []
@@ -1592,6 +1663,38 @@ const PaymentFollowReport = () => {
             )
           ),
 
+        levelName:
+          String(
+            pick(
+              row,
+              [
+                "LevelName",
+                "levelName",
+                "StudentLevelName",
+                "studentLevelName",
+                "Level",
+                "level"
+              ]
+            )
+          ),
+
+        sectionName:
+          String(
+            pick(
+              row,
+              [
+                "SectionName",
+                "sectionName",
+                "ClassName",
+                "className",
+                "Section",
+                "section",
+                "Class",
+                "class"
+              ]
+            )
+          ),
+
         batchName:
           String(
             pick(
@@ -1752,14 +1855,20 @@ const PaymentFollowReport = () => {
 
 
   const filterOptions = useMemo(() => {
-    const makeOptions = (field) =>
-      Array.from(
+    const makeOptions = (field) => {
+      const values = gridRows.map((row) =>
+        normalizeFilterValue(row[field])
+      );
+
+      const hasBlank =
+        values.includes(BLANK_FILTER_VALUE);
+
+      const regularValues = Array.from(
         new Set(
-          gridRows
-            .map((row) =>
-              String(row[field] || "").trim()
-            )
-            .filter(Boolean)
+          values.filter(
+            (value) =>
+              value !== BLANK_FILTER_VALUE
+          )
         )
       ).sort((first, second) =>
         first.localeCompare(
@@ -1769,11 +1878,20 @@ const PaymentFollowReport = () => {
         )
       );
 
+      return hasBlank
+        ? [BLANK_FILTER_VALUE, ...regularValues]
+        : regularValues;
+    };
+
     return {
       regTypeName:
         makeOptions("regTypeName"),
       diplomName:
         makeOptions("diplomName"),
+      levelName:
+        makeOptions("levelName"),
+      sectionName:
+        makeOptions("sectionName"),
       batchName:
         makeOptions("batchName"),
       trainerName:
@@ -1787,12 +1905,17 @@ const PaymentFollowReport = () => {
     () =>
       gridRows.filter((row) =>
         Object.entries(columnFilters)
-          .every(([field, selectedValues]) =>
-            !selectedValues.length ||
-            selectedValues.includes(
-              String(row[field] || "").trim()
-            )
-          )
+          .every(([field, selectedValues]) => {
+            if (!selectedValues.length) {
+              return true;
+            }
+
+            return selectedValues.includes(
+              normalizeFilterValue(
+                row[field]
+              )
+            );
+          })
       ),
     [gridRows, columnFilters]
   );
@@ -1852,6 +1975,8 @@ const PaymentFollowReport = () => {
     setColumnFilters({
       regTypeName: [],
       diplomName: [],
+      levelName: [],
+      sectionName: [],
       batchName: [],
       trainerName: [],
       studentType: []
@@ -3502,6 +3627,7 @@ const exportExcel = () => {
 
       
 
+      
       <PageContainer
         component="main"
         sx={{
@@ -3517,7 +3643,7 @@ const exportExcel = () => {
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 4,
+            borderRadius: 2.5,
             overflow: "hidden",
             border:
               "1px solid rgba(5,117,70,.14)"
@@ -3526,7 +3652,7 @@ const exportExcel = () => {
           <Box
             sx={{
               p: isDesktop
-                ? 2.5
+                ? 1.35
                 : isPhone
                   ? 0.75
                   : 1,
@@ -3597,54 +3723,37 @@ const exportExcel = () => {
             <Paper
               elevation={0}
               sx={{
-                p: 1.7,
-                mb: 2,
-                borderRadius: 3,
+                p: isDesktop ? 1.05 : 0.75,
+                mb: isDesktop ? 1 : 0.7,
+                borderRadius: 2,
                 border:
                   "1px solid #dcebe4",
                 background: isDark ? uiColors.nested : "#fbfdfc"
               }}
             >
-              <Stack
-                direction={isDesktop ? "row" : "row"}
-                spacing={isDesktop ? 1.2 : isPhone ? 0.9 : 1.05}
-                useFlexGap
-                flexWrap={isDesktop ? "nowrap" : "wrap"}
-                sx={uiLayout.withUiSx({
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "repeat(2,minmax(0,1fr))",
+                    sm: "repeat(2,minmax(0,1fr))",
+                    md: "repeat(4,minmax(0,1fr))"
+                  },
+                  gap: { xs: 0.65, sm: 0.75 },
+                  alignItems: "end",
+                  minWidth: 0,
+                  "& .MuiFormControl-root, & .MuiAutocomplete-root": {
+                    width: "100%",
+                    minWidth: "0 !important"
+                  },
                   "& .MuiInputLabel-root": {
-                    fontFamily: "Cairo",
-                    fontSize: !isDesktop
-                      ? isPhone
-                        ? "0.75rem"
-                        : "0.75rem"
-                      : undefined
+                    fontFamily: "Cairo"
                   },
                   "& .MuiInputBase-root": {
-                    minHeight: !isDesktop
-                      ? isPhone
-                        ? 32
-                        : 36
-                      : undefined,
-                    fontFamily: "Cairo",
-                    fontSize: !isDesktop
-                      ? isPhone
-                        ? "0.75rem"
-                        : "0.75rem"
-                      : undefined
-                  },
-                  "& .MuiButton-root": {
-                    minHeight: !isDesktop
-                      ? isPhone
-                        ? 31
-                        : 35
-                      : undefined,
-                    fontSize: !isDesktop
-                      ? isPhone
-                        ? "0.75rem"
-                        : "0.75rem"
-                      : undefined
+                    minHeight: isPhone ? 34 : 38,
+                    fontFamily: "Cairo"
                   }
-                }, uiLayout.filterBarSx)}
+                }}
               >
                 <TextField
                   type="date"
@@ -3652,19 +3761,18 @@ const exportExcel = () => {
                   label="من تاريخ"
                   value={fromDate}
                   onChange={(event) =>
-                    setFromDate(
-                      event.target.value
-                    )
+                    setFromDate(event.target.value)
                   }
-                  InputLabelProps={{
-                    shrink: true
+                  InputLabelProps={{ shrink: true }}
+                  sx={uiLayout.formFieldSx}
+                  inputProps={{
+                    dir: "ltr",
+                    style: {
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
                   }}
-                  sx={uiLayout.withUiSx({
-                    width: !isDesktop
-                      ? "calc(50% - 4px)"
-                      : "auto"
-                  }, uiLayout.formFieldSx)}
-                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+                />
 
                 <TextField
                   type="date"
@@ -3672,52 +3780,43 @@ const exportExcel = () => {
                   label="إلى تاريخ"
                   value={toDate}
                   onChange={(event) =>
-                    setToDate(
-                      event.target.value
-                    )
+                    setToDate(event.target.value)
                   }
-                  InputLabelProps={{
-                    shrink: true
+                  InputLabelProps={{ shrink: true }}
+                  sx={uiLayout.formFieldSx}
+                  inputProps={{
+                    dir: "ltr",
+                    style: {
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
                   }}
-                  sx={uiLayout.withUiSx({
-                    width: !isDesktop
-                      ? "calc(50% - 4px)"
-                      : "auto"
-                  }, uiLayout.formFieldSx)}
-                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+                />
 
                 <Autocomplete
                   options={branches}
                   value={branch}
-                  disabled={
-                    branches.length === 1
-                  }
-                  onChange={(
-                    event,
-                    value
-                  ) =>
+                  disabled={branches.length === 1}
+                  onChange={(event, value) =>
                     setBranch(value)
                   }
                   getOptionLabel={(item) =>
                     item?.name || ""
                   }
-                  isOptionEqualToValue={(
-                    first,
-                    second
-                  ) =>
-                    first.guid ===
-                    second.guid
+                  isOptionEqualToValue={(first, second) =>
+                    first.guid === second.guid
                   }
                   sx={{
-                    minWidth: isDesktop ? 250 : 0,
-                    flex: isDesktop ? 1 : "none",
-                    width: !isDesktop ? "100%" : "auto"
+                    minWidth: 0,
+                    width: "100%"
                   }}
                   renderInput={(params) => (
-                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+                    <TextField
                       {...params}
                       size="small"
                       label="الفرع"
+                      InputLabelProps={{ shrink: true }}
+                      sx={uiLayout.formFieldSx}
                     />
                   )}
                 />
@@ -3725,44 +3824,58 @@ const exportExcel = () => {
                 <Autocomplete
                   options={batches}
                   value={batch}
-                  onChange={(
-                    event,
-                    value
-                  ) =>
+                  onChange={(event, value) =>
                     setBatch(value)
                   }
                   getOptionLabel={(item) =>
                     item?.name || ""
                   }
-                  isOptionEqualToValue={(
-                    first,
-                    second
-                  ) =>
-                    first.guid ===
-                    second.guid
+                  isOptionEqualToValue={(first, second) =>
+                    first.guid === second.guid
                   }
                   sx={{
-                    minWidth: isDesktop ? 190 : 0,
-                    flex: isDesktop ? 0.8 : "none",
-                    width: !isDesktop ? "100%" : "auto"
+                    minWidth: 0,
+                    width: "100%"
                   }}
                   renderInput={(params) => (
-                    <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+                    <TextField
                       {...params}
                       size="small"
                       label="الدفعة (اختياري)"
+                      InputLabelProps={{ shrink: true }}
+                      sx={uiLayout.formFieldSx}
                     />
                   )}
                 />
+              </Box>
 
+              <Stack
+                direction="row"
+                useFlexGap
+                flexWrap="wrap"
+                spacing={0.7}
+                sx={{
+                  mt: 0.85,
+                  alignItems: "center",
+                  "& .MuiButton-root": {
+                    width: "auto !important",
+                    flex: "0 0 auto",
+                    minWidth: isPhone ? 92 : 110,
+                    minHeight: isPhone ? 32 : 35,
+                    fontFamily: "Cairo",
+                    fontSize: isPhone ? "0.75rem" : undefined
+                  }
+                }}
+              >
                 <Button
-                  variant="contained"
+                  variant={isDark ? "outlined" : "contained"}
                   startIcon={<SearchIcon />}
                   onClick={loadData}
                   sx={uiLayout.withUiSx({
-                    bgcolor: "#057546",
-                    fontWeight: 900,
-                    fontFamily: "Cairo"
+                    bgcolor: isDark ? "transparent" : "#057546",
+                    color: isDark ? uiColors.border : "#fff",
+                    borderColor: isDark ? uiColors.border : "#057546",
+                    fontWeight: 900
                   }, uiLayout.buttonSx)}
                 >
                   عرض
@@ -3770,12 +3883,9 @@ const exportExcel = () => {
 
                 <Button
                   variant="outlined"
-                  startIcon={
-                    <RefreshIcon />
-                  }
+                  startIcon={<RefreshIcon />}
                   onClick={loadData}
                   sx={uiLayout.withUiSx({
-                    fontFamily: "Cairo",
                     fontWeight: 800
                   }, uiLayout.buttonSx)}
                 >
@@ -3785,15 +3895,10 @@ const exportExcel = () => {
                 <Button
                   variant="outlined"
                   color="error"
-                  startIcon={
-                    <FileDownloadIcon />
-                  }
-                 onClick={exportExcel}
-                  disabled={
-                    !filteredGridRows.length
-                  }
+                  startIcon={<FileDownloadIcon />}
+                  onClick={exportExcel}
+                  disabled={!filteredGridRows.length}
                   sx={uiLayout.withUiSx({
-                    fontFamily: "Cairo",
                     fontWeight: 800
                   }, uiLayout.buttonSx)}
                 >
@@ -3807,35 +3912,40 @@ const exportExcel = () => {
               spacing={1}
               useFlexGap
               flexWrap="wrap"
-              sx={uiLayout.withUiSx({
-                mb: isDesktop ? 1.5 : 0.7,
-                gap: !isDesktop ? 0.35 : undefined,
+              sx={{
+                mb: isDesktop ? 1 : 0.7,
+                p: { xs: 0.55, sm: 0.7 },
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: { xs: 0.4, sm: 0.6 },
+                border: isDark
+                  ? `1px solid ${uiColors.border}`
+                  : "1px solid #dcebe4",
+                borderRadius: 2,
+                backgroundColor: isDark
+                  ? uiColors.section
+                  : "#fbfdfc",
+                "& > *": {
+                  minWidth: "0 !important"
+                },
                 "& .MuiChip-root": {
-                  height: !isDesktop
-                    ? isPhone
-                      ? 24
-                      : 28
-                    : undefined,
+                  width: "auto !important",
+                  flex: "0 0 auto",
+                  height: isPhone ? 25 : 29,
                   fontFamily: "Cairo",
-                  fontSize: !isDesktop
-                    ? isPhone
-                      ? "0.75rem"
-                      : "0.75rem"
-                    : undefined
+                  fontSize: isPhone ? "0.72rem" : "0.78rem"
                 },
                 "& .MuiButton-root": {
-                  minHeight: !isDesktop
-                    ? isPhone
-                      ? 28
-                      : 32
-                    : undefined,
-                  fontSize: !isDesktop
-                    ? isPhone
-                      ? "0.75rem"
-                      : "0.75rem"
-                    : undefined
+                  width: "auto !important",
+                  flex: "0 0 auto",
+                  minWidth: "unset !important",
+                  minHeight: isPhone ? 29 : 33,
+                  px: isPhone ? 0.8 : 1.1,
+                  fontSize: isPhone ? "0.72rem" : "0.78rem",
+                  whiteSpace: "nowrap"
                 }
-              }, uiLayout.actionBarSx)}
+              }}
             >
               <Chip
                 label={`العدد: ${filteredGridRows.length} من ${gridRows.length}`}
@@ -3858,11 +3968,7 @@ const exportExcel = () => {
 
               <Button
                 size="small"
-                variant={
-                  activeFilterCount
-                    ? "contained"
-                    : "outlined"
-                }
+                variant="outlined"
                 startIcon={<FilterAltIcon />}
                 onClick={() =>
                   setFilterDialogOpen(true)
@@ -3904,7 +4010,7 @@ const exportExcel = () => {
 
               <Button
                 size="small"
-                variant="contained"
+                variant={isDark ? "outlined" : "contained"}
                 startIcon={<Groups2Icon />}
                 onClick={openDistributionDialog}
                 disabled={
@@ -3984,7 +4090,7 @@ const exportExcel = () => {
             <Box
               sx={uiLayout.withUiSx({
                 height: isDesktop
-                  ? 720
+                  ? 650
                   : isPhone
                     ? "calc(100dvh - 360px)"
                     : "calc(100dvh - 330px)",
@@ -3996,7 +4102,7 @@ const exportExcel = () => {
                 width: "100%",
                 border:
                   "1px solid #dcebe4",
-                borderRadius: 3,
+                borderRadius: 2,
                 overflow: "hidden"
               }, uiLayout.tableContainerSx)}
             >
@@ -4508,6 +4614,30 @@ const exportExcel = () => {
               />
 
               <MultiValueFilter
+                label="المستوى"
+                options={filterOptions.levelName}
+                value={columnFilters.levelName}
+                onChange={(values) =>
+                  updateColumnFilter(
+                    "levelName",
+                    values
+                  )
+                }
+              />
+
+              <MultiValueFilter
+                label="الشعبة"
+                options={filterOptions.sectionName}
+                value={columnFilters.sectionName}
+                onChange={(values) =>
+                  updateColumnFilter(
+                    "sectionName",
+                    values
+                  )
+                }
+              />
+
+              <MultiValueFilter
                 label="الدفعة"
                 options={filterOptions.batchName}
                 value={columnFilters.batchName}
@@ -4568,12 +4698,14 @@ const exportExcel = () => {
             <Box sx={{ flex: 1 }} />
 
             <Button
-              variant="contained"
+              variant={isDark ? "outlined" : "contained"}
               onClick={() =>
                 setFilterDialogOpen(false)
               }
               sx={uiLayout.withUiSx({
-                bgcolor: "#057546",
+                bgcolor: isDark ? "transparent" : "#057546",
+                color: isDark ? uiColors.border : "#fff",
+                borderColor: isDark ? uiColors.border : "#057546",
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 px: 3

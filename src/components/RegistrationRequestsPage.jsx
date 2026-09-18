@@ -29,6 +29,9 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
 const today = () => new Date().toISOString().slice(0, 10);
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
 const exportCsv = (rows, fileName) => {
   const quote = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
   const headers = ["اسم المتدرب", "رقم الجوال", "رقم الهوية", "الدبلوم/الدورة", "المدينة"];
@@ -60,6 +63,12 @@ const shortName = (name) => {
 
 const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
@@ -118,7 +127,93 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
   }, []);
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100%", overflowX: "hidden", background: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f5f8f7", direction: "rtl" }}>
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
+      sx={{
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100%",
+        overflowX: "hidden",
+        background: isDark ? theme.palette.background.default : "#f5f8f7",
+        color: "text.primary",
+        direction: "rtl",
+
+        ...(isDark && {
+          "& .MuiButton-root": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important",
+            fontWeight: "800 !important"
+          },
+          "& .MuiButton-root:hover": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important",
+            borderColor: `${DARK_BORDER} !important`,
+            boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+          },
+          "& .MuiButton-root.Mui-disabled": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            color: "rgba(155,224,193,.42) !important",
+            borderColor: "rgba(103,201,157,.35) !important",
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root:hover": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important"
+          },
+          "& .MuiOutlinedInput-root": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            color: `${theme.palette.text.primary} !important`
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`,
+            borderWidth: "1px !important"
+          },
+          "& .MuiInputLabel-root": {
+            color: `${theme.palette.text.secondary} !important`
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& .MuiCircularProgress-root": {
+            color: `${DARK_BORDER} !important`
+          },
+          "& .MuiAlert-root": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            color: `${theme.palette.text.primary} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiAlert-icon": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& input[type='date']": {
+            colorScheme: "dark"
+          }
+        })
+      }}
+    >
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -139,10 +234,10 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
             right: 0,
             width: "100%",
             zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
+            background: isDark ? darkSection : "rgba(255,255,255,.97)",
             backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom: "1px solid rgba(5,117,70,.12)",
+            color: isDark ? theme.palette.text.primary : "#17372b",
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "1px solid rgba(5,117,70,.12)",
             direction: "rtl"
           }}
         >
@@ -166,10 +261,13 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 width: { xs: 36, sm: 40 },
                 height: { xs: 36, sm: 40 },
                 flexShrink: 0,
-                color: "#fff",
-                background: "linear-gradient(135deg,#057546,#034d31)",
-                boxShadow: "0 5px 14px rgba(5,117,70,.20)",
-                "&:hover": { background: "linear-gradient(135deg,#034d31,#057546)" }
+                color: isDark ? DARK_TEXT : "#fff",
+                background: isDark ? "transparent" : "linear-gradient(135deg,#057546,#034d31)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none",
+                boxShadow: isDark ? "none" : "0 5px 14px rgba(5,117,70,.20)",
+                "&:hover": {
+                  background: isDark ? "transparent" : "linear-gradient(135deg,#034d31,#057546)"
+                }
               }}
             >
               <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22 } }} />
@@ -181,7 +279,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 fontSize: { xs: "0.75rem", sm: "0.8rem" },
-                color: "#17372b",
+                color: isDark ? theme.palette.text.primary : "#17372b",
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -226,15 +324,18 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
           elevation={0}
           sx={{
             borderRadius: isPhone ? 1.6 : isTablet ? 2.1 : 4,
-            border: "1px solid rgba(5,117,70,.13)",
-            overflow: "hidden"
+            border: isDark ? `1px solid ${DARK_BORDER}` : "1px solid rgba(5,117,70,.13)",
+            overflow: "hidden",
+            background: isDark ? darkCard : "#fff",
+            backgroundImage: "none",
+            color: "text.primary"
           }}
         >
           <Box
             sx={{
               p: isPhone ? 0.7 : isTablet ? 1 : 3,
-              background: "linear-gradient(135deg,#fff,#edf8f3)",
-              borderBottom: "1px solid rgba(5,117,70,.12)"
+              background: isDark ? darkSection : "linear-gradient(135deg,#fff,#edf8f3)",
+              borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "1px solid rgba(5,117,70,.12)"
             }}
           >
             <Typography
@@ -242,7 +343,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#034d31",
+                color: isDark ? theme.palette.text.primary : "#034d31",
                 fontSize: isPhone ? "0.76rem" : isTablet ? "0.94rem" : undefined
               }}
             >
@@ -253,7 +354,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
               sx={{
                 mt: isPhone ? 0.2 : 0.5,
                 fontFamily: "Cairo",
-                color: "#60756d",
+                color: isDark ? theme.palette.text.secondary : "#60756d",
                 fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
                 display: isPhone ? "none" : "block"
               }}
@@ -262,7 +363,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
             </Typography>
           </Box>
 
-          <Box sx={{ p: isPhone ? 0.65 : isTablet ? 0.9 : 3 }}>
+          <Box sx={{ p: isPhone ? 0.65 : isTablet ? 0.9 : 3, background: isDark ? darkCard : "#fff" }}>
             <Box
               sx={uiLayout.withUiSx({
                 display: "grid",
@@ -308,8 +409,8 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 800,
-                  color: "#ae1e21",
-                  borderColor: "#ae1e21",
+                  color: isDark ? DARK_TEXT : "#ae1e21",
+                  borderColor: isDark ? DARK_BORDER : "#ae1e21",
                   gridColumn: isCompact ? "1 / -1" : undefined
                 }, uiLayout.buttonSx)}
               >
@@ -323,8 +424,9 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                   px: isPhone ? 0.65 : isTablet ? 0.9 : 2,
                   py: isPhone ? 0.55 : isTablet ? 0.7 : 1,
                   borderRadius: isCompact ? 1.2 : 2,
-                  background: "#edf8f3",
-                  color: "#034d31",
+                  background: isDark ? "transparent" : "#edf8f3",
+                  color: isDark ? DARK_TEXT : "#034d31",
+                  border: isDark ? `1px solid ${DARK_BORDER}` : "none",
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined,
@@ -352,10 +454,11 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
 
             <Box
               sx={{
-                border: "1px solid rgba(5,117,70,.13)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "1px solid rgba(5,117,70,.13)",
                 borderRadius: isCompact ? 1.4 : 3,
                 overflow: "hidden",
-                minHeight: isPhone ? 340 : isTablet ? 380 : 360
+                minHeight: isPhone ? 340 : isTablet ? 380 : 360,
+                background: isDark ? darkSection : "#fff"
               }}
             >
               {loading ? (
@@ -365,7 +468,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
               ) : isCompact ? (
                 <Box sx={{ display: "grid", gap: isPhone ? 0.45 : 0.65, p: isPhone ? 0.45 : 0.65 }}>
                   {rows.length === 0 ? (
-                    <Box sx={{ minHeight: 300, display: "grid", placeItems: "center", fontFamily: "Cairo", color: "#60756d", fontSize: isPhone ? "0.75rem" : "0.75rem" }}>
+                    <Box sx={{ minHeight: 300, display: "grid", placeItems: "center", fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : "#60756d", fontSize: isPhone ? "0.75rem" : "0.75rem" }}>
                       لا توجد بيانات خلال الفترة المحددة
                     </Box>
                   ) : (
@@ -376,8 +479,10 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                         sx={{
                           p: isPhone ? 0.6 : 0.8,
                           borderRadius: isPhone ? 1.2 : 1.5,
-                          borderColor: "rgba(5,117,70,.12)",
-                          background: index % 2 === 0 ? "#fff" : "#fbfdfc"
+                          borderColor: isDark ? DARK_BORDER : "rgba(5,117,70,.12)",
+                          background: isDark
+                            ? (index % 2 === 0 ? darkCard : darkNested)
+                            : (index % 2 === 0 ? "#fff" : "#fbfdfc")
                         }}
                       >
                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", columnGap: isPhone ? 0.55 : 0.75, rowGap: isPhone ? 0.5 : 0.65 }}>
@@ -388,14 +493,14 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                             ["المدينة", row.city || "-"]
                           ].map(([label, value]) => (
                             <Box key={label}>
-                              <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#7a8b84" }}>{label}</Typography>
-                              <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#1f2d3d" }}>{value}</Typography>
+                              <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.75rem" : "0.75rem", color: isDark ? theme.palette.text.secondary : "#7a8b84" }}>{label}</Typography>
+                              <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.75rem" : "0.75rem", color: isDark ? theme.palette.text.primary : "#1f2d3d" }}>{value}</Typography>
                             </Box>
                           ))}
 
                           <Box sx={{ gridColumn: "1 / -1", pt: 0.2 }}>
-                            <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#7a8b84" }}>الدبلوم / الدورة</Typography>
-                            <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.75rem" : "0.75rem", color: "#057546" }}>{row.diploma || "-"}</Typography>
+                            <Typography sx={{ fontFamily: "Cairo", fontSize: isPhone ? "0.75rem" : "0.75rem", color: isDark ? theme.palette.text.secondary : "#7a8b84" }}>الدبلوم / الدورة</Typography>
+                            <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, fontSize: isPhone ? "0.75rem" : "0.75rem", color: isDark ? DARK_TEXT : "#057546" }}>{row.diploma || "-"}</Typography>
                           </Box>
                         </Box>
                       </Paper>
@@ -404,15 +509,43 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                 </Box>
               ) : (
                 <Box
+                  sx={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    overflowX: "auto"
+                  }}
+                >
+                  <Box
                   component="table"
                   sx={{
                     width: "100%",
                     minWidth: 850,
                     borderCollapse: "collapse",
                     direction: "rtl",
-                    "& th": { p: 1.5, background: "#057546", color: "#fff", fontFamily: "Cairo", fontWeight: 900, textAlign: "start" },
-                    "& td": { p: 1.35, borderBottom: "1px solid rgba(5,117,70,.09)", fontFamily: "Cairo", textAlign: "start" },
-                    "& tbody tr:hover": { background: "#f1faf6" }
+                    "& th": {
+                      p: 1.5,
+                      background: isDark ? darkNested : "#057546",
+                      color: isDark ? theme.palette.text.primary : "#fff",
+                      fontFamily: "Cairo",
+                      fontWeight: 900,
+                      textAlign: "start",
+                      borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "none"
+                    },
+                    "& td": {
+                      p: 1.35,
+                      borderBottom: isDark
+                        ? "1px solid rgba(103,201,157,.28)"
+                        : "1px solid rgba(5,117,70,.09)",
+                      fontFamily: "Cairo",
+                      textAlign: "start",
+                      color: isDark ? theme.palette.text.primary : "inherit"
+                    },
+                    "& tbody tr:nth-of-type(even)": {
+                      background: isDark ? darkCard : "transparent"
+                    },
+                    "& tbody tr:hover": {
+                      background: isDark ? darkHover : "#f1faf6"
+                    }
                   }}
                 >
                   <thead>
@@ -437,6 +570,7 @@ const RegistrationRequestsPage = ({ mode, title, subtitle, exportFileName }) => 
                       </tr>
                     ))}
                   </tbody>
+                  </Box>
                 </Box>
               )}
             </Box>

@@ -3,7 +3,7 @@ import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import {
   Alert,
@@ -66,6 +66,9 @@ const primaryDark = "#6a9a87";
 const primaryLight = "#9ac9b5";
 const textColor = "#2c3e50";
 const softBg = "#f8fbfa";
+
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
 
 const API_BASE_URL = "https://api4.sstli.com";
 const today = new Date().toISOString().slice(0, 10);
@@ -328,6 +331,57 @@ const getOrderSellerGuid = (row, details) => {
   );
 };
 
+let userInfoCache = null;
+let userInfoCacheAt = 0;
+let userInfoRequestPromise = null;
+const USERINFO_CACHE_TTL_MS = 5 * 60 * 1000;
+
+const getUserInfoList = async () => {
+  const now = Date.now();
+
+  if (
+    Array.isArray(userInfoCache) &&
+    now - userInfoCacheAt < USERINFO_CACHE_TTL_MS
+  ) {
+    return userInfoCache;
+  }
+
+  if (userInfoRequestPromise) {
+    return userInfoRequestPromise;
+  }
+
+  userInfoRequestPromise = (async () => {
+    const response = await fetch(USERINFO_API_URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const users = await response.json().catch(() => []);
+
+    if (!response.ok) {
+      throw new Error("تعذر تحميل بيانات المستخدمين من userinfo");
+    }
+
+    const list = Array.isArray(users)
+      ? users
+      : Array.isArray(users?.data)
+        ? users.data
+        : [];
+
+    userInfoCache = list;
+    userInfoCacheAt = Date.now();
+    return list;
+  })();
+
+  try {
+    return await userInfoRequestPromise;
+  } finally {
+    userInfoRequestPromise = null;
+  }
+};
+
 const getUserGuidBySellerGuid = async (sellerGuid) => {
   const cleanSellerGuid = normalizeGuid(sellerGuid);
 
@@ -335,24 +389,7 @@ const getUserGuidBySellerGuid = async (sellerGuid) => {
     throw new Error("لا يمكن قراءة SellerGuid الخاص بمسئول التسجيل من الطلب");
   }
 
-  const response = await fetch(USERINFO_API_URL, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-
-  const users = await response.json().catch(() => []);
-
-  if (!response.ok) {
-    throw new Error("تعذر تحميل بيانات المستخدمين من userinfo");
-  }
-
-  const list = Array.isArray(users)
-    ? users
-    : Array.isArray(users?.data)
-    ? users.data
-    : [];
+  const list = await getUserInfoList();
 
   const matchedUser = list.find(
     (u) => normalizeGuid(u?.sellerGuid) === cleanSellerGuid
@@ -510,6 +547,15 @@ const SmallDataTable = ({ title, rows, emptyText = "لا توجد بيانات" 
 
 const AdmissionRequests = () => {
   const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
+
+  const orderDetailsCacheRef = useRef(new Map());
+  const statementCacheRef = useRef(new Map());
 
   const isPhone = useMediaQuery(
     muiTheme.breakpoints.down("sm")
@@ -588,6 +634,14 @@ const [convertOtherInstituteName, setConvertOtherInstituteName] = useState("");
         `&nationalId=${encodeURIComponent(row.nationalId || "")}` +
         `&notes=${encodeURIComponent(searchValue || "")}`;
 
+      const cacheKey =
+        `${String(row.accountGuid || "").toLowerCase()}|${String(searchValue || "").trim().toLowerCase()}`;
+
+      if (statementCacheRef.current.has(cacheKey)) {
+        setStatementData(statementCacheRef.current.get(cacheKey));
+        return;
+      }
+
       const response = await fetch(url);
 
       const result = await response.json().catch(() => null);
@@ -596,6 +650,7 @@ const [convertOtherInstituteName, setConvertOtherInstituteName] = useState("");
         throw new Error(result?.message || result?.error || "تعذر تحميل كشف الحساب");
       }
 
+      statementCacheRef.current.set(cacheKey, result);
       setStatementData(result);
     } catch (error) {
       showError(error.message || "حدث خطأ أثناء تحميل كشف الحساب");
@@ -645,6 +700,9 @@ const [convertOtherInstituteName, setConvertOtherInstituteName] = useState("");
           orderDateGregorianDisplay: formatGregorianDate(getGregorianOrderDate(item))
         }))
       );
+
+      orderDetailsCacheRef.current.clear();
+      statementCacheRef.current.clear();
     } catch (error) {
       const msg = error.message || "حدث خطأ غير متوقع";
       setErrorMsg(msg);
@@ -765,6 +823,14 @@ const [convertOtherInstituteName, setConvertOtherInstituteName] = useState("");
       setDetailsOpen(true);
       setDetailsLoading(true);
 
+      const cacheKey =
+        `${String(row.code || "")}|${String(row.orderGuid || "").toLowerCase()}`;
+
+      if (orderDetailsCacheRef.current.has(cacheKey)) {
+        setOrderDetails(orderDetailsCacheRef.current.get(cacheKey));
+        return;
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/api/admission-requests/details?code=${encodeURIComponent(
           row.code
@@ -777,6 +843,7 @@ const [convertOtherInstituteName, setConvertOtherInstituteName] = useState("");
       }
 
       const result = await response.json();
+      orderDetailsCacheRef.current.set(cacheKey, result);
       setOrderDetails(result);
     } catch (error) {
       showError(error.message || "حدث خطأ أثناء تحميل تفاصيل الطلب");
@@ -870,6 +937,14 @@ window.open(
       setConvertOpen(true);
       setConvertLoading(true);
 
+      const cacheKey =
+        `${String(row.code || "")}|${String(row.orderGuid || "").toLowerCase()}`;
+
+      if (orderDetailsCacheRef.current.has(cacheKey)) {
+        setConvertDetails(orderDetailsCacheRef.current.get(cacheKey));
+        return;
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/api/admission-requests/details?code=${encodeURIComponent(
           row.code
@@ -882,6 +957,7 @@ window.open(
       }
 
       const result = await response.json();
+      orderDetailsCacheRef.current.set(cacheKey, result);
       setConvertDetails(result);
     } catch (error) {
       showError(error.message || "حدث خطأ أثناء تحميل بيانات التحويل");
@@ -1033,6 +1109,8 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       // 🚀 تحديث الصف محلياً فقط - بدون إعادة تحميل القائمة بالكامل
       // ============================================================
       const acceptedOrderGuid = convertRow.orderGuid;
+      orderDetailsCacheRef.current.clear();
+      statementCacheRef.current.clear();
 
       setRows((prevRows) =>
         prevRows.map((item) =>
@@ -1154,6 +1232,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       // 🚀 تحديث الصف محلياً فقط - بدون إعادة تحميل القائمة بالكامل
       // ============================================================
       const cancelledOrderGuid = rowToCancel.orderGuid;
+      orderDetailsCacheRef.current.clear();
 
       setRows((prevRows) =>
         prevRows.map((item) =>
@@ -1764,7 +1843,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       activeStatusColumn,
       actionColumn
     ];
-  }, [isPhone, isTablet, isCompact]);
+  }, [isPhone, isTablet, isCompact, isDark]);
 
   const handleExportCsv = () => {
     const headers = [
@@ -1838,12 +1917,233 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
-        background: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : softBg,
+        background: isDark ? muiTheme.palette.background.default : softBg,
+        color: "text.primary",
         fontFamily: "Cairo, Arial, sans-serif",
         direction: "rtl",
-        overflowX: "hidden"
+        overflowX: "hidden",
+
+        ...(isDark && {
+          "& .MuiButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important",
+            borderColor: `${DARK_BORDER} !important`,
+            boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+          },
+          "& .MuiButton-root.Mui-disabled": {
+            backgroundColor: "transparent !important",
+            color: "rgba(155,224,193,.42) !important",
+            borderColor: "rgba(103,201,157,.34) !important",
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important"
+          },
+          "& .MuiChip-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${muiTheme.palette.text.primary} !important`
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiInputLabel-root": {
+            color: `${muiTheme.palette.text.secondary} !important`
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& .MuiSelect-icon, & .MuiCheckbox-root, & .MuiCircularProgress-root": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& .MuiPaper-root": {
+            backgroundColor: `${darkCard} !important`,
+            backgroundImage: "none !important",
+            color: `${muiTheme.palette.text.primary} !important`,
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiPaper-root .MuiPaper-root": {
+            backgroundColor: `${darkSection} !important`
+          },
+          "& .MuiAlert-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${muiTheme.palette.text.primary} !important`,
+            border: `1px solid ${DARK_BORDER} !important`
+          },
+          "& .MuiDivider-root": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiTabs-indicator": {
+            backgroundColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiTab-root": {
+            color: `${muiTheme.palette.text.secondary} !important`
+          },
+          "& .MuiTab-root.Mui-selected": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& input[type='date']": {
+            colorScheme: "dark"
+          }
+        })
       }}
     >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  background: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialog-paper .MuiPaper-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".MuiDialog-paper .MuiTypography-root": {
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiDialog-paper .MuiTableCell-root": {
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`
+                },
+                ".MuiDialog-paper .MuiButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialog-paper .MuiChip-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialog-paper .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiDialog-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiDataGrid-panel": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiMenuItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".MuiDataGrid-columnHeaders, .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiDataGrid-cell, .MuiDataGrid-columnHeader": {
+                  borderColor: "rgba(103,201,157,.22) !important"
+                },
+                ".MuiDataGrid-row:nth-of-type(even)": {
+                  backgroundColor: `${darkSection} !important`
+                },
+                ".MuiDataGrid-row:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiDataGrid-footerContainer": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderTop: `1px solid ${DARK_BORDER} !important`
+                },
+                ".shared-order-allowed, .shared-order-blocked": {
+                  backgroundColor: "transparent !important"
+                },
+                ".swal2-popup": {
+                  background: `${darkCard} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  background: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  background: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -1867,9 +2167,9 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
             left: 0,
             right: 0,
             zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
-            color: textColor,
-            borderBottom: "1px solid #d7e8e0",
+            background: isDark ? darkSection : "rgba(255,255,255,.97)",
+            color: isDark ? muiTheme.palette.text.primary : textColor,
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "1px solid #d7e8e0",
             direction: "rtl"
           }}
         >
@@ -1886,8 +2186,9 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
               sx={{
                 width: { xs: 36, sm: 40 },
                 height: { xs: 36, sm: 40 },
-                color: "#fff",
-                background: "linear-gradient(135deg,#057546,#034d31)"
+                color: isDark ? DARK_TEXT : "#fff",
+                background: isDark ? "transparent" : "linear-gradient(135deg,#057546,#034d31)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none"
               }}
             >
               <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22 } }} />
@@ -3131,7 +3432,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
         label="اسم المعهد الآخر / ملاحظة"
         fullWidth
         multiline
-        minRows={2}
+        minRows={4}
         value={convertOtherInstituteName}
         onChange={(e) => setConvertOtherInstituteName(e.target.value)}
         placeholder="اكتب اسم المعهد الآخر أو أي ملاحظة مرتبطة بالتسجيل"
@@ -3149,7 +3450,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
   label="ملاحظات المبيعات"
   fullWidth
   multiline
-  minRows={3}
+  minRows={4}
   value={convertSalesNotes}
   onChange={(e) => setConvertSalesNotes(e.target.value)}
   sx={uiLayout.withUiSx({

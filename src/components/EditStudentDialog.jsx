@@ -766,22 +766,19 @@ const EditStudentDialog = ({
             {error}
           </Box>
         ) : (
-          <Grid container spacing={isPhone ? 0.5 : isTablet ? 0.75 : 1.6} sx={{ mt: isPhone ? 0 : 0.2 }}>
-            <Grid item xs={6} sm={6} md={3}>
-              <StudentField label="كود الطالب">
-                <TextField InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  size="small"
-                  value={form.studentCode}
-                  disabled
-                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
-                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
-              </StudentField>
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={3}>
+          <Grid
+            container
+            spacing={isPhone ? 0.6 : isTablet ? 0.85 : 1.35}
+            sx={{
+              mt: isPhone ? 0 : 0.2,
+              alignItems: "flex-start"
+            }}
+          >
+            {/* الصف الأول: بيانات أساسية مختصرة */}
+            <Grid item xs={12} sm={6} md={4}>
               <StudentField label="الرقم الأكاديمي">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.acadmyId}
@@ -791,29 +788,34 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
-              <StudentField label="رقم الحساب">
-                <TextField InputLabelProps={{ shrink: true }}
+            <Grid item xs={12} sm={6} md={4}>
+              <StudentField label="الحساب الرئيسي">
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
-                  value={form.accountCode}
+                  value={form.parentAccountName}
                   disabled
                   sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
-                 inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
+                />
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={12} sm={12} md={4}>
               <StudentField label="حالة الطالب">
                 <Box
                   sx={{
                     height: isPhone ? 31 : isTablet ? 34 : 40,
-                    px: isPhone ? 0.45 : isTablet ? 0.7 : 1.5,
+                    px: isPhone ? 0.65 : isTablet ? 0.9 : 1.4,
                     display: "flex",
                     alignItems: "center",
-                    border: isDark ? `1px solid #67C99D` : `1px solid ${primaryLight}`,
+                    border: isDark
+                      ? "1px solid #67C99D"
+                      : `1px solid ${primaryLight}`,
                     borderRadius: 2.2,
-                    backgroundColor: isDark ? theme.palette.surfaces.input : "#fff"
+                    backgroundColor: isDark
+                      ? theme.palette.surfaces.input
+                      : "#fff"
                   }}
                 >
                   <FormControlLabel
@@ -838,9 +840,11 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={6}>
+            {/* الصف الثاني: الأسماء */}
+            <Grid item xs={12} md={6}>
               <StudentField label="اسم الطالب">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.studentName}
@@ -852,9 +856,10 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={6}>
+            <Grid item xs={12} md={6}>
               <StudentField label="الاسم باللغة الإنجليزية">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.studentNameEn}
@@ -873,9 +878,11 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            {/* الصف الثالث: التواصل والهوية */}
+            <Grid item xs={12} sm={6} md={3}>
               <StudentField label="رقم الجوال">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.studentTel}
@@ -885,15 +892,23 @@ const EditStudentDialog = ({
                       event.target.value.replace(/\D/g, "")
                     )
                   }
-                  inputProps={{ maxLength: 20 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                  inputProps={{
+                    maxLength: 20,
+                    dir: "ltr",
+                    style: {
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
+                  }}
                   sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 />
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <StudentField label="رقم جوال آخر">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.studentTel2}
@@ -903,15 +918,23 @@ const EditStudentDialog = ({
                       event.target.value.replace(/\D/g, "")
                     )
                   }
-                  inputProps={{ maxLength: 20 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                  inputProps={{
+                    maxLength: 20,
+                    dir: "ltr",
+                    style: {
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
+                  }}
                   sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 />
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <StudentField label="رقم الهوية">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.nationalId}
@@ -921,13 +944,20 @@ const EditStudentDialog = ({
                       event.target.value.replace(/\D/g, "")
                     )
                   }
-                  inputProps={{ maxLength: 20 , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
+                  inputProps={{
+                    maxLength: 20,
+                    dir: "ltr",
+                    style: {
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
+                  }}
                   sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
                 />
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <StudentField label="تاريخ الميلاد">
                 <TextField
                   fullWidth
@@ -947,13 +977,22 @@ const EditStudentDialog = ({
                     min: "1900-01-01",
                     max: new Date()
                       .toISOString()
-                      .slice(0, 10)
-                  , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
-                  helperText={isPhone ? "" : "التاريخ يُعرض ويُحفظ بالميلادي"}
+                      .slice(0, 10),
+                    dir: "ltr",
+                    style: {
+                      direction: "ltr",
+                      unicodeBidi: "isolate"
+                    }
+                  }}
+                  helperText={
+                    isPhone
+                      ? ""
+                      : "التاريخ يُعرض ويُحفظ بالميلادي"
+                  }
                   FormHelperTextProps={{
                     sx: {
                       mr: 0,
-                      color: primaryColor,
+                      color: isDark ? "#9BE0C1" : primaryColor,
                       fontWeight: 800
                     }
                   }}
@@ -962,9 +1001,11 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={6}>
+            {/* الصف الرابع: البريد + النوع والجنسية */}
+            <Grid item xs={12} md={6}>
               <StudentField label="البريد الإلكتروني">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   size="small"
                   value={form.email}
@@ -980,9 +1021,13 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <StudentField label="النوع">
-                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
+                <FormControl
+                  sx={uiLayout.formFieldSx}
+                  fullWidth
+                  size="small"
+                >
                   <InputLabel>النوع</InputLabel>
                   <Select
                     value={form.studentType}
@@ -990,7 +1035,12 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("studentType", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
+                    sx={{
+                      borderRadius: 2.2,
+                      backgroundColor: isDark
+                        ? theme.palette.surfaces.input
+                        : "#fff"
+                    }}
                   >
                     <MenuItem value={0}>ذكر</MenuItem>
                     <MenuItem value={1}>أنثى</MenuItem>
@@ -999,17 +1049,29 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <StudentField label="الجنسية">
-                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
+                <FormControl
+                  sx={uiLayout.formFieldSx}
+                  fullWidth
+                  size="small"
+                >
                   <InputLabel>الجنسية</InputLabel>
                   <Select
                     value={form.studentNational}
                     label="الجنسية"
                     onChange={(event) =>
-                      setField("studentNational", event.target.value)
+                      setField(
+                        "studentNational",
+                        event.target.value
+                      )
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
+                    sx={{
+                      borderRadius: 2.2,
+                      backgroundColor: isDark
+                        ? theme.palette.surfaces.input
+                        : "#fff"
+                    }}
                   >
                     <MenuItem value={0}>مواطن</MenuItem>
                     <MenuItem value={1}>أجنبي</MenuItem>
@@ -1018,9 +1080,14 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={4}>
+            {/* الصف الخامس: نوع الدراسة والعميل */}
+            <Grid item xs={12} sm={6} md={6}>
               <StudentField label="نوع الدراسة">
-                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
+                <FormControl
+                  sx={uiLayout.formFieldSx}
+                  fullWidth
+                  size="small"
+                >
                   <InputLabel>نوع الدراسة</InputLabel>
                   <Select
                     value={form.studyType}
@@ -1028,7 +1095,12 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("studyType", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
+                    sx={{
+                      borderRadius: 2.2,
+                      backgroundColor: isDark
+                        ? theme.palette.surfaces.input
+                        : "#fff"
+                    }}
                   >
                     <MenuItem value={0}>حضوري</MenuItem>
                     <MenuItem value={1}>عن بعد</MenuItem>
@@ -1037,9 +1109,13 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={6}>
               <StudentField label="نوع العميل">
-                <FormControl sx={uiLayout.formFieldSx} fullWidth size="small">
+                <FormControl
+                  sx={uiLayout.formFieldSx}
+                  fullWidth
+                  size="small"
+                >
                   <InputLabel>نوع العميل</InputLabel>
                   <Select
                     value={form.customerType}
@@ -1047,7 +1123,12 @@ const EditStudentDialog = ({
                     onChange={(event) =>
                       setField("customerType", event.target.value)
                     }
-                    sx={{ borderRadius: 2.2, backgroundColor: isDark ? theme.palette.surfaces.input : "#fff" }}
+                    sx={{
+                      borderRadius: 2.2,
+                      backgroundColor: isDark
+                        ? theme.palette.surfaces.input
+                        : "#fff"
+                    }}
                   >
                     <MenuItem value={0}>فرد</MenuItem>
                     <MenuItem value={1}>شركة</MenuItem>
@@ -1056,19 +1137,8 @@ const EditStudentDialog = ({
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={4}>
-              <StudentField label="الحساب الرئيسي">
-                <TextField InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  size="small"
-                  value={form.parentAccountName}
-                  disabled
-                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
-                />
-              </StudentField>
-            </Grid>
-
-            <Grid item xs={6} sm={6} md={6}>
+            {/* الصف السادس: القطاع ومندوب البيع */}
+            <Grid item xs={12} md={6}>
               <StudentField label="القطاع">
                 <Autocomplete
                   options={sectors}
@@ -1089,25 +1159,35 @@ const EditStudentDialog = ({
                     option?.guid === value?.guid
                   }
                   onChange={(_, value) => {
-                    setField("companyGuid", value?.guid || "");
-                    setField("sectorName", value?.name || "");
+                    setField(
+                      "companyGuid",
+                      value?.guid || ""
+                    );
+                    setField(
+                      "sectorName",
+                      value?.name || ""
+                    );
                   }}
                   noOptionsText="لا توجد قطاعات"
                   loadingText="جارٍ تحميل القطاعات..."
                   renderInput={(params) => (
-                    <TextField InputLabelProps={{ shrink: true }}
+                    <TextField
+                      InputLabelProps={{ shrink: true }}
                       {...params}
                       fullWidth
                       size="small"
                       placeholder="اختر القطاع"
-                      sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
+                      sx={uiLayout.withUiSx(
+                        fieldSx,
+                        uiLayout.formFieldSx
+                      )}
                     />
                   )}
                 />
               </StudentField>
             </Grid>
 
-            <Grid item xs={6} sm={6} md={6}>
+            <Grid item xs={12} md={6}>
               <StudentField label="مندوب البيع">
                 <Autocomplete
                   options={sellers}
@@ -1128,51 +1208,73 @@ const EditStudentDialog = ({
                     option?.guid === value?.guid
                   }
                   onChange={(_, value) => {
-                    setField("sellerGuid", value?.guid || "");
-                    setField("sellerName", value?.name || "");
+                    setField(
+                      "sellerGuid",
+                      value?.guid || ""
+                    );
+                    setField(
+                      "sellerName",
+                      value?.name || ""
+                    );
                   }}
                   noOptionsText="لا يوجد مندوبو بيع"
                   loadingText="جارٍ تحميل مندوبي البيع..."
                   renderInput={(params) => (
-                    <TextField InputLabelProps={{ shrink: true }}
+                    <TextField
+                      InputLabelProps={{ shrink: true }}
                       {...params}
                       fullWidth
                       size="small"
                       placeholder="اختر مندوب البيع"
-                      sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
+                      sx={uiLayout.withUiSx(
+                        fieldSx,
+                        uiLayout.formFieldSx
+                      )}
                     />
                   )}
                 />
               </StudentField>
             </Grid>
 
+            {/* الصف السابع والثامن: سبب التعديل والملاحظات */}
             <Grid item xs={12}>
               <StudentField label="سبب التعديل">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   multiline
-                  minRows={2}
+                  minRows={3}
                   value={form.actionReason}
                   onChange={(event) =>
-                    setField("actionReason", event.target.value)
+                    setField(
+                      "actionReason",
+                      event.target.value
+                    )
                   }
                   placeholder="اكتب سبب تعديل بيانات الطالب"
-                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
+                  sx={uiLayout.withUiSx(
+                    fieldSx,
+                    uiLayout.formFieldSx
+                  )}
                 />
               </StudentField>
             </Grid>
 
             <Grid item xs={12}>
               <StudentField label="ملاحظات">
-                <TextField InputLabelProps={{ shrink: true }}
+                <TextField
+                  InputLabelProps={{ shrink: true }}
                   fullWidth
                   multiline
-                  minRows={isPhone ? 2 : isTablet ? 2 : 3}
+                  minRows={3}
                   value={form.notes}
                   onChange={(event) =>
                     setField("notes", event.target.value)
                   }
-                  sx={uiLayout.withUiSx(fieldSx, uiLayout.formFieldSx)}
+                  sx={uiLayout.withUiSx(
+                    fieldSx,
+                    uiLayout.formFieldSx
+                  )}
                 />
               </StudentField>
             </Grid>

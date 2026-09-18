@@ -2758,26 +2758,19 @@ export default function HrAttendancePage() {
 
   const content = (
     <Box
-      className="hr-attendance-dark-root"
       dir={PAGE_DIRECTION}
       sx={{
         minHeight: "100vh",
-        width: "100%",
-        maxWidth: "100%",
-        minWidth: 0,
-        overflowX: "hidden",
-        bgcolor: isDark ? theme.palette.background.default : bg,
-        color: "text.primary",
+        bgcolor: bg,
         p: { xs: 0.8, sm: 1.3, md: 1.8 },
         textAlign: PAGE_TEXT_ALIGN
       }}
     >
       <Box sx={{ maxWidth: "100%", minWidth: 0, mx: "auto" }}>
         <Paper
-          className="attendance-page-header"
           elevation={0}
           sx={{
-            bgcolor: isDark ? darkSection : primaryDark,
+            bgcolor: primaryDark,
             color: "#fff",
             p: { xs: 1.2, sm: 1.25 },
             borderRadius: 3,
@@ -2958,7 +2951,7 @@ export default function HrAttendancePage() {
                 disabled={!selectedCount}
                 sx={uiLayout.withUiSx({
                   bgcolor: isDark ? darkCard : "#fff",
-                  color: isDark ? theme.palette.text.primary : primaryDark,
+                  color: primaryDark,
                   fontWeight: 950,
                   "&:hover": {
                     bgcolor: "#f4fff9"
@@ -3144,7 +3137,7 @@ export default function HrAttendancePage() {
                   sx={uiLayout.withUiSx({
                     minWidth: 145,
                     height: 40,
-                    bgcolor: isDark ? "transparent" : primary,
+                    bgcolor: primary,
                     fontWeight: 950
                   }, uiLayout.buttonSx)}
                 >
@@ -3258,7 +3251,7 @@ export default function HrAttendancePage() {
                           mt: 0.15,
                           fontSize: 19,
                           fontWeight: 950,
-                          color: isDark ? theme.palette.text.primary : primaryDark
+                          color: primaryDark
                         }}
                       >
                         {value}
@@ -3288,11 +3281,11 @@ export default function HrAttendancePage() {
                           "1.05fr 0.75fr 1.2fr 0.85fr 0.85fr 1fr 0.75fr 0.85fr 0.75fr 1fr 1.35fr 0.65fr",
                         px: 1.2,
                         py: 1,
-                        bgcolor: isDark ? darkNested : "#edf6f1",
+                        bgcolor: "#edf6f1",
                         borderBottom: `1px solid ${border}`,
                         fontSize: 12,
                         fontWeight: 950,
-                        color: isDark ? theme.palette.text.primary : primaryDark
+                        color: primaryDark
                       }}
                     >
                       <Box>التاريخ</Box>
@@ -3411,7 +3404,7 @@ export default function HrAttendancePage() {
                     bgcolor: isDark ? darkCard : "#fff"
                   }}
                 >
-                  <Typography sx={{ fontWeight: 900, color: isDark ? theme.palette.text.primary : primaryDark }}>
+                  <Typography sx={{ fontWeight: 900, color: primaryDark }}>
                     اختر الموظف والفترة ثم اضغط "عرض التقرير"
                   </Typography>
                   <Typography
@@ -3476,7 +3469,7 @@ export default function HrAttendancePage() {
                     mt: 0.2,
                     fontWeight: 950,
                     fontSize: 22,
-                    color: isDark ? theme.palette.text.primary : primaryDark
+                    color: primaryDark
                   }}
                 >
                   {value}
@@ -3730,14 +3723,12 @@ export default function HrAttendancePage() {
             </Stack>
 
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<GroupWorkRoundedIcon />}
               disabled={!selectedCount}
               onClick={openBulkAssignment}
               sx={uiLayout.withUiSx({
-                bgcolor: isDark ? "transparent" : primary,
-                color: isDark ? DARK_TEXT : "#fff",
-                borderColor: isDark ? DARK_BORDER : primary,
+                bgcolor: primary,
                 fontWeight: 950
               }, uiLayout.buttonSx)}
             >
@@ -3772,16 +3763,14 @@ export default function HrAttendancePage() {
                   sx={{
                     p: 1.1,
                     borderRadius: 2.5,
-                    border: isDark
-                      ? `1px solid ${DARK_BORDER}`
-                      : row.status === "Absent"
+                    border:
+                      row.status === "Absent"
                         ? "1px solid #efb0b0"
                         : row.status === "Late"
                           ? "1px solid #eed09a"
                           : `1px solid ${border}`,
-                    bgcolor: isDark
-                      ? darkCard
-                      : row.status === "Absent"
+                    bgcolor:
+                      row.status === "Absent"
                         ? "#fff8f8"
                         : row.status === "Late"
                           ? "#fffaf2"
@@ -3836,8 +3825,8 @@ export default function HrAttendancePage() {
                             borderRadius: 2,
                             display: "grid",
                             placeItems: "center",
-                            bgcolor: isDark ? darkNested : "#edf7f2",
-                            color: isDark ? DARK_TEXT : primary
+                            bgcolor: "#edf7f2",
+                            color: primary
                           }}
                         >
                           <BadgeRoundedIcon
@@ -4034,7 +4023,7 @@ export default function HrAttendancePage() {
                       ) > 0 && (
                         <Typography
                           sx={{
-                            color: isDark ? DARK_TEXT : primary,
+                            color: primary,
                             fontSize: isDesktop ? 10.5 : 12,
                             fontWeight: 850
                           }}
@@ -4151,7 +4140,7 @@ export default function HrAttendancePage() {
                             sx={{
                               border: `1px solid ${border}`,
                               borderRadius: 1.5,
-                              color: isDark ? DARK_TEXT : primary
+                              color: primary
                             }}
                           >
                             <LinkOffRoundedIcon fontSize="small" />
@@ -4167,7 +4156,7 @@ export default function HrAttendancePage() {
                             sx={{
                               border: `1px solid ${border}`,
                               borderRadius: 1.5,
-                              color: isDark ? DARK_TEXT : primary
+                              color: primary
                             }}
                           >
                             <FingerprintRoundedIcon fontSize="small" />
@@ -4178,7 +4167,7 @@ export default function HrAttendancePage() {
                       {!row.shiftGuid ? (
                         <Button
                           size="small"
-                          variant={isDark ? "outlined" : "contained"}
+                          variant="contained"
                           startIcon={
                             <ScheduleRoundedIcon />
                           }
@@ -4187,9 +4176,7 @@ export default function HrAttendancePage() {
                           }
                           sx={uiLayout.withUiSx({
                             minWidth: isDesktop ? 88 : 115,
-                            bgcolor: isDark ? "transparent" : primary,
-                            color: isDark ? DARK_TEXT : "#fff",
-                            borderColor: isDark ? DARK_BORDER : primary,
+                            bgcolor: primary,
                             fontWeight: 900
                           }, uiLayout.buttonSx)}
                         >
@@ -4212,7 +4199,7 @@ export default function HrAttendancePage() {
                               }
                               sx={uiLayout.withUiSx({
                                 minWidth: isDesktop ? 72 : 95,
-                                bgcolor: isDark ? "transparent" : primary,
+                                bgcolor: primary,
                                 fontWeight: 900
                               }, uiLayout.buttonSx)}
                             >
@@ -4236,7 +4223,7 @@ export default function HrAttendancePage() {
                                 }
                                 sx={uiLayout.withUiSx({
                                   minWidth: 95,
-                                  bgcolor: isDark ? "transparent" : primary,
+                                  bgcolor: primary,
                                   fontWeight: 900
                                 }, uiLayout.buttonSx)}
                               >
@@ -4318,47 +4305,56 @@ export default function HrAttendancePage() {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
+      <Box className="sstli-hr-dark-root" sx={[navigationContentSx, uiLayout.scopeSx]}>
 
       <GlobalStyles
         styles={{
           ...(isDark
             ? {
-                ".hr-attendance-dark-root .MuiPaper-root": {
+                ".sstli-hr-dark-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiPaper-root:not(.print-preview):not(.document-preview):not(.a4-page), .sstli-hr-dark-root .MuiCard-root": {
                   backgroundColor: `${darkCard} !important`,
                   backgroundImage: "none !important",
                   color: `${theme.palette.text.primary} !important`,
                   borderColor: `${DARK_BORDER} !important`,
                   boxShadow: "none !important"
                 },
-                ".hr-attendance-dark-root .MuiPaper-root .MuiPaper-root": {
-                  backgroundColor: `${darkSection} !important`
-                },
-                ".hr-attendance-dark-root .attendance-page-header": {
-                  backgroundColor: `${darkSection} !important`,
-                  backgroundImage: "none !important",
-                  border: `1px solid ${DARK_BORDER} !important`
-                },
 
-                ".hr-attendance-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                ".sstli-hr-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
                   backgroundColor: "transparent !important",
                   backgroundImage: "none !important",
                   color: `${DARK_TEXT} !important`,
                   border: `1px solid ${DARK_BORDER} !important`,
                   boxShadow: "none !important"
                 },
-                ".hr-attendance-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                ".sstli-hr-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
                   backgroundColor: "transparent !important",
                   color: "#C9F2DF !important",
                   borderColor: `${DARK_BORDER} !important`,
                   boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
                 },
-                ".hr-attendance-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                ".sstli-hr-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
                   backgroundColor: "transparent !important",
                   color: "rgba(155,224,193,.42) !important",
                   borderColor: "rgba(103,201,157,.34) !important"
                 },
 
-                ".hr-attendance-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                ".sstli-hr-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiIconButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".sstli-hr-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root, .sstli-hr-dark-root .MuiBadge-badge": {
                   backgroundColor: "transparent !important",
                   backgroundImage: "none !important",
                   color: `${DARK_TEXT} !important`,
@@ -4366,95 +4362,117 @@ export default function HrAttendancePage() {
                   boxShadow: "none !important"
                 },
 
-                ".hr-attendance-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root, .hr-attendance-dark-root .MuiBadge-badge": {
-                  backgroundColor: "transparent !important",
+                ".sstli-hr-dark-root .MuiTabs-root, .MuiDialog-paper .MuiTabs-root": {
+                  backgroundColor: `${darkSection} !important`,
                   backgroundImage: "none !important",
-                  color: `${DARK_TEXT} !important`,
                   border: `1px solid ${DARK_BORDER} !important`,
-                  boxShadow: "none !important"
+                  borderRadius: "10px !important",
+                  minHeight: "38px !important"
+                },
+                ".sstli-hr-dark-root .MuiTab-root, .MuiDialog-paper .MuiTab-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.secondary} !important`,
+                  minHeight: "36px !important"
+                },
+                ".sstli-hr-dark-root .MuiTab-root.Mui-selected, .MuiDialog-paper .MuiTab-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiTabs-indicator, .MuiDialog-paper .MuiTabs-indicator": {
+                  backgroundColor: `${DARK_BORDER} !important`,
+                  height: "2px !important"
                 },
 
-                ".hr-attendance-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                ".sstli-hr-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
                   backgroundColor: "transparent !important",
                   backgroundImage: "none !important",
                   color: `${theme.palette.text.primary} !important`
                 },
-                ".hr-attendance-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                ".sstli-hr-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
                   borderColor: `${DARK_BORDER} !important`
                 },
-                ".hr-attendance-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                ".sstli-hr-dark-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .sstli-hr-dark-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`,
+                  borderWidth: "1px !important"
+                },
+                ".sstli-hr-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
                   color: `${theme.palette.text.secondary} !important`
                 },
-                ".hr-attendance-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                ".sstli-hr-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
                   color: `${DARK_TEXT} !important`
                 },
-                ".hr-attendance-dark-root .MuiSelect-icon, .hr-attendance-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .MuiDialog-paper .MuiSelect-icon": {
+                ".sstli-hr-dark-root .MuiInputAdornment-root, .sstli-hr-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .sstli-hr-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
                   color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiFormHelperText-root, .MuiDialog-paper .MuiFormHelperText-root": {
+                  color: `${theme.palette.text.secondary} !important`
                 },
 
-                ".hr-attendance-dark-root .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                ".sstli-hr-dark-root .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiCheckbox-root.Mui-checked, .MuiDialog-paper .MuiCheckbox-root.Mui-checked": {
                   color: `${DARK_BORDER} !important`
                 },
 
-                ".hr-attendance-dark-root .MuiTabs-root, .MuiDialog-paper .MuiTabs-root": {
-                  backgroundColor: `${darkSection} !important`,
-                  backgroundImage: "none !important",
-                  border: `1px solid ${DARK_BORDER} !important`
-                },
-                ".hr-attendance-dark-root .MuiTab-root, .MuiDialog-paper .MuiTab-root": {
-                  backgroundColor: "transparent !important",
-                  color: `${theme.palette.text.secondary} !important`
-                },
-                ".hr-attendance-dark-root .MuiTab-root.Mui-selected, .MuiDialog-paper .MuiTab-root.Mui-selected": {
-                  color: `${DARK_TEXT} !important`
-                },
-                ".hr-attendance-dark-root .MuiTabs-indicator, .MuiDialog-paper .MuiTabs-indicator": {
-                  backgroundColor: `${DARK_BORDER} !important`
-                },
-
-                ".hr-attendance-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                ".sstli-hr-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
                   backgroundColor: "transparent !important",
                   backgroundImage: "none !important",
                   color: `${theme.palette.text.primary} !important`,
-                  border: `1px solid ${DARK_BORDER} !important`
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
                 },
-                ".hr-attendance-dark-root .MuiAlert-icon, .hr-attendance-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                ".sstli-hr-dark-root .MuiAlert-icon, .MuiDialog-paper .MuiAlert-icon, .sstli-hr-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
                   color: `${DARK_BORDER} !important`
                 },
 
-                ".hr-attendance-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                ".sstli-hr-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
                   borderColor: `${DARK_BORDER} !important`
                 },
 
-                ".hr-attendance-dark-root .MuiTableContainer-root": {
+                ".sstli-hr-dark-root .MuiAppBar-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiTableContainer-root": {
                   backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
                   borderColor: `${DARK_BORDER} !important`
                 },
-                ".hr-attendance-dark-root .MuiTableHead-root .MuiTableCell-root, .MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
+                ".sstli-hr-dark-root .MuiTableHead-root .MuiTableCell-root, .MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
                   backgroundColor: `${darkNested} !important`,
                   color: `${theme.palette.text.primary} !important`,
                   borderColor: `${DARK_BORDER} !important`
                 },
-                ".hr-attendance-dark-root .MuiTableBody-root .MuiTableCell-root, .MuiDialog-paper .MuiTableBody-root .MuiTableCell-root": {
+                ".sstli-hr-dark-root .MuiTableBody-root .MuiTableCell-root, .MuiDialog-paper .MuiTableBody-root .MuiTableCell-root": {
                   backgroundColor: `${darkCard} !important`,
                   color: `${theme.palette.text.primary} !important`,
                   borderColor: "rgba(103,201,157,.24) !important"
                 },
-                ".hr-attendance-dark-root .MuiTableRow-root:hover .MuiTableCell-root, .MuiDialog-paper .MuiTableRow-root:hover .MuiTableCell-root": {
+                ".sstli-hr-dark-root .MuiTableRow-root:hover .MuiTableCell-root, .MuiDialog-paper .MuiTableRow-root:hover .MuiTableCell-root": {
                   backgroundColor: `${darkHover} !important`
                 },
 
-                ".hr-attendance-dark-root .MuiPaginationItem-root": {
+                ".sstli-hr-dark-root .MuiPaginationItem-root": {
                   backgroundColor: "transparent !important",
                   color: `${DARK_TEXT} !important`,
                   border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
                 },
 
                 ".MuiDialog-paper": {
                   backgroundColor: `${darkCard} !important`,
                   backgroundImage: "none !important",
                   color: `${theme.palette.text.primary} !important`,
-                  border: `1px solid ${DARK_BORDER} !important`
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
                 },
                 ".MuiDialogTitle-root": {
                   backgroundColor: `${darkSection} !important`,
@@ -4470,7 +4488,7 @@ export default function HrAttendancePage() {
                   backgroundColor: `${darkSection} !important`,
                   borderTop: `1px solid ${DARK_BORDER} !important`
                 },
-                ".MuiDialog-paper .MuiPaper-root": {
+                ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiCard-root": {
                   backgroundColor: `${darkSection} !important`,
                   backgroundImage: "none !important",
                   color: `${theme.palette.text.primary} !important`,
@@ -4481,7 +4499,8 @@ export default function HrAttendancePage() {
                   backgroundColor: `${darkSection} !important`,
                   backgroundImage: "none !important",
                   color: `${theme.palette.text.primary} !important`,
-                  border: `1px solid ${DARK_BORDER} !important`
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 14px 34px rgba(3,20,13,.28) !important"
                 },
                 ".MuiMenuItem-root, .MuiAutocomplete-option": {
                   backgroundColor: "transparent !important",
@@ -4492,7 +4511,8 @@ export default function HrAttendancePage() {
                 },
                 ".MuiMenuItem-root.Mui-selected, .MuiAutocomplete-option[aria-selected='true']": {
                   backgroundColor: "transparent !important",
-                  color: `${DARK_TEXT} !important`
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
                 },
 
                 ".swal2-popup": {
@@ -4514,18 +4534,24 @@ export default function HrAttendancePage() {
                 ".swal2-input, .swal2-textarea, .swal2-select": {
                   backgroundColor: "transparent !important",
                   color: `${theme.palette.text.primary} !important`,
-                  border: `1px solid ${DARK_BORDER} !important`
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
                 },
 
-                ".hr-attendance-dark-root input[type='date'], .hr-attendance-dark-root input[type='time'], .hr-attendance-dark-root input[type='datetime-local'], .MuiDialog-paper input[type='date'], .MuiDialog-paper input[type='time'], .MuiDialog-paper input[type='datetime-local']": {
+                ".sstli-hr-dark-root input[type='date'], .MuiDialog-paper input[type='date'], .sstli-hr-dark-root input[type='datetime-local'], .MuiDialog-paper input[type='datetime-local'], .sstli-hr-dark-root input[type='time'], .MuiDialog-paper input[type='time']": {
                   colorScheme: "dark"
+                },
+
+                ".sstli-hr-dark-root .print-preview, .sstli-hr-dark-root .document-preview, .sstli-hr-dark-root .a4-page": {
+                  backgroundColor: "#fff !important",
+                  color: "#111 !important",
+                  borderColor: "#ddd !important"
                 }
               }
             : {})
         }}
       />
-
-      <Box sx={[navigationContentSx, uiLayout.scopeSx]}>{content}</Box>
+{content}</Box>
 
       {/* Shift dialog */}
       <Dialog
@@ -4734,7 +4760,7 @@ export default function HrAttendancePage() {
             variant="contained"
             onClick={saveShift}
             disabled={shiftSaving}
-            sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {shiftSaving
               ? "جاري الحفظ..."
@@ -4949,7 +4975,7 @@ export default function HrAttendancePage() {
             variant="contained"
             onClick={saveAssignment}
             disabled={assignmentSaving}
-            sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {assignmentSaving
               ? "جاري الحفظ..."
@@ -5149,7 +5175,7 @@ export default function HrAttendancePage() {
               bulkAssignmentSaving ||
               !selectedCount
             }
-            sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {bulkAssignmentSaving
               ? "جاري التوزيع..."
@@ -5329,7 +5355,7 @@ export default function HrAttendancePage() {
             variant="contained"
             onClick={saveAttendance}
             disabled={attendanceSaving}
-            sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ bgcolor: primary }, uiLayout.buttonSx)}
           >
             {attendanceSaving
               ? "جاري الحفظ..."
@@ -5441,7 +5467,7 @@ export default function HrAttendancePage() {
                 variant="contained"
                 disabled={reportLoading || !reportForm.employeeGuid}
                 onClick={runAttendanceReport}
-                sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary, fontWeight: 900, minWidth: 130 }, uiLayout.buttonSx)}
+                sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 900, minWidth: 130 }, uiLayout.buttonSx)}
               >
                 {reportLoading ? "جاري التجهيز..." : "عرض التقرير"}
               </Button>
@@ -5536,7 +5562,7 @@ export default function HrAttendancePage() {
                       <Typography color="text.secondary" sx={{ fontSize: 12 }}>
                         {label}
                       </Typography>
-                      <Typography sx={{ fontWeight: 950, color: isDark ? theme.palette.text.primary : primaryDark }}>
+                      <Typography sx={{ fontWeight: 950, color: primaryDark }}>
                         {value}
                       </Typography>
                     </Paper>
@@ -5562,7 +5588,7 @@ export default function HrAttendancePage() {
                       display: "grid",
                       gridTemplateColumns:
                         "1.05fr 0.75fr 1.2fr 0.85fr 0.85fr 1fr 0.75fr 0.85fr 0.75fr 1fr 1.35fr 0.65fr",
-                      bgcolor: isDark ? darkNested : "#eef6f2",
+                      bgcolor: "#eef6f2",
                       borderBottom: `1px solid ${border}`,
                       p: 1,
                       fontSize: 12,
@@ -5688,7 +5714,7 @@ export default function HrAttendancePage() {
                 }
                 disabled={bioExcelLoading || bioExcelSaving}
                 sx={uiLayout.withUiSx({
-                  bgcolor: isDark ? "transparent" : primary,
+                  bgcolor: primary,
                   fontWeight: 950,
                   minHeight: 42
                 }, uiLayout.buttonSx)}
@@ -5792,7 +5818,7 @@ export default function HrAttendancePage() {
                         sx={{
                           fontWeight: 950,
                           fontSize: 18,
-                          color: isDark ? theme.palette.text.primary : primaryDark
+                          color: primaryDark
                         }}
                       >
                         {Number(value || 0)}
@@ -5882,8 +5908,8 @@ export default function HrAttendancePage() {
                       alignItems: "center",
                       px: 1,
                       py: 0.9,
-                      bgcolor: isDark ? darkNested : "#eef6f2",
-                      color: isDark ? theme.palette.text.primary : primaryDark,
+                      bgcolor: "#eef6f2",
+                      color: primaryDark,
                       fontSize: 12,
                       fontWeight: 950,
                       borderBottom: `1px solid ${border}`
@@ -6131,7 +6157,7 @@ export default function HrAttendancePage() {
               bioExcelLoading ||
               !bioExcelApprovedLinks.length
             }
-            sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary, fontWeight: 950 }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 950 }, uiLayout.buttonSx)}
           >
             {bioExcelSaving
               ? "جاري حفظ الربط..."
@@ -6272,7 +6298,7 @@ export default function HrAttendancePage() {
                 onClick={refreshBioBulkCache}
                 sx={uiLayout.withUiSx({
                   minHeight: 52,
-                  bgcolor: isDark ? "transparent" : primary,
+                  bgcolor: primary,
                   fontWeight: 950,
                   px: 2.2
                 }, uiLayout.buttonSx)}
@@ -6430,7 +6456,7 @@ export default function HrAttendancePage() {
                       "48px minmax(220px,1.1fr) minmax(360px,1.8fr) 120px",
                     gap: 1,
                     p: 1,
-                    bgcolor: isDark ? darkNested : "#f5f8f6",
+                    bgcolor: "#f5f8f6",
                     borderBottom: `1px solid ${border}`,
                     fontWeight: 950,
                     fontSize: 12
@@ -6840,7 +6866,7 @@ export default function HrAttendancePage() {
             }
             onClick={saveBioBulkLinks}
             sx={uiLayout.withUiSx({
-              bgcolor: isDark ? "transparent" : primary,
+              bgcolor: primary,
               fontWeight: 950,
               minWidth: 190
             }, uiLayout.buttonSx)}
@@ -7049,7 +7075,7 @@ export default function HrAttendancePage() {
                         }
                         sx={uiLayout.withUiSx({
                           minWidth: 110,
-                          bgcolor: isDark ? "transparent" : primary,
+                          bgcolor: primary,
                           fontWeight: 900
                         }, uiLayout.buttonSx)}
                       >

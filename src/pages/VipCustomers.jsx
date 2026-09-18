@@ -45,6 +45,9 @@ const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "https://api4.sstli.com";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
 const getToday = () => {
   return new Date()
     .toISOString()
@@ -130,6 +133,12 @@ const showSuccess = async (message) => {
 
 const VipCustomers = () => {
   const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     muiTheme.breakpoints.down("sm")
@@ -740,10 +749,138 @@ const VipCustomers = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f5f8f7",
-        direction: "rtl"
+        background: isDark ? muiTheme.palette.background.default : "#f5f8f7",
+        color: "text.primary",
+        direction: "rtl",
+        ...(isDark && {
+          "& .MuiButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important",
+            borderColor: `${DARK_BORDER} !important`,
+            boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+          },
+          "& .MuiButton-root.Mui-disabled": {
+            backgroundColor: "transparent !important",
+            color: "rgba(155,224,193,.42) !important",
+            borderColor: "rgba(103,201,157,.34) !important",
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important"
+          },
+          "& .MuiChip-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${muiTheme.palette.text.primary} !important`
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiInputLabel-root": {
+            color: `${muiTheme.palette.text.secondary} !important`
+          },
+          "& .MuiInputAdornment-root, & .MuiInputAdornment-root .MuiSvgIcon-root, & .MuiSelect-icon": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& .MuiPaper-root, & .MuiCard-root": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiDivider-root": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiCircularProgress-root": {
+            color: `${DARK_BORDER} !important`
+          },
+          "& input[type='date']": {
+            colorScheme: "dark"
+          }
+        })
       }}
     >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".MuiMenu-paper, .MuiPopover-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiMenuItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-confirm:hover, .swal2-deny:hover, .swal2-cancel:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+                ".swal2-textarea, .swal2-input, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-html-container [style*='background']": {
+                  background: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -810,11 +947,12 @@ const VipCustomers = () => {
             right: 0,
             width: "100%",
             zIndex: 1400,
-            background:
-              "rgba(255,255,255,.97)",
+            background: isDark
+              ? darkSection
+              : "rgba(255,255,255,.97)",
             backdropFilter:
               "blur(14px)",
-            color: "#17372b",
+            color: isDark ? muiTheme.palette.text.primary : "#17372b",
             borderBottom:
               "1px solid rgba(5,117,70,.12)",
             direction: "rtl"
@@ -843,9 +981,11 @@ const VipCustomers = () => {
               sx={{
                 width: { xs: 36, sm: 40 },
                 height: { xs: 36, sm: 40 },
-                color: "#fff",
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)",
+                color: isDark ? DARK_TEXT : "#fff",
+                background: isDark
+                  ? "transparent"
+                  : "linear-gradient(135deg,#057546,#034d31)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none",
                 boxShadow:
                   "0 5px 14px rgba(5,117,70,.20)"
               }}
@@ -869,7 +1009,7 @@ const VipCustomers = () => {
                   xs: "0.75rem",
                   sm: "0.79rem"
                 },
-                color: "#17372b",
+                color: isDark ? muiTheme.palette.text.primary : "#17372b",
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -913,9 +1053,11 @@ const VipCustomers = () => {
           sx={{
             borderRadius: isPhone ? 1.4 : isTablet ? 1.9 : 4,
             overflow: "hidden",
-            border:
-              "1px solid rgba(5,117,70,0.14)",
-            background: "#fff"
+            border: isDark
+              ? `1px solid ${DARK_BORDER}`
+              : "1px solid rgba(5,117,70,0.14)",
+            background: isDark ? darkCard : "#fff",
+            backgroundImage: "none"
           }}
         >
           <Box
@@ -926,11 +1068,13 @@ const VipCustomers = () => {
                   ? 1
                   : 2.5,
 
-              background:
-                "linear-gradient(135deg, #ffffff 0%, #edf8f3 100%)",
+              background: isDark
+                ? darkSection
+                : "linear-gradient(135deg, #ffffff 0%, #edf8f3 100%)",
 
-              borderBottom:
-                "1px solid rgba(5,117,70,0.12)"
+              borderBottom: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid rgba(5,117,70,0.12)"
             }}
           >
             <Typography
@@ -938,7 +1082,7 @@ const VipCustomers = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#057546",
+                color: isDark ? DARK_TEXT : "#057546",
                 fontSize: isPhone
                   ? "0.75rem"
                   : isTablet
@@ -966,7 +1110,7 @@ const VipCustomers = () => {
                   ? "repeat(2,minmax(0,1fr))"
                   : isTablet
                     ? "repeat(4,minmax(0,1fr))"
-                    : "auto auto minmax(260px,1fr) auto auto auto",
+                    : "minmax(150px,175px) minmax(150px,175px) minmax(260px,1fr)",
                 gap: isPhone
                   ? 0.5
                   : isTablet
@@ -1113,13 +1257,11 @@ const VipCustomers = () => {
               />
 
               <Button
-                variant="contained"
+                variant="outlined"
                 startIcon={<SearchIcon />}
                 onClick={loadData}
                 disabled={loading}
-                sx={uiLayout.withUiSx({
-                  background: "#057546"
-                }, uiLayout.buttonSx)}
+                sx={uiLayout.buttonSx}
               >
                 بحث
               </Button>
@@ -1142,8 +1284,8 @@ const VipCustomers = () => {
                   filteredRows.length === 0
                 }
                 sx={uiLayout.withUiSx({
-                  color: "#ae1e21",
-                  borderColor: "#ae1e21",
+                  color: isDark ? DARK_TEXT : "#ae1e21",
+                  borderColor: isDark ? DARK_BORDER : "#ae1e21",
                   gridColumn: isPhone
                     ? "1 / -1"
                     : undefined
@@ -1164,12 +1306,13 @@ const VipCustomers = () => {
                 sx={{
                   flex: 1,
                   p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
-                  border:
-                    "1px solid rgba(5,117,70,0.22)",
+                  border: isDark
+                    ? `1px solid ${DARK_BORDER}`
+                    : "1px solid rgba(5,117,70,0.22)",
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  color: "#057546",
+                  color: isDark ? DARK_TEXT : "#057546",
                   fontSize: isPhone
                     ? "0.75rem"
                     : isTablet
@@ -1187,12 +1330,13 @@ const VipCustomers = () => {
                 sx={{
                   flex: 1,
                   p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
-                  border:
-                    "1px solid rgba(212,160,23,0.35)",
+                  border: isDark
+                    ? `1px solid ${DARK_BORDER}`
+                    : "1px solid rgba(212,160,23,0.35)",
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  color: "#d4a017",
+                  color: isDark ? DARK_TEXT : "#d4a017",
                   fontSize: isPhone
                     ? "0.75rem"
                     : isTablet
@@ -1210,12 +1354,13 @@ const VipCustomers = () => {
                 sx={{
                   flex: 1,
                   p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
-                  border:
-                    "1px solid rgba(174,30,33,0.25)",
+                  border: isDark
+                    ? `1px solid ${DARK_BORDER}`
+                    : "1px solid rgba(174,30,33,0.25)",
                   textAlign: "center",
                   fontFamily: "Cairo",
                   fontWeight: 900,
-                  color: "#ae1e21",
+                  color: isDark ? DARK_TEXT : "#ae1e21",
                   fontSize: isPhone
                     ? "0.75rem"
                     : isTablet
@@ -1232,8 +1377,9 @@ const VipCustomers = () => {
 
             <Box
               sx={{
-                border:
-                  "1px solid rgba(5,117,70,0.14)",
+                border: isDark
+                  ? `1px solid ${DARK_BORDER}`
+                  : "1px solid rgba(5,117,70,0.14)",
                 borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
                 overflow: "hidden",
                 minHeight: isPhone
@@ -1271,7 +1417,7 @@ const VipCustomers = () => {
                         placeItems: "center",
                         fontFamily: "Cairo",
                         fontWeight: 800,
-                        color: "#789",
+                        color: isDark ? muiTheme.palette.text.secondary : "#789",
                         fontSize: isPhone
                           ? "0.75rem"
                           : "0.75rem"
@@ -1298,7 +1444,7 @@ const VipCustomers = () => {
                             borderRadius: isPhone ? 1.1 : 1.4,
                             borderColor:
                               "rgba(5,117,70,.12)",
-                            background: "#fff"
+                            background: isDark ? darkCard : "#fff"
                           }}
                         >
                           <Stack
@@ -1315,7 +1461,7 @@ const VipCustomers = () => {
                                   fontSize: isPhone
                                     ? "0.75rem"
                                     : "0.75rem",
-                                  color: "#1f2d3d",
+                                  color: isDark ? muiTheme.palette.text.primary : "#1f2d3d",
                                   whiteSpace: "nowrap",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis"
@@ -1331,7 +1477,7 @@ const VipCustomers = () => {
                                   fontSize: isPhone
                                     ? "0.75rem"
                                     : "0.75rem",
-                                  color: "#789"
+                                  color: isDark ? muiTheme.palette.text.secondary : "#789"
                                 }}
                               >
                                 <bdi dir="ltr">{row.nationalId || "-"}</bdi> • <bdi dir="ltr">{row.studentTel || "-"}</bdi>
@@ -1349,12 +1495,19 @@ const VipCustomers = () => {
                                   ? "0.75rem"
                                   : "0.75rem",
                                 whiteSpace: "nowrap",
-                                color: confirmed
-                                  ? "#1b5e20"
-                                  : "#b71c1c",
-                                backgroundColor: confirmed
-                                  ? "#e8f5e9"
-                                  : "#ffebee"
+                                color: isDark
+                                  ? DARK_TEXT
+                                  : confirmed
+                                    ? "#1b5e20"
+                                    : "#b71c1c",
+                                backgroundColor: isDark
+                                  ? "transparent"
+                                  : confirmed
+                                    ? "#e8f5e9"
+                                    : "#ffebee",
+                                border: isDark
+                                  ? `1px solid ${DARK_BORDER}`
+                                  : "1px solid transparent"
                               }}
                             >
                               {row.orderStatus || "غير مؤكد"}
@@ -1377,7 +1530,7 @@ const VipCustomers = () => {
                                   fontSize: isPhone
                                     ? "0.75rem"
                                     : "0.75rem",
-                                  color: "#8a9993"
+                                  color: isDark ? muiTheme.palette.text.secondary : "#8a9993"
                                 }}
                               >
                                 مسئول التسجيل
@@ -1402,7 +1555,7 @@ const VipCustomers = () => {
                                   fontSize: isPhone
                                     ? "0.75rem"
                                     : "0.75rem",
-                                  color: "#8a9993"
+                                  color: isDark ? muiTheme.palette.text.secondary : "#8a9993"
                                 }}
                               >
                                 الدبلوم / الدورة
@@ -1427,7 +1580,7 @@ const VipCustomers = () => {
                                     sx={{
                                       fontFamily: "Cairo",
                                       fontSize: "0.75rem",
-                                      color: "#8a9993"
+                                      color: isDark ? muiTheme.palette.text.secondary : "#8a9993"
                                     }}
                                   >
                                     الفرع
@@ -1448,7 +1601,7 @@ const VipCustomers = () => {
                                     sx={{
                                       fontFamily: "Cairo",
                                       fontSize: "0.75rem",
-                                      color: "#8a9993"
+                                      color: isDark ? muiTheme.palette.text.secondary : "#8a9993"
                                     }}
                                   >
                                     الدفعة
@@ -1500,7 +1653,7 @@ const VipCustomers = () => {
                                 fontSize: isPhone
                                   ? "0.75rem"
                                   : "0.75rem",
-                                color: "#789"
+                                color: isDark ? muiTheme.palette.text.secondary : "#789"
                               }}
                             >
                               {formatGregorianDate(row.createdAt)}
@@ -1522,7 +1675,7 @@ const VipCustomers = () => {
                                     width: isPhone ? 25 : 29,
                                     height: isPhone ? 25 : 29,
                                     p: 0,
-                                    color: "#057546",
+                                    color: isDark ? DARK_TEXT : "#057546",
                                     background: "#eef8f3"
                                   }}
                                 >
@@ -1546,7 +1699,7 @@ const VipCustomers = () => {
                                     width: isPhone ? 25 : 29,
                                     height: isPhone ? 25 : 29,
                                     p: 0,
-                                    color: "#ae1e21",
+                                    color: isDark ? DARK_TEXT : "#ae1e21",
                                     background: "#fff0f0"
                                   }}
                                 >

@@ -6,6 +6,8 @@ import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
+  useTheme,
+  GlobalStyles,
   Alert,
   Badge,
   Box,
@@ -267,6 +269,9 @@ const API_BASE_URL =
 
 
 
+
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
 const PAGE_DIRECTION = "rtl";
 const PAGE_TEXT_ALIGN = "right";
 const DIALOG_DIRECTION = "rtl";
@@ -391,6 +396,14 @@ const getRemainingText = (row) => {
 };
 
 export default function HrContractsPage() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
+
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -2163,7 +2176,253 @@ export default function HrContractsPage() {
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><>
-      <Box sx={[navigationContentSx, uiLayout.scopeSx]}>{content}</Box>
+      <Box className="sstli-hr-dark-root" sx={[navigationContentSx, uiLayout.scopeSx]}>
+
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".sstli-hr-dark-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiPaper-root:not(.print-preview):not(.document-preview):not(.a4-page), .sstli-hr-dark-root .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: `${DARK_BORDER} !important`,
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".sstli-hr-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                  backgroundColor: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".sstli-hr-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiIconButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".sstli-hr-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root, .sstli-hr-dark-root .MuiBadge-badge": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiTabs-root, .MuiDialog-paper .MuiTabs-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  borderRadius: "10px !important",
+                  minHeight: "38px !important"
+                },
+                ".sstli-hr-dark-root .MuiTab-root, .MuiDialog-paper .MuiTab-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.secondary} !important`,
+                  minHeight: "36px !important"
+                },
+                ".sstli-hr-dark-root .MuiTab-root.Mui-selected, .MuiDialog-paper .MuiTab-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiTabs-indicator, .MuiDialog-paper .MuiTabs-indicator": {
+                  backgroundColor: `${DARK_BORDER} !important`,
+                  height: "2px !important"
+                },
+
+                ".sstli-hr-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".sstli-hr-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .sstli-hr-dark-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`,
+                  borderWidth: "1px !important"
+                },
+                ".sstli-hr-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".sstli-hr-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiInputAdornment-root, .sstli-hr-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .sstli-hr-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiFormHelperText-root, .MuiDialog-paper .MuiFormHelperText-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiCheckbox-root.Mui-checked, .MuiDialog-paper .MuiCheckbox-root.Mui-checked": {
+                  color: `${DARK_BORDER} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiAlert-icon, .MuiDialog-paper .MuiAlert-icon, .sstli-hr-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiAppBar-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiTableHead-root .MuiTableCell-root, .MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiTableBody-root .MuiTableCell-root, .MuiDialog-paper .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".sstli-hr-dark-root .MuiTableRow-root:hover .MuiTableCell-root, .MuiDialog-paper .MuiTableRow-root:hover .MuiTableCell-root": {
+                  backgroundColor: `${darkHover} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiPaginationItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiCard-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 14px 34px rgba(3,20,13,.28) !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected, .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root input[type='date'], .MuiDialog-paper input[type='date'], .sstli-hr-dark-root input[type='datetime-local'], .MuiDialog-paper input[type='datetime-local'], .sstli-hr-dark-root input[type='time'], .MuiDialog-paper input[type='time']": {
+                  colorScheme: "dark"
+                },
+
+                ".sstli-hr-dark-root .print-preview, .sstli-hr-dark-root .document-preview, .sstli-hr-dark-root .a4-page": {
+                  backgroundColor: "#fff !important",
+                  color: "#111 !important",
+                  borderColor: "#ddd !important"
+                }
+              }
+            : {})
+        }}
+      />
+{content}</Box>
 
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
@@ -2720,7 +2979,7 @@ export default function HrContractsPage() {
                   height: "100%",
                   minHeight: "72vh",
                   border: 0,
-                  bgcolor: "#fff"
+                  bgcolor: isDark ? darkCard : "#fff"
                 }}
               />
             )
@@ -2760,7 +3019,7 @@ export default function HrContractsPage() {
             px: { xs: 1.5, sm: 2.25 },
             py: { xs: 1.15, sm: 1.4 },
             borderBottom: `1px solid ${border}`,
-            bgcolor: "#fff",
+            bgcolor: isDark ? darkCard : "#fff",
             color: primaryDark
           }}
         >
@@ -2798,7 +3057,7 @@ export default function HrContractsPage() {
                 p: { xs: 1, sm: 1.2 },
                 borderRadius: 2.2,
                 borderColor: border,
-                bgcolor: "#fff"
+                bgcolor: isDark ? darkCard : "#fff"
               }}
             >
               <Typography
@@ -3060,7 +3319,7 @@ export default function HrContractsPage() {
             justifyContent: "flex-start",
             flexDirection: "row",
             flexWrap: "wrap",
-            bgcolor: "#fff",
+            bgcolor: isDark ? darkCard : "#fff",
             "& .MuiButton-root": {
               minHeight: 38,
               minWidth: { xs: 96, sm: 110 }

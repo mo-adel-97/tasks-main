@@ -17,6 +17,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  GlobalStyles,
   useMediaQuery,
   useTheme
 } from "@mui/material";
@@ -44,6 +45,115 @@ const primary = "#057546";
 const primaryDark = "#034d31";
 const border = "#dce8e2";
 const soft = "#f7fbf9";
+
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
+const darkControlContractSx = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  return {
+    backgroundImage: "none",
+
+    "& .MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important",
+      fontWeight: "800 !important"
+    },
+    "& .MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    "& .MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    "& .MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+
+    "& .MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiIconButton-root.Mui-disabled": {
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important"
+    },
+
+    "& .MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`,
+      borderWidth: "1px !important"
+    },
+    "& .MuiInputLabel-root": {
+      color: `${theme.palette.text.secondary} !important`
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: `${DARK_TEXT} !important`
+    },
+    "& .MuiInputAdornment-root, & .MuiInputAdornment-root .MuiSvgIcon-root": {
+      color: `${DARK_TEXT} !important`
+    },
+    "& .MuiSelect-icon": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    "& .MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiAlert-icon": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    "& .MuiCircularProgress-root": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    "& input[type='date']": {
+      colorScheme: "dark"
+    }
+  };
+};
 
 const pad2 = (value) =>
   String(value).padStart(2, "0");
@@ -255,6 +365,13 @@ const uniqueSorted = (values) =>
 
 export default function UserActionReport() {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
+
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -732,7 +849,10 @@ export default function UserActionReport() {
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: soft,
+        width: "100%",
+        maxWidth: "100%",
+        bgcolor: isDark ? theme.palette.background.default : soft,
+        color: "text.primary",
         p: {
           xs: 0.35,
           sm: 0.7,
@@ -741,17 +861,55 @@ export default function UserActionReport() {
         overflowX: "hidden"
       }}
     >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".MuiMenu-paper, .MuiPopover-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 14px 34px rgba(3,20,13,.28) !important"
+                },
+                ".MuiMenuItem-root": {
+                  color: `${theme.palette.text.primary} !important`,
+                  backgroundColor: "transparent !important"
+                },
+                ".MuiMenuItem-root:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected:hover": {
+                  backgroundColor: `${darkHover} !important`
+                }
+              }
+            : {})
+        }}
+      />
+
       <Paper
         elevation={0}
-        sx={{
+        sx={(theme) => ({
           border:
-            `1px solid ${border}`,
+            `1px solid ${theme.palette.mode === "dark" ? DARK_BORDER : border}`,
           borderRadius: {
             xs: 1.2,
             sm: 2.2
           },
-          overflow: "hidden"
-        }}
+          overflow: "hidden",
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? (theme.palette.surfaces?.card || "#13251d")
+              : "#ffffff",
+          color: theme.palette.text.primary,
+          backgroundImage: "none",
+          ...darkControlContractSx(theme)
+        })}
       >
         <Box
           sx={uiLayout.withUiSx({
@@ -759,8 +917,9 @@ export default function UserActionReport() {
               xs: 48,
               sm: 62
             },
-            bgcolor: primaryDark,
-            color: "#fff",
+            bgcolor: isDark ? darkSection : primaryDark,
+            color: isDark ? "text.primary" : "#fff",
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "none",
             px: {
               xs: 0.65,
               sm: 1.3
@@ -780,7 +939,7 @@ export default function UserActionReport() {
                 setMobileSidebarOpen(true)
               }
               sx={{
-                color: "#fff",
+                color: isDark ? DARK_TEXT : "#fff",
                 p: 0.25
               }}
             >
@@ -826,8 +985,9 @@ export default function UserActionReport() {
                 searched
                   ? "flex"
                   : "none",
-              bgcolor: "#fff",
-              color: primaryDark,
+              bgcolor: isDark ? "transparent" : "#fff",
+              color: isDark ? DARK_TEXT : primaryDark,
+              border: isDark ? `1px solid ${DARK_BORDER}` : "none",
               fontWeight: 900,
               fontSize: {
                 xs: 12,
@@ -853,7 +1013,9 @@ export default function UserActionReport() {
               xs: 0.45,
               sm: 0.7
             },
-            alignItems: "center"
+            alignItems: "center",
+            backgroundColor: isDark ? darkCard : "transparent",
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "none"
           }, uiLayout.filterBarSx)}
         >
           <TextField
@@ -1004,10 +1166,11 @@ export default function UserActionReport() {
               },
               mb: 0.8,
               border:
-                `1px solid ${border}`,
+                `1px solid ${isDark ? DARK_BORDER : border}`,
               borderRadius: 1.5,
-              bgcolor: "#fbfefc",
-              overflow: "hidden"
+              bgcolor: isDark ? darkSection : "#fbfefc",
+              overflow: "hidden",
+              backgroundImage: "none"
             }}
           >
             <Box
@@ -1450,12 +1613,19 @@ export default function UserActionReport() {
               sm: 0.8
             },
             border:
-              `1px solid ${border}`,
+              `1px solid ${isDark ? DARK_BORDER : border}`,
             borderRadius: 1.5,
-            overflow: "auto",
+            overflowX: "auto",
+            overflowY: "auto",
+            maxWidth: "100%",
             maxHeight:
               "calc(100vh - 265px)",
-            bgcolor: "#fff"
+            bgcolor: isDark ? darkSection : "#fff",
+            backgroundImage: "none",
+            scrollbarColor: isDark
+              ? `${DARK_BORDER} ${darkSection}`
+              : undefined,
+            scrollbarWidth: "thin"
           }}
         >
           {filteredRows.length > 0 && (
@@ -1473,8 +1643,8 @@ export default function UserActionReport() {
                   position: "sticky",
                   top: 0,
                   zIndex: 2,
-                  bgcolor: "#e8f3ef",
-                  color: "#17352c",
+                  bgcolor: isDark ? darkNested : "#e8f3ef",
+                  color: isDark ? theme.palette.text.primary : "#17352c",
                   fontFamily: "Cairo",
                   fontWeight: 900,
                   fontSize: {
@@ -1494,7 +1664,7 @@ export default function UserActionReport() {
                     sm: 0.75
                   },
                   borderBottom:
-                    `1px solid ${border}`
+                    `1px solid ${isDark ? DARK_BORDER : border}`
                 },
                 "& td": {
                   fontFamily: "Cairo",
@@ -1519,17 +1689,19 @@ export default function UserActionReport() {
                     sm: 0.65
                   },
                   borderBottom:
-                    "1px solid #edf2ef"
+                    isDark
+                      ? "1px solid rgba(103,201,157,.28)"
+                      : "1px solid #edf2ef"
                 },
                 "& tbody tr:nth-of-type(even)":
                   {
                     bgcolor:
-                      "#fbfdfc"
+                      isDark ? darkCard : "#fbfdfc"
                   },
                 "& tbody tr:hover":
                   {
                     bgcolor:
-                      "#f0f8f5"
+                      isDark ? darkHover : "#f0f8f5"
                   }
               }}
             >
@@ -1621,7 +1793,10 @@ export default function UserActionReport() {
             }><Box
       sx={{
         minHeight: "100vh",
-        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
+        width: "100%",
+        maxWidth: "100%",
+        overflowX: "hidden",
+        bgcolor: theme.palette.mode === "dark" ? theme.palette.background.default : soft
       }}
     >
       {isDesktop ? (

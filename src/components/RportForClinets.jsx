@@ -2,8 +2,10 @@ import { adaptiveInlineStyle } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { navigationContentStyle } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  useTheme,
+  GlobalStyles,
   Box, Typography, TextField, IconButton, Stack, Paper,
   FormControl, InputLabel, Select, MenuItem, Tooltip, Chip,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button
@@ -47,7 +49,65 @@ const complainSources = [
   "موظف إداري", "مدرب", "مشرف فرع", "مسوق", "آخري"
 ];
 
+const CALLS_CACHE_KEY = "sstli_report_clients_core_v3";
+const CALLS_CACHE_TTL_MS = 60 * 1000;
+const STUDENT_CACHE_TTL_MS = 10 * 60 * 1000;
+const STUDENT_BATCH_SIZE = 6;
+
+const readSessionCache = (key, ttlMs) => {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    if (!parsed?.timestamp || Date.now() - parsed.timestamp > ttlMs) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    return parsed.data ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const writeSessionCache = (key, data) => {
+  try {
+    sessionStorage.setItem(
+      key,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data
+      })
+    );
+  } catch {
+    // Cache is an optimization only.
+  }
+};
+
+const studentCacheKey = (accountGuid) =>
+  `sstli_report_client_student_${String(accountGuid || "").toLowerCase()}`;
+
+const runInBatches = async (items, worker, batchSize = STUDENT_BATCH_SIZE) => {
+  for (let start = 0; start < items.length; start += batchSize) {
+    const batch = items.slice(start, start + batchSize);
+    await Promise.allSettled(batch.map(worker));
+  }
+};
+
+
 const ReportClients = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
+
+  const studentCacheRef = useRef(new Map());
+  const studentInFlightRef = useRef(new Set());
+
   const [calls, setCalls] = useState([]);
   const [filteredCalls, setFilteredCalls] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
@@ -79,85 +139,239 @@ const [userFilter, setUserFilter] = useState('');
 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [callsRes, usersRes, followRes] = await Promise.all([
-          axios.get('https://api1.sstli.com/api/call/all'),
-          axios.get('https://api1.sstli.com/api/userinfo'),
-          axios.get('https://api1.sstli.com/api/followcall')
-        ]);
+  const transformCalls = (rawCalls, rawUsers) => {
+    const userMap = {};
 
-        const userMap = {};
-        usersRes.data.forEach(u => {
-          userMap[u.guid] = u.fullName;
-        });
+    (Array.isArray(rawUsers) ? rawUsers : []).forEach((user) => {
+      userMap[user.guid] = user.fullName;
+    });
 
-        // Create a map of accountGuid to student info
-        const studentInfo = {};
-        const uniqueAccountGuids = [...new Set(callsRes.data.map(call => call.accountGuid).filter(Boolean))];
-        
-        // Fetch student info for each unique accountGuid
-        await Promise.all(uniqueAccountGuids.map(async (accountGuid) => {
-          try {
-            const response = await axios.get(`https://api1.sstli.com/api/StudyInfo/by-account/${accountGuid}`);
-            studentInfo[accountGuid] = response.data;
-          } catch (error) {
-            console.error(`Error fetching student info for account ${accountGuid}:`, error);
-            studentInfo[accountGuid] = {
-              studentName: 'غير متوفر',
-              studentTel: 'غير متوفر',
-              nationalId: 'غير متوفر'
-            };
-          }
-        }));
+    return (Array.isArray(rawCalls) ? rawCalls : []).map((call, index) => {
+      const accountGuid = call.accountGuid || "";
+      const cachedStudent = accountGuid
+        ? studentCacheRef.current.get(accountGuid) ||
+          readSessionCache(
+            studentCacheKey(accountGuid),
+            STUDENT_CACHE_TTL_MS
+          )
+        : null;
 
-        setStudentInfoMap(studentInfo);
-
-        const transformed = callsRes.data.map((call, index) => {
-          const dateOnly = call.callDate?.split('T')[0];
-          const callGuid = call.guid;
-          const studentData = call.accountGuid ? studentInfo[call.accountGuid] : null;
-
-          return {
-            id: index + 1,
-            guid: callGuid,
-            date: dateOnly,
-            user: userMap[call.userGuid] || '',
-            type: callTypeLabels[call.callType] || '',
-            program: programLabels[call.programInquiry] || '',
-            topic: studyTopics[call.studyInquiryTopic - 1] || '',
-            complain: (call.callType === 2 && call.complainInquiry !== null)
-              ? complainSources[call.complainInquiry]
-              : '',
-            details: call.complainDetails || '',
-            notes: call.notes || '',
-            status: call.callStatus === 1 ? 'متابعة لاحقة' : 'مكملة',
-            forwarded: call.forwardCall ? 'نعم' : 'لا',
-            to: (() => {
-              const fwdGuid = call.supervisorGuid || call.forwardTo;
-              return userMap[fwdGuid] || '';
-            })(),
-            studentName: studentData?.studentName || 'غير متوفر',
-            studentTel: studentData?.studentTel || 'غير متوفر',
-            nationalId: studentData?.nationalId || 'غير متوفر'
-          };
-        });
-
-        setCalls(transformed);
-        setFilteredCalls(transformed);
-const uniqueUsers = [...new Set(transformed.map(call => call.user))].filter(Boolean);
-setUsers(uniqueUsers);
-        setFollowUps(followRes.data);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      } finally {
-        setLoading(false);
+      if (accountGuid && cachedStudent) {
+        studentCacheRef.current.set(accountGuid, cachedStudent);
       }
-    };
 
+      return {
+        id: index + 1,
+        guid: call.guid,
+        accountGuid,
+        date: call.callDate?.split("T")[0],
+        user: userMap[call.userGuid] || "",
+        type: callTypeLabels[call.callType] || "",
+        program: programLabels[call.programInquiry] || "",
+        topic: studyTopics[call.studyInquiryTopic - 1] || "",
+        complain:
+          call.callType === 2 && call.complainInquiry !== null
+            ? complainSources[call.complainInquiry]
+            : "",
+        details: call.complainDetails || "",
+        notes: call.notes || "",
+        status: call.callStatus === 1 ? "متابعة لاحقة" : "مكملة",
+        forwarded: call.forwardCall ? "نعم" : "لا",
+        to: userMap[call.supervisorGuid || call.forwardTo] || "",
+        studentName: accountGuid
+          ? cachedStudent?.studentName || "جارٍ التحميل..."
+          : "غير متوفر",
+        studentTel: accountGuid
+          ? cachedStudent?.studentTel || "جارٍ التحميل..."
+          : "غير متوفر",
+        nationalId: accountGuid
+          ? cachedStudent?.nationalId || "جارٍ التحميل..."
+          : "غير متوفر"
+      };
+    });
+  };
+
+  const applyStudentInfo = (infoMap) => {
+    if (!infoMap || !Object.keys(infoMap).length) return;
+
+    setStudentInfoMap((current) => ({
+      ...current,
+      ...infoMap
+    }));
+
+    setCalls((currentCalls) =>
+      currentCalls.map((call) => {
+        const student = infoMap[call.accountGuid];
+        if (!student) return call;
+
+        return {
+          ...call,
+          studentName: student.studentName || "غير متوفر",
+          studentTel: student.studentTel || "غير متوفر",
+          nationalId: student.nationalId || "غير متوفر"
+        };
+      })
+    );
+  };
+
+  const hydrateStudentInfoForRows = async (rows) => {
+    const accountGuids = [
+      ...new Set(
+        (Array.isArray(rows) ? rows : [])
+          .map((row) => row.accountGuid)
+          .filter(Boolean)
+      )
+    ];
+
+    if (!accountGuids.length) return;
+
+    const cached = {};
+    const missing = [];
+
+    accountGuids.forEach((accountGuid) => {
+      const memoryHit = studentCacheRef.current.get(accountGuid);
+
+      if (memoryHit) {
+        cached[accountGuid] = memoryHit;
+        return;
+      }
+
+      const sessionHit = readSessionCache(
+        studentCacheKey(accountGuid),
+        STUDENT_CACHE_TTL_MS
+      );
+
+      if (sessionHit) {
+        studentCacheRef.current.set(accountGuid, sessionHit);
+        cached[accountGuid] = sessionHit;
+        return;
+      }
+
+      if (!studentInFlightRef.current.has(accountGuid)) {
+        missing.push(accountGuid);
+      }
+    });
+
+    if (Object.keys(cached).length) {
+      applyStudentInfo(cached);
+    }
+
+    if (!missing.length) return;
+
+    const fetched = {};
+
+    await runInBatches(
+      missing,
+      async (accountGuid) => {
+        studentInFlightRef.current.add(accountGuid);
+
+        try {
+          const response = await axios.get(
+            `https://api1.sstli.com/api/StudyInfo/by-account/${accountGuid}`,
+            { timeout: 15000 }
+          );
+
+          const student = response.data || {};
+          studentCacheRef.current.set(accountGuid, student);
+          writeSessionCache(studentCacheKey(accountGuid), student);
+          fetched[accountGuid] = student;
+        } catch (error) {
+          console.error(
+            `Error fetching student info for account ${accountGuid}:`,
+            error
+          );
+
+          const fallback = {
+            studentName: "غير متوفر",
+            studentTel: "غير متوفر",
+            nationalId: "غير متوفر"
+          };
+
+          studentCacheRef.current.set(accountGuid, fallback);
+          writeSessionCache(studentCacheKey(accountGuid), fallback);
+          fetched[accountGuid] = fallback;
+        } finally {
+          studentInFlightRef.current.delete(accountGuid);
+        }
+      },
+      STUDENT_BATCH_SIZE
+    );
+
+    applyStudentInfo(fetched);
+  };
+
+  const fetchData = async ({ useCacheFirst = true } = {}) => {
+    try {
+      const cachedPayload = useCacheFirst
+        ? readSessionCache(CALLS_CACHE_KEY, CALLS_CACHE_TTL_MS)
+        : null;
+
+      if (
+        cachedPayload?.calls &&
+        cachedPayload?.users &&
+        cachedPayload?.followUps
+      ) {
+        const cachedRows = transformCalls(
+          cachedPayload.calls,
+          cachedPayload.users
+        );
+
+        setCalls(cachedRows);
+        setFilteredCalls(cachedRows);
+        setFollowUps(cachedPayload.followUps);
+        setUsers(
+          [...new Set(cachedRows.map((call) => call.user))].filter(Boolean)
+        );
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
+      // These three requests run together.
+      // The page does not wait for StudyInfo of every call anymore.
+      const [callsRes, usersRes, followRes] = await Promise.all([
+        axios.get("https://api1.sstli.com/api/call/all", {
+          timeout: 30000
+        }),
+        axios.get("https://api1.sstli.com/api/userinfo", {
+          timeout: 20000
+        }),
+        axios.get("https://api1.sstli.com/api/followcall", {
+          timeout: 20000
+        })
+      ]);
+
+      const rawCalls = Array.isArray(callsRes.data) ? callsRes.data : [];
+      const rawUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
+      const rawFollowUps = Array.isArray(followRes.data)
+        ? followRes.data
+        : [];
+
+      writeSessionCache(CALLS_CACHE_KEY, {
+        calls: rawCalls,
+        users: rawUsers,
+        followUps: rawFollowUps
+      });
+
+      const rows = transformCalls(rawCalls, rawUsers);
+
+      // Show calls immediately.
+      setCalls(rows);
+      setFilteredCalls(rows);
+      setFollowUps(rawFollowUps);
+      setUsers(
+        [...new Set(rows.map((call) => call.user))].filter(Boolean)
+      );
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUserChange = (e) => {
@@ -215,7 +429,57 @@ setUsers(uniqueUsers);
     }
 
     setFilteredCalls(filtered);
-  }, [calls, selectedDate, callTypeFilter, callStatusFilter, dateRange]);
+  }, [
+    calls,
+    selectedDate,
+    callTypeFilter,
+    callStatusFilter,
+    userFilter,
+    dateRange
+  ]);
+
+
+  const sortedFilteredCalls = useMemo(
+    () =>
+      [...filteredCalls].sort((a, b) =>
+        String(a.date || "").localeCompare(String(b.date || ""))
+      ),
+    [filteredCalls]
+  );
+
+  const visiblePageCalls = useMemo(() => {
+    const start =
+      (paginationModel.page || 0) *
+      (paginationModel.pageSize || 10);
+
+    return sortedFilteredCalls.slice(
+      start,
+      start + (paginationModel.pageSize || 10)
+    );
+  }, [sortedFilteredCalls, paginationModel]);
+
+  useEffect(() => {
+    if (!visiblePageCalls.length) return;
+
+    hydrateStudentInfoForRows(visiblePageCalls);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visiblePageCalls]);
+
+  const followUpsByCall = useMemo(() => {
+    const map = new Map();
+
+    followUps.forEach((followUp) => {
+      if (!followUp.callGuid) return;
+
+      if (!map.has(followUp.callGuid)) {
+        map.set(followUp.callGuid, []);
+      }
+
+      map.get(followUp.callGuid).push(followUp);
+    });
+
+    return map;
+  }, [followUps]);
 
   const handleDateChange = (e) => {
     const value = e.target.value;
@@ -247,8 +511,8 @@ const resetFilters = () => {
   setDateRange({ start: null, end: null });
 };
 
-  const refreshData = () => {
-    window.location.reload();
+  const refreshData = async () => {
+    await fetchData({ useCacheFirst: false });
   };
 
   const handleNotesClick = (notes) => {
@@ -262,7 +526,7 @@ const resetFilters = () => {
   };
 
   const handleFollowUpsClick = (call) => {
-    const callFollowUps = followUps.filter(f => f.callGuid === call.guid);
+    const callFollowUps = followUpsByCall.get(call.guid) || [];
     setSelectedFollowUps(callFollowUps);
     setSelectedCallInfo(call);
     setFollowUpsDialogOpen(true);
@@ -885,9 +1149,17 @@ const resetFilters = () => {
 
   // Statistics
   const totalCalls = filteredCalls.length;
-  const totalFollowUps = followUps.filter(f =>
-    filteredCalls.some(c => c.guid === f.callGuid)
-  ).length;
+  const filteredCallGuidSet = new Set(
+    filteredCalls.map((call) => call.guid)
+  );
+
+  const totalFollowUps = followUps.reduce(
+    (count, followUp) =>
+      filteredCallGuidSet.has(followUp.callGuid)
+        ? count + 1
+        : count,
+    0
+  );
   const totalByType = {
     'استفسار عام': filteredCalls.filter(c => c.type === 'استفسار عام').length,
     'استفسار دراسي': filteredCalls.filter(c => c.type === 'استفسار دراسي').length,
@@ -904,21 +1176,24 @@ const resetFilters = () => {
       headerName: 'المتابعات',
       width: 80,
       sortable: false,
-      renderCell: (params) => (
-        followUps.some(f => f.callGuid === params.row.guid) ? (
+      renderCell: (params) => {
+        const rowFollowUps =
+          followUpsByCall.get(params.row.guid) || [];
+
+        return rowFollowUps.length ? (
           <Tooltip title="عرض المتابعات">
             <IconButton
               onClick={() => handleFollowUpsClick(params.row)}
               size="small"
             >
-              <Visibility color="primary" />
+              <Visibility />
               <Typography variant="caption" sx={{ mr: 1 }}>
-                (<bdi dir="ltr">{followUps.filter(f => f.callGuid === params.row.guid).length}</bdi>)
+                (<bdi dir="ltr">{rowFollowUps.length}</bdi>)
               </Typography>
             </IconButton>
           </Tooltip>
-        ) : null
-      )
+        ) : null;
+      }
     },
     { 
       field: 'date', 
@@ -939,7 +1214,12 @@ const resetFilters = () => {
         <Chip 
           label={params.value} 
           size="small" 
-          sx={{ backgroundColor: '#e3f2fd' }} 
+          variant={isDark ? "outlined" : "filled"}
+          sx={{
+            backgroundColor: isDark ? "transparent" : "#e3f2fd",
+            color: isDark ? "#9BE0C1" : undefined,
+            borderColor: isDark ? "#67C99D" : undefined
+          }} 
         />
       )
     },
@@ -1052,10 +1332,20 @@ const resetFilters = () => {
         <Chip
           label={params.value}
           size="small"
+          variant={isDark ? "outlined" : "filled"}
           sx={{
             fontWeight: 'bold',
-            backgroundColor: params.value === 'متابعة لاحقة' ? '#fff3e0' : '#e8f5e9',
-            color: params.value === 'متابعة لاحقة' ? '#e65100' : '#2e7d32'
+            backgroundColor: isDark
+              ? "transparent"
+              : params.value === 'متابعة لاحقة'
+                ? '#fff3e0'
+                : '#e8f5e9',
+            color: isDark
+              ? '#9BE0C1'
+              : params.value === 'متابعة لاحقة'
+                ? '#e65100'
+                : '#2e7d32',
+            borderColor: isDark ? '#67C99D' : undefined
           }}
         />
       )
@@ -1105,11 +1395,149 @@ const resetFilters = () => {
   return (
     <NavigationShell variant="standard" ><>
       
-      <Box style={adaptiveInlineStyle({
-        padding: "20px",
-        direction: 'rtl',
-        ...navigationContentStyle
-      })}>
+      
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".report-clients-dark-root": {
+                  backgroundColor: `${theme.palette.background.default} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".report-clients-dark-root .MuiPaper-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".report-clients-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".report-clients-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover": {
+                  background: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+                ".report-clients-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".report-clients-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".report-clients-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".report-clients-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#67C99D !important",
+                  borderWidth: "1px !important"
+                },
+                ".report-clients-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".report-clients-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: "#9BE0C1 !important"
+                },
+                ".report-clients-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: "#9BE0C1 !important"
+                },
+                ".report-clients-dark-root .MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".report-clients-dark-root .MuiDataGrid-columnHeaders, .report-clients-dark-root .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".report-clients-dark-root .MuiDataGrid-cell": {
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".report-clients-dark-root .MuiDataGrid-row": {
+                  backgroundColor: `${darkCard} !important`
+                },
+                ".report-clients-dark-root .MuiDataGrid-row:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".report-clients-dark-root .MuiDataGrid-toolbarContainer, .report-clients-dark-root .MuiDataGrid-footerContainer": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: "1px solid #67C99D !important"
+                },
+                ".MuiDialogContent-root, .MuiDialogContentText-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: "1px solid #67C99D !important"
+                },
+                ".MuiDialog-paper .MuiPaper-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenu-paper, .MuiPopover-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".report-clients-dark-root input[type='date'], .MuiDialog-paper input[type='date']": {
+                  colorScheme: "dark"
+                }
+              }
+            : {})
+        }}
+      />
+
+      <Box
+        className="report-clients-dark-root"
+        style={adaptiveInlineStyle({
+          padding: "20px",
+          direction: 'rtl',
+          ...navigationContentStyle
+        })}
+        sx={{
+          minHeight: "100vh",
+          width: "100%",
+          maxWidth: "100%",
+          overflowX: "hidden",
+          boxSizing: "border-box",
+          bgcolor: isDark ? theme.palette.background.default : "transparent"
+        }}
+      >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
             <Description sx={{ verticalAlign: 'middle', marginInlineEnd: 1 }} />
@@ -1138,38 +1566,131 @@ const resetFilters = () => {
             mb: 3,
           }}
         >
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f5f5f5' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#f5f5f5',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">إجمالي المكالمات</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>{totalCalls}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#1976d2'
+              }}>{totalCalls}</Typography>
           </Paper>
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#e8f5e9' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#e8f5e9',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">مكتملة</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>{totalByStatus['مكملة']}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#2e7d32'
+              }}>{totalByStatus['مكملة']}</Typography>
           </Paper>
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#fff3e0' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#fff3e0',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">متابعة لاحقة</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#e65100' }}>{totalByStatus['متابعة لاحقة']}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#e65100'
+              }}>{totalByStatus['متابعة لاحقة']}</Typography>
           </Paper>
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#e3f2fd' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#e3f2fd',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">استفسارات عامة</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1565c0' }}>{totalByType['استفسار عام']}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#1565c0'
+              }}>{totalByType['استفسار عام']}</Typography>
           </Paper>
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#e1f5fe' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#e1f5fe',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">استفسارات دراسية</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#0277bd' }}>{totalByType['استفسار دراسي']}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#0277bd'
+              }}>{totalByType['استفسار دراسي']}</Typography>
           </Paper>
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#ffebee' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#ffebee',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">شكاوى</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#c62828' }}>{totalByType['شكوى']}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#c62828'
+              }}>{totalByType['شكوى']}</Typography>
           </Paper>
-          <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f3e5f5' }}>
+          <Paper
+            sx={{
+              p: 1.5,
+              textAlign: 'center',
+              bgcolor: isDark ? darkCard : '#f3e5f5',
+              border: isDark ? '1px solid #67C99D' : undefined,
+              borderRadius: 2,
+              boxShadow: 'none'
+            }}
+          >
             <Typography variant="subtitle2" color="text.secondary">إجمالي المتابعات</Typography>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#6a1b9a' }}>{totalFollowUps}</Typography>
+            <Typography variant="h4" sx={{
+                fontWeight: 'bold',
+                color: isDark ? '#9BE0C1' : '#6a1b9a'
+              }}>{totalFollowUps}</Typography>
           </Paper>
         </Box>
 
         {/* Filters Section */}
-        <Paper sx={{ mb: 3, p: 2, backgroundColor: '#fafafa', borderRadius: 2 }}>
+        <Paper
+          sx={{
+            mb: 2,
+            p: 1.5,
+            backgroundColor: isDark ? darkSection : '#fafafa',
+            border: isDark ? '1px solid #67C99D' : undefined,
+            borderRadius: 2,
+            boxShadow: 'none'
+          }}
+        >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
               <FilterAlt sx={{ verticalAlign: 'middle', marginInlineEnd: 1 }} />
@@ -1182,7 +1703,7 @@ const resetFilters = () => {
                 sx={{ 
                   border: '1px solid #e0e0e0',
                   borderRadius: 1,
-                  backgroundColor: '#fff'
+                  backgroundColor: isDark ? 'transparent' : '#fff'
                 }}
               >
                 <FilterAltOff fontSize="small" />
@@ -1266,26 +1787,26 @@ const resetFilters = () => {
         </Paper>
 
         {/* DataGrid Section */}
-        <Paper sx={{ p: 1, borderRadius: 2, mb: "30px" }}>
+        <Paper
+          sx={{
+            p: 1,
+            borderRadius: 2,
+            mb: "30px",
+            backgroundColor: isDark ? darkCard : '#fff',
+            border: isDark ? '1px solid #67C99D' : undefined,
+            boxShadow: 'none'
+          }}
+        >
   <h3>تفاصيل المكالمات</h3>
   <div style={{ minHeight: 300, width: '100%' }}>
     <DataGrid
-      rows={[...filteredCalls].sort((a, b) => {
-        // Convert dates to comparable format (YYYY-MM-DD)
-        const dateA = a.date.split('-').reverse().join('-');
-        const dateB = b.date.split('-').reverse().join('-');
-        
-        // Compare as strings (will sort chronologically)
-        if (dateA < dateB) return -1;
-        if (dateA > dateB) return 1;
-        return 0;
-      })}
+      rows={sortedFilteredCalls}
       columns={columns}
       paginationModel={paginationModel}
       onPaginationModelChange={(newModel) => {
         setPaginationModel(newModel);
       }}
-      rowsPerPageOptions={[10, 25, 50, 100]}
+      pageSizeOptions={[10, 25, 50, 100]}
       pagination
       loading={loading}
       components={{
@@ -1299,17 +1820,27 @@ const resetFilters = () => {
       }}
       sx={uiLayout.withUiSx({
         '& .MuiDataGrid-columnHeaders': {
-          backgroundColor: '#f5f5f5',
+          backgroundColor: isDark ? darkNested : '#f5f5f5',
+          color: isDark ? theme.palette.text.primary : undefined,
           fontWeight: 'bold',
+          borderBottom: isDark ? '1px solid #67C99D' : undefined
         },
         '& .MuiDataGrid-cell': {
-          borderBottom: '1px solid #f0f0f0',
+          borderBottom: isDark
+            ? '1px solid rgba(103,201,157,.24)'
+            : '1px solid #f0f0f0',
+          color: isDark ? theme.palette.text.primary : undefined
+        },
+        '& .MuiDataGrid-row': {
+          backgroundColor: isDark ? darkCard : undefined
         },
         '& .MuiDataGrid-row:hover': {
-          backgroundColor: '#fafafa',
+          backgroundColor: isDark ? darkHover : '#fafafa'
         },
-        '& .MuiDataGrid-footerContainer': {
-          borderTop: '1px solid #e0e0e0',
+        '& .MuiDataGrid-toolbarContainer, & .MuiDataGrid-footerContainer': {
+          backgroundColor: isDark ? darkSection : undefined,
+          color: isDark ? theme.palette.text.primary : undefined,
+          borderColor: isDark ? '#67C99D' : '#e0e0e0'
         },
       }, uiLayout.dataGridSx)}
     />
@@ -1338,7 +1869,17 @@ const resetFilters = () => {
             return dateA - dateB; // Sort from oldest to newest
           })
           .map((followUp, index) => (
-            <Paper key={index} elevation={2} sx={{ p: 2, mb: 2 }}>
+            <Paper
+              key={index}
+              elevation={0}
+              sx={{
+                p: 2,
+                mb: 2,
+                bgcolor: isDark ? darkSection : undefined,
+                border: isDark ? '1px solid #67C99D' : undefined,
+                boxShadow: 'none'
+              }}
+            >
               <Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Typography variant="body1">
                   <span style={{ fontWeight: 'bold' }}>📌 المتابعة {index + 1}:</span> {followUp.followUpNotes}

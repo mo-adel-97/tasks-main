@@ -20,6 +20,7 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  GlobalStyles,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -64,6 +65,206 @@ const primaryDark = "#034d31";
 const border = "#dce8e2";
 const soft = "#f7fbf9";
 const ZERO_GUID = "00000000-0000-0000-0000-000000000000";
+
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
+const darkUserManagementStyles = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const surfaces = theme.palette.surfaces || {};
+  const card = surfaces.card || "#13251d";
+  const section = surfaces.section || "#172b22";
+  const nested = surfaces.nested || "#1b3328";
+  const hover = surfaces.hover || "#214333";
+
+  return {
+    ".user-management-page": {
+      color: theme.palette.text.primary
+    },
+
+    ".user-management-page .MuiPaper-root": {
+      backgroundImage: "none !important",
+      backgroundColor: `${card} !important`,
+      color: `${theme.palette.text.primary} !important`,
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    ".MuiDialog-paper, .MuiPopover-paper, .MuiMenu-paper": {
+      backgroundImage: "none !important",
+      backgroundColor: `${card} !important`,
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`
+    },
+
+    ".MuiDialog-paper .MuiButton-root, .MuiDialog-paper .MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".MuiDialog-paper .MuiButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    ".MuiDialog-paper .MuiChip-root, .MuiDialog-paper .MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      border: `1px solid ${DARK_BORDER} !important`
+    },
+
+    ".MuiDialog-paper .MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+
+    ".MuiDialog-paper .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+
+    ".user-management-page .MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important"
+    },
+
+    ".user-management-page .MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+
+    ".user-management-page .MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important"
+    },
+
+    ".user-management-page .MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".user-management-page .MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+
+    ".user-management-page .MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+
+    ".user-management-page .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .user-management-page .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiInputLabel-root, .user-management-page .MuiFormHelperText-root": {
+      color: `${theme.palette.text.secondary} !important`
+    },
+
+    ".user-management-page .MuiCheckbox-root": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiCheckbox-root.Mui-checked": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiAlert-icon": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    ".user-management-page .MuiTabs-root": {
+      backgroundColor: "transparent !important",
+      borderBottom: `1px solid ${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiTab-root": {
+      backgroundColor: "transparent !important",
+      color: `${theme.palette.text.secondary} !important`
+    },
+
+    ".user-management-page .MuiTab-root.Mui-selected": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    ".user-management-page .MuiTabs-indicator": {
+      backgroundColor: `${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .MuiAutocomplete-paper, .user-management-page .MuiMenu-list": {
+      backgroundColor: `${card} !important`,
+      color: `${theme.palette.text.primary} !important`
+    },
+
+    ".MuiAutocomplete-paper": {
+      backgroundColor: `${card} !important`,
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`
+    },
+
+    ".MuiAutocomplete-option": {
+      backgroundColor: "transparent !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+
+    ".MuiAutocomplete-option:hover, .MuiAutocomplete-option[aria-selected='true']": {
+      backgroundColor: `${hover} !important`
+    },
+
+    ".user-management-page .dark-section-header": {
+      backgroundColor: `${section} !important`,
+      borderBottom: `1px solid ${DARK_BORDER} !important`
+    },
+
+    ".user-management-page .dark-nested-surface": {
+      backgroundColor: `${nested} !important`,
+      borderColor: `${DARK_BORDER} !important`
+    }
+  };
+};
+
+const formPlatform = (form) =>
+  form?.platform ||
+  (form?.isWeb === true || form?.isWeb === 1 ? "web" : "desktop");
+
+const formPlatformLabel = (form) =>
+  formPlatform(form) === "web" ? "ويب" : "ديسكتوب";
+
 
 /*
  * UserJop يظل هو الـ Legacy index القديم كما هو.
@@ -159,6 +360,10 @@ const emptyUser = () => ({
 const emptyPermission = (form) => ({
   name: form?.name || "",
   guid: form?.guid || "",
+  platform: formPlatform(form),
+  isWeb: formPlatform(form) === "web",
+  webItemKey: form?.webItemKey || "",
+  webRoute: form?.webRoute || "",
   add: false,
   edit: false,
   del: false,
@@ -251,16 +456,21 @@ function LookupDialog({
                 key={row.guid || row.code || index}
                 variant="outlined"
                 onDoubleClick={() => onPick(row)}
-                sx={{
+                sx={(theme) => ({
                   px: { xs: 0.7, sm: 1 },
                   py: { xs: 0.5, sm: 0.7 },
                   cursor: "pointer",
-                  borderColor: border,
+                  borderColor: theme.palette.mode === "dark" ? DARK_BORDER : border,
+                  backgroundColor: theme.palette.mode === "dark"
+                    ? (theme.palette.surfaces?.card || "#13251d")
+                    : undefined,
                   "&:hover": {
-                    bgcolor: "#eef8f3",
-                    borderColor: primary
+                    bgcolor: theme.palette.mode === "dark"
+                      ? (theme.palette.surfaces?.hover || "#214333")
+                      : "#eef8f3",
+                    borderColor: theme.palette.mode === "dark" ? DARK_BORDER : primary
                   }
-                }}
+                })}
               >
                 <Box
                   sx={{
@@ -493,7 +703,13 @@ export default function UserManagement() {
         }))
       );
 
-      setForms(loadedForms);
+      setForms(
+        loadedForms.map((form) => ({
+          ...form,
+          platform: formPlatform(form),
+          isWeb: formPlatform(form) === "web"
+        }))
+      );
 
       // مطابق للديسكتوب: FormGrid يبدأ فارغًا،
       // ولا نضيف الشاشة إلا عند اختيارها.
@@ -827,6 +1043,13 @@ export default function UserManagement() {
                 form?.name ||
                 "",
               guid: p.guid,
+              platform: p.platform || formPlatform(form || p),
+              isWeb:
+                p.isWeb === true ||
+                p.isWeb === 1 ||
+                formPlatform(form || p) === "web",
+              webItemKey: p.webItemKey || form?.webItemKey || "",
+              webRoute: p.webRoute || form?.webRoute || "",
               add: Boolean(p.add),
               edit: Boolean(p.edit),
               del: Boolean(p.del),
@@ -936,6 +1159,10 @@ export default function UserManagement() {
       forms.map((form) => ({
         name: form.name,
         guid: form.guid,
+        platform: formPlatform(form),
+        isWeb: formPlatform(form) === "web",
+        webItemKey: form.webItemKey || "",
+        webRoute: form.webRoute || "",
         add: true,
         edit: true,
         del: true,
@@ -1272,7 +1499,9 @@ export default function UserManagement() {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        bgcolor: soft,
+        bgcolor: theme.palette.mode === "dark"
+          ? theme.palette.background.default
+          : soft,
         
       }}
     >
@@ -1304,15 +1533,25 @@ export default function UserManagement() {
         }}
       >
         <Box
-          sx={uiLayout.withUiSx({
-            bgcolor: primaryDark,
-            color: "#fff",
+          sx={uiLayout.withUiSx((theme) => ({
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? (theme.palette.surfaces?.card || "#13251d")
+                : primaryDark,
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.text.primary
+                : "#fff",
+            borderBottom:
+              theme.palette.mode === "dark"
+                ? `1px solid ${DARK_BORDER}`
+                : "none",
             px: { xs: 1, sm: 1.5 },
             py: { xs: 0.7, sm: 0.9 },
             display: "flex",
             alignItems: "center",
             gap: 1
-          }, uiLayout.mobileHeaderSx)}
+          }), uiLayout.mobileHeaderSx)}
         >
           {!isDesktop && (
             <IconButton
@@ -2072,10 +2311,13 @@ export default function UserManagement() {
                 }}
               >
                 <Box
-                  sx={{
+                  className="dark-section-header"
+                  sx={(theme) => ({
                     p: 1,
-                    bgcolor: "#eef7f3"
-                  }}
+                    bgcolor: theme.palette.mode === "dark"
+                      ? (theme.palette.surfaces?.section || "#172b22")
+                      : "#eef7f3"
+                  })}
                 >
                   <Typography sx={{ fontWeight: 900 }}>
                     القوائم الرئيسية
@@ -2142,19 +2384,22 @@ export default function UserManagement() {
                 }}
               >
                 <Box
-                  sx={{
+                  className="dark-section-header"
+                  sx={(theme) => ({
                     p: 1,
-                    bgcolor: "#eef7f3",
+                    bgcolor: theme.palette.mode === "dark"
+                      ? (theme.palette.surfaces?.section || "#172b22")
+                      : "#eef7f3",
                     display: "flex",
                     flexDirection: { xs: "column", sm: "row" },
                     alignItems: { xs: "stretch", sm: "center" },
                     justifyContent: "space-between",
                     gap: 0.75
-                  }}
+                  })}
                 >
                   <Box sx={{ minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 900 }}>
-                      شاشات الويب والصلاحيات
+                      كل الشاشات والصلاحيات
                     </Typography>
                     <Typography
                       sx={{
@@ -2163,7 +2408,7 @@ export default function UserManagement() {
                         color: "text.secondary"
                       }}
                     >
-                      تظهر هنا شاشات الموقع فقط كما هي معرفة في إعدادات الـ Web Sidebar.
+                      تظهر هنا كل الشاشات الفعّالة من Form_Name؛ بجانب كل شاشة توضيح إن كانت ويب أو ديسكتوب.
                     </Typography>
                   </Box>
 
@@ -2194,7 +2439,8 @@ export default function UserManagement() {
                           option?.name,
                           option?.webItemKey,
                           option?.webRoute,
-                          option?.code
+                          option?.code,
+                          formPlatformLabel(option)
                         ].some((value) =>
                           norm(value).includes(q)
                         )
@@ -2210,14 +2456,31 @@ export default function UserManagement() {
                           >
                             <Chip
                               size="small"
-                              label="ويب"
-                              sx={{
+                              variant="outlined"
+                              label={formPlatformLabel(option)}
+                              sx={(theme) => ({
                                 height: 20,
                                 fontSize: 10,
-                                bgcolor: "#e8f5ee",
-                                color: primary,
-                                fontWeight: 900
-                              }}
+                                fontWeight: 900,
+                                backgroundColor:
+                                  theme.palette.mode === "dark"
+                                    ? "transparent"
+                                    : formPlatform(option) === "web"
+                                      ? "#e8f5ee"
+                                      : "#f4f5f6",
+                                color:
+                                  theme.palette.mode === "dark"
+                                    ? DARK_TEXT
+                                    : formPlatform(option) === "web"
+                                      ? primary
+                                      : "#5b6770",
+                                borderColor:
+                                  theme.palette.mode === "dark"
+                                    ? DARK_BORDER
+                                    : formPlatform(option) === "web"
+                                      ? primary
+                                      : "#9aa5ad"
+                              })}
                             />
                             <Typography
                               sx={{
@@ -2240,7 +2503,7 @@ export default function UserManagement() {
                               whiteSpace: "nowrap"
                             }}
                           >
-                            {option.webRoute || option.webItemKey}
+                            {formPlatform(option) === "web" ? (option.webRoute || option.webItemKey || "شاشة ويب") : `Code: ${option.code || "-"}`}
                           </Typography>
                         </Box>
                       </li>
@@ -2263,7 +2526,7 @@ export default function UserManagement() {
                           }
                         }, uiLayout.formFieldSx)}
                         InputLabelProps={{ shrink: true }}
-                        placeholder="ابحث في شاشات الويب..."
+                        placeholder="ابحث في كل الشاشات..."
                         InputProps={{
                           ...params.InputProps
                         }}
@@ -2299,16 +2562,30 @@ export default function UserManagement() {
                           borderColor: border
                         }}
                       >
-                        <Typography
-                          sx={{
-                            fontSize: 12,
-                            fontWeight: 900,
-                            lineHeight: 1.2,
-                            mb: 0.35
-                          }}
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          spacing={0.6}
+                          sx={{ mb: 0.35 }}
                         >
-                          {p.name}
-                        </Typography>
+                          <Typography
+                            sx={{
+                              minWidth: 0,
+                              fontSize: 12,
+                              fontWeight: 900,
+                              lineHeight: 1.2
+                            }}
+                          >
+                            {p.name}
+                          </Typography>
+                          <Chip
+                            size="small"
+                            variant="outlined"
+                            label={formPlatformLabel(p)}
+                            sx={{ height: 20, fontSize: 10, fontWeight: 900, flexShrink: 0 }}
+                          />
+                        </Stack>
 
                         <Box
                           sx={{
@@ -2386,15 +2663,17 @@ export default function UserManagement() {
                       sx={{
                         display: "grid",
                         gridTemplateColumns:
-                          "minmax(180px,1fr) repeat(6,70px)",
-                        bgcolor: "#f7faf8",
+                          "minmax(230px,1fr) repeat(6,70px)",
+                        bgcolor: theme.palette.mode === "dark"
+                          ? (theme.palette.surfaces?.section || "#172b22")
+                          : "#f7faf8",
                         borderBottom:
-                          `1px solid ${border}`,
+                          `1px solid ${theme.palette.mode === "dark" ? DARK_BORDER : border}`,
                         fontWeight: 900
                       }}
                     >
                       {[
-                        "اسم الشاشة",
+                        "اسم الشاشة / النوع",
                         "جديد",
                         "تعديل",
                         "حذف/إلغاء",
@@ -2420,20 +2699,37 @@ export default function UserManagement() {
                         sx={{
                           display: "grid",
                           gridTemplateColumns:
-                            "minmax(180px,1fr) repeat(6,70px)",
+                            "minmax(230px,1fr) repeat(6,70px)",
                           alignItems: "center",
                           borderBottom:
                             `1px solid ${border}`
                         }}
                       >
-                        <Typography
-                          sx={{
-                            px: 1,
-                            fontWeight: 700
-                          }}
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={0.7}
+                          sx={{ px: 1, minWidth: 0 }}
                         >
-                          {p.name}
-                        </Typography>
+                          <Typography
+                            sx={{
+                              minWidth: 0,
+                              flex: 1,
+                              fontWeight: 700,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap"
+                            }}
+                          >
+                            {p.name}
+                          </Typography>
+                          <Chip
+                            size="small"
+                            variant="outlined"
+                            label={formPlatformLabel(p)}
+                            sx={{ height: 21, fontSize: 10, fontWeight: 900, flexShrink: 0 }}
+                          />
+                        </Stack>
 
                         {[
                           "add",
@@ -2494,7 +2790,10 @@ export default function UserManagement() {
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
             setMobileSidebarOpen(false)
-          }><Box
+          }>
+      <GlobalStyles styles={darkUserManagementStyles} />
+      <Box
+        className="user-management-page"
       sx={{
         display: "flex",
         minHeight: "100vh",
@@ -2514,6 +2813,7 @@ export default function UserManagement() {
       >
         {content}
       </Box>
-    </Box></NavigationShell>
+    </Box>
+    </NavigationShell>
   );
 }

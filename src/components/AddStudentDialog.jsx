@@ -49,6 +49,112 @@ const whiteColor = "#fefefe";
 const softBg = "#fefefe";
 const textColor = "#1f2d3d";
 
+const ADD_STUDENT_BOOTSTRAP_TTL_MS = 5 * 60 * 1000;
+const addStudentBootstrapCache = new Map();
+const addStudentBootstrapInFlight = new Map();
+
+const getCachedAddStudentBootstrap = (sellerGuid) => {
+  const key = String(sellerGuid || "default").toLowerCase();
+  const cached = addStudentBootstrapCache.get(key);
+
+  if (
+    !cached ||
+    Date.now() - cached.timestamp >= ADD_STUDENT_BOOTSTRAP_TTL_MS
+  ) {
+    return null;
+  }
+
+  return cached.data;
+};
+
+const fetchJsonOrThrow = async (url, fallbackMessage) => {
+  const response = await fetch(url);
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      json?.error ||
+      json?.message ||
+      fallbackMessage ||
+      `HTTP ${response.status}`
+    );
+  }
+
+  return json;
+};
+
+const loadAddStudentBootstrap = async (
+  sellerGuid,
+  { force = false } = {}
+) => {
+  const key = String(sellerGuid || "default").toLowerCase();
+  const cached = !force
+    ? getCachedAddStudentBootstrap(sellerGuid)
+    : null;
+
+  if (cached) {
+    return cached;
+  }
+
+  if (!force && addStudentBootstrapInFlight.has(key)) {
+    return addStudentBootstrapInFlight.get(key);
+  }
+
+  const promise = (async () => {
+    // الثلاث طلبات مستقلة، لذلك تُنفذ معًا بدل التسلسل.
+    const contextPromise = fetchJsonOrThrow(
+      `${API_BASE_URL}/api/students/create-context?sellerGuid=${encodeURIComponent(
+        sellerGuid || ""
+      )}`,
+      "فشل تجهيز بيانات إضافة الطالب"
+    );
+
+    const sectorsPromise = fetchJsonOrThrow(
+      `${API_BASE_URL}/api/students/sectors`,
+      "فشل تحميل القطاعات"
+    ).catch((error) => {
+      console.error("Sectors loading error:", error);
+      return { data: [] };
+    });
+
+    const sellersPromise = fetchJsonOrThrow(
+      `${API_BASE_URL}/api/students/sellers`,
+      "فشل تحميل مناديب البيع"
+    ).catch((error) => {
+      console.error("Sellers loading error:", error);
+      return { data: [] };
+    });
+
+    const [contextJson, sectorsJson, sellersJson] =
+      await Promise.all([
+        contextPromise,
+        sectorsPromise,
+        sellersPromise
+      ]);
+
+    const data = {
+      contextJson,
+      sectorsJson,
+      sellersJson
+    };
+
+    addStudentBootstrapCache.set(key, {
+      timestamp: Date.now(),
+      data
+    });
+
+    return data;
+  })();
+
+  addStudentBootstrapInFlight.set(key, promise);
+
+  try {
+    return await promise;
+  } finally {
+    addStudentBootstrapInFlight.delete(key);
+  }
+};
+
 const emptyForm = {
   acadmyId: "",
   parentGuid: "",
@@ -124,9 +230,12 @@ const showWarning = (message) => {
 
 const FieldLabel = ({ children }) => (
   <Typography
-    sx={{
+    sx={(theme) => ({
       fontWeight: 900,
-      color: primaryColor,
+      color:
+        theme.palette.mode === "dark"
+          ? "#9BE0C1"
+          : primaryColor,
       fontSize: "0.85rem",
       mb: 0.5,
       textAlign: "start",
@@ -141,14 +250,17 @@ const FieldLabel = ({ children }) => (
         fontSize: "0.75rem",
         mb: 0.16
       }
-    }}
+    })}
   >
     {children}
   </Typography>
 );
 
 const inputSx = {
-  backgroundColor: whiteColor,
+  backgroundColor: (theme) =>
+    theme.palette.mode === "dark"
+      ? "transparent"
+      : whiteColor,
   borderRadius: 2,
   "& .MuiOutlinedInput-root": {
     borderRadius: 2,
@@ -194,7 +306,10 @@ const inputSx = {
     }
   },
   "& .MuiInputBase-input.Mui-disabled": {
-    WebkitTextFillColor: textColor
+    WebkitTextFillColor: (theme) =>
+      theme.palette.mode === "dark"
+        ? theme.palette.text.secondary
+        : textColor
   }
 };
 
@@ -215,6 +330,14 @@ const selectMenuProps = {
       direction: "rtl",
       borderRadius: 2,
       border: theme.palette.mode === "dark" ? "1px solid #67C99D" : undefined,
+      backgroundColor:
+        theme.palette.mode === "dark"
+          ? (theme.palette.surfaces?.section || "#172b22")
+          : undefined,
+      color:
+        theme.palette.mode === "dark"
+          ? theme.palette.text.primary
+          : undefined,
       "& .MuiMenuItem-root": {
         fontWeight: 800,
         textAlign: "right",
@@ -253,6 +376,7 @@ const AddStudentDialog = ({
   permissionMode = "addStudent"
 }) => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
 
@@ -305,61 +429,35 @@ const AddStudentDialog = ({
     );
   };
 
-  const loadContext = async () => {
+  const loadContext = async ({ force = false } = {}) => {
+    const currentSellerGuid =
+      getSellerGuidFromLocalStorage();
+
+    const cachedBootstrap = !force
+      ? getCachedAddStudentBootstrap(currentSellerGuid)
+      : null;
+
     try {
-      setLoadingContext(true);
+      if (!cachedBootstrap) {
+        setLoadingContext(true);
+      }
 
-      const currentSellerGuid = getSellerGuidFromLocalStorage();
-
-      const contextRes = await fetch(
-        `${API_BASE_URL}/api/students/create-context?sellerGuid=${encodeURIComponent(
-          currentSellerGuid
-        )}`
+      const {
+        contextJson,
+        sectorsJson,
+        sellersJson
+      } = await loadAddStudentBootstrap(
+        currentSellerGuid,
+        { force }
       );
 
-      const contextJson = await contextRes.json().catch(() => null);
+      const apiSectors = Array.isArray(sectorsJson?.data)
+        ? sectorsJson.data
+        : [];
 
-      if (!contextRes.ok) {
-        throw new Error(
-          contextJson?.error ||
-            contextJson?.message ||
-            `فشل create-context - Status ${contextRes.status}`
-        );
-      }
-
-      let sectorsJson = { data: [] };
-      let sellersJson = { data: [] };
-
-      try {
-        const sectorsRes = await fetch(`${API_BASE_URL}/api/students/sectors`);
-        sectorsJson = await sectorsRes.json().catch(() => ({ data: [] }));
-
-        if (!sectorsRes.ok) {
-          throw new Error(
-            sectorsJson?.error || sectorsJson?.message || "فشل تحميل القطاعات"
-          );
-        }
-      } catch (error) {
-        console.error("Sectors loading error:", error);
-        sectorsJson = { data: [] };
-      }
-
-      try {
-        const sellersRes = await fetch(`${API_BASE_URL}/api/students/sellers`);
-        sellersJson = await sellersRes.json().catch(() => ({ data: [] }));
-
-        if (!sellersRes.ok) {
-          throw new Error(
-            sellersJson?.error || sellersJson?.message || "فشل تحميل مناديب البيع"
-          );
-        }
-      } catch (error) {
-        console.error("Sellers loading error:", error);
-        sellersJson = { data: [] };
-      }
-
-      const apiSectors = Array.isArray(sectorsJson?.data) ? sectorsJson.data : [];
-      const apiSellers = Array.isArray(sellersJson?.data) ? sellersJson.data : [];
+      const apiSellers = Array.isArray(sellersJson?.data)
+        ? sellersJson.data
+        : [];
 
       const finalSellers =
         contextJson?.sellerGuid && contextJson?.sellerName
@@ -368,7 +466,9 @@ const AddStudentDialog = ({
                 guid: contextJson.sellerGuid,
                 name: contextJson.sellerName
               },
-              ...apiSellers.filter((x) => x.guid !== contextJson.sellerGuid)
+              ...apiSellers.filter(
+                (x) => x.guid !== contextJson.sellerGuid
+              )
             ]
           : apiSellers;
 
@@ -387,7 +487,10 @@ const AddStudentDialog = ({
         sellerName: contextJson?.sellerName || "",
 
         studentName: initialData?.studentName || "",
-        studentTel: initialData?.studentTel || initialData?.tel || "",
+        studentTel:
+          initialData?.studentTel ||
+          initialData?.tel ||
+          "",
         nationalId: initialData?.nationalId || "",
         notes: initialData?.notes || "",
         maden: Number(initialData?.maden || 0),
@@ -396,9 +499,15 @@ const AddStudentDialog = ({
         isUse: true
       });
     } catch (error) {
-      console.error("AddStudentDialog loadContext error:", error);
+      console.error(
+        "AddStudentDialog loadContext error:",
+        error
+      );
 
-      showError(error.message || "حدث خطأ أثناء تجهيز شاشة الطالب");
+      showError(
+        error.message ||
+          "حدث خطأ أثناء تجهيز شاشة الطالب"
+      );
 
       setContext(null);
       setSectors([]);
@@ -412,6 +521,23 @@ const AddStudentDialog = ({
       setLoadingContext(false);
     }
   };
+
+  // Warm the bootstrap data while the reception page is already open.
+  // Therefore most clicks on "طالب جديد" open with cached context.
+  useEffect(() => {
+    const currentSellerGuid =
+      getSellerGuidFromLocalStorage();
+
+    loadAddStudentBootstrap(currentSellerGuid).catch(
+      (error) => {
+        console.error(
+          "AddStudentDialog preload error:",
+          error
+        );
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -651,6 +777,9 @@ const AddStudentDialog = ({
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
       <Dialog
         open={open}
+        keepMounted
+        transitionDuration={0}
+        BackdropProps={{ transitionDuration: 0 }}
         onClose={() => !saving && onClose?.()}
         fullWidth
         maxWidth="lg"
@@ -672,8 +801,15 @@ const AddStudentDialog = ({
             borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
             direction: "rtl",
             overflow: "hidden",
-            border: `1px solid ${primaryLight}`,
-            boxShadow: "0 18px 50px rgba(5,117,70,0.18)",
+            border: isDark
+              ? "1px solid #67C99D"
+              : `1px solid ${primaryLight}`,
+            backgroundColor: isDark
+              ? (theme.palette.surfaces?.card || "#13251d")
+              : whiteColor,
+            boxShadow: isDark
+              ? "none"
+              : "0 18px 50px rgba(5,117,70,0.18)",
             display: "flex",
             flexDirection: "column"
           }
@@ -682,12 +818,17 @@ const AddStudentDialog = ({
         <DialogTitle
           sx={{
             fontWeight: 950,
-            color: whiteColor,
-            borderBottom: `1px solid ${primaryDark}`,
+            color: isDark ? "#9BE0C1" : whiteColor,
+            borderBottom: isDark
+              ? "1px solid #67C99D"
+              : `1px solid ${primaryDark}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+            background: isDark
+              ? (theme.palette.surfaces?.section || "#172b22")
+              : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+            backgroundImage: isDark ? "none" : undefined,
             py: isPhone ? 0.6 : isTablet ? 0.8 : 1.7,
             px: isPhone ? 0.8 : isTablet ? 1.2 : 2.5,
             fontSize: isPhone ? "0.78rem" : isTablet ? "0.9rem" : undefined,
@@ -704,7 +845,10 @@ const AddStudentDialog = ({
         <DialogContent
           dividers
           sx={{
-            background: (theme) => theme.palette.mode === "dark" ? theme.palette.surfaces.page : `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
+            background: (theme) =>
+              theme.palette.mode === "dark"
+                ? (theme.palette.surfaces?.card || "#13251d")
+                : `linear-gradient(180deg, ${softBg} 0%, #f4fbf7 100%)`,
             p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
             overflowY: "auto",
             flex: 1,
@@ -753,10 +897,26 @@ const AddStudentDialog = ({
                   <Typography sx={{ fontWeight: 950, color: "#e65100" }}>
                     يتم نقل الطالب من الأرشيف القديم إلى النظام الجديد
                   </Typography>
-                  <Typography sx={{ mt: 0.5, fontWeight: 800, color: textColor }}>
+                  <Typography
+                    sx={{
+                      mt: 0.5,
+                      fontWeight: 800,
+                      color: isDark
+                        ? theme.palette.text.primary
+                        : textColor
+                    }}
+                  >
                     رقم العميل القديم: {initialData?.oldCustomerNo || "-"} — كود الفرع القديم: {initialData?.branchCode || "-"}
                   </Typography>
-                  <Typography sx={{ mt: 0.4, fontWeight: 800, color: textColor }}>
+                  <Typography
+                    sx={{
+                      mt: 0.4,
+                      fontWeight: 800,
+                      color: isDark
+                        ? theme.palette.text.primary
+                        : textColor
+                    }}
+                  >
                     الرصيد الافتتاحي: مدين {Number(initialData?.maden || 0).toLocaleString("en-US")} / دائن {Number(initialData?.daen || 0).toLocaleString("en-US")}
                   </Typography>
                 </Paper>
@@ -768,8 +928,14 @@ const AddStudentDialog = ({
                   p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
                   borderRadius: isPhone ? 1.2 : isTablet ? 1.6 : 3,
                   border: (theme) => theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
-                  backgroundColor: (theme) => theme.palette.mode === "dark" ? theme.palette.surfaces.card : whiteColor,
-                  boxShadow: "0 10px 30px rgba(5,117,70,0.08)"
+                  backgroundColor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? (theme.palette.surfaces?.section || "#172b22")
+                      : whiteColor,
+                  boxShadow: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "none"
+                      : "0 10px 30px rgba(5,117,70,0.08)"
                 }}
               >
                 <Grid
@@ -1123,8 +1289,12 @@ const AddStudentDialog = ({
           sx={uiLayout.withUiSx({
             p: isPhone ? 0.45 : isTablet ? 0.7 : 2,
             gap: isPhone ? 0.45 : isTablet ? 0.65 : 1,
-            backgroundColor: whiteColor,
-            borderTop: `1px solid ${primaryLight}`,
+            backgroundColor: isDark
+              ? (theme.palette.surfaces?.section || "#172b22")
+              : whiteColor,
+            borderTop: isDark
+              ? "1px solid #67C99D"
+              : `1px solid ${primaryLight}`,
             flexShrink: 0,
 
             "& .MuiButton-root": {
@@ -1142,15 +1312,18 @@ const AddStudentDialog = ({
             sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 900,
-              color: accentColor,
-              borderColor: pinColor("#ffcdd2")
+              color: isDark ? "#9BE0C1" : accentColor,
+              backgroundColor: "transparent",
+              borderColor: isDark
+                ? "#67C99D"
+                : pinColor("#ffcdd2")
             }, uiLayout.buttonSx)}
           >
             خروج
           </Button>
 
           <Button
-            variant="contained"
+            variant={isDark ? "outlined" : "contained"}
             startIcon={
               saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />
             }
@@ -1159,11 +1332,21 @@ const AddStudentDialog = ({
             sx={uiLayout.withUiSx({
               borderRadius: 2,
               fontWeight: 900,
-              background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-              boxShadow: "0 8px 20px rgba(5,117,70,0.24)",
+              background: isDark
+                ? "transparent"
+                : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+              color: isDark ? "#9BE0C1" : "#fff",
+              borderColor: isDark ? "#67C99D" : primaryColor,
+              boxShadow: isDark
+                ? "none"
+                : "0 8px 20px rgba(5,117,70,0.24)",
               "&:hover": {
-                background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`,
-                boxShadow: "0 10px 24px rgba(5,117,70,0.30)"
+                background: isDark
+                  ? "transparent"
+                  : `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`,
+                boxShadow: isDark
+                  ? "none"
+                  : "0 10px 24px rgba(5,117,70,0.30)"
               },
               "& .MuiButton-startIcon": {
                 ml: 0.5,

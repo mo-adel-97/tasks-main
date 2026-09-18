@@ -1,7 +1,7 @@
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
   Box,
@@ -86,6 +86,45 @@ const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
 
 const DESKTOP_BREAKPOINT = 1200;
 
+const SUPPORT_TICKETS_CACHE_KEY = 'sstli_support_all_tickets_v4';
+const SUPPORT_TICKETS_CACHE_TTL_MS = 60 * 1000;
+
+const readSupportTicketsCache = () => {
+  try {
+    const raw = sessionStorage.getItem(SUPPORT_TICKETS_CACHE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    const timestamp = Number(parsed?.timestamp || 0);
+
+    if (
+      !timestamp ||
+      Date.now() - timestamp > SUPPORT_TICKETS_CACHE_TTL_MS
+    ) {
+      sessionStorage.removeItem(SUPPORT_TICKETS_CACHE_KEY);
+      return null;
+    }
+
+    return Array.isArray(parsed?.data) ? parsed.data : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeSupportTicketsCache = (tickets) => {
+  try {
+    sessionStorage.setItem(
+      SUPPORT_TICKETS_CACHE_KEY,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data: Array.isArray(tickets) ? tickets : []
+      })
+    );
+  } catch {
+    // Cache is an optimization only.
+  }
+};
+
 const TechnicalSupport = () => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -134,6 +173,8 @@ const TechnicalSupport = () => {
   const [hasPendingTicket, setHasPendingTicket] = useState(false);
   const [checkingPendingTicket, setCheckingPendingTicket] = useState(false);
   const [pendingTicketDialogOpen, setPendingTicketDialogOpen] = useState(false);
+  const [updatingTicketIds, setUpdatingTicketIds] = useState([]);
+  const allTicketsRequestIdRef = useRef(0);
 
   // Pagination states
   const [page, setPage] = useState(0);
@@ -213,7 +254,7 @@ const TechnicalSupport = () => {
   // تحميل التذاكر عند بدء التشغيل
   useEffect(() => {
     if (isSupportStaff && viewAllTickets) {
-      fetchAllTickets();
+      fetchAllTickets({ preferCache: true });
     } else {
       fetchUserTickets();
     }
@@ -224,37 +265,26 @@ const TechnicalSupport = () => {
     setPage(0);
   }, [allUsersTickets, tickets, tabValue, statusFilter, searchQuery, selectedEmployeeGuid]);
 
-  // تحقق من وجود تذكرة قيد الانتظار عند فتح النموذج
+  // التذاكر محملة بالفعل؛ لا نكرر نفس endpoint فقط لمعرفة حالة الانتظار
   useEffect(() => {
-    if (!isSupportStaff && userGuid) {
-      checkForPendingTickets();
-    }
-  }, [userGuid, isSupportStaff, tickets]);
+    if (isSupportStaff) return;
 
-  const checkForPendingTickets = async () => {
-    try {
-      setCheckingPendingTicket(true);
-      const response = await axios.get(`${API_BASE_URL}?request=user_tickets&user_guid=${userGuid}`);
-      
-      if (response.data.status === 'success') {
-        const userTickets = response.data.data || [];
-        const pendingTickets = userTickets.filter(ticket => 
-          ticket.status === 'pending' || ticket.status === 'in_progress'
-        );
-        
-        // استثناء المشرفين من القيود
-        if (isSupervisor) {
-          setHasPendingTicket(false);
-        } else {
-          setHasPendingTicket(pendingTickets.length > 1);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking pending tickets:', error);
-    } finally {
-      setCheckingPendingTicket(false);
+    setCheckingPendingTicket(false);
+
+    if (isSupervisor) {
+      setHasPendingTicket(false);
+      return;
     }
-  };
+
+    const pendingCount = tickets.filter(
+      (ticket) =>
+        ticket.status === 'pending' ||
+        ticket.status === 'in_progress'
+    ).length;
+
+    // نفس قاعدة العمل الموجودة أصلًا
+    setHasPendingTicket(pendingCount > 1);
+  }, [tickets, isSupportStaff, isSupervisor]);
 
   const fetchBranchesData = async () => {
     try {
@@ -311,32 +341,66 @@ const TechnicalSupport = () => {
     }
   };
 
-  const fetchAllTickets = async () => {
-    try {
+  const fetchAllTickets = async ({
+    silent = false,
+    preferCache = true
+  } = {}) => {
+    const requestId = ++allTicketsRequestIdRef.current;
+
+    const cached = preferCache
+      ? readSupportTicketsCache()
+      : null;
+
+    if (Array.isArray(cached)) {
+      setAllUsersTickets(cached);
+
+      if (!silent) {
+        setLoadingTickets(false);
+      }
+    } else if (!silent) {
       setLoadingTickets(true);
-      
-      let url = `${API_BASE_URL}?request=all_tickets`;
-      
-      if (statusFilter !== 'all') {
-        url += `&status=${statusFilter}`;
+    }
+
+    try {
+      // مهم: نحفظ القائمة الكاملة دائمًا.
+      // status/search/employee يتم تطبيقهم محليًا في getDisplayedTickets.
+      const response = await axios.get(
+        `${API_BASE_URL}?request=all_tickets`,
+        { timeout: 30000 }
+      );
+
+      if (response.data.status !== 'success') {
+        throw new Error(
+          response.data.message || 'فشل في تحميل جميع التذاكر'
+        );
       }
-      
-      if (searchQuery) {
-        url += `&search=${encodeURIComponent(searchQuery)}`;
+
+      const nextTickets = Array.isArray(response.data.data)
+        ? response.data.data
+        : [];
+
+      // لا تسمح لطلب قديم أبطأ أن يكتب فوق طلب أحدث
+      if (requestId === allTicketsRequestIdRef.current) {
+        setAllUsersTickets(nextTickets);
+        writeSupportTicketsCache(nextTickets);
       }
-      
-      const response = await axios.get(url);
-      
-      if (response.data.status === 'success') {
-        setAllUsersTickets(response.data.data);
-      } else {
-        showAlert('فشل في تحميل جميع التذاكر', 'error');
-      }
+
+      return nextTickets;
     } catch (error) {
       console.error('Error fetching all tickets:', error);
-      showAlert('حدث خطأ في تحميل التذاكر', 'error');
+
+      if (!Array.isArray(cached) && !silent) {
+        showAlert('حدث خطأ في تحميل التذاكر', 'error');
+      }
+
+      return Array.isArray(cached) ? cached : null;
     } finally {
-      setLoadingTickets(false);
+      if (
+        requestId === allTicketsRequestIdRef.current &&
+        !silent
+      ) {
+        setLoadingTickets(false);
+      }
     }
   };
 
@@ -571,7 +635,7 @@ const TechnicalSupport = () => {
         setReplyDialogOpen(false);
         
         if (isSupportStaff && viewAllTickets) {
-          await fetchAllTickets();
+          await fetchAllTickets({ preferCache: false });
         } else {
           await fetchUserTickets();
         }
@@ -600,17 +664,46 @@ const TechnicalSupport = () => {
     setReplyDialogOpen(true);
   };
 
-  const openTicketDetails = async (ticket) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}?request=ticket&id=${ticket.id}`);
-      if (response.data.status === 'success') {
-        setTicketDetails(response.data.data);
-        setDetailsDialogOpen(true);
-      }
-    } catch (error) {
-      console.error('Error fetching ticket details:', error);
-      showAlert('فشل في تحميل تفاصيل التذكرة', 'error');
-    }
+  const openTicketDetails = (ticket) => {
+    // افتح الديالوج فورًا من بيانات الصف الموجودة بالفعل.
+    // لا ننتظر أي endpoint حتى يظهر للمستخدم.
+    setSelectedTicket(ticket);
+    setTicketDetails(ticket);
+    setDetailsDialogOpen(true);
+
+    // هات التفاصيل الكاملة في الخلفية فقط.
+    axios
+      .get(
+        `${API_BASE_URL}?request=ticket&id=${ticket.id}`,
+        { timeout: 15000 }
+      )
+      .then((response) => {
+        if (response.data.status !== 'success') return;
+
+        const fullTicket = response.data.data;
+
+        setTicketDetails((current) => {
+          if (
+            !current ||
+            String(current.id) !== String(ticket.id)
+          ) {
+            return current;
+          }
+
+          return {
+            ...ticket,
+            ...fullTicket
+          };
+        });
+      })
+      .catch((error) => {
+        // البيانات الأساسية ظاهرة بالفعل؛ فشل التفاصيل الإضافية
+        // لا يمنع فتح الديالوج ولا يزعج المستخدم برسالة فشل.
+        console.error(
+          'Background ticket details fetch failed:',
+          error
+        );
+      });
   };
 
   const downloadFile = (filePath, fileName) => {
@@ -623,35 +716,231 @@ const TechnicalSupport = () => {
     document.body.removeChild(link);
   };
 
-  const updateTicketStatus = async (ticketId, newStatus) => {
+  const patchTicketStatus = (list, ticketId, newStatus) =>
+    (Array.isArray(list) ? list : []).map((ticket) =>
+      String(ticket.id) === String(ticketId)
+        ? {
+            ...ticket,
+            status: newStatus,
+            updated_at: new Date().toISOString()
+          }
+        : ticket
+    );
+
+  const verifyTicketStatus = async (ticketId, expectedStatus) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}?request=update_status`, {
-        id: ticketId,
-        status: newStatus,
-        updated_by: userGuid,
-      });
-      
-      if (response.data.status === 'success') {
-        showAlert('✅ تم تحديث حالة التذكرة', 'success');
-        
-        // إذا كان المستخدم عاديًا وتذكرة قيد الانتظار تم تغيير حالتها
-        if (!isSupportStaff && !isSupervisor) {
-          const updatedTickets = tickets.filter(t => t.id !== ticketId || t.status !== 'pending');
-          const hasPending = updatedTickets.some(t => t.status === 'pending' || t.status === 'in_progress');
-          setHasPendingTicket(hasPending);
-        }
-        
-        if (isSupportStaff && viewAllTickets) {
-          await fetchAllTickets();
-        } else {
-          await fetchUserTickets();
-        }
-      } else {
-        showAlert(response.data.message || 'فشل في تحديث حالة التذكرة', 'error');
-      }
+      const response = await axios.get(
+        `${API_BASE_URL}?request=ticket&id=${ticketId}`,
+        { timeout: 12000 }
+      );
+
+      const serverTicket =
+        response.data?.status === 'success'
+          ? response.data?.data
+          : null;
+
+      return {
+        confirmed:
+          !!serverTicket &&
+          String(serverTicket.status) ===
+            String(expectedStatus),
+        ticket: serverTicket
+      };
     } catch (error) {
-      console.error('Error updating ticket status:', error);
-      showAlert('فشل في تحديث حالة التذكرة', 'error');
+      console.error(
+        'Error verifying ticket status:',
+        error
+      );
+
+      return {
+        confirmed: false,
+        ticket: null
+      };
+    }
+  };
+
+  const updateTicketStatus = async (ticketId, newStatus) => {
+    if (
+      updatingTicketIds.some(
+        (id) => String(id) === String(ticketId)
+      )
+    ) {
+      return;
+    }
+
+    const previousAllTickets = allUsersTickets;
+    const previousUserTickets = tickets;
+    const previousSelectedTicket = selectedTicket;
+    const previousTicketDetails = ticketDetails;
+
+    setUpdatingTicketIds((current) => [
+      ...current,
+      ticketId
+    ]);
+
+    // Optimistic update:
+    // الواجهة والفلتر يتحدثان فورًا بدون انتظار Reload.
+    setAllUsersTickets((current) => {
+      const next = patchTicketStatus(
+        current,
+        ticketId,
+        newStatus
+      );
+
+      writeSupportTicketsCache(next);
+      return next;
+    });
+
+    setTickets((current) =>
+      patchTicketStatus(current, ticketId, newStatus)
+    );
+
+    setSelectedTicket((current) =>
+      current &&
+      String(current.id) === String(ticketId)
+        ? { ...current, status: newStatus }
+        : current
+    );
+
+    setTicketDetails((current) =>
+      current &&
+      String(current.id) === String(ticketId)
+        ? { ...current, status: newStatus }
+        : current
+    );
+
+    try {
+      let confirmed = false;
+      let verifiedTicket = null;
+      let mutationError = null;
+
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}?request=update_status`,
+          {
+            id: ticketId,
+            status: newStatus,
+            updated_by: userGuid
+          },
+          { timeout: 15000 }
+        );
+
+        confirmed =
+          response.data?.status === 'success' ||
+          response.data?.success === true ||
+          response.data?.updated === true;
+
+        if (!confirmed) {
+          mutationError = new Error(
+            response.data?.message ||
+              'لم يؤكد الخادم تحديث الحالة'
+          );
+        }
+      } catch (error) {
+        // أحيانًا الـDB تكون اتحدثت بالفعل لكن الرد يتأخر/ينقطع.
+        mutationError = error;
+      }
+
+      // قبل ما نقول "فشل"، نتأكد من الحالة الحقيقية من التذكرة نفسها.
+      if (!confirmed) {
+        const verification = await verifyTicketStatus(
+          ticketId,
+          newStatus
+        );
+
+        confirmed = verification.confirmed;
+        verifiedTicket = verification.ticket;
+      }
+
+      if (!confirmed) {
+        throw mutationError || new Error(
+          'فشل في تحديث حالة التذكرة'
+        );
+      }
+
+      // لو تحققنا من نسخة السيرفر، ادمجها في الحالة المحلية.
+      if (verifiedTicket) {
+        const mergeVerified = (list) =>
+          (Array.isArray(list) ? list : []).map((ticket) =>
+            String(ticket.id) === String(ticketId)
+              ? { ...ticket, ...verifiedTicket }
+              : ticket
+          );
+
+        setAllUsersTickets((current) => {
+          const next = mergeVerified(current);
+          writeSupportTicketsCache(next);
+          return next;
+        });
+
+        setTickets((current) =>
+          mergeVerified(current)
+        );
+
+        setSelectedTicket((current) =>
+          current &&
+          String(current.id) === String(ticketId)
+            ? { ...current, ...verifiedTicket }
+            : current
+        );
+
+        setTicketDetails((current) =>
+          current &&
+          String(current.id) === String(ticketId)
+            ? { ...current, ...verifiedTicket }
+            : current
+        );
+      }
+
+      if (!isSupportStaff && !isSupervisor) {
+        const nextUserTickets = patchTicketStatus(
+          previousUserTickets,
+          ticketId,
+          newStatus
+        );
+
+        const pendingCount = nextUserTickets.filter(
+          (ticket) =>
+            ticket.status === 'pending' ||
+            ticket.status === 'in_progress'
+        ).length;
+
+        setHasPendingTicket(pendingCount > 1);
+      }
+
+      showAlert(
+        '✅ تم تحديث حالة التذكرة',
+        'success'
+      );
+
+      // لا يوجد fetchAllTickets هنا.
+      // نجاح التعديل لم يعد مرتبطًا بنجاح Refresh ثاني.
+    } catch (error) {
+      console.error(
+        'Error updating ticket status:',
+        error
+      );
+
+      // Rollback فقط إذا لم نستطع تأكيد التحديث من السيرفر.
+      setAllUsersTickets(previousAllTickets);
+      setTickets(previousUserTickets);
+      setSelectedTicket(previousSelectedTicket);
+      setTicketDetails(previousTicketDetails);
+
+      writeSupportTicketsCache(previousAllTickets);
+
+      showAlert(
+        error?.response?.data?.message ||
+          error?.message ||
+          'فشل في تحديث حالة التذكرة',
+        'error'
+      );
+    } finally {
+      setUpdatingTicketIds((current) =>
+        current.filter(
+          (id) => String(id) !== String(ticketId)
+        )
+      );
     }
   };
 
@@ -921,7 +1210,7 @@ const TechnicalSupport = () => {
                 startIcon={<Refresh />}
                 onClick={() => {
                   if (isSupportStaff && viewAllTickets) {
-                    fetchAllTickets();
+                    fetchAllTickets({ preferCache: false });
                   } else {
                     fetchUserTickets();
                   }
@@ -2092,6 +2381,11 @@ const TechnicalSupport = () => {
                                   variant="text"
                                   startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
                                   onClick={() => updateTicketStatus(ticket.id, 'resolved')}
+                                  disabled={updatingTicketIds.some(
+                                    (id) =>
+                                      String(id) ===
+                                      String(ticket.id)
+                                  )}
                                   sx={{
                                     minHeight: 30,
                                     px: 0.65,
@@ -2113,6 +2407,11 @@ const TechnicalSupport = () => {
                                     variant="text"
                                     startIcon={<AccessTime sx={{ fontSize: 16 }} />}
                                     onClick={() => updateTicketStatus(ticket.id, 'in_progress')}
+                                  disabled={updatingTicketIds.some(
+                                    (id) =>
+                                      String(id) ===
+                                      String(ticket.id)
+                                  )}
                                     sx={{
                                       minHeight: 30,
                                       px: 0.65,
@@ -2131,6 +2430,11 @@ const TechnicalSupport = () => {
                                   variant="text"
                                   startIcon={<Close sx={{ fontSize: 16 }} />}
                                   onClick={() => updateTicketStatus(ticket.id, 'closed')}
+                                  disabled={updatingTicketIds.some(
+                                    (id) =>
+                                      String(id) ===
+                                      String(ticket.id)
+                                  )}
                                   sx={{
                                     minHeight: 30,
                                     px: 0.65,
@@ -2494,6 +2798,11 @@ const TechnicalSupport = () => {
                                               border: isDark ? '1px solid #67C99D' : 'none'
                                             }}
                                             onClick={() => updateTicketStatus(ticket.id, 'resolved')}
+                                  disabled={updatingTicketIds.some(
+                                    (id) =>
+                                      String(id) ===
+                                      String(ticket.id)
+                                  )}
                                           >
                                             <CheckCircle fontSize="small" />
                                           </IconButton>
@@ -2510,6 +2819,11 @@ const TechnicalSupport = () => {
                                               border: isDark ? '1px solid #67C99D' : 'none'
                                             }}
                                             onClick={() => updateTicketStatus(ticket.id, 'in_progress')}
+                                  disabled={updatingTicketIds.some(
+                                    (id) =>
+                                      String(id) ===
+                                      String(ticket.id)
+                                  )}
                                           >
                                             <AccessTime fontSize="small" />
                                           </IconButton>
@@ -2526,6 +2840,11 @@ const TechnicalSupport = () => {
                                               border: isDark ? '1px solid #67C99D' : 'none'
                                             }}
                                             onClick={() => updateTicketStatus(ticket.id, 'closed')}
+                                  disabled={updatingTicketIds.some(
+                                    (id) =>
+                                      String(id) ===
+                                      String(ticket.id)
+                                  )}
                                           >
                                             <Close fontSize="small" />
                                           </IconButton>

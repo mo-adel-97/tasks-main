@@ -5,6 +5,7 @@ import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  GlobalStyles,
   Alert,
   Box,
   Button,
@@ -174,6 +175,12 @@ const showErrorAlert = (message) =>
 
 const CircularsUpload = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
   const userGuid = getUserGuid();
 
   const [tree, setTree] = useState([]);
@@ -686,14 +693,195 @@ const CircularsUpload = () => {
   }[dialog.mode];
 
   return (
-    <NavigationShell variant="standard" ><Box
+    <NavigationShell variant="standard" ><Box className="circulars-dark-root"
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : PAGE_BG,
+        bgcolor: isDark ? theme.palette.background.default : PAGE_BG,
         fontFamily: "Cairo, Arial, sans-serif",
       }}
     >
+
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".circulars-dark-root": {
+                  backgroundColor: `${theme.palette.background.default} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".circulars-dark-root .MuiPaper-root, .circulars-dark-root .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".circulars-dark-root .MuiPaper-root .MuiPaper-root": {
+                  backgroundColor: `${darkSection} !important`
+                },
+
+                ".circulars-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important",
+                  borderRadius: "9px !important"
+                },
+                ".circulars-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: "#67C99D !important",
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".circulars-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                  backgroundColor: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".circulars-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".circulars-dark-root .MuiIconButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".circulars-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+
+                ".circulars-dark-root .MuiTabs-root, .MuiDialog-paper .MuiTabs-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  border: "1px solid #67C99D !important",
+                  borderRadius: "10px !important"
+                },
+                ".circulars-dark-root .MuiTab-root, .MuiDialog-paper .MuiTab-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".circulars-dark-root .MuiTab-root.Mui-selected, .MuiDialog-paper .MuiTab-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important"
+                },
+                ".circulars-dark-root .MuiTabs-indicator, .MuiDialog-paper .MuiTabs-indicator": {
+                  backgroundColor: "#67C99D !important",
+                  height: "2px !important"
+                },
+
+                ".circulars-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".circulars-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#67C99D !important",
+                  borderWidth: "1px !important"
+                },
+                ".circulars-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root, .circulars-dark-root .MuiFormHelperText-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".circulars-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: "#9BE0C1 !important"
+                },
+                ".circulars-dark-root .MuiInputAdornment-root, .circulars-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .circulars-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: "#9BE0C1 !important"
+                },
+
+                ".circulars-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".circulars-dark-root .MuiAlert-icon, .circulars-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: "#67C99D !important"
+                },
+
+                ".circulars-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                  borderColor: "#67C99D !important"
+                },
+
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: "1px solid #67C99D !important"
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: "1px solid #67C99D !important"
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected, .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important"
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel, .swal-cairo-button": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                }
+              }
+            : {})
+        }}
+      />
+
       
 
       <PageContainer
@@ -712,9 +900,9 @@ const CircularsUpload = () => {
             sx={{
               px: { xs: 1.5, md: 2 },
               py: 1.4,
-              borderRadius: 3,
-              border: `1px solid ${BORDER}`,
-              bgcolor: WHITE,
+              borderRadius: 2,
+              border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
+              bgcolor: isDark ? darkCard : WHITE,
             }}
           >
             <Stack
@@ -729,7 +917,7 @@ const CircularsUpload = () => {
                     width: 44,
                     height: 44,
                     borderRadius: 2.5,
-                    bgcolor: "#e9f5ef",
+                    bgcolor: isDark ? darkNested : "#e9f5ef",
                     display: "grid",
                     placeItems: "center",
                     flexShrink: 0,
@@ -743,13 +931,13 @@ const CircularsUpload = () => {
                 <Box>
                   <Typography
                     variant="h6"
-                    sx={{ fontFamily: "Cairo", fontWeight: 950, color: TEXT }}
+                    sx={{ fontFamily: "Cairo", fontWeight: 950, color: isDark ? theme.palette.text.primary : TEXT }}
                   >
                     إدارة مكتبة المحتوى
                   </Typography>
                   <Typography
                     variant="caption"
-                    sx={{ fontFamily: "Cairo", color: MUTED }}
+                    sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}
                   >
                     أنشئ الأقسام ثم ادخل إلى المجلدات لإدارة ملفاتها
                   </Typography>
@@ -761,17 +949,17 @@ const CircularsUpload = () => {
                 spacing={0.8}
               >
                 <Button
-                  variant="contained"
+                  variant={isDark ? "outlined" : "contained"}
                   startIcon={<AddRoundedIcon />}
                   onClick={() => openDialog("createTab")}
                   disabled={loading || busy || forbidden}
                   sx={uiLayout.withUiSx({
-                    bgcolor: PRIMARY,
+                    bgcolor: isDark ? "transparent" : PRIMARY,
                     borderRadius: 2.5,
                     boxShadow: "none",
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
+                    "&:hover": { bgcolor: isDark ? "transparent" : PRIMARY_DARK, boxShadow: "none" },
                     "& .MuiButton-startIcon": { ml: 0.6, mr: 0 },
                   }, uiLayout.buttonSx)}
                 >
@@ -785,7 +973,7 @@ const CircularsUpload = () => {
                   disabled={loading || busy}
                   sx={uiLayout.withUiSx({
                     borderRadius: 2.5,
-                    borderColor: BORDER,
+                    borderColor: isDark ? "#67C99D" : BORDER,
                     color: PRIMARY,
                     fontFamily: "Cairo",
                     fontWeight: 900,
@@ -801,14 +989,14 @@ const CircularsUpload = () => {
           {successMessage && (
             <Alert
               severity="success"
-              sx={{ borderRadius: 3, fontFamily: "Cairo" }}
+              sx={{ borderRadius: 2, fontFamily: "Cairo" }}
             >
               {successMessage}
             </Alert>
           )}
 
           {error && (
-            <Alert severity="error" sx={{ borderRadius: 3, fontFamily: "Cairo" }}>
+            <Alert severity="error" sx={{ borderRadius: 2, fontFamily: "Cairo" }}>
               {error}
             </Alert>
           )}
@@ -818,16 +1006,16 @@ const CircularsUpload = () => {
               elevation={0}
               sx={{
                 minHeight: 360,
-                borderRadius: 3,
-                border: `1px solid ${BORDER}`,
+                borderRadius: 2,
+                border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
                 display: "grid",
                 placeItems: "center",
-                bgcolor: WHITE,
+                bgcolor: isDark ? darkCard : WHITE,
               }}
             >
               <Stack alignItems="center" spacing={1.3}>
                 <CircularProgress sx={{ color: PRIMARY }} />
-                <Typography sx={{ fontFamily: "Cairo", color: MUTED }}>
+                <Typography sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}>
                   جاري تحميل إدارة مكتبة المحتوى...
                 </Typography>
               </Stack>
@@ -837,11 +1025,11 @@ const CircularsUpload = () => {
               elevation={0}
               sx={{
                 minHeight: 340,
-                borderRadius: 3,
-                border: `1px solid ${BORDER}`,
+                borderRadius: 2,
+                border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
                 display: "grid",
                 placeItems: "center",
-                bgcolor: WHITE,
+                bgcolor: isDark ? darkCard : WHITE,
                 p: 3,
               }}
             >
@@ -853,7 +1041,7 @@ const CircularsUpload = () => {
                 >
                   غير مصرح
                 </Typography>
-                <Typography sx={{ fontFamily: "Cairo", color: MUTED }}>
+                <Typography sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}>
                   هذه الصفحة تحتاج صلاحية إدارة المحتوى والملفات.
                 </Typography>
               </Stack>
@@ -863,11 +1051,11 @@ const CircularsUpload = () => {
               elevation={0}
               sx={{
                 minHeight: 360,
-                borderRadius: 3,
-                border: `1px dashed ${BORDER}`,
+                borderRadius: 2,
+                border: `1px dashed ${isDark ? "#67C99D" : BORDER}`,
                 display: "grid",
                 placeItems: "center",
-                bgcolor: WHITE,
+                bgcolor: isDark ? darkCard : WHITE,
                 textAlign: "center",
                 p: 3,
               }}
@@ -876,22 +1064,22 @@ const CircularsUpload = () => {
                 <FolderRoundedIcon sx={{ fontSize: 62, color: "#a9bbb3" }} />
                 <Typography
                   variant="h6"
-                  sx={{ mt: 1, fontFamily: "Cairo", fontWeight: 900, color: TEXT }}
+                  sx={{ mt: 1, fontFamily: "Cairo", fontWeight: 900, color: isDark ? theme.palette.text.primary : TEXT }}
                 >
                   لا توجد أقسام بعد
                 </Typography>
                 <Button
-                  variant="contained"
+                  variant={isDark ? "outlined" : "contained"}
                   startIcon={<AddRoundedIcon />}
                   onClick={() => openDialog("createTab")}
                   sx={uiLayout.withUiSx({
                     mt: 1.5,
-                    bgcolor: PRIMARY,
+                    bgcolor: isDark ? "transparent" : PRIMARY,
                     borderRadius: 2.5,
                     boxShadow: "none",
                     fontFamily: "Cairo",
                     fontWeight: 900,
-                    "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
+                    "&:hover": { bgcolor: isDark ? "transparent" : PRIMARY_DARK, boxShadow: "none" },
                     "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
                   }, uiLayout.buttonSx)}
                 >
@@ -904,9 +1092,9 @@ const CircularsUpload = () => {
               <Paper
                 elevation={0}
                 sx={{
-                  borderRadius: 3,
-                  border: `1px solid ${BORDER}`,
-                  bgcolor: WHITE,
+                  borderRadius: 2,
+                  border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
+                  bgcolor: isDark ? darkCard : WHITE,
                   overflow: "hidden",
                 }}
               >
@@ -928,12 +1116,12 @@ const CircularsUpload = () => {
                     },
                     "& .Mui-selected": {
                       color: `${PRIMARY} !important`,
-                      bgcolor: "#eef7f2",
+                      bgcolor: isDark ? "transparent" : "#eef7f2",
                     },
                     "& .MuiTabs-indicator": {
                       height: 3,
-                      bgcolor: PRIMARY,
-                      borderRadius: 3,
+                      bgcolor: isDark ? "transparent" : PRIMARY,
+                      borderRadius: 2,
                     },
                   }}
                 >
@@ -946,9 +1134,9 @@ const CircularsUpload = () => {
               <Paper
                 elevation={0}
                 sx={{
-                  borderRadius: 3,
-                  border: `1px solid ${BORDER}`,
-                  bgcolor: WHITE,
+                  borderRadius: 2,
+                  border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
+                  bgcolor: isDark ? darkCard : WHITE,
                   overflow: "hidden",
                   minHeight: 520,
                 }}
@@ -957,8 +1145,8 @@ const CircularsUpload = () => {
                   sx={{
                     px: { xs: 1.5, md: 2 },
                     py: 1.2,
-                    borderBottom: `1px solid ${BORDER}`,
-                    bgcolor: "#fbfdfc",
+                    borderBottom: `1px solid ${isDark ? "#67C99D" : BORDER}`,
+                    bgcolor: isDark ? darkSection : "#fbfdfc",
                   }}
                 >
                   <Stack
@@ -993,7 +1181,7 @@ const CircularsUpload = () => {
                       )}
 
                       <Typography
-                        sx={{ fontFamily: "Cairo", color: MUTED, whiteSpace: "nowrap" }}
+                        sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED, whiteSpace: "nowrap" }}
                       >
                         إدارة المحتوى
                       </Typography>
@@ -1062,7 +1250,7 @@ const CircularsUpload = () => {
                           width: { xs: "100%", sm: 270 },
                           "& .MuiOutlinedInput-root": {
                             borderRadius: 2.5,
-                            bgcolor: WHITE,
+                            bgcolor: isDark ? darkCard : WHITE,
                           },
                           "& input": { fontFamily: "Cairo" },
                         }, uiLayout.formFieldSx)}
@@ -1076,18 +1264,18 @@ const CircularsUpload = () => {
                       />
 
                       <Button
-                        variant="contained"
+                        variant={isDark ? "outlined" : "contained"}
                         startIcon={<CreateNewFolderRoundedIcon />}
                         onClick={() => openDialog("createFolder")}
                         disabled={busy || !activeTab}
                         sx={uiLayout.withUiSx({
-                          bgcolor: PRIMARY,
+                          bgcolor: isDark ? "transparent" : PRIMARY,
                           borderRadius: 2.5,
                           boxShadow: "none",
                           fontFamily: "Cairo",
                           fontWeight: 900,
                           "&:hover": {
-                            bgcolor: PRIMARY_DARK,
+                            bgcolor: isDark ? "transparent" : PRIMARY_DARK,
                             boxShadow: "none",
                           },
                           "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
@@ -1105,7 +1293,7 @@ const CircularsUpload = () => {
                             disabled={busy || !activeTab}
                             sx={uiLayout.withUiSx({
                               borderRadius: 2.5,
-                              borderColor: BORDER,
+                              borderColor: isDark ? "#67C99D" : BORDER,
                               color: PRIMARY,
                               fontFamily: "Cairo",
                               fontWeight: 900,
@@ -1146,17 +1334,17 @@ const CircularsUpload = () => {
                         <>
                           <Button
                             component="label"
-                            variant="contained"
+                            variant={isDark ? "outlined" : "contained"}
                             startIcon={<CloudUploadRoundedIcon />}
                             disabled={busy}
                             sx={uiLayout.withUiSx({
-                              bgcolor: PRIMARY,
+                              bgcolor: isDark ? "transparent" : PRIMARY,
                               borderRadius: 2.5,
                               boxShadow: "none",
                               fontFamily: "Cairo",
                               fontWeight: 900,
                               "&:hover": {
-                                bgcolor: PRIMARY_DARK,
+                                bgcolor: isDark ? "transparent" : PRIMARY_DARK,
                                 boxShadow: "none",
                               },
                               "& .MuiButton-startIcon": { ml: 0.5, mr: 0 },
@@ -1182,7 +1370,7 @@ const CircularsUpload = () => {
                               }
                               disabled={busy}
                               sx={{
-                                border: `1px solid ${BORDER}`,
+                                border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
                                 borderRadius: 2.3,
                                 color: PRIMARY,
                               }}
@@ -1224,7 +1412,7 @@ const CircularsUpload = () => {
                             width: 48,
                             height: 48,
                             borderRadius: 2.5,
-                            bgcolor: "#fff7dc",
+                            bgcolor: isDark ? darkNested : "#fff7dc",
                             display: "grid",
                             placeItems: "center",
                             flexShrink: 0,
@@ -1241,7 +1429,7 @@ const CircularsUpload = () => {
                             sx={{
                               fontFamily: "Cairo",
                               fontWeight: 950,
-                              color: TEXT,
+                              color: isDark ? theme.palette.text.primary : TEXT,
                               lineHeight: 1.35,
                             }}
                           >
@@ -1249,7 +1437,7 @@ const CircularsUpload = () => {
                           </Typography>
                           <Typography
                             variant="caption"
-                            sx={{ fontFamily: "Cairo", color: MUTED }}
+                            sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}
                           >
                             {currentFolders.length} مجلد فرعي •{" "}
                             {Array.isArray(activeFolder.files)
@@ -1263,7 +1451,7 @@ const CircularsUpload = () => {
                       {activeFolder.description && (
                         <Typography
                           variant="body2"
-                          sx={{ mb: 1.5, fontFamily: "Cairo", color: MUTED }}
+                          sx={{ mb: 1.5, fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}
                         >
                           {activeFolder.description}
                         </Typography>
@@ -1273,7 +1461,7 @@ const CircularsUpload = () => {
                     activeTab?.description && (
                       <Typography
                         variant="body2"
-                        sx={{ mb: 1.5, fontFamily: "Cairo", color: MUTED }}
+                        sx={{ mb: 1.5, fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}
                       >
                         {activeTab.description}
                       </Typography>
@@ -1288,7 +1476,7 @@ const CircularsUpload = () => {
                             mb: 1,
                             fontFamily: "Cairo",
                             fontWeight: 950,
-                            color: TEXT,
+                            color: isDark ? theme.palette.text.primary : TEXT,
                           }}
                         >
                           المجلدات الفرعية
@@ -1331,9 +1519,9 @@ const CircularsUpload = () => {
                               sx={{
                                 p: 1.45,
                                 minHeight: 145,
-                                borderRadius: 3,
-                                border: `1px solid ${BORDER}`,
-                                bgcolor: "#fcfefd",
+                                borderRadius: 2,
+                                border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
+                                bgcolor: isDark ? darkCard : "#fcfefd",
                                 cursor: "pointer",
                                 transition: "all .18s ease",
                                 display: "flex",
@@ -1345,7 +1533,7 @@ const CircularsUpload = () => {
                                   borderColor: "#a9cdbb",
                                   boxShadow:
                                     "0 8px 24px rgba(5,116,69,0.09)",
-                                  bgcolor: "#ffffff",
+                                  bgcolor: isDark ? darkCard : "#ffffff",
                                 },
                               }}
                             >
@@ -1397,7 +1585,7 @@ const CircularsUpload = () => {
                                   sx={{
                                     fontFamily: "Cairo",
                                     fontWeight: 950,
-                                    color: TEXT,
+                                    color: isDark ? theme.palette.text.primary : TEXT,
                                     lineHeight: 1.5,
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
@@ -1409,7 +1597,7 @@ const CircularsUpload = () => {
 
                                 <Typography
                                   variant="caption"
-                                  sx={{ fontFamily: "Cairo", color: MUTED }}
+                                  sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}
                                 >
                                   {subFolderCount} مجلد • {fileCount} ملف
                                 </Typography>
@@ -1428,7 +1616,7 @@ const CircularsUpload = () => {
                           mb: 1,
                           fontFamily: "Cairo",
                           fontWeight: 950,
-                          color: TEXT,
+                          color: isDark ? theme.palette.text.primary : TEXT,
                         }}
                       >
                         الملفات
@@ -1452,9 +1640,9 @@ const CircularsUpload = () => {
                             elevation={0}
                             sx={{
                               p: 1.3,
-                              borderRadius: 2.8,
-                              border: `1px solid ${BORDER}`,
-                              bgcolor: "#fcfefd",
+                              borderRadius: 2,
+                              border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
+                              bgcolor: isDark ? darkCard : "#fcfefd",
                               transition: "all .18s ease",
                               "&:hover": {
                                 borderColor: "#b4d0c2",
@@ -1472,8 +1660,8 @@ const CircularsUpload = () => {
                                   width: 48,
                                   height: 48,
                                   borderRadius: 2.5,
-                                  bgcolor: WHITE,
-                                  border: `1px solid ${BORDER}`,
+                                  bgcolor: isDark ? darkCard : WHITE,
+                                  border: `1px solid ${isDark ? "#67C99D" : BORDER}`,
                                   display: "grid",
                                   placeItems: "center",
                                   flexShrink: 0,
@@ -1494,7 +1682,7 @@ const CircularsUpload = () => {
                                     sx={{
                                       fontFamily: "Cairo",
                                       fontWeight: 900,
-                                      color: TEXT,
+                                      color: isDark ? theme.palette.text.primary : TEXT,
                                       overflow: "hidden",
                                       textOverflow: "ellipsis",
                                       whiteSpace: "nowrap",
@@ -1506,7 +1694,7 @@ const CircularsUpload = () => {
 
                                 <Typography
                                   variant="caption"
-                                  sx={{ fontFamily: "Cairo", color: MUTED }}
+                                  sx={{ fontFamily: "Cairo", color: isDark ? theme.palette.text.secondary : MUTED }}
                                 >
                                   {formatBytes(file.fileSize)}
                                 </Typography>
@@ -1582,7 +1770,7 @@ const CircularsUpload = () => {
                             mt: 1,
                             fontFamily: "Cairo",
                             fontWeight: 850,
-                            color: MUTED,
+                            color: isDark ? theme.palette.text.secondary : MUTED,
                           }}
                         >
                           {searchText
@@ -1662,23 +1850,23 @@ const CircularsUpload = () => {
           <Button
             onClick={closeDialog}
             disabled={busy}
-            sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, color: MUTED }, uiLayout.buttonSx)}
+            sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900, color: isDark ? theme.palette.text.secondary : MUTED }, uiLayout.buttonSx)}
           >
             إلغاء
           </Button>
 
           <Button
-            variant="contained"
+            variant={isDark ? "outlined" : "contained"}
             onClick={saveDialog}
             disabled={busy}
             sx={uiLayout.withUiSx({
               minWidth: 110,
-              bgcolor: PRIMARY,
+              bgcolor: isDark ? "transparent" : PRIMARY,
               borderRadius: 2.5,
               boxShadow: "none",
               fontFamily: "Cairo",
               fontWeight: 900,
-              "&:hover": { bgcolor: PRIMARY_DARK, boxShadow: "none" },
+              "&:hover": { bgcolor: isDark ? "transparent" : PRIMARY_DARK, boxShadow: "none" },
             }, uiLayout.buttonSx)}
           >
             {busy ? (

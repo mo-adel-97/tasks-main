@@ -6,6 +6,7 @@ import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  GlobalStyles,
   Alert,
   AppBar,
   Avatar,
@@ -295,6 +296,9 @@ const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "https://api4.sstli.com";
 
+
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
 const EMPLOYEE_IMAGE_API =
   "https://filesregsiteration.sstli.com/erp/image_api.php";
 
@@ -508,6 +512,12 @@ const formatMinutesAsHours = (minutes) => {
 
 const HrEmployeesPage = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     theme.breakpoints.down("sm")
@@ -905,7 +915,7 @@ const HrEmployeesPage = () => {
       confirmButtonText: "حسنًا",
       confirmButtonColor:
         icon === "success" ? primaryColor : accentColor,
-      background: "#ffffff",
+      background: isDark ? darkCard : "#ffffff",
       color: "#17372b",
       buttonsStyling: true,
       customClass: {
@@ -3136,7 +3146,7 @@ const HrEmployeesPage = () => {
           "1px solid rgba(5,117,70,0.10)",
         boxShadow:
           "0 2px 8px rgba(5,117,70,0.035)",
-        bgcolor: "#fff",
+        bgcolor: isDark ? darkCard : "#fff",
         cursor: "pointer",
         boxSizing: "border-box",
         position: "relative",
@@ -3307,7 +3317,7 @@ const HrEmployeesPage = () => {
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
           setMobileSidebarOpen(false)
-        }><Box
+        }><Box className="sstli-hr-dark-root"
       dir={PAGE_DIRECTION}
       sx={{
         minHeight: "100dvh",
@@ -3347,6 +3357,252 @@ const HrEmployeesPage = () => {
         }
       }}
     >
+
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".sstli-hr-dark-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiPaper-root:not(.print-preview):not(.document-preview):not(.a4-page), .sstli-hr-dark-root .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: `${DARK_BORDER} !important`,
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".sstli-hr-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                  backgroundColor: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".sstli-hr-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiIconButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".sstli-hr-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root, .sstli-hr-dark-root .MuiBadge-badge": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiTabs-root, .MuiDialog-paper .MuiTabs-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  borderRadius: "10px !important",
+                  minHeight: "38px !important"
+                },
+                ".sstli-hr-dark-root .MuiTab-root, .MuiDialog-paper .MuiTab-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.secondary} !important`,
+                  minHeight: "36px !important"
+                },
+                ".sstli-hr-dark-root .MuiTab-root.Mui-selected, .MuiDialog-paper .MuiTab-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiTabs-indicator, .MuiDialog-paper .MuiTabs-indicator": {
+                  backgroundColor: `${DARK_BORDER} !important`,
+                  height: "2px !important"
+                },
+
+                ".sstli-hr-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".sstli-hr-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .sstli-hr-dark-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`,
+                  borderWidth: "1px !important"
+                },
+                ".sstli-hr-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".sstli-hr-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiInputAdornment-root, .sstli-hr-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .sstli-hr-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: `${DARK_TEXT} !important`
+                },
+                ".sstli-hr-dark-root .MuiFormHelperText-root, .MuiDialog-paper .MuiFormHelperText-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiCheckbox-root.Mui-checked, .MuiDialog-paper .MuiCheckbox-root.Mui-checked": {
+                  color: `${DARK_BORDER} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".sstli-hr-dark-root .MuiAlert-icon, .MuiDialog-paper .MuiAlert-icon, .sstli-hr-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiAppBar-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiTableHead-root .MuiTableCell-root, .MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiTableBody-root .MuiTableCell-root, .MuiDialog-paper .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".sstli-hr-dark-root .MuiTableRow-root:hover .MuiTableCell-root, .MuiDialog-paper .MuiTableRow-root:hover .MuiTableCell-root": {
+                  backgroundColor: `${darkHover} !important`
+                },
+
+                ".sstli-hr-dark-root .MuiPaginationItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".sstli-hr-dark-root .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiCard-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 14px 34px rgba(3,20,13,.28) !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected, .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".sstli-hr-dark-root input[type='date'], .MuiDialog-paper input[type='date'], .sstli-hr-dark-root input[type='datetime-local'], .MuiDialog-paper input[type='datetime-local'], .sstli-hr-dark-root input[type='time'], .MuiDialog-paper input[type='time']": {
+                  colorScheme: "dark"
+                },
+
+                ".sstli-hr-dark-root .print-preview, .sstli-hr-dark-root .document-preview, .sstli-hr-dark-root .a4-page": {
+                  backgroundColor: "#fff !important",
+                  color: "#111 !important",
+                  borderColor: "#ddd !important"
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <AppBar
           position="fixed"
@@ -3355,8 +3611,7 @@ const HrEmployeesPage = () => {
             zIndex: 1250,
             height: { xs: 50, sm: 56 },
             justifyContent: "center",
-            background:
-              "linear-gradient(135deg, #ffffff 0%, #f4fbf7 100%)",
+            background: isDark ? darkSection : "linear-gradient(135deg, #ffffff 0%, #f4fbf7 100%)",
             borderBottom:
               "1px solid rgba(5,117,70,0.12)",
             color: primaryDark,
@@ -3388,13 +3643,11 @@ const HrEmployeesPage = () => {
                 width: { xs: 36, sm: 40 },
                 height: { xs: 36, sm: 40 },
                 color: "#fff",
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)",
+                background: isDark ? darkSection : "linear-gradient(135deg,#057546,#034d31)",
                 boxShadow:
                   "0 5px 14px rgba(5,117,70,.20)",
                 "&:hover": {
-                  background:
-                    "linear-gradient(135deg,#034d31,#057546)"
+                  background: isDark ? darkSection : "linear-gradient(135deg,#034d31,#057546)"
                 }
               }}
             >
@@ -3474,8 +3727,7 @@ const HrEmployeesPage = () => {
             },
             borderRadius: 4,
             color: "#fff",
-            background:
-              `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
+            background: isDark ? darkSection : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
             boxShadow:
               "0 12px 30px rgba(5,117,70,0.18)",
             animation: "pageReveal .55s cubic-bezier(.2,.8,.2,1) both",
@@ -4391,8 +4643,7 @@ const HrEmployeesPage = () => {
                 sm: 1.2,
                 lg: 1.5
               },
-              background:
-                "linear-gradient(135deg,#ffffff,#f2faf6)",
+              background: isDark ? darkSection : "linear-gradient(135deg,#ffffff,#f2faf6)",
               borderBottom:
                 "1px solid rgba(5,117,70,.09)"
             }}
@@ -4492,8 +4743,7 @@ const HrEmployeesPage = () => {
                 sm: .8,
                 lg: 1.05
               },
-              background:
-                "radial-gradient(circle at 15% 0%, rgba(5,117,70,.045), transparent 28%), linear-gradient(180deg,#f7fbf9 0%,#f2f8f5 100%)",
+              background: isDark ? darkSection : "radial-gradient(circle at 15% 0%, rgba(5,117,70,.045), transparent 28%), linear-gradient(180deg,#f7fbf9 0%,#f2f8f5 100%)",
               "& .MuiButton-root": {
                 fontFamily: "Cairo",
                 textTransform: "none"
@@ -4529,8 +4779,7 @@ const HrEmployeesPage = () => {
                       lg: 1.6
                     },
                     color: "#fff",
-                    background:
-                      `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+                    background: isDark ? darkSection : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
                     boxShadow:
                       "0 18px 46px rgba(5,117,70,.20)",
                     animation: "cardReveal .42s cubic-bezier(.16,1,.3,1) both",
@@ -4918,7 +5167,7 @@ const HrEmployeesPage = () => {
                         borderRadius: 3,
                         border:
                           "1px solid rgba(5,117,70,.09)",
-                        bgcolor: "#fff"
+                        bgcolor: isDark ? darkCard : "#fff"
                       }}
                     >
                       <Stack
@@ -5542,7 +5791,7 @@ const HrEmployeesPage = () => {
                       borderRadius: 3,
                       border:
                         "1px solid rgba(5,117,70,.09)",
-                      bgcolor: "#fff",
+                      bgcolor: isDark ? darkCard : "#fff",
                       animation:
                         "fadeSlide .25s ease both"
                     }}
@@ -6037,7 +6286,7 @@ const HrEmployeesPage = () => {
                       borderRadius: 3,
                       border:
                         "1px solid rgba(5,117,70,.09)",
-                      bgcolor: "#fff",
+                      bgcolor: isDark ? darkCard : "#fff",
                       animation:
                         "fadeSlide .25s ease both"
                     }}
@@ -6358,8 +6607,7 @@ const HrEmployeesPage = () => {
                           placeItems: "center",
                           textAlign: CENTER_TEXT_ALIGN,
                           borderRadius: 3,
-                          background:
-                            "linear-gradient(180deg,#fbfefc,#f4faf7)",
+                          background: isDark ? darkSection : "linear-gradient(180deg,#fbfefc,#f4faf7)",
                           border:
                             "1px dashed rgba(5,117,70,.16)"
                         }}
@@ -6431,8 +6679,7 @@ const HrEmployeesPage = () => {
                                 borderRadius: 3,
                                 border:
                                   "1px solid rgba(5,117,70,.10)",
-                                background:
-                                  "linear-gradient(145deg,#ffffff 0%,#fbfefc 68%,#f2faf6 100%)",
+                                background: isDark ? darkSection : "linear-gradient(145deg,#ffffff 0%,#fbfefc 68%,#f2faf6 100%)",
                                 cursor: "pointer",
                                 animation:
                                   `cardReveal .3s ease ${Math.min(index * 35, 280)}ms both`,
@@ -6671,7 +6918,7 @@ const HrEmployeesPage = () => {
                         borderRadius: 3,
                         border:
                           "1px solid rgba(5,117,70,.10)",
-                        bgcolor: "#fff",
+                        bgcolor: isDark ? darkCard : "#fff",
                         boxShadow:
                           "0 8px 24px rgba(5,117,70,.055)"
                       }}
@@ -7234,7 +7481,7 @@ const HrEmployeesPage = () => {
                               borderRadius: 2.8,
                               border:
                                 "1px solid rgba(5,117,70,.09)",
-                              bgcolor: "#fff"
+                              bgcolor: isDark ? darkCard : "#fff"
                             }}
                           >
                             <Typography
@@ -7402,7 +7649,7 @@ const HrEmployeesPage = () => {
                         borderRadius: 3,
                         border:
                           "1px solid rgba(5,117,70,.09)",
-                        bgcolor: "#fff"
+                        bgcolor: isDark ? darkCard : "#fff"
                       }}
                     >
                       <Stack
@@ -7923,15 +8170,14 @@ const HrEmployeesPage = () => {
                           borderRadius: 3.2,
                           border:
                             "1px solid rgba(5,117,70,.10)",
-                          bgcolor: "#fff"
+                          bgcolor: isDark ? darkCard : "#fff"
                         }}
                       >
                         <Box
                           sx={{
                             px: { xs: 1.2, sm: 1.6 },
                             py: { xs: 1.2, sm: 1.45 },
-                            background:
-                              "linear-gradient(135deg, #f4fbf7 0%, #ffffff 72%)",
+                            background: isDark ? darkSection : "linear-gradient(135deg, #f4fbf7 0%, #ffffff 72%)",
                             borderBottom:
                               "1px solid rgba(5,117,70,.08)"
                           }}
@@ -8046,7 +8292,7 @@ const HrEmployeesPage = () => {
                                 fontFamily: "Cairo",
                                 fontWeight: 900,
                                 fontSize: "0.75rem",
-                                bgcolor: "#fff",
+                                bgcolor: isDark ? darkCard : "#fff",
                                 borderColor:
                                   "rgba(5,117,70,.16)"
                               }]}
@@ -8942,7 +9188,7 @@ const HrEmployeesPage = () => {
                           borderRadius: 3,
                           border:
                             "1px solid rgba(5,117,70,.09)",
-                          bgcolor: "#fff"
+                          bgcolor: isDark ? darkCard : "#fff"
                         }}
                       >
                         <Stack
@@ -9088,7 +9334,7 @@ const HrEmployeesPage = () => {
                                     borderRadius: 2.4,
                                     border:
                                       "1px solid rgba(5,117,70,.10)",
-                                    bgcolor: "#fff"
+                                    bgcolor: isDark ? darkCard : "#fff"
                                   }}
                                 >
                                   <Typography
@@ -9377,7 +9623,7 @@ const HrEmployeesPage = () => {
                       p: { xs: .75, sm: 1.05, lg: 1.2 },
                       borderRadius: 3,
                       border: "1px solid rgba(5,117,70,.08)",
-                      bgcolor: "#fff",
+                      bgcolor: isDark ? darkCard : "#fff",
                       direction: EMPLOYEE_DIALOG_DIRECTION,
                       animation: "fadeSlide .25s ease both"
                     }}
@@ -9972,7 +10218,7 @@ const HrEmployeesPage = () => {
               px: { xs: 1, sm: 1.5 },
               py: { xs: .85, sm: 1.05 },
               borderBottom: "1px solid rgba(5,117,70,.09)",
-              bgcolor: "#fff"
+              bgcolor: isDark ? darkCard : "#fff"
             }}
           >
             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
@@ -10032,7 +10278,7 @@ const HrEmployeesPage = () => {
                 borderRadius: 3,
                 overflow: "hidden",
                 border: "1px solid rgba(5,117,70,.10)",
-                bgcolor: "#fff",
+                bgcolor: isDark ? darkCard : "#fff",
                 display: "flex",
                 flexDirection: "column"
               }}
@@ -10165,7 +10411,7 @@ const HrEmployeesPage = () => {
                         height: "100%",
                         border: 0,
                         display: "block",
-                        bgcolor: "#fff"
+                        bgcolor: isDark ? darkCard : "#fff"
                       }}
                     />
                   )

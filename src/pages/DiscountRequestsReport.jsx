@@ -701,6 +701,12 @@ const PromoStudentsDialog = ({
 
 const DiscountRequestsReport = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     theme.breakpoints.down("sm")
@@ -1564,15 +1570,221 @@ const DiscountRequestsReport = () => {
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
             setMobileSidebarOpen(false)
           }><Box
+      className="discount-requests-dark-root"
       sx={{
         minHeight: "100vh",
+        width: "100%",
         maxWidth: "100%",
+        minWidth: 0,
         overflowX: "hidden",
-        background:
-          "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
+        background: isDark
+          ? theme.palette.background.default
+          : "linear-gradient(135deg,#f5faf7 0%,#ffffff 55%,#eef8f3 100%)",
+        color: "text.primary",
         direction: "rtl"
       }}
     >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".discount-requests-dark-root .MuiPaper-root, .discount-requests-dark-root .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".discount-requests-dark-root .MuiPaper-root .MuiPaper-root": {
+                  backgroundColor: `${darkSection} !important`
+                },
+
+                ".discount-requests-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".discount-requests-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  background: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: "#67C99D !important",
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".discount-requests-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                  background: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".discount-requests-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+
+                ".discount-requests-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+
+                ".discount-requests-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".discount-requests-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#67C99D !important",
+                  borderWidth: "1px !important"
+                },
+                ".discount-requests-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root, .discount-requests-dark-root .MuiFormHelperText-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".discount-requests-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: "#9BE0C1 !important"
+                },
+                ".discount-requests-dark-root .MuiSelect-icon, .discount-requests-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .MuiDialog-paper .MuiSelect-icon": {
+                  color: "#9BE0C1 !important"
+                },
+                ".discount-requests-dark-root .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: "#67C99D !important"
+                },
+
+                ".discount-requests-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".discount-requests-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: "#67C99D !important"
+                },
+
+                ".discount-requests-dark-root .MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".discount-requests-dark-root .MuiDataGrid-columnHeaders, .discount-requests-dark-root .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".discount-requests-dark-root .MuiDataGrid-cell": {
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".discount-requests-dark-root .MuiDataGrid-row, .discount-requests-dark-root .executed-row, .discount-requests-dark-root .rejected-row, .discount-requests-dark-root .pending-row": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important"
+                },
+                ".discount-requests-dark-root .MuiDataGrid-row:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".discount-requests-dark-root .MuiDataGrid-toolbarContainer, .discount-requests-dark-root .MuiDataGrid-footerContainer": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".discount-requests-dark-root .MuiDataGrid-columnSeparator": {
+                  color: "rgba(103,201,157,.55) !important"
+                },
+
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: "1px solid #67C99D !important"
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: "1px solid #67C99D !important"
+                },
+                ".MuiDialog-paper .MuiPaper-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".MuiDialog-paper .MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".MuiDialog-paper .MuiDataGrid-columnHeaders, .MuiDialog-paper .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialog-paper .MuiDataGrid-cell": {
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper, .MuiDataGrid-panel": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected, .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important"
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+
+                ".discount-requests-dark-root input[type='date'], .MuiDialog-paper input[type='date']": {
+                  colorScheme: "dark"
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <>
           <GlobalStyles
@@ -1597,12 +1809,16 @@ const DiscountRequestsReport = () => {
               left: 0,
               right: 0,
               zIndex: 1400,
-              background:
-                "rgba(255,255,255,.97)",
+              background: isDark
+                ? darkSection
+                : "rgba(255,255,255,.97)",
               backdropFilter: "blur(14px)",
-              color: "#173b2b",
-              borderBottom:
-                "1px solid rgba(5,117,70,.12)",
+              color: isDark
+                ? theme.palette.text.primary
+                : "#173b2b",
+              borderBottom: isDark
+                ? "1px solid #67C99D"
+                : "1px solid rgba(5,117,70,.12)",
               direction: "rtl"
             }}
           >
@@ -1634,9 +1850,13 @@ const DiscountRequestsReport = () => {
                     xs: 36,
                     sm: 40
                   },
-                  color: "#fff",
-                  background:
-                    "linear-gradient(135deg,#057546,#034d31)",
+                  color: isDark ? "#9BE0C1" : "#fff",
+                  background: isDark
+                    ? "transparent"
+                    : "linear-gradient(135deg,#057546,#034d31)",
+                  border: isDark
+                    ? "1px solid #67C99D"
+                    : "none",
                   boxShadow:
                     "0 5px 14px rgba(5,117,70,.20)"
                 }}
@@ -1660,7 +1880,9 @@ const DiscountRequestsReport = () => {
                     xs: "0.75rem",
                     sm: "0.78rem"
                   },
-                  color: "#173b2b",
+                  color: isDark
+                    ? theme.palette.text.primary
+                    : "#173b2b",
                   textAlign: "start"
                 }}
               >
@@ -1694,9 +1916,10 @@ const DiscountRequestsReport = () => {
             mb: isDesktop
               ? 1.5
               : 0.6,
-            borderRadius: 4,
-            border:
-              "1px solid rgba(5,117,70,0.14)",
+            borderRadius: 2.5,
+            border: isDark
+              ? "1px solid #67C99D"
+              : "1px solid rgba(5,117,70,0.14)",
             boxShadow:
               "0 12px 30px rgba(5,117,70,0.08)"
           }}
@@ -1817,7 +2040,7 @@ const DiscountRequestsReport = () => {
             <Chip label={`النتائج: ${filteredGridRows.length} من ${gridRows.length}`} sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#057546", backgroundColor: "#eef8f3" }} />
 
             <Button
-              variant={activeFilterCount > 0 ? "contained" : "outlined"}
+              variant={isDark ? "outlined" : activeFilterCount > 0 ? "contained" : "outlined"}
               startIcon={<FilterAltIcon />}
               onClick={() => setFilterDialogOpen(true)}
               sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800, ...(activeFilterCount > 0 ? { background: "linear-gradient(135deg,#057546,#034d31)" } : {}) }, uiLayout.buttonSx)}
@@ -1869,9 +2092,10 @@ const DiscountRequestsReport = () => {
             mb: isDesktop
               ? 1.5
               : 0.6,
-            borderRadius: 3.5,
-            border:
-              "1px solid rgba(5,117,70,0.13)"
+            borderRadius: 2,
+            border: isDark
+              ? "1px solid #67C99D"
+              : "1px solid rgba(5,117,70,0.13)"
           }}
         >
           <Box
@@ -1953,7 +2177,7 @@ const DiscountRequestsReport = () => {
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
             <Button
-              variant="contained"
+              variant={isDark ? "outlined" : "contained"}
               startIcon={
                 loading
                   ? (
@@ -1969,8 +2193,11 @@ const DiscountRequestsReport = () => {
               sx={uiLayout.withUiSx({
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)"
+                background: isDark
+                  ? "transparent"
+                  : "linear-gradient(135deg,#057546,#034d31)",
+                color: isDark ? "#9BE0C1" : "#fff",
+                borderColor: isDark ? "#67C99D" : "#057546"
               }, uiLayout.buttonSx)}
             >
               عرض
@@ -1982,19 +2209,21 @@ const DiscountRequestsReport = () => {
           elevation={0}
           sx={uiLayout.withUiSx({
             height: isDesktop
-              ? "calc(100vh - 240px)"
+              ? "calc(100vh - 205px)"
               : isPhone
                 ? "calc(100dvh - 270px)"
                 : "calc(100dvh - 250px)",
             minHeight: isDesktop
-              ? 520
+              ? 620
               : isPhone
                 ? 420
                 : 540,
-            borderRadius: 3.5,
+            borderRadius: 2,
             overflow: "hidden",
-            border:
-              "1px solid rgba(5,117,70,0.13)"
+            backgroundColor: isDark ? darkCard : "#fff",
+            border: isDark
+              ? "1px solid #67C99D"
+              : "1px solid rgba(5,117,70,0.13)"
           }, uiLayout.tableContainerSx)}
         >
           <DataGrid

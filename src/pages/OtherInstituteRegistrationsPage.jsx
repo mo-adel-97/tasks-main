@@ -59,6 +59,9 @@ const textColor = "#2c3e50";
 const dangerColor = "#d32f2f";
 const warningColor = "#ed6c02";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "https://api4.sstli.com/api";
 
@@ -85,8 +88,29 @@ const shortStudentName = (value) => {
 
 const formatDate = (value) => {
   if (!value) return "";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return safeText(value);
+
+  let raw = value;
+
+  if (typeof raw === "object") {
+    raw =
+      raw?.dateTime ??
+      raw?.DateTime ??
+      raw?.date ??
+      raw?.Date ??
+      raw?.value ??
+      raw?.Value ??
+      raw?.iso ??
+      raw?.ISO ??
+      raw?.$date ??
+      "";
+  }
+
+  if (!raw) return "";
+
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) {
+    return typeof raw === "string" ? raw : "";
+  }
 
   return d.toLocaleString("en-GB", {
     year: "numeric",
@@ -102,7 +126,7 @@ const isActiveRegistered = (value) =>
   value === 1 ||
   String(value).toLowerCase() === "true";
 
-const getStatusChip = (isStillRegistered) => {
+const getStatusChip = (isStillRegistered, isDark = false) => {
   const active = isActiveRegistered(isStillRegistered);
 
   if (active) {
@@ -112,8 +136,9 @@ const getStatusChip = (isStillRegistered) => {
         label="مازال مسجلاً"
         size="small"
         sx={{
-          backgroundColor: "#e8f5e9",
-          color: "#1b5e20",
+          backgroundColor: isDark ? "transparent" : "#e8f5e9",
+          color: isDark ? DARK_TEXT : "#1b5e20",
+          border: isDark ? `1px solid ${DARK_BORDER}` : "none",
           fontWeight: 900,
           direction: "rtl",
           maxWidth: "100%",
@@ -152,8 +177,9 @@ const getStatusChip = (isStillRegistered) => {
       label="لم يعد مسجلاً"
       size="small"
       sx={{
-        backgroundColor: "#ffebee",
-        color: "#b71c1c",
+        backgroundColor: isDark ? "transparent" : "#ffebee",
+        color: isDark ? DARK_TEXT : "#b71c1c",
+        border: isDark ? `1px solid ${DARK_BORDER}` : "none",
         fontWeight: 900,
         direction: "rtl",
         maxWidth: "100%",
@@ -168,6 +194,12 @@ const getStatusChip = (isStillRegistered) => {
 
 export default function OtherInstituteRegistrationsPage() {
   const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     muiTheme.breakpoints.down("sm")
@@ -398,19 +430,96 @@ export default function OtherInstituteRegistrationsPage() {
   };
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
-          setMobileSidebarOpen(false)
-        }><Box
-      sx={{
-        minHeight: "100dvh",
-        width: "100%",
-        maxWidth: "100%",
-        overflowX: "hidden",
-        backgroundColor: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f7faf9",
-        direction: "rtl"
-      }}
+    <NavigationShell
+      variant="standard"
+      mobileOpen={mobileSidebarOpen}
+      onMobileClose={() => setMobileSidebarOpen(false)}
     >
-      {!isDesktop && (
+      <Box
+        sx={{
+          minHeight: "100dvh",
+          width: "100%",
+          maxWidth: "100%",
+          overflowX: "hidden",
+          backgroundColor: isDark
+            ? muiTheme.palette.background.default
+            : "#f7faf9",
+          color: "text.primary",
+          direction: "rtl",
+
+          ...(isDark && {
+            "& .MuiButton-root": {
+              backgroundColor: "transparent !important",
+              backgroundImage: "none !important",
+              color: `${DARK_TEXT} !important`,
+              border: `1px solid ${DARK_BORDER} !important`,
+              boxShadow: "none !important"
+            },
+            "& .MuiButton-root:hover": {
+              backgroundColor: "transparent !important",
+              color: "#C9F2DF !important",
+              borderColor: `${DARK_BORDER} !important`,
+              boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+            },
+            "& .MuiButton-root.Mui-disabled": {
+              backgroundColor: "transparent !important",
+              color: "rgba(155,224,193,.42) !important",
+              borderColor: "rgba(103,201,157,.34) !important",
+              boxShadow: "none !important"
+            },
+            "& .MuiIconButton-root": {
+              backgroundColor: "transparent !important",
+              backgroundImage: "none !important",
+              color: `${DARK_TEXT} !important`,
+              border: `1px solid ${DARK_BORDER} !important`,
+              boxShadow: "none !important"
+            },
+            "& .MuiIconButton-root:hover": {
+              backgroundColor: "transparent !important",
+              color: "#C9F2DF !important"
+            },
+            "& .MuiChip-root": {
+              backgroundColor: "transparent !important",
+              backgroundImage: "none !important",
+              color: `${DARK_TEXT} !important`,
+              border: `1px solid ${DARK_BORDER} !important`,
+              boxShadow: "none !important"
+            },
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "transparent !important",
+              color: `${muiTheme.palette.text.primary} !important`
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: `${DARK_BORDER} !important`
+            },
+            "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: `${DARK_BORDER} !important`
+            },
+            "& .MuiInputLabel-root": {
+              color: `${muiTheme.palette.text.secondary} !important`
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: `${DARK_TEXT} !important`
+            },
+            "& .MuiSelect-icon": {
+              color: `${DARK_TEXT} !important`
+            },
+            "& .MuiAlert-root": {
+              backgroundColor: "transparent !important",
+              backgroundImage: "none !important",
+              color: `${muiTheme.palette.text.primary} !important`,
+              border: `1px solid ${DARK_BORDER} !important`,
+              boxShadow: "none !important"
+            },
+            "& .MuiAlert-icon, & .MuiCircularProgress-root": {
+              color: `${DARK_TEXT} !important`
+            },
+            "& .MuiDivider-root": {
+              borderColor: `${DARK_BORDER} !important`
+            }
+          })
+        }}
+      >
         <GlobalStyles
           styles={{
             ".MuiDrawer-root": {
@@ -421,1112 +530,1153 @@ export default function OtherInstituteRegistrationsPage() {
             },
             ".MuiDrawer-root .MuiDrawer-paper": {
               zIndex: "2101 !important"
-            }
+            },
+            ...(isDark
+              ? {
+                  ".MuiMenu-paper, .MuiPopover-paper": {
+                    backgroundColor: `${darkSection} !important`,
+                    backgroundImage: "none !important",
+                    color: `${muiTheme.palette.text.primary} !important`,
+                    border: `1px solid ${DARK_BORDER} !important`
+                  },
+                  ".MuiMenuItem-root": {
+                    backgroundColor: "transparent !important",
+                    color: `${muiTheme.palette.text.primary} !important`
+                  },
+                  ".MuiMenuItem-root:hover": {
+                    backgroundColor: `${darkHover} !important`
+                  },
+                  ".MuiMenuItem-root.Mui-selected": {
+                    backgroundColor: "transparent !important",
+                    color: `${DARK_TEXT} !important`,
+                    borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                  }
+                }
+              : {})
           }}
         />
-      )}
 
-      {!isDesktop && (
-        <AppBar
-          position="fixed"
-          elevation={0}
-          sx={{
-            top: 0,
-            left: 0,
-            right: 0,
-            width: "100%",
-            zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
-            backdropFilter: "blur(14px)",
-            color: textColor,
-            borderBottom: "1px solid #e4eeea",
-            direction: "rtl"
-          }}
-        >
-          <Toolbar
+        {!isDesktop && (
+          <AppBar
+            position="fixed"
+            elevation={0}
             sx={{
-              direction: "rtl",
-              minHeight: {
-                xs: "var(--app-header-height, 56px)",
-                sm: "var(--app-header-height, 56px)"
-              },
-              px: { xs: 0.75, sm: 1 },
-              gap: 0.8
+              top: 0,
+              left: 0,
+              right: 0,
+              width: "100%",
+              zIndex: 1400,
+              background: isDark ? darkSection : "rgba(255,255,255,.97)",
+              backdropFilter: "blur(14px)",
+              color: isDark ? muiTheme.palette.text.primary : textColor,
+              borderBottom: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid #e4eeea",
+              direction: "rtl"
             }}
           >
-            <IconButton
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setMobileSidebarOpen((v) => !v);
-              }}
+            <Toolbar
               sx={{
-                width: { xs: 36, sm: 40 },
-                height: { xs: 36, sm: 40 },
-                color: "#fff",
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)",
-                boxShadow:
-                  "0 5px 14px rgba(5,117,70,.20)"
+                direction: "rtl",
+                minHeight: "var(--app-header-height, 56px)",
+                px: { xs: 0.75, sm: 1 },
+                gap: 0.8
               }}
             >
-              <MenuRoundedIcon
-                sx={{
-                  fontSize: { xs: 20, sm: 22 }
+              <IconButton
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setMobileSidebarOpen((v) => !v);
                 }}
-              />
-            </IconButton>
-
-            <Typography
-              sx={{
-                flex: 1,
-                fontFamily: "Cairo",
-                fontWeight: 900,
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.8rem"
-                },
-                color: textColor,
-                textAlign: "start",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}
-            >
-              المسجلين في معاهد أخرى
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      )}
-
-      
-
-      <PageContainer
-        component="main"
-        sx={{
-          width: "100%",
-          maxWidth: "100%",
-          minWidth: 0,
-          ml: 0,
-          mt: {
-            xs: "var(--app-header-height, 56px)",
-            sm: "var(--app-header-height, 56px)"
-          },
-          minHeight: "100dvh",
-          
-          backgroundColor: "#f7faf9",
-          direction: "rtl",
-          textAlign: "start",
-          fontFamily: "Cairo, Arial",
-          overflowX: "hidden",
-          boxSizing: "border-box",
-          [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
-            mt: 0,
-            p: 2.5
-          },
-          ...navigationContentSx
-        }}
-      >
-        <Paper
-          elevation={0}
-          sx={{
-            p: isPhone ? 0.5 : isTablet ? 0.75 : 2.3,
-            mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.6,
-            borderRadius: isPhone ? 1.25 : isTablet ? 1.6 : 3.2,
-            border: "1px solid #e4eeea",
-            background: "linear-gradient(135deg, #ffffff 0%, #f4fbf8 100%)",
-            direction: "rtl",
-            textAlign: "start"
-          }}
-        >
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={isPhone ? 0.55 : isTablet ? 0.8 : 1.5}
-          >
-            <Box sx={{ textAlign: "start" }}>
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <SchoolIcon
-                  sx={{
-                    color: primaryDark,
-                    fontSize: isPhone
-                      ? 20
-                      : isTablet
-                        ? 24
-                        : 30
-                  }}
-                />
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: 900,
-                    color: textColor,
-                    textAlign: "start",
-                    fontFamily: "Cairo",
-                    fontSize: isPhone
-                      ? "0.75rem"
-                      : isTablet
-                        ? "0.76rem"
-                        : "1.3rem"
-                  }}
-                >
-                  المسجلين في معاهد أخرى
-                </Typography>
-              </Stack>
+                sx={{
+                  width: { xs: 36, sm: 40 },
+                  height: { xs: 36, sm: 40 },
+                  color: isDark ? DARK_TEXT : "#fff",
+                  background: isDark
+                    ? "transparent"
+                    : "linear-gradient(135deg,#057546,#034d31)",
+                  border: isDark ? `1px solid ${DARK_BORDER}` : "none",
+                  boxShadow: isDark
+                    ? "none"
+                    : "0 5px 14px rgba(5,117,70,.20)"
+                }}
+              >
+                <MenuRoundedIcon sx={{ fontSize: { xs: 20, sm: 22 } }} />
+              </IconButton>
 
               <Typography
                 sx={{
-                  mt: isPhone ? 0.15 : 0.45,
-                  color: "#607d70",
-                  fontWeight: 600,
-                  fontSize: isPhone
-                    ? "0.75rem"
-                    : isTablet
-                      ? "0.75rem"
-                      : "0.82rem",
-                  display: isPhone ? "none" : "block",
+                  flex: 1,
+                  minWidth: 0,
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  fontSize: { xs: "0.75rem", sm: "0.8rem" },
+                  color: isDark ? muiTheme.palette.text.primary : textColor,
                   textAlign: "start",
-                  fontFamily: "Cairo"
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
                 }}
               >
-                تقرير متابعة الطلاب الذين تم تسجيلهم كمسجلين في معاهد أخرى، مع إمكانية تحديث الحالة عند طي القيد.
+                المسجلين في معاهد أخرى
               </Typography>
-            </Box>
+            </Toolbar>
+          </AppBar>
+        )}
 
-            <Button
-              variant="contained"
-              startIcon={<RefreshIcon />}
-              onClick={loadData}
-              disabled={loading}
-              sx={uiLayout.withUiSx({
-                borderRadius: 3,
-                fontWeight: 900,
-                background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-                fontFamily: "Cairo",
-                minWidth: isPhone ? 0 : isTablet ? 90 : 110,
-                minHeight: isPhone ? 30 : isTablet ? 33 : 38,
-                px: isPhone ? 0.8 : isTablet ? 1.1 : 1.6,
-                fontSize: isPhone
-                  ? "0.75rem"
-                  : isTablet
-                    ? "0.75rem"
-                    : "0.75rem"
-              }, uiLayout.buttonSx)}
-            >
-              تحديث
-            </Button>
-          </Stack>
-        </Paper>
-
-        <Grid
-          container
-          spacing={isPhone ? 0.35 : isTablet ? 0.5 : 1.2}
-          sx={{ mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.5 }}
-        >
-          <Grid item xs={4} md={4}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
-                borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
-                border: "1px solid #e4eeea",
-                textAlign: "start",
-                minHeight: isPhone ? 50 : isTablet ? 58 : 82
-              }}
-            >
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <InfoIcon sx={{ color: primaryDark }} />
-                <Box>
-                  <Typography
-                    sx={{
-                      fontWeight: 900,
-                      textAlign: "start",
-                      fontSize: isPhone
-                        ? "0.75rem"
-                        : isTablet
-                          ? "0.75rem"
-                          : "0.75rem"
-                    }}
-                  >
-                    إجمالي السجلات
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 900,
-                      color: primaryDark,
-                      fontSize: isPhone
-                        ? "0.75rem"
-                        : isTablet
-                          ? "0.75rem"
-                          : "1.25rem"
-                    }}
-                  >
-                    {totalCount}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={4} md={4}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
-                borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
-                border: "1px solid #e4eeea",
-                textAlign: "start",
-                minHeight: isPhone ? 50 : isTablet ? 58 : 82
-              }}
-            >
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <CheckCircleIcon sx={{ color: primaryDark }} />
-                <Box>
-                  <Typography
-                    sx={{
-                      fontWeight: 900,
-                      textAlign: "start",
-                      fontSize: isPhone
-                        ? "0.75rem"
-                        : isTablet
-                          ? "0.75rem"
-                          : "0.75rem"
-                    }}
-                  >
-                    مازالوا مسجلين
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 900,
-                      color: primaryDark,
-                      fontSize: isPhone
-                        ? "0.75rem"
-                        : isTablet
-                          ? "0.75rem"
-                          : "1.25rem"
-                    }}
-                  >
-                    {activeCount}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={4} md={4}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: isPhone ? 0.35 : isTablet ? 0.55 : 1.35,
-                borderRadius: isPhone ? 1 : isTablet ? 1.35 : 2.4,
-                border: "1px solid #e4eeea",
-                textAlign: "start",
-                minHeight: isPhone ? 50 : isTablet ? 58 : 82
-              }}
-            >
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <CancelIcon sx={{ color: dangerColor }} />
-                <Box>
-                  <Typography
-                    sx={{
-                      fontWeight: 900,
-                      textAlign: "start",
-                      fontSize: isPhone
-                        ? "0.75rem"
-                        : isTablet
-                          ? "0.75rem"
-                          : "0.75rem"
-                    }}
-                  >
-                    لم يعودوا مسجلين
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 900,
-                      color: dangerColor,
-                      fontSize: isPhone
-                        ? "0.75rem"
-                        : isTablet
-                          ? "0.75rem"
-                          : "1.25rem"
-                    }}
-                  >
-                    {inactiveCount}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        <Paper
-          elevation={0}
+        <PageContainer
+          component="main"
           sx={{
-            p: isPhone ? 0.45 : isTablet ? 0.65 : 1.4,
-            mb: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
-            borderRadius: isPhone ? 1.15 : isTablet ? 1.5 : 2.8,
-            border: "1px solid #e4eeea",
+            width: "100%",
+            maxWidth: "100%",
+            minWidth: 0,
+            mt: {
+              xs: "var(--app-header-height, 56px)",
+              sm: "var(--app-header-height, 56px)"
+            },
+            minHeight: "100dvh",
+            backgroundColor: isDark
+              ? muiTheme.palette.background.default
+              : "#f7faf9",
             direction: "rtl",
-            textAlign: "start"
+            textAlign: "start",
+            fontFamily: "Cairo, Arial",
+            overflowX: "hidden",
+            boxSizing: "border-box",
+            p: { xs: 0.5, sm: 0.75, md: 1.25 },
+            [`@media (min-width:${DESKTOP_BREAKPOINT}px)`]: {
+              mt: 0,
+              p: 1.6
+            },
+            ...navigationContentSx
           }}
         >
-          <Grid
-            container
-            spacing={isPhone ? 0.55 : isTablet ? 0.75 : 1.2}
-            alignItems="center"
+          {/* Header: compact and quiet */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: isPhone ? 0.55 : isTablet ? 0.75 : 1.15,
+              mb: 0.8,
+              borderRadius: isCompact ? 1.5 : 2.2,
+              border: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid #e4eeea",
+              background: isDark
+                ? darkSection
+                : "linear-gradient(135deg,#fff,#f4fbf8)",
+              backgroundImage: isDark ? "none" : undefined
+            }}
           >
-            <Grid item xs={12} sm={8} md={8}>
-              <TextField InputLabelProps={{ shrink: true }}
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              spacing={0.8}
+            >
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={0.7}
+                sx={{ minWidth: 0 }}
+              >
+                <SchoolIcon
+                  sx={{
+                    color: isDark ? DARK_TEXT : primaryDark,
+                    fontSize: isPhone ? 19 : 24
+                  }}
+                />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 950,
+                      fontSize: isPhone ? "0.76rem" : isTablet ? "0.86rem" : "1.1rem",
+                      color: isDark ? muiTheme.palette.text.primary : textColor,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}
+                  >
+                    المسجلين في معاهد أخرى
+                  </Typography>
+                  {!isPhone && (
+                    <Typography
+                      sx={{
+                        mt: 0.1,
+                        fontFamily: "Cairo",
+                        fontSize: isTablet ? "0.7rem" : "0.76rem",
+                        color: isDark
+                          ? muiTheme.palette.text.secondary
+                          : "#607d70"
+                      }}
+                    >
+                      متابعة التسجيل الخارجي وتحديث حالة طي القيد
+                    </Typography>
+                  )}
+                </Box>
+              </Stack>
+
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<RefreshIcon />}
+                onClick={loadData}
+                disabled={loading}
+                sx={uiLayout.withUiSx({
+                  flexShrink: 0,
+                  minHeight: 32,
+                  px: 1,
+                  fontFamily: "Cairo",
+                  fontWeight: 900
+                }, uiLayout.buttonSx)}
+              >
+                تحديث
+              </Button>
+            </Stack>
+          </Paper>
+
+          {/* One compact statistics strip instead of three large cards */}
+          <Paper
+            elevation={0}
+            sx={{
+              mb: 0.8,
+              p: isPhone ? 0.4 : 0.55,
+              borderRadius: isCompact ? 1.4 : 1.9,
+              border: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid #e4eeea",
+              background: isDark ? darkCard : "#fff",
+              backgroundImage: "none"
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3,minmax(0,1fr))",
+                gap: 0.45
+              }}
+            >
+              {[
+                {
+                  label: "الإجمالي",
+                  value: totalCount,
+                  icon: <InfoIcon />
+                },
+                {
+                  label: "مازالوا مسجلين",
+                  value: activeCount,
+                  icon: <CheckCircleIcon />
+                },
+                {
+                  label: "تم طي القيد",
+                  value: inactiveCount,
+                  icon: <CancelIcon />
+                }
+              ].map((item) => (
+                <Box
+                  key={item.label}
+                  sx={{
+                    minWidth: 0,
+                    px: isPhone ? 0.35 : 0.6,
+                    py: isPhone ? 0.35 : 0.5,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 0.45,
+                    borderRadius: 1.2,
+                    border: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : "1px solid rgba(5,117,70,.09)",
+                    background: isDark ? "transparent" : "#f8fcfa"
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "grid",
+                      placeItems: "center",
+                      color: isDark ? DARK_TEXT : primaryDark,
+                      "& .MuiSvgIcon-root": {
+                        fontSize: isPhone ? 14 : 17
+                      }
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 800,
+                        fontSize: isPhone ? "0.62rem" : "0.7rem",
+                        color: isDark
+                          ? muiTheme.palette.text.secondary
+                          : "#607d70",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 950,
+                        fontSize: isPhone ? "0.78rem" : "0.94rem",
+                        color: isDark ? DARK_TEXT : primaryDark,
+                        lineHeight: 1.2
+                      }}
+                    >
+                      {item.value}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Compact filters */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: isPhone ? 0.45 : 0.6,
+              mb: 0.8,
+              borderRadius: isCompact ? 1.4 : 1.9,
+              border: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid #e4eeea",
+              background: isDark ? darkCard : "#fff",
+              backgroundImage: "none"
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "minmax(0,1fr) 190px"
+                },
+                gap: 0.55
+              }}
+            >
+              <TextField
                 fullWidth
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="بحث باسم الطالب، رقم الهوية، المعهد الآخر، الفرع، مسئول التسجيل..."
+                placeholder="بحث بالطالب، الهوية، الجوال، الفرع أو المعهد الآخر..."
                 InputProps={{
-                  startAdornment: <SearchIcon sx={{ color: "#8aa99c", mr: 1 }} />
+                  startAdornment: (
+                    <SearchIcon
+                      sx={{
+                        color: isDark ? DARK_TEXT : "#8aa99c",
+                        mr: 0.7,
+                        fontSize: 18
+                      }}
+                    />
+                  )
                 }}
-                size={isCompact ? "small" : "medium"}
+                size="small"
                 sx={uiLayout.withUiSx({
-                  direction: "rtl",
-                  "& .MuiOutlinedInput-root": {
-                    minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
-                    borderRadius: isCompact ? 1.1 : undefined
-                  },
                   "& input": {
                     textAlign: "start",
                     fontFamily: "Cairo",
                     fontWeight: 700,
-                    fontSize: isPhone
-                      ? "0.75rem"
-                      : isTablet
-                        ? "0.75rem"
-                        : undefined,
-                    py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
-                  },
-                  "& .MuiSvgIcon-root": {
-                    fontSize: isPhone ? 14 : isTablet ? 16 : undefined
+                    fontSize: isPhone ? "0.72rem" : "0.78rem"
                   }
                 }, uiLayout.formFieldSx)}
               />
-            </Grid>
 
-            <Grid item xs={12} sm={4} md={4}>
-              <TextField InputLabelProps={{ shrink: true }}
+              <TextField
                 select
                 fullWidth
                 label="الحالة"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                size={isCompact ? "small" : "medium"}
+                size="small"
+                InputLabelProps={{ shrink: true }}
                 SelectProps={{
                   MenuProps: {
                     PaperProps: {
                       sx: {
+                        backgroundColor: isDark ? darkSection : "#fff",
+                        color: isDark
+                          ? muiTheme.palette.text.primary
+                          : "inherit",
+                        border: isDark
+                          ? `1px solid ${DARK_BORDER}`
+                          : "none",
                         "& .MuiMenuItem-root": {
-                          minHeight: isPhone ? 28 : isTablet ? 31 : 40,
-                          fontSize: isPhone
-                            ? "0.44rem"
-                            : isTablet
-                              ? "0.52rem"
-                              : undefined,
-                          fontFamily: "Cairo"
+                          minHeight: 34,
+                          fontFamily: "Cairo",
+                          fontSize: "0.78rem"
                         }
                       }
                     }
                   }
                 }}
-                sx={uiLayout.withUiSx({
-                  direction: "rtl",
-                  "& .MuiOutlinedInput-root": {
-                    minHeight: isPhone ? 31 : isTablet ? 34 : undefined,
-                    borderRadius: isCompact ? 1.1 : undefined
-                  },
-                  "& .MuiInputBase-input": {
-                    textAlign: "start",
-                    fontFamily: "Cairo",
-                    fontWeight: 700,
-                    fontSize: isPhone
-                      ? "0.75rem"
-                      : isTablet
-                        ? "0.75rem"
-                        : undefined,
-                    py: isPhone ? 0.45 : isTablet ? 0.55 : undefined
-                  },
-                  "& .MuiInputLabel-root": {
-                    left: 0,
-                    right: "auto",
-                    transformOrigin: "left",
-                    fontSize: isPhone
-                      ? "0.75rem"
-                      : isTablet
-                        ? "0.75rem"
-                        : undefined
-                  }
-                }, uiLayout.formFieldSx)}
+                sx={uiLayout.formFieldSx}
               >
                 <MenuItem value="all">الكل</MenuItem>
                 <MenuItem value="active">مازال مسجلاً</MenuItem>
-                <MenuItem value="inactive">لم يعد مسجلاً</MenuItem>
+                <MenuItem value="inactive">تم طي القيد</MenuItem>
               </TextField>
-            </Grid>
-          </Grid>
-        </Paper>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2, textAlign: "start", fontFamily: "Cairo" }}>
-            {error}
-          </Alert>
-        )}
-
-        {successMessage && (
-          <Alert severity="success" sx={{ mb: 2, textAlign: "start", fontFamily: "Cairo" }}>
-            {successMessage}
-          </Alert>
-        )}
-
-        <Paper
-          elevation={0}
-          sx={{
-            borderRadius: isPhone ? 1.4 : isTablet ? 1.8 : 3,
-            border: "1px solid #e4eeea",
-            overflow: "hidden",
-            direction: "rtl",
-            textAlign: "start",
-            width: "100%"
-          }}
-        >
-          {loading ? (
-            <Box sx={{ p: 6, textAlign: "center" }}>
-              <CircularProgress sx={{ color: primaryDark }} />
-              <Typography sx={{ mt: 2, fontWeight: 800 }}>
-                جاري تحميل البيانات...
-              </Typography>
             </Box>
-          ) : isCompact ? (
-            <Box
+          </Paper>
+
+          {error && (
+            <Alert
+              severity="error"
               sx={{
-                display: "grid",
-                gap: isPhone ? 0.35 : 0.5,
-                p: isPhone ? 0.35 : 0.5
+                mb: 0.8,
+                fontFamily: "Cairo"
               }}
             >
-              {filteredRows.length === 0 ? (
-                <Box
+              {error}
+            </Alert>
+          )}
+
+          {successMessage && (
+            <Alert
+              severity="success"
+              sx={{
+                mb: 0.8,
+                fontFamily: "Cairo"
+              }}
+            >
+              {successMessage}
+            </Alert>
+          )}
+
+          {/* Results */}
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: isCompact ? 1.5 : 2,
+              border: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid #e4eeea",
+              overflow: "hidden",
+              background: isDark ? darkCard : "#fff",
+              backgroundImage: "none",
+              width: "100%"
+            }}
+          >
+            {loading ? (
+              <Box
+                sx={{
+                  minHeight: 260,
+                  display: "grid",
+                  placeItems: "center"
+                }}
+              >
+                <Stack spacing={1} alignItems="center">
+                  <CircularProgress size={30} />
+                  <Typography
+                    sx={{
+                      fontFamily: "Cairo",
+                      fontWeight: 800,
+                      fontSize: "0.78rem"
+                    }}
+                  >
+                    جاري تحميل البيانات...
+                  </Typography>
+                </Stack>
+              </Box>
+            ) : isCompact ? (
+              <Box
+                sx={{
+                  display: "grid",
+                  gap: 0.45,
+                  p: 0.45
+                }}
+              >
+                {filteredRows.length === 0 ? (
+                  <Box
+                    sx={{
+                      minHeight: 220,
+                      display: "grid",
+                      placeItems: "center",
+                      fontFamily: "Cairo",
+                      fontWeight: 800,
+                      color: isDark
+                        ? muiTheme.palette.text.secondary
+                        : "#789",
+                      fontSize: "0.75rem"
+                    }}
+                  >
+                    لا توجد بيانات للعرض
+                  </Box>
+                ) : (
+                  filteredRows.map((row) => {
+                    const id = row.id || row.ID;
+                    const isStill = isActiveRegistered(row.isStillRegistered);
+
+                    return (
+                      <Paper
+                        key={id}
+                        variant="outlined"
+                        sx={{
+                          p: 0.65,
+                          borderRadius: 1.2,
+                          borderColor: isDark ? DARK_BORDER : "#e4eeea",
+                          background: isDark ? darkSection : "#fff",
+                          backgroundImage: "none"
+                        }}
+                      >
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="flex-start"
+                          spacing={0.55}
+                        >
+                          <Box sx={{ minWidth: 0, flex: 1 }}>
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontWeight: 950,
+                                fontSize: "0.76rem",
+                                color: isDark
+                                  ? muiTheme.palette.text.primary
+                                  : textColor,
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                              }}
+                            >
+                              {shortStudentName(row.studentName) || "-"}
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                mt: 0.1,
+                                fontFamily: "Cairo",
+                                fontSize: "0.68rem",
+                                color: isDark
+                                  ? muiTheme.palette.text.secondary
+                                  : "#789"
+                              }}
+                            >
+                              <bdi dir="ltr">{safeText(row.nationalId) || "-"}</bdi>
+                              {" • "}
+                              <bdi dir="ltr">{safeText(row.studentTel) || "-"}</bdi>
+                            </Typography>
+                          </Box>
+
+                          {getStatusChip(row.isStillRegistered, isDark)}
+                        </Stack>
+
+                        <Box
+                          sx={{
+                            mt: 0.5,
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 0.45
+                          }}
+                        >
+                          <Box>
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontSize: "0.64rem",
+                                color: isDark
+                                  ? muiTheme.palette.text.secondary
+                                  : "#8a9993"
+                              }}
+                            >
+                              المعهد الآخر
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontWeight: 800,
+                                fontSize: "0.72rem",
+                                color: isDark
+                                  ? muiTheme.palette.text.primary
+                                  : textColor
+                              }}
+                            >
+                              {safeText(row.otherInstituteName) || "-"}
+                            </Typography>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontSize: "0.64rem",
+                                color: isDark
+                                  ? muiTheme.palette.text.secondary
+                                  : "#8a9993"
+                              }}
+                            >
+                              الفرع
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontWeight: 800,
+                                fontSize: "0.72rem",
+                                color: isDark
+                                  ? muiTheme.palette.text.primary
+                                  : textColor
+                              }}
+                            >
+                              {safeText(row.branchName) || "-"}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {(row.traineeStatusNote || row.notes || row.statusUpdateNote) && (
+                          <Box
+                            sx={{
+                              mt: 0.5,
+                              p: 0.45,
+                              borderRadius: 1,
+                              background: isDark ? darkNested : "#f7faf9",
+                              border: isDark
+                                ? `1px solid ${DARK_BORDER}`
+                                : "none"
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontFamily: "Cairo",
+                                fontSize: "0.68rem",
+                                lineHeight: 1.45,
+                                color: isDark
+                                  ? muiTheme.palette.text.secondary
+                                  : "#5e6f68"
+                              }}
+                            >
+                              {safeText(
+                                row.statusUpdateNote ||
+                                  row.traineeStatusNote ||
+                                  row.notes
+                              )}
+                            </Typography>
+                          </Box>
+                        )}
+
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={0.45}
+                          sx={{ mt: 0.5 }}
+                        >
+                          <Typography
+                            sx={{
+                              minWidth: 0,
+                              fontFamily: "Cairo",
+                              fontSize: "0.64rem",
+                              color: isDark
+                                ? muiTheme.palette.text.secondary
+                                : "#789"
+                            }}
+                          >
+                            {formatDate(row.createdAt)}
+                          </Typography>
+
+                          {isStill ? (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={<DoneAllIcon />}
+                              onClick={() => openConfirm(row)}
+                              disabled={savingId === id}
+                              sx={uiLayout.withUiSx({
+                                minHeight: 27,
+                                px: 0.7,
+                                fontFamily: "Cairo",
+                                fontWeight: 900,
+                                fontSize: "0.68rem",
+                                whiteSpace: "nowrap"
+                              }, uiLayout.buttonSx)}
+                            >
+                              تحديث الحالة
+                            </Button>
+                          ) : (
+                            <Chip
+                              label="تم طي القيد"
+                              size="small"
+                              sx={{
+                                height: 23,
+                                fontSize: "0.66rem",
+                                fontWeight: 900,
+                                backgroundColor: isDark
+                                  ? "transparent"
+                                  : "#ffebee",
+                                color: isDark ? DARK_TEXT : "#b71c1c",
+                                border: isDark
+                                  ? `1px solid ${DARK_BORDER}`
+                                  : "none"
+                              }}
+                            />
+                          )}
+                        </Stack>
+                      </Paper>
+                    );
+                  })
+                )}
+              </Box>
+            ) : (
+              <TableContainer
+                sx={{
+                  maxHeight: "calc(100vh - 270px)",
+                  overflowX: "hidden",
+                  width: "100%",
+                  backgroundColor: isDark ? darkCard : "#fff"
+                }}
+              >
+                <Table
+                  stickyHeader
+                  size="small"
                   sx={{
-                    minHeight: 240,
-                    display: "grid",
-                    placeItems: "center",
-                    fontFamily: "Cairo",
-                    fontWeight: 800,
-                    color: "#789",
-                    fontSize: isPhone
-                      ? "0.75rem"
-                      : "0.75rem"
+                    tableLayout: "fixed",
+                    width: "100%",
+                    "& tbody tr:hover": {
+                      backgroundColor: isDark ? darkHover : "#f4fbf8"
+                    },
+                    "& tbody td": {
+                      borderBottom: isDark
+                        ? "1px solid rgba(103,201,157,.22)"
+                        : "1px solid #edf2ef"
+                    }
                   }}
                 >
-                  لا توجد بيانات للعرض
-                </Box>
-              ) : (
-                filteredRows.map((row) => {
-                  const id = row.id || row.ID;
-                  const isStill = isActiveRegistered(
-                    row.isStillRegistered
-                  );
-
-                  return (
-                    <Paper
-                      key={id}
-                      variant="outlined"
-                      sx={uiLayout.withUiSx({
-                        p: isPhone ? 0.45 : 0.65,
-                        borderRadius: isPhone ? 1 : 1.3,
-                        borderColor: "#e4eeea",
-                        background: "#fff"
-                      }, uiLayout.pageHeaderSx)}
-                    >
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="flex-start"
-                        spacing={0.6}
-                      >
-                        <Box sx={{ minWidth: 0, flex: 1 }}>
-                          <Typography
-                            sx={{
-                              fontFamily: "Cairo",
-                              fontWeight: 950,
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              color: textColor,
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis"
-                            }}
-                          >
-                            {shortStudentName(row.studentName) || "-"}
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              mt: 0.15,
-                              fontFamily: "Cairo",
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              color: "#789"
-                            }}
-                          >
-                            {safeText(row.nationalId) || "-"} • {safeText(row.studentTel) || "-"}
-                          </Typography>
-                        </Box>
-
-                        {getStatusChip(row.isStillRegistered)}
-                      </Stack>
-
-                      <Box
-                        sx={{
-                          mt: 0.55,
-                          display: "grid",
-                          gridTemplateColumns:
-                            "repeat(2,minmax(0,1fr))",
-                          gap: isPhone ? 0.45 : 0.6
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            sx={{
-                              fontFamily: "Cairo",
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              color: "#8a9993"
-                            }}
-                          >
-                            المعهد الآخر
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontFamily: "Cairo",
-                              fontWeight: 800,
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              color: textColor
-                            }}
-                          >
-                            {safeText(row.otherInstituteName) || "-"}
-                          </Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography
-                            sx={{
-                              fontFamily: "Cairo",
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              color: "#8a9993"
-                            }}
-                          >
-                            مسئول التسجيل
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontFamily: "Cairo",
-                              fontWeight: 800,
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem"
-                            }}
-                          >
-                            {safeText(row.sellerName) || "-"}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      {(row.traineeStatusNote || row.notes) && (
-                        <Typography
-                          sx={{
-                            mt: 0.55,
-                            p: 0.45,
-                            borderRadius: 1,
-                            background: "#f7faf9",
-                            fontFamily: "Cairo",
-                            fontSize: isPhone
-                              ? "0.75rem"
-                              : "0.75rem",
-                            lineHeight: 1.45,
-                            color: "#5e6f68"
-                          }}
-                        >
-                          {safeText(
-                            row.traineeStatusNote ||
-                              row.notes
-                          )}
-                        </Typography>
-                      )}
-
-                      <Stack
-                        direction="row"
-                        justifyContent="flex-end"
-                        alignItems="center"
-                        spacing={0.45}
-                        sx={{
-                          mt: isPhone ? 0.4 : 0.5,
-                          flexWrap: "nowrap"
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            flex: 1,
-                            minWidth: 0,
-                            fontFamily: "Cairo",
-                            fontSize: isPhone
-                              ? "0.75rem"
-                              : "0.75rem",
-                            color: "#789"
-                          }}
-                        >
-                          طلب {safeText(row.orderCode) || "-"} • استمارة {safeText(row.regDocCode) || "-"}
-                        </Typography>
-
-                        {isStill ? (
-                          <Button
-                            size="small"
-                            variant="contained"
-                            onClick={() => openConfirm(row)}
-                            disabled={savingId === id}
-                            sx={uiLayout.withUiSx({
-                              minHeight: isPhone ? 24 : 27,
-                              minWidth: isPhone ? 52 : 62,
-                              px: isPhone ? 0.45 : 0.65,
-                              py: 0,
-                              fontFamily: "Cairo",
-                              fontWeight: 900,
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              borderRadius: isPhone ? 1 : 1.2,
-                              boxShadow: "none",
-                              backgroundColor: warningColor
-                            }, uiLayout.buttonSx)}
-                          >
-                            طي القيد
-                          </Button>
-                        ) : (
-                          <Chip
-                            label="تم طي القيد"
-                            size="small"
-                            sx={{
-                              height: isPhone ? 20 : 23,
-                              fontSize: isPhone
-                                ? "0.75rem"
-                                : "0.75rem",
-                              fontWeight: 900,
-                              "& .MuiChip-label": {
-                                px: isPhone ? 0.55 : 0.7
-                              }
-                            }}
-                          />
-                        )}
-                      </Stack>
-                    </Paper>
-                  );
-                })
-              )}
-            </Box>
-          ) : (
-            <TableContainer
-              sx={uiLayout.withUiSx({
-                maxHeight: "calc(100vh - 300px)",
-                overflowX: "hidden",
-                width: "100%"
-              }, uiLayout.tableContainerSx)}
-            >
-              <Table
-                stickyHeader
-                sx={{
-                  tableLayout: "fixed",
-                  width: "100%"
-                }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ ...headerCellSx, width: "13%" }}>
-                      الحالة
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "13%" }}>
-                      هل سوّى طي قيد من المعهد الآخر؟
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "9%" }}>
-                      رقم الطلب
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "10%" }}>
-                      رقم الاستمارة
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "15%" }}>
-                      اسم الطالب
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "10%" }}>
-                      رقم الهوية
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "10%" }}>
-                      رقم الجوال
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "12%" }}>
-                      الفرع
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "10%" }}>
-                      مسئول التسجيل
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "14%" }}>
-                      ملاحظة مسئول التسجيل
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "13%" }}>
-                      المعهد الآخر
-                    </TableCell>
-                    <TableCell sx={{ ...headerCellSx, width: "15%" }}>
-                      ملاحظات
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {filteredRows.length === 0 ? (
+                  <TableHead>
                     <TableRow>
-                      <TableCell colSpan={12} sx={{ textAlign: "center", py: 5 }}>
-                        <Typography sx={{ fontWeight: 900, color: "#789" }}>
-                          لا توجد بيانات للعرض
-                        </Typography>
+                      <TableCell
+                        sx={{
+                          ...headerCellSx,
+                          width: "12%",
+                          backgroundColor: isDark ? darkNested : "#057546",
+                          color: isDark
+                            ? muiTheme.palette.text.primary
+                            : "#fff",
+                          borderBottom: isDark
+                            ? `1px solid ${DARK_BORDER}`
+                            : "1px solid rgba(255,255,255,.14)"
+                        }}
+                      >
+                        الحالة
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          ...headerCellSx,
+                          width: "14%",
+                          backgroundColor: isDark ? darkNested : "#057546",
+                          color: isDark
+                            ? muiTheme.palette.text.primary
+                            : "#fff",
+                          borderBottom: isDark
+                            ? `1px solid ${DARK_BORDER}`
+                            : "1px solid rgba(255,255,255,.14)"
+                        }}
+                      >
+                        الإجراء
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          ...headerCellSx,
+                          width: "25%",
+                          backgroundColor: isDark ? darkNested : "#057546",
+                          color: isDark
+                            ? muiTheme.palette.text.primary
+                            : "#fff",
+                          borderBottom: isDark
+                            ? `1px solid ${DARK_BORDER}`
+                            : "1px solid rgba(255,255,255,.14)"
+                        }}
+                      >
+                        بيانات الطالب
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          ...headerCellSx,
+                          width: "13%",
+                          backgroundColor: isDark ? darkNested : "#057546",
+                          color: isDark
+                            ? muiTheme.palette.text.primary
+                            : "#fff",
+                          borderBottom: isDark
+                            ? `1px solid ${DARK_BORDER}`
+                            : "1px solid rgba(255,255,255,.14)"
+                        }}
+                      >
+                        الفرع
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          ...headerCellSx,
+                          width: "18%",
+                          backgroundColor: isDark ? darkNested : "#057546",
+                          color: isDark
+                            ? muiTheme.palette.text.primary
+                            : "#fff",
+                          borderBottom: isDark
+                            ? `1px solid ${DARK_BORDER}`
+                            : "1px solid rgba(255,255,255,.14)"
+                        }}
+                      >
+                        المعهد الآخر
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          ...headerCellSx,
+                          width: "18%",
+                          backgroundColor: isDark ? darkNested : "#057546",
+                          color: isDark
+                            ? muiTheme.palette.text.primary
+                            : "#fff",
+                          borderBottom: isDark
+                            ? `1px solid ${DARK_BORDER}`
+                            : "1px solid rgba(255,255,255,.14)"
+                        }}
+                      >
+                        الملاحظات
                       </TableCell>
                     </TableRow>
-                  ) : (
-                    filteredRows.map((row) => {
-                      const id = row.id || row.ID;
-                      const isStill = isActiveRegistered(row.isStillRegistered);
+                  </TableHead>
 
-                      return (
-                        <TableRow key={id} hover>
-                          <TableCell sx={commonCellSx}>
-                            <Stack spacing={1}>
-                              {getStatusChip(row.isStillRegistered)}
+                  <TableBody>
+                    {filteredRows.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} sx={{ textAlign: "center", py: 5 }}>
+                          <Typography
+                            sx={{
+                              fontFamily: "Cairo",
+                              fontWeight: 900,
+                              color: isDark
+                                ? muiTheme.palette.text.secondary
+                                : "#789"
+                            }}
+                          >
+                            لا توجد بيانات للعرض
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredRows.map((row) => {
+                        const id = row.id || row.ID;
+                        const isStill = isActiveRegistered(row.isStillRegistered);
 
-                              {row.statusUpdatedAt && (
-                                <Typography
-                                  sx={{
-                                    fontSize: "0.75rem",
-                                    color: "#789",
-                                    fontWeight: 700,
-                                    textAlign: "start"
-                                  }}
-                                >
-                                  تحديث: {formatDate(row.statusUpdatedAt)}
-                                </Typography>
-                              )}
-                            </Stack>
-                          </TableCell>
-
-                          <TableCell sx={commonCellSx}>
-                            {isStill ? (
-                              <Tooltip title="تحديث الحالة إلى لم يعد مسجلاً">
-                                <span>
-                                  <Button
-                                    size="small"
-                                    variant="contained"
-                                    startIcon={<DoneAllIcon />}
-                                    disabled={savingId === id}
-                                    onClick={() => openConfirm(row)}
-                                    sx={uiLayout.withUiSx({
-                                      fontWeight: 900,
-                                      borderRadius: 2,
-                                      backgroundColor: warningColor,
+                        return (
+                          <TableRow key={id} hover>
+                            <TableCell sx={commonCellSx}>
+                              <Stack spacing={0.35}>
+                                {getStatusChip(row.isStillRegistered, isDark)}
+                                {row.statusUpdatedAt && (
+                                  <Typography
+                                    sx={{
                                       fontFamily: "Cairo",
-                                      width: "100%",
-                                      whiteSpace: "normal",
-                                      lineHeight: 1.5,
-                                      py: 0.8,
-                                      "&:hover": {
-                                        backgroundColor: "#c75a00"
-                                      }
-                                    }, uiLayout.buttonSx)}
+                                      fontSize: "0.66rem",
+                                      color: isDark
+                                        ? muiTheme.palette.text.secondary
+                                        : "#789"
+                                    }}
                                   >
-                                   تحديث حالته
-                                  </Button>
-                                </span>
-                              </Tooltip>
-                            ) : (
-                              <Chip
-                                label="تم طي القيد"
-                                size="small"
-                                sx={{
-                                  fontWeight: 900,
-                                  backgroundColor: "#ffebee",
-                                  color: "#b71c1c",
-                                  whiteSpace: "normal",
-                                  height: "auto",
-                                  py: 0.5,
-                                  "& .MuiChip-label": {
-                                    whiteSpace: "normal"
-                                  }
-                                }}
-                              />
-                            )}
-                          </TableCell>
+                                    {formatDate(row.statusUpdatedAt)}
+                                  </Typography>
+                                )}
+                              </Stack>
+                            </TableCell>
 
-                          <TableCell sx={commonCellSx}>{safeText(row.orderCode)}</TableCell>
-                          <TableCell sx={commonCellSx}>{safeText(row.regDocCode)}</TableCell>
-
-                          <TableCell sx={commonCellSx}>
-                            <Stack direction="row" spacing={1} alignItems="flex-start">
-                              <PersonIcon sx={{ color: primaryDark, fontSize: 18, mt: 0.3 }} />
-                              <span>{safeText(row.studentName)}</span>
-                            </Stack>
-                          </TableCell>
-
-                          <TableCell sx={commonCellSx}>{safeText(row.nationalId)}</TableCell>
-                          <TableCell sx={commonCellSx}>{safeText(row.studentTel)}</TableCell>
-                          <TableCell sx={commonCellSx}>{safeText(row.branchName)}</TableCell>
-                          <TableCell sx={commonCellSx}>{safeText(row.sellerName)}</TableCell>
-
-                          <TableCell sx={commonCellSx}>
-                            {row.traineeStatusNote ? (
-                              <Tooltip title={safeText(row.traineeStatusNote)} arrow>
-                                <Typography
+                            <TableCell sx={commonCellSx}>
+                              {isStill ? (
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  startIcon={<DoneAllIcon />}
+                                  onClick={() => openConfirm(row)}
+                                  disabled={savingId === id}
+                                  sx={uiLayout.withUiSx({
+                                    width: "100%",
+                                    minHeight: 31,
+                                    px: 0.65,
+                                    fontFamily: "Cairo",
+                                    fontWeight: 900,
+                                    fontSize: "0.7rem",
+                                    whiteSpace: "nowrap"
+                                  }, uiLayout.buttonSx)}
+                                >
+                                  تحديث الحالة
+                                </Button>
+                              ) : (
+                                <Chip
+                                  label="تم طي القيد"
+                                  size="small"
                                   sx={{
                                     fontFamily: "Cairo",
-                                    fontWeight: 800,
-                                    fontSize: "0.82rem",
-                                    textAlign: "start",
-                                    whiteSpace: "normal",
-                                    wordBreak: "break-word",
-                                    overflowWrap: "anywhere",
-                                    color: textColor
+                                    fontWeight: 900,
+                                    backgroundColor: isDark
+                                      ? "transparent"
+                                      : "#ffebee",
+                                    color: isDark ? DARK_TEXT : "#b71c1c",
+                                    border: isDark
+                                      ? `1px solid ${DARK_BORDER}`
+                                      : "none"
                                   }}
-                                >
-                                  {safeText(row.traineeStatusNote)}
-                                </Typography>
-                              </Tooltip>
-                            ) : (
-                              <Typography
-                                sx={{
-                                  fontFamily: "Cairo",
-                                  fontWeight: 700,
-                                  fontSize: "0.8rem",
-                                  color: "#9aa7a1",
-                                  textAlign: "start"
-                                }}
-                              >
-                                لا توجد ملاحظة
-                              </Typography>
-                            )}
-                          </TableCell>
-
-                          <TableCell sx={commonCellSx}>
-                            <Stack direction="row" spacing={1} alignItems="flex-start">
-                              <BusinessIcon sx={{ color: primaryDark, fontSize: 18, mt: 0.3 }} />
-                              <span>{safeText(row.otherInstituteName)}</span>
-                            </Stack>
-                          </TableCell>
-
-                          <TableCell sx={commonCellSx}>
-                            <Stack spacing={0.8}>
-                              {row.notes && (
-                                <Typography
-                                  sx={{
-                                    fontFamily: "Cairo",
-                                    fontWeight: 700,
-                                    fontSize: "0.85rem",
-                                    textAlign: "start",
-                                    wordBreak: "break-word"
-                                  }}
-                                >
-                                  {safeText(row.notes)}
-                                </Typography>
+                                />
                               )}
+                            </TableCell>
 
-                              {row.statusUpdateNote && (
+                            <TableCell sx={commonCellSx}>
+                              <Stack spacing={0.15}>
                                 <Typography
                                   sx={{
                                     fontFamily: "Cairo",
-                                    fontWeight: 800,
+                                    fontWeight: 900,
                                     fontSize: "0.78rem",
-                                    color: dangerColor,
-                                    textAlign: "start",
-                                    wordBreak: "break-word"
+                                    color: isDark
+                                      ? muiTheme.palette.text.primary
+                                      : textColor
                                   }}
                                 >
-                                  ملاحظة طي القيد: {safeText(row.statusUpdateNote)}
+                                  {safeText(row.studentName) || "-"}
                                 </Typography>
-                              )}
+                                <Typography
+                                  sx={{
+                                    fontFamily: "Cairo",
+                                    fontSize: "0.67rem",
+                                    color: isDark
+                                      ? muiTheme.palette.text.secondary
+                                      : "#789"
+                                  }}
+                                >
+                                  هوية:{" "}
+                                  <bdi dir="ltr">
+                                    {safeText(row.nationalId) || "-"}
+                                  </bdi>
+                                  {" • "}
+                                  جوال:{" "}
+                                  <bdi dir="ltr">
+                                    {safeText(row.studentTel) || "-"}
+                                  </bdi>
+                                </Typography>
+                              </Stack>
+                            </TableCell>
 
-                              <Typography
-                                sx={{
-                                  fontFamily: "Cairo",
-                                  fontWeight: 700,
-                                  fontSize: "0.75rem",
-                                  color: "#789",
-                                  textAlign: "start"
-                                }}
+                            <TableCell sx={commonCellSx}>
+                              {safeText(row.branchName) || "-"}
+                            </TableCell>
+
+                            <TableCell sx={commonCellSx}>
+                              <Stack
+                                direction="row"
+                                spacing={0.45}
+                                alignItems="flex-start"
                               >
-                                تاريخ التسجيل: {formatDate(row.createdAt)}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </Paper>
+                                <BusinessIcon
+                                  sx={{
+                                    flexShrink: 0,
+                                    color: isDark ? DARK_TEXT : primaryDark,
+                                    fontSize: 16,
+                                    mt: 0.2
+                                  }}
+                                />
+                                <span>
+                                  {safeText(row.otherInstituteName) || "-"}
+                                </span>
+                              </Stack>
+                            </TableCell>
 
-        <Dialog
-          open={confirmOpen}
-          onClose={closeConfirm}
-          maxWidth="sm"
-          fullWidth
-          fullScreen={isPhone}
-          sx={uiLayout.withUiSx({
-            "& .MuiDialog-container": {
-              pt: isPhone ? "50px" : isTablet ? "58px" : 0,
-              alignItems: isPhone ? "stretch" : "center"
-            }
-          }, uiLayout.dialogLayoutSx)}
-          PaperProps={{
-            sx: {
-              direction: "rtl",
-              textAlign: "start",
-              borderRadius: isPhone ? 0 : isTablet ? 2 : 4,
-              m: isPhone ? 0 : undefined,
-              width: isPhone ? "100vw" : undefined,
-              maxHeight: isPhone
-                ? "calc(100dvh - 50px)"
-                : isTablet
-                  ? "90dvh"
-                  : undefined
-            }
-          }}
-        >
-          <DialogTitle
-            sx={{
-              fontFamily: "Cairo",
-              fontWeight: 900,
-              textAlign: "start",
-              color: textColor,
-              fontSize: isPhone
-                ? "0.75rem"
-                : isTablet
-                  ? "0.8rem"
-                  : undefined,
-              py: isPhone ? 0.7 : isTablet ? 1 : 2
-            }}
-          >
-            تأكيد طي القيد من المعهد الآخر
-          </DialogTitle>
+                            <TableCell sx={commonCellSx}>
+                              <Stack spacing={0.25}>
+                                {(row.traineeStatusNote || row.notes) ? (
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 700,
+                                      fontSize: "0.72rem",
+                                      lineHeight: 1.45,
+                                      color: isDark
+                                        ? muiTheme.palette.text.primary
+                                        : textColor
+                                    }}
+                                  >
+                                    {safeText(
+                                      row.traineeStatusNote || row.notes
+                                    )}
+                                  </Typography>
+                                ) : (
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontSize: "0.68rem",
+                                      color: isDark
+                                        ? muiTheme.palette.text.secondary
+                                        : "#9aa7a1"
+                                    }}
+                                  >
+                                    لا توجد ملاحظة
+                                  </Typography>
+                                )}
 
-          <DialogContent
-            sx={{
-              textAlign: "start",
-              p: isPhone ? 0.7 : isTablet ? 1 : 2
-            }}
-          >
-            <Typography sx={{ fontFamily: "Cairo", fontWeight: 700, mb: 2 }}>
-              هل أنت متأكد أن الطالب لم يعد مسجلاً في المعهد الآخر؟
-            </Typography>
+                                {row.statusUpdateNote && (
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "Cairo",
+                                      fontWeight: 800,
+                                      fontSize: "0.68rem",
+                                      color: isDark ? DARK_TEXT : dangerColor
+                                    }}
+                                  >
+                                    طي القيد: {safeText(row.statusUpdateNote)}
+                                  </Typography>
+                                )}
 
-            {selectedRow && (
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  borderRadius: 3,
-                  backgroundColor: "#f7faf9",
-                  border: "1px solid #e4eeea",
-                  textAlign: "start"
-                }}
-              >
-                <Typography sx={{ fontWeight: 900, textAlign: "start" }}>
-                  الطالب: {safeText(selectedRow.studentName)}
-                </Typography>
-                <Typography sx={{ fontWeight: 800, textAlign: "start" }}>
-                  رقم الهوية: {safeText(selectedRow.nationalId)}
-                </Typography>
-                <Typography sx={{ fontWeight: 800, textAlign: "start" }}>
-                  المعهد الآخر: {safeText(selectedRow.otherInstituteName)}
-                </Typography>
-              </Paper>
+                                <Typography
+                                  sx={{
+                                    fontFamily: "Cairo",
+                                    fontSize: "0.64rem",
+                                    color: isDark
+                                      ? muiTheme.palette.text.secondary
+                                      : "#789"
+                                  }}
+                                >
+                                  {formatDate(row.createdAt)}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             )}
+          </Paper>
 
-            <TextField InputLabelProps={{ shrink: true }}
-              fullWidth
-              multiline
-              minRows={3}
-              label="ملاحظة التحديث"
-              placeholder="مثال: تم طي قيده من المعهد الآخر بناءً على الإفادة"
-              value={updateNote}
-              onChange={(e) => setUpdateNote(e.target.value)}
-              sx={uiLayout.withUiSx({
+          <Dialog
+            open={confirmOpen}
+            onClose={closeConfirm}
+            maxWidth="sm"
+            fullWidth
+            fullScreen={isPhone}
+            sx={uiLayout.dialogLayoutSx}
+            PaperProps={{
+              sx: {
                 direction: "rtl",
-                "& textarea": {
-                  textAlign: "start",
-                  fontFamily: "Cairo",
-                  fontWeight: 700
-                },
-                "& .MuiInputLabel-root": {
-                  left: 0,
-                  right: "auto",
-                  transformOrigin: "left"
-                }
-              }, uiLayout.formFieldSx)}
-            />
-          </DialogContent>
-
-          <Divider />
-
-          <DialogActions
-            sx={uiLayout.withUiSx({
-              justifyContent: "flex-start",
-              p: isPhone ? 0.5 : isTablet ? 0.75 : 2,
-              gap: isPhone ? 0.35 : 0.55
-            }, uiLayout.dialogActionsSx)}
+                textAlign: "start",
+                backgroundColor: isDark ? darkCard : "#fff",
+                color: "text.primary",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none",
+                backgroundImage: "none",
+                borderRadius: isPhone ? 0 : isTablet ? 2 : 3
+              }
+            }}
           >
-            <Button
-              onClick={closeConfirm}
-              size={isCompact ? "small" : "medium"}
-              disabled={!!savingId}
-              sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}
-            >
-              إلغاء
-            </Button>
-
-            <Button
-              variant="contained"
-              size={isCompact ? "small" : "medium"}
-              onClick={markAsNotRegistered}
-              disabled={!!savingId}
-              startIcon={savingId ? <CircularProgress size={16} /> : <DoneAllIcon />}
-              sx={uiLayout.withUiSx({
+            <DialogTitle
+              sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                borderRadius: 2,
-                backgroundColor: warningColor,
-                "&:hover": {
-                  backgroundColor: "#c75a00"
-                }
-              }, uiLayout.buttonSx)}
+                color: isDark ? muiTheme.palette.text.primary : textColor,
+                backgroundColor: isDark ? darkSection : "transparent",
+                borderBottom: isDark
+                  ? `1px solid ${DARK_BORDER}`
+                  : "none"
+              }}
             >
-              تأكيد طي القيد
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </PageContainer>
-    </Box></NavigationShell>
+              تأكيد طي القيد من المعهد الآخر
+            </DialogTitle>
+
+            <DialogContent
+              sx={{
+                pt: 2,
+                backgroundColor: isDark ? darkCard : "#fff"
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "Cairo",
+                  fontWeight: 700,
+                  mb: 1.2
+                }}
+              >
+                هل أنت متأكد أن الطالب لم يعد مسجلاً في المعهد الآخر؟
+              </Typography>
+
+              {selectedRow && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 1.2,
+                    mb: 1.2,
+                    borderRadius: 1.5,
+                    backgroundColor: isDark ? darkSection : "#f7faf9",
+                    border: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : "1px solid #e4eeea"
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 900, fontFamily: "Cairo" }}>
+                    الطالب: {safeText(selectedRow.studentName)}
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, fontFamily: "Cairo" }}>
+                    رقم الهوية:{" "}
+                    <bdi dir="ltr">{safeText(selectedRow.nationalId)}</bdi>
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, fontFamily: "Cairo" }}>
+                    المعهد الآخر: {safeText(selectedRow.otherInstituteName)}
+                  </Typography>
+                </Paper>
+              )}
+
+              <TextField
+                fullWidth
+                multiline
+                minRows={4}
+                label="ملاحظة التحديث"
+                placeholder="مثال: تم طي قيده من المعهد الآخر بناءً على الإفادة"
+                value={updateNote}
+                onChange={(e) => setUpdateNote(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                sx={uiLayout.formFieldSx}
+              />
+            </DialogContent>
+
+            <Divider />
+
+            <DialogActions
+              sx={{
+                p: 1,
+                gap: 0.55,
+                backgroundColor: isDark ? darkSection : "#fff",
+                borderTop: isDark
+                  ? `1px solid ${DARK_BORDER}`
+                  : "none"
+              }}
+            >
+              <Button
+                onClick={closeConfirm}
+                disabled={!!savingId}
+                sx={uiLayout.buttonSx}
+              >
+                إلغاء
+              </Button>
+
+              <Button
+                variant="outlined"
+                onClick={markAsNotRegistered}
+                disabled={!!savingId}
+                startIcon={
+                  savingId ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    <DoneAllIcon />
+                  )
+                }
+                sx={uiLayout.buttonSx}
+              >
+                تأكيد طي القيد
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </PageContainer>
+      </Box>
+    </NavigationShell>
   );
 }

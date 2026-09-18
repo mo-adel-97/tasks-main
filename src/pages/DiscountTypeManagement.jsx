@@ -46,6 +46,227 @@ const primaryDark = "#034d31";
 const border = "#dce8e2";
 const soft = "#f7fbf9";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
+const darkPageContractSx = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const surfaces = theme.palette.surfaces || {};
+  const card = surfaces.card || "#13251d";
+  const section = surfaces.section || "#172b22";
+  const nested = surfaces.nested || "#1b3328";
+
+  return {
+    backgroundColor: card,
+    backgroundImage: "none",
+    color: theme.palette.text.primary,
+    borderColor: `${DARK_BORDER} !important`,
+
+    "& .MuiPaper-root": {
+      backgroundImage: "none",
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important"
+    },
+    "& .MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    "& .MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    "& .MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+
+    "& .MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`,
+      borderWidth: "1px !important",
+      boxShadow: "0 0 0 2px rgba(103,201,157,.08)"
+    },
+    "& .MuiInputBase-input, & .MuiSelect-select": {
+      color: `${theme.palette.text.primary} !important`
+    },
+    "& .MuiInputLabel-root": {
+      color: `${theme.palette.text.secondary} !important`
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: `${DARK_TEXT} !important`
+    },
+    "& .MuiInputAdornment-root, & .MuiInputAdornment-root .MuiSvgIcon-root": {
+      color: `${DARK_TEXT} !important`
+    },
+    "& .MuiSelect-icon": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    "& .MuiCheckbox-root": {
+      color: `${DARK_BORDER} !important`
+    },
+    "& .MuiCheckbox-root.Mui-checked": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiSwitch-root .MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      border: `1px solid ${DARK_BORDER}`,
+      opacity: "1 !important"
+    },
+    "& .MuiSwitch-root .MuiSwitch-thumb": {
+      backgroundColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiSwitch-root .MuiSwitch-switchBase.Mui-checked": {
+      color: `${DARK_BORDER} !important`
+    },
+    "& .MuiSwitch-root .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      borderColor: `${DARK_BORDER} !important`,
+      opacity: "1 !important"
+    },
+
+    "& .MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiAlert-icon": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    "& .MuiCircularProgress-root": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiDivider-root": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    "--screen-dark-card": card,
+    "--screen-dark-section": section,
+    "--screen-dark-nested": nested
+  };
+};
+
+const darkDialogContractSx = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const surfaces = theme.palette.surfaces || {};
+  const card = surfaces.card || "#13251d";
+  const section = surfaces.section || "#172b22";
+  const hover = surfaces.hover || "#214333";
+
+  return {
+    "& .MuiDialog-paper": {
+      backgroundColor: card,
+      backgroundImage: "none",
+      color: theme.palette.text.primary,
+      border: `1px solid ${DARK_BORDER}`
+    },
+    "& .MuiDialogTitle-root": {
+      backgroundColor: section,
+      borderBottom: `1px solid ${DARK_BORDER}`
+    },
+    "& .MuiDialogContent-root": {
+      backgroundColor: card
+    },
+    "& .MuiDialogActions-root": {
+      backgroundColor: section,
+      borderTop: `1px solid ${DARK_BORDER}`
+    },
+    "& .MuiPaper-root": {
+      backgroundColor: section,
+      backgroundImage: "none",
+      color: theme.palette.text.primary,
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiPaper-root:hover": {
+      backgroundColor: `${hover} !important`,
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiInputAdornment-root, & .MuiInputAdornment-root .MuiSvgIcon-root": {
+      color: `${DARK_TEXT} !important`
+    },
+    "& .MuiCircularProgress-root": {
+      color: `${DARK_BORDER} !important`
+    },
+    "& .MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`
+    },
+    "& .MuiAlert-icon": {
+      color: `${DARK_TEXT} !important`
+    }
+  };
+};
+
 const TARGET_OPTIONS = [
   { value: 0, label: "مدني" },
   { value: 1, label: "عسكري" },
@@ -92,7 +313,7 @@ function DiscountTypeLookupDialog({
   onPick
 }) {
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog sx={[uiLayout.dialogLayoutSx, darkDialogContractSx]}
       open={open}
       onClose={onClose}
       fullWidth
@@ -258,6 +479,11 @@ function DiscountTypeLookupDialog({
 
 export default function DiscountTypeManagement() {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -284,6 +510,37 @@ export default function DiscountTypeManagement() {
   const [saving, setSaving] = useState(false);
 
   const isEdit = Boolean(model.guid);
+
+  const selectMenuProps = useMemo(() => ({
+    PaperProps: {
+      sx: {
+        backgroundColor: isDark ? darkSection : "#ffffff",
+        backgroundImage: "none",
+        color: isDark ? theme.palette.text.primary : undefined,
+        border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+        "& .MuiMenuItem-root": {
+          fontFamily: "Cairo, sans-serif",
+          color: isDark ? theme.palette.text.primary : undefined,
+          backgroundColor: "transparent"
+        },
+        "& .MuiMenuItem-root:hover": {
+          backgroundColor: isDark ? "transparent" : undefined,
+          color: isDark ? DARK_TEXT : undefined
+        },
+        "& .MuiMenuItem-root.Mui-selected": {
+          backgroundColor: isDark ? "transparent !important" : undefined,
+          color: isDark ? DARK_TEXT : undefined,
+          outline: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+          outlineOffset: "-1px"
+        },
+        "& .MuiMenuItem-root.Mui-selected:hover": {
+          backgroundColor: isDark ? "transparent !important" : undefined
+        }
+      }
+    }
+  }), [isDark, darkSection, theme.palette.text.primary]);
+
+  
 
   const setField = useCallback(
     (field, value) =>
@@ -749,23 +1006,31 @@ export default function DiscountTypeManagement() {
       dir="rtl"
       sx={{
         minHeight: "100vh",
-        bgcolor: soft,
+        bgcolor: isDark ? theme.palette.background.default : soft,
         p: { xs: 0.35, sm: 0.8 },
         overflowX: "hidden"
       }}
     >
       <Paper
         elevation={0}
-        sx={{
-          border: `1px solid ${border}`,
+        sx={(theme) => ({
+          ...darkPageContractSx(theme),
+          border: `1px solid ${theme.palette.mode === "dark" ? DARK_BORDER : border}`,
           borderRadius: { xs: 1.1, sm: 2 },
-          overflow: "hidden"
-        }}
+          overflow: "hidden",
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? (theme.palette.surfaces?.card || "#13251d")
+              : "#ffffff",
+          backgroundImage: "none",
+          color: theme.palette.text.primary
+        })}
       >
         <Box
           sx={uiLayout.withUiSx({
-            bgcolor: primaryDark,
-            color: "#fff",
+            bgcolor: isDark ? darkSection : primaryDark,
+            color: isDark ? theme.palette.text.primary : "#fff",
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "none",
             px: { xs: 0.65, sm: 1.4 },
             py: { xs: 0.55, sm: 0.9 },
             display: "flex",
@@ -778,7 +1043,7 @@ export default function DiscountTypeManagement() {
               onClick={() =>
                 setMobileSidebarOpen(true)
               }
-              sx={{ color: "#fff", p: 0.3 }}
+              sx={{ color: isDark ? DARK_TEXT : "#fff", p: 0.3 }}
             >
               <MenuRoundedIcon />
             </IconButton>
@@ -811,8 +1076,9 @@ export default function DiscountTypeManagement() {
             }
             size="small"
             sx={{
-              bgcolor: "#fff",
-              color: primaryDark,
+              bgcolor: isDark ? "transparent" : "#fff",
+              color: isDark ? DARK_TEXT : primaryDark,
+              border: isDark ? `1px solid ${DARK_BORDER}` : "none",
               fontWeight: 900,
               fontSize: { xs: 12, sm: 12 }
             }}
@@ -822,7 +1088,7 @@ export default function DiscountTypeManagement() {
         <Box
           sx={{
             p: { xs: 0.55, sm: 0.9 },
-            borderBottom: `1px solid ${border}`
+            borderBottom: `1px solid ${isDark ? DARK_BORDER : border}`
           }}
         >
           <Box
@@ -841,7 +1107,7 @@ export default function DiscountTypeManagement() {
               onClick={newDiscountType}
               disabled={!ops.canAdd && !isEdit}
               sx={uiLayout.withUiSx({
-                bgcolor: "#1976d2",
+                bgcolor: isDark ? "transparent" : "#1976d2",
                 fontWeight: 900,
                 minWidth: 0,
                 fontSize: { xs: 12, sm: 12.5 }
@@ -966,6 +1232,7 @@ export default function DiscountTypeManagement() {
 
             <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
               select
+              SelectProps={{ MenuProps: selectMenuProps }}
               label="المستهدف"
               size="small"
               value={model.forWhat}
@@ -1086,7 +1353,10 @@ export default function DiscountTypeManagement() {
             }><Box
       sx={{
         minHeight: "100vh",
-        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
+        width: "100%",
+        maxWidth: "100%",
+        overflowX: "hidden",
+        bgcolor: theme.palette.mode === "dark" ? theme.palette.background.default : soft
       }}
     >
       {isDesktop ? (

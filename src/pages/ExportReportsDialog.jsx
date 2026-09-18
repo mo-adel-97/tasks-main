@@ -904,29 +904,11 @@ export default function ExportReportsDialog({
         styles={{
           ...(isDark
             ? {
-                ".export-reports-dark-paper": {
-                  backgroundColor: `${darkCard} !important`,
-                  backgroundImage: "none !important",
-                  color: `${muiTheme.palette.text.primary} !important`,
-                  border: "1px solid #67C99D !important",
-                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
-                },
-                ".export-reports-dark-paper .MuiDialogTitle-root": {
-                  backgroundColor: `${darkSection} !important`,
-                  backgroundImage: "none !important",
-                  color: `${muiTheme.palette.text.primary} !important`,
-                  borderBottom: "1px solid #67C99D !important"
-                },
-                ".export-reports-dark-paper .MuiDialogContent-root": {
-                  backgroundColor: `${darkCard} !important`,
+                ".export-reports-dark": {
+                  backgroundColor: `${muiTheme.palette.background.default} !important`,
                   color: `${muiTheme.palette.text.primary} !important`
                 },
-                ".export-reports-dark-paper .MuiDialogActions-root": {
-                  backgroundColor: `${darkSection} !important`,
-                  borderTop: "1px solid #67C99D !important"
-                },
-
-                ".export-reports-dark-paper .MuiButton-root": {
+                ".export-reports-dark .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
                   background: "transparent !important",
                   backgroundColor: "transparent !important",
                   backgroundImage: "none !important",
@@ -934,69 +916,149 @@ export default function ExportReportsDialog({
                   border: "1px solid #67C99D !important",
                   boxShadow: "none !important"
                 },
-                ".export-reports-dark-paper .MuiButton-root:hover": {
+                ".export-reports-dark .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
                   background: "transparent !important",
                   color: "#C9F2DF !important",
                   borderColor: "#67C99D !important"
                 },
-                ".export-reports-dark-paper .MuiButton-root.Mui-disabled": {
-                  background: "transparent !important",
-                  color: "rgba(155,224,193,.42) !important",
-                  borderColor: "rgba(103,201,157,.34) !important"
-                },
-
-                ".export-reports-dark-paper .MuiChip-root": {
+                ".export-reports-dark .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
                   background: "transparent !important",
                   color: "#9BE0C1 !important",
-                  border: "1px solid #67C99D !important"
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
                 },
-                ".export-reports-dark-paper .MuiCheckbox-root": {
-                  color: "#67C99D !important"
-                },
-
-                ".export-reports-dark-paper .MuiOutlinedInput-root": {
+                ".export-reports-dark .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
                   background: "transparent !important",
-                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".export-reports-dark .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  background: "transparent !important",
                   color: `${muiTheme.palette.text.primary} !important`
                 },
-                ".export-reports-dark-paper .MuiOutlinedInput-notchedOutline": {
+                ".export-reports-dark .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
                   borderColor: "#67C99D !important",
                   borderWidth: "1px !important"
                 },
-                ".export-reports-dark-paper .MuiInputLabel-root, .export-reports-dark-paper .MuiFormHelperText-root": {
+                ".export-reports-dark .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
                   color: `${muiTheme.palette.text.secondary} !important`
                 },
-                ".export-reports-dark-paper .MuiInputLabel-root.Mui-focused": {
+                ".export-reports-dark .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
                   color: "#9BE0C1 !important"
                 },
-                ".export-reports-dark-paper .MuiSelect-icon": {
+                ".export-reports-dark .MuiInputAdornment-root, .export-reports-dark .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
                   color: "#9BE0C1 !important"
                 },
-
-                ".export-reports-dark-paper .MuiAlert-root": {
+                ".export-reports-dark .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: "#67C99D !important"
+                },
+                ".export-reports-dark .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
                   background: "transparent !important",
                   color: `${muiTheme.palette.text.primary} !important`,
                   border: "1px solid #67C99D !important"
                 },
-                ".export-reports-dark-paper .MuiCircularProgress-root": {
-                  color: "#67C99D !important"
-                },
-                ".export-reports-dark-paper .MuiDivider-root": {
+                ".export-reports-dark .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
                   borderColor: "#67C99D !important"
                 },
-
-                ".MuiMenu-paper, .MuiPopover-paper": {
+                ".export-reports-dark .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: "#67C99D !important"
+                },
+                ".export-reports-dark .MuiDataGrid-root, .MuiDialog-paper .MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".export-reports-dark .MuiDataGrid-columnHeaders, .export-reports-dark .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".export-reports-dark .MuiDataGrid-cell": {
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".export-reports-dark .MuiDataGrid-row": {
+                  backgroundColor: `${darkCard} !important`
+                },
+                ".export-reports-dark .MuiDataGrid-row:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".export-reports-dark .MuiDataGrid-footerContainer, .export-reports-dark .MuiDataGrid-toolbarContainer": {
                   backgroundColor: `${darkSection} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".export-reports-dark .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".export-reports-dark .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".export-reports-dark .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
                   backgroundImage: "none !important",
                   color: `${muiTheme.palette.text.primary} !important`,
                   border: "1px solid #67C99D !important"
                 },
-                ".MuiMenuItem-root": {
-                  backgroundColor: "transparent !important",
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderBottom: "1px solid #67C99D !important"
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
                   color: `${muiTheme.palette.text.primary} !important`
                 },
-                ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: "1px solid #67C99D !important"
+                },
+                ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiCard-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper, .MuiDataGrid-panel": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  background: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
                   backgroundColor: `${darkHover} !important`
+                },
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  background: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
                 }
               }
             : {})
@@ -1009,7 +1071,7 @@ export default function ExportReportsDialog({
       fullWidth
       maxWidth="md"
       PaperProps={{
-        className: "export-reports-dark-paper",
+        className: "export-reports-dark",
         sx: {
           borderRadius: 2,
           direction: "rtl",
@@ -1024,9 +1086,7 @@ export default function ExportReportsDialog({
         display: "flex", 
         alignItems: "center", 
         gap: 1,
-        bgcolor: isDark
-          ? darkSection
-          : palette?.primary?.main || "#80b49e",
+        bgcolor: isDark ? darkSection : palette?.primary?.main || "#80b49e",
         color: isDark ? muiTheme.palette.text.primary : "white",
         borderBottom: isDark ? "1px solid #67C99D" : undefined,
       }}>
@@ -1213,16 +1273,10 @@ export default function ExportReportsDialog({
           onClick={handleExport}
           disabled={!canExport || exporting || branchesLoading}
           sx={uiLayout.withUiSx({
-            backgroundColor: isDark
-              ? "transparent"
-              : palette?.primary?.main || "#80b49e",
+            backgroundColor: isDark ? "transparent" : palette?.primary?.main || "#80b49e",
             color: isDark ? "#9BE0C1" : "#fff",
             borderColor: isDark ? "#67C99D" : palette?.primary?.main || "#80b49e",
-            "&:hover": {
-              backgroundColor: isDark
-                ? "transparent"
-                : palette?.primary?.dark || "#5a8f7d"
-            },
+            "&:hover": { backgroundColor: palette?.primary?.dark || "#5a8f7d" },
             fontWeight: 800,
             borderRadius: 2,
             px: 3,

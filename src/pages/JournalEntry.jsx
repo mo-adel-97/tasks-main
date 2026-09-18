@@ -6,6 +6,7 @@ import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  GlobalStyles,
   Alert,
   AppBar,
   Box,
@@ -60,6 +61,9 @@ const API_BASE_URL =
 
 
 
+
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
 const ACCOUNT_SEARCH_DEBOUNCE_MS = 550;
 const JOURNAL_SEARCH_DEBOUNCE_MS = 650;
 const MIN_ACCOUNT_SEARCH_LENGTH = 2;
@@ -252,6 +256,12 @@ const money = (v) =>
 
 export default function JournalEntry() {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
   const isDesktop = useMediaQuery(
@@ -973,6 +983,7 @@ ${PRINT_READY_SCRIPT}</head>
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={handleMobileSidebarClose}><Box
+      className="accounting-dark-root"
       dir="rtl"
       sx={{
         minHeight: "100vh",
@@ -980,12 +991,285 @@ ${PRINT_READY_SCRIPT}</head>
         fontFamily: '"Cairo","Tahoma",sans-serif'
       }}
     >
+
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".accounting-dark-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".accounting-dark-root .MuiPaper-root:not(.print-preview):not(.document-preview), .accounting-dark-root .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+
+                ".accounting-dark-root .MuiTypography-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".accounting-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".accounting-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#C9F2DF !important",
+                  borderColor: `${DARK_BORDER} !important`,
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".accounting-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                  backgroundColor: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important",
+                  boxShadow: "none !important"
+                },
+
+                ".accounting-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".accounting-dark-root .MuiIconButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".accounting-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".accounting-dark-root .MuiToggleButton-root, .MuiDialog-paper .MuiToggleButton-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiToggleButton-root.Mui-selected, .MuiDialog-paper .MuiToggleButton-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  boxShadow: `inset 0 0 0 1px ${DARK_BORDER} !important`
+                },
+
+                ".accounting-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".accounting-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .accounting-dark-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".accounting-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: `${DARK_TEXT} !important`
+                },
+                ".accounting-dark-root .MuiInputAdornment-root, .accounting-dark-root .MuiInputAdornment-root .MuiSvgIcon-root, .accounting-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: `${DARK_TEXT} !important`
+                },
+
+                ".accounting-dark-root .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiCheckbox-root.Mui-checked, .MuiDialog-paper .MuiCheckbox-root.Mui-checked": {
+                  color: `${DARK_BORDER} !important`
+                },
+
+                ".accounting-dark-root .MuiSwitch-track": {
+                  backgroundColor: "transparent !important",
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  opacity: "1 !important"
+                },
+                ".accounting-dark-root .MuiSwitch-thumb": {
+                  backgroundColor: `${DARK_TEXT} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".accounting-dark-root .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".accounting-dark-root .MuiAlert-icon, .MuiDialog-paper .MuiAlert-icon": {
+                  color: `${DARK_TEXT} !important`
+                },
+
+                ".accounting-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                  borderColor: `${DARK_BORDER} !important`
+                },
+
+                ".accounting-dark-root .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: `${DARK_BORDER} !important`
+                },
+
+                ".accounting-dark-root .MuiAppBar-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+
+                ".accounting-dark-root .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiTableHead-root .MuiTableCell-root, .MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiTableBody-root .MuiTableCell-root, .MuiDialog-paper .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".accounting-dark-root .MuiTableRow-root:hover .MuiTableCell-root, .MuiDialog-paper .MuiTableRow-root:hover .MuiTableCell-root": {
+                  backgroundColor: `${darkHover} !important`
+                },
+
+                ".accounting-dark-root .MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiDataGrid-columnHeaders, .accounting-dark-root .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".accounting-dark-root .MuiDataGrid-cell": {
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".accounting-dark-root .MuiDataGrid-row:nth-of-type(even)": {
+                  backgroundColor: `${darkCard} !important`
+                },
+                ".accounting-dark-root .MuiDataGrid-row:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".accounting-dark-root .MuiDataGrid-toolbarContainer, .accounting-dark-root .MuiDataGrid-footerContainer": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                },
+                ".accounting-dark-root .MuiDataGrid-columnSeparator": {
+                  color: "rgba(103,201,157,.55) !important"
+                },
+
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderTop: `1px solid ${DARK_BORDER} !important`
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper, .MuiDataGrid-panel": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 14px 34px rgba(3,20,13,.28) !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected, .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+
+                ".MuiPaginationItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-confirm:hover, .swal2-deny:hover, .swal2-cancel:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-validation-message": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".accounting-dark-root input[type='date']": {
+                  colorScheme: "dark"
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <AppBar
           position="sticky"
           elevation={1}
           sx={{
-            bgcolor: primary,
+            bgcolor: isDark ? "transparent" : primary,
             zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
@@ -1019,8 +1303,8 @@ ${PRINT_READY_SCRIPT}</head>
               label={code ? `قيد ${code}` : "جديد"}
               size="small"
               sx={{
-                bgcolor: "#fff",
-                color: primaryDark,
+                bgcolor: isDark ? darkCard : "#fff",
+                color: isDark ? theme.palette.text.primary : primaryDark,
                 fontWeight: 900,
                 height: 25
               }}
@@ -1071,7 +1355,7 @@ ${PRINT_READY_SCRIPT}</head>
 
           <Chip
             label={code ? `رقم القيد: ${code}` : "قيد جديد"}
-            sx={{ bgcolor: "#fff", color: primaryDark, fontWeight: 900 }}
+            sx={{ bgcolor: isDark ? darkCard : "#fff", color: isDark ? theme.palette.text.primary : primaryDark, fontWeight: 900 }}
           />
         </Box>
 
@@ -1093,7 +1377,7 @@ ${PRINT_READY_SCRIPT}</head>
               variant="contained"
               startIcon={<AddIcon />}
               onClick={newEntry}
-              sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 800 }, uiLayout.buttonSx)}
+              sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary, fontWeight: 800 }, uiLayout.buttonSx)}
             >
               جديد
             </Button>
@@ -1112,7 +1396,7 @@ ${PRINT_READY_SCRIPT}</head>
               startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
               disabled={saving || linkedToDocument}
               onClick={save}
-              sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 800 }, uiLayout.buttonSx)}
+              sx={uiLayout.withUiSx({ bgcolor: isDark ? "transparent" : primary, fontWeight: 800 }, uiLayout.buttonSx)}
             >
               {guid ? "حفظ التعديل" : "حفظ"}
             </Button>
@@ -1184,7 +1468,7 @@ ${PRINT_READY_SCRIPT}</head>
             <FormControlLabel
               sx={uiLayout.withUiSx({
                 m: 0,
-                border: `1px solid ${line}`,
+                border: `1px solid ${isDark ? DARK_BORDER : line}`,
                 borderRadius: 1,
                 px: 1
               }, uiLayout.checkboxFieldSx)}
@@ -1220,7 +1504,7 @@ ${PRINT_READY_SCRIPT}</head>
                   sx={{
                     p: { xs: 1, sm: 1.15 },
                     borderColor: "rgba(5,117,70,.16)",
-                    bgcolor: "#fff",
+                    bgcolor: isDark ? darkCard : "#fff",
                     borderRadius: 2,
                     boxShadow: "0 4px 14px rgba(5,117,70,.05)"
                   }}
@@ -1333,7 +1617,7 @@ ${PRINT_READY_SCRIPT}</head>
           ) : (
             <TableContainer
               sx={uiLayout.withUiSx({
-                border: `1px solid ${line}`,
+                border: `1px solid ${isDark ? DARK_BORDER : line}`,
                 borderRadius: 2,
                 overflowX: "auto"
               }, uiLayout.tableContainerSx)}
@@ -1500,14 +1784,14 @@ ${PRINT_READY_SCRIPT}</head>
           >
             <Paper variant="outlined" sx={{ p: { xs: .8, sm: 1.2 }, textAlign: "center", borderRadius: 2 }}>
               <Typography variant="caption">إجمالي مدين</Typography>
-              <Typography sx={{ fontWeight: 900, color: primaryDark }}>
+              <Typography sx={{ fontWeight: 900, color: isDark ? theme.palette.text.primary : primaryDark }}>
                 {money(totals.debit)}
               </Typography>
             </Paper>
 
             <Paper variant="outlined" sx={{ p: { xs: .8, sm: 1.2 }, textAlign: "center", borderRadius: 2 }}>
               <Typography variant="caption">إجمالي دائن</Typography>
-              <Typography sx={{ fontWeight: 900, color: primaryDark }}>
+              <Typography sx={{ fontWeight: 900, color: isDark ? theme.palette.text.primary : primaryDark }}>
                 {money(totals.credit)}
               </Typography>
             </Paper>
@@ -1660,8 +1944,8 @@ ${PRINT_READY_SCRIPT}</head>
                   onClick={() => chooseCost(c)}
                   sx={uiLayout.withUiSx({
                     justifyContent: "space-between",
-                    color: primaryDark,
-                    borderColor: line
+                    color: isDark ? theme.palette.text.primary : primaryDark,
+                    borderColor: isDark ? DARK_BORDER : line
                   }, uiLayout.buttonSx)}
                 >
                   <span>{c.name}</span>
@@ -1721,7 +2005,7 @@ ${PRINT_READY_SCRIPT}</head>
                 <Paper
                   variant="outlined"
                   key={j.guid}
-                  sx={{ p: 1.2, borderColor: line }}
+                  sx={{ p: 1.2, borderColor: isDark ? DARK_BORDER : line }}
                   onClick={() => loadEntry(j.code)}
                 >
                   <Stack direction="row" justifyContent="space-between">

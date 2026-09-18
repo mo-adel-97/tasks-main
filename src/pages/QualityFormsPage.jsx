@@ -15,6 +15,7 @@ import {
   Alert,
   AppBar,
   Box,
+  GlobalStyles,
   Button,
   CircularProgress,
   Checkbox,
@@ -24,6 +25,7 @@ import {
   FormControlLabel,
   FormControl,
   InputLabel,
+  InputAdornment,
   MenuItem,
   Paper,
   Select,
@@ -281,6 +283,121 @@ const showError = (message) =>
     confirmButtonText: "حسنًا",
     confirmButtonColor: "#ae1e21"
   });
+
+const DARK_ACTION_GLOBAL_STYLES = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const darkBorder = "#67C99D";
+  const darkText = "#9BE0C1";
+
+  return {
+    ".MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important",
+      fontWeight: "800 !important"
+    },
+    ".MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${darkBorder} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    ".MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    ".MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+    ".MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiIconButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.38) !important",
+      borderColor: "rgba(103,201,157,.30) !important"
+    },
+    ".MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiChip-icon, .MuiChip-deleteIcon": {
+      color: `${darkText} !important`
+    },
+    ".MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important"
+    },
+    ".MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiSelect-icon": {
+      color: `${darkText} !important`
+    },
+    ".MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiAlert-icon": {
+      color: `${darkText} !important`
+    },
+    ".MuiPaginationItem-root": {
+      backgroundColor: "transparent !important",
+      color: `${darkText} !important`,
+      border: "1px solid transparent !important"
+    },
+    ".MuiPaginationItem-root.Mui-selected": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      border: `1px solid ${darkBorder} !important`
+    },
+    ".MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      border: `1px solid ${darkBorder} !important`,
+      opacity: "1 !important"
+    },
+    ".MuiSwitch-thumb": {
+      backgroundColor: `${darkBorder} !important`
+    },
+    ".MuiSwitch-switchBase.Mui-checked": {
+      color: `${darkBorder} !important`
+    },
+    ".MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      borderColor: `${darkBorder} !important`,
+      opacity: "1 !important"
+    }
+  };
+};
+
 
 const fieldSx = {
   "& .MuiInputBase-root": {
@@ -1750,7 +1867,7 @@ const handleExportPdf = () => {
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
           setMobileSidebarOpen(false)
-        }><Box
+        }><GlobalStyles styles={DARK_ACTION_GLOBAL_STYLES} /><Box
       dir="rtl"
       sx={(theme) => ({
         minHeight: "100dvh",
@@ -2272,6 +2389,13 @@ const handleExportPdf = () => {
                     unicodeBidi: "isolate",
                     textAlign: "right"
                   }
+                }}
+                InputProps={{
+                  endAdornment: loadingStudent ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={16} thickness={5} sx={{ color: "#67C99D" }} />
+                    </InputAdornment>
+                  ) : null
                 }}
                 sx={uiLayout.withUiSx({
                   ...fieldSx,
@@ -3877,6 +4001,13 @@ const StudentLookupFields = ({
         maxLength: 10,
         inputMode: "numeric"
       , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
+      InputProps={{
+        endAdornment: loadingStudent ? (
+          <InputAdornment position="end">
+            <CircularProgress size={16} thickness={5} sx={{ color: "#67C99D" }} />
+          </InputAdornment>
+        ) : null
+      }}
       sx={uiLayout.withUiSx({
         ...fieldSx,
         "& .MuiInputBase-input": {

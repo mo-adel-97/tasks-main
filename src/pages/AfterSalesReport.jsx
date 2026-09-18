@@ -44,6 +44,9 @@ const API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "https://api4.sstli.com";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
 const getToday = () =>
   new Date()
     .toISOString()
@@ -198,6 +201,12 @@ const showError = async (
 
 const AfterSalesReport = () => {
   const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     muiTheme.breakpoints.down("sm")
@@ -416,18 +425,23 @@ const AfterSalesReport = () => {
               : isTablet
                 ? "0.75rem"
                 : undefined,
-            color:
-              params.value === "تم الرد"
+            color: isDark
+              ? DARK_TEXT
+              : params.value === "تم الرد"
                 ? "#057546"
                 : params.value === "لم يتم الرد"
                   ? "#ae1e21"
                   : "#735c00",
-            background:
-              params.value === "تم الرد"
+            background: isDark
+              ? "transparent"
+              : params.value === "تم الرد"
                 ? "#e6f3ee"
                 : params.value === "لم يتم الرد"
                   ? "#fdecec"
-                  : "#fff7cc"
+                  : "#fff7cc",
+            border: isDark
+              ? `1px solid ${DARK_BORDER}`
+              : "1px solid transparent"
           }}
         >
           {params.value || "لم يتحدد الموقف"}
@@ -654,7 +668,7 @@ const AfterSalesReport = () => {
       },
       actionColumn
     ];
-  }, [isPhone, isTablet, isCompact]);
+  }, [isPhone, isTablet, isCompact, isDark]);
 
   const filteredStats = useMemo(() => {
     const rated =
@@ -1113,10 +1127,132 @@ const AfterSalesReport = () => {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        background: muiTheme.palette.mode === 'dark' ? muiTheme.palette.background.default : "#f5f8f7",
-        direction: "rtl"
+        background: isDark ? muiTheme.palette.background.default : "#f5f8f7",
+        color: "text.primary",
+        direction: "rtl",
+
+        ...(isDark && {
+          "& .MuiButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important",
+            fontWeight: "800 !important"
+          },
+          "& .MuiButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important",
+            borderColor: `${DARK_BORDER} !important`,
+            boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+          },
+          "& .MuiButton-root.Mui-disabled": {
+            backgroundColor: "transparent !important",
+            color: "rgba(155,224,193,.42) !important",
+            borderColor: "rgba(103,201,157,.34) !important",
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiIconButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important"
+          },
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${muiTheme.palette.text.primary} !important`
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiInputLabel-root": {
+            color: `${muiTheme.palette.text.secondary} !important`
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& .MuiSelect-icon": {
+            color: `${DARK_TEXT} !important`
+          },
+          "& input[type='date']": {
+            colorScheme: "dark"
+          }
+        })
       }}
     >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiDataGrid-panel": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 14px 34px rgba(3,20,13,.28) !important"
+                },
+                ".MuiMenuItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-confirm:hover, .swal2-deny:hover, .swal2-cancel:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+                ".swal2-textarea, .swal2-select, .swal2-input, #after-sales-rating": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-validation-message": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".swal2-html-container [style*='background']": {
+                  background: "transparent !important",
+                  borderColor: `${DARK_BORDER} !important`,
+                  color: `${muiTheme.palette.text.primary} !important`
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -1186,11 +1322,12 @@ const AfterSalesReport = () => {
             right: 0,
             width: "100%",
             zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
+            background: isDark ? darkSection : "rgba(255,255,255,.97)",
             backdropFilter: "blur(14px)",
-            color: "#17372b",
-            borderBottom:
-              "1px solid rgba(5,117,70,.12)",
+            color: isDark ? muiTheme.palette.text.primary : "#17372b",
+            borderBottom: isDark
+              ? `1px solid ${DARK_BORDER}`
+              : "1px solid rgba(5,117,70,.12)",
             direction: "rtl"
           }}
         >
@@ -1217,11 +1354,14 @@ const AfterSalesReport = () => {
               sx={{
                 width: { xs: 36, sm: 40 },
                 height: { xs: 36, sm: 40 },
-                color: "#fff",
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)",
-                boxShadow:
-                  "0 5px 14px rgba(5,117,70,.20)"
+                color: isDark ? DARK_TEXT : "#fff",
+                background: isDark
+                  ? "transparent"
+                  : "linear-gradient(135deg,#057546,#034d31)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none",
+                boxShadow: isDark
+                  ? "none"
+                  : "0 5px 14px rgba(5,117,70,.20)"
               }}
             >
               <MenuRoundedIcon
@@ -1243,7 +1383,7 @@ const AfterSalesReport = () => {
                   xs: "0.75rem",
                   sm: "0.79rem"
                 },
-                color: "#17372b",
+                color: isDark ? muiTheme.palette.text.primary : "#17372b",
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -1286,9 +1426,11 @@ const AfterSalesReport = () => {
           sx={{
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
             overflow: "hidden",
-            border:
-              "1px solid rgba(5,117,70,0.14)",
-            background: "#fff"
+            border: isDark
+              ? `1px solid ${DARK_BORDER}`
+              : "1px solid rgba(5,117,70,0.14)",
+            background: isDark ? darkCard : "#fff",
+            backgroundImage: "none"
           }}
         >
           <Box
@@ -1299,11 +1441,13 @@ const AfterSalesReport = () => {
                   ? 1
                   : 2.5,
 
-              background:
-                "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
+              background: isDark
+                ? darkSection
+                : "linear-gradient(135deg,#fff 0%,#edf8f3 100%)",
 
-              borderBottom:
-                "1px solid rgba(5,117,70,0.12)"
+              borderBottom: isDark
+                ? `1px solid ${DARK_BORDER}`
+                : "1px solid rgba(5,117,70,0.12)"
             }}
           >
             <Typography
@@ -1311,7 +1455,7 @@ const AfterSalesReport = () => {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                color: "#034d31",
+                color: isDark ? muiTheme.palette.text.primary : "#034d31",
                 fontSize: isPhone
                   ? "0.75rem"
                   : isTablet
@@ -1326,7 +1470,7 @@ const AfterSalesReport = () => {
               sx={{
                 mt: isPhone ? 0.15 : 0.5,
                 fontFamily: "Cairo",
-                color: "#61756d",
+                color: isDark ? muiTheme.palette.text.secondary : "#61756d",
                 fontSize: isPhone
                   ? "0.75rem"
                   : isTablet
@@ -1357,7 +1501,7 @@ const AfterSalesReport = () => {
                   ? "repeat(2,minmax(0,1fr))"
                   : isTablet
                     ? "repeat(4,minmax(0,1fr))"
-                    : "repeat(7,minmax(120px,1fr)) auto auto auto auto",
+                    : "repeat(7,minmax(120px,1fr))",
                 gap: isPhone
                   ? 0.5
                   : isTablet
@@ -1570,71 +1714,77 @@ const AfterSalesReport = () => {
                 ))}
               </TextField>
 
-              <Button
-                variant="contained"
-                startIcon={<SearchIcon />}
-                onClick={loadData}
-                disabled={loading}
-                sx={uiLayout.withUiSx({
-                  background: "#057546"
-                }, uiLayout.buttonSx)}
+              <Box
+                sx={{
+                  gridColumn: "1 / -1",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                  gap: 0.55,
+                  pt: isCompact ? 0 : 0.2
+                }}
               >
-                عرض
-              </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<SearchIcon />}
+                  onClick={loadData}
+                  disabled={loading}
+                  sx={uiLayout.buttonSx}
+                >
+                  عرض
+                </Button>
 
-              <Button sx={uiLayout.buttonSx}
-                variant="outlined"
-                startIcon={<RefreshIcon />}
-                onClick={loadData}
-                disabled={loading}
-              >
-                تحديث
-              </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshIcon />}
+                  onClick={loadData}
+                  disabled={loading}
+                  sx={uiLayout.buttonSx}
+                >
+                  تحديث
+                </Button>
 
-              <Button
-                variant="outlined"
-                startIcon={<FileDownloadIcon />}
-                onClick={exportToExcel}
-                disabled={
-                  loading ||
-                  filteredRows.length === 0
-                }
-                sx={uiLayout.withUiSx({
-                  color: "#ae1e21",
-                  borderColor: "#ae1e21",
-                  gridColumn: isPhone
-                    ? "1 / -1"
-                    : undefined
-                }, uiLayout.buttonSx)}
-              >
-                تصدير Excel
-              </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<FileDownloadIcon />}
+                  onClick={exportToExcel}
+                  disabled={loading || filteredRows.length === 0}
+                  sx={uiLayout.withUiSx({
+                    color: isDark ? DARK_TEXT : "#ae1e21",
+                    borderColor: isDark ? DARK_BORDER : "#ae1e21"
+                  }, uiLayout.buttonSx)}
+                >
+                  تصدير Excel
+                </Button>
 
-              <Button
-                variant="outlined"
-                startIcon={<ClearAllIcon />}
-                onClick={clearFilters}
-                sx={uiLayout.withUiSx({
-                  gridColumn: isPhone
-                    ? "1 / -1"
-                    : undefined
-                }, uiLayout.buttonSx)}
-              >
-                مسح الفلاتر
-              </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<ClearAllIcon />}
+                  onClick={clearFilters}
+                  sx={uiLayout.buttonSx}
+                >
+                  مسح الفلاتر
+                </Button>
+              </Box>
             </Box>
 
             <Stack
               direction="row"
-              spacing={isPhone ? 0.45 : isTablet ? 0.65 : 2}
+              spacing={isPhone ? 0.4 : isTablet ? 0.55 : 0.7}
               sx={{
-                mb: isPhone ? 0.7 : isTablet ? 0.9 : 2.5
+                mb: isPhone ? 0.65 : isTablet ? 0.75 : 1,
+                p: 0.45,
+                borderRadius: 1.5,
+                border: isDark
+                  ? `1px solid ${DARK_BORDER}`
+                  : "1px solid rgba(5,117,70,.10)",
+                backgroundColor: isDark ? darkCard : "#fff"
               }}
             >
               <Box
                 sx={{
                   flex: 1,
-                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  p: isPhone ? 0.45 : isTablet ? 0.55 : 0.7,
                   borderRadius: isPhone ? 1 : isTablet ? 1.3 : 2,
                   fontSize: isPhone
                     ? "0.75rem"
@@ -1643,8 +1793,9 @@ const AfterSalesReport = () => {
                       : undefined,
                   lineHeight: 1.5,
                   textAlign: "center",
-                  background: "#fff9c4",
-                  color: "#ae1e21",
+                  background: isDark ? "transparent" : "#fff9c4",
+                  color: isDark ? DARK_TEXT : "#ae1e21",
+                  border: isDark ? `1px solid ${DARK_BORDER}` : "none",
                   fontFamily: "Cairo",
                   fontWeight: 900
                 }}
@@ -1657,7 +1808,7 @@ const AfterSalesReport = () => {
               <Box
                 sx={{
                   flex: 1,
-                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  p: isPhone ? 0.45 : isTablet ? 0.55 : 0.7,
                   borderRadius: isPhone ? 1 : isTablet ? 1.3 : 2,
                   fontSize: isPhone
                     ? "0.75rem"
@@ -1666,8 +1817,9 @@ const AfterSalesReport = () => {
                       : undefined,
                   lineHeight: 1.5,
                   textAlign: "center",
-                  background: "#edf8f3",
-                  color: "#034d31",
+                  background: isDark ? "transparent" : "#edf8f3",
+                  color: isDark ? DARK_TEXT : "#034d31",
+                  border: isDark ? `1px solid ${DARK_BORDER}` : "none",
                   fontFamily: "Cairo",
                   fontWeight: 900
                 }}
@@ -1682,7 +1834,7 @@ const AfterSalesReport = () => {
               <Box
                 sx={{
                   flex: 1,
-                  p: isPhone ? 0.5 : isTablet ? 0.7 : 1.5,
+                  p: isPhone ? 0.45 : isTablet ? 0.55 : 0.7,
                   borderRadius: isPhone ? 1 : isTablet ? 1.3 : 2,
                   fontSize: isPhone
                     ? "0.75rem"
@@ -1691,8 +1843,9 @@ const AfterSalesReport = () => {
                       : undefined,
                   lineHeight: 1.5,
                   textAlign: "center",
-                  background: "#eef4ff",
-                  color: "#184f90",
+                  background: isDark ? "transparent" : "#eef4ff",
+                  color: isDark ? DARK_TEXT : "#184f90",
+                  border: isDark ? `1px solid ${DARK_BORDER}` : "none",
                   fontFamily: "Cairo",
                   fontWeight: 900
                 }}
@@ -1716,10 +1869,12 @@ const AfterSalesReport = () => {
                   : isTablet
                     ? 420
                     : 520,
-                border:
-                  "1px solid rgba(5,117,70,0.14)",
-                borderRadius: 3,
-                overflow: "hidden"
+                border: isDark
+                  ? `1px solid ${DARK_BORDER}`
+                  : "1px solid rgba(5,117,70,0.14)",
+                borderRadius: 2,
+                overflow: "hidden",
+                backgroundColor: isDark ? darkSection : "#fff"
               }, uiLayout.tableContainerSx)}
             >
               <DataGrid
@@ -1859,17 +2014,21 @@ const AfterSalesReport = () => {
                   },
 
                   "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor:
-                      "#057546",
-                    color: "#fff",
+                    backgroundColor: isDark
+                      ? darkNested
+                      : "#057546",
+                    color: isDark
+                      ? muiTheme.palette.text.primary
+                      : "#fff",
                     fontFamily: "Cairo",
                     fontWeight: 900,
                     borderBottom: 0
                   },
 
                   "& .MuiDataGrid-columnHeader": {
-                    backgroundColor:
-                      "#057546"
+                    backgroundColor: isDark
+                      ? darkNested
+                      : "#057546"
                   },
 
                   "& .MuiDataGrid-columnHeaderTitle": {
@@ -1886,8 +2045,9 @@ const AfterSalesReport = () => {
                   },
 
                   "& .MuiDataGrid-columnSeparator": {
-                    color:
-                      "rgba(255,255,255,0.55)",
+                    color: isDark
+                      ? "rgba(103,201,157,.55)"
+                      : "rgba(255,255,255,0.55)",
                     visibility: "visible"
                   },
 
@@ -1897,7 +2057,12 @@ const AfterSalesReport = () => {
                     justifyContent: "center",
                     whiteSpace: "normal",
                     lineHeight: 1.35,
-                    borderColor: "#e6ece9",
+                    borderColor: isDark
+                      ? "rgba(103,201,157,.22)"
+                      : "#e6ece9",
+                    color: isDark
+                      ? muiTheme.palette.text.primary
+                      : "inherit",
                     px: isPhone
                       ? 0.35
                       : isTablet
@@ -1911,13 +2076,15 @@ const AfterSalesReport = () => {
                   },
 
                   "& .MuiDataGrid-row:nth-of-type(even)": {
-                    backgroundColor:
-                      "#fbfdfc"
+                    backgroundColor: isDark
+                      ? darkCard
+                      : "#fbfdfc"
                   },
 
                   "& .MuiDataGrid-row:hover": {
-                    backgroundColor:
-                      "#fff3d6"
+                    backgroundColor: isDark
+                      ? darkHover
+                      : "#f1faf6"
                   },
 
                   "& .MuiDataGrid-toolbarContainer": {
@@ -1926,17 +2093,19 @@ const AfterSalesReport = () => {
                       : "flex",
                     p: isTablet ? 0.45 : 1,
                     gap: isTablet ? 0.45 : 1,
-                    borderBottom:
-                      "1px solid #e6ece9",
-                    backgroundColor:
-                      "#f8fbf9",
+                    borderBottom: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : "1px solid #e6ece9",
+                    backgroundColor: isDark
+                      ? darkSection
+                      : "#f8fbf9",
                     direction: "rtl"
                   },
 
                   "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
                     fontFamily: "Cairo",
                     fontWeight: 800,
-                    color: "#057546",
+                    color: isDark ? DARK_TEXT : "#057546",
                     fontSize: isTablet
                       ? "0.75rem"
                       : undefined,
@@ -1957,6 +2126,13 @@ const AfterSalesReport = () => {
                   "& .MuiDataGrid-footerContainer": {
                     direction: "rtl",
                     fontFamily: "Cairo",
+                    backgroundColor: isDark ? darkSection : "#fff",
+                    color: isDark
+                      ? muiTheme.palette.text.primary
+                      : "inherit",
+                    borderTop: isDark
+                      ? `1px solid ${DARK_BORDER}`
+                      : undefined,
                     minHeight: isPhone
                       ? 34
                       : isTablet

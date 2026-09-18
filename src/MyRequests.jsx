@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  GlobalStyles,
   Grid,
   IconButton,
   InputAdornment,
@@ -84,13 +85,105 @@ const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
 // light-mode-only white/near-white need a dark-mode alternative here.
 const requestsGridDarkSx = (theme) => (theme.palette.mode !== "dark" ? {} : {
   border: "1px solid #67C99D",
-  backgroundColor: theme.palette.surfaces.card,
-  "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
-  "& .MuiDataGrid-row:nth-of-type(even)": { backgroundColor: theme.palette.surfaces.section },
-  "& .MuiDataGrid-row:hover": { backgroundColor: theme.palette.surfaces.hover },
-  "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
-  "& .MuiDataGrid-footerContainer": { borderTop: `1px solid #67C99D` }
+  backgroundColor: theme.palette.surfaces?.card || "#10251c",
+  color: theme.palette.text.primary,
+  "& .MuiDataGrid-columnHeaders": {
+    background: `${theme.palette.surfaces?.section || "#132b21"} !important`,
+    backgroundImage: "none !important",
+    color: theme.palette.text.primary,
+    borderBottom: "1px solid #67C99D"
+  },
+  "& .MuiDataGrid-columnHeader": {
+    backgroundColor: "transparent !important"
+  },
+  "& .MuiDataGrid-row": {
+    backgroundColor: theme.palette.surfaces?.card || "#10251c"
+  },
+  "& .MuiDataGrid-row:nth-of-type(even)": {
+    backgroundColor: theme.palette.surfaces?.section || "#132b21"
+  },
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: `${theme.palette.surfaces?.hover || "#1d4031"} !important`
+  },
+  "& .MuiDataGrid-cell": {
+    borderColor: "#67C99D",
+    color: theme.palette.text.primary
+  },
+  "& .MuiDataGrid-footerContainer": {
+    backgroundColor: theme.palette.surfaces?.section || "#132b21",
+    borderTop: "1px solid #67C99D"
+  },
+  "& .MuiDataGrid-virtualScroller": {
+    backgroundColor: theme.palette.surfaces?.card || "#10251c"
+  }
 });
+
+const DARK_ACTION_GLOBAL_STYLES = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const borderColor = "#67C99D";
+  const textColor = "#9BE0C1";
+
+  return {
+    ".MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${textColor} !important`,
+      border: `1px solid ${borderColor} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important",
+      fontWeight: "800 !important"
+    },
+    ".MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${borderColor} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    ".MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    ".MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+    ".MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${textColor} !important`,
+      border: `1px solid ${borderColor} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${borderColor} !important`
+    },
+    ".MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${textColor} !important`,
+      border: `1px solid ${borderColor} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important"
+    },
+    ".MuiOutlinedInput-notchedOutline": {
+      borderColor: `${borderColor} !important`
+    },
+    ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${borderColor} !important`
+    },
+    ".MuiTabs-indicator": {
+      backgroundColor: `${borderColor} !important`
+    }
+  };
+};
 
 const readCurrentUser = () => {
   try {
@@ -383,7 +476,92 @@ const money = (value) => {
 };
 
 const formatDateTime = (value) => {
-  if (!value) return "";
+  if (value === null || value === undefined || value === "") return "";
+
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return "";
+
+    return value.toLocaleString("en-GB", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  if (typeof value === "object") {
+    const nestedValue =
+      value?.value ??
+      value?.Value ??
+      value?.date ??
+      value?.Date ??
+      value?.dateTime ??
+      value?.DateTime ??
+      value?.datetime ??
+      value?.timestamp ??
+      value?.Timestamp ??
+      value?.iso ??
+      value?.ISO ??
+      value?.["$date"];
+
+    if (
+      nestedValue !== undefined &&
+      nestedValue !== null &&
+      nestedValue !== value
+    ) {
+      return formatDateTime(nestedValue);
+    }
+
+    const year = Number(value?.year ?? value?.Year ?? 0);
+    const month = Number(value?.month ?? value?.Month ?? 0);
+    const day = Number(value?.day ?? value?.Day ?? 0);
+
+    if (year && month && day) {
+      const hh = Number(value?.hour ?? value?.Hour ?? 0);
+      const mm = Number(value?.minute ?? value?.Minute ?? 0);
+
+      if (year < 1700) {
+        const timeText =
+          hh || mm
+            ? ` ${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`
+            : "";
+
+        return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}${timeText}`;
+      }
+
+      const dateFromParts = new Date(
+        year,
+        Math.max(0, month - 1),
+        day,
+        hh,
+        mm
+      );
+
+      if (!Number.isNaN(dateFromParts.getTime())) {
+        return dateFromParts.toLocaleString("en-GB", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+    }
+
+    const primitiveValues = Object.values(value).filter(
+      (item) =>
+        item !== null &&
+        item !== undefined &&
+        ["string", "number"].includes(typeof item)
+    );
+
+    if (primitiveValues.length === 1) {
+      return formatDateTime(primitiveValues[0]);
+    }
+
+    return "";
+  }
 
   const date = new Date(value);
 
@@ -2608,10 +2786,13 @@ ${PRINT_READY_SCRIPT}</head>
   const otherInstitutesColumns = [
     {
       field: "traineeStatusActions",
-      headerName: "الإجراءات",
-      minWidth: 150,
+      headerName: "الموقف",
+      width: 112,
+      minWidth: 112,
+      maxWidth: 112,
       sortable: false,
       filterable: false,
+      disableColumnMenu: true,
       align: "center",
       headerAlign: "center",
       renderCell: ({ row }) => {
@@ -2626,48 +2807,118 @@ ${PRINT_READY_SCRIPT}</head>
           String(savingTraineeNoteId) === String(recordId);
 
         return (
-          <Tooltip title="إضافة أو تعديل موقف المتدرب">
+          <Tooltip title="إضافة أو تعديل موقف المتدرب" arrow>
             <span>
               <Button
                 size="small"
-                variant="contained"
+                variant="outlined"
                 onClick={() => editTraineeStatusNote(row)}
                 disabled={isSaving}
                 startIcon={
                   isSaving
-                    ? <CircularProgress size={16} color="inherit" />
-                    : <NoteAddIcon />
+                    ? <CircularProgress size={14} color="inherit" />
+                    : <NoteAddIcon sx={{ fontSize: 16 }} />
                 }
-                sx={uiLayout.withUiSx({
-                  backgroundColor: primaryColor,
+                sx={uiLayout.withUiSx((theme) => ({
+                  width: 96,
+                  minWidth: 96,
+                  maxWidth: 96,
+                  height: 30,
+                  px: 0.8,
+                  borderRadius: 1.5,
+                  fontSize: "0.67rem",
+                  lineHeight: 1,
                   fontWeight: 900,
-                  whiteSpace: "nowrap"
-                }, uiLayout.buttonSx)}
+                  whiteSpace: "nowrap",
+                  backgroundColor: "transparent",
+                  color: theme.palette.mode === "dark" ? "#9BE0C1" : primaryColor,
+                  border: `1px solid ${theme.palette.mode === "dark" ? "#67C99D" : primaryColor}`,
+                  boxShadow: "none",
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    borderColor: theme.palette.mode === "dark" ? "#67C99D" : primaryDark,
+                    color: theme.palette.mode === "dark" ? "#C9F2DF" : primaryDark,
+                    boxShadow: "none"
+                  },
+                  "& .MuiButton-startIcon": {
+                    ml: 0.35,
+                    mr: 0
+                  }
+                }), uiLayout.buttonSx)}
               >
-                موقف المتدرب
+                {isSaving ? "حفظ..." : "الموقف"}
               </Button>
             </span>
           </Tooltip>
         );
       }
     },
-    { field: "code", headerName: "كود", minWidth: 80, align: "center", headerAlign: "center" },
-    { field: "orderCode", headerName: "رقم الطلب", minWidth: 100, align: "center", headerAlign: "center" },
-    { field: "regDocCode", headerName: "رقم الاستمارة", minWidth: 110, align: "center", headerAlign: "center" },
-    { field: "studentName", headerName: "اسم الطالب", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
-    { field: "nationalId", headerName: "رقم الهوية", minWidth: 110, align: "center", headerAlign: "center" },
-    { field: "studentTel", headerName: "رقم الجوال", minWidth: 140, align: "center", headerAlign: "center" },
-    { field: "branchName", headerName: "الفرع", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
-    { field: "sellerName", headerName: "مسؤول التسجيل", minWidth: 170, align: "center", headerAlign: "center" },
-    { field: "otherInstituteName", headerName: "المعهد الآخر", minWidth: 190, align: "center", headerAlign: "center" },
-    { field: "isStillRegisteredText", headerName: "هل تم طي قيده؟", minWidth: 160, align: "center", headerAlign: "center" },
-    { field: "notes", headerName: "ملاحظات", minWidth: 140, flex: 1, align: "center", headerAlign: "center" },
-    { field: "statusUpdateNote", headerName: "ملاحظة طي القيد", minWidth: 230, flex: 1, align: "center", headerAlign: "center" },
+    {
+      field: "studentName",
+      headerName: "اسم الطالب",
+      minWidth: 160,
+      flex: 1.2,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "nationalId",
+      headerName: "رقم الهوية",
+      minWidth: 115,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "studentTel",
+      headerName: "رقم الجوال",
+      minWidth: 125,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "branchName",
+      headerName: "الفرع",
+      minWidth: 145,
+      flex: 1,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "otherInstituteName",
+      headerName: "المعهد الآخر",
+      minWidth: 165,
+      flex: 1.05,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "isStillRegisteredText",
+      headerName: "هل تم طي قيده؟",
+      minWidth: 125,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "notes",
+      headerName: "ملاحظات",
+      minWidth: 145,
+      flex: 0.9,
+      align: "center",
+      headerAlign: "center"
+    },
+    {
+      field: "statusUpdateNote",
+      headerName: "ملاحظة طي القيد",
+      minWidth: 170,
+      flex: 1.05,
+      align: "center",
+      headerAlign: "center"
+    },
     {
       field: "traineeStatusNote",
       headerName: "موقف المتدرب",
-      minWidth: 300,
-      flex: 1.4,
+      minWidth: 190,
+      flex: 1.2,
       align: "center",
       headerAlign: "center",
       renderCell: ({ value }) => (
@@ -2675,6 +2926,7 @@ ${PRINT_READY_SCRIPT}</head>
           <Typography
             sx={{
               width: "100%",
+              px: 0.5,
               fontWeight: 800,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -2690,21 +2942,70 @@ ${PRINT_READY_SCRIPT}</head>
     {
       field: "traineeStatusUpdatedBy",
       headerName: "آخر تحديث بواسطة",
-      minWidth: 180,
+      minWidth: 145,
       align: "center",
       headerAlign: "center"
     },
     {
       field: "traineeStatusUpdatedAt",
       headerName: "تاريخ موقف المتدرب",
-      minWidth: 180,
+      minWidth: 145,
       align: "center",
       headerAlign: "center",
-      valueFormatter: (p) =>
-        formatDateTime(p?.value ?? p)
+      renderCell: ({ value }) => (
+        <Typography
+          sx={{
+            width: "100%",
+            fontSize: "0.72rem",
+            fontWeight: 800,
+            textAlign: "center",
+            whiteSpace: "nowrap"
+          }}
+        >
+          {formatDateTime(value) || "-"}
+        </Typography>
+      )
     },
-    { field: "createdAt", headerName: "تاريخ التسجيل", minWidth: 150, align: "center", headerAlign: "center", valueFormatter: (p) => formatDateTime(p?.value ?? p) },
-    { field: "statusUpdatedAt", headerName: "تاريخ تحديث الحالة", minWidth: 165, align: "center", headerAlign: "center", valueFormatter: (p) => formatDateTime(p?.value ?? p) }
+    {
+      field: "createdAt",
+      headerName: "تاريخ التسجيل",
+      minWidth: 135,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ value }) => (
+        <Typography
+          sx={{
+            width: "100%",
+            fontSize: "0.72rem",
+            fontWeight: 800,
+            textAlign: "center",
+            whiteSpace: "nowrap"
+          }}
+        >
+          {formatDateTime(value) || "-"}
+        </Typography>
+      )
+    },
+    {
+      field: "statusUpdatedAt",
+      headerName: "تاريخ تحديث الحالة",
+      minWidth: 145,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ value }) => (
+        <Typography
+          sx={{
+            width: "100%",
+            fontSize: "0.72rem",
+            fontWeight: 800,
+            textAlign: "center",
+            whiteSpace: "nowrap"
+          }}
+        >
+          {formatDateTime(value) || "-"}
+        </Typography>
+      )
+    }
   ];
 
   const columns =
@@ -2769,17 +3070,30 @@ ${PRINT_READY_SCRIPT}</head>
 
         if (!onClick) return null;
 
+        const actionTitle =
+          activeTab === "other-institutes"
+            ? "تعديل موقف المتدرب"
+            : activeTab === "approvals"
+              ? "تعديل الموافقة"
+              : "عرض الطلب";
+
         return (
-          <Tooltip title="عرض الطلب">
+          <Tooltip title={actionTitle} arrow>
             <IconButton
               size="small"
               onClick={onClick}
-              sx={{
-                width: isPhone ? 22 : 26,
-                height: isPhone ? 22 : 26,
+              sx={(theme) => ({
+                width: isPhone ? 24 : 28,
+                height: isPhone ? 24 : 28,
                 p: 0,
-                color
-              }}
+                color: theme.palette.mode === "dark" ? "#9BE0C1" : color,
+                backgroundColor: "transparent",
+                border: `1px solid ${theme.palette.mode === "dark" ? "#67C99D" : color}`,
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  borderColor: theme.palette.mode === "dark" ? "#67C99D" : color
+                }
+              })}
             >
               {icon}
             </IconButton>
@@ -2952,18 +3266,44 @@ ${PRINT_READY_SCRIPT}</head>
 
   const responsiveColumns = isTableCompact
     ? getCompactColumns()
-    : columns.map((column) => ({
-        ...column,
-        minWidth: column.field === "actions" || column.field === "approvalActions"
-          ? 72
-          : 0,
-        flex: column.flex || 1
-      }));
+    : columns.map((column) => {
+        const isActionColumn = [
+          "actions",
+          "approvalActions",
+          "traineeStatusActions"
+        ].includes(column.field);
+
+        if (isActionColumn) {
+          return {
+            ...column,
+            width: column.width || 112,
+            minWidth: column.minWidth || 96,
+            maxWidth: column.maxWidth || 125,
+            flex: 0
+          };
+        }
+
+        if (activeTab === "other-institutes") {
+          return {
+            ...column,
+            minWidth: column.minWidth || 105,
+            flex: column.flex ?? 0.85
+          };
+        }
+
+        return {
+          ...column,
+          minWidth: 0,
+          flex: column.flex || 1
+        };
+      });
 
   const selectedTab = tabs.find((item) => item.key === activeTab);
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}>
+      <GlobalStyles styles={DARK_ACTION_GLOBAL_STYLES} />
+      <Box
       dir="rtl"
       sx={(theme) => ({
         height: isDesktop ? "100dvh" : "auto",
@@ -3059,15 +3399,22 @@ ${PRINT_READY_SCRIPT}</head>
         >
           <Box
             dir="rtl"
-            sx={{
-              px: isPhone ? 0.75 : isTablet ? 1.1 : designTokens.cardPadding,
-              py: isPhone ? 0.65 : isTablet ? 0.9 : designTokens.cardPadding,
-              color: "white",
-              background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexShrink: 0
+            sx={(theme) => {
+              const isDark = theme.palette.mode === "dark";
+
+              return {
+                px: isPhone ? 0.75 : isTablet ? 1.1 : designTokens.cardPadding,
+                py: isPhone ? 0.65 : isTablet ? 0.9 : designTokens.cardPadding,
+                color: isDark ? theme.palette.text.primary : "white",
+                background: isDark
+                  ? (theme.palette.surfaces?.section || "#132b21")
+                  : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryDark} 100%)`,
+                borderBottom: isDark ? "1px solid #67C99D" : "none",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexShrink: 0
+              };
             }}
           >
             <Box>
@@ -3128,7 +3475,7 @@ ${PRINT_READY_SCRIPT}</head>
               },
               "& .MuiTabs-indicator": {
                 height: isCompact ? 2.5 : 4,
-                backgroundColor: accentColor
+                backgroundColor: theme.palette.mode === "dark" ? "#67C99D" : accentColor
               }
             })}
           >

@@ -56,6 +56,9 @@ const USERS_API = "https://api1.sstli.com/api/userinfo";
 const BRANCHES_API = "https://api1.sstli.com/api/branches/all";
 const ADMIN_TOKEN = "PUT_ADMIN_TOKEN_HERE";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
 // الألوان
 const theme = {
   primary: "#80b49e",
@@ -72,6 +75,12 @@ const theme = {
 
 // مكون Card للبيانات
 function NoteCard({ note, usersMap, branchesMap }) {
+  const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+
   const uploaderGuid = String(note.uploader_guid || "").toLowerCase();
   const branchGuid = String(note.branch_guid || "").toLowerCase();
   
@@ -88,8 +97,9 @@ function NoteCard({ note, usersMap, branchesMap }) {
       sx={{
         height: '100%',
         borderRadius: 3,
-        border: `1px solid ${theme.border}`,
-        background: 'white',
+        border: `1px solid ${isDark ? DARK_BORDER : theme.border}`,
+        background: isDark ? darkCard : "white",
+        backgroundImage: "none",
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -132,7 +142,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                   variant="subtitle1" 
                   sx={{ 
                     fontWeight: 800,
-                    color: theme.text,
+                    color: isDark ? muiTheme.palette.text.primary : theme.text,
                     [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
                       fontSize: "0.75rem"
                     },
@@ -146,7 +156,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 >
                   {note.original_filename}
                 </Typography>
-                <Typography variant="caption" sx={{ color: theme.lightText }}>
+                <Typography variant="caption" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                   {fileExt} • {new Date(note.created_at).toLocaleDateString('ar-SA')}
                 </Typography>
               </Box>
@@ -155,7 +165,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
             <Typography 
               variant="body2" 
               sx={{ 
-                color: theme.text,
+                color: isDark ? muiTheme.palette.text.primary : theme.text,
                 mb: 2,
                 lineHeight: 1.6,
                 minHeight: 48,
@@ -179,17 +189,17 @@ function NoteCard({ note, usersMap, branchesMap }) {
               {note.note_text || "لا توجد ملاحظة"}
             </Typography>
 
-            <Divider sx={{ my: 1.5 }} />
+            <Divider sx={{ my: 1.5, borderColor: isDark ? DARK_BORDER : undefined }} />
 
             <Grid container spacing={1.5}>
               <Grid item xs={6}>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <PersonIcon sx={{ fontSize: 16, color: theme.primary }} />
                   <Box>
-                    <Typography variant="caption" sx={{ color: theme.lightText, display: 'block' }}>
+                    <Typography variant="caption" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText, display: 'block' }}>
                       الرافع
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: theme.text }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                       {uploaderName}
                     </Typography>
                   </Box>
@@ -200,10 +210,10 @@ function NoteCard({ note, usersMap, branchesMap }) {
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <BusinessIcon sx={{ fontSize: 16, color: theme.secondary }} />
                   <Box>
-                    <Typography variant="caption" sx={{ color: theme.lightText, display: 'block' }}>
+                    <Typography variant="caption" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText, display: 'block' }}>
                       الفرع
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: theme.text }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                       {branchName}
                     </Typography>
                   </Box>
@@ -213,7 +223,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
               <Grid item xs={6}>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <CalendarIcon sx={{ fontSize: 16, color: theme.warning }} />
-                  <Typography variant="caption" sx={{ color: theme.lightText }}>
+                  <Typography variant="caption" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                     {new Date(note.created_at).toLocaleDateString('ar-SA')}
                   </Typography>
                 </Stack>
@@ -222,7 +232,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
               <Grid item xs={6}>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <DescriptionIcon sx={{ fontSize: 16, color: theme.success }} />
-                  <Typography variant="caption" sx={{ color: theme.lightText }}>
+                  <Typography variant="caption" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                     {fileExt}
                   </Typography>
                 </Stack>
@@ -232,7 +242,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
         </Stack>
       </CardContent>
       
-      <Divider />
+      <Divider sx={{ borderColor: isDark ? DARK_BORDER : undefined }} />
       
       <CardActions
         sx={{
@@ -270,7 +280,7 @@ function NoteCard({ note, usersMap, branchesMap }) {
           
           <Button
             fullWidth
-            variant="contained"
+            variant="outlined"
             size="small"
             startIcon={<DownloadIcon />}
             component="a"
@@ -278,7 +288,9 @@ function NoteCard({ note, usersMap, branchesMap }) {
             download
             sx={uiLayout.withUiSx({
               borderRadius: 2,
-              background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`,
+              background: isDark
+                    ? "transparent"
+                    : `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`,
               fontWeight: 700,
               boxShadow: 'none',
               '&:hover': {
@@ -297,6 +309,12 @@ function NoteCard({ note, usersMap, branchesMap }) {
 
 export default function AdminStudentNotes() {
   const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+  const surfaces = muiTheme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
 
   const isPhone = useMediaQuery(
     muiTheme.breakpoints.down("sm")
@@ -494,14 +512,108 @@ export default function AdminStudentNotes() {
         }><Box
       sx={{
         display: "flex",
-        background: theme.bg,
+        background: isDark ? muiTheme.palette.background.default : theme.bg,
+        color: "text.primary",
         minHeight: "100dvh",
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        direction: "rtl"
+        direction: "rtl",
+        ...(isDark && {
+          "& .MuiButton-root": {
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiButton-root:hover": {
+            backgroundColor: "transparent !important",
+            color: "#C9F2DF !important"
+          },
+          "& .MuiIconButton-root": {
+            backgroundColor: "transparent !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`,
+            boxShadow: "none !important"
+          },
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "transparent !important",
+            color: `${muiTheme.palette.text.primary} !important`
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${DARK_BORDER} !important`
+          },
+          "& .MuiChip-root": {
+            backgroundColor: "transparent !important",
+            color: `${DARK_TEXT} !important`,
+            border: `1px solid ${DARK_BORDER} !important`
+          },
+          "& .MuiDivider-root": {
+            borderColor: `${DARK_BORDER} !important`
+          }
+        })
       }}
     >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".MuiMenu-paper, .MuiPopover-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`
+                },
+                ".MuiMenuItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: `${DARK_TEXT} !important`,
+                  borderInlineStart: `2px solid ${DARK_BORDER} !important`
+                },
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${muiTheme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-confirm:hover, .swal2-deny:hover, .swal2-cancel:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+                ".swal2-textarea, .swal2-input, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                },
+                ".swal2-html-container [style*='background']": {
+                  background: "transparent !important",
+                  color: `${muiTheme.palette.text.primary} !important`,
+                  borderColor: `${DARK_BORDER} !important`
+                }
+              }
+            : {})
+        }}
+      />
+
       {!isDesktop && (
         <GlobalStyles
           styles={{
@@ -528,10 +640,10 @@ export default function AdminStudentNotes() {
             right: 0,
             width: "100%",
             zIndex: 1400,
-            background: "rgba(255,255,255,.97)",
+            background: isDark ? darkSection : "rgba(255,255,255,.97)",
             backdropFilter: "blur(14px)",
-            color: theme.text,
-            borderBottom: `1px solid ${theme.border}`,
+            color: isDark ? muiTheme.palette.text.primary : theme.text,
+            borderBottom: `1px solid ${isDark ? DARK_BORDER : theme.border}`,
             direction: "rtl"
           }}
         >
@@ -557,9 +669,11 @@ export default function AdminStudentNotes() {
               sx={{
                 width: { xs: 36, sm: 40 },
                 height: { xs: 36, sm: 40 },
-                color: "#fff",
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)",
+                color: isDark ? DARK_TEXT : "#fff",
+                background: isDark
+                  ? "transparent"
+                  : "linear-gradient(135deg,#057546,#034d31)",
+                border: isDark ? `1px solid ${DARK_BORDER}` : "none",
                 boxShadow:
                   "0 5px 14px rgba(5,117,70,.20)"
               }}
@@ -579,7 +693,7 @@ export default function AdminStudentNotes() {
                   xs: "0.75rem",
                   sm: "0.8rem"
                 },
-                color: theme.text,
+                color: isDark ? muiTheme.palette.text.primary : theme.text,
                 textAlign: "start",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -625,8 +739,9 @@ export default function AdminStudentNotes() {
           sx={{
             p: isPhone ? 0.7 : isTablet ? 1 : 3,
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
-            border: `1px solid ${theme.border}`,
-            background: 'white',
+            border: `1px solid ${isDark ? DARK_BORDER : theme.border}`,
+            background: isDark ? darkCard : "white",
+            backgroundImage: "none",
             mb: isPhone ? 0.65 : isTablet ? 0.9 : 3
           }}
         >
@@ -636,7 +751,7 @@ export default function AdminStudentNotes() {
                 variant="h5"
                 sx={{
                   fontWeight: 900,
-                  color: theme.text,
+                  color: isDark ? muiTheme.palette.text.primary : theme.text,
                   mb: 0.5,
                   fontSize: isPhone
                     ? "0.75rem"
@@ -669,7 +784,7 @@ export default function AdminStudentNotes() {
                 sx={uiLayout.withUiSx({
                   borderRadius: 2,
                   borderColor: theme.border,
-                  color: theme.text,
+                  color: isDark ? muiTheme.palette.text.primary : theme.text,
                   fontWeight: 600
                 }, uiLayout.buttonSx)}
               >
@@ -677,12 +792,14 @@ export default function AdminStudentNotes() {
               </Button>
               
               <Button
-                variant="contained"
+                variant="outlined"
                 startIcon={<RefreshIcon />}
                 onClick={loadAll}
                 sx={uiLayout.withUiSx({
                   borderRadius: 2,
-                  background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`,
+                  background: isDark
+                    ? "transparent"
+                    : `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`,
                   fontWeight: 700,
                   px: 3,
                   boxShadow: `0 6px 16px rgba(128,180,158,0.25)`,
@@ -709,20 +826,20 @@ export default function AdminStudentNotes() {
                 sx={{
                   p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
                   borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
-                  background: `linear-gradient(135deg, rgba(128,180,158,0.1) 0%, rgba(128,180,158,0.05) 100%)`,
-                  border: `1px solid ${theme.border}`
+                  background: isDark ? "transparent" : `linear-gradient(135deg, rgba(128,180,158,0.1) 0%, rgba(128,180,158,0.05) 100%)`,
+                  border: `1px solid ${isDark ? DARK_BORDER : theme.border}`
                 }}
               >
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 900, color: theme.text }}>
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                       {stats.total}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: theme.lightText }}>
+                    <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                       إجمالي الملفات
                     </Typography>
                   </Box>
-                  <Avatar sx={{ bgcolor: theme.primary }}>
+                  <Avatar sx={{ bgcolor: isDark ? "transparent" : theme.primary, color: isDark ? DARK_TEXT : undefined, border: isDark ? `1px solid ${DARK_BORDER}` : "none" }}>
                     <DescriptionIcon />
                   </Avatar>
                 </Stack>
@@ -735,20 +852,20 @@ export default function AdminStudentNotes() {
                 sx={{
                   p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
                   borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
-                  background: `linear-gradient(135deg, rgba(93,124,166,0.1) 0%, rgba(93,124,166,0.05) 100%)`,
-                  border: `1px solid rgba(93,124,166,0.2)`
+                  background: isDark ? "transparent" : `linear-gradient(135deg, rgba(93,124,166,0.1) 0%, rgba(93,124,166,0.05) 100%)`,
+                  border: `1px solid ${isDark ? DARK_BORDER : "rgba(93,124,166,0.2)"}`
                 }}
               >
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 900, color: theme.text }}>
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                       {stats.branchesCount}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: theme.lightText }}>
+                    <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                       عدد الفروع
                     </Typography>
                   </Box>
-                  <Avatar sx={{ bgcolor: theme.secondary }}>
+                  <Avatar sx={{ bgcolor: isDark ? "transparent" : theme.secondary, color: isDark ? DARK_TEXT : undefined, border: isDark ? `1px solid ${DARK_BORDER}` : "none" }}>
                     <BusinessIcon />
                   </Avatar>
                 </Stack>
@@ -761,20 +878,20 @@ export default function AdminStudentNotes() {
                 sx={{
                   p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
                   borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
-                  background: `linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(76,175,80,0.05) 100%)`,
-                  border: `1px solid rgba(76,175,80,0.2)`
+                  background: isDark ? "transparent" : `linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(76,175,80,0.05) 100%)`,
+                  border: `1px solid ${isDark ? DARK_BORDER : "rgba(76,175,80,0.2)"}`
                 }}
               >
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 900, color: theme.text }}>
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                       {stats.uploadersCount}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: theme.lightText }}>
+                    <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                       عدد الرافعين
                     </Typography>
                   </Box>
-                  <Avatar sx={{ bgcolor: theme.success }}>
+                  <Avatar sx={{ bgcolor: isDark ? "transparent" : theme.success, color: isDark ? DARK_TEXT : undefined, border: isDark ? `1px solid ${DARK_BORDER}` : "none" }}>
                     <PersonIcon />
                   </Avatar>
                 </Stack>
@@ -787,20 +904,20 @@ export default function AdminStudentNotes() {
                 sx={{
                   p: isPhone ? 0.6 : isTablet ? 0.85 : 2.5,
                   borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
-                  background: `linear-gradient(135deg, rgba(255,152,0,0.1) 0%, rgba(255,152,0,0.05) 100%)`,
-                  border: `1px solid rgba(255,152,0,0.2)`
+                  background: isDark ? "transparent" : `linear-gradient(135deg, rgba(255,152,0,0.1) 0%, rgba(255,152,0,0.05) 100%)`,
+                  border: `1px solid ${isDark ? DARK_BORDER : "rgba(255,152,0,0.2)"}`
                 }}
               >
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 900, color: theme.text }}>
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                       {stats.recentCount}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: theme.lightText }}>
+                    <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                       آخر 7 أيام
                     </Typography>
                   </Box>
-                  <Avatar sx={{ bgcolor: theme.warning }}>
+                  <Avatar sx={{ bgcolor: isDark ? "transparent" : theme.warning, color: isDark ? DARK_TEXT : undefined, border: isDark ? `1px solid ${DARK_BORDER}` : "none" }}>
                     <CalendarIcon />
                   </Avatar>
                 </Stack>
@@ -815,14 +932,15 @@ export default function AdminStudentNotes() {
           sx={{
             p: isPhone ? 0.7 : isTablet ? 1 : 3,
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
-            border: `1px solid ${theme.border}`,
-            background: 'white',
+            border: `1px solid ${isDark ? DARK_BORDER : theme.border}`,
+            background: isDark ? darkCard : "white",
+            backgroundImage: "none",
             mb: isPhone ? 0.65 : isTablet ? 0.9 : 3
           }}
         >
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
             <FilterListIcon sx={{ color: theme.primary }} />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: theme.text }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
               فلاتر البحث
             </Typography>
           </Stack>
@@ -907,17 +1025,17 @@ export default function AdminStudentNotes() {
           sx={{
             p: isPhone ? 0.7 : isTablet ? 1 : 3,
             borderRadius: isPhone ? 1.5 : isTablet ? 2 : 4,
-            border: `1px solid ${theme.border}`,
+            border: `1px solid ${isDark ? DARK_BORDER : theme.border}`,
             background: 'white',
             minHeight: isPhone ? 300 : isTablet ? 340 : 400
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: theme.text }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: isDark ? muiTheme.palette.text.primary : theme.text }}>
                 الملفات المرفوعة
               </Typography>
-              <Typography variant="body2" sx={{ color: theme.lightText }}>
+              <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                 عرض {filteredRows.length} من {rows.length} ملف
               </Typography>
             </Box>
@@ -928,7 +1046,7 @@ export default function AdminStudentNotes() {
                 fontWeight: 800,
                 background: `rgba(128,180,158,0.15)`,
                 color: theme.primaryDark,
-                border: `1px solid ${theme.border}`
+                border: `1px solid ${isDark ? DARK_BORDER : theme.border}`
               }}
             />
           </Stack>
@@ -937,7 +1055,7 @@ export default function AdminStudentNotes() {
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
               <Stack alignItems="center" spacing={2}>
                 <CircularProgress size={40} sx={{ color: theme.primary }} />
-                <Typography variant="body2" sx={{ color: theme.lightText }}>
+                <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                   جاري تحميل البيانات...
                 </Typography>
               </Stack>
@@ -945,10 +1063,10 @@ export default function AdminStudentNotes() {
           ) : filteredRows.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <CloudDownloadIcon sx={{ fontSize: 64, color: theme.border, mb: 2 }} />
-              <Typography variant="h6" sx={{ color: theme.lightText, mb: 1 }}>
+              <Typography variant="h6" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText, mb: 1 }}>
                 لا توجد نتائج
               </Typography>
-              <Typography variant="body2" sx={{ color: theme.lightText }}>
+              <Typography variant="body2" sx={{ color: isDark ? muiTheme.palette.text.secondary : theme.lightText }}>
                 جرب تغيير فلاتر البحث أو تأكد من وجود بيانات
               </Typography>
             </Box>

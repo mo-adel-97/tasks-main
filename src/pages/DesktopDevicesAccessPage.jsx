@@ -6,6 +6,7 @@ import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  GlobalStyles,
   Alert,
   Box,
   Button,
@@ -691,6 +692,12 @@ const AccessResultChip = ({ row }) => {
 
 export default function DesktopDevicesAccessPage() {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
   const user = getCurrentUser();
   const userGuid = normalizeGuid(user?.guid || user?.Guid);
 
@@ -905,7 +912,7 @@ export default function DesktopDevicesAccessPage() {
               <Typography noWrap sx={{ fontFamily: "Cairo", fontWeight: 900, lineHeight: 1.2, fontSize: "0.82rem" }}>
                 {params.row.display_user_name || "غير معروف"}
               </Typography>
-              <Typography noWrap sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: colors.muted }}>
+              <Typography noWrap sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: isDark ? theme.palette.text.secondary : colors.muted }}>
                 {params.row.actual_user_loaded
                   ? params.row.resolved_user_name || params.row.user_guid || ""
                   : params.row.user_guid
@@ -1035,11 +1042,11 @@ export default function DesktopDevicesAccessPage() {
                       width: 28,
                       height: 28,
                       color: "#fff",
-                      bgcolor: colors.primary,
+                      bgcolor: isDark ? "transparent" : colors.primary,
                       flex: "0 0 auto",
                       boxShadow: "0 6px 14px rgba(5,116,69,0.18)",
                       "&:hover": {
-                        bgcolor: colors.primaryDark,
+                        bgcolor: isDark ? "transparent" : colors.primaryDark,
                       },
                     }}
                   >
@@ -1135,10 +1142,10 @@ export default function DesktopDevicesAccessPage() {
                     }
                     sx={{
                       color: "#fff",
-                      bgcolor: colors.primary,
+                      bgcolor: isDark ? "transparent" : colors.primary,
                       width: 30,
                       height: 30,
-                      "&:hover": { bgcolor: colors.primaryDark },
+                      "&:hover": { bgcolor: isDark ? "transparent" : colors.primaryDark },
                     }}
                   >
                     <LockOpenIcon fontSize="small" />
@@ -1205,7 +1212,7 @@ export default function DesktopDevicesAccessPage() {
         sx={{
           minHeight: "100vh",
           
-          bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : colors.page,
+          bgcolor: isDark ? theme.palette.background.default : colors.page,
           direction: "rtl",
           textAlign: "start",
           fontFamily: "Cairo, Arial, sans-serif",
@@ -1220,9 +1227,13 @@ export default function DesktopDevicesAccessPage() {
             p: { xs: 2, md: 2.7 },
             borderRadius: 5,
             mb: 2.5,
-            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
-            color: "#fff",
-            boxShadow: "0 18px 42px rgba(5,116,69,0.22)",
+            background: isDark
+              ? darkSection
+              : `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
+            backgroundImage: isDark ? "none" : undefined,
+            color: isDark ? theme.palette.text.primary : "#fff",
+            border: isDark ? "1px solid #67C99D" : undefined,
+            boxShadow: isDark ? "none" : "0 18px 42px rgba(5,116,69,0.22)",
             position: "relative",
             overflow: "hidden",
             "&:before": {
@@ -1283,7 +1294,7 @@ export default function DesktopDevicesAccessPage() {
             </Box>
 
             <Button
-              variant="contained"
+              variant={isDark ? "outlined" : "contained"}
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <RefreshIcon />}
               onClick={() => fetchRows(filters)}
               disabled={loading}
@@ -1292,7 +1303,7 @@ export default function DesktopDevicesAccessPage() {
                 fontWeight: 900,
                 borderRadius: 3,
                 px: 2.5,
-                bgcolor: "#fff",
+                bgcolor: isDark ? darkCard : "#fff",
                 color: colors.primary,
                 boxShadow: "none",
                 "&:hover": { bgcolor: "#edf7f2", boxShadow: "none" },
@@ -1362,7 +1373,7 @@ export default function DesktopDevicesAccessPage() {
             mb: 2,
             border: `1px solid ${colors.border}`,
             boxShadow: "0 14px 34px rgba(5,116,69,0.07)",
-            bgcolor: "#fff",
+            bgcolor: isDark ? darkCard : "#fff",
           }}
         >
           <Stack
@@ -1449,7 +1460,7 @@ export default function DesktopDevicesAccessPage() {
             />
 
             <Button
-              variant="contained"
+              variant={isDark ? "outlined" : "contained"}
               onClick={applyCurrentFilters}
               disabled={loading}
               sx={uiLayout.withUiSx({
@@ -1458,9 +1469,9 @@ export default function DesktopDevicesAccessPage() {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 borderRadius: 2.5,
-                bgcolor: colors.primary,
+                bgcolor: isDark ? "transparent" : colors.primary,
                 boxShadow: "0 10px 22px rgba(5,116,69,0.18)",
-                "&:hover": { bgcolor: colors.primaryDark },
+                "&:hover": { bgcolor: isDark ? "transparent" : colors.primaryDark },
               }, uiLayout.buttonSx)}
             >
               تطبيق
@@ -1520,14 +1531,14 @@ export default function DesktopDevicesAccessPage() {
             overflow: "visible",
             border: `1px solid ${colors.border}`,
             boxShadow: "0 18px 42px rgba(5,116,69,0.08)",
-            bgcolor: "#fff",
+            bgcolor: isDark ? darkCard : "#fff",
           }, uiLayout.tableContainerSx)}
         >
           <Box
             sx={{
               px: 2,
               py: 1.5,
-              bgcolor: "#fff",
+              bgcolor: isDark ? darkCard : "#fff",
               borderBottom: "1px solid #e7f1ed",
               display: "flex",
               alignItems: "center",
@@ -1536,10 +1547,10 @@ export default function DesktopDevicesAccessPage() {
             }}
           >
             <Box>
-              <Typography sx={{ fontFamily: "Cairo", fontWeight: 950, color: colors.text }}>
+              <Typography sx={{ fontFamily: "Cairo", fontWeight: 950, color: isDark ? theme.palette.text.primary : colors.text }}>
                 الأجهزة ومحاولات الدخول
               </Typography>
-              <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: colors.muted }}>
+              <Typography sx={{ fontFamily: "Cairo", fontSize: "0.75rem", color: isDark ? theme.palette.text.secondary : colors.muted }}>
                 اسم المستخدم المعروض يتم جلبه من user_guid فقط وليس من اسم مستخدم الجهاز
               </Typography>
             </Box>
@@ -1550,7 +1561,7 @@ export default function DesktopDevicesAccessPage() {
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 900,
-                bgcolor: colors.primarySoft,
+                bgcolor: isDark ? "transparent" : colors.primarySoft,
                 color: colors.primary,
               }}
             />
@@ -1589,7 +1600,7 @@ export default function DesktopDevicesAccessPage() {
               },
               ".MuiDataGrid-columnHeaders": {
                 bgcolor: "#f2faf6",
-                color: colors.text,
+                color: isDark ? theme.palette.text.primary : colors.text,
                 fontFamily: "Cairo",
                 fontWeight: 950,
                 borderBottom: `1px solid ${colors.border}`,
@@ -1641,7 +1652,7 @@ export default function DesktopDevicesAccessPage() {
             fontFamily: "Cairo",
             fontWeight: 950,
             color: "#fff",
-            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
+            background: isDark ? darkSection : `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
             display: "flex",
             alignItems: "center",
             gap: 1,
@@ -1674,7 +1685,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          color: colors.muted,
+                          color: isDark ? theme.palette.text.secondary : colors.muted,
                           fontSize: "0.78rem",
                         }}
                       >
@@ -1685,7 +1696,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 950,
-                          color: colors.text,
+                          color: isDark ? theme.palette.text.primary : colors.text,
                         }}
                       >
                         {mapDialog.row.display_user_name || "غير معروف"}
@@ -1706,7 +1717,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          color: colors.muted,
+                          color: isDark ? theme.palette.text.secondary : colors.muted,
                           fontSize: "0.78rem",
                         }}
                       >
@@ -1717,7 +1728,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 950,
-                          color: colors.text,
+                          color: isDark ? theme.palette.text.primary : colors.text,
                         }}
                       >
                         {mapDialog.row.machine_name || "غير متاح"}
@@ -1738,7 +1749,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          color: colors.muted,
+                          color: isDark ? theme.palette.text.secondary : colors.muted,
                           fontSize: "0.78rem",
                         }}
                       >
@@ -1749,7 +1760,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 950,
-                          color: colors.text,
+                          color: isDark ? theme.palette.text.primary : colors.text,
                         }}
                       >
                         {mapDialog.row.local_ip || "غير متاح"}
@@ -1770,7 +1781,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          color: colors.muted,
+                          color: isDark ? theme.palette.text.secondary : colors.muted,
                           fontSize: "0.78rem",
                         }}
                       >
@@ -1781,7 +1792,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 950,
-                          color: colors.text,
+                          color: isDark ? theme.palette.text.primary : colors.text,
                           direction: "ltr",
                           textAlign: "left",
                           wordBreak: "break-all",
@@ -1806,7 +1817,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          color: colors.muted,
+                          color: isDark ? theme.palette.text.secondary : colors.muted,
                           fontSize: "0.78rem",
                         }}
                       >
@@ -1817,7 +1828,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 950,
-                          color: colors.text,
+                          color: isDark ? theme.palette.text.primary : colors.text,
                           direction: "ltr",
                           textAlign: "left",
                         }}
@@ -1840,7 +1851,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 900,
-                          color: colors.muted,
+                          color: isDark ? theme.palette.text.secondary : colors.muted,
                           fontSize: "0.78rem",
                         }}
                       >
@@ -1851,7 +1862,7 @@ export default function DesktopDevicesAccessPage() {
                         sx={{
                           fontFamily: "Cairo",
                           fontWeight: 800,
-                          color: colors.text,
+                          color: isDark ? theme.palette.text.primary : colors.text,
                         }}
                       >
                         {mapDialog.row.location_text || "غير متاح"}
@@ -1903,7 +1914,7 @@ export default function DesktopDevicesAccessPage() {
 
           {mapDialog.row?.location_lat && mapDialog.row?.location_lng && (
             <Button
-              variant="contained"
+              variant={isDark ? "outlined" : "contained"}
               endIcon={<OpenInNewIcon />}
               onClick={() => {
                 window.open(
@@ -1915,9 +1926,9 @@ export default function DesktopDevicesAccessPage() {
                 fontFamily: "Cairo",
                 fontWeight: 900,
                 borderRadius: 2.5,
-                bgcolor: colors.primary,
+                bgcolor: isDark ? "transparent" : colors.primary,
                 "&:hover": {
-                  bgcolor: colors.primaryDark,
+                  bgcolor: isDark ? "transparent" : colors.primaryDark,
                 },
               }, uiLayout.buttonSx)}
             >

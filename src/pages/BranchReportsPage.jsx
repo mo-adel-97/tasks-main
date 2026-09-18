@@ -6,7 +6,8 @@ import { rtlComponents } from '../config/rtlComponents';
 import { navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useState, useEffect } from 'react';
-import { 
+import {
+  GlobalStyles, 
   Box, 
   Typography, 
   Paper, 
@@ -114,6 +115,12 @@ const customTheme = createTheme(deepmerge(appTheme, {
 
 const BranchReportsPage = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+  const darkHover = surfaces.hover || "#214333";
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
@@ -291,9 +298,13 @@ const BranchReportsPage = () => {
     return (
       <Chip 
         label={statusMap[status]?.label || 'غير محدد'} 
-        color={statusMap[status]?.color || 'default'} 
+        color={isDark ? "default" : statusMap[status]?.color || 'default'}
+        variant={isDark ? "outlined" : "filled"}
         size="small"
-        sx={{ 
+        sx={{
+          backgroundColor: isDark ? "transparent" : undefined,
+          color: isDark ? "#9BE0C1" : undefined,
+          borderColor: isDark ? "#67C99D" : undefined,
           fontWeight: 600,
           minWidth: 80,
           borderRadius: 1
@@ -303,7 +314,16 @@ const BranchReportsPage = () => {
   };
 
   const renderListSection = (title, items = []) => (
-    <Box sx={{ mb: 4, p: 3, backgroundColor: theme.palette.background.paper, borderRadius: 2, boxShadow: theme.shadows[1] }}>
+    <Box
+      sx={{
+        mb: 3,
+        p: 2,
+        backgroundColor: isDark ? darkCard : theme.palette.background.paper,
+        border: isDark ? '1px solid #67C99D' : undefined,
+        borderRadius: 2,
+        boxShadow: isDark ? 'none' : theme.shadows[1]
+      }}
+    >
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
         {title}
         <Chip label={items.length} size="small" sx={{ ml: 1 }} />
@@ -330,7 +350,16 @@ const BranchReportsPage = () => {
   );
 
   const renderDiplomaSection = (title, items = []) => (
-    <Box sx={{ mb: 4, p: 3, backgroundColor: theme.palette.background.paper, borderRadius: 2, boxShadow: theme.shadows[1] }}>
+    <Box
+      sx={{
+        mb: 3,
+        p: 2,
+        backgroundColor: isDark ? darkCard : theme.palette.background.paper,
+        border: isDark ? '1px solid #67C99D' : undefined,
+        borderRadius: 2,
+        boxShadow: isDark ? 'none' : theme.shadows[1]
+      }}
+    >
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
         {title}
         <Chip label={items.length} size="small" sx={{ ml: 1 }} />
@@ -339,14 +368,23 @@ const BranchReportsPage = () => {
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[100] }}>اسم الدبلوم</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[100], textAlign: 'center' }}>العدد</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: theme.palette.grey[100], textAlign: 'center' }}>الدفعة</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: isDark ? darkNested : theme.palette.grey[100] }}>اسم الدبلوم</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: isDark ? darkNested : theme.palette.grey[100], textAlign: 'center' }}>العدد</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: isDark ? darkNested : theme.palette.grey[100], textAlign: 'center' }}>الدفعة</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((item, index) => (
-              <TableRow key={index} sx={{ '&:nth-of-type(even)': { backgroundColor: theme.palette.action.hover } }}>
+              <TableRow
+                key={index}
+                sx={{
+                  '&:nth-of-type(even)': {
+                    backgroundColor: isDark
+                      ? darkSection
+                      : theme.palette.action.hover
+                  }
+                }}
+              >
                 <TableCell>{item.diploma_name}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.count}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.batch}</TableCell>
@@ -385,7 +423,210 @@ const BranchReportsPage = () => {
 
   return (
     <NavigationShell variant="standard" ><ThemeProvider theme={(outerTheme) => ({ ...customTheme, palette: outerTheme.palette })}>
-      <Box sx={{ minHeight: '100vh', backgroundColor: customTheme.palette.background.default }}>
+
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".branch-reports-dark": {
+                  backgroundColor: `${theme.palette.background.default} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".branch-reports-dark .MuiPaper-root, .branch-reports-dark .MuiCard-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".branch-reports-dark .MuiPaper-root .MuiPaper-root, .branch-reports-dark .MuiCard-root .MuiPaper-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiCardContent-root": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".branch-reports-dark .MuiToggleButton-root": {
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiToggleButton-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  boxShadow: "inset 0 0 0 1px #67C99D !important"
+                },
+
+                ".branch-reports-dark .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  background: "transparent !important",
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".branch-reports-dark .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  background: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".branch-reports-dark .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".branch-reports-dark .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".branch-reports-dark .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#67C99D !important",
+                  borderWidth: "1px !important"
+                },
+                ".branch-reports-dark .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".branch-reports-dark .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: "#9BE0C1 !important"
+                },
+                ".branch-reports-dark .MuiInputAdornment-root, .branch-reports-dark .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: "#9BE0C1 !important"
+                },
+                ".branch-reports-dark .MuiCheckbox-root, .MuiDialog-paper .MuiCheckbox-root": {
+                  color: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiAlert-root, .MuiDialog-paper .MuiAlert-root": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".branch-reports-dark .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiCircularProgress-root, .MuiDialog-paper .MuiCircularProgress-root": {
+                  color: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiDataGrid-root, .MuiDialog-paper .MuiDataGrid-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiDataGrid-columnHeaders, .branch-reports-dark .MuiDataGrid-columnHeader": {
+                  backgroundColor: `${darkNested} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".branch-reports-dark .MuiDataGrid-cell": {
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".branch-reports-dark .MuiDataGrid-row": {
+                  backgroundColor: `${darkCard} !important`
+                },
+                ".branch-reports-dark .MuiDataGrid-row:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".branch-reports-dark .MuiDataGrid-footerContainer, .branch-reports-dark .MuiDataGrid-toolbarContainer": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".branch-reports-dark .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: "1px solid #67C99D !important"
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: "1px solid #67C99D !important"
+                },
+                ".MuiDialog-paper .MuiPaper-root, .MuiDialog-paper .MuiCard-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiAutocomplete-paper, .MuiDataGrid-panel": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root, .MuiAutocomplete-option": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiAutocomplete-option:hover": {
+                  backgroundColor: `${darkHover} !important`
+                },
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  background: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  background: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                }
+              }
+            : {})
+        }}
+      />
+
+      <Box
+        className="branch-reports-dark"
+        sx={{
+          minHeight: '100vh',
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden',
+          backgroundColor: isDark
+            ? theme.palette.background.default
+            : customTheme.palette.background.default
+        }}
+      >
         
         
         <PageContainer 
@@ -398,7 +639,9 @@ const BranchReportsPage = () => {
               easing: customTheme.transitions.easing.sharp,
               duration: customTheme.transitions.duration.leavingScreen
             }),
-            backgroundColor: customTheme.palette.background.default,
+            backgroundColor: isDark
+              ? theme.palette.background.default
+              : customTheme.palette.background.default,
             ...navigationContentSx
           }}
         >
@@ -411,7 +654,7 @@ const BranchReportsPage = () => {
                   mb: 3,
                   borderRadius: 3,
                   boxShadow: isMobile ? 'none' : customTheme.shadows[3],
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%)',
+                  background: isDark ? darkCard : 'linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%)',
                   border: `1px solid ${alpha(customTheme.palette.primary.light, 0.3)}`,
                   overflow: 'hidden'
                 }}
@@ -441,7 +684,9 @@ const BranchReportsPage = () => {
                           left: 0,
                           width: 60,
                           height: 4,
-                          backgroundColor: customTheme.palette.primary.main,
+                          backgroundColor: isDark
+                            ? '#67C99D'
+                            : customTheme.palette.primary.main,
                           borderRadius: 2
                         }
                       }}
@@ -456,12 +701,16 @@ const BranchReportsPage = () => {
                       width: isMobile ? '100%' : 'auto'
                     }, uiLayout.filterBarSx)}>
                       <Button
-  variant="contained"
+  variant={isDark ? "outlined" : "contained"}
   startIcon={<CloudDownloadIcon />}
   onClick={() => setExportOpen(true)}
   sx={uiLayout.withUiSx({
-    backgroundColor: customTheme.palette.primary.main,
-    "&:hover": { backgroundColor: customTheme.palette.primary.dark },
+    backgroundColor: isDark ? "transparent" : customTheme.palette.primary.main,
+    color: isDark ? "#9BE0C1" : "#fff",
+    borderColor: isDark ? "#67C99D" : customTheme.palette.primary.main,
+    "&:hover": {
+      backgroundColor: isDark ? "transparent" : customTheme.palette.primary.dark
+    },
     borderRadius: 2,
     height: isMobile ? "48px" : "44px",
     fontWeight: 800,
@@ -640,7 +889,7 @@ const BranchReportsPage = () => {
                         </Box>
                         
                         {/* Employee Attendance */}
-                        <Box sx={{ mb: 3, p: 2, backgroundColor: customTheme.palette.background.paper, borderRadius: 2, boxShadow: customTheme.shadows[1], border: `1px solid ${alpha(customTheme.palette.primary.light, 0.2)}` }}>
+                        <Box sx={{ mb: 3, p: 2, backgroundColor: isDark ? darkCard : customTheme.palette.background.paper, borderRadius: 2, boxShadow: customTheme.shadows[1], border: `1px solid ${alpha(customTheme.palette.primary.light, 0.2)}` }}>
                           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', color: customTheme.palette.primary.dark }}>
                             حضور الموظفين
                             <Chip label={currentReport.employee_attendance.length} size="small" sx={{ ml: 1, backgroundColor: customTheme.palette.primary.light, color: customTheme.palette.primary.dark }} />
@@ -711,7 +960,7 @@ const BranchReportsPage = () => {
                           لا توجد تقارير متاحة للفرع {selectedBranchName} بتاريخ {format(selectedDate, 'yyyy-MM-dd')}
                         </Typography>
                         <Button
-                          variant="contained"
+                          variant={isDark ? "outlined" : "contained"}
                           onClick={handleBackToList}
                           sx={uiLayout.withUiSx({ 
                             mt: 2,
@@ -1163,7 +1412,7 @@ const BranchReportsPage = () => {
                                   </TableCell>
                                   <TableCell sx={{ py: 2, textAlign: 'center' }}>
                                     <Button
-                                      variant="contained"
+                                      variant={isDark ? "outlined" : "contained"}
                                       size="small"
                                       startIcon={<DescriptionIcon />}
                                       onClick={() => fetchReports(branch.guid)}

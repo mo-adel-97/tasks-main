@@ -6,7 +6,16 @@ import { designTokens } from '../config/designTokens';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import StudyApprovalDialog from "../components/StudyApprovalDialog";
 import DocumentHistoryDialog from "../components/DocumentHistoryDialog";
@@ -28,6 +37,7 @@ import {
   Alert,
   Backdrop,
   Box,
+  GlobalStyles,
   Button,
   Chip,
   CircularProgress,
@@ -106,6 +116,121 @@ const accentColor = "#ae1e21";
 const whiteColor = "#fefefe";
 const textColor = "#1f2d3d";
 const softBg = "#fefefe";
+
+const DARK_ACTION_GLOBAL_STYLES = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const darkBorder = "#67C99D";
+  const darkText = "#9BE0C1";
+
+  return {
+    ".MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important",
+      fontWeight: "800 !important"
+    },
+    ".MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${darkBorder} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    ".MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    ".MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+    ".MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiIconButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.38) !important",
+      borderColor: "rgba(103,201,157,.30) !important"
+    },
+    ".MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${darkText} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiChip-icon, .MuiChip-deleteIcon": {
+      color: `${darkText} !important`
+    },
+    ".MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important"
+    },
+    ".MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${darkBorder} !important`
+    },
+    ".MuiSelect-icon": {
+      color: `${darkText} !important`
+    },
+    ".MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${darkBorder} !important`,
+      boxShadow: "none !important"
+    },
+    ".MuiAlert-icon": {
+      color: `${darkText} !important`
+    },
+    ".MuiPaginationItem-root": {
+      backgroundColor: "transparent !important",
+      color: `${darkText} !important`,
+      border: "1px solid transparent !important"
+    },
+    ".MuiPaginationItem-root.Mui-selected": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      border: `1px solid ${darkBorder} !important`
+    },
+    ".MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      border: `1px solid ${darkBorder} !important`,
+      opacity: "1 !important"
+    },
+    ".MuiSwitch-thumb": {
+      backgroundColor: `${darkBorder} !important`
+    },
+    ".MuiSwitch-switchBase.Mui-checked": {
+      color: `${darkBorder} !important`
+    },
+    ".MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "transparent !important",
+      borderColor: `${darkBorder} !important`,
+      opacity: "1 !important"
+    }
+  };
+};
+
 
 const showWarning = (message) => {
   return Swal.fire({
@@ -299,11 +424,18 @@ const EllipsisCell = ({ value, color = textColor }) => (
   </Tooltip>
 );
 
-const HeaderButton = ({ icon, label, onClick, color = primaryColor }) => (
+const HeaderButton = ({
+  icon,
+  label,
+  onClick,
+  onPointerDown,
+  color = primaryColor
+}) => (
   <Button
     variant="outlined"
     startIcon={icon}
     onClick={onClick}
+    onPointerDown={onPointerDown}
     sx={uiLayout.withUiSx((theme) => {
       const isDark = theme.palette.mode === "dark";
       const darkHoverBg = `${color}26`;
@@ -453,98 +585,116 @@ const ComingSoonMenuItem = ({ icon, label }) => (
 );
 
 
-const actionMenuItemSx = (color = primaryColor) => ({
-  mx: 0.8,
-  my: 0.35,
-  minHeight: 46,
-  px: 1.1,
-  py: 0.55,
-  borderRadius: 2.2,
-  direction: "rtl",
-  transition: "all 160ms ease",
+const actionMenuItemSx = (color = primaryColor) => (theme) => {
+  const isDark = theme.palette.mode === "dark";
+  const darkHover = theme.palette.surfaces?.hover || "#214333";
 
-  "& .MuiListItemIcon-root": {
-    minWidth: 0,
-    ml: 1.1,
-    mr: 0
-  },
-
-  "&:hover": {
-    backgroundColor: `${color}10`,
-    transform: "translateX(-3px)",
-
-    "& .action-menu-icon": {
-      backgroundColor: color,
-      color: "#fff",
-      boxShadow: `0 7px 16px ${color}35`
-    }
-  },
-
-  // موبايل + تابلت فقط
-  [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-    mx: 0.35,
-    my: 0.12,
-    minHeight: 33,
-    px: 0.55,
-    py: 0.22,
-    borderRadius: 1.35,
+  return {
+    mx: 0.8,
+    my: 0.35,
+    minHeight: 46,
+    px: 1.1,
+    py: 0.55,
+    borderRadius: 2.2,
+    direction: "rtl",
+    transition: "all 160ms ease",
+    backgroundColor: "transparent",
+    color: isDark ? theme.palette.text.primary : textColor,
+    border: isDark
+      ? "1px solid transparent"
+      : "1px solid transparent",
 
     "& .MuiListItemIcon-root": {
-      ml: 0.5
+      minWidth: 0,
+      ml: 1.1,
+      mr: 0
     },
 
     "&:hover": {
-      transform: "none"
-    }
-  },
+      backgroundColor: isDark ? darkHover : `${color}10`,
+      borderColor: isDark ? "#67C99D" : "transparent",
+      transform: "translateX(-3px)",
 
-  "@media (max-width:599px)": {
-    minHeight: 30,
-    mx: 0.25,
-    px: 0.45,
-    py: 0.16
-  }
-});
+      "& .action-menu-icon": {
+        backgroundColor: isDark ? "transparent" : color,
+        color: isDark ? "#C9F2DF" : "#fff",
+        borderColor: isDark ? "#67C99D" : `${color}28`,
+        boxShadow: isDark ? "none" : `0 7px 16px ${color}35`
+      }
+    },
+
+    [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+      mx: 0.35,
+      my: 0.12,
+      minHeight: 33,
+      px: 0.55,
+      py: 0.22,
+      borderRadius: 1.35,
+
+      "& .MuiListItemIcon-root": {
+        ml: 0.5
+      },
+
+      "&:hover": {
+        transform: "none"
+      }
+    },
+
+    "@media (max-width:599px)": {
+      minHeight: 30,
+      mx: 0.25,
+      px: 0.45,
+      py: 0.16
+    }
+  };
+};
 
 const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
   <MenuItem onClick={onClick} sx={actionMenuItemSx(color)}>
     <ListItemIcon>
       <Box
         className="action-menu-icon"
-        sx={{
-          width: 34,
-          height: 34,
-          borderRadius: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color,
-          backgroundColor: `${color}12`,
-          border: `1px solid ${color}28`,
-          transition: "all 160ms ease",
+        sx={(theme) => {
+          const isDark = theme.palette.mode === "dark";
 
-          "& svg": {
-            fontSize: "1.18rem"
-          },
-
-          [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
-            width: 25,
-            height: 25,
-            borderRadius: 1.15,
+          return {
+            width: 34,
+            height: 34,
+            borderRadius: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: isDark ? "#9BE0C1" : color,
+            backgroundColor: isDark ? "transparent" : `${color}12`,
+            border: isDark
+              ? "1px solid #67C99D"
+              : `1px solid ${color}28`,
+            boxShadow: "none",
+            transition: "all 160ms ease",
 
             "& svg": {
-              fontSize: "0.82rem"
-            }
-          },
+              fontSize: "1.18rem"
+            },
 
-          "@media (max-width:599px)": {
-            width: 23,
-            height: 23,
+            [`@media (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`]: {
+              width: 25,
+              height: 25,
+              borderRadius: 1.15,
 
-            "& svg": {
-              fontSize: "0.76rem"
+              "& svg": {
+                fontSize: "0.82rem"
+              }
+            },
+
+            "@media (max-width:599px)": {
+              width: 23,
+              height: 23,
+
+              "& svg": {
+                fontSize: "0.76rem"
+              }
             }
-          }
+          };
         }}
       >
         {icon}
@@ -555,10 +705,12 @@ const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
       primary={label}
       primaryTypographyProps={{
         fontWeight: 900,
-        color: textColor,
         textAlign: "start",
-
-        sx: {
+        sx: (theme) => ({
+          color:
+            theme.palette.mode === "dark"
+              ? theme.palette.text.primary
+              : textColor,
           fontSize: "0.88rem",
           lineHeight: 1.25,
           whiteSpace: "nowrap",
@@ -570,7 +722,7 @@ const ActionMenuItem = ({ icon, label, color = primaryColor, onClick }) => (
           "@media (max-width:599px)": {
             fontSize: "0.56rem"
           }
-        }
+        })
       }}
     />
   </MenuItem>
@@ -827,6 +979,68 @@ const OldStudentStatementDialog = ({
   );
 };
 
+
+const FastAddStudentDialogHost = memo(
+  forwardRef(({ onCreated }, ref) => {
+    const [open, setOpen] = useState(false);
+    const [initialData, setInitialData] = useState(null);
+    const [permissionMode, setPermissionMode] =
+      useState("addStudent");
+    const openRef = useRef(false);
+
+    const closeDialog = useCallback(() => {
+      openRef.current = false;
+      setOpen(false);
+    }, []);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        openNew: () => {
+          if (openRef.current) return;
+
+          setInitialData(null);
+          setPermissionMode("addStudent");
+          openRef.current = true;
+          setOpen(true);
+        },
+
+        openArchive: (data) => {
+          setInitialData(data);
+          setPermissionMode("acceptOldStudent");
+          openRef.current = true;
+          setOpen(true);
+        },
+
+        close: closeDialog
+      }),
+      [closeDialog]
+    );
+
+    const handleCreated = useCallback(
+      (student) => {
+        openRef.current = false;
+        setOpen(false);
+        onCreated?.(student);
+      },
+      [onCreated]
+    );
+
+    return (
+      <AddStudentDialog
+        open={open}
+        initialData={initialData}
+        permissionMode={permissionMode}
+        onClose={closeDialog}
+        onCreated={handleCreated}
+      />
+    );
+  })
+);
+
+FastAddStudentDialogHost.displayName =
+  "FastAddStudentDialogHost";
+
 const ReceptionOffice = () => {
   const theme = useTheme();
   
@@ -841,8 +1055,7 @@ const ReceptionOffice = () => {
   const [showOldGrid, setShowOldGrid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-const [addStudentOpen, setAddStudentOpen] = useState(false);
-const [archiveStudentData, setArchiveStudentData] = useState(null);
+const fastAddStudentDialogRef = useRef(null);
 const [oldStatementOpen, setOldStatementOpen] = useState(false);
 const [oldStatementLoading, setOldStatementLoading] = useState(false);
 const [oldStatementData, setOldStatementData] = useState(null);
@@ -1072,7 +1285,7 @@ const autoSearchTimerRef = useRef(null);
     setStudentDetails(null);
     setEditStudentOpen(false);
     setEditStudentRow(null);
-    setAddStudentOpen(false);
+    fastAddStudentDialogRef.current?.close();
     setRegFeesOpen(false);
 setRegFeesStudent(null);
 setStudyFileOpen(false);
@@ -1101,9 +1314,21 @@ setStudentOperationsStudent(null);
       if (showLoader) {
         setActionLoadingLabel(loadingLabel);
         setActionLoading(true);
+
+        // اترك Frame واحد للمتصفح حتى يظهر اللودر قبل تجهيز الـ Dialog الثقيل.
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(() => resolve());
+        });
       }
 
       await Promise.resolve(callback(row));
+
+      if (showLoader) {
+        // Frame إضافي حتى يبدأ الـ Dialog في الظهور قبل إخفاء مؤشر التجهيز.
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(() => resolve());
+        });
+      }
     } catch (error) {
       showError(error?.message || "حدث خطأ أثناء فتح الشاشة");
     } finally {
@@ -1222,7 +1447,7 @@ const handleAcceptOldStudent = async (row) => {
 
     const statement = await loadOldStatementData(row, "accept");
 
-    setArchiveStudentData({
+    const archiveData = {
       fromArchive: true,
       studentName: row?.studentName || "",
       studentTel: row?.studentTel || row?.tel || "",
@@ -1235,11 +1460,12 @@ const handleAcceptOldStudent = async (row) => {
         row?.notes || "",
         `منقول من الأرشيف القديم - رقم العميل ${row?.oldCustomerNo || "-"} - كود الفرع ${row?.branchCode || "-"}`
       ].filter(Boolean).join(" | ")
-    });
+    };
 
-    // نقفل اللودر أولاً ثم نفتح الشاشة.
     setActionLoading(false);
-    setAddStudentOpen(true);
+    fastAddStudentDialogRef.current?.openArchive(
+      archiveData
+    );
   } catch (error) {
     // نقفل اللودر قبل رسالة الخطأ مباشرة.
     setActionLoading(false);
@@ -1251,55 +1477,43 @@ const handleAcceptOldStudent = async (row) => {
   }
 };
 
-const handleNewStudent = async () => {
-  try {
-    const userGuid = getUserGuid(getCurrentUser());
-
-    if (!userGuid) {
-      showWarning(
-        "تعذر قراءة بيانات المستخدم، برجاء تسجيل الدخول مرة أخرى"
-      );
-      return;
-    }
-
-    // إضافة طالب عادي تعتمد على addstudent/save فقط.
-    const params = new URLSearchParams({
-      userGuid,
-      formName: "addstudent",
-      action: "save"
-    });
-
-    const response = await fetch(
-      `${API_BASE_URL}/api/reception-office/permissions/check?${params.toString()}`,
-      { cache: "no-store" }
-    );
-
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      throw new Error(
-        result?.message ||
-        result?.error ||
-        "تعذر فحص صلاحية إضافة طالب"
-      );
-    }
-
-    if (!result?.allowed) {
-      showWarning(
-        result?.message ||
-        "لا تملك صلاحية إضافة طالب جديد"
-      );
-      return;
-    }
-
-    setArchiveStudentData(null);
-    setAddStudentOpen(true);
-  } catch (error) {
-    showError(
-      error?.message ||
-      "حدث خطأ أثناء فحص صلاحية إضافة الطالب"
-    );
+const handleStudentCreated = useCallback((student) => {
+  if (student?.nationalId) {
+    setSearchType("nationalId");
+    setSearchText(student.nationalId);
   }
+
+  if (student) {
+    setStudents([
+      {
+        ...student,
+        id:
+          student.accountGuid ||
+          student.studentGuid ||
+          student.nationalId,
+        serial: 1,
+        code: student.studentCode,
+        studentCode: student.studentCode
+      }
+    ]);
+
+    setShowOldGrid(false);
+    setOldStudents([]);
+  }
+}, []);
+
+const handleNewStudent = () => {
+  const userGuid = getUserGuid(getCurrentUser());
+
+  if (!userGuid) {
+    showWarning(
+      "تعذر قراءة بيانات المستخدم، برجاء تسجيل الدخول مرة أخرى"
+    );
+    return;
+  }
+
+  // فتح مباشر داخل Host صغير بدون إعادة Render للشاشة الكبيرة.
+  fastAddStudentDialogRef.current?.openNew();
 };
 
 const ensureStudentActive = (row) => {
@@ -2600,7 +2814,7 @@ const handleAcceptOrder = (row) => {
   ];
 
   return (
-    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
+    <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><GlobalStyles styles={DARK_ACTION_GLOBAL_STYLES} /><Box
       sx={(theme) => ({
         background: theme.palette.mode === "dark" ? theme.palette.background.default : `
           radial-gradient(circle at 18% 8%, rgba(174,30,33,0.075) 0%, transparent 24%),
@@ -2814,6 +3028,7 @@ const handleAcceptOrder = (row) => {
               <HeaderButton
                 label="طالب جديد"
                 icon={<PersonAddAlt1Icon />}
+                onPointerDown={handleNewStudent}
                 onClick={handleNewStudent}
                 color={primaryColor}
               />
@@ -3311,9 +3526,9 @@ const handleAcceptOrder = (row) => {
               direction: "rtl",
               textAlign: "right",
               border: isDark ? "1px solid #67C99D" : "1px solid rgba(5,117,70,0.15)",
-              background: isDark ? theme.palette.surfaces.card : "linear-gradient(180deg, #ffffff 0%, #fbfefc 100%)",
+              background: isDark ? (theme.palette.surfaces?.card || "#13251d") : "linear-gradient(180deg, #ffffff 0%, #fbfefc 100%)",
               boxShadow: isDark
-                ? "0 0 0 1px #67C99D, 0 18px 40px rgba(0,0,0,.5)"
+                ? "none"
                 : (isDesktop
                   ? "0 24px 60px rgba(31,45,61,0.22)"
                   : "0 12px 28px rgba(31,45,61,0.18)"),
@@ -3334,17 +3549,27 @@ const handleAcceptOrder = (row) => {
         }}
       >
         <Box
-          sx={{
-            mx: isDesktop ? 1 : 0.4,
-            mb: isDesktop ? 0.55 : 0.22,
-            px: isDesktop ? 1.4 : { xs: 0.65, sm: 0.8, md: 0.9 },
-            py: isDesktop ? 1.15 : { xs: 0.5, sm: 0.6, md: 0.7 },
-            borderRadius: isDesktop ? 2.4 : 1.35,
-            color: "#fff",
-            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
-            boxShadow: isDesktop
-              ? "0 9px 22px rgba(5,117,70,0.22)"
-              : "0 5px 12px rgba(5,117,70,0.18)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+
+            return {
+              mx: isDesktop ? 1 : 0.4,
+              mb: isDesktop ? 0.55 : 0.22,
+              px: isDesktop ? 1.4 : { xs: 0.65, sm: 0.8, md: 0.9 },
+              py: isDesktop ? 1.15 : { xs: 0.5, sm: 0.6, md: 0.7 },
+              borderRadius: isDesktop ? 2.4 : 1.35,
+              color: isDark ? "#9BE0C1" : "#fff",
+              background: isDark
+                ? (theme.palette.surfaces?.section || "#172b22")
+                : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+              backgroundImage: isDark ? "none" : undefined,
+              border: isDark ? "1px solid #67C99D" : "none",
+              boxShadow: isDark
+                ? "none"
+                : isDesktop
+                  ? "0 9px 22px rgba(5,117,70,0.22)"
+                  : "0 5px 12px rgba(5,117,70,0.18)"
+            };
           }}
         >
           <Typography
@@ -3380,13 +3605,21 @@ const handleAcceptOrder = (row) => {
         <ActionMenuSection>
           <ActionMenuItem icon={<EditNoteIcon />} label="عرض بيانات الطالب" color="#546e7a" onClick={() => runAction(handleViewStudentDetails, "جاري فتح بيانات الطالب...")} />
           <ActionMenuItem icon={<AccountBalanceWalletIcon />} label="كشف حساب" color="#1565c0" onClick={() => runAction(handleStatement, "جاري تجهيز كشف الحساب...")} />
-          <ActionMenuItem icon={<AssignmentIcon />} label="طلب التحاق" color="#6a1b9a" onClick={() => runAction(handleAdmissionOrder, "جاري فتح طلب الالتحاق...")} />
+          <ActionMenuItem icon={<AssignmentIcon />} label="طلب التحاق" color="#6a1b9a" onClick={() => runAction(handleAdmissionOrder, "جاري تجهيز شاشة طلب الالتحاق...")} />
           <ActionMenuItem icon={<DescriptionIcon />} label="استمارة رسوم" color="#ef6c00" onClick={() => runAction(handleFeesForm, "جاري تجهيز استمارة الرسوم...")} />
           <ActionMenuItem icon={<RequestQuoteIcon />} label="طلب سداد" color="#00838f" onClick={() => runAction(handlePaymentOrder, "جاري تجهيز بيانات السداد...")} />
           <ActionMenuItem icon={<MenuBookIcon />} label="الملف التدريبي" color="#3949ab" onClick={() => runAction(handleStudyFile, "جاري فتح الملف التدريبي...")} />
         </ActionMenuSection>
 
-        <Divider sx={{ mx: isDesktop ? 1.2 : 0.55 }} />
+        <Divider
+          sx={(theme) => ({
+            mx: isDesktop ? 1.2 : 0.55,
+            borderColor:
+              theme.palette.mode === "dark"
+                ? "rgba(103,201,157,.42)"
+                : undefined
+          })}
+        />
 
         <ActionMenuSection>
           <ActionMenuItem icon={<UndoIcon />} label="مرتجع استمارة" color="#8e24aa" onClick={() => runAction(handleReRegister, "جاري تجهيز مرتجع الاستمارة...")} />
@@ -3395,7 +3628,15 @@ const handleAcceptOrder = (row) => {
           <ActionMenuItem icon={<LockOpenIcon />} label="إعادة فتح ملف طالب" color={primaryColor} onClick={() => runAction((row) => handleToggleProfileLock(row, false), "", false)} />
         </ActionMenuSection>
 
-        <Divider sx={{ mx: isDesktop ? 1.2 : 0.55 }} />
+        <Divider
+          sx={(theme) => ({
+            mx: isDesktop ? 1.2 : 0.55,
+            borderColor:
+              theme.palette.mode === "dark"
+                ? "rgba(103,201,157,.42)"
+                : undefined
+          })}
+        />
 
         <ActionMenuSection>
           <ActionMenuItem icon={<PublishedWithChangesIcon />} label="تغيير حالة الطالب" color="#00897b" onClick={() => runAction(handleChangeStudentStatus, "جاري تحميل حالات الطالب...")} />
@@ -3419,20 +3660,24 @@ const handleAcceptOrder = (row) => {
       >
         <Paper
           elevation={0}
-          sx={{
-            minWidth: 300,
-            px: 2.5,
-            py: 2,
-            borderRadius: `${designTokens.radius}px`,
-            textAlign: "center",
-            direction: "rtl",
-            border: "1px solid rgba(255,255,255,0.32)",
-            background: "rgba(255,255,255,0.96)",
-            boxShadow: "0 24px 70px rgba(0,0,0,0.30)"
+          sx={(theme) => {
+            const isDark = theme.palette.mode === "dark";
+            return {
+              minWidth: { xs: 210, sm: 245 },
+              px: 2,
+              py: 1.45,
+              borderRadius: `${designTokens.radius}px`,
+              textAlign: "center",
+              direction: "rtl",
+              border: isDark ? "1px solid #67C99D" : "1px solid rgba(5,117,70,.22)",
+              background: isDark ? theme.palette.surfaces.card : "rgba(255,255,255,0.98)",
+              color: isDark ? theme.palette.text.primary : textColor,
+              boxShadow: isDark ? "none" : "0 18px 48px rgba(0,0,0,0.22)"
+            };
           }}
         >
           <Box sx={{ position: "relative", display: "inline-flex" }}>
-            <CircularProgress size={48} thickness={4} sx={{ color: primaryColor }} />
+            <CircularProgress size={30} thickness={4.5} sx={{ color: "#67C99D" }} />
             <Box
               sx={{
                 position: "absolute",
@@ -3442,13 +3687,27 @@ const handleAcceptOrder = (row) => {
                 justifyContent: "center"
               }}
             >
-              <SchoolIcon sx={{ color: primaryColor, fontSize: 22 }} />
+              <SchoolIcon sx={{ color: "#67C99D", fontSize: 14 }} />
             </Box>
           </Box>
-          <Typography sx={{ mt: 1.2, color: textColor, fontWeight: 950, fontSize: designTokens.typography.control }}>
+          <Typography
+            sx={(theme) => ({
+              mt: 0.85,
+              color: theme.palette.mode === "dark" ? theme.palette.text.primary : textColor,
+              fontWeight: 950,
+              fontSize: designTokens.typography.control
+            })}
+          >
             {actionLoadingLabel}
           </Typography>
-          <Typography sx={{ mt: 0.55, color: "#6b7b75", fontWeight: 700, fontSize: "0.78rem" }}>
+          <Typography
+            sx={(theme) => ({
+              mt: 0.35,
+              color: theme.palette.mode === "dark" ? theme.palette.text.secondary : "#6b7b75",
+              fontWeight: 700,
+              fontSize: "0.75rem"
+            })}
+          >
             برجاء الانتظار لحظات
           </Typography>
         </Paper>
@@ -3549,43 +3808,10 @@ const handleAcceptOrder = (row) => {
         }}
       />
 
-      <AddStudentDialog
-  open={addStudentOpen}
-  initialData={archiveStudentData}
-  permissionMode={
-    archiveStudentData?.fromArchive
-      ? "acceptOldStudent"
-      : "addStudent"
-  }
-  onClose={() => {
-    setAddStudentOpen(false);
-    setArchiveStudentData(null);
-  }}
-  onCreated={(student) => {
-    setAddStudentOpen(false);
-    setArchiveStudentData(null);
-
-    if (student?.nationalId) {
-      setSearchType("nationalId");
-      setSearchText(student.nationalId);
-    }
-
-    if (student) {
-      setStudents([
-        {
-          ...student,
-          id: student.accountGuid || student.studentGuid || student.nationalId,
-          serial: 1,
-          code: student.studentCode,
-          studentCode: student.studentCode
-        }
-      ]);
-
-      setShowOldGrid(false);
-      setOldStudents([]);
-    }
-  }}
-/>
+      <FastAddStudentDialogHost
+        ref={fastAddStudentDialogRef}
+        onCreated={handleStudentCreated}
+      />
 <EditStudentDialog
   open={editStudentOpen}
   onClose={() => {

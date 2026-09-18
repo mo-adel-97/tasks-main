@@ -51,6 +51,141 @@ const primaryDark = "#034d31";
 const border = "#dce8e2";
 const soft = "#f7fbf9";
 
+const DARK_BORDER = "#67C99D";
+const DARK_TEXT = "#9BE0C1";
+
+const darkControlContractSx = (theme) => {
+  if (theme.palette.mode !== "dark") return {};
+
+  const surfaces = theme.palette.surfaces || {};
+  const card = surfaces.card || "#13251d";
+  const section = surfaces.section || "#172b22";
+  const nested = surfaces.nested || "#1b3328";
+
+  return {
+    backgroundImage: "none",
+
+    "& .MuiButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important",
+      borderRadius: "10px !important",
+      fontWeight: "800 !important"
+    },
+    "& .MuiButton-root:hover": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`,
+      boxShadow: "0 0 0 1px rgba(103,201,157,.18) !important"
+    },
+    "& .MuiButton-root.Mui-disabled": {
+      backgroundColor: "transparent !important",
+      color: "rgba(155,224,193,.42) !important",
+      borderColor: "rgba(103,201,157,.35) !important",
+      boxShadow: "none !important"
+    },
+    "& .MuiButton-root .MuiSvgIcon-root": {
+      color: "inherit !important"
+    },
+
+    "& .MuiIconButton-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiIconButton-root:hover": {
+      backgroundColor: "transparent !important",
+      color: "#C9F2DF !important",
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiChip-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${DARK_TEXT} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: `${DARK_BORDER} !important`,
+      borderWidth: "1px !important"
+    },
+    "& .MuiInputLabel-root": {
+      color: `${theme.palette.text.secondary} !important`
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: `${DARK_TEXT} !important`
+    },
+    "& .MuiInputAdornment-root, & .MuiInputAdornment-root .MuiSvgIcon-root": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    "& .MuiCheckbox-root": {
+      color: `${DARK_BORDER} !important`
+    },
+    "& .MuiCheckbox-root.Mui-checked": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiAlert-root": {
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      color: `${theme.palette.text.primary} !important`,
+      border: `1px solid ${DARK_BORDER} !important`,
+      boxShadow: "none !important"
+    },
+    "& .MuiAlert-icon": {
+      color: `${DARK_TEXT} !important`
+    },
+
+    "& .MuiPaper-root": {
+      backgroundImage: "none",
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiDialogTitle-root": {
+      backgroundColor: section,
+      borderBottom: `1px solid ${DARK_BORDER}`
+    },
+    "& .MuiDialogContent-root": {
+      backgroundColor: card
+    },
+    "& .MuiDialogActions-root": {
+      backgroundColor: section,
+      borderTop: `1px solid ${DARK_BORDER}`
+    },
+
+    "& .MuiDivider-root": {
+      borderColor: `${DARK_BORDER} !important`
+    },
+
+    "& .MuiCircularProgress-root": {
+      color: `${DARK_BORDER} !important`
+    },
+
+    "--salesman-dark-card": card,
+    "--salesman-dark-section": section,
+    "--salesman-dark-nested": nested
+  };
+};
+
 const readUser = () => {
   try {
     return JSON.parse(localStorage.getItem("user") || "{}");
@@ -90,8 +225,33 @@ function SalesManLookupDialog({
   onClose,
   onPick
 }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkHover = surfaces.hover || "#214333";
+
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    <Dialog
+      sx={[
+        uiLayout.dialogLayoutSx,
+        (theme) => ({
+          ...darkControlContractSx(theme),
+          "& .MuiDialog-paper": {
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? (theme.palette.surfaces?.card || "#13251d")
+                : "#ffffff",
+            color: theme.palette.text.primary,
+            border:
+              theme.palette.mode === "dark"
+                ? `1px solid ${DARK_BORDER}`
+                : undefined,
+            backgroundImage: "none"
+          }
+        })
+      ]}
       open={open}
       onClose={onClose}
       fullWidth
@@ -101,7 +261,11 @@ function SalesManLookupDialog({
         sx: {
           borderRadius: { xs: 1.5, sm: 2.5 },
           m: { xs: 1, sm: 2 },
-          maxHeight: { xs: "92vh", sm: "82vh" }
+          maxHeight: { xs: "92vh", sm: "82vh" },
+          backgroundColor: isDark ? darkCard : "#ffffff",
+          color: "text.primary",
+          border: isDark ? `1px solid ${DARK_BORDER}` : undefined,
+          backgroundImage: "none"
         }
       }}
     >
@@ -109,7 +273,10 @@ function SalesManLookupDialog({
         sx={{
           fontWeight: 900,
           fontSize: { xs: 17, sm: 21 },
-          py: { xs: 1, sm: 1.4 }
+          py: { xs: 1, sm: 1.4 },
+          backgroundColor: isDark ? darkSection : "transparent",
+          color: isDark ? "text.primary" : undefined,
+          borderBottom: isDark ? `1px solid ${DARK_BORDER}` : undefined
         }}
       >
         قائمة مناديب البيع
@@ -117,7 +284,10 @@ function SalesManLookupDialog({
 
       <DialogContent
         dividers
-        sx={{ p: { xs: 0.8, sm: 1.5 } }}
+        sx={{
+          p: { xs: 0.8, sm: 1.5 },
+          backgroundColor: isDark ? darkCard : "#ffffff"
+        }}
       >
         <TextField InputLabelProps={{ shrink: true }}
           autoFocus
@@ -159,10 +329,12 @@ function SalesManLookupDialog({
                   px: { xs: 0.65, sm: 1 },
                   py: { xs: 0.45, sm: 0.65 },
                   cursor: "pointer",
-                  borderColor: border,
+                  backgroundColor: isDark ? darkSection : "#ffffff",
+                  borderColor: isDark ? DARK_BORDER : border,
+                  color: "text.primary",
                   "&:hover": {
-                    bgcolor: "#eef8f3",
-                    borderColor: primary
+                    backgroundColor: isDark ? darkHover : "#eef8f3",
+                    borderColor: isDark ? DARK_BORDER : primary
                   }
                 }}
               >
@@ -276,6 +448,12 @@ function SalesManLookupDialog({
 
 export default function SalesManManagement() {
   const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || "#13251d";
+  const darkSection = surfaces.section || "#172b22";
+  const darkNested = surfaces.nested || "#1b3328";
+
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
     { noSsr: true }
@@ -816,16 +994,25 @@ export default function SalesManManagement() {
         width: "100%",
         maxWidth: "100%",
         overflowX: "hidden",
-        bgcolor: soft,
+        bgcolor: isDark ? theme.palette.background.default : soft,
+        color: "text.primary",
         p: { xs: 0.45, sm: 0.8, md: 1 }
       }}
     >
       <Paper
         elevation={0}
-        sx={{
-          border: `1px solid ${border}`,
+        sx={(theme) => ({
+          border: `1px solid ${theme.palette.mode === "dark" ? DARK_BORDER : border}`,
           borderRadius: { xs: 1.2, sm: 2 },
           overflow: "hidden",
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? (theme.palette.surfaces?.card || "#13251d")
+              : "#ffffff",
+          color: theme.palette.text.primary,
+          backgroundImage: "none",
+
+          ...darkControlContractSx(theme),
 
           "& .MuiInputBase-root": {
             minHeight: { xs: 34, sm: 38 }
@@ -840,17 +1027,27 @@ export default function SalesManManagement() {
           "& .MuiButton-root": {
             minHeight: { xs: 31, sm: 36 },
             fontSize: { xs: 12, sm: 13.2 },
-            lineHeight: 1.1
+            lineHeight: 1.1,
+            ...(theme.palette.mode === "dark"
+              ? {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${DARK_TEXT} !important`,
+                  border: `1px solid ${DARK_BORDER} !important`,
+                  boxShadow: "none !important"
+                }
+              : {})
           },
           "& .MuiSvgIcon-root": {
             fontSize: { xs: 18, sm: 20 }
           }
-        }}
+        })}
       >
         <Box
           sx={uiLayout.withUiSx({
-            bgcolor: primaryDark,
-            color: "#fff",
+            bgcolor: isDark ? darkSection : primaryDark,
+            color: isDark ? "text.primary" : "#fff",
+            borderBottom: isDark ? `1px solid ${DARK_BORDER}` : "none",
             px: { xs: 0.8, sm: 1.5 },
             py: { xs: 0.65, sm: 0.9 },
             display: "flex",
@@ -895,8 +1092,9 @@ export default function SalesManManagement() {
             size="small"
             sx={{
               height: { xs: 23, sm: 27 },
-              bgcolor: "#fff",
-              color: primaryDark,
+              bgcolor: isDark ? "transparent" : "#fff",
+              color: isDark ? DARK_TEXT : primaryDark,
+              border: isDark ? `1px solid ${DARK_BORDER}` : "none",
               fontWeight: 900,
               fontSize: { xs: 12, sm: 12 }
             }}
@@ -906,7 +1104,8 @@ export default function SalesManManagement() {
         <Box
           sx={{
             p: { xs: 0.55, sm: 0.8 },
-            borderBottom: `1px solid ${border}`
+            borderBottom: `1px solid ${isDark ? DARK_BORDER : border}`,
+            backgroundColor: isDark ? darkCard : "transparent"
           }}
         >
           <Box
@@ -1019,7 +1218,8 @@ export default function SalesManManagement() {
               sx={uiLayout.withUiSx({
                 m: 0,
                 px: 0.5,
-                border: `1px solid ${border}`,
+                border: `1px solid ${isDark ? DARK_BORDER : border}`,
+                backgroundColor: isDark ? "transparent" : "#ffffff",
                 borderRadius: 1,
                 minHeight: { xs: 34, sm: 38 },
                 "& .MuiFormControlLabel-label": {
@@ -1082,7 +1282,9 @@ export default function SalesManManagement() {
               variant="outlined"
               sx={{
                 p: { xs: 0.55, sm: 0.8 },
-                borderColor: border
+                backgroundColor: isDark ? darkSection : "#ffffff",
+                borderColor: isDark ? DARK_BORDER : border,
+                backgroundImage: "none"
               }}
             >
               <Typography
@@ -1163,7 +1365,9 @@ export default function SalesManManagement() {
               variant="outlined"
               sx={{
                 p: { xs: 0.55, sm: 0.8 },
-                borderColor: border
+                backgroundColor: isDark ? darkSection : "#ffffff",
+                borderColor: isDark ? DARK_BORDER : border,
+                backgroundImage: "none"
               }}
             >
               <Typography
@@ -1245,7 +1449,10 @@ export default function SalesManManagement() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : soft
+        width: "100%",
+        maxWidth: "100%",
+        overflowX: "hidden",
+        bgcolor: theme.palette.mode === "dark" ? theme.palette.background.default : soft
       }}
     >
       

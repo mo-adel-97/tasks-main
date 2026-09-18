@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import QRCode from 'qrcode';
 import { QrCode2 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import {
+  Pagination,
+  GlobalStyles,
   Container,
   Paper,
   Box,
@@ -66,6 +68,50 @@ const focusBorderColor = '#67C99D';
 const EXAM_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/exam_api.php';
 const STUDENT_EXAM_BASE_URL = 'http://examsforstudents.sstli.com';
 
+const EXAMS_PER_PAGE = 12;
+const USERS_CACHE_TTL_MS = 5 * 60 * 1000;
+const EXAMS_CACHE_TTL_MS = 60 * 1000;
+
+const readSessionCache = (key, ttlMs) => {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    const timestamp = Number(parsed?.timestamp || 0);
+
+    if (!timestamp || Date.now() - timestamp > ttlMs) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    return parsed?.data ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const writeSessionCache = (key, data) => {
+  try {
+    sessionStorage.setItem(
+      key,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data
+      })
+    );
+  } catch {
+    // Cache is an optimization only.
+  }
+};
+
+const runInBatches = async (items, worker, batchSize = 6) => {
+  for (let start = 0; start < items.length; start += batchSize) {
+    const batch = items.slice(start, start + batchSize);
+    await Promise.all(batch.map(worker));
+  }
+};
+
 const EXAM_ADMINS = [
   'f426653a-b389-4036-95f0-907920e7f205',
   '3f69ccb6-e2cf-4d6d-b801-7d727c977d8e',
@@ -118,6 +164,12 @@ const showErrorAlert = (message) => {
 const HRCreateExams = () => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const surfaces = theme.palette.surfaces || {};
+  const darkCard = surfaces.card || '#13251d';
+  const darkSection = surfaces.section || '#172b22';
+  const darkNested = surfaces.nested || '#1b3328';
+  const darkHover = surfaces.hover || '#214333';
+
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUserGuid = currentUser?.guid || '';
   const isExamAdmin = EXAM_ADMINS.includes(String(currentUserGuid).toLowerCase());
@@ -126,6 +178,9 @@ const HRCreateExams = () => {
   const [allExams, setAllExams] = useState([]);
   const [loadingExams, setLoadingExams] = useState(false);
   const [examSearch, setExamSearch] = useState('');
+  const deferredExamSearch = useDeferredValue(examSearch);
+  const [examPage, setExamPage] = useState(1);
+  const examDetailsCacheRef = useRef(new Map());
 
   const [showCreateExamDialog, setShowCreateExamDialog] = useState(false);
   const [showExamDetailsDialog, setShowExamDetailsDialog] = useState(false);
@@ -140,30 +195,66 @@ const HRCreateExams = () => {
 
   useEffect(() => {
     initializeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const usersCacheKey = 'sstli_exam_users_v1';
+  const examsCacheKey = `sstli_exam_list_v2_${String(currentUserGuid || 'guest').toLowerCase()}_${
+    isExamAdmin ? 'admin' : 'user'
+  }`;
+
   const initializeData = async () => {
-    await fetchUsers();
-    await fetchAllExams();
+    const cachedUsers = readSessionCache(usersCacheKey, USERS_CACHE_TTL_MS);
+    const cachedExams = readSessionCache(examsCacheKey, EXAMS_CACHE_TTL_MS);
+
+    if (Array.isArray(cachedUsers)) {
+      setUsers(cachedUsers);
+    }
+
+    if (Array.isArray(cachedExams)) {
+      setAllExams(cachedExams);
+    }
+
+    await Promise.allSettled([
+      fetchUsers({ silent: Array.isArray(cachedUsers) }),
+      fetchAllExams({ silent: Array.isArray(cachedExams) })
+    ]);
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = async ({ silent = false } = {}) => {
     try {
-      const response = await axios.get('https://api1.sstli.com/api/userinfo');
-      setUsers(Array.isArray(response.data) ? response.data : []);
+      const response = await axios.get(
+        'https://api1.sstli.com/api/userinfo',
+        { timeout: 20000 }
+      );
+
+      const nextUsers = Array.isArray(response.data) ? response.data : [];
+      setUsers(nextUsers);
+      writeSessionCache(usersCacheKey, nextUsers);
     } catch (error) {
       console.error(error);
-      setUsers([]);
+
+      if (!silent) {
+        setUsers((current) => (current.length ? current : []));
+      }
     }
   };
 
-  const fetchAllExams = async () => {
+  const fetchAllExams = async ({ silent = false } = {}) => {
     try {
-      setLoadingExams(true);
-      const response = await axios.get(`${EXAM_API_BASE_URL}?action=get_exams`);
+      if (!silent) {
+        setLoadingExams(true);
+      }
+
+      const response = await axios.get(
+        `${EXAM_API_BASE_URL}?action=get_exams`,
+        { timeout: 30000 }
+      );
 
       if (response.data.success) {
-        let exams = response.data.data || [];
+        let exams = Array.isArray(response.data.data)
+          ? response.data.data
+          : [];
 
         if (!isExamAdmin) {
           exams = exams.filter(
@@ -174,35 +265,109 @@ const HRCreateExams = () => {
         }
 
         setAllExams(exams);
-      } else {
+        writeSessionCache(examsCacheKey, exams);
+      } else if (!silent) {
         setAllExams([]);
         showErrorAlert(response.data.message || 'فشل في جلب الاختبارات');
       }
     } catch (error) {
       console.error(error);
-      showErrorAlert('حدث خطأ أثناء جلب الاختبارات');
+
+      if (!silent) {
+        showErrorAlert('حدث خطأ أثناء جلب الاختبارات');
+      }
     } finally {
-      setLoadingExams(false);
+      if (!silent) {
+        setLoadingExams(false);
+      }
     }
   };
 
-  const getCreatorName = (guid) => {
-    const user = users.find(
-      (u) => String(u.guid || '').toLowerCase() === String(guid || '').toLowerCase()
-    );
+  const usersByGuid = useMemo(() => {
+    const map = new Map();
 
-    return user?.fullName || user?.userName || 'غير معروف';
+    users.forEach((user) => {
+      const guid = String(user?.guid || '').toLowerCase();
+      if (!guid) return;
+
+      map.set(
+        guid,
+        user?.fullName || user?.userName || 'غير معروف'
+      );
+    });
+
+    return map;
+  }, [users]);
+
+  const getCreatorName = (guid) => {
+    return (
+      usersByGuid.get(String(guid || '').toLowerCase()) ||
+      'غير معروف'
+    );
   };
 
   const filteredExams = useMemo(() => {
-    const term = examSearch.trim().toLowerCase();
+    const term = deferredExamSearch.trim().toLowerCase();
     if (!term) return allExams;
 
     return allExams.filter((exam) => {
-      const creator = getCreatorName(exam.created_by_guid);
-      return `${exam.title} ${exam.description} ${creator}`.toLowerCase().includes(term);
+      const creator =
+        usersByGuid.get(
+          String(exam.created_by_guid || '').toLowerCase()
+        ) || 'غير معروف';
+
+      return `${exam.title || ''} ${exam.description || ''} ${creator}`
+        .toLowerCase()
+        .includes(term);
     });
-  }, [allExams, examSearch, users]);
+  }, [allExams, deferredExamSearch, usersByGuid]);
+
+  const totalExamPages = Math.max(
+    1,
+    Math.ceil(filteredExams.length / EXAMS_PER_PAGE)
+  );
+
+  const visibleExams = useMemo(() => {
+    const safePage = Math.min(examPage, totalExamPages);
+    const start = (safePage - 1) * EXAMS_PER_PAGE;
+    return filteredExams.slice(start, start + EXAMS_PER_PAGE);
+  }, [filteredExams, examPage, totalExamPages]);
+
+  useEffect(() => {
+    setExamPage(1);
+  }, [deferredExamSearch]);
+
+  useEffect(() => {
+    setExamPage((current) =>
+      Math.min(Math.max(1, current), totalExamPages)
+    );
+  }, [totalExamPages]);
+
+  const fetchExamById = async (examId, { force = false } = {}) => {
+    const cacheKey = String(examId);
+
+    if (!force && examDetailsCacheRef.current.has(cacheKey)) {
+      return examDetailsCacheRef.current.get(cacheKey);
+    }
+
+    const response = await axios.get(
+      `${EXAM_API_BASE_URL}?action=get_exam&id=${examId}`,
+      { timeout: 30000 }
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || 'فشل في جلب بيانات الاختبار'
+      );
+    }
+
+    examDetailsCacheRef.current.set(
+      cacheKey,
+      response.data.data
+    );
+
+    return response.data.data;
+  };
 
   const openCreateDialog = () => {
     setIsEditMode(false);
@@ -212,14 +377,7 @@ const HRCreateExams = () => {
 
   const openEditDialog = async (examId) => {
     try {
-      const response = await axios.get(`${EXAM_API_BASE_URL}?action=get_exam&id=${examId}`);
-
-      if (!response.data.success) {
-        showErrorAlert(response.data.message || 'فشل في جلب بيانات الاختبار');
-        return;
-      }
-
-      const exam = response.data.data;
+      const exam = await fetchExamById(examId);
 
       setExamForm({
         id: exam.id,
@@ -256,17 +414,14 @@ const HRCreateExams = () => {
 
   const handleOpenExamDetails = async (examId) => {
     try {
-      const response = await axios.get(`${EXAM_API_BASE_URL}?action=get_exam&id=${examId}`);
-
-      if (response.data.success) {
-        setSelectedExamDetails(response.data.data);
-        setShowExamDetailsDialog(true);
-      } else {
-        showErrorAlert(response.data.message || 'فشل في جلب تفاصيل الاختبار');
-      }
+      const exam = await fetchExamById(examId);
+      setSelectedExamDetails(exam);
+      setShowExamDetailsDialog(true);
     } catch (error) {
       console.error(error);
-      showErrorAlert('حدث خطأ أثناء جلب تفاصيل الاختبار');
+      showErrorAlert(
+        error?.message || 'حدث خطأ أثناء جلب تفاصيل الاختبار'
+      );
     }
   };
 
@@ -477,28 +632,65 @@ const HRCreateExams = () => {
         return;
       }
 
-      for (let i = 0; i < examForm.questions.length; i++) {
-        const q = examForm.questions[i];
+      const questionJobs = examForm.questions.map(
+        (question, index) => ({
+          question,
+          index
+        })
+      );
 
-        if (q.id) {
-          await axios.post(`${EXAM_API_BASE_URL}?action=update_question`, {
-            question_id: q.id,
-            text: q.text,
-            type: q.type,
-            points: q.points,
-            question_order: i + 1,
-            answers: q.answers
-          });
-        } else {
-          await axios.post(`${EXAM_API_BASE_URL}?action=add_question`, {
-            exam_id: examForm.id,
-            text: q.text,
-            type: q.type,
-            points: q.points,
-            answers: q.answers
-          });
-        }
-      }
+      await runInBatches(
+        questionJobs,
+        async ({ question: q, index }) => {
+          if (q.id) {
+            const response = await axios.post(
+              `${EXAM_API_BASE_URL}?action=update_question`,
+              {
+                question_id: q.id,
+                text: q.text,
+                type: q.type,
+                points: q.points,
+                question_order: index + 1,
+                answers: q.answers
+              },
+              { timeout: 30000 }
+            );
+
+            if (response?.data?.success === false) {
+              throw new Error(
+                response.data.message ||
+                  `فشل حفظ السؤال رقم ${index + 1}`
+              );
+            }
+
+            return;
+          }
+
+          const response = await axios.post(
+            `${EXAM_API_BASE_URL}?action=add_question`,
+            {
+              exam_id: examForm.id,
+              text: q.text,
+              type: q.type,
+              points: q.points,
+              answers: q.answers
+            },
+            { timeout: 30000 }
+          );
+
+          if (response?.data?.success === false) {
+            throw new Error(
+              response.data.message ||
+                `فشل إضافة السؤال رقم ${index + 1}`
+            );
+          }
+        },
+        6
+      );
+
+      examDetailsCacheRef.current.delete(
+        String(examForm.id)
+      );
 
       Swal.close();
       showSuccessAlert('تم تعديل الاختبار بنجاح');
@@ -511,7 +703,7 @@ const HRCreateExams = () => {
     } catch (error) {
       Swal.close();
       console.error(error);
-      showErrorAlert('حدث خطأ أثناء حفظ الاختبار');
+      showErrorAlert(error?.message || 'حدث خطأ أثناء حفظ الاختبار');
     }
   };
 
@@ -532,6 +724,7 @@ const HRCreateExams = () => {
       const response = await axios.get(`${EXAM_API_BASE_URL}?action=delete_exam&id=${examId}`);
 
       if (response.data.success) {
+        examDetailsCacheRef.current.delete(String(examId));
         showSuccessAlert('تم حذف الاختبار بنجاح');
         fetchAllExams();
       } else {
@@ -560,10 +753,20 @@ const HRCreateExams = () => {
       const response = await axios.get(`${EXAM_API_BASE_URL}?action=delete_question&id=${questionId}`);
 
       if (response.data.success) {
+        if (selectedExamDetails?.id) {
+          examDetailsCacheRef.current.delete(
+            String(selectedExamDetails.id)
+          );
+        }
+
         showSuccessAlert('تم حذف السؤال بنجاح');
 
         if (selectedExamDetails?.id) {
-          handleOpenExamDetails(selectedExamDetails.id);
+          const refreshedExam = await fetchExamById(
+            selectedExamDetails.id,
+            { force: true }
+          );
+          setSelectedExamDetails(refreshedExam);
         }
 
         fetchAllExams();
@@ -703,15 +906,223 @@ const exportExamQrCode = async (exam) => {
   };
 
   return (
-    <Container maxWidth="xl" dir="rtl" sx={{ py: 4, fontFamily: '"Cairo", sans-serif' }}>
+    <Container
+      className="hr-exams-dark-root"
+      maxWidth="xl"
+      dir="rtl"
+      sx={{
+        py: { xs: 1.5, md: 2.5 },
+        minHeight: '100dvh',
+        width: '100%',
+        maxWidth: '100% !important',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
+        backgroundColor: isDark
+          ? theme.palette.background.default
+          : backgroundColor,
+        fontFamily: '"Cairo", sans-serif'
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          ...(isDark
+            ? {
+                ".hr-exams-dark-root .MuiPaper-root, .hr-exams-dark-root .MuiCard-root, .hr-exams-dark-root .MuiAccordion-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".hr-exams-dark-root .MuiAccordionSummary-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: "1px solid rgba(103,201,157,.28) !important"
+                },
+                ".hr-exams-dark-root .MuiAccordionDetails-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".hr-exams-dark-root .MuiButton-root, .MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".hr-exams-dark-root .MuiButton-root:hover, .MuiDialog-paper .MuiButton-root:hover, .MuiPopover-paper .MuiButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  borderColor: "#67C99D !important",
+                  boxShadow: "0 0 0 1px rgba(103,201,157,.16) !important"
+                },
+                ".hr-exams-dark-root .MuiButton-root.Mui-disabled, .MuiDialog-paper .MuiButton-root.Mui-disabled": {
+                  backgroundColor: "transparent !important",
+                  color: "rgba(155,224,193,.42) !important",
+                  borderColor: "rgba(103,201,157,.34) !important"
+                },
+
+                ".hr-exams-dark-root .MuiIconButton-root, .MuiDialog-paper .MuiIconButton-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".hr-exams-dark-root .MuiIconButton-root:hover, .MuiDialog-paper .MuiIconButton-root:hover": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important"
+                },
+
+                ".hr-exams-dark-root .MuiChip-root, .MuiDialog-paper .MuiChip-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+
+                ".hr-exams-dark-root .MuiOutlinedInput-root, .MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".hr-exams-dark-root .MuiOutlinedInput-notchedOutline, .MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#67C99D !important",
+                  borderWidth: "1px !important"
+                },
+                ".hr-exams-dark-root .MuiInputLabel-root, .MuiDialog-paper .MuiInputLabel-root, .MuiPopover-paper .MuiInputLabel-root": {
+                  color: `${theme.palette.text.secondary} !important`
+                },
+                ".hr-exams-dark-root .MuiInputLabel-root.Mui-focused, .MuiDialog-paper .MuiInputLabel-root.Mui-focused": {
+                  color: "#9BE0C1 !important"
+                },
+                ".hr-exams-dark-root .MuiInputAdornment-root, .hr-exams-dark-root .MuiSelect-icon, .MuiDialog-paper .MuiSelect-icon": {
+                  color: "#9BE0C1 !important"
+                },
+
+                ".hr-exams-dark-root .MuiRadio-root, .MuiDialog-paper .MuiRadio-root": {
+                  color: "#67C99D !important"
+                },
+
+                ".hr-exams-dark-root .MuiDivider-root, .MuiDialog-paper .MuiDivider-root": {
+                  borderColor: "#67C99D !important"
+                },
+
+                ".hr-exams-dark-root .MuiTableContainer-root, .MuiDialog-paper .MuiTableContainer-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  borderColor: "#67C99D !important"
+                },
+                ".hr-exams-dark-root .MuiTableHead-root .MuiTableCell-root, .MuiDialog-paper .MuiTableHead-root .MuiTableCell-root": {
+                  backgroundColor: `${darkNested} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "#67C99D !important"
+                },
+                ".hr-exams-dark-root .MuiTableBody-root .MuiTableCell-root, .MuiDialog-paper .MuiTableBody-root .MuiTableCell-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderColor: "rgba(103,201,157,.24) !important"
+                },
+                ".hr-exams-dark-root .MuiTableRow-root:hover .MuiTableCell-root, .MuiDialog-paper .MuiTableRow-root:hover .MuiTableCell-root": {
+                  backgroundColor: `${darkHover} !important`
+                },
+
+                ".hr-exams-dark-root .MuiPaginationItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important"
+                },
+                ".hr-exams-dark-root .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "transparent !important",
+                  color: "#C9F2DF !important",
+                  boxShadow: "inset 0 0 0 1px #67C99D !important"
+                },
+
+                ".MuiDialog-paper": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "0 18px 50px rgba(2,18,12,.34) !important"
+                },
+                ".MuiDialogTitle-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  borderBottom: "1px solid #67C99D !important"
+                },
+                ".MuiDialogContent-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiDialogActions-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  borderTop: "1px solid #67C99D !important"
+                },
+                ".MuiDialog-paper .MuiAccordion-root": {
+                  backgroundColor: `${darkCard} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".MuiDialog-paper .MuiAccordionSummary-root": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`
+                },
+
+                ".MuiMenu-paper, .MuiPopover-paper, .MuiSelect-paper": {
+                  backgroundColor: `${darkSection} !important`,
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".MuiMenuItem-root": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected": {
+                  backgroundColor: `${darkHover} !important`
+                },
+
+                ".swal2-popup": {
+                  backgroundColor: `${darkCard} !important`,
+                  backgroundImage: "none !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+                ".swal2-title, .swal2-html-container, .swal2-input-label": {
+                  color: `${theme.palette.text.primary} !important`
+                },
+                ".swal2-confirm, .swal2-deny, .swal2-cancel": {
+                  backgroundColor: "transparent !important",
+                  backgroundImage: "none !important",
+                  color: "#9BE0C1 !important",
+                  border: "1px solid #67C99D !important",
+                  boxShadow: "none !important"
+                },
+                ".swal2-input, .swal2-textarea, .swal2-select": {
+                  backgroundColor: "transparent !important",
+                  color: `${theme.palette.text.primary} !important`,
+                  border: "1px solid #67C99D !important"
+                },
+
+                ".hr-exams-dark-root input[type='date'], .MuiDialog-paper input[type='date']": {
+                  colorScheme: "dark"
+                }
+              }
+            : {})
+        }}
+      />
+
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 2, md: 4 },
-          borderRadius: 5,
+          p: { xs: 1.25, md: 2 },
+          borderRadius: 2.5,
           background: isDark
-            ? theme.palette.background.default
+            ? darkCard
             : `linear-gradient(135deg, ${backgroundColor}, #ffffff)`,
+          backgroundImage: isDark ? 'none' : undefined,
           border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
           boxShadow: 'none',
           '& .MuiCard-root, & .MuiPaper-root, & .MuiAccordion-root, & .MuiTableContainer-root': {
@@ -725,13 +1136,13 @@ const exportExamQrCode = async (exam) => {
           }
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: primaryDark, mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark, mb: 1 }}>
               إدارة الاختبارات
             </Typography>
 
-            <Typography sx={{ color: textColor }}>
+            <Typography sx={{ color: isDark ? theme.palette.text.primary : textColor }}>
               إنشاء الاختبارات، إدارة الأسئلة، تحديد مفتاح الإجابة، وعرض تفاصيل الاختبارات.
             </Typography>
           </Box>
@@ -742,7 +1153,11 @@ const exportExamQrCode = async (exam) => {
               startIcon={<Add />}
               onClick={openCreateDialog}
               sx={{
-                background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+                background: isDark
+                  ? 'transparent'
+                  : `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+                color: isDark ? '#9BE0C1' : '#fff',
+                border: isDark ? '1px solid #67C99D' : 'none',
                 borderRadius: 3,
                 px: 3,
                 py: 1.3,
@@ -755,10 +1170,10 @@ const exportExamQrCode = async (exam) => {
             <Button
               variant="outlined"
               startIcon={<Visibility />}
-              onClick={fetchAllExams}
+              onClick={() => fetchAllExams({ silent: false })}
               sx={{
                 borderColor: primaryColor,
-                color: primaryDark,
+                color: isDark ? theme.palette.text.primary : primaryDark,
                 borderRadius: 3,
                 px: 3,
                 py: 1.3,
@@ -779,7 +1194,7 @@ const exportExamQrCode = async (exam) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search sx={{ color: primaryDark }} />
+                <Search sx={{ color: isDark ? theme.palette.text.primary : primaryDark }} />
               </InputAdornment>
             )
           }}
@@ -790,14 +1205,14 @@ const exportExamQrCode = async (exam) => {
             <CircularProgress sx={{ color: primaryColor }} />
           </Box>
         ) : (
-          <Grid container spacing={2.5}>
-            {filteredExams.map((exam) => (
+          <Grid container spacing={1.5}>
+            {visibleExams.map((exam) => (
               <Grid item xs={12} md={6} lg={4} key={exam.id}>
                 <Card
                   sx={{
-                    borderRadius: 4,
+                    borderRadius: 2,
                     border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
-                    backgroundColor: isDark ? theme.palette.surfaces.card : '#fff',
+                    backgroundColor: isDark ? darkCard : '#fff',
                     height: '100%',
                     boxShadow: '0 10px 30px rgba(0,0,0,.06)',
                     transition: '.3s',
@@ -826,16 +1241,16 @@ const exportExamQrCode = async (exam) => {
                       />
                     </Box>
 
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: primaryDark, mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark, mb: 1 }}>
                       {exam.title}
                     </Typography>
 
-                    <Typography variant="body2" sx={{ color: textColor, mb: 2, minHeight: 42 }}>
+                    <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.primary : textColor, mb: 2, minHeight: 42 }}>
                       {exam.description || 'لا يوجد وصف'}
                     </Typography>
 
                     {isExamAdmin && (
-                      <Typography variant="caption" sx={{ display: 'block', mb: 1, color: '#777' }}>
+                      <Typography variant="caption" sx={{ display: 'block', mb: 1, color: isDark ? theme.palette.text.secondary : '#777' }}>
                         أنشأه: {getCreatorName(exam.created_by_guid)}
                       </Typography>
                     )}
@@ -849,16 +1264,16 @@ const exportExamQrCode = async (exam) => {
                         p: 1,
                         mb: 1.5,
                         borderRadius: 2,
-                        backgroundColor: isDark ? theme.palette.surfaces.nested : '#f1f8f5',
+                        backgroundColor: isDark ? darkNested : '#f1f8f5',
                         border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
                         wordBreak: 'break-all'
                       }}
                     >
-                      <Typography variant="caption" sx={{ color: primaryDark, fontWeight: 'bold' }}>
+                      <Typography variant="caption" sx={{ color: isDark ? theme.palette.text.primary : primaryDark, fontWeight: 'bold' }}>
                         رابط الطالب:
                       </Typography>
 
-                      <Typography variant="caption" sx={{ display: 'block', color: textColor }}>
+                      <Typography variant="caption" sx={{ display: 'block', color: isDark ? theme.palette.text.primary : textColor }}>
                         {generateStudentExamLink(exam.id)}
                       </Typography>
                     </Box>
@@ -866,7 +1281,7 @@ const exportExamQrCode = async (exam) => {
                     <Divider sx={{ mb: 1.5 }} />
 
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      <IconButton onClick={() => handleOpenExamDetails(exam.id)} sx={{ color: primaryDark }}>
+                      <IconButton onClick={() => handleOpenExamDetails(exam.id)} sx={{ color: isDark ? theme.palette.text.primary : primaryDark }}>
                         <Visibility />
                       </IconButton>
 
@@ -903,10 +1318,41 @@ const exportExamQrCode = async (exam) => {
             {!filteredExams.length && (
               <Grid item xs={12}>
                 <Paper sx={{ p: 5, textAlign: 'center', borderRadius: 4 }}>
-                  <Typography sx={{ color: primaryDark, fontWeight: 'bold' }}>
+                  <Typography sx={{ color: isDark ? theme.palette.text.primary : primaryDark, fontWeight: 'bold' }}>
                     لا توجد اختبارات للعرض
                   </Typography>
                 </Paper>
+              </Grid>
+            )}
+
+            {!!filteredExams.length && (
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    mt: 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1,
+                    flexWrap: 'wrap'
+                  }}
+                >
+                  <Chip
+                    variant="outlined"
+                    label={`إجمالي الاختبارات: ${filteredExams.length}`}
+                    sx={{ fontWeight: 800 }}
+                  />
+
+                  <Pagination
+                    count={totalExamPages}
+                    page={Math.min(examPage, totalExamPages)}
+                    onChange={(_, value) => setExamPage(value)}
+                    shape="rounded"
+                    size="small"
+                    siblingCount={1}
+                    boundaryCount={1}
+                  />
+                </Box>
               </Grid>
             )}
           </Grid>
@@ -918,7 +1364,7 @@ const exportExamQrCode = async (exam) => {
         sx={{
           '& .MuiDialog-paper': {
             border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
-            backgroundColor: isDark ? theme.palette.surfaces.card : '#fff'
+            backgroundColor: isDark ? darkCard : '#fff'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: isDark ? `${focusBorderColor} !important` : undefined
@@ -930,11 +1376,11 @@ const exportExamQrCode = async (exam) => {
         fullWidth
         dir="rtl"
       >
-        <DialogTitle sx={{ fontWeight: 'bold', color: primaryDark }}>
+        <DialogTitle sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark }}>
           {isEditMode ? 'تعديل الاختبار' : 'إنشاء اختبار جديد'}
         </DialogTitle>
 
-        <DialogContent dividers sx={{ backgroundColor: isDark ? theme.palette.surfaces.section : backgroundColor }}>
+        <DialogContent dividers sx={{ backgroundColor: isDark ? darkSection : backgroundColor }}>
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
@@ -969,7 +1415,7 @@ const exportExamQrCode = async (exam) => {
               <TextField
                 fullWidth
                 multiline
-                rows={2}
+                minRows={4}
                 label="وصف الاختبار"
                 value={examForm.description}
                 onChange={(e) => updateExamField('description', e.target.value)}
@@ -1014,7 +1460,7 @@ const exportExamQrCode = async (exam) => {
           </Grid>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: primaryDark }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark }}>
               الأسئلة
             </Typography>
 
@@ -1024,7 +1470,12 @@ const exportExamQrCode = async (exam) => {
           </Box>
 
           {examForm.questions.map((q, qIndex) => (
-            <Accordion key={qIndex} defaultExpanded sx={{ mb: 2, borderRadius: 3 }}>
+            <Accordion
+              key={qIndex}
+              defaultExpanded={qIndex === 0}
+              TransitionProps={{ unmountOnExit: true }}
+              sx={{ mb: 1.2, borderRadius: 2 }}
+            >
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Typography sx={{ fontWeight: 'bold' }}>
                   السؤال رقم {qIndex + 1}
@@ -1141,7 +1592,7 @@ const exportExamQrCode = async (exam) => {
         sx={{
           '& .MuiDialog-paper': {
             border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
-            backgroundColor: isDark ? theme.palette.surfaces.card : '#fff'
+            backgroundColor: isDark ? darkCard : '#fff'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: isDark ? `${focusBorderColor} !important` : undefined
@@ -1153,7 +1604,7 @@ const exportExamQrCode = async (exam) => {
         fullWidth
         dir="rtl"
       >
-        <DialogTitle sx={{ fontWeight: 'bold', color: primaryDark }}>
+        <DialogTitle sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark }}>
           تفاصيل الاختبار
         </DialogTitle>
 
@@ -1164,7 +1615,7 @@ const exportExamQrCode = async (exam) => {
                 {selectedExamDetails.title}
               </Typography>
 
-              <Typography sx={{ mb: 2, color: textColor }}>
+              <Typography sx={{ mb: 2, color: isDark ? theme.palette.text.primary : textColor }}>
                 {selectedExamDetails.description || 'لا يوجد وصف'}
               </Typography>
 
@@ -1179,7 +1630,11 @@ const exportExamQrCode = async (exam) => {
               </Box>
 
               {selectedExamDetails.questions?.map((q, index) => (
-                <Accordion key={q.id} sx={{ mb: 1.5, borderRadius: 2 }}>
+                <Accordion
+                  key={q.id}
+                  TransitionProps={{ unmountOnExit: true }}
+                  sx={{ mb: 1, borderRadius: 2 }}
+                >
                   <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography sx={{ fontWeight: 'bold' }}>
                       {index + 1}. {q.question_text}
@@ -1200,10 +1655,18 @@ const exportExamQrCode = async (exam) => {
                           p: 1.2,
                           mb: 1,
                           borderRadius: 2,
-                          border: `1px solid ${Number(a.is_correct) === 1 ? '#4caf50' : (isDark ? focusBorderColor : '#ddd')}`,
+                          border: `1px solid ${
+                            isDark
+                              ? focusBorderColor
+                              : Number(a.is_correct) === 1
+                                ? '#4caf50'
+                                : '#ddd'
+                          }`,
                           backgroundColor: isDark
-                            ? (Number(a.is_correct) === 1 ? 'rgba(76,175,80,.14)' : theme.palette.surfaces.card)
-                            : (Number(a.is_correct) === 1 ? '#edf7ed' : '#fff'),
+                            ? 'transparent'
+                            : Number(a.is_correct) === 1
+                              ? '#edf7ed'
+                              : '#fff',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1
@@ -1249,7 +1712,7 @@ const exportExamQrCode = async (exam) => {
         sx={{
           '& .MuiDialog-paper': {
             border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
-            backgroundColor: isDark ? theme.palette.surfaces.card : '#fff'
+            backgroundColor: isDark ? darkCard : '#fff'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: isDark ? `${focusBorderColor} !important` : undefined
@@ -1261,11 +1724,11 @@ const exportExamQrCode = async (exam) => {
         fullWidth
         dir="rtl"
       >
-        <DialogTitle sx={{ fontWeight: 'bold', color: primaryDark }}>
+        <DialogTitle sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark }}>
           نتائج وإجابات الاختبار
         </DialogTitle>
 
-        <DialogContent dividers sx={{ backgroundColor: isDark ? theme.palette.surfaces.section : '#fbfdfc' }}>
+        <DialogContent dividers sx={{ backgroundColor: isDark ? darkSection : '#fbfdfc' }}>
           {loadingAttempts ? (
             <Box sx={{ py: 8, textAlign: 'center' }}>
               <CircularProgress sx={{ color: primaryColor }} />
@@ -1273,7 +1736,7 @@ const exportExamQrCode = async (exam) => {
           ) : selectedExamAttempts ? (
             <Box>
               <Box sx={{ mb: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', color: primaryDark, mb: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark, mb: 1 }}>
                   {selectedExamAttempts.exam?.title}
                 </Typography>
 
@@ -1285,7 +1748,12 @@ const exportExamQrCode = async (exam) => {
 
               {selectedExamAttempts.attempts?.length ? (
                 selectedExamAttempts.attempts.map((attempt, attemptIndex) => (
-                  <Accordion key={attempt.id} defaultExpanded={attemptIndex === 0} sx={{ mb: 2, borderRadius: 3 }}>
+                  <Accordion
+                    key={attempt.id}
+                    defaultExpanded={attemptIndex === 0}
+                    TransitionProps={{ unmountOnExit: true }}
+                    sx={{ mb: 1.2, borderRadius: 2 }}
+                  >
                     <AccordionSummary expandIcon={<ExpandMore />}>
                       <Box
                         sx={{
@@ -1297,7 +1765,7 @@ const exportExamQrCode = async (exam) => {
                           justifyContent: 'space-between'
                         }}
                       >
-                        <Typography sx={{ fontWeight: 'bold', color: primaryDark }}>
+                        <Typography sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark }}>
                           {attemptIndex + 1}. {attempt.student_name}
                         </Typography>
 
@@ -1326,12 +1794,12 @@ const exportExamQrCode = async (exam) => {
                         sx={{
                           borderRadius: 3,
                           border: isDark ? `1px solid ${focusBorderColor}` : '1px solid rgba(5,117,70,0.11)',
-                          backgroundColor: isDark ? theme.palette.surfaces.card : '#fff'
+                          backgroundColor: isDark ? darkCard : '#fff'
                         }}
                       >
                         <Table size="small">
                           <TableHead>
-                            <TableRow sx={{ backgroundColor: isDark ? theme.palette.surfaces.nested : '#edf7f2' }}>
+                            <TableRow sx={{ backgroundColor: isDark ? darkNested : '#edf7f2' }}>
                               <TableCell align="center" sx={{ fontWeight: 'bold' }}>#</TableCell>
                               <TableCell align="right" sx={{ fontWeight: 'bold' }}>السؤال</TableCell>
                               <TableCell align="right" sx={{ fontWeight: 'bold' }}>إجابة الطالب</TableCell>
@@ -1347,8 +1815,10 @@ const exportExamQrCode = async (exam) => {
                                 key={`${attempt.id}-${ans.question_id}`}
                                 sx={{
                                   backgroundColor: isDark
-                                    ? (Number(ans.is_correct) === 1 ? 'rgba(76,175,80,.14)' : 'rgba(229,90,90,.12)')
-                                    : (Number(ans.is_correct) === 1 ? '#f1f8f4' : '#fff7f7')
+                                    ? 'transparent'
+                                    : Number(ans.is_correct) === 1
+                                      ? '#f1f8f4'
+                                      : '#fff7f7',
                                 }}
                               >
                                 <TableCell align="center">{index + 1}</TableCell>
@@ -1381,7 +1851,7 @@ const exportExamQrCode = async (exam) => {
                 ))
               ) : (
                 <Paper sx={{ p: 5, textAlign: 'center', borderRadius: 4 }}>
-                  <Typography sx={{ color: primaryDark, fontWeight: 'bold' }}>
+                  <Typography sx={{ color: isDark ? theme.palette.text.primary : primaryDark, fontWeight: 'bold' }}>
                     لا توجد محاولات لهذا الاختبار حتى الآن
                   </Typography>
                 </Paper>
