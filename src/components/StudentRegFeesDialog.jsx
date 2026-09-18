@@ -51,6 +51,56 @@ const primaryLight = "#d8eee5";
 const textColor = "#1f2d3d";
 const softBg = "#f6faf8";
 
+const REG_FEES_CACHE = new Map();
+const REG_FEES_IN_FLIGHT = new Map();
+
+const regFeesCachedGet = async (
+  url,
+  ttlMs = 60 * 1000
+) => {
+  const cached = REG_FEES_CACHE.get(url);
+
+  if (
+    cached &&
+    Date.now() - cached.timestamp < ttlMs
+  ) {
+    return cached.data;
+  }
+
+  if (REG_FEES_IN_FLIGHT.has(url)) {
+    return REG_FEES_IN_FLIGHT.get(url);
+  }
+
+  const promise = (async () => {
+    const response = await fetch(url);
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        result?.message ||
+        result?.error ||
+        "حدث خطأ أثناء تنفيذ الطلب"
+      );
+    }
+
+    REG_FEES_CACHE.set(url, {
+      timestamp: Date.now(),
+      data: result
+    });
+
+    return result;
+  })();
+
+  REG_FEES_IN_FLIGHT.set(url, promise);
+
+  try {
+    return await promise;
+  } finally {
+    REG_FEES_IN_FLIGHT.delete(url);
+  }
+};
+
+
 const showWarning = (message) => {
   return Swal.fire({
     icon: "warning",
@@ -387,7 +437,10 @@ const StudentRegFeesDialog = ({
     try {
       setLoadingContext(true);
 
-      const result = await fetchJson(`${apiBaseUrl}/api/student-reg-fees/context`);
+      const result = await regFeesCachedGet(
+        `${apiBaseUrl}/api/student-reg-fees/context`,
+        2 * 60 * 1000
+      );
 
       setContext(result?.data || null);
     } catch (error) {
@@ -415,8 +468,11 @@ const StudentRegFeesDialog = ({
         search: searchValue || ""
       });
 
-      const result = await fetchJson(
-        `${apiBaseUrl}/api/student-reg-fees/documents?${params.toString()}`
+      const result = await regFeesCachedGet(
+        `${apiBaseUrl}/api/student-reg-fees/documents?${params.toString()}`,
+        searchValue
+          ? 15 * 1000
+          : 30 * 1000
       );
 
       const data = Array.isArray(result?.data) ? result.data : [];
@@ -450,19 +506,27 @@ const StudentRegFeesDialog = ({
         docTypeGuid: context.regFessTypeGuid
       });
 
-      const result = await fetchJson(
-        `${apiBaseUrl}/api/student-reg-fees/document-info?${params.toString()}`
+      const result = await regFeesCachedGet(
+        `${apiBaseUrl}/api/student-reg-fees/document-info?${params.toString()}`,
+        30 * 1000
       );
 
       const info = result?.data || null;
 
       setDocInfo(info);
 
-      if (info?.priceListGuid && doc?.fessType !== undefined && doc?.fessType !== null) {
-        await loadFees(info.priceListGuid, doc.fessType, feesSearch);
-      }
-
-      await loadSalesmen();
+      await Promise.all([
+        info?.priceListGuid &&
+        doc?.fessType !== undefined &&
+        doc?.fessType !== null
+          ? loadFees(
+              info.priceListGuid,
+              doc.fessType,
+              feesSearch
+            )
+          : Promise.resolve(),
+        loadSalesmen()
+      ]);
     } catch (error) {
       showError(error.message || "حدث خطأ أثناء تحميل بيانات نوع المستند");
       setDocInfo(null);
@@ -481,8 +545,11 @@ const StudentRegFeesDialog = ({
         search: searchValue || ""
       });
 
-      const result = await fetchJson(
-        `${apiBaseUrl}/api/student-reg-fees/fees?${params.toString()}`
+      const result = await regFeesCachedGet(
+        `${apiBaseUrl}/api/student-reg-fees/fees?${params.toString()}`,
+        searchValue
+          ? 15 * 1000
+          : 30 * 1000
       );
 
       const data = Array.isArray(result?.data) ? result.data : [];
@@ -518,7 +585,12 @@ const StudentRegFeesDialog = ({
       ? `${apiBaseUrl}/api/student-reg-fees/salesmen?${params.toString()}`
       : `${apiBaseUrl}/api/student-reg-fees/salesmen`;
 
-    const result = await fetchJson(url);
+    const result = await regFeesCachedGet(
+      url,
+      searchValue
+        ? 20 * 1000
+        : 2 * 60 * 1000
+    );
 
     const data = Array.isArray(result?.data) ? result.data : [];
 
@@ -717,6 +789,19 @@ const StudentRegFeesDialog = ({
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    // Warm the stable context and salesmen endpoints while the dialog is closed.
+    void regFeesCachedGet(
+      `${apiBaseUrl}/api/student-reg-fees/context`,
+      2 * 60 * 1000
+    ).catch(() => {});
+
+    void regFeesCachedGet(
+      `${apiBaseUrl}/api/student-reg-fees/salesmen`,
+      2 * 60 * 1000
+    ).catch(() => {});
+  }, [apiBaseUrl]);
 
   useEffect(() => {
     if (!open) return;
@@ -953,6 +1038,9 @@ const StudentRegFeesDialog = ({
   return (
     <Dialog
       open={open}
+      keepMounted
+      transitionDuration={0}
+      BackdropProps={{ transitionDuration: 0 }}
       onClose={saving ? undefined : onClose}
       fullWidth
       maxWidth="xl"

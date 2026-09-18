@@ -109,6 +109,88 @@ import "sweetalert2/dist/sweetalert2.min.css";
 
 const API_BASE_URL = "https://api4.sstli.com";
 
+const RECEPTION_PERMISSION_TTL_MS = 30 * 1000;
+const receptionPermissionCache = new Map();
+const receptionPermissionInFlight = new Map();
+
+const receptionPermissionKey = (
+  userGuid,
+  formName,
+  action
+) =>
+  [
+    String(userGuid || "").toLowerCase(),
+    String(formName || "").toLowerCase(),
+    String(action || "").toLowerCase()
+  ].join("|");
+
+const checkReceptionPermissionFast = async ({
+  apiBaseUrl = API_BASE_URL,
+  userGuid,
+  formName,
+  action,
+  force = false
+}) => {
+  const key = receptionPermissionKey(
+    userGuid,
+    formName,
+    action
+  );
+
+  const cached = receptionPermissionCache.get(key);
+
+  if (
+    !force &&
+    cached &&
+    Date.now() - cached.timestamp < RECEPTION_PERMISSION_TTL_MS
+  ) {
+    return cached.result;
+  }
+
+  if (!force && receptionPermissionInFlight.has(key)) {
+    return receptionPermissionInFlight.get(key);
+  }
+
+  const promise = (async () => {
+    const params = new URLSearchParams({
+      userGuid,
+      formName,
+      action
+    });
+
+    const response = await fetch(
+      `${apiBaseUrl}/api/reception-office/permissions/check?${params.toString()}`,
+      { cache: "no-store" }
+    );
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        result?.message ||
+        result?.error ||
+        "تعذر فحص الصلاحية"
+      );
+    }
+
+    receptionPermissionCache.set(key, {
+      timestamp: Date.now(),
+      result
+    });
+
+    return result;
+  })();
+
+  receptionPermissionInFlight.set(key, promise);
+
+  try {
+    return await promise;
+  } finally {
+    receptionPermissionInFlight.delete(key);
+  }
+};
+
+
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const primaryLight = "#e6f3ee";
@@ -1041,6 +1123,239 @@ const FastAddStudentDialogHost = memo(
 FastAddStudentDialogHost.displayName =
   "FastAddStudentDialogHost";
 
+
+const FastReceptionDialogsHost = memo(
+  forwardRef(
+    (
+      {
+        onRefresh,
+        onOpenStatementDocument,
+        onOpenStatementSalesInvoice,
+        onOpenStatementSalesReturn,
+        onOpenStatementHistory
+      },
+      ref
+    ) => {
+      const [editState, setEditState] = useState({ open: false, student: null });
+      const [statementState, setStatementState] = useState({ open: false, student: null });
+      const [admissionState, setAdmissionState] = useState({ open: false, student: null });
+      const [feesState, setFeesState] = useState({ open: false, student: null });
+      const [paymentState, setPaymentState] = useState({
+        open: false,
+        loading: false,
+        context: null,
+        student: null,
+        needsRefresh: false
+      });
+
+      const paymentRequestIdRef = useRef(0);
+
+      const openEdit = useCallback((student) => {
+        setEditState({ open: true, student });
+      }, []);
+
+      const openStatement = useCallback((student) => {
+        setStatementState({ open: true, student });
+      }, []);
+
+      const openAdmission = useCallback((student) => {
+        setAdmissionState({ open: true, student });
+      }, []);
+
+      const openFees = useCallback((student) => {
+        setFeesState({ open: true, student });
+      }, []);
+
+      const openPayment = useCallback((student) => {
+        const branchGuid =
+          student?.branchGuid ||
+          student?.studyBranchGuid ||
+          student?.BranchGuid ||
+          "";
+
+        const requestId = ++paymentRequestIdRef.current;
+
+        // Show the shell immediately.
+        setPaymentState({
+          open: true,
+          loading: true,
+          context: null,
+          student,
+          needsRefresh: false
+        });
+
+        // Network starts after the first paint opportunity.
+        window.setTimeout(async () => {
+          try {
+            const params = new URLSearchParams({
+              accountGuid: student?.accountGuid || "",
+              studentName: student?.studentName || "",
+              nationalId: student?.nationalId || "",
+              tel: student?.studentTel || student?.tel || "",
+              studentNational: String(
+                student?.studentNational ??
+                student?.StudentNational ??
+                "0"
+              ),
+              diplomName: student?.diplomName || "",
+              diplomGuid: student?.diplomGuid || "",
+              branchGuid,
+              branchName:
+                student?.branchName ||
+                student?.studyBranchName ||
+                "",
+              regDocGuid: student?.regDocGuid || ""
+            });
+
+            const response = await fetch(
+              `${API_BASE_URL}/api/student-payment-orders/context?${params.toString()}`
+            );
+
+            const result = await response.json().catch(() => null);
+
+            if (!response.ok) {
+              throw new Error(
+                result?.message ||
+                result?.error ||
+                "تعذر تجهيز بيانات السداد"
+              );
+            }
+
+            if (requestId !== paymentRequestIdRef.current) return;
+
+            setPaymentState((current) => ({
+              ...current,
+              loading: false,
+              context: result
+            }));
+          } catch (error) {
+            if (requestId !== paymentRequestIdRef.current) return;
+
+            setPaymentState((current) => ({
+              ...current,
+              loading: false,
+              open: false,
+              context: null
+            }));
+
+            showError(
+              error?.message ||
+              "حدث خطأ أثناء تجهيز بيانات السداد"
+            );
+          }
+        }, 0);
+      }, []);
+
+      const closePayment = useCallback(() => {
+        if (paymentState.loading) return;
+
+        const shouldRefresh = paymentState.needsRefresh;
+
+        setPaymentState({
+          open: false,
+          loading: false,
+          context: null,
+          student: null,
+          needsRefresh: false
+        });
+
+        if (shouldRefresh) onRefresh?.();
+      }, [
+        paymentState.loading,
+        paymentState.needsRefresh,
+        onRefresh
+      ]);
+
+      useImperativeHandle(
+        ref,
+        () => ({
+          openEdit,
+          openStatement,
+          openAdmission,
+          openFees,
+          openPayment,
+          closeAll: () => {
+            setEditState({ open: false, student: null });
+            setStatementState({ open: false, student: null });
+            setAdmissionState({ open: false, student: null });
+            setFeesState({ open: false, student: null });
+            setPaymentState({
+              open: false,
+              loading: false,
+              context: null,
+              student: null,
+              needsRefresh: false
+            });
+          }
+        }),
+        [openEdit, openStatement, openAdmission, openFees, openPayment]
+      );
+
+      return (
+        <>
+          <EditStudentDialog
+            open={editState.open}
+            onClose={() => setEditState({ open: false, student: null })}
+            student={editState.student}
+            apiBaseUrl={API_BASE_URL}
+            onSaved={() => {
+              setEditState({ open: false, student: null });
+              onRefresh?.();
+            }}
+          />
+
+          <StudentStatementDialog2
+            open={statementState.open}
+            onClose={() => setStatementState({ open: false, student: null })}
+            student={statementState.student}
+            apiBaseUrl={API_BASE_URL}
+            onOpenStatementDocument={onOpenStatementDocument}
+            onOpenSalesInvoice={onOpenStatementSalesInvoice}
+            onOpenSalesReturn={onOpenStatementSalesReturn}
+            onOpenHistory={onOpenStatementHistory}
+          />
+
+          <AdmissionOrderDialog
+            open={admissionState.open}
+            onClose={() => setAdmissionState({ open: false, student: null })}
+            student={admissionState.student}
+            apiBaseUrl={API_BASE_URL}
+            onSaved={() => onRefresh?.()}
+          />
+
+          <StudentRegFeesDialog
+            open={feesState.open}
+            onClose={() => setFeesState({ open: false, student: null })}
+            student={feesState.student}
+            apiBaseUrl={API_BASE_URL}
+            onSaved={() => {
+              setFeesState({ open: false, student: null });
+              onRefresh?.();
+            }}
+          />
+
+          <StudentPaymentOrderDialog
+            open={paymentState.open}
+            onClose={closePayment}
+            context={paymentState.context}
+            selectedStudent={paymentState.student}
+            loading={paymentState.loading}
+            apiBaseUrl={API_BASE_URL}
+            onSaved={() => {
+              setPaymentState((current) => ({
+                ...current,
+                needsRefresh: true
+              }));
+            }}
+          />
+        </>
+      );
+    }
+  )
+);
+
+FastReceptionDialogsHost.displayName = "FastReceptionDialogsHost";
+
 const ReceptionOffice = () => {
   const theme = useTheme();
   
@@ -1056,30 +1371,17 @@ const ReceptionOffice = () => {
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 const fastAddStudentDialogRef = useRef(null);
+const fastReceptionDialogsRef = useRef(null);
 const [oldStatementOpen, setOldStatementOpen] = useState(false);
 const [oldStatementLoading, setOldStatementLoading] = useState(false);
 const [oldStatementData, setOldStatementData] = useState(null);
 const [oldStatementError, setOldStatementError] = useState("");
-  const [paymentContextOpen, setPaymentContextOpen] = useState(false);
-  const [paymentContextLoading, setPaymentContextLoading] = useState(false);
-  const [paymentContext, setPaymentContext] = useState(null);
-  const [paymentNeedsRefresh, setPaymentNeedsRefresh] = useState(false);
-
   useEffect(() => {
     if (isDesktop) setMobileSidebarOpen(false);
   }, [isDesktop]);
 
 
-  const [admissionOrderOpen, setAdmissionOrderOpen] = useState(false);
-const [admissionOrderStudent, setAdmissionOrderStudent] = useState(null);
-
-const [regFeesOpen, setRegFeesOpen] = useState(false);
-const [regFeesStudent, setRegFeesStudent] = useState(null);
-
-const [statementOpen, setStatementOpen] = useState(false);
-const [statementStudent, setStatementStudent] = useState(null);
-
-const [documentHistoryOpen, setDocumentHistoryOpen] = useState(false);
+  const [documentHistoryOpen, setDocumentHistoryOpen] = useState(false);
 const [documentHistoryRow, setDocumentHistoryRow] = useState(null);
 
 const [registerDocumentOpen, setRegisterDocumentOpen] = useState(false);
@@ -1091,9 +1393,6 @@ const [registerDocumentRow, setRegisterDocumentRow] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [studentDetails, setStudentDetails] = useState(null);
-
-  const [editStudentOpen, setEditStudentOpen] = useState(false);
-  const [editStudentRow, setEditStudentRow] = useState(null);
 
   const [studyFileOpen, setStudyFileOpen] = useState(false);
 const [studyFileStudent, setStudyFileStudent] = useState(null);
@@ -1276,18 +1575,19 @@ const autoSearchTimerRef = useRef(null);
     setOldStudents([]);
     setShowOldGrid(false);
     setSelectedStudent(null);
-    setPaymentContext(null);
-    setPaymentContextOpen(false);
-    setPaymentNeedsRefresh(false);
+    
+    
+    
     setActionAnchorEl(null);
     setActionRow(null);
     setDetailsOpen(false);
     setStudentDetails(null);
-    setEditStudentOpen(false);
-    setEditStudentRow(null);
+    
+    
     fastAddStudentDialogRef.current?.close();
-    setRegFeesOpen(false);
-setRegFeesStudent(null);
+    fastReceptionDialogsRef.current?.closeAll();
+    
+
 setStudyFileOpen(false);
 setStudyFileStudent(null);
 setStudentOperationsOpen(false);
@@ -1297,6 +1597,27 @@ setStudentOperationsStudent(null);
   const handleOpenActionMenu = (event, row) => {
     setActionAnchorEl(event.currentTarget);
     setActionRow(row);
+
+    // Start the two most common permission checks while the user is
+    // still looking at the actions menu. The actual handlers still
+    // await the same permission result, so no rule is bypassed.
+    const userGuid = getUserGuid(getCurrentUser());
+
+    if (userGuid) {
+      void checkReceptionPermissionFast({
+        apiBaseUrl: API_BASE_URL,
+        userGuid,
+        formName: "addstudent",
+        action: "find"
+      }).catch(() => {});
+
+      void checkReceptionPermissionFast({
+        apiBaseUrl: API_BASE_URL,
+        userGuid,
+        formName: "studentstatment",
+        action: "find"
+      }).catch(() => {});
+    }
   };
 
   const handleCloseActionMenu = () => {
@@ -1304,37 +1625,40 @@ setStudentOperationsStudent(null);
     setActionRow(null);
   };
 
-  const runAction = async (callback, loadingLabel = "جاري فتح الشاشة...", showLoader = true) => {
+  const runAction = async (
+    callback,
+    loadingLabel = "جاري فتح الشاشة...",
+    showLoader = true
+  ) => {
     const row = actionRow;
-    handleCloseActionMenu();
-
     if (!row || actionLoading) return;
 
     try {
       if (showLoader) {
         setActionLoadingLabel(loadingLabel);
         setActionLoading(true);
-
-        // اترك Frame واحد للمتصفح حتى يظهر اللودر قبل تجهيز الـ Dialog الثقيل.
-        await new Promise((resolve) => {
-          window.requestAnimationFrame(() => resolve());
-        });
       }
 
+      // Open isolated dialog first.
       await Promise.resolve(callback(row));
 
-      if (showLoader) {
-        // Frame إضافي حتى يبدأ الـ Dialog في الظهور قبل إخفاء مؤشر التجهيز.
-        await new Promise((resolve) => {
-          window.requestAnimationFrame(() => resolve());
-        });
-      }
+      // Close parent Menu one task later, so its render cannot delay dialog paint.
+      window.setTimeout(() => {
+        handleCloseActionMenu();
+      }, 0);
     } catch (error) {
-      showError(error?.message || "حدث خطأ أثناء فتح الشاشة");
+      handleCloseActionMenu();
+      showError(
+        error?.message ||
+        "حدث خطأ أثناء فتح الشاشة"
+      );
     } finally {
-      if (showLoader) setActionLoading(false);
+      if (showLoader) {
+        setActionLoading(false);
+      }
     }
   };
+
 
 const checkAcceptOldStudentPermission = async () => {
   const userGuid = getUserGuid(getCurrentUser());
@@ -1677,8 +2001,6 @@ const ensureStudentActive = (row) => {
   };
 
   const handleViewStudentDetails = async (row) => {
-    setSelectedStudent(row);
-
     const userGuid = getUserGuid(getCurrentUser());
 
     if (!userGuid) {
@@ -1689,25 +2011,12 @@ const ensureStudentActive = (row) => {
     }
 
     try {
-      const params = new URLSearchParams({
+      const result = await checkReceptionPermissionFast({
+        apiBaseUrl: API_BASE_URL,
         userGuid,
         formName: "addstudent",
         action: "find"
       });
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/reception-office/permissions/check?${params.toString()}`
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          result?.message ||
-          result?.error ||
-          "تعذر فحص صلاحية بيانات الطالب"
-        );
-      }
 
       if (!result?.allowed) {
         showWarning(
@@ -1717,8 +2026,7 @@ const ensureStudentActive = (row) => {
         return;
       }
 
-      setEditStudentRow(row);
-      setEditStudentOpen(true);
+      fastReceptionDialogsRef.current?.openEdit(row);
     } catch (error) {
       showError(
         error.message ||
@@ -1728,22 +2036,23 @@ const ensureStudentActive = (row) => {
   };
 
 const handleAdmissionOrder = (row) => {
-  setSelectedStudent(row);
-
-  const profileLocked = normalizeBool(row?.lockProfile ?? row?.isProfileLocked ?? false);
+  const profileLocked = normalizeBool(
+    row?.lockProfile ??
+    row?.isProfileLocked ??
+    false
+  );
 
   if (profileLocked) {
-    showWarning("ملف الطالب مغلق برجاء التواصل مع الإدارة");
+    showWarning(
+      "ملف الطالب مغلق برجاء التواصل مع الإدارة"
+    );
     return;
   }
 
-  setAdmissionOrderStudent(row);
-  setAdmissionOrderOpen(true);
+  fastReceptionDialogsRef.current?.openAdmission(row);
 };
 
 const handleFeesForm = (row) => {
-  setSelectedStudent(row);
-
   if (!ensureStudentActive(row)) return;
   if (!ensureStudentCanPay(row)) return;
 
@@ -1759,61 +2068,30 @@ const handleFeesForm = (row) => {
     return;
   }
 
-  setRegFeesStudent(row);
-  setRegFeesOpen(true);
+  fastReceptionDialogsRef.current?.openFees(row);
 };
 
-  const handlePaymentOrder = async (row) => {
-    setSelectedStudent(row);
-
+  const handlePaymentOrder = (row) => {
     if (!ensureStudentActive(row)) return;
     if (!ensureStudentCanPay(row)) return;
     if (!ensureHasStudyFile(row)) return;
 
-    const branchGuid = row?.branchGuid || row?.studyBranchGuid || row?.BranchGuid || "";
+    const branchGuid =
+      row?.branchGuid ||
+      row?.studyBranchGuid ||
+      row?.BranchGuid ||
+      "";
 
     if (!branchGuid) {
-      showWarning("لا يمكن قراءة فرع الدراسة للطالب");
+      showWarning(
+        "لا يمكن قراءة فرع الدراسة للطالب"
+      );
       return;
     }
 
-    try {
-      setPaymentNeedsRefresh(false);
-      setPaymentContextOpen(true);
-      setPaymentContextLoading(true);
-      setPaymentContext(null);
-
-      const params = new URLSearchParams({
-        accountGuid: row?.accountGuid || "",
-        studentName: row?.studentName || "",
-        nationalId: row?.nationalId || "",
-        tel: row?.studentTel || row?.tel || "",
-        studentNational: String(row?.studentNational ?? row?.StudentNational ?? "0"),
-        diplomName: row?.diplomName || "",
-        diplomGuid: row?.diplomGuid || "",
-        branchGuid,
-        branchName: row?.branchName || row?.studyBranchName || "",
-        regDocGuid: row?.regDocGuid || ""
-      });
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/student-payment-orders/context?${params.toString()}`
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(result?.message || result?.error || "تعذر تجهيز بيانات السداد");
-      }
-
-      setPaymentContext(result);
-    } catch (error) {
-      showError(error.message || "حدث خطأ أثناء تجهيز بيانات السداد");
-      setPaymentContextOpen(false);
-    } finally {
-      setPaymentContextLoading(false);
-    }
+    fastReceptionDialogsRef.current?.openPayment(row);
   };
+
 
 const handleStudyFile = (row) => {
   setSelectedStudent(row);
@@ -1849,8 +2127,6 @@ const handleStudyFile = (row) => {
   };
 
 const handleStatement = async (row) => {
-  setSelectedStudent(row);
-
   const accountGuid =
     row?.accountGuid ||
     row?.AccountGuid ||
@@ -1863,46 +2139,36 @@ const handleStatement = async (row) => {
 
   const profileLocked = normalizeBool(
     row?.lockProfile ??
-      row?.LockProfile ??
-      row?.isProfileLocked ??
-      row?.IsProfileLocked ??
-      false,
+    row?.LockProfile ??
+    row?.isProfileLocked ??
+    row?.IsProfileLocked ??
+    false,
     false
   );
 
   if (profileLocked) {
-    showWarning("ملف الطالب مغلق برجاء التواصل مع الإدارة");
+    showWarning(
+      "ملف الطالب مغلق برجاء التواصل مع الإدارة"
+    );
     return;
   }
 
-  const user = getCurrentUser();
-  const userGuid = getUserGuid(user);
+  const userGuid = getUserGuid(getCurrentUser());
 
   if (!userGuid) {
-    showWarning("تعذر قراءة بيانات المستخدم، برجاء تسجيل الدخول مرة أخرى");
+    showWarning(
+      "تعذر قراءة بيانات المستخدم، برجاء تسجيل الدخول مرة أخرى"
+    );
     return;
   }
 
   try {
-    const params = new URLSearchParams({
+    const result = await checkReceptionPermissionFast({
+      apiBaseUrl: API_BASE_URL,
       userGuid,
       formName: "studentstatment",
       action: "find"
     });
-
-    const response = await fetch(
-      `${API_BASE_URL}/api/reception-office/permissions/check?${params.toString()}`
-    );
-
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      throw new Error(
-        result?.message ||
-        result?.error ||
-        "تعذر فحص صلاحية كشف الحساب"
-      );
-    }
 
     if (!result?.allowed) {
       showWarning(
@@ -1912,8 +2178,7 @@ const handleStatement = async (row) => {
       return;
     }
 
-    setStatementStudent(row);
-    setStatementOpen(true);
+    fastReceptionDialogsRef.current?.openStatement(row);
   } catch (error) {
     showError(
       error.message ||
@@ -1921,6 +2186,8 @@ const handleStatement = async (row) => {
     );
   }
 };
+
+
 const handleOpenStatementDocument = async (row) => {
   const formName = String(row?.formName || "")
     .trim()
@@ -3603,11 +3870,11 @@ const handleAcceptOrder = (row) => {
         </Box>
 
         <ActionMenuSection>
-          <ActionMenuItem icon={<EditNoteIcon />} label="عرض بيانات الطالب" color="#546e7a" onClick={() => runAction(handleViewStudentDetails, "جاري فتح بيانات الطالب...")} />
-          <ActionMenuItem icon={<AccountBalanceWalletIcon />} label="كشف حساب" color="#1565c0" onClick={() => runAction(handleStatement, "جاري تجهيز كشف الحساب...")} />
-          <ActionMenuItem icon={<AssignmentIcon />} label="طلب التحاق" color="#6a1b9a" onClick={() => runAction(handleAdmissionOrder, "جاري تجهيز شاشة طلب الالتحاق...")} />
-          <ActionMenuItem icon={<DescriptionIcon />} label="استمارة رسوم" color="#ef6c00" onClick={() => runAction(handleFeesForm, "جاري تجهيز استمارة الرسوم...")} />
-          <ActionMenuItem icon={<RequestQuoteIcon />} label="طلب سداد" color="#00838f" onClick={() => runAction(handlePaymentOrder, "جاري تجهيز بيانات السداد...")} />
+          <ActionMenuItem icon={<EditNoteIcon />} label="عرض بيانات الطالب" color="#546e7a" onClick={() => runAction(handleViewStudentDetails, "جاري فتح بيانات الطالب...", false)} />
+          <ActionMenuItem icon={<AccountBalanceWalletIcon />} label="كشف حساب" color="#1565c0" onClick={() => runAction(handleStatement, "جاري تجهيز كشف الحساب...", false)} />
+          <ActionMenuItem icon={<AssignmentIcon />} label="طلب التحاق" color="#6a1b9a" onClick={() => runAction(handleAdmissionOrder, "جاري تجهيز شاشة طلب الالتحاق...", false)} />
+          <ActionMenuItem icon={<DescriptionIcon />} label="استمارة رسوم" color="#ef6c00" onClick={() => runAction(handleFeesForm, "جاري تجهيز استمارة الرسوم...", false)} />
+          <ActionMenuItem icon={<RequestQuoteIcon />} label="طلب سداد" color="#00838f" onClick={() => runAction(handlePaymentOrder, "جاري تجهيز بيانات السداد...", false)} />
           <ActionMenuItem icon={<MenuBookIcon />} label="الملف التدريبي" color="#3949ab" onClick={() => runAction(handleStudyFile, "جاري فتح الملف التدريبي...")} />
         </ActionMenuSection>
 
@@ -3774,28 +4041,6 @@ const handleAcceptOrder = (row) => {
         </DialogActions>
       </Dialog>
 
-      <StudentPaymentOrderDialog
-        open={paymentContextOpen}
-        onClose={() => {
-          if (paymentContextLoading) return;
-
-          setPaymentContextOpen(false);
-
-          if (paymentNeedsRefresh) {
-            setPaymentNeedsRefresh(false);
-            handleSearch();
-          }
-        }}
-        context={paymentContext}
-        selectedStudent={selectedStudent}
-        loading={paymentContextLoading}
-        apiBaseUrl={API_BASE_URL}
-        onSaved={() => {
-          // لا تقفل الديالوج هنا؛ خليه مفتوح عشان زر "طباعة الطلب" يظهر ويشتغل أكثر من مرة.
-          // التحديث هيحصل لما المستخدم يضغط خروج من ديالوج طلب السداد.
-          setPaymentNeedsRefresh(true);
-        }}
-      />
       <OldStudentStatementDialog
         open={oldStatementOpen}
         loading={oldStatementLoading}
@@ -3812,21 +4057,14 @@ const handleAcceptOrder = (row) => {
         ref={fastAddStudentDialogRef}
         onCreated={handleStudentCreated}
       />
-<EditStudentDialog
-  open={editStudentOpen}
-  onClose={() => {
-    setEditStudentOpen(false);
-    setEditStudentRow(null);
-  }}
-  student={editStudentRow}
-  apiBaseUrl={API_BASE_URL}
-  onSaved={() => {
-    setEditStudentOpen(false);
-    setEditStudentRow(null);
-    handleSearch();
-  }}
-/>
-
+      <FastReceptionDialogsHost
+        ref={fastReceptionDialogsRef}
+        onRefresh={handleSearch}
+        onOpenStatementDocument={handleOpenStatementDocument}
+        onOpenStatementSalesInvoice={handleOpenStatementSalesInvoice}
+        onOpenStatementSalesReturn={handleOpenStatementSalesReturn}
+        onOpenStatementHistory={handleOpenStatementHistory}
+      />
 <StudentOperationsDialog
   open={studentOperationsOpen}
   onClose={() => {
@@ -3835,20 +4073,6 @@ const handleAcceptOrder = (row) => {
   }}
   student={studentOperationsStudent}
   apiBaseUrl={API_BASE_URL}
-/>
-
-<StudentStatementDialog2
-  open={statementOpen}
-  onClose={() => {
-    setStatementOpen(false);
-    setStatementStudent(null);
-  }}
-  student={statementStudent}
-  apiBaseUrl={API_BASE_URL}
-  onOpenStatementDocument={handleOpenStatementDocument}
-  onOpenSalesInvoice={handleOpenStatementSalesInvoice}
-  onOpenSalesReturn={handleOpenStatementSalesReturn}
-  onOpenHistory={handleOpenStatementHistory}
 />
 
 <DocumentHistoryDialog
@@ -3887,27 +4111,6 @@ const handleAcceptOrder = (row) => {
     ""
   }
   apiBaseUrl={API_BASE_URL}
-/>
-<AdmissionOrderDialog
-  open={admissionOrderOpen}
-  onClose={() => setAdmissionOrderOpen(false)}
-  student={admissionOrderStudent}
-  apiBaseUrl={API_BASE_URL}
-  onSaved={() => handleSearch()}
-/>
-<StudentRegFeesDialog
-  open={regFeesOpen}
-  onClose={() => {
-    setRegFeesOpen(false);
-    setRegFeesStudent(null);
-  }}
-  student={regFeesStudent}
-  apiBaseUrl={API_BASE_URL}
-  onSaved={() => {
-    setRegFeesOpen(false);
-    setRegFeesStudent(null);
-    handleSearch();
-  }}
 />
 <StudentStudyFileDialog
   open={studyFileOpen}

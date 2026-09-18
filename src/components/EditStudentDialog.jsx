@@ -43,6 +43,73 @@ const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
 });
 const primaryLight = "#e6f3ee";
 
+const EDIT_LOOKUPS_TTL_MS = 5 * 60 * 1000;
+const EDIT_DETAILS_TTL_MS = 30 * 1000;
+const editStudentCache = new Map();
+const editStudentInFlight = new Map();
+
+const getFastCached = (key, ttlMs) => {
+  const item = editStudentCache.get(key);
+
+  if (
+    !item ||
+    Date.now() - item.timestamp >= ttlMs
+  ) {
+    return null;
+  }
+
+  return item.data;
+};
+
+const setFastCached = (key, data) => {
+  editStudentCache.set(key, {
+    timestamp: Date.now(),
+    data
+  });
+};
+
+const fetchFastJson = async (
+  key,
+  url,
+  ttlMs,
+  options = {}
+) => {
+  const cached = getFastCached(key, ttlMs);
+
+  if (cached) {
+    return cached;
+  }
+
+  if (editStudentInFlight.has(key)) {
+    return editStudentInFlight.get(key);
+  }
+
+  const promise = (async () => {
+    const response = await fetch(url, options);
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        result?.message ||
+        result?.error ||
+        "حدث خطأ أثناء تحميل البيانات"
+      );
+    }
+
+    setFastCached(key, result);
+    return result;
+  })();
+
+  editStudentInFlight.set(key, promise);
+
+  try {
+    return await promise;
+  } finally {
+    editStudentInFlight.delete(key);
+  }
+};
+
+
 const emptyForm = {
   studentGuid: "",
   accountGuid: "",
@@ -318,6 +385,19 @@ const EditStudentDialog = ({
   apiBaseUrl,
   onSaved
 }) => {
+  const studentDetailsCacheKey = useMemo(
+    () =>
+      [
+        "details",
+        apiBaseUrl,
+        student?.studentCode || student?.code || "",
+        student?.studentGuid || "",
+        student?.accountGuid || "",
+        student?.nationalId || ""
+      ].join("|"),
+    [apiBaseUrl, student]
+  );
+
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(`(min-width:600px) and (max-width:${DESKTOP_BREAKPOINT - 0.05}px)`);
@@ -349,21 +429,108 @@ const EditStudentDialog = ({
   };
 
   useEffect(() => {
-    if (!open || !canLoad) return undefined;
+    if (!open || !canLoad) {
+      return undefined;
+    }
 
     const controller = new AbortController();
 
+    const applyDetails = (data) => {
+      setForm({
+        studentGuid: data.studentGuid || "",
+        accountGuid: data.accountGuid || "",
+        studentCode: data.studentCode || data.code || "",
+        acadmyId: data.acadmyId || "",
+        accountCode: data.accountCode || "",
+
+        studentName: data.studentName || "",
+        studentNameEn: data.studentNameEn || "",
+        studentTel: data.studentTel || "",
+        studentTel2: data.studentTel2 || "",
+        nationalId: data.nationalId || "",
+        birthDate: normalizeBirthDateToGregorian(
+          data.birthDate
+        ),
+        email: data.email || "",
+        notes: data.notes || "",
+
+        studentType: numericValue(
+          data.studentTypeValue,
+          0
+        ),
+        studentNational: numericValue(
+          data.studentNationalValue,
+          0
+        ),
+        studyType: numericValue(
+          data.studyTypeValue,
+          0
+        ),
+        customerType: numericValue(
+          data.customerTypeValue,
+          0
+        ),
+
+        companyGuid: data.sectorGuid || "",
+        sectorName:
+          data.sectorName ||
+          data.companyName ||
+          "",
+        sellerGuid: data.sellerGuid || "",
+        sellerName: data.sellerName || "",
+        actionReason: "",
+        parentAccountName:
+          data.parentAccountName || "العملاء",
+        isUse: boolValue(data.isUse, true)
+      });
+    };
+
+    const cachedDetails = getFastCached(
+      studentDetailsCacheKey,
+      EDIT_DETAILS_TTL_MS
+    );
+
+    if (cachedDetails) {
+      applyDetails(cachedDetails);
+      setLoading(false);
+      setError("");
+    } else {
+      // Seed visible values immediately instead of blanking the dialog.
+      setForm((current) => ({
+        ...emptyForm,
+        ...current,
+        studentGuid: student?.studentGuid || "",
+        accountGuid: student?.accountGuid || "",
+        studentCode:
+          student?.studentCode ||
+          student?.code ||
+          "",
+        studentName: student?.studentName || "",
+        studentTel:
+          student?.studentTel ||
+          student?.tel ||
+          "",
+        nationalId: student?.nationalId || "",
+        actionReason: ""
+      }));
+      setLoading(true);
+    }
+
     const loadDetails = async () => {
       try {
-        setLoading(true);
         setError("");
-        setForm(emptyForm);
 
         const params = new URLSearchParams({
-          code: student?.studentCode || student?.code || "",
-          studentGuid: student?.studentGuid || "",
-          accountGuid: student?.accountGuid || "",
-          nationalId: student?.nationalId || ""
+          code:
+            student?.studentCode ||
+            student?.code ||
+            "",
+          studentGuid:
+            student?.studentGuid || "",
+          accountGuid:
+            student?.accountGuid || "",
+          nationalId:
+            student?.nationalId || ""
         });
 
         const response = await fetch(
@@ -373,7 +540,9 @@ const EditStudentDialog = ({
           }
         );
 
-        const result = await response.json().catch(() => null);
+        const result = await response
+          .json()
+          .catch(() => null);
 
         if (!response.ok) {
           throw new Error(
@@ -383,100 +552,74 @@ const EditStudentDialog = ({
           );
         }
 
-        const data = result?.data || result || {};
+        const data =
+          result?.data ||
+          result ||
+          {};
 
-        setForm({
-          studentGuid: data.studentGuid || "",
-          accountGuid: data.accountGuid || "",
-          studentCode: data.studentCode || data.code || "",
-          acadmyId: data.acadmyId || "",
-          accountCode: data.accountCode || "",
+        setFastCached(
+          studentDetailsCacheKey,
+          data
+        );
 
-          studentName: data.studentName || "",
-          studentNameEn: data.studentNameEn || "",
-          studentTel: data.studentTel || "",
-          studentTel2: data.studentTel2 || "",
-          nationalId: data.nationalId || "",
-          /*
-           * مهما كان التاريخ القادم من قاعدة البيانات
-           * هجريًا أو ميلاديًا، يتم عرضه هنا بالميلادي.
-           */
-          birthDate: normalizeBirthDateToGregorian(
-            data.birthDate
-          ),
-          email: data.email || "",
-          notes: data.notes || "",
-
-          studentType: numericValue(data.studentTypeValue, 0),
-          studentNational: numericValue(data.studentNationalValue, 0),
-          studyType: numericValue(data.studyTypeValue, 0),
-          customerType: numericValue(data.customerTypeValue, 0),
-
-          companyGuid: data.sectorGuid || "",
-          sectorName: data.sectorName || data.companyName || "",
-          sellerGuid: data.sellerGuid || "",
-          sellerName: data.sellerName || "",
-          actionReason: "",
-          parentAccountName: data.parentAccountName || "العملاء",
-          isUse: boolValue(data.isUse, true)
-        });
+        applyDetails(data);
       } catch (err) {
         if (err.name !== "AbortError") {
-          setError(err.message || "حدث خطأ أثناء تحميل بيانات الطالب");
+          setError(
+            err.message ||
+            "حدث خطأ أثناء تحميل بيانات الطالب"
+          );
         }
       } finally {
         setLoading(false);
       }
     };
 
-    loadDetails();
+    // With cached data the dialog is already useful; revalidate quietly.
+    void loadDetails();
 
     return () => controller.abort();
-  }, [open, canLoad, student, apiBaseUrl]);
+  }, [
+    open,
+    canLoad,
+    student,
+    apiBaseUrl,
+    studentDetailsCacheKey
+  ]);
 
   useEffect(() => {
-    if (!open) return undefined;
-
     const controller = new AbortController();
 
-    const loadLookups = async () => {
+    const loadLookups = async ({
+      apply = true
+    } = {}) => {
+      const sectorsKey =
+        `edit|sectors|${apiBaseUrl}`;
+      const sellersKey =
+        `edit|sellers|${apiBaseUrl}`;
+
       try {
-        setLookupsLoading(true);
-
-        const [sectorsResponse, sellersResponse] = await Promise.all([
-          fetch(
-            `${apiBaseUrl}/api/reception-office/lookups/sectors`,
-            { signal: controller.signal }
-          ),
-          fetch(
-            `${apiBaseUrl}/api/reception-office/lookups/sellers`,
-            { signal: controller.signal }
-          )
-        ]);
-
-        const sectorsResult = await sectorsResponse
-          .json()
-          .catch(() => null);
-
-        const sellersResult = await sellersResponse
-          .json()
-          .catch(() => null);
-
-        if (!sectorsResponse.ok) {
-          throw new Error(
-            sectorsResult?.message ||
-            sectorsResult?.error ||
-            "تعذر تحميل القطاعات"
-          );
+        if (apply) {
+          setLookupsLoading(true);
         }
 
-        if (!sellersResponse.ok) {
-          throw new Error(
-            sellersResult?.message ||
-            sellersResult?.error ||
-            "تعذر تحميل مندوبي البيع"
-          );
-        }
+        const [sectorsResult, sellersResult] =
+          await Promise.all([
+            fetchFastJson(
+              sectorsKey,
+              `${apiBaseUrl}/api/reception-office/lookups/sectors`,
+              EDIT_LOOKUPS_TTL_MS,
+              { signal: controller.signal }
+            ),
+            fetchFastJson(
+              sellersKey,
+              `${apiBaseUrl}/api/reception-office/lookups/sellers`,
+              EDIT_LOOKUPS_TTL_MS,
+              { signal: controller.signal }
+            )
+          ]);
+
+        if (!apply) return;
 
         setSectors(
           Array.isArray(sectorsResult?.data)
@@ -490,7 +633,10 @@ const EditStudentDialog = ({
             : []
         );
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (
+          apply &&
+          err.name !== "AbortError"
+        ) {
           await Swal.fire({
             icon: "error",
             title: "خطأ",
@@ -502,14 +648,22 @@ const EditStudentDialog = ({
           });
         }
       } finally {
-        setLookupsLoading(false);
+        if (apply) {
+          setLookupsLoading(false);
+        }
       }
     };
 
-    loadLookups();
+    // Warm the two lookup endpoints while ReceptionOffice is idle.
+    void loadLookups({ apply: false });
+
+    if (open) {
+      void loadLookups({ apply: true });
+    }
 
     return () => controller.abort();
   }, [open, apiBaseUrl]);
+
 
   const validate = () => {
     if (!form.studentName.trim()) return "برجاء إدخال اسم الطالب";
@@ -621,6 +775,10 @@ const EditStudentDialog = ({
         confirmButtonColor: primaryColor
       });
 
+      editStudentCache.delete(
+        studentDetailsCacheKey
+      );
+
       onSaved?.();
       onClose?.();
     } catch (err) {
@@ -670,6 +828,9 @@ const EditStudentDialog = ({
   return (
     <Dialog
       open={open}
+      keepMounted
+      transitionDuration={0}
+      BackdropProps={{ transitionDuration: 0 }}
       onClose={saving ? undefined : onClose}
       fullWidth
       maxWidth="lg"

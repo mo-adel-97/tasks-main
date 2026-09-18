@@ -54,6 +54,42 @@ const whiteColor = "#fefefe";
 const textColor = "#1f2d3d";
 const softBg = "#fefefe";
 
+const STATEMENT_CACHE_TTL_MS = 30 * 1000;
+const statementFastCache = new Map();
+const statementInFlight = new Map();
+
+const statementCacheKey = (
+  apiBaseUrl,
+  accountGuid,
+  notes = ""
+) =>
+  [
+    apiBaseUrl,
+    accountGuid,
+    String(notes || "").trim()
+  ].join("|");
+
+const readStatementCache = (key) => {
+  const item = statementFastCache.get(key);
+
+  if (
+    !item ||
+    Date.now() - item.timestamp >= STATEMENT_CACHE_TTL_MS
+  ) {
+    return null;
+  }
+
+  return item.data;
+};
+
+const writeStatementCache = (key, data) => {
+  statementFastCache.set(key, {
+    timestamp: Date.now(),
+    data
+  });
+};
+
+
 const getCurrentUser = () => {
   try {
     return JSON.parse(localStorage.getItem("user") || "{}");
@@ -920,79 +956,144 @@ const StudentStatementDialog2 = ({
     }
   ];
 
-  const loadStatement = async () => {
+  const loadStatement = async ({
+    preferCache = true,
+    silent = false
+  } = {}) => {
     if (!accountGuid) {
       setError("لا يمكن قراءة حساب الطالب");
       setData(null);
-      return;
+      return null;
     }
 
-    try {
-      setLoading(true);
-      setError("");
+    const key = statementCacheKey(
+      apiBaseUrl,
+      accountGuid,
+      notes
+    );
 
+    const cached =
+      preferCache
+        ? readStatementCache(key)
+        : null;
+
+    if (cached) {
+      setData(cached);
+      setError("");
+      setLoading(false);
+    } else if (!silent) {
+      setLoading(true);
+    }
+
+    const fetchFresh = async () => {
       const params = new URLSearchParams({
         accountGuid
       });
 
       if (notes.trim()) {
-        params.append("notes", notes.trim());
+        params.append(
+          "notes",
+          notes.trim()
+        );
       }
 
-      const url = `${apiBaseUrl}/api/reception-office/student-statement?${params.toString()}`;
-
-      console.log("STUDENT STATEMENT URL =>", url);
+      const url =
+        `${apiBaseUrl}/api/reception-office/student-statement?${params.toString()}`;
 
       const response = await fetch(url);
 
-      const result = await response.json().catch(() => null);
-
-      console.log("STUDENT STATEMENT RESPONSE =>", result);
+      const result = await response
+        .json()
+        .catch(() => null);
 
       if (!response.ok) {
-        throw new Error(result?.message || result?.error || "تعذر تحميل كشف الحساب");
+        throw new Error(
+          result?.message ||
+          result?.error ||
+          "تعذر تحميل كشف الحساب"
+        );
       }
 
+      writeStatementCache(key, result);
+      return result;
+    };
+
+    try {
+      let promise = statementInFlight.get(key);
+
+      if (!promise) {
+        promise = fetchFresh();
+        statementInFlight.set(key, promise);
+      }
+
+      const result = await promise;
       setData(result);
+      setError("");
+      return result;
     } catch (err) {
-      console.error("STUDENT STATEMENT ERROR =>", err);
-      setError(err.message || "حدث خطأ أثناء تحميل كشف الحساب");
-      setData(null);
+      if (!cached) {
+        setError(
+          err.message ||
+          "حدث خطأ أثناء تحميل كشف الحساب"
+        );
+        setData(null);
+      }
+      return cached;
     } finally {
+      statementInFlight.delete(key);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (open) {
-      setActiveTab(0);
-      setNotes("");
-      setData(null);
-      setError("");
-    }
-  }, [open, accountGuid]);
+    if (!open) return;
 
-  useEffect(() => {
-    if (open && accountGuid) {
-      loadStatement();
+    setActiveTab(0);
+    setNotes("");
+    setError("");
+
+    if (accountGuid) {
+      void loadStatement({
+        preferCache: true,
+        silent: false
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, accountGuid, apiBaseUrl]);
 
-  const statementRows = (data?.statementRows || []).map((row, index) => ({
-    ...row,
-    id: normalizeRowId(row, index)
-  }));
 
-  const salesInvoices = (data?.salesInvoices || []).map((row, index) => ({
-    ...row,
-    id: normalizeRowId(row, index)
-  }));
+  const statementRows = useMemo(
+    () =>
+      (data?.statementRows || []).map(
+        (row, index) => ({
+          ...row,
+          id: normalizeRowId(row, index)
+        })
+      ),
+    [data?.statementRows]
+  );
 
-  const salesReturns = (data?.salesReturns || []).map((row, index) => ({
-    ...row,
-    id: normalizeRowId(row, index)
-  }));
+  const salesInvoices = useMemo(
+    () =>
+      (data?.salesInvoices || []).map(
+        (row, index) => ({
+          ...row,
+          id: normalizeRowId(row, index)
+        })
+      ),
+    [data?.salesInvoices]
+  );
+
+  const salesReturns = useMemo(
+    () =>
+      (data?.salesReturns || []).map(
+        (row, index) => ({
+          ...row,
+          id: normalizeRowId(row, index)
+        })
+      ),
+    [data?.salesReturns]
+  );
 
   const exportStatementToPdf = () => {
     if (!data || statementRows.length === 0) {
@@ -1777,6 +1878,9 @@ const StudentStatementDialog2 = ({
   return (
     <Dialog
       open={open}
+        keepMounted
+        transitionDuration={0}
+        BackdropProps={{ transitionDuration: 0 }}
       onClose={onClose}
       fullWidth
       maxWidth="xl"

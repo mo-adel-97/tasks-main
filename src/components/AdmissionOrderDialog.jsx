@@ -66,6 +66,57 @@ const whiteColor = "#fefefe";
 const textColor = "#1f2d3d";
 const softBg = "#fefefe";
 
+const ADMISSION_LOOKUP_TTL_MS = 5 * 60 * 1000;
+const admissionLookupCache = new Map();
+const admissionLookupInFlight = new Map();
+
+const admissionCachedGet = async (
+  url,
+  ttlMs = ADMISSION_LOOKUP_TTL_MS
+) => {
+  const cached = admissionLookupCache.get(url);
+
+  if (
+    cached &&
+    Date.now() - cached.timestamp < ttlMs
+  ) {
+    return cached.data;
+  }
+
+  if (admissionLookupInFlight.has(url)) {
+    return admissionLookupInFlight.get(url);
+  }
+
+  const promise = (async () => {
+    const response = await fetch(url);
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        result?.message ||
+        result?.error ||
+        "حدث خطأ أثناء تنفيذ الطلب"
+      );
+    }
+
+    admissionLookupCache.set(url, {
+      timestamp: Date.now(),
+      data: result
+    });
+
+    return result;
+  })();
+
+  admissionLookupInFlight.set(url, promise);
+
+  try {
+    return await promise;
+  } finally {
+    admissionLookupInFlight.delete(url);
+  }
+};
+
+
 const DARK_ACTION_GLOBAL_STYLES = (theme) => {
   if (theme.palette.mode !== "dark") return {};
 
@@ -1206,7 +1257,7 @@ const minimumPayDisplay =
       setBranchesLoading(true);
       setError("");
 
-      const result = await fetchJson(`${apiBaseUrl}/api/admission-order/branches`);
+      const result = await admissionCachedGet(`${apiBaseUrl}/api/admission-order/branches`);
       setBranches(Array.isArray(result?.data) ? result.data : []);
     } catch (err) {
       setError(err.message || "حدث خطأ أثناء تحميل الفروع");
@@ -1218,7 +1269,7 @@ const minimumPayDisplay =
 
   const loadPlatforms = async () => {
     try {
-      const result = await fetchJson(`${apiBaseUrl}/api/admission-order/platforms`);
+      const result = await admissionCachedGet(`${apiBaseUrl}/api/admission-order/platforms`);
       setPlatforms(Array.isArray(result?.data) ? result.data : []);
     } catch {
       setPlatforms([
@@ -1233,7 +1284,7 @@ const minimumPayDisplay =
 
   const loadDefaultNetworkBank = async () => {
     try {
-      const result = await fetchJson(`${apiBaseUrl}/api/admission-order/default-network-bank`);
+      const result = await admissionCachedGet(`${apiBaseUrl}/api/admission-order/default-network-bank`);
       setNetworkBankInfo(result?.data || null);
     } catch {
       setNetworkBankInfo(null);
@@ -1263,9 +1314,15 @@ const minimumPayDisplay =
       const params = new URLSearchParams();
       if (search.trim()) params.append("search", search.trim());
 
-      const result = await fetchJson(
-        `${apiBaseUrl}/api/admission-order/banks?${params.toString()}`
-      );
+      const banksUrl =
+        `${apiBaseUrl}/api/admission-order/banks?${params.toString()}`;
+
+      const result = search.trim()
+        ? await fetchJson(banksUrl)
+        : await admissionCachedGet(
+            banksUrl,
+            2 * 60 * 1000
+          );
 
       setBanks(
         (Array.isArray(result?.data) ? result.data : []).map((x, i) => ({
@@ -1322,8 +1379,25 @@ const minimumPayDisplay =
   };
 
   useEffect(() => {
+    // Preload stable lookup endpoints while ReceptionOffice is idle.
+    void admissionCachedGet(
+      `${apiBaseUrl}/api/admission-order/branches`
+    ).catch(() => {});
+
+    void admissionCachedGet(
+      `${apiBaseUrl}/api/admission-order/platforms`
+    ).catch(() => {});
+
+    void admissionCachedGet(
+      `${apiBaseUrl}/api/admission-order/default-network-bank`
+    ).catch(() => {});
+  }, [apiBaseUrl]);
+
+  useEffect(() => {
     if (open) {
       resetDialog();
+
+      // These resolve immediately from the preloaded cache in the usual path.
       loadBranches();
       loadPlatforms();
       loadDefaultNetworkBank();
@@ -1440,13 +1514,21 @@ setAmount(
       setAvailableDiplomas([]);
 
       await Promise.all([
-        loadBatches(targetBranchGuid, targetRegType),
-        loadBranchCashbox(getBranchForWork() || targetBranchGuid)
+        loadBatches(
+          targetBranchGuid,
+          targetRegType
+        ),
+        loadBranchCashbox(
+          getBranchForWork() ||
+          targetBranchGuid
+        ),
+        result?.chkOtherFees &&
+        result?.priceListGuid
+          ? loadFees(
+              result.priceListGuid
+            )
+          : Promise.resolve()
       ]);
-
-      if (result?.chkOtherFees && result?.priceListGuid) {
-        await loadFees(result.priceListGuid);
-      }
     } catch (err) {
       setError(err.message || "حدث خطأ أثناء تجهيز طلب الالتحاق");
     } finally {
@@ -3223,6 +3305,9 @@ ${PRINT_READY_SCRIPT}</head>
       `}</style>
       <Dialog
         open={open}
+      keepMounted
+      transitionDuration={0}
+      BackdropProps={{ transitionDuration: 0 }}
         onClose={onClose}
         fullWidth
         maxWidth="xl"

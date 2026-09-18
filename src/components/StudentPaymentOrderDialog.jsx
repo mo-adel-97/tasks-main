@@ -61,6 +61,56 @@ const warningColor = accentColor;
 
 const noGuid = "00000000-0000-0000-0000-000000000000";
 
+const PAYMENT_FAST_CACHE = new Map();
+const PAYMENT_FAST_IN_FLIGHT = new Map();
+
+const paymentCachedGet = async (
+  url,
+  ttlMs = 60 * 1000
+) => {
+  const cached = PAYMENT_FAST_CACHE.get(url);
+
+  if (
+    cached &&
+    Date.now() - cached.timestamp < ttlMs
+  ) {
+    return cached.data;
+  }
+
+  if (PAYMENT_FAST_IN_FLIGHT.has(url)) {
+    return PAYMENT_FAST_IN_FLIGHT.get(url);
+  }
+
+  const promise = (async () => {
+    const response = await fetch(url);
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        result?.error ||
+        result?.message ||
+        "حدث خطأ أثناء تنفيذ الطلب"
+      );
+    }
+
+    PAYMENT_FAST_CACHE.set(url, {
+      timestamp: Date.now(),
+      data: result
+    });
+
+    return result;
+  })();
+
+  PAYMENT_FAST_IN_FLIGHT.set(url, promise);
+
+  try {
+    return await promise;
+  } finally {
+    PAYMENT_FAST_IN_FLIGHT.delete(url);
+  }
+};
+
+
 
 const exportHtmlDocumentToPdf = async ({
   html,
@@ -1593,9 +1643,13 @@ const StudentPaymentOrderDialog = ({
     }
 
     if ((open || keepDialogOpenAfterSave) && context) {
-      loadPaymentItems("diplom");
       setPaymentKind("diplom");
-      handleChangeMethod("cash");
+
+      // Independent reads run together.
+      void Promise.allSettled([
+        loadPaymentItems("diplom"),
+        handleChangeMethod("cash")
+      ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, context, keepDialogOpenAfterSave]);
@@ -1614,21 +1668,10 @@ const StudentPaymentOrderDialog = ({
         studentNational: String(context.studentNational ?? context.StudentNational ?? "0")
       });
 
-      const response = await fetch(
-        `${apiBaseUrl}/api/student-payment-orders/payment-items?${params.toString()}`
+      const result = await paymentCachedGet(
+        `${apiBaseUrl}/api/student-payment-orders/payment-items?${params.toString()}`,
+        30 * 1000
       );
-
-      const result = await response.json().catch(() => null);
-
-    if (!response.ok) {
-  console.error("Payment items error:", result);
-
-  throw new Error(
-    result?.error ||
-    result?.message ||
-    "تعذر تحميل بنود السداد"
-  );
-}
 
       const data = Array.isArray(result?.data) ? result.data : [];
 
@@ -1666,15 +1709,10 @@ const StudentPaymentOrderDialog = ({
 
       const params = new URLSearchParams({ branchGuid });
 
-      const response = await fetch(
-        `${apiBaseUrl}/api/student-payment-orders/branch-cash-info?${params.toString()}`
+      const result = await paymentCachedGet(
+        `${apiBaseUrl}/api/student-payment-orders/branch-cash-info?${params.toString()}`,
+        2 * 60 * 1000
       );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(result?.message || result?.error || "فشل تحميل بيانات صندوق المكتب");
-      }
 
       setCashBoxName(result?.cashBoxName || result?.CashBoxName || "");
       setCashBoxGuid(result?.cashBoxGuid || result?.CashBoxGuid || "");
@@ -1694,12 +1732,10 @@ const StudentPaymentOrderDialog = ({
       setCashBoxLoading(true);
       setBankOptions([]);
 
-      const response = await fetch(`${apiBaseUrl}/api/student-payment-orders/cashboxes?kind=bank`);
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(result?.message || result?.error || "تعذر تحميل قائمة البنوك");
-      }
+      const result = await paymentCachedGet(
+        `${apiBaseUrl}/api/student-payment-orders/cashboxes?kind=bank`,
+        2 * 60 * 1000
+      );
 
       const data = Array.isArray(result?.data) ? result.data : [];
       setBankOptions(data);
@@ -1755,12 +1791,10 @@ const StudentPaymentOrderDialog = ({
       try {
         setCashBoxLoading(true);
 
-        const response = await fetch(`${apiBaseUrl}/api/student-payment-orders/default-network-bank`);
-        const result = await response.json().catch(() => null);
-
-        if (!response.ok) {
-          throw new Error(result?.message || result?.error || "تعذر تحميل بنك الشبكة الافتراضي");
-        }
+        const result = await paymentCachedGet(
+          `${apiBaseUrl}/api/student-payment-orders/default-network-bank`,
+          2 * 60 * 1000
+        );
 
         setCashBoxName(result?.cashBoxName || "");
         setCashBoxGuid(result?.cashBoxGuid || "");
@@ -1804,15 +1838,10 @@ const StudentPaymentOrderDialog = ({
         priceListGuid
       });
 
-      const response = await fetch(
-        `${apiBaseUrl}/api/student-payment-orders/fee-catalog?${params.toString()}`
+      const result = await paymentCachedGet(
+        `${apiBaseUrl}/api/student-payment-orders/fee-catalog?${params.toString()}`,
+        30 * 1000
       );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(result?.message || result?.error || "تعذر تحميل قائمة الرسوم");
-      }
 
       const data = Array.isArray(result?.data) ? result.data : [];
       setFeeCatalog(data.map((item, index) => normalizePaymentItem(item, `fee-${index + 1}`)));
@@ -2279,6 +2308,9 @@ const StudentPaymentOrderDialog = ({
 
       <Dialog
       open={open || keepDialogOpenAfterSave}
+      keepMounted
+      transitionDuration={0}
+      BackdropProps={{ transitionDuration: 0 }}
       onClose={() => {
         if (!disabled) {
           setKeepDialogOpenAfterSave(false);
