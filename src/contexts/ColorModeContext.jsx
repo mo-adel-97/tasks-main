@@ -5,15 +5,19 @@ import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlined from '@mui/icons-material/LightModeOutlined';
 import { createAppTheme } from '../theme';
 
-export const COLOR_MODE_KEY = 'sstli-color-mode';
-const ColorModeContext = createContext({ mode: 'light', toggleMode: () => {} });
+// Bumped to -v2 so this deploy's new "dark by default" below applies to
+// everyone once, including users who had already saved 'light' under the
+// old key -- that old value simply stops being read. Whatever a user picks
+// from here on (light or dark) still persists normally under this key.
+export const COLOR_MODE_KEY = 'sstli-color-mode-v2';
+const ColorModeContext = createContext({ mode: 'dark', toggleMode: () => {} });
 
 export function initialColorMode() {
   try {
     const saved = localStorage.getItem(COLOR_MODE_KEY);
     if (saved === 'dark' || saved === 'light') return saved;
   } catch { /* Storage may be disabled by the browser. */ }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'dark';
 }
 
 export function ColorModeProvider({ children }) {

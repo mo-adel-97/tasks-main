@@ -1,6 +1,6 @@
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import * as uiLayout from './common/uiLayout';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -837,6 +837,14 @@ const DiscountOrderDialog = ({
     setPromoOpen(false);
     loadData();
   }, [open, accountGuid]);
+
+  // Lazy-mount guard: this dialog is mounted eagerly (but closed) as soon
+  // as the parent page loads, so skip building its JSX until it has
+  // actually been opened once. Once opened, later closes still render
+  // normally so the MUI exit transition keeps working.
+  const hasOpenedRef = useRef(open);
+  if (open) hasOpenedRef.current = true;
+  if (!hasOpenedRef.current) return null;
 
   const handleTypeChange = (event) => {
     const guid = event.target.value;

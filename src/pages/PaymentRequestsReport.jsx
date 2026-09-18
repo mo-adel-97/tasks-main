@@ -130,21 +130,35 @@ const today = () => {
   return new Date(d.getTime() - offset * 60000).toISOString().slice(0, 10);
 };
 
+const moneyFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
+const gridMoneyFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2
+});
+
+const gregorianDateFormatter = new Intl.DateTimeFormat(
+  "en-GB-u-ca-gregory",
+  {
+    calendar: "gregory",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }
+);
+
 const money = (value) =>
-  Number(value || 0).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  moneyFormatter.format(Number(value || 0));
 
 // عرض مختصر للمبالغ داخل الجريد فقط:
 // 500.00 => 500
 // 500.50 => 500.5
 // 1,250.75 => 1,250.75
 const gridMoney = (value) =>
-  Number(value || 0).toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
+  gridMoneyFormatter.format(Number(value || 0));
 
 const firstAndLastName = (value) => {
   const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
@@ -162,12 +176,7 @@ const formatDateTime = (value) => {
   }
 
   // التاريخ فقط - ميلادي Gregorian - بدون وقت.
-  return new Intl.DateTimeFormat("en-GB-u-ca-gregory", {
-    calendar: "gregory",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  }).format(d);
+  return gregorianDateFormatter.format(d);
 };
 
 const statusLabel = (row) => {
@@ -188,6 +197,327 @@ const statusColor = (row) => {
   if (status === 3) return "error";
   return "default";
 };
+
+const AdvancedMultiSelect = React.memo(function AdvancedMultiSelect({
+    label,
+    options,
+    value,
+    onChange,
+    placeholder,
+    isPhone
+  }) {
+    return (
+    <Autocomplete
+      multiple
+      disableCloseOnSelect
+      options={options}
+      value={value}
+      onChange={(_, newValue) => onChange(newValue)}
+      limitTags={isPhone ? 1 : 2}
+      noOptionsText="لا توجد خيارات"
+      ListboxProps={{
+        sx: {
+          p: { xs: 0.25, sm: 0.5 },
+          maxHeight: { xs: 190, sm: 240 },
+          "& .MuiAutocomplete-option": {
+            minHeight: { xs: 28, sm: 34 },
+            py: { xs: 0.35, sm: 0.55 },
+            px: { xs: 0.7, sm: 1 },
+            fontSize: { xs: "0.58rem", sm: "0.72rem" },
+            lineHeight: 1.35,
+            whiteSpace: "normal"
+          }
+        }
+      }}
+      componentsProps={{
+        paper: {
+          sx: {
+            mt: 0.35,
+            borderRadius: 1.5,
+            boxShadow: "0 8px 24px rgba(0,0,0,.14)",
+            fontSize: { xs: "0.58rem", sm: "0.72rem" },
+            maxWidth: { xs: 190, sm: 320 }
+          }
+        },
+        popper: {
+          sx: {
+            zIndex: 16000,
+            "& .MuiAutocomplete-paper": {
+              minWidth: { xs: "150px !important", sm: "220px !important" }
+            }
+          }
+        }
+      }}
+      renderTags={(selected, getTagProps) =>
+        selected.map((option, index) => (
+          <Chip
+            {...getTagProps({ index })}
+            key={`${label}-${option}`}
+            label={option}
+            size="small"
+            sx={{
+              height: { xs: 19, sm: 22 },
+              maxWidth: { xs: 92, sm: 150 },
+              fontWeight: 800,
+              fontSize: { xs: "0.75rem", sm: "0.75rem" },
+              "& .MuiChip-label": {
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }
+            }}
+          />
+        ))
+      }
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          size="small"
+          label={label}
+          placeholder={value.length ? "" : placeholder}
+          InputLabelProps={{ shrink: true }}
+          sx={uiLayout.withUiSx({
+            "& .MuiInputBase-root": {
+              minHeight: { xs: 31, sm: 39 },
+              py: "0px !important",
+              px: { xs: 0.15, sm: 0.5 },
+              bgcolor: "#fff"
+            },
+            "& .MuiInputLabel-root": {
+              fontWeight: 850,
+              fontSize: { xs: "0.75rem", sm: "0.75rem" }
+            },
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.75rem", sm: "0.75rem" }
+            }
+          }, uiLayout.formFieldSx)}
+        />
+      )}
+      sx={{ minWidth: 0, width: "100%" }}
+    />
+    );
+});
+
+const PaymentRequestsDataGrid = React.memo(
+  function PaymentRequestsDataGrid({
+    rows,
+    columns,
+    getRowId,
+    getRowClassName,
+    isDesktop,
+    isPhone
+  }) {
+    return (
+<DataGrid 
+  autoHeight 
+  rows={rows} 
+  columns={columns} 
+  getRowId={getRowId} 
+  disableRowSelectionOnClick 
+  rowHeight={isDesktop ? 56 : isPhone ? 38 : 46} 
+  columnHeaderHeight={isDesktop ? 50 : isPhone ? 38 : 46}
+
+  initialState={{
+    pagination: {
+      paginationModel: {
+        page: 0,
+        pageSize: 25
+      }
+    }
+  }}
+  pageSizeOptions={[25, 50, 100]}
+
+  getRowClassName={getRowClassName} 
+
+  sx={uiLayout.withUiSx({ 
+    border: "none", 
+
+    // اتجاه الجريد يظل LTR
+    direction: "rtl", 
+
+    /* ==============================
+       الهيدر
+    ============================== */ 
+    "& .MuiDataGrid-columnHeaders": { 
+      backgroundColor: "#f4f1ec", 
+      borderBottom: "1px solid #d8d1c7", 
+      color: "#163e32", 
+      fontWeight: "900", 
+      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px" 
+    }, 
+
+    "& .MuiDataGrid-columnHeader": { 
+      backgroundColor: "#f4f1ec" 
+    }, 
+
+    "& .MuiDataGrid-columnHeaderTitle": { 
+      fontWeight: "900 !important", 
+      color: "#163e32" 
+    }, 
+
+    /* ==============================
+       جميع الخلايا
+    ============================== */ 
+    "& .MuiDataGrid-virtualScroller": { 
+      minHeight: "0 !important" 
+    }, 
+
+    "& .MuiDataGrid-virtualScrollerContent": { 
+      minHeight: "0 !important" 
+    }, 
+
+    "& .MuiDataGrid-cell": { 
+      borderBottom: "1px solid #dedbd5", 
+      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px", 
+      fontWeight: "700", 
+      color: "#24352f", 
+      display: "flex", 
+      alignItems: "center" 
+    }, 
+
+    /* ==============================
+       المبالغ فقط
+       تكبير على الديسكتوب فقط
+    ============================== */ 
+    "& .amount-cell": { 
+      fontSize: isDesktop 
+        ? "15px" 
+        : isPhone 
+          ? "12px" 
+          : "12px", 
+
+      fontWeight: isDesktop 
+        ? "900 !important" 
+        : "800", 
+
+      color: "#20382f", 
+      fontVariantNumeric: "tabular-nums",
+      lineHeight: 1.2
+    }, 
+
+    /* ==============================
+       التاريخ
+    ============================== */ 
+    "& .date-cell": { 
+      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px", 
+      fontWeight: "750", 
+      color: "#24352f", 
+      whiteSpace: "nowrap", 
+      overflow: "visible", 
+      textOverflow: "clip", 
+      fontVariantNumeric: "tabular-nums" 
+    }, 
+
+    /* ==============================
+       صف أبيض + صف خوخي
+    ============================== */ 
+    "& .payment-row-even": { 
+      backgroundColor: "#ffffff" 
+    }, 
+
+    "& .payment-row-odd": { 
+      backgroundColor: "#fff0df" 
+    }, 
+
+    /* Hover */ 
+    "& .payment-row-even:hover, & .payment-row-odd:hover": { 
+      backgroundColor: "#f9e2c8 !important" 
+    }, 
+
+    /* ==============================
+       التحديد
+    ============================== */ 
+    "& .MuiDataGrid-row.Mui-selected": { 
+      backgroundColor: "#f6dfc6 !important" 
+    }, 
+
+    "& .MuiDataGrid-row.Mui-selected:hover": { 
+      backgroundColor: "#f2d4b2 !important" 
+    }, 
+
+    /* ==============================
+       الفوتر
+    ============================== */ 
+    "& .MuiDataGrid-footerContainer": { 
+      borderTop: "1px solid #d8d1c7", 
+      backgroundColor: "#faf8f5", 
+      fontWeight: "700",
+      minHeight: isDesktop ? 68 : isPhone ? 60 : 64,
+      paddingTop: isDesktop ? "10px" : "8px",
+      paddingBottom: isDesktop ? "14px" : "10px",
+      paddingLeft: isDesktop ? "10px" : "6px",
+      paddingRight: isDesktop ? "10px" : "6px",
+      alignItems: "center"
+    },
+
+    "& .MuiTablePagination-root": {
+      width: "100%",
+      overflow: "visible"
+    },
+
+    "& .MuiTablePagination-toolbar": {
+      minHeight: "48px !important",
+      paddingLeft: isDesktop ? "8px !important" : "4px !important",
+      paddingRight: isDesktop ? "8px !important" : "4px !important",
+      paddingBottom: isDesktop ? "4px" : "2px",
+      gap: isDesktop ? "8px" : "4px"
+    },
+
+    "& .MuiTablePagination-actions": {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      marginInlineStart: "6px"
+    }, 
+
+    /* ==============================
+       إزالة Outline
+    ============================== */ 
+    "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": { 
+      outline: "none" 
+    }, 
+
+    /* ==============================
+       فون / تابلت فقط
+    ============================== */ 
+    ...(!isDesktop 
+      ? { 
+          "& .MuiDataGrid-columnHeaderTitleContainer": { 
+            justifyContent: "center", 
+            minWidth: 0, 
+            overflow: "hidden" 
+          }, 
+
+          "& .MuiDataGrid-columnHeaderTitle": { 
+            textAlign: "center", 
+            whiteSpace: "nowrap", 
+            overflow: "hidden", 
+            textOverflow: "ellipsis" 
+          }, 
+
+          "& .MuiDataGrid-columnSeparator, & .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer": { 
+            display: "none" 
+          }, 
+
+          "& .MuiDataGrid-cell": { 
+            px: isPhone ? 0.05 : 0.2, 
+            justifyContent: "center", 
+            textAlign: "center" 
+          }, 
+
+          "& .MuiDataGrid-virtualScroller": { 
+            overflowX: "auto" 
+          }, 
+
+          "& .MuiDataGrid-scrollbar--horizontal": { 
+            display: "block" 
+          } 
+        } 
+      : {}) 
+  }, uiLayout.dataGridSx)} 
+/>
+    );
+  }
+);
 
 export default function PaymentRequestsReport() {
   const theme = useTheme();
@@ -615,7 +945,7 @@ export default function PaymentRequestsReport() {
     setMenuAnchor(null);
   };
 
-  const copyToClipboard = async (value, successMessage = "تم النسخ") => {
+  const copyToClipboard = useCallback(async (value, successMessage = "تم النسخ") => {
     const text = String(value ?? "").trim();
 
     if (!text) {
@@ -661,7 +991,7 @@ export default function PaymentRequestsReport() {
 
       return false;
     }
-  };
+  }, []);
 
   const confirmRow = async (row) => {
     if (Number(row?.status) !== 0 || row?.isUse === false) {
@@ -885,8 +1215,10 @@ export default function PaymentRequestsReport() {
     setMenuAnchor(null);
     setMenuRow(null);
 
-    // نسمح لـ MUI Menu/Popover أن يعمل unmount كامل.
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    // يكفي Frame واحد بعد إغلاق الـ Menu بدون تأخير ثابت 250ms.
+    await new Promise((resolve) =>
+      window.requestAnimationFrame(resolve)
+    );
 
     if (Number(row?.status) !== 0) {
       await fireSweetAlert({
@@ -1142,8 +1474,17 @@ export default function PaymentRequestsReport() {
           input.style.lineHeight = "1.8";
           input.style.fontFamily =
             "Tahoma, Arial, sans-serif";
-          input.style.background = "#fff";
-          input.style.color = "#222";
+          input.style.background =
+            theme.palette.mode === "dark"
+              ? (theme.palette.surfaces?.nested || "#1b3328")
+              : "#fff";
+          input.style.color =
+            theme.palette.mode === "dark"
+              ? (theme.palette.text?.primary || "#eef8f3")
+              : "#222";
+          if (theme.palette.mode === "dark") {
+            input.style.border = "1px solid #67C99D";
+          }
           input.style.pointerEvents = "auto";
           input.style.userSelect = "text";
           input.style.webkitUserSelect = "text";
@@ -1392,6 +1733,23 @@ export default function PaymentRequestsReport() {
     a.remove();
     URL.revokeObjectURL(url);
   };
+
+  const getGridRowId = useCallback(
+    (row) =>
+      row.guid ||
+      row.id ||
+      row.orderGuid ||
+      row.code,
+    []
+  );
+
+  const getGridRowClassName = useCallback(
+    (params) =>
+      params.indexRelativeToCurrentPage % 2 === 0
+        ? "payment-row-even"
+        : "payment-row-odd",
+    []
+  );
 
   const columns = useMemo(() => [
     {
@@ -1820,101 +2178,7 @@ export default function PaymentRequestsReport() {
     return {};
   }, [isPhone, isTablet]);
 
-  const AdvancedMultiSelect = ({
-    label,
-    options,
-    value,
-    onChange,
-    placeholder
-  }) => (
-    <Autocomplete
-      multiple
-      disableCloseOnSelect
-      options={options}
-      value={value}
-      onChange={(_, newValue) => onChange(newValue)}
-      limitTags={isPhone ? 1 : 2}
-      noOptionsText="لا توجد خيارات"
-      ListboxProps={{
-        sx: {
-          p: { xs: 0.25, sm: 0.5 },
-          maxHeight: { xs: 190, sm: 240 },
-          "& .MuiAutocomplete-option": {
-            minHeight: { xs: 28, sm: 34 },
-            py: { xs: 0.35, sm: 0.55 },
-            px: { xs: 0.7, sm: 1 },
-            fontSize: { xs: "0.58rem", sm: "0.72rem" },
-            lineHeight: 1.35,
-            whiteSpace: "normal"
-          }
-        }
-      }}
-      componentsProps={{
-        paper: {
-          sx: {
-            mt: 0.35,
-            borderRadius: 1.5,
-            boxShadow: "0 8px 24px rgba(0,0,0,.14)",
-            fontSize: { xs: "0.58rem", sm: "0.72rem" },
-            maxWidth: { xs: 190, sm: 320 }
-          }
-        },
-        popper: {
-          sx: {
-            zIndex: 16000,
-            "& .MuiAutocomplete-paper": {
-              minWidth: { xs: "150px !important", sm: "220px !important" }
-            }
-          }
-        }
-      }}
-      renderTags={(selected, getTagProps) =>
-        selected.map((option, index) => (
-          <Chip
-            {...getTagProps({ index })}
-            key={`${label}-${option}`}
-            label={option}
-            size="small"
-            sx={{
-              height: { xs: 19, sm: 22 },
-              maxWidth: { xs: 92, sm: 150 },
-              fontWeight: 800,
-              fontSize: { xs: "0.75rem", sm: "0.75rem" },
-              "& .MuiChip-label": {
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }
-            }}
-          />
-        ))
-      }
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          size="small"
-          label={label}
-          placeholder={value.length ? "" : placeholder}
-          InputLabelProps={{ shrink: true }}
-          sx={uiLayout.withUiSx({
-            "& .MuiInputBase-root": {
-              minHeight: { xs: 31, sm: 39 },
-              py: "0px !important",
-              px: { xs: 0.15, sm: 0.5 },
-              bgcolor: "#fff"
-            },
-            "& .MuiInputLabel-root": {
-              fontWeight: 850,
-              fontSize: { xs: "0.75rem", sm: "0.75rem" }
-            },
-            "& .MuiInputBase-input": {
-              fontSize: { xs: "0.75rem", sm: "0.75rem" }
-            }
-          }, uiLayout.formFieldSx)}
-        />
-      )}
-      sx={{ minWidth: 0, width: "100%" }}
-    />
-  );
+
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box dir="rtl" sx={{ minHeight: "100vh", bgcolor: theme.palette.mode === 'dark' ? theme.palette.background.default : "#f7faf8" }}>
@@ -2274,6 +2538,32 @@ export default function PaymentRequestsReport() {
                     color: `${theme.palette.text.primary} !important`
                   },
 
+                  ".swal2-html-container, .swal2-html-container > div, .swal2-html-container span, .swal2-html-container small": {
+                    color: `${theme.palette.text.primary} !important`
+                  },
+                  ".swal2-select": {
+                    background: `${theme.palette.surfaces?.nested || "#1b3328"} !important`,
+                    color: `${theme.palette.text.primary} !important`,
+                    border: "1px solid #67C99D !important",
+                    colorScheme: "dark"
+                  },
+                  ".swal2-select option": {
+                    background: `${theme.palette.surfaces?.section || "#172b22"} !important`,
+                    color: `${theme.palette.text.primary} !important`
+                  },
+                  ".swal2-textarea, .swal2-input": {
+                    background: `${theme.palette.surfaces?.nested || "#1b3328"} !important`,
+                    color: `${theme.palette.text.primary} !important`,
+                    border: "1px solid #67C99D !important",
+                    caretColor: "#9BE0C1 !important"
+                  },
+                  ".swal2-icon": {
+                    borderColor: "#8eb7c7 !important"
+                  },
+                  ".swal2-icon-content": {
+                    color: "#9bc6d6 !important"
+                  },
+
                   ".sstli-unified-dark-root input[type='date'], .sstli-unified-dark-root input[type='datetime-local'], .sstli-unified-dark-root input[type='time'], .MuiDialog-paper input[type='date'], .MuiDialog-paper input[type='datetime-local'], .MuiDialog-paper input[type='time']": {
                     colorScheme: "dark"
                   }
@@ -2515,6 +2805,7 @@ export default function PaymentRequestsReport() {
                   }}
                 >
                   <AdvancedMultiSelect
+                    isPhone={isPhone}
                     label="الفرع"
                     placeholder="اختر فرع أو أكثر"
                     options={filterOptions.branches}
@@ -2523,6 +2814,7 @@ export default function PaymentRequestsReport() {
                   />
 
                   <AdvancedMultiSelect
+                    isPhone={isPhone}
                     label="المستند"
                     placeholder="اختر مستند أو أكثر"
                     options={filterOptions.documents}
@@ -2531,6 +2823,7 @@ export default function PaymentRequestsReport() {
                   />
 
                   <AdvancedMultiSelect
+                    isPhone={isPhone}
                     label="الخزينة / البنك"
                     placeholder="اختر بنك أو خزينة"
                     options={filterOptions.cashBoxes}
@@ -2539,6 +2832,7 @@ export default function PaymentRequestsReport() {
                   />
 
                   <AdvancedMultiSelect
+                    isPhone={isPhone}
                     label="حالة التحويل"
                     placeholder="اختر حالة أو أكثر"
                     options={filterOptions.statuses}
@@ -2547,6 +2841,7 @@ export default function PaymentRequestsReport() {
                   />
 
                   <AdvancedMultiSelect
+                    isPhone={isPhone}
                     label="مدخل البيانات"
                     placeholder="اختر مستخدم أو أكثر"
                     options={filterOptions.createdBy}
@@ -2555,6 +2850,7 @@ export default function PaymentRequestsReport() {
                   />
 
                   <AdvancedMultiSelect
+                    isPhone={isPhone}
                     label="المحاسب"
                     placeholder="اختر محاسب أو أكثر"
                     options={filterOptions.accountants}
@@ -2628,191 +2924,30 @@ export default function PaymentRequestsReport() {
                 width: "100%",
                 maxWidth: "100%",
                 overflowX: isDesktop ? "auto" : "hidden",
-                overflowY: "visible"
+                overflowY: "visible",
+                pb: { xs: 1.25, sm: 1.5, md: 2 }
               }, uiLayout.tableContainerSx)}
             >
-<DataGrid 
-  autoHeight 
-  rows={filteredRows} 
-  columns={isDesktop ? columns : compactColumns} 
-  getRowId={(row) => row.guid || row.id} 
-  disableRowSelectionOnClick 
-  rowHeight={isDesktop ? 52 : isPhone ? 34 : 42} 
-  columnHeaderHeight={isDesktop ? 46 : isPhone ? 34 : 42} 
-
-  getRowClassName={(params) => 
-    params.indexRelativeToCurrentPage % 2 === 0 
-      ? "payment-row-even" 
-      : "payment-row-odd" 
-  } 
-
-  sx={uiLayout.withUiSx({ 
-    border: "none", 
-
-    // اتجاه الجريد يظل LTR
-    direction: "rtl", 
-
-    /* ==============================
-       الهيدر
-    ============================== */ 
-    "& .MuiDataGrid-columnHeaders": { 
-      backgroundColor: "#f4f1ec", 
-      borderBottom: "1px solid #d8d1c7", 
-      color: "#163e32", 
-      fontWeight: "900", 
-      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px" 
-    }, 
-
-    "& .MuiDataGrid-columnHeader": { 
-      backgroundColor: "#f4f1ec" 
-    }, 
-
-    "& .MuiDataGrid-columnHeaderTitle": { 
-      fontWeight: "900 !important", 
-      color: "#163e32" 
-    }, 
-
-    /* ==============================
-       جميع الخلايا
-    ============================== */ 
-    "& .MuiDataGrid-virtualScroller": { 
-      minHeight: "0 !important" 
-    }, 
-
-    "& .MuiDataGrid-virtualScrollerContent": { 
-      minHeight: "0 !important" 
-    }, 
-
-    "& .MuiDataGrid-cell": { 
-      borderBottom: "1px solid #dedbd5", 
-      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px", 
-      fontWeight: "700", 
-      color: "#24352f", 
-      display: "flex", 
-      alignItems: "center" 
-    }, 
-
-    /* ==============================
-       المبالغ فقط
-       تكبير على الديسكتوب فقط
-    ============================== */ 
-    "& .amount-cell": { 
-      fontSize: isDesktop 
-        ? "15px" 
-        : isPhone 
-          ? "12px" 
-          : "12px", 
-
-      fontWeight: isDesktop 
-        ? "900 !important" 
-        : "800", 
-
-      color: "#20382f", 
-      fontVariantNumeric: "tabular-nums",
-      lineHeight: 1.2
-    }, 
-
-    /* ==============================
-       التاريخ
-    ============================== */ 
-    "& .date-cell": { 
-      fontSize: isDesktop ? "12px" : isPhone ? "12px" : "12px", 
-      fontWeight: "750", 
-      color: "#24352f", 
-      whiteSpace: "nowrap", 
-      overflow: "visible", 
-      textOverflow: "clip", 
-      fontVariantNumeric: "tabular-nums" 
-    }, 
-
-    /* ==============================
-       صف أبيض + صف خوخي
-    ============================== */ 
-    "& .payment-row-even": { 
-      backgroundColor: "#ffffff" 
-    }, 
-
-    "& .payment-row-odd": { 
-      backgroundColor: "#fff0df" 
-    }, 
-
-    /* Hover */ 
-    "& .payment-row-even:hover, & .payment-row-odd:hover": { 
-      backgroundColor: "#f9e2c8 !important" 
-    }, 
-
-    /* ==============================
-       التحديد
-    ============================== */ 
-    "& .MuiDataGrid-row.Mui-selected": { 
-      backgroundColor: "#f6dfc6 !important" 
-    }, 
-
-    "& .MuiDataGrid-row.Mui-selected:hover": { 
-      backgroundColor: "#f2d4b2 !important" 
-    }, 
-
-    /* ==============================
-       الفوتر
-    ============================== */ 
-    "& .MuiDataGrid-footerContainer": { 
-      borderTop: "1px solid #d8d1c7", 
-      backgroundColor: "#faf8f5", 
-      fontWeight: "700" 
-    }, 
-
-    /* ==============================
-       إزالة Outline
-    ============================== */ 
-    "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": { 
-      outline: "none" 
-    }, 
-
-    /* ==============================
-       فون / تابلت فقط
-    ============================== */ 
-    ...(!isDesktop 
-      ? { 
-          "& .MuiDataGrid-columnHeaderTitleContainer": { 
-            justifyContent: "center", 
-            minWidth: 0, 
-            overflow: "hidden" 
-          }, 
-
-          "& .MuiDataGrid-columnHeaderTitle": { 
-            textAlign: "center", 
-            whiteSpace: "nowrap", 
-            overflow: "hidden", 
-            textOverflow: "ellipsis" 
-          }, 
-
-          "& .MuiDataGrid-columnSeparator, & .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer": { 
-            display: "none" 
-          }, 
-
-          "& .MuiDataGrid-cell": { 
-            px: isPhone ? 0.05 : 0.2, 
-            justifyContent: "center", 
-            textAlign: "center" 
-          }, 
-
-          "& .MuiDataGrid-virtualScroller": { 
-            overflowX: "auto" 
-          }, 
-
-          "& .MuiDataGrid-scrollbar--horizontal": { 
-            display: "block" 
-          } 
-        } 
-      : {}) 
-  }, uiLayout.dataGridSx)} 
+<PaymentRequestsDataGrid
+  rows={filteredRows}
+  columns={isDesktop ? columns : compactColumns}
+  getRowId={getGridRowId}
+  getRowClassName={getGridRowClassName}
+  isDesktop={isDesktop}
+  isPhone={isPhone}
 />
             </Box>
           </Box>
         </Paper>
       </PageContainer>
 
-      <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)} dir="rtl">
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={() => setMenuAnchor(null)}
+        transitionDuration={0}
+        dir="rtl"
+      >
         <MenuItem onClick={() => menuRow && openRequest(menuRow)}><VisibilityIcon fontSize="small" sx={{ ml: 1 }} />عرض طلب السداد</MenuItem>
         <MenuItem disabled={!menuRow || Number(menuRow.status) !== 0 || menuRow.isUse === false} onClick={() => menuRow && confirmRow(menuRow)}><CheckCircleIcon fontSize="small" sx={{ ml: 1, color: primaryColor }} />تأكيد التحويل</MenuItem>
         <MenuItem disabled={!menuRow?.billGuid} onClick={() => menuRow && openInvoice(menuRow)}><ReceiptLongIcon fontSize="small" sx={{ ml: 1 }} />عرض الفاتورة</MenuItem>

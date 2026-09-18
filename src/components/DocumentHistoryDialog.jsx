@@ -1,5 +1,5 @@
 import * as uiLayout from './common/uiLayout';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -72,6 +72,14 @@ const DocumentHistoryDialog = ({
 
     return () => controller.abort();
   }, [open, actionGuid, apiBaseUrl]);
+
+  // Lazy-mount guard: this dialog is mounted eagerly (but closed) as soon
+  // as the parent page loads, so skip building its JSX until it has
+  // actually been opened once. Once opened, later closes still render
+  // normally so the MUI exit transition keeps working.
+  const hasOpenedRef = useRef(open);
+  if (open) hasOpenedRef.current = true;
+  if (!hasOpenedRef.current) return null;
 
   const columns = [
     {

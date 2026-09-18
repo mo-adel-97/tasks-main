@@ -10,7 +10,7 @@ import {
   sidebarPositionStyle,
 } from '../config/sidebarLayout';
 import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
-import { designTokens } from '../config/designTokens';
+import { designTokens, fluid } from '../config/designTokens';
 import { keyframes } from '@mui/system';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
@@ -106,7 +106,15 @@ const HR_API_BASE_URL =
   process.env.REACT_APP_API_URL ||
   "https://api4.sstli.com";
 const user = JSON.parse(localStorage.getItem('user') || '{}');
-const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v6';
+// Same key/shape PrivateRoute.jsx writes ({ userKey, loadedAt, groups, items }
+// from the identical token-fingerprint hash) after it fetches
+// /api/sidebar-navigation/me to decide route access. PrivateRoute always
+// finishes that fetch and blocks rendering its children (this component
+// included) until it does, so by the time this component mounts the cache
+// below is already fresh -- reading the same key instead of an independent
+// 'v6' key lets fetchSidebarConfigShared's own TTL check see that freshness
+// and skip firing a second, redundant request for data PrivateRoute already has.
+const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v4';
 const SIDEBAR_CACHE_TTL_MS = 5 * 60 * 1000;
 
 let sidebarMemoryCache = null;
@@ -1305,7 +1313,7 @@ const childItemSx = (selected) => ({
           sx={{
             display: isDesktop ? 'flex' : 'none',
             flex: '0 0 auto',
-            height: 74,
+            height: fluid(74, 96),
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1320,8 +1328,8 @@ const childItemSx = (selected) => ({
         >
           <Box
             sx={{
-              width: 68,
-              height: 68,
+              width: fluid(68, 88),
+              height: fluid(68, 88),
               position: 'relative',
               display: 'grid',
               placeItems: 'center',
@@ -1364,8 +1372,8 @@ const childItemSx = (selected) => ({
           >
             <Box
               sx={{
-                width: 50,
-                height: 50,
+                width: fluid(50, 68),
+                height: fluid(50, 68),
                 borderRadius: '50%',
                 display: 'grid',
                 placeItems: 'center',

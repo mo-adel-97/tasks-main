@@ -42,6 +42,19 @@ const COLORS = {
   white: '#ffffff'
 };
 
+const DARK = {
+  page: '#0d1b15',
+  card: '#13251d',
+  section: '#172b22',
+  nested: '#1b3328',
+  hover: '#214333',
+  selected: '#28513f',
+  border: '#67C99D',
+  accent: '#9BE0C1',
+  text: '#eef8f3',
+  muted: '#b7cfc3'
+};
+
 const ADMIN_USERS = ['sa', 'sa1', 'admin'];
 
 const PARTICLES = [
@@ -202,19 +215,24 @@ export default function Login() {
         overflowX: 'hidden',
         overflowY: { xs: 'auto', md: 'hidden' },
         fontFamily: 'Cairo, Arial, sans-serif',
-        background: theme.palette.mode === 'dark'
-          ? theme.palette.background.default
+        background: isDark
+          ? `
+            radial-gradient(circle at 18% 18%, rgba(103,201,157,.07), transparent 27%),
+            radial-gradient(circle at 82% 72%, rgba(103,201,157,.04), transparent 24%),
+            ${DARK.page}
+          `
           : `
-          radial-gradient(circle at 15% 15%, rgba(255,255,255,0.18), transparent 28%),
-          radial-gradient(circle at 88% 78%, rgba(174,30,33,0.15), transparent 25%),
-          linear-gradient(135deg, ${COLORS.primaryDark} 0%, ${COLORS.primary} 52%, #0a8c5a 100%)
-        `,
+            radial-gradient(circle at 15% 15%, rgba(255,255,255,0.18), transparent 28%),
+            radial-gradient(circle at 88% 78%, rgba(174,30,33,0.15), transparent 25%),
+            linear-gradient(135deg, ${COLORS.primaryDark} 0%, ${COLORS.primary} 52%, #0a8c5a 100%)
+          `,
         '&::before': {
           content: '""',
           position: 'absolute',
           inset: 0,
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)',
+          backgroundImage: isDark
+            ? 'linear-gradient(rgba(103,201,157,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(103,201,157,.025) 1px, transparent 1px)'
+            : 'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)',
           backgroundSize: '42px 42px',
           maskImage: 'linear-gradient(to bottom, black, transparent 92%)',
           pointerEvents: 'none'
@@ -231,6 +249,38 @@ export default function Login() {
           @keyframes loginRise {
             from { opacity: 0; transform: translateY(22px); }
             to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes loginDarkGlow {
+            0%, 100% {
+              box-shadow:
+                0 18px 50px rgba(0,0,0,.32),
+                0 0 0 1px rgba(103,201,157,.10),
+                0 0 22px rgba(103,201,157,.05);
+            }
+            50% {
+              box-shadow:
+                0 22px 58px rgba(0,0,0,.36),
+                0 0 0 1px rgba(103,201,157,.22),
+                0 0 34px rgba(103,201,157,.10);
+            }
+          }
+
+          @media (max-width: 599px) {
+            @keyframes loginDarkGlow {
+              0%, 100% {
+                box-shadow:
+                  0 12px 30px rgba(0,0,0,.28),
+                  0 0 0 1px rgba(103,201,157,.09),
+                  0 0 16px rgba(103,201,157,.04);
+              }
+              50% {
+                box-shadow:
+                  0 14px 34px rgba(0,0,0,.31),
+                  0 0 0 1px rgba(103,201,157,.17),
+                  0 0 22px rgba(103,201,157,.075);
+              }
+            }
           }
 
           @media (prefers-reduced-motion: reduce) {
@@ -254,11 +304,16 @@ export default function Login() {
               width: particle.size,
               height: particle.size,
               borderRadius: '50%',
-              backgroundColor:
-                index % 3 === 0
-                  ? 'rgba(174,30,33,0.65)'
-                  : 'rgba(255,255,255,0.38)',
-              boxShadow: '0 0 18px rgba(255,255,255,0.22)',
+              backgroundColor: isDark
+                ? 'rgba(103,201,157,.22)'
+                : (
+                    index % 3 === 0
+                      ? 'rgba(174,30,33,0.65)'
+                      : 'rgba(255,255,255,0.38)'
+                  ),
+              boxShadow: isDark
+                ? '0 0 14px rgba(103,201,157,.12)'
+                : '0 0 18px rgba(255,255,255,0.22)',
               animation: `loginFloat ${7 + index}s ease-in-out infinite`,
               animationDelay: particle.delay,
               pointerEvents: 'none'
@@ -291,14 +346,24 @@ export default function Login() {
               gridTemplateColumns: { xs: '1fr', md: '0.96fr 1.04fr' },
               overflow: 'hidden',
               borderRadius: { xs: 2.25, sm: 3.5, md: 5 },
-              border: isDark ? '1px solid #67C99D' : '1px solid rgba(255,255,255,0.28)',
-              backgroundColor: isDark ? theme.palette.surfaces.card : 'rgba(255,255,255,0.97)',
-              boxShadow: {
-                xs: '0 10px 28px rgba(3, 48, 31, 0.24)',
-                md: '0 35px 90px rgba(3, 48, 31, 0.34)'
-              },
+              border: isDark
+                ? `1px solid ${DARK.border}`
+                : '1px solid rgba(255,255,255,0.28)',
+              backgroundColor: isDark
+                ? DARK.card
+                : 'rgba(255,255,255,0.97)',
+              boxShadow: isDark
+                ? '0 18px 50px rgba(0,0,0,.32)'
+                : {
+                    xs: '0 10px 28px rgba(3, 48, 31, 0.24)',
+                    md: '0 35px 90px rgba(3, 48, 31, 0.34)'
+                  },
               backdropFilter: 'blur(18px)',
-              animation: reduceMotion ? 'none' : 'loginRise 700ms ease-out'
+              animation: reduceMotion
+                ? 'none'
+                : isDark
+                  ? 'loginRise 700ms ease-out, loginDarkGlow 4.6s ease-in-out 700ms infinite'
+                  : 'loginRise 700ms ease-out'
             }}
           >
             <Box
@@ -308,7 +373,35 @@ export default function Login() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                backgroundColor: isDark ? theme.palette.surfaces.card : COLORS.white
+                backgroundColor: isDark ? DARK.card : COLORS.white,
+                borderInlineEnd: {
+                  xs: 'none',
+                  md: isDark
+                    ? `1px solid ${DARK.border}`
+                    : 'none'
+                },
+                boxShadow: {
+                  xs: 'none',
+                  md: isDark
+                    ? '-10px 0 24px -22px rgba(103,201,157,.60)'
+                    : 'none'
+                },
+                position: 'relative',
+                '&::after': {
+                  content: '""',
+                  display: {
+                    xs: 'none',
+                    md: isDark ? 'block' : 'none'
+                  },
+                  position: 'absolute',
+                  insetBlock: '12%',
+                  insetInlineEnd: '-1px',
+                  width: '1px',
+                  background:
+                    'linear-gradient(180deg, transparent 0%, rgba(155,224,193,.30) 18%, #67C99D 50%, rgba(155,224,193,.30) 82%, transparent 100%)',
+                  opacity: 0.9,
+                  pointerEvents: 'none'
+                }
               }}
             >
               <Box sx={{ maxWidth: 450, width: '100%', mx: 'auto' }}>
@@ -330,8 +423,12 @@ export default function Login() {
                       borderRadius: { xs: 2, sm: 3 },
                       p: { xs: 0.45, sm: 0.7 },
                       backgroundColor: COLORS.white,
-                      border: `1px solid ${COLORS.primarySoft}`,
-                      boxShadow: '0 12px 30px rgba(5,117,70,0.16)'
+                      border: isDark
+                        ? `1px solid ${DARK.border}`
+                        : `1px solid ${COLORS.primarySoft}`,
+                      boxShadow: isDark
+                        ? '0 6px 18px rgba(0,0,0,.28)'
+                        : '0 12px 30px rgba(5,117,70,0.16)'
                     }}
                   />
                 </Stack>
@@ -340,7 +437,7 @@ export default function Login() {
                   component="h1"
                   sx={{
                     textAlign: 'center',
-                    color: isDark ? theme.palette.text.primary : COLORS.text,
+                    color: isDark ? DARK.text : COLORS.text,
                     fontSize: { xs: '1.02rem', sm: '1.4rem', md: '1.9rem' },
                     fontWeight: 800,
                     lineHeight: 1.35
@@ -354,7 +451,7 @@ export default function Login() {
                     mt: { xs: 0.45, sm: 0.8 },
                     mb: { xs: 1.4, sm: 2.8, md: 3.5 },
                     textAlign: 'center',
-                    color: isDark ? theme.palette.text.secondary : COLORS.muted,
+                    color: isDark ? DARK.muted : COLORS.muted,
                     fontSize: { xs: "0.75rem", sm: '0.8rem', md: '0.98rem' },
                     lineHeight: { xs: 1.65, sm: 1.8 }
                   }}
@@ -400,13 +497,6 @@ export default function Login() {
                           dir: 'rtl',
                           'aria-label': 'اسم المستخدم'
                         }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <PersonOutline sx={{ color: isDark ? theme.palette.primary.main : COLORS.primary }} />
-                            </InputAdornment>
-                          )
-                        }}
                         sx={uiLayout.withUiSx(getFieldStyles(theme), uiLayout.formFieldSx)}
                       />
                     </Box>
@@ -428,29 +518,6 @@ export default function Login() {
                           dir: 'rtl',
                           'aria-label': 'كلمة المرور'
                         }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LockOutlined sx={{ color: isDark ? theme.palette.primary.main : COLORS.primary }} />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label={
-                                  showPassword
-                                    ? 'إخفاء كلمة المرور'
-                                    : 'إظهار كلمة المرور'
-                                }
-                                onClick={() => setShowPassword((current) => !current)}
-                                edge="end"
-                                disabled={isLoading}
-                              >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          )
-                        }}
                         sx={uiLayout.withUiSx(getFieldStyles(theme), uiLayout.formFieldSx)}
                       />
                     </Box>
@@ -471,12 +538,39 @@ export default function Login() {
                           fontFamily: 'Cairo, Arial, sans-serif',
                           fontWeight: 800,
                           fontSize: { xs: '0.76rem', sm: '0.86rem', md: '0.98rem' },
-                          boxShadow: '0 10px 24px rgba(5,117,70,0.25)',
-                          background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
+                          border: isDark
+                            ? `1px solid ${DARK.border}`
+                            : '1px solid transparent',
+                          color: isDark ? DARK.accent : '#fff',
+                          boxShadow: isDark
+                            ? 'none'
+                            : '0 10px 24px rgba(5,117,70,0.25)',
+                          background: isDark
+                            ? 'transparent'
+                            : `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
+                          backgroundColor: isDark
+                            ? 'transparent'
+                            : undefined,
+                          backgroundImage: isDark
+                            ? 'none'
+                            : undefined,
                           '&:hover': {
-                            background: `linear-gradient(135deg, ${COLORS.primaryDark}, ${COLORS.primary})`,
-                            boxShadow: '0 13px 30px rgba(5,117,70,0.31)',
-                            transform: 'translateY(-1px)'
+                            background: isDark
+                              ? 'transparent'
+                              : `linear-gradient(135deg, ${COLORS.primaryDark}, ${COLORS.primary})`,
+                            backgroundColor: isDark
+                              ? 'transparent'
+                              : undefined,
+                            borderColor: isDark
+                              ? '#8EDBB8'
+                              : 'transparent',
+                            color: isDark
+                              ? '#C9F2DF'
+                              : '#fff',
+                            boxShadow: isDark
+                              ? '0 0 0 1px rgba(103,201,157,.14)'
+                              : '0 13px 30px rgba(5,117,70,0.31)',
+                            transform: 'none'
                           }
                         }, uiLayout.buttonSx)}
                       >
@@ -504,14 +598,20 @@ export default function Login() {
                           fontWeight: 800,
                           fontSize: { xs: "0.75rem", sm: '0.84rem', md: '0.95rem' },
                           borderWidth: 1.5,
-                          borderColor: isDark ? '#67C99D' : COLORS.primary,
-                          color: isDark ? theme.palette.primary.main : COLORS.primary,
-                          backgroundColor: isDark ? theme.palette.surfaces.hover : COLORS.primarySoft,
+                          borderColor: isDark ? DARK.border : COLORS.primary,
+                          color: isDark ? DARK.accent : COLORS.primary,
+                          backgroundColor: isDark ? 'transparent' : COLORS.primarySoft,
+                          backgroundImage: 'none',
+                          boxShadow: 'none',
                           '&:hover': {
                             borderWidth: 1.5,
-                            borderColor: isDark ? theme.palette.primary.main : COLORS.primaryDark,
-                            backgroundColor: isDark ? theme.palette.surfaces.selected : '#dff1e9',
-                            transform: 'translateY(-1px)'
+                            borderColor: isDark ? '#8EDBB8' : COLORS.primaryDark,
+                            backgroundColor: isDark ? 'transparent' : '#dff1e9',
+                            color: isDark ? '#C9F2DF' : COLORS.primaryDark,
+                            transform: 'none',
+                            boxShadow: isDark
+                              ? '0 0 0 1px rgba(103,201,157,.14)'
+                              : 'none'
                           }
                         }, uiLayout.buttonSx)}
                       >
@@ -525,7 +625,7 @@ export default function Login() {
                   sx={{
                     mt: { xs: 1.35, sm: 2.3, md: 3 },
                     textAlign: 'center',
-                    color: isDark ? theme.palette.text.secondary : '#83938d',
+                    color: isDark ? DARK.muted : '#83938d',
                     fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.78rem' },
                     lineHeight: { xs: 1.6, sm: 1.8 }
                   }}
@@ -542,11 +642,41 @@ export default function Login() {
                 overflow: 'hidden',
                 minHeight: { xs: 132, sm: 190, md: 'auto' },
                 p: { xs: 1.05, sm: 2, md: isShortScreen ? 3.25 : 6 },
-                color: COLORS.white,
+                color: isDark ? DARK.text : COLORS.white,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                background: `linear-gradient(145deg, ${COLORS.primaryDark} 0%, ${COLORS.primary} 68%, #0c9963 100%)`,
+                background: isDark
+                  ? `linear-gradient(145deg, ${DARK.section} 0%, ${DARK.card} 72%, ${DARK.nested} 100%)`
+                  : `linear-gradient(145deg, ${COLORS.primaryDark} 0%, ${COLORS.primary} 68%, #0c9963 100%)`,
+                borderInlineEnd: 'none',
+                borderBlockStart: {
+                  xs: isDark
+                    ? `1px solid ${DARK.border}`
+                    : 'none',
+                  md: 'none'
+                },
+                boxShadow: {
+                  xs: isDark
+                    ? '0 -10px 24px -22px rgba(103,201,157,.60)'
+                    : 'none',
+                  md: 'none'
+                },
+                '&::before': {
+                  content: '""',
+                  display: {
+                    xs: isDark ? 'block' : 'none',
+                    md: 'none'
+                  },
+                  position: 'absolute',
+                  insetInline: '12%',
+                  top: '-1px',
+                  height: '1px',
+                  background:
+                    'linear-gradient(90deg, transparent 0%, rgba(155,224,193,.30) 18%, #67C99D 50%, rgba(155,224,193,.30) 82%, transparent 100%)',
+                  pointerEvents: 'none',
+                  zIndex: 2
+                },
                 '&::before': {
                   content: '""',
                   position: 'absolute',
@@ -555,7 +685,7 @@ export default function Login() {
                   borderRadius: '50%',
                   top: -190,
                   left: -120,
-                  border: '55px solid rgba(255,255,255,0.055)'
+                  border: isDark ? '55px solid rgba(103,201,157,.035)' : '55px solid rgba(255,255,255,0.055)'
                 },
                 '&::after': {
                   content: '""',
@@ -565,7 +695,7 @@ export default function Login() {
                   borderRadius: '50%',
                   bottom: -145,
                   right: -90,
-                  backgroundColor: 'rgba(174,30,33,0.20)'
+                  backgroundColor: isDark ? 'rgba(103,201,157,.035)' : 'rgba(174,30,33,0.20)'
                 }
               }}
             >
@@ -578,8 +708,12 @@ export default function Login() {
                       borderRadius: { xs: 1.6, sm: 2.2, md: 2.5 },
                       display: 'grid',
                       placeItems: 'center',
-                      backgroundColor: 'rgba(255,255,255,0.14)',
-                      border: '1px solid rgba(255,255,255,0.22)'
+                      backgroundColor: isDark
+                        ? DARK.nested
+                        : 'rgba(255,255,255,0.14)',
+                      border: isDark
+                        ? `1px solid ${DARK.border}`
+                        : '1px solid rgba(255,255,255,0.22)'
                     }}
                   >
                     <BusinessOutlined sx={{ fontSize: { xs: 22, sm: 28, md: 32 } }} />
@@ -608,7 +742,7 @@ export default function Login() {
                       maxWidth: 470,
                       fontSize: '1.05rem',
                       lineHeight: 2,
-                      color: 'rgba(255,255,255,0.88)'
+                      color: isDark ? DARK.muted : 'rgba(255,255,255,0.88)'
                     }}
                   >
                     منصة موحدة تساعد فرق العمل على إدارة العمليات اليومية،
@@ -641,8 +775,12 @@ export default function Login() {
                       p: { xs: 0.55, sm: 1.05, md: 1.6 },
                       textAlign: { xs: 'center', md: 'start' },
                       borderRadius: { xs: 1.6, sm: 2.2, md: 2.5 },
-                      backgroundColor: 'rgba(255,255,255,0.10)',
-                      border: '1px solid rgba(255,255,255,0.14)'
+                      backgroundColor: isDark
+                        ? DARK.nested
+                        : 'rgba(255,255,255,0.10)',
+                      border: isDark
+                        ? `1px solid ${DARK.border}`
+                        : '1px solid rgba(255,255,255,0.14)'
                     }}
                   >
                     <Box
@@ -653,7 +791,7 @@ export default function Login() {
                         display: 'grid',
                         placeItems: 'center',
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255,255,255,0.14)',
+                        backgroundColor: isDark ? DARK.section : 'rgba(255,255,255,0.14)',
                         '& svg': { fontSize: { xs: 17, sm: 20, md: 25 } }
                       }}
                     >
@@ -673,7 +811,8 @@ export default function Login() {
                         <Typography
                           sx={{
                             mt: 0.15,
-                            opacity: 0.74,
+                            opacity: isDark ? 1 : 0.74,
+                            color: isDark ? DARK.muted : 'inherit',
                             fontSize: { sm: "0.75rem", md: '0.8rem' }
                           }}
                         >
@@ -697,15 +836,25 @@ export default function Login() {
           px: 2,
           py: { xs: 0.55, sm: 0.9, md: 1.4 },
           textAlign: 'center',
-          color: 'rgba(255,255,255,0.88)',
+          color: isDark ? DARK.muted : 'rgba(255,255,255,0.88)',
           fontSize: { xs: "0.75rem", sm: "0.75rem", md: '0.82rem' },
-          borderTop: '1px solid rgba(255,255,255,0.12)',
-          backgroundColor: 'rgba(2,48,30,0.28)',
+          borderTop: isDark
+            ? `1px solid ${DARK.border}`
+            : '1px solid rgba(255,255,255,0.12)',
+          backgroundColor: isDark
+            ? DARK.section
+            : 'rgba(2,48,30,0.28)',
           backdropFilter: 'blur(10px)'
         }}
       >
         تم تطويره بواسطة{' '}
-        <Box component="span" sx={{ fontWeight: 800, color: COLORS.white }}>
+        <Box
+          component="span"
+          sx={{
+            fontWeight: 800,
+            color: isDark ? DARK.text : COLORS.white
+          }}
+        >
           فريق الدعم الفني وتطوير البرمجيات
         </Box>{' '}
         © {currentYear}
@@ -724,7 +873,7 @@ const fieldLabelStyles = (theme) => ({
   paddingRight: '2px',
   textAlign: 'right',
   direction: 'rtl',
-  color: theme.palette.mode === 'dark' ? theme.palette.text.primary : COLORS.text,
+  color: theme.palette.mode === 'dark' ? DARK.text : COLORS.text,
   fontFamily: 'Cairo, Arial, sans-serif',
   fontWeight: 800,
   fontSize: '0.88rem',
@@ -741,25 +890,30 @@ const getFieldStyles = (theme) => {
       minHeight: '52px',
       direction: 'rtl',
       borderRadius: '12px',
-      backgroundColor: isDark ? theme.palette.surfaces.input : '#fbfdfc'
+      backgroundColor: isDark ? DARK.nested : '#fbfdfc',
+      backgroundImage: 'none',
+      color: isDark ? DARK.text : COLORS.text
     },
 
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDark ? '#67C99D' : '#dce8e3'
+      borderColor: isDark ? DARK.border : '#dce8e3',
+      borderWidth: isDark ? '1px' : undefined
     },
 
     '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDark ? '#67C99D' : COLORS.primary
+      borderColor: isDark ? '#8EDBB8' : COLORS.primary
     },
 
     '& .MuiOutlinedInput-root.Mui-focused': {
-      backgroundColor: isDark ? theme.palette.surfaces.card : COLORS.white,
-      boxShadow: isDark ? '0 0 0 4px rgba(103,201,157,.35)' : '0 0 0 4px rgba(5,117,70,0.09)'
+      backgroundColor: isDark ? DARK.nested : COLORS.white,
+      boxShadow: isDark
+        ? '0 0 0 1px rgba(103,201,157,.12)'
+        : '0 0 0 4px rgba(5,117,70,0.09)'
     },
 
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDark ? theme.palette.primary.main : COLORS.primary,
-      borderWidth: '1.5px'
+      borderColor: isDark ? '#8EDBB8' : COLORS.primary,
+      borderWidth: isDark ? '1px' : '1.5px'
     },
 
     '& .MuiOutlinedInput-input': {
@@ -776,7 +930,29 @@ const getFieldStyles = (theme) => {
     },
 
     '& .MuiInputAdornment-root svg': {
-      fontSize: '1.2rem'
+      fontSize: '1.2rem',
+      color: isDark ? DARK.accent : COLORS.primary
+    },
+
+    '& .MuiInputBase-input': {
+      color: isDark ? DARK.text : COLORS.text
+    },
+
+    '& .MuiIconButton-root': {
+      background: 'transparent',
+      backgroundColor: 'transparent',
+      border: 'none',
+      borderColor: 'transparent',
+      boxShadow: 'none',
+      color: isDark ? DARK.accent : COLORS.primary
+    },
+
+    '& .MuiIconButton-root:hover, & .MuiIconButton-root:focus, & .MuiIconButton-root:focus-visible': {
+      background: 'transparent',
+      backgroundColor: 'transparent',
+      border: 'none',
+      boxShadow: 'none',
+      outline: 'none'
     }
   };
 };

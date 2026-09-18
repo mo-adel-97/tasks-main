@@ -24,6 +24,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  InputAdornment,
   Menu,
   MenuItem,
   Paper,
@@ -59,6 +60,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 
@@ -105,13 +107,50 @@ const unwrap = (value) => {
   return "";
 };
 
+const rowKeyIndexCache = new WeakMap();
+
+const getRowKeyIndex = (row) => {
+  if (
+    !row ||
+    typeof row !== "object"
+  ) {
+    return null;
+  }
+
+  const cached =
+    rowKeyIndexCache.get(row);
+
+  if (cached) {
+    return cached;
+  }
+
+  const index = new Map();
+
+  Object.keys(row).forEach((key) => {
+    const normalizedKey =
+      String(key).toLowerCase();
+
+    // Preserve the old Object.keys(...).find(...) behavior:
+    // the first matching key wins.
+    if (!index.has(normalizedKey)) {
+      index.set(normalizedKey, key);
+    }
+  });
+
+  rowKeyIndexCache.set(row, index);
+
+  return index;
+};
+
 const pick = (row, names, fallback = "") => {
+  const keyIndex =
+    getRowKeyIndex(row);
+
   for (const name of names) {
-    const key = Object.keys(row || {}).find(
-      (item) =>
-        item.toLowerCase() ===
+    const key =
+      keyIndex?.get(
         String(name).toLowerCase()
-    );
+      );
 
     if (!key) continue;
 
@@ -399,6 +438,39 @@ const genderText = (row) => {
   return value;
 };
 
+const prepareSearchableStudentRow = (row) => {
+  const filterGender =
+    String(genderText(row) || "").trim();
+
+  return {
+    ...row,
+    __filterGender: filterGender,
+    __searchText: [
+      row.acadmyId,
+      row.code,
+      row.studentName,
+      row.studentNameEn,
+      row.nationalId,
+      row.studentTel,
+      row.email,
+      row.diplomName,
+      row.batchName,
+      row.statusName,
+      row.levelName,
+      row.sectionName,
+      row.levelNotes,
+      row.typeName,
+      row.registrationBranchName,
+      row.studyBranchName,
+      filterGender
+    ]
+      .map((value) =>
+        String(value ?? "").toLowerCase()
+      )
+      .join("\u0001")
+  };
+};
+
 const nationalityText = (value) => {
   const text = String(value ?? "").trim();
   if (text === "0") return "مواطن";
@@ -431,6 +503,170 @@ const downloadBlob = (blob, fileName) => {
   anchor.remove();
   URL.revokeObjectURL(url);
 };
+
+
+const DiplomaStudentsDataGrid = React.memo(
+  function DiplomaStudentsDataGrid({
+    rows,
+    columns,
+    loading,
+    selectionModel,
+    onSelectionModelChange,
+    isPhone,
+    isTablet,
+    isCompact
+  }) {
+    return (
+<DataGrid
+            autoHeight
+            rows={rows}
+            columns={columns}
+            loading={loading}
+            checkboxSelection
+            disableRowSelectionOnClick
+            rowSelectionModel={selectionModel}
+            onRowSelectionModelChange={onSelectionModelChange}
+            rowHeight={isPhone ? 31 : isTablet ? 36 : 40}
+            columnHeaderHeight={isPhone ? 30 : isTablet ? 34 : 38}
+            pageSizeOptions={[25, 50, 100]}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 25,
+                  page: 0
+                }
+              }
+            }}
+            slots={{
+              toolbar: isPhone ? undefined : GridToolbar
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: false
+              }
+            }}
+            sx={uiLayout.withUiSx({
+              border: 0,
+              direction: "rtl",
+              width: "100%",
+
+              "& .MuiDataGrid-main": {
+                overflow: "hidden"
+              },
+
+              "& .MuiDataGrid-virtualScroller": {
+                overflowX: "auto",
+                overflowY: "hidden !important"
+              },
+
+              "& .MuiDataGrid-scrollbar--horizontal, & .MuiDataGrid-scrollbar--vertical": {
+                display: "block"
+              },
+
+              "& .MuiDataGrid-columnHeader": {
+                px: isPhone ? .08 : isTablet ? .3 : .45
+              },
+
+              "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox": {
+                width: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
+                minWidth: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
+                maxWidth: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
+                px: "0 !important"
+              },
+
+              "& .MuiCheckbox-root": {
+                p: isPhone ? "1px" : isTablet ? "2px" : undefined
+              },
+
+              "& .MuiCheckbox-root .MuiSvgIcon-root": {
+                fontSize: isPhone ? 15 : isTablet ? 17 : undefined
+              },
+
+              "& .MuiDataGrid-columnSeparator": {
+                display: isCompact ? "none" : undefined
+              },
+
+              "& .MuiDataGrid-toolbarContainer": {
+                display: isPhone ? "none" : "flex",
+                p: isTablet ? .4 : 1,
+                gap: isTablet ? .4 : 1
+              },
+
+              "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
+                fontFamily: "Cairo",
+                fontWeight: 800,
+                fontSize: isTablet ? "0.75rem" : undefined,
+                minWidth: isTablet ? 0 : undefined,
+                px: isTablet ? .45 : undefined
+              },
+
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontFamily: "Cairo",
+                fontWeight: 900,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".75rem",
+                whiteSpace: "normal",
+                lineHeight: 1.2,
+                textAlign: "center"
+              },
+
+              "& .MuiDataGrid-cell": {
+                fontFamily: "Cairo",
+                fontWeight: 700,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".75rem",
+                px: isPhone ? .08 : isTablet ? .3 : .45,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              },
+
+              "& .MuiDataGrid-row:nth-of-type(odd)": {
+                backgroundColor:
+                  "rgba(255,170,95,.18)"
+              },
+
+              "& .MuiDataGrid-row:nth-of-type(even)": {
+                backgroundColor:
+                  "rgba(160,220,255,.10)"
+              },
+
+              "& .MuiDataGrid-footerContainer": {
+                minHeight: isPhone ? 58 : isTablet ? 62 : 68,
+                paddingTop: isPhone ? "6px" : "8px",
+                paddingBottom: isPhone ? "10px" : "14px",
+                paddingLeft: isPhone ? "5px" : "10px",
+                paddingRight: isPhone ? "5px" : "10px",
+                alignItems: "center"
+              },
+
+              "& .MuiTablePagination-root": {
+                width: "100%",
+                overflow: "visible"
+              },
+
+              "& .MuiTablePagination-toolbar": {
+                minHeight: "46px !important",
+                paddingBottom: isPhone ? "2px" : "4px",
+                paddingLeft: isPhone ? "4px !important" : "8px !important",
+                paddingRight: isPhone ? "4px !important" : "8px !important",
+                gap: isPhone ? "4px" : "8px"
+              },
+
+              "& .MuiTablePagination-actions": {
+                display: "flex",
+                alignItems: "center",
+                gap: "7px",
+                marginInlineStart: "8px"
+              }
+            }, uiLayout.dataGridSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
+              border: "1px solid #67C99D",
+              "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
+              "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
+              "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #67C99D" }
+            }))}
+          />
+    );
+  }
+);
 
 const DiplomaStudentsPage = () => {
   const theme = useTheme();
@@ -637,7 +873,9 @@ const DiplomaStudentsPage = () => {
 
       setRows(
         items.map((item, index) =>
-          normalizeRow(item, index)
+          prepareSearchableStudentRow(
+            normalizeRow(item, index)
+          )
         )
       );
     } catch (error) {
@@ -880,64 +1118,97 @@ const DiplomaStudentsPage = () => {
     filterDiplomaGuids
   ]);
 
+  const fastFilterState = useMemo(
+    () => {
+      const sectionSet =
+        new Set(filterSectionGuids);
+
+      return {
+        levelSet:
+          new Set(filterLevelGuids),
+        diplomaSet:
+          new Set(filterDiplomaGuids),
+        batchSet:
+          new Set(filterBatchGuids),
+        sectionSet,
+        wantsUnassigned:
+          sectionSet.has("unassigned"),
+        studyStatusSet:
+          new Set(filterStudyStatuses),
+        genderSet:
+          new Set(filterGenders)
+      };
+    },
+    [
+      filterLevelGuids,
+      filterDiplomaGuids,
+      filterBatchGuids,
+      filterSectionGuids,
+      filterStudyStatuses,
+      filterGenders
+    ]
+  );
+
   const filteredRows = useMemo(() => {
     const query = String(globalSearch || "")
       .trim()
       .toLowerCase();
 
+    const {
+      levelSet,
+      diplomaSet,
+      batchSet,
+      sectionSet,
+      wantsUnassigned,
+      studyStatusSet,
+      genderSet
+    } = fastFilterState;
+
+    const hasLevelFilter =
+      levelSet.size > 0;
+    const hasDiplomaFilter =
+      diplomaSet.size > 0;
+    const hasBatchFilter =
+      batchSet.size > 0;
+    const hasSectionFilter =
+      sectionSet.size > 0;
+    const hasStudyStatusFilter =
+      studyStatusSet.size > 0;
+    const hasGenderFilter =
+      genderSet.size > 0;
+
     return rows.filter((row) => {
       if (
-        filterLevelGuids.length > 0 &&
-        !filterLevelGuids.includes(
-          row.levelGuid
-        )
+        hasLevelFilter &&
+        !levelSet.has(row.levelGuid)
       ) {
         return false;
       }
 
       if (
-        filterDiplomaGuids.length > 0 &&
-        !filterDiplomaGuids.includes(
-          row.diplomaGuid
-        )
+        hasDiplomaFilter &&
+        !diplomaSet.has(row.diplomaGuid)
       ) {
         return false;
       }
 
       if (
-        filterBatchGuids.length > 0 &&
-        !filterBatchGuids.includes(
-          row.batchGuid
-        )
+        hasBatchFilter &&
+        !batchSet.has(row.batchGuid)
       ) {
         return false;
       }
 
-      if (
-        filterSectionGuids.length > 0
-      ) {
-        const wantsUnassigned =
-          filterSectionGuids.includes(
-            "unassigned"
-          );
-
-        const selectedRealSections =
-          filterSectionGuids.filter(
-            (value) =>
-              value !== "unassigned"
-          );
-
-        const matchesSection =
-          selectedRealSections.includes(
-            row.sectionGuid
-          );
+      if (hasSectionFilter) {
+        const matchesRealSection =
+          sectionSet.has(row.sectionGuid);
 
         const matchesUnassigned =
           wantsUnassigned &&
           row.sectionGuid === ZERO_GUID;
 
         if (
-          !matchesSection &&
+          !matchesRealSection &&
           !matchesUnassigned
         ) {
           return false;
@@ -961,56 +1232,28 @@ const DiplomaStudentsPage = () => {
       }
 
       if (
-        filterStudyStatuses.length > 0 &&
-        !filterStudyStatuses.includes(
-          String(
-            row.statusName || ""
-          ).trim()
+        hasStudyStatusFilter &&
+        !studyStatusSet.has(
+          String(row.statusName || "").trim()
         )
       ) {
         return false;
       }
 
       if (
-        filterGenders.length > 0 &&
-        !filterGenders.includes(
-          String(
-            genderText(row) || ""
-          ).trim()
+        hasGenderFilter &&
+        !genderSet.has(
+          row.__filterGender
         )
       ) {
         return false;
       }
 
-      if (query) {
-        const haystack = [
-          row.acadmyId,
-          row.code,
-          row.studentName,
-          row.studentNameEn,
-          row.nationalId,
-          row.studentTel,
-          row.email,
-          row.diplomName,
-          row.batchName,
-          row.statusName,
-          row.levelName,
-          row.sectionName,
-          row.levelNotes,
-          row.typeName,
-          row.registrationBranchName,
-          row.studyBranchName,
-          genderText(row)
-        ]
-          .map((value) =>
-            String(value ?? "")
-              .toLowerCase()
-          )
-          .join(" ");
-
-        if (!haystack.includes(query)) {
-          return false;
-        }
+      if (
+        query &&
+        !row.__searchText.includes(query)
+      ) {
+        return false;
       }
 
       return true;
@@ -1018,12 +1261,7 @@ const DiplomaStudentsPage = () => {
   }, [
     rows,
     globalSearch,
-    filterLevelGuids,
-    filterDiplomaGuids,
-    filterBatchGuids,
-    filterSectionGuids,
-    filterStudyStatuses,
-    filterGenders,
+    fastFilterState,
     distributionStatus
   ]);
 
@@ -2721,6 +2959,28 @@ const DiplomaStudentsPage = () => {
     ];
   }, [isPhone, isTablet, isCompact]);
 
+  const compactGlobalStyles = useMemo(
+    () => ({
+      ".swal2-popup": {
+        width: isPhone ? "88vw !important" : isTablet ? "540px !important" : undefined,
+        padding: isPhone ? "0.75rem !important" : isTablet ? "1rem !important" : undefined
+      },
+      ".swal2-title": {
+        fontFamily: "Cairo !important",
+        fontSize: isPhone ? "0.82rem !important" : isTablet ? "1rem !important" : undefined
+      },
+      ".swal2-html-container, .swal2-input-label, .swal2-input, .swal2-select": {
+        fontFamily: "Cairo !important",
+        fontSize: isPhone ? "0.56rem !important" : isTablet ? "0.68rem !important" : undefined
+      },
+      ".swal2-confirm, .swal2-cancel": {
+        fontFamily: "Cairo !important",
+        fontSize: isPhone ? "0.5rem !important" : isTablet ? "0.6rem !important" : undefined
+      }
+    }),
+    [isPhone, isTablet]
+  );
+
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><Box
       sx={(theme) => ({
@@ -2736,24 +2996,7 @@ const DiplomaStudentsPage = () => {
     >
       {!isDesktop && (
         <GlobalStyles
-          styles={{
-            ".swal2-popup": {
-              width: isPhone ? "88vw !important" : isTablet ? "540px !important" : undefined,
-              padding: isPhone ? "0.75rem !important" : isTablet ? "1rem !important" : undefined
-            },
-            ".swal2-title": {
-              fontFamily: "Cairo !important",
-              fontSize: isPhone ? "0.82rem !important" : isTablet ? "1rem !important" : undefined
-            },
-            ".swal2-html-container, .swal2-input-label, .swal2-input, .swal2-select": {
-              fontFamily: "Cairo !important",
-              fontSize: isPhone ? "0.56rem !important" : isTablet ? "0.68rem !important" : undefined
-            },
-            ".swal2-confirm, .swal2-cancel": {
-              fontFamily: "Cairo !important",
-              fontSize: isPhone ? "0.5rem !important" : isTablet ? "0.6rem !important" : undefined
-            }
-          }}
+          styles={compactGlobalStyles}
         />
       )}
 
@@ -3761,6 +4004,59 @@ const DiplomaStudentsPage = () => {
           )}
         </Paper>
 
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            direction: "rtl",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            mb: { xs: 0.7, sm: 0.9, md: 1.1 }
+          }}
+        >
+          <TextField
+            size="small"
+            value={globalSearch}
+            onChange={(event) =>
+              setGlobalSearch(event.target.value)
+            }
+            placeholder="بحث شامل: الاسم، الهوية، الجوال، الدبلوم، الدفعة، الحالة، المستوى، الشعبة..."
+            inputProps={{ dir: "rtl" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon
+                    sx={{
+                      fontSize: { xs: 18, sm: 20 },
+                      color: "#67C99D"
+                    }}
+                  />
+                </InputAdornment>
+              )
+            }}
+            sx={uiLayout.withUiSx({
+              width: {
+                xs: "100%",
+                sm: 390,
+                md: 440
+              },
+              maxWidth: "100%",
+              "& .MuiInputBase-root": {
+                minHeight: { xs: 36, sm: 40 }
+              },
+              "& .MuiInputBase-input": {
+                fontFamily: "Cairo",
+                fontWeight: 700,
+                fontSize: {
+                  xs: "0.75rem",
+                  sm: "0.78rem"
+                },
+                textAlign: "right"
+              }
+            }, uiLayout.formFieldSx)}
+          />
+        </Box>
+
         <Paper
           elevation={0}
           sx={uiLayout.withUiSx({
@@ -3774,129 +4070,15 @@ const DiplomaStudentsPage = () => {
             backgroundColor: theme.palette.surfaces.card
           }))}
         >
-          <DataGrid
-            autoHeight
+          <DiplomaStudentsDataGrid
             rows={filteredRows}
             columns={columns}
             loading={loading}
-            checkboxSelection
-            disableRowSelectionOnClick
-            rowSelectionModel={selectionModel}
-            onRowSelectionModelChange={
-              setSelectionModel
-            }
-            rowHeight={isPhone ? 31 : isTablet ? 36 : 40}
-            columnHeaderHeight={isPhone ? 30 : isTablet ? 34 : 38}
-            pageSizeOptions={[15, 25, 50, 100]}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 15,
-                  page: 0
-                }
-              }
-            }}
-            slots={{
-              toolbar: isPhone ? undefined : GridToolbar
-            }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: false
-              }
-            }}
-            sx={uiLayout.withUiSx({
-              border: 0,
-              direction: "rtl",
-              width: "100%",
-
-              "& .MuiDataGrid-main": {
-                overflow: "hidden"
-              },
-
-              "& .MuiDataGrid-virtualScroller": {
-                overflowX: "auto",
-                overflowY: "hidden !important"
-              },
-
-              "& .MuiDataGrid-scrollbar--horizontal, & .MuiDataGrid-scrollbar--vertical": {
-                display: "block"
-              },
-
-              "& .MuiDataGrid-columnHeader": {
-                px: isPhone ? .08 : isTablet ? .3 : .45
-              },
-
-              "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox": {
-                width: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
-                minWidth: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
-                maxWidth: isPhone ? "28px !important" : isTablet ? "34px !important" : undefined,
-                px: "0 !important"
-              },
-
-              "& .MuiCheckbox-root": {
-                p: isPhone ? "1px" : isTablet ? "2px" : undefined
-              },
-
-              "& .MuiCheckbox-root .MuiSvgIcon-root": {
-                fontSize: isPhone ? 15 : isTablet ? 17 : undefined
-              },
-
-              "& .MuiDataGrid-columnSeparator": {
-                display: isCompact ? "none" : undefined
-              },
-
-              "& .MuiDataGrid-toolbarContainer": {
-                display: isPhone ? "none" : "flex",
-                p: isTablet ? .4 : 1,
-                gap: isTablet ? .4 : 1
-              },
-
-              "& .MuiDataGrid-toolbarContainer .MuiButton-root": {
-                fontFamily: "Cairo",
-                fontWeight: 800,
-                fontSize: isTablet ? "0.75rem" : undefined,
-                minWidth: isTablet ? 0 : undefined,
-                px: isTablet ? .45 : undefined
-              },
-
-              "& .MuiDataGrid-columnHeaderTitle": {
-                fontFamily: "Cairo",
-                fontWeight: 900,
-                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".75rem",
-                whiteSpace: "normal",
-                lineHeight: 1.2,
-                textAlign: "center"
-              },
-
-              "& .MuiDataGrid-cell": {
-                fontFamily: "Cairo",
-                fontWeight: 700,
-                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : ".75rem",
-                px: isPhone ? .08 : isTablet ? .3 : .45,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              },
-
-              "& .MuiDataGrid-row:nth-of-type(odd)": {
-                backgroundColor:
-                  "rgba(255,170,95,.18)"
-              },
-
-              "& .MuiDataGrid-row:nth-of-type(even)": {
-                backgroundColor:
-                  "rgba(160,220,255,.10)"
-              },
-
-              "& .MuiDataGrid-footerContainer": {
-                minHeight: isPhone ? 31 : isTablet ? 36 : 48
-              }
-            }, uiLayout.dataGridSx, (theme) => (theme.palette.mode !== "dark" ? {} : {
-              border: "1px solid #67C99D",
-              "& .MuiDataGrid-columnHeaders": { borderBottom: "1px solid #67C99D" },
-              "& .MuiDataGrid-cell": { borderColor: "#67C99D" },
-              "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #67C99D" }
-            }))}
+            selectionModel={selectionModel}
+            onSelectionModelChange={setSelectionModel}
+            isPhone={isPhone}
+            isTablet={isTablet}
+            isCompact={isCompact}
           />
         </Paper>
 

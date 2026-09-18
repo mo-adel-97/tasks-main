@@ -209,6 +209,14 @@ const RegisterDocumentDialog = ({
     return () => controller.abort();
   }, [open, docGuid, apiBaseUrl]);
 
+  // Lazy-mount guard: this dialog is mounted eagerly (but closed) as soon
+  // as the parent page loads, so skip building its JSX until it has
+  // actually been opened once. Once opened, later closes still render
+  // normally so the MUI exit transition keeps working.
+  const hasOpenedRef = useRef(open);
+  if (open) hasOpenedRef.current = true;
+  if (!hasOpenedRef.current) return null;
+
   const openPrintWindow = () => {
     if (!printRef.current || !documentData) return;
 

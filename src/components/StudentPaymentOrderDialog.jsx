@@ -2,7 +2,7 @@ import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {
@@ -1653,6 +1653,15 @@ const StudentPaymentOrderDialog = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, context, keepDialogOpenAfterSave]);
+
+  // Lazy-mount guard: this dialog is mounted eagerly (but closed) as soon
+  // as the parent page loads, so skip building its JSX until it has
+  // actually needed to be visible (open, or kept open after save for the
+  // print button). Once that happens, later closes still render normally
+  // so the MUI exit transition keeps working.
+  const hasOpenedRef = useRef(open || keepDialogOpenAfterSave);
+  if (open || keepDialogOpenAfterSave) hasOpenedRef.current = true;
+  if (!hasOpenedRef.current) return null;
 
   const loadPaymentItems = async (kind = paymentKind) => {
     if (!context) return;

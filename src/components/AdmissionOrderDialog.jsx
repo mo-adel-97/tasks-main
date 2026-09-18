@@ -1156,6 +1156,11 @@ const AdmissionOrderDialog = ({
   const diplomaStepRef = useRef(null);
   const paymentStepRef = useRef(null);
 
+  // Lazy-mount guard: stays false until the dialog opens for the first
+  // time, so the heavy form below never has to build while it's closed.
+  const hasOpenedRef = useRef(open);
+  if (open) hasOpenedRef.current = true;
+
   useEffect(() => {
     if (!open) return;
 
@@ -1404,6 +1409,14 @@ const minimumPayDisplay =
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // All hooks above this line run every render regardless of `open` (Rules
+  // of Hooks). This dialog is mounted eagerly (but closed) as soon as the
+  // parent page loads, so skip building the ~3k-line form JSX until it has
+  // actually been opened at least once — that's what was making the initial
+  // page load feel laggy. Once opened, `hasOpenedRef` stays true so later
+  // closes still render normally and keep their MUI exit transition.
+  if (!hasOpenedRef.current) return null;
 
   const clearRegistrationData = () => {
     setContextData(null);

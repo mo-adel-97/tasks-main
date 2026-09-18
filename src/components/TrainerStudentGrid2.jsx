@@ -3,13 +3,13 @@ import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import {
   Box, Typography, Button, MenuItem, Select, FormControl,
   InputLabel, Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, Card, CardContent, Chip, IconButton, List, ListItem, ListItemText, Divider,
-  Tabs, Tab, Grid, Stack, Alert, AlertTitle, AppBar, Toolbar, useMediaQuery
+  Tabs, Tab, Grid, Stack, Alert, AlertTitle, AppBar, Toolbar, GlobalStyles, useMediaQuery
 } from '@mui/material';
 import { CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -49,6 +49,379 @@ const PHP_BASE = 'https://filesregsiteration.sstli.com';
 const PRIMARY_COLOR = '#80b49e';
 const PRIMARY_COLOR_DARK = '#6a9a87';
 const PRIMARY_COLOR_LIGHT = '#9ac8b5';
+
+const HIDDEN_NATIONAL_IDS = new Set([
+  "112115278656567"
+]);
+
+const AR_NUMBER_FORMATTER =
+  new Intl.NumberFormat('ar-EG');
+
+const formatArabicNumber = (value) =>
+  AR_NUMBER_FORMATTER.format(
+    Number(value || 0)
+  );
+
+const trainerStudentDarkStyles = (theme) => {
+  if (theme.palette.mode !== 'dark') {
+    return {};
+  }
+
+  const page =
+    theme.palette.background?.default ||
+    '#0d1b15';
+
+  const card =
+    theme.palette.surfaces?.card ||
+    '#13251d';
+
+  const section =
+    theme.palette.surfaces?.section ||
+    '#172b22';
+
+  const nested =
+    theme.palette.surfaces?.nested ||
+    '#1b3328';
+
+  const hover =
+    theme.palette.surfaces?.hover ||
+    '#214333';
+
+  const text =
+    theme.palette.text?.primary ||
+    '#eef8f3';
+
+  const muted =
+    theme.palette.text?.secondary ||
+    '#b7cfc3';
+
+  const border = '#67C99D';
+  const accent = '#9BE0C1';
+
+  return {
+    '.trainer-student-grid-ui': {
+      backgroundColor: `${page} !important`,
+      color: `${text} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiAppBar-root': {
+      background: `${card} !important`,
+      backgroundImage: 'none !important',
+      color: `${text} !important`,
+      borderBottom:
+        `1px solid ${border} !important`,
+      boxShadow: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiPaper-root, .trainer-student-grid-ui .MuiCard-root': {
+      backgroundColor: `${card} !important`,
+      backgroundImage: 'none !important',
+      color: `${text} !important`,
+      borderColor: `${border} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiDivider-root': {
+      borderColor:
+        'rgba(103,201,157,.45) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiButton-root': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      backgroundImage: 'none !important',
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiButton-root:hover': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      color: '#C9F2DF !important',
+      borderColor: '#8EDBB8 !important',
+      boxShadow:
+        '0 0 0 1px rgba(103,201,157,.18) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiButton-root.Mui-disabled': {
+      background: 'transparent !important',
+      color:
+        'rgba(155,224,193,.42) !important',
+      borderColor:
+        'rgba(103,201,157,.35) !important'
+    },
+
+    /* Icon-only controls must never become green circles. */
+    '.trainer-student-grid-ui .MuiIconButton-root': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      backgroundImage: 'none !important',
+      color: `${accent} !important`,
+      border: 'none !important',
+      borderColor: 'transparent !important',
+      boxShadow: 'none !important',
+      outline: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiIconButton-root:hover, .trainer-student-grid-ui .MuiIconButton-root:focus, .trainer-student-grid-ui .MuiIconButton-root:focus-visible': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      color: '#C9F2DF !important',
+      border: 'none !important',
+      borderColor: 'transparent !important',
+      boxShadow: 'none !important',
+      outline: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiIconButton-root .MuiTouchRipple-root': {
+      display: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiChip-root, .MuiDialog-paper .MuiChip-root, .MuiPopover-paper .MuiChip-root': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      backgroundImage: 'none !important',
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiChip-root .MuiChip-icon, .MuiDialog-paper .MuiChip-root .MuiChip-icon, .MuiPopover-paper .MuiChip-root .MuiChip-icon': {
+      color: 'inherit !important'
+    },
+
+    '.trainer-student-grid-ui .MuiOutlinedInput-root, .trainer-student-grid-ui .MuiInputBase-root': {
+      backgroundColor: `${nested} !important`,
+      backgroundImage: 'none !important',
+      color: `${text} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${border} !important`,
+      borderWidth: '1px !important'
+    },
+
+    '.trainer-student-grid-ui .MuiInputBase-input, .trainer-student-grid-ui .MuiSelect-select': {
+      color: `${text} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiInputLabel-root, .trainer-student-grid-ui .MuiFormHelperText-root': {
+      color: `${muted} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiInputLabel-root.Mui-focused': {
+      color: `${border} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-root': {
+      backgroundColor: `${card} !important`,
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-columnHeaders': {
+      backgroundColor:
+        `${section} !important`,
+      color: `${text} !important`,
+      borderBottom:
+        `1px solid ${border} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-columnHeader, .trainer-student-grid-ui .MuiDataGrid-cell': {
+      borderColor:
+        'rgba(103,201,157,.34) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-row': {
+      backgroundColor: `${card} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-row:hover': {
+      backgroundColor: `${hover} !important`,
+      filter: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-row.row-paid': {
+      backgroundColor:
+        'rgba(76,175,80,.11) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-row.row-has-order': {
+      backgroundColor:
+        'rgba(33,150,243,.10) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-row.row-note': {
+      backgroundColor:
+        'rgba(255,152,0,.10) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-row.row-late': {
+      backgroundColor:
+        'rgba(244,67,54,.10) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiDataGrid-footerContainer': {
+      backgroundColor:
+        `${section} !important`,
+      color: `${text} !important`,
+      borderTop:
+        `1px solid ${border} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiTablePagination-root, .trainer-student-grid-ui .MuiTablePagination-selectLabel, .trainer-student-grid-ui .MuiTablePagination-displayedRows': {
+      color: `${text} !important`
+    },
+
+    /* Keep DataGrid header three-dots/sort controls borderless. */
+    '.trainer-student-grid-ui .MuiDataGrid-menuIcon .MuiIconButton-root, .trainer-student-grid-ui .MuiDataGrid-iconButtonContainer .MuiIconButton-root, .trainer-student-grid-ui .MuiDataGrid-menuIconButton, .trainer-student-grid-ui .MuiDataGrid-sortButton': {
+      border: 'none !important',
+      borderColor:
+        'transparent !important',
+      borderRadius: '0 !important',
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      boxShadow: 'none !important'
+    },
+
+    '.trainer-student-grid-ui .MuiTabs-root': {
+      backgroundColor:
+        `${section} !important`,
+      borderBottom:
+        `1px solid ${border} !important`
+    },
+
+    '.trainer-student-grid-ui .MuiTab-root': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      borderRadius: '8px !important',
+      margin: '4px !important'
+    },
+
+    '.trainer-student-grid-ui .MuiTab-root.Mui-selected': {
+      background: 'transparent !important',
+      color: '#C9F2DF !important',
+      borderColor: '#8EDBB8 !important',
+      boxShadow:
+        'inset 0 0 0 1px rgba(103,201,157,.30) !important'
+    },
+
+    '.trainer-student-grid-ui .MuiTabs-indicator': {
+      backgroundColor:
+        `${border} !important`
+    },
+
+    '.MuiDialog-paper, .MuiPopover-paper, .MuiMenu-paper, .MuiPickersPopper-root .MuiPaper-root': {
+      backgroundColor: `${card} !important`,
+      backgroundImage: 'none !important',
+      color: `${text} !important`,
+      border:
+        `1px solid ${border} !important`
+    },
+
+    '.MuiDialogTitle-root, .MuiDialogContent-root, .MuiDialogActions-root': {
+      backgroundColor: `${card} !important`,
+      color: `${text} !important`
+    },
+
+    '.MuiDialog-paper .MuiOutlinedInput-root, .MuiPopover-paper .MuiOutlinedInput-root, .MuiPickersPopper-root .MuiOutlinedInput-root': {
+      backgroundColor:
+        `${nested} !important`,
+      color: `${text} !important`
+    },
+
+    '.MuiDialog-paper .MuiOutlinedInput-notchedOutline, .MuiPopover-paper .MuiOutlinedInput-notchedOutline, .MuiPickersPopper-root .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${border} !important`
+    },
+
+    '.MuiDialog-paper .MuiButton-root, .MuiPopover-paper .MuiButton-root, .MuiPickersPopper-root .MuiButton-root': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      backgroundImage: 'none !important',
+      color: `${accent} !important`,
+      border:
+        `1px solid ${border} !important`,
+      boxShadow: 'none !important'
+    },
+
+    '.MuiDialog-paper .MuiIconButton-root, .MuiPopover-paper .MuiIconButton-root, .MuiPickersPopper-root .MuiIconButton-root, .MuiPickersInputBase-root .MuiIconButton-root, .MuiInputAdornment-root .MuiIconButton-root': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      backgroundImage: 'none !important',
+      color: `${accent} !important`,
+      border: 'none !important',
+      borderColor: 'transparent !important',
+      boxShadow: 'none !important',
+      outline: 'none !important'
+    },
+
+    '.MuiDialog-paper .MuiIconButton-root:hover, .MuiPopover-paper .MuiIconButton-root:hover, .MuiPickersPopper-root .MuiIconButton-root:hover, .MuiPickersInputBase-root .MuiIconButton-root:hover, .MuiInputAdornment-root .MuiIconButton-root:hover': {
+      background: 'transparent !important',
+      backgroundColor:
+        'transparent !important',
+      border: 'none !important',
+      boxShadow: 'none !important'
+    },
+
+    '.MuiDialog-paper .MuiIconButton-root .MuiTouchRipple-root, .MuiPopover-paper .MuiIconButton-root .MuiTouchRipple-root, .MuiPickersPopper-root .MuiIconButton-root .MuiTouchRipple-root, .MuiPickersInputBase-root .MuiIconButton-root .MuiTouchRipple-root, .MuiInputAdornment-root .MuiIconButton-root .MuiTouchRipple-root': {
+      display: 'none !important'
+    },
+
+    '.MuiMenuItem-root': {
+      background: 'transparent !important',
+      color: `${text} !important`
+    },
+
+    '.MuiMenuItem-root:hover, .MuiMenuItem-root.Mui-selected': {
+      background: 'transparent !important',
+      color: '#C9F2DF !important',
+      boxShadow:
+        `inset 0 0 0 1px ${border} !important`
+    },
+
+    '.MuiPickersDay-root': {
+      background: 'transparent !important',
+      color: `${text} !important`,
+      border:
+        '1px solid transparent !important'
+    },
+
+    '.MuiPickersDay-root.Mui-selected': {
+      background: 'transparent !important',
+      color: `${accent} !important`,
+      borderColor: `${border} !important`
+    },
+
+    '.MuiPickersCalendarHeader-root, .MuiDayCalendar-weekDayLabel': {
+      color: `${text} !important`
+    },
+
+    /* Calendar / field adornment icons stay functional, never circular. */
+    '.trainer-student-grid-ui .MuiPickersInputBase-root .MuiIconButton-root, .trainer-student-grid-ui .MuiInputAdornment-root .MuiIconButton-root, .trainer-student-grid-ui .MuiDateField-root .MuiIconButton-root': {
+      border: 'none !important',
+      borderColor: 'transparent !important',
+      background: 'transparent !important',
+      backgroundColor: 'transparent !important',
+      boxShadow: 'none !important',
+      outline: 'none !important'
+    }
+  };
+};
 
 // Every stat card at the top of this page ("متابعة الطلاب والسداد") shared the
 // same hardcoded light-only border/background, so in dark mode they all
@@ -101,6 +474,158 @@ const metricCardSx = (theme, topColor) => {
 // الحد الأدنى للقسط الشهري لاعتباره مدفوع
 const MINIMUM_MONTHPAY_THRESHOLD = 250;
 
+
+const TrainerStudentsDataGrid = React.memo(
+  function TrainerStudentsDataGrid({
+    rows,
+    columns,
+    gridLoading,
+    isDesktop,
+    isPhone,
+    paginationModel,
+    onPaginationModelChange,
+    getRowClassName
+  }) {
+    return (
+<DataGrid
+                  autoHeight
+                  rows={gridLoading ? [] : rows}
+                  columns={columns}
+                  loading={gridLoading}
+                  disableRowSelectionOnClick
+                  disableColumnMenu={!isDesktop}
+                  disableColumnFilter={!isDesktop}
+                  rowHeight={isDesktop ? 52 : isPhone ? 38 : 44}
+                  columnHeaderHeight={isDesktop ? 56 : isPhone ? 36 : 42}
+                  density={isDesktop ? 'standard' : 'compact'}
+                  hideFooterSelectedRowCount
+                  paginationModel={paginationModel}
+                  onPaginationModelChange={onPaginationModelChange}
+                  pageSizeOptions={[30, 60, 100]}
+                  localeText={{
+                    MuiTablePagination: {
+                      labelRowsPerPage: 'عدد الصفوف:',
+                    },
+                  }}
+                  getRowClassName={getRowClassName}
+                  slots={{
+                    loadingOverlay: () => (
+                      <Box
+                        sx={{
+                    width: '100%',
+                    minWidth: 0,
+                    maxWidth: '100%',
+                    '& .MuiDataGrid-main': {
+                      minWidth: 0,
+                    },
+
+                          minHeight: 180,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexDirection: 'column',
+                          gap: 2,
+                          p: 3
+                        }}
+                      >
+                        <CircularProgress size={46} thickness={4} sx={{ color: PRIMARY_COLOR }} />
+                        <Typography sx={{ color: PRIMARY_COLOR, fontWeight: 'bold' }}>
+                          جاري تحميل بيانات الفترة المختارة...
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          (طلاب + حالات + ملاحظات)
+                        </Typography>
+                      </Box>
+                    ),
+                    noRowsOverlay: () => (
+                      <Box sx={{ p: 3, textAlign: 'center' }}>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                          {gridLoading ? 'جاري التحميل...' : 'لا توجد بيانات'}
+                        </Typography>
+                      </Box>
+                    ),
+                  }}
+                  sx={uiLayout.withUiSx({
+                    border: 'none',
+                    height: 'auto',
+                    '& .MuiDataGrid-main': {
+                      overflow: 'visible'
+                    },
+                    '& .MuiDataGrid-virtualScroller': {
+                      overflowY: 'hidden !important',
+                      overflowX: 'auto'
+                    },
+                    '& .MuiDataGrid-scrollbar--vertical': {
+                      display: 'none !important'
+                    },
+                    '& .MuiDataGrid-virtualScrollerContent': {
+                      minHeight: '0 !important'
+                    },
+                    '& .MuiDataGrid-cell': {
+                      borderBottom: (theme) => theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid #e0e0e0',
+                      fontWeight: 500,
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                      px: isDesktop ? undefined : { xs: 0.18, sm: 0.45 },
+                      lineHeight: 1.25,
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
+                      fontWeight: 800,
+                      whiteSpace: 'normal',
+                      lineHeight: 1.2,
+                      textAlign: 'center',
+                    },
+                    '& .MuiDataGrid-columnHeader': {
+                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
+                    },
+                    '& .MuiDataGrid-footerContainer': {
+                      minHeight: isDesktop ? undefined : { xs: 42, sm: 44 },
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
+                      px: isDesktop ? undefined : { xs: 0.3, sm: 0.6 },
+                      borderTop: (theme) => theme.palette.mode === 'dark' ? '1px solid #67C99D' : undefined,
+                    },
+                    '& .MuiTablePagination-root': {
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
+                      overflow: 'visible',
+                    },
+                    '& .MuiTablePagination-toolbar': {
+                      minHeight: isDesktop ? undefined : { xs: 40, sm: 42 },
+                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.5 },
+                      gap: isDesktop ? undefined : { xs: 0.2, sm: 0.4 },
+                    },
+                    '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
+                      m: 0,
+                    },
+                    '& .MuiTablePagination-select': {
+                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
+                    },
+                    '& .MuiDataGrid-columnHeaders': {
+                      backgroundColor: (theme) => theme.palette.mode === 'dark' ? theme.palette.surfaces.section : '#edf7f2',
+                      color: (theme) => theme.palette.mode === 'dark' ? theme.palette.text.primary : '#17372b',
+                      borderBottom: (theme) => theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid rgba(5,117,70,.18)',
+                    },
+                  '& .row-paid': {
+  backgroundColor: 'rgba(76, 175, 80, 0.12)',
+},
+'& .row-has-order': {
+  backgroundColor: 'rgba(33, 150, 243, 0.12)',
+},
+'& .row-note': {
+  backgroundColor: 'rgba(255, 152, 0, 0.12)',
+},
+'& .row-late': {
+  backgroundColor: 'rgba(244, 67, 54, 0.12)',
+},
+                    '& .MuiDataGrid-row:hover': {
+                      filter: 'brightness(0.98)',
+                    },
+                  }, uiLayout.dataGridSx)}
+                />
+    );
+  }
+);
+
 const TrainerStudentGrid2 = () => {
   
   
@@ -127,7 +652,6 @@ const TrainerStudentGrid2 = () => {
   const [studentHistory, setStudentHistory] = useState({});
   const [trainers, setTrainers] = useState({});
   const [filterStatus, setFilterStatus] = useState('');
-  const HIDDEN_NATIONAL_IDS = new Set(["112115278656567"]);
 
   const [actionDialogOpen, setActionDialogOpen] = useState(false);
   const [currentActionRow, setCurrentActionRow] = useState(null);
@@ -136,6 +660,7 @@ const TrainerStudentGrid2 = () => {
   const [gridLoading, setGridLoading] = useState(false);
   const fetchSeqRef = useRef(0);
   const abortRef = useRef(null);
+  const openActionDialogRef = useRef(null);
 
   const [showSpecial, setShowSpecial] = useState(false);
 
@@ -163,7 +688,16 @@ const TrainerStudentGrid2 = () => {
   // ✅ حالة لتخزين رسالة الخطأ عند محاولة تغيير الحالة
   const [statusError, setStatusError] = useState('');
 
-const user = JSON.parse(localStorage.getItem('user'));
+const user = useMemo(() => {
+  try {
+    return JSON.parse(
+      localStorage.getItem('user') || '{}'
+    );
+  } catch {
+    return {};
+  }
+}, []);
+
 const branchGuid = user?.branchForWork;
 const trainerGuid = user?.trainerGuid;
 
@@ -281,27 +815,53 @@ const isStudentPaid = (row) => {
   };
 
   // ✅ حساب إجمالي المبالغ المدفوعة والطلاب (معدل)
-  const getCommissionData = () => {
-    const filteredStudents = rows.filter((row) => {
-      const status = isStudentPaid(row) ? 'paid' : (rowStatuses[row.id] || '');
-      if (!filterStatus) return true;
-      if (filterStatus === 'none') return status === '';
-      return status === filterStatus;
-    });
-    
-    const totalStudents = filteredStudents.length;
-    
-    // ✅ إجمالي المبالغ المدفوعة من الطلاب المستوفين للشروط
-    const totalPaidAmount = filteredStudents
-      .filter(row => isStudentPaid(row))
-      .reduce((sum, row) => sum + (row.monthpay || 0), 0);
-    
-    const totalPaidStudents = filteredStudents.filter(row => isStudentPaid(row)).length;
-    
-    return calculateCommission(totalPaidAmount, totalStudents, totalPaidStudents);
-  };
+  const getCommissionData = useCallback(() => {
+    let totalStudents = 0;
+    let totalPaidAmount = 0;
+    let totalPaidStudents = 0;
 
-  const commissionData = getCommissionData();
+    for (const row of rows) {
+      const paid = isStudentPaid(row);
+      const status =
+        paid
+          ? 'paid'
+          : (rowStatuses[row.id] || '');
+
+      if (
+        filterStatus &&
+        !(
+          filterStatus === 'none'
+            ? status === ''
+            : status === filterStatus
+        )
+      ) {
+        continue;
+      }
+
+      totalStudents += 1;
+
+      if (paid) {
+        totalPaidStudents += 1;
+        totalPaidAmount +=
+          Number(row.monthpay || 0);
+      }
+    }
+
+    return calculateCommission(
+      totalPaidAmount,
+      totalStudents,
+      totalPaidStudents
+    );
+  }, [
+    rows,
+    rowStatuses,
+    filterStatus
+  ]);
+
+  const commissionData = useMemo(
+    () => getCommissionData(),
+    [getCommissionData]
+  );
 
   // الحالة الفعلية المستخدمة في العرض والفلاتر:
   // أي طالب قسطه الشهري 250 ريال أو أكثر يعتبر مسدد.
@@ -1061,6 +1621,9 @@ const handleStatusChange = async (id, status) => {
 
     loadActionDialogData();
   };
+
+  openActionDialogRef.current =
+    handleOpenActionDialog;
 
   const handleWhatsAppClick = (phoneNumber) => {
     if (!phoneNumber) return;
@@ -2154,24 +2717,106 @@ const getStatusDisplayText = (status) => {
 
   useEffect(() => {
     fetchTrainers();
+    // قائمة المدربين لا تعتمد على فترة التقرير.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     fetchData();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromDate, toDate]);
 
-  // فلترة الحالة باستخدام نفس الحالة الفعلية الظاهرة للمستخدم
-  const filteredRows = rows.filter((row) => {
-    const status = getEffectiveRowStatus(row);
+  // فلترة الحالة باستخدام نفس الحالة الفعلية الظاهرة للمستخدم.
+  const filteredRows = useMemo(
+    () =>
+      rows.filter((row) => {
+        const status =
+          getEffectiveRowStatus(row);
 
-    if (!filterStatus) return true;
-    if (filterStatus === 'none') return status === '';
-    return status === filterStatus;
-  });
+        if (!filterStatus) {
+          return true;
+        }
 
-  // Statistics
-  const totalStudents = filteredRows.length;
-  const paidStudents = filteredRows.filter((row) => isStudentPaid(row)).length;
-  const notedStudents = filteredRows.filter((row) => rowStatuses[row.id] === 'note' && !isStudentPaid(row)).length;
-  const lateStudents = filteredRows.filter((row) => rowStatuses[row.id] === 'late' && !isStudentPaid(row)).length;
+        if (filterStatus === 'none') {
+          return status === '';
+        }
+
+        return status === filterStatus;
+      }),
+    [
+      rows,
+      rowStatuses,
+      filterStatus
+    ]
+  );
+
+  const {
+    totalStudents,
+    paidStudents,
+    notedStudents,
+    lateStudents
+  } = useMemo(() => {
+    let paid = 0;
+    let noted = 0;
+    let late = 0;
+
+    for (const row of filteredRows) {
+      const isPaid =
+        isStudentPaid(row);
+
+      if (isPaid) {
+        paid += 1;
+      } else if (
+        rowStatuses[row.id] === 'note'
+      ) {
+        noted += 1;
+      } else if (
+        rowStatuses[row.id] === 'late'
+      ) {
+        late += 1;
+      }
+    }
+
+    return {
+      totalStudents:
+        filteredRows.length,
+      paidStudents: paid,
+      notedStudents: noted,
+      lateStudents: late
+    };
+  }, [
+    filteredRows,
+    rowStatuses
+  ]);
+
+  const getGridRowClassName = useCallback(
+    (params) => {
+      const row = params.row;
+      const id = params.id;
+
+      if (isStudentPaid(row)) {
+        return 'row-paid';
+      }
+
+      const status =
+        rowStatuses[id] || '';
+
+      if (status === 'has_order') {
+        return 'row-has-order';
+      }
+
+      if (status === 'note') {
+        return 'row-note';
+      }
+
+      if (status === 'late') {
+        return 'row-late';
+      }
+
+      return '';
+    },
+    [rowStatuses]
+  );
 
   const getCompactStudentName = (fullName) => {
     const parts = String(fullName || '')
@@ -2183,7 +2828,7 @@ const getStatusDisplayText = (status) => {
     return `${parts[0]} ${parts[parts.length - 1]}`;
   };
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       field: 'studentName',
       headerName: 'اسم الطالب',
@@ -2248,7 +2893,7 @@ const getStatusDisplayText = (status) => {
         <Box display="flex" alignItems="center" gap={1}>
           <PaymentIcon fontSize="small" color={params.value > 0 ? 'error' : 'success'} />
           <Typography variant="body2" fontWeight="600" color={params.value > 0 ? 'error' : 'success'}>
-            {Number(params.value || 0).toLocaleString('ar-EG')} ر.س
+            {formatArabicNumber(params.value)} ر.س
           </Typography>
         </Box>
       ),
@@ -2261,7 +2906,7 @@ const getStatusDisplayText = (status) => {
         <Box display="flex" alignItems="center" gap={1}>
           <AttachMoneyIcon sx={{ color: isValidMonthpay(params.value) ? '#2196f3' : '#ff9800', display: isPhone ? 'none' : 'inline-flex', fontSize: 18 }} />
           <Typography variant="body2" fontWeight="600" color={isValidMonthpay(params.value) ? 'info.main' : 'warning.main'}>
-            {Number(params.value || 0).toLocaleString('ar-EG')} ر.س
+            {formatArabicNumber(params.value)} ر.س
           </Typography>
           {!isValidMonthpay(params.value) && (
             <Tooltip title="القسط الشهري أقل من 250 ريال - لا يعتبر مسدداً في العمولة" arrow>
@@ -2329,13 +2974,21 @@ const getStatusDisplayText = (status) => {
       renderCell: (params) => (
         <IconButton
           size="small"
-          onClick={() => handleOpenActionDialog(params.row)}
+          onClick={() => openActionDialogRef.current?.(params.row)}
           sx={(theme) => ({
-            border: theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid #e0e0e0',
-            borderRadius: 2,
+            border: 'none',
+            borderColor: 'transparent',
+            borderRadius: 0,
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
             '&:hover': {
-              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(103,201,157,.14)' : PRIMARY_COLOR_LIGHT,
-              borderColor: theme.palette.mode === 'dark' ? '#67C99D' : pinColor(PRIMARY_COLOR),
+              backgroundColor: 'transparent',
+              border: 'none',
+              boxShadow: 'none',
+              color:
+                theme.palette.mode === 'dark'
+                  ? '#C9F2DF'
+                  : pinColor(PRIMARY_COLOR),
             }
           })}
         >
@@ -2343,7 +2996,12 @@ const getStatusDisplayText = (status) => {
         </IconButton>
       ),
     },
-  ];
+  ], [
+    isDesktop,
+    isPhone,
+    rowStatuses,
+    rowNotes
+  ]);
 
   // ============================================================
   // أعمدة مختصرة للموبايل والتابلت فقط.
@@ -2353,7 +3011,9 @@ const getStatusDisplayText = (status) => {
     ? ['studentName', 'studentTel', 'monthpay', 'status', 'actions']
     : ['studentName', 'studentTel', 'balance', 'monthpay', 'status', 'actions'];
 
-  const responsiveColumns = isDesktop
+  const responsiveColumns = useMemo(
+    () => (
+isDesktop
     ? columns
     : columns
         .filter((column) => compactColumnFields.includes(column.field))
@@ -2391,7 +3051,14 @@ const getStatusDisplayText = (status) => {
             minWidth: column.field === 'studentName' ? 140 : undefined,
             width: column.field === 'studentName' ? undefined : (tabletWidths[column.field] || 100),
           };
-        });
+        })
+    ),
+    [
+      isDesktop,
+      isPhone,
+      columns
+    ]
+  );
 
   // تابع لتغيير التبويبات
   const handleTabChange = (event, newValue) => {
@@ -2400,18 +3067,29 @@ const getStatusDisplayText = (status) => {
 
   // تعريف التبويبات
   const tabs = [
-    { label: 'الرئيسية', icon: <PersonIcon /> },
-    { label: 'الفواتير', icon: <ReceiptIcon /> },
-    { label: 'الملف التدريبي', icon: <FolderIcon /> },
-    { label: 'طلب السداد', icon: <PendingActionsIcon /> },
-    { label: 'المتابعات', icon: <HistoryIcon /> },
+    'الرئيسية',
+    'الفواتير',
+    'الملف التدريبي',
+    'طلب السداد',
+    'المتابعات',
   ];
 
   return showSpecial ? (
     <SpecialComponent onBack={() => setShowSpecial(false)} />
   ) : (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)}><LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={(theme) => ({ display: 'flex', minHeight: '100vh', backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : '#f6faf8' })}>
+      <GlobalStyles styles={trainerStudentDarkStyles} />
+      <Box
+        className="trainer-student-grid-ui"
+        sx={(theme) => ({
+          display: 'flex',
+          minHeight: '100vh',
+          backgroundColor:
+            theme.palette.mode === 'dark'
+              ? theme.palette.background.default
+              : '#f6faf8'
+        })}
+      >
         {/* Sidebar */}
         {!isDesktop && (
         <AppBar
@@ -2894,152 +3572,15 @@ const getStatusDisplayText = (status) => {
                   overflow: 'visible'
                 }, uiLayout.tableContainerSx)}
               >
-                <DataGrid
-                  autoHeight
-                  rows={gridLoading ? [] : filteredRows}
+                <TrainerStudentsDataGrid
+                  rows={filteredRows}
                   columns={responsiveColumns}
-                  loading={gridLoading}
-                  disableRowSelectionOnClick
-                  disableColumnMenu={!isDesktop}
-                  disableColumnFilter={!isDesktop}
-                  rowHeight={isDesktop ? 52 : isPhone ? 38 : 44}
-                  columnHeaderHeight={isDesktop ? 56 : isPhone ? 36 : 42}
-                  density={isDesktop ? 'standard' : 'compact'}
-                  hideFooterSelectedRowCount
+                  gridLoading={gridLoading}
+                  isDesktop={isDesktop}
+                  isPhone={isPhone}
                   paginationModel={paginationModel}
                   onPaginationModelChange={setPaginationModel}
-                  pageSizeOptions={[30, 60, 100]}
-                  localeText={{
-                    MuiTablePagination: {
-                      labelRowsPerPage: 'عدد الصفوف:',
-                    },
-                  }}
-                 getRowClassName={(params) => {
-  const row = params.row;
-  const id = params.id;
-
-  const isPaid = isStudentPaid(row);
-  if (isPaid) return 'row-paid';
-
-  const s = rowStatuses[id] || '';
-  if (s === 'has_order') return 'row-has-order';
-  if (s === 'note') return 'row-note';
-  if (s === 'late') return 'row-late';
-  return '';
-}}
-                  slots={{
-                    loadingOverlay: () => (
-                      <Box
-                        sx={{
-                    width: '100%',
-                    minWidth: 0,
-                    maxWidth: '100%',
-                    '& .MuiDataGrid-main': {
-                      minWidth: 0,
-                    },
-
-                          minHeight: 180,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexDirection: 'column',
-                          gap: 2,
-                          p: 3
-                        }}
-                      >
-                        <CircularProgress size={46} thickness={4} sx={{ color: PRIMARY_COLOR }} />
-                        <Typography sx={{ color: PRIMARY_COLOR, fontWeight: 'bold' }}>
-                          جاري تحميل بيانات الفترة المختارة...
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          (طلاب + حالات + ملاحظات)
-                        </Typography>
-                      </Box>
-                    ),
-                    noRowsOverlay: () => (
-                      <Box sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography sx={{ color: 'text.secondary' }}>
-                          {gridLoading ? 'جاري التحميل...' : 'لا توجد بيانات'}
-                        </Typography>
-                      </Box>
-                    ),
-                  }}
-                  sx={uiLayout.withUiSx({
-                    border: 'none',
-                    height: 'auto',
-                    '& .MuiDataGrid-main': {
-                      overflow: 'visible'
-                    },
-                    '& .MuiDataGrid-virtualScroller': {
-                      overflowY: 'hidden !important',
-                      overflowX: 'auto'
-                    },
-                    '& .MuiDataGrid-scrollbar--vertical': {
-                      display: 'none !important'
-                    },
-                    '& .MuiDataGrid-virtualScrollerContent': {
-                      minHeight: '0 !important'
-                    },
-                    '& .MuiDataGrid-cell': {
-                      borderBottom: (theme) => theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid #e0e0e0',
-                      fontWeight: 500,
-                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-                      px: isDesktop ? undefined : { xs: 0.18, sm: 0.45 },
-                      lineHeight: 1.25,
-                    },
-                    '& .MuiDataGrid-columnHeaderTitle': {
-                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem", md: "0.75rem" },
-                      fontWeight: 800,
-                      whiteSpace: 'normal',
-                      lineHeight: 1.2,
-                      textAlign: 'center',
-                    },
-                    '& .MuiDataGrid-columnHeader': {
-                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.45 },
-                    },
-                    '& .MuiDataGrid-footerContainer': {
-                      minHeight: isDesktop ? undefined : { xs: 42, sm: 44 },
-                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
-                      px: isDesktop ? undefined : { xs: 0.3, sm: 0.6 },
-                      borderTop: (theme) => theme.palette.mode === 'dark' ? '1px solid #67C99D' : undefined,
-                    },
-                    '& .MuiTablePagination-root': {
-                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
-                      overflow: 'visible',
-                    },
-                    '& .MuiTablePagination-toolbar': {
-                      minHeight: isDesktop ? undefined : { xs: 40, sm: 42 },
-                      px: isDesktop ? undefined : { xs: 0.2, sm: 0.5 },
-                      gap: isDesktop ? undefined : { xs: 0.2, sm: 0.4 },
-                    },
-                    '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
-                      m: 0,
-                    },
-                    '& .MuiTablePagination-select': {
-                      fontSize: isDesktop ? undefined : { xs: "0.75rem", sm: "0.75rem" },
-                    },
-                    '& .MuiDataGrid-columnHeaders': {
-                      backgroundColor: (theme) => theme.palette.mode === 'dark' ? theme.palette.surfaces.section : '#edf7f2',
-                      color: (theme) => theme.palette.mode === 'dark' ? theme.palette.text.primary : '#17372b',
-                      borderBottom: (theme) => theme.palette.mode === 'dark' ? `1px solid #67C99D` : '1px solid rgba(5,117,70,.18)',
-                    },
-                  '& .row-paid': {
-  backgroundColor: 'rgba(76, 175, 80, 0.12)',
-},
-'& .row-has-order': {
-  backgroundColor: 'rgba(33, 150, 243, 0.12)',
-},
-'& .row-note': {
-  backgroundColor: 'rgba(255, 152, 0, 0.12)',
-},
-'& .row-late': {
-  backgroundColor: 'rgba(244, 67, 54, 0.12)',
-},
-                    '& .MuiDataGrid-row:hover': {
-                      filter: 'brightness(0.98)',
-                    },
-                  }, uiLayout.dataGridSx)}
+                  getRowClassName={getGridRowClassName}
                 />
               </Box>
             </CardContent>
@@ -3051,7 +3592,8 @@ const getStatusDisplayText = (status) => {
             onClose={() => setActionDialogOpen(false)}
             maxWidth={false}
             fullScreen={isPhone}
-            transitionDuration={{ enter: 120, exit: 90 }}
+            keepMounted
+            transitionDuration={0}
             PaperProps={{
               sx: (theme) => {
                 const isDark = theme.palette.mode === 'dark';
@@ -3112,21 +3654,6 @@ const getStatusDisplayText = (status) => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
-                  <Box
-                    sx={{
-                      width: isPhone ? 30 : 34,
-                      height: isPhone ? 30 : 34,
-                      borderRadius: 1.6,
-                      display: 'grid',
-                      placeItems: 'center',
-                      bgcolor: 'rgba(255,255,255,.10)',
-                      border: '1px solid rgba(255,255,255,.15)',
-                      flexShrink: 0
-                    }}
-                  >
-                    <PersonIcon sx={{ fontSize: isPhone ? 17 : 19 }} />
-                  </Box>
-
                   <Box sx={{ minWidth: 0 }}>
                     <Typography
                       sx={{
@@ -3164,9 +3691,13 @@ const getStatusDisplayText = (status) => {
                     height: 32,
                     flexShrink: 0,
                     color: '#fff',
-                    border: '1px solid rgba(255,255,255,.20)',
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    boxShadow: 'none',
                     '&:hover': {
-                      bgcolor: 'rgba(255,255,255,.10)'
+                      bgcolor: 'transparent',
+                      border: 'none',
+                      boxShadow: 'none'
                     }
                   }}
                 >
@@ -3225,8 +3756,8 @@ const getStatusDisplayText = (status) => {
                       }
                     },
                     '& .Mui-selected': {
-                      color: '#057546 !important',
-                      bgcolor: theme.palette.mode === 'dark' ? theme.palette.surfaces.selected : '#f7fbf9'
+                      color: theme.palette.mode === 'dark' ? '#C9F2DF !important' : '#057546 !important',
+                      bgcolor: 'transparent'
                     },
                     '& .MuiTabs-indicator': {
                       backgroundColor: '#057546',
@@ -3237,10 +3768,8 @@ const getStatusDisplayText = (status) => {
                 >
                   {tabs.map((tab, index) => (
                     <Tab
-                      key={index}
-                      icon={tab.icon}
-                      iconPosition="start"
-                      label={tab.label}
+                      key={tab}
+                      label={tab}
                     />
                   ))}
                 </Tabs>
@@ -3318,6 +3847,12 @@ const getStatusDisplayText = (status) => {
 
                   '& .MuiChip-root': {
                     minHeight: 22,
+                    background: 'transparent !important',
+                    backgroundColor: 'transparent !important',
+                    backgroundImage: 'none !important',
+                    border: isDark ? '1px solid #67C99D !important' : undefined,
+                    color: isDark ? '#9BE0C1 !important' : undefined,
+                    boxShadow: 'none !important',
                     height: 'auto',
                     fontSize: isPhone ? '0.61rem' : '0.65rem'
                   },
@@ -3487,7 +4022,7 @@ const getStatusDisplayText = (status) => {
                               fontWeight: 'bold',
                             }}
                           >
-                            <InfoIcon /> الحالة الحالية
+                            الحالة الحالية
                           </Typography>
 
                           <Box
@@ -3631,7 +4166,7 @@ const getStatusDisplayText = (status) => {
                               fontWeight: 'bold',
                             }}
                           >
-                            <HistoryIcon /> إضافة متابعة جديدة
+                            إضافة متابعة جديدة
                           </Typography>
 
                           <TextField InputLabelProps={{ shrink: true }}
@@ -3688,7 +4223,7 @@ const getStatusDisplayText = (status) => {
                           fontWeight: 'bold',
                         }}
                       >
-                        📑 الفواتير المدفوعة
+                        الفواتير المدفوعة
                       </Typography>
 
                       {statementsLoading ? (
@@ -3704,10 +4239,10 @@ const getStatusDisplayText = (status) => {
                           <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
                             <thead>
                               <tr style={{ backgroundColor: TABLE_HEADER_BG }}>
-                                <th style={adaptiveInlineStyle(thCell)}>📅 التاريخ</th>
-                                <th style={adaptiveInlineStyle(thCell)}>➖ دفعة الشهر</th>
-                                <th style={adaptiveInlineStyle(thCell)}>💰 الرصيد المتبقي عليه</th>
-                                <th style={adaptiveInlineStyle(thCell)}>📝 ملاحظات</th>
+                                <th style={adaptiveInlineStyle(thCell)}>التاريخ</th>
+                                <th style={adaptiveInlineStyle(thCell)}>دفعة الشهر</th>
+                                <th style={adaptiveInlineStyle(thCell)}>الرصيد المتبقي عليه</th>
+                                <th style={adaptiveInlineStyle(thCell)}>ملاحظات</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -3745,7 +4280,7 @@ const getStatusDisplayText = (status) => {
                           fontWeight: 'bold',
                         }}
                       >
-                        📚 الملف التدريبي
+                        الملف التدريبي
                       </Typography>
 
                       {trainingLoading ? (
@@ -3825,7 +4360,7 @@ const getStatusDisplayText = (status) => {
                           fontWeight: 'bold',
                         }}
                       >
-                        <PendingActionsIcon /> آخر طلب سداد
+                        آخر طلب سداد
                       </Typography>
 
                       {!lastOrderData[currentActionRow?.id] ? (
@@ -3856,18 +4391,16 @@ const getStatusDisplayText = (status) => {
                                   تفاصيل آخر طلب سداد
                                 </Typography>
                                 {lastOrderData[currentActionRow?.id]?.data?.orderSubTotal > 0 ? (
-                                  <Chip 
-                                    icon={<PendingActionsIcon />} 
-                                    label="طلب معلق" 
-                                    color="warning" 
-                                    variant="filled" 
+                                  <Chip
+                                    label="طلب معلق"
+                                    color="warning"
+                                    variant="outlined"
                                   />
                                 ) : (
-                                  <Chip 
-                                    icon={<CheckCircleIcon />} 
-                                    label="طلب مكتمل" 
-                                    color="success" 
-                                    variant="filled" 
+                                  <Chip
+                                    label="طلب مكتمل"
+                                    color="success"
+                                    variant="outlined"
                                   />
                                 )}
                               </Box>
@@ -3956,7 +4489,7 @@ const getStatusDisplayText = (status) => {
                                 border: `1px solid ${pinColor('#90caf9')}`
                               })}>
                                 <Typography variant="body2" sx={{ color: '#0d47a1', fontWeight: 'bold' }}>
-                                  📅 تاريخ الطلب: {lastOrderData[currentActionRow?.id]?.data?.orderDate ? 
+                                  تاريخ الطلب: {lastOrderData[currentActionRow?.id]?.data?.orderDate ? 
                                     dayjs(lastOrderData[currentActionRow?.id]?.data?.orderDate).format('YYYY/MM/DD HH:mm') : '-'}
                                 </Typography>
                                 <Typography variant="body2" sx={{ color: '#0d47a1', mt: 0.5 }}>

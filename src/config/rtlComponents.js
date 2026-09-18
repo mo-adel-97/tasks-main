@@ -103,16 +103,16 @@ export const rtlComponents = {
     // loses its red border entirely in dark mode. Give each severity the
     // same bright, on-brand-saturation border used for Alerts everywhere else.
     outlinedError: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      borderColor: pinColor('rgba(229,90,90,.5)'), color: '#e57373',
+      borderColor: pinColor('rgba(229,90,90,.5)'), color: pinColor('#e57373'),
     } : {}),
     outlinedWarning: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      borderColor: pinColor('rgba(237,137,54,.5)'), color: '#f0ad4e',
+      borderColor: pinColor('rgba(237,137,54,.5)'), color: pinColor('#f0ad4e'),
     } : {}),
     outlinedInfo: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      borderColor: pinColor('rgba(90,160,229,.5)'), color: '#78bdf5',
+      borderColor: pinColor('rgba(90,160,229,.5)'), color: pinColor('#78bdf5'),
     } : {}),
     outlinedSuccess: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      borderColor: theme.palette.borders.accent, color: theme.palette.primary.main,
+      borderColor: pinColor(theme.palette.borders.accent), color: pinColor(theme.palette.primary.main),
     } : {}),
   } },
   // Same root cause as MuiButton's containedPrimary above: the moving bar
@@ -135,7 +135,7 @@ export const rtlComponents = {
   // hover/focus state.
   MuiCard: { styleOverrides: { root: ({ theme }) => ({
     borderRadius: `${designTokens.radius}px`,
-    ...(theme.palette.mode === 'dark' ? { border: '1px solid #67C99D' } : {}),
+    ...(theme.palette.mode === 'dark' ? { border: `1px solid ${pinColor('#67C99D')}` } : {}),
   }) } },
   // TableContainer renders as a plain div by default (no Paper), so tables
   // otherwise have no visible boundary in the dark enterprise theme. Tables
@@ -144,28 +144,28 @@ export const rtlComponents = {
   MuiTableContainer: { styleOverrides: { root: ({ theme }) => (
     theme.palette.mode === 'dark'
       ? {
-        border: '1px solid #67C99D',
+        border: `1px solid ${pinColor('#67C99D')}`,
         borderRadius: `${designTokens.radius}px`,
-        backgroundColor: theme.palette.surfaces.section,
+        backgroundColor: pinColor(theme.palette.surfaces.section),
       }
       : {}
   ) } },
   // Dialogs are form containers and get the same fixed border: they are
   // almost always the most important surface on screen while open.
   MuiDialog: { styleOverrides: { paper: ({ theme }) => (
-    theme.palette.mode === 'dark' ? { border: '1px solid #67C99D' } : {}
+    theme.palette.mode === 'dark' ? { border: `1px solid ${pinColor('#67C99D')}` } : {}
   ) } },
   // Dropdowns/menus/popovers (selects, autocomplete lists, notification
   // popovers) render on every page and previously had zero boundary against
   // the page in dark mode — a big part of the "everything is flat black" look.
   MuiPopover: { styleOverrides: { paper: ({ theme }) => (
     theme.palette.mode === 'dark'
-      ? { border: '1px solid #67C99D', backgroundColor: theme.palette.surfaces.card }
+      ? { border: `1px solid ${pinColor('#67C99D')}`, backgroundColor: pinColor(theme.palette.surfaces.card) }
       : {}
   ) } },
   MuiMenu: { styleOverrides: { paper: ({ theme }) => (
     theme.palette.mode === 'dark'
-      ? { border: '1px solid #67C99D', backgroundColor: theme.palette.surfaces.card }
+      ? { border: `1px solid ${pinColor('#67C99D')}`, backgroundColor: pinColor(theme.palette.surfaces.card) }
       : {}
   ) } },
   // A bare <Paper variant="outlined"> is the app's most common hand-rolled
@@ -174,7 +174,7 @@ export const rtlComponents = {
   // border color surviving the auto dark-color transform.
   MuiPaper: { styleOverrides: { root: ({ theme, ownerState }) => (
     theme.palette.mode === 'dark' && ownerState.variant === 'outlined'
-      ? { borderColor: '#67C99D', backgroundColor: theme.palette.surfaces.section }
+      ? { borderColor: pinColor('#67C99D'), backgroundColor: pinColor(theme.palette.surfaces.section) }
       : {}
   ) } },
   // DataGrid ("الجريدات") gets the same fixed border on its shell, header,
@@ -182,16 +182,16 @@ export const rtlComponents = {
   // the one container type left unstyled next to the green-bordered rest.
   MuiDataGrid: { defaultProps: { density: 'compact' }, styleOverrides: {
     root: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      border: '1px solid #67C99D',
+      border: `1px solid ${pinColor('#67C99D')}`,
       borderRadius: `${designTokens.radius}px`,
-      backgroundColor: theme.palette.surfaces.section,
+      backgroundColor: pinColor(theme.palette.surfaces.section),
       '& .MuiDataGrid-columnHeaders': {
-        borderBottom: '1px solid #67C99D',
-        backgroundColor: theme.palette.surfaces.card,
+        borderBottom: `1px solid ${pinColor('#67C99D')}`,
+        backgroundColor: pinColor(theme.palette.surfaces.card),
       },
-      '& .MuiDataGrid-cell': { borderBottom: '1px solid #67C99D' },
-      '& .MuiDataGrid-footerContainer': { borderTop: '1px solid #67C99D' },
-      '& .MuiDataGrid-withBorderColor': { borderColor: '#67C99D' },
+      '& .MuiDataGrid-cell': { borderBottom: `1px solid ${pinColor('#67C99D')}` },
+      '& .MuiDataGrid-footerContainer': { borderTop: `1px solid ${pinColor('#67C99D')}` },
+      '& .MuiDataGrid-withBorderColor': { borderColor: pinColor('#67C99D') },
     } : {}),
   } },
   MuiDialogTitle: { styleOverrides: { root: { padding: '9px 14px', fontSize: designTokens.typography.sectionTitle, fontWeight: 600 } } },
@@ -208,15 +208,15 @@ export const rtlComponents = {
       const isDark = theme.palette.mode === 'dark';
       // Inputs sit one level "recessed" from their card/dialog in dark mode,
       // so a form reads as a coherent surface instead of same-tone boxes.
-      const recessed = isDark ? { backgroundColor: theme.palette.surfaces.input } : {};
+      const recessed = isDark ? { backgroundColor: pinColor(theme.palette.surfaces.input) } : {};
       // MUI's own unfocused/hover outline colors are neutral grays with no
       // relation to this app's brand green, so every text field on every
       // page looked like a plain, unstyled dark box. Give the outline the
       // same visible green ladder used everywhere else in dark mode instead.
       const darkBorders = isDark ? {
-        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
-        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D' },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#67C99D', borderWidth: '1.5px' },
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: pinColor('#67C99D') },
+        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: pinColor('#67C99D') },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pinColor('#67C99D'), borderWidth: '1.5px' },
       } : {};
       // Autocomplete manages its own control gutter, including the compact size.
       if (ownerState.className?.includes('MuiAutocomplete-inputRoot')) {
@@ -311,20 +311,20 @@ export const rtlComponents = {
     action: { marginLeft: 0, marginRight: 0, marginInlineStart: 'auto', marginInlineEnd: -8,
       paddingLeft: 0, paddingInlineStart: 16 },
     standardWarning: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      backgroundColor: 'rgba(237,137,54,.12)', border: `1px solid ${pinColor('rgba(237,137,54,.42)')}`,
-      color: '#f0ad4e', '& .MuiAlert-icon': { color: '#f0ad4e' },
+      backgroundColor: pinColor('rgba(237,137,54,.12)'), border: `1px solid ${pinColor('rgba(237,137,54,.42)')}`,
+      color: pinColor('#f0ad4e'), '& .MuiAlert-icon': { color: pinColor('#f0ad4e') },
     } : {}),
     standardError: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      backgroundColor: 'rgba(229,90,90,.12)', border: `1px solid ${pinColor('rgba(229,90,90,.42)')}`,
-      color: '#e57373', '& .MuiAlert-icon': { color: '#e57373' },
+      backgroundColor: pinColor('rgba(229,90,90,.12)'), border: `1px solid ${pinColor('rgba(229,90,90,.42)')}`,
+      color: pinColor('#e57373'), '& .MuiAlert-icon': { color: pinColor('#e57373') },
     } : {}),
     standardInfo: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      backgroundColor: 'rgba(90,160,229,.12)', border: `1px solid ${pinColor('rgba(90,160,229,.42)')}`,
-      color: '#78bdf5', '& .MuiAlert-icon': { color: '#78bdf5' },
+      backgroundColor: pinColor('rgba(90,160,229,.12)'), border: `1px solid ${pinColor('rgba(90,160,229,.42)')}`,
+      color: pinColor('#78bdf5'), '& .MuiAlert-icon': { color: pinColor('#78bdf5') },
     } : {}),
     standardSuccess: ({ theme }) => (theme.palette.mode === 'dark' ? {
-      backgroundColor: 'rgba(103,201,157,.12)', border: '1px solid #67C99D',
-      color: theme.palette.primary.main, '& .MuiAlert-icon': { color: theme.palette.primary.main },
+      backgroundColor: pinColor('rgba(103,201,157,.12)'), border: `1px solid ${pinColor('#67C99D')}`,
+      color: pinColor(theme.palette.primary.main), '& .MuiAlert-icon': { color: pinColor(theme.palette.primary.main) },
     } : {}),
   } },
   MuiInputBase: { styleOverrides: {

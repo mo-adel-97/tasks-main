@@ -270,14 +270,16 @@ const toNumber = (value) => {
     : 0;
 };
 
+const moneyFormatter = new Intl.NumberFormat(
+  "en-US",
+  {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }
+);
+
 const money = (value) =>
-  new Intl.NumberFormat(
-    "en-US",
-    {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }
-  ).format(toNumber(value));
+  moneyFormatter.format(toNumber(value));
 
 const firstAndLastName = (value) => {
   const parts = String(value || "")
@@ -372,7 +374,7 @@ const readJson = async (response) => {
   return json;
 };
 
-const TextCell = ({
+const TextCell = React.memo(({
   value,
   align = "center"
 }) => (
@@ -398,9 +400,9 @@ const TextCell = ({
       {value || "-"}
     </Typography>
   </Tooltip>
-);
+));
 
-const MoneyCell = ({ value }) => (
+const MoneyCell = React.memo(({ value }) => (
   <Typography
     sx={{
       width: "100%",
@@ -414,9 +416,9 @@ const MoneyCell = ({ value }) => (
   >
     {money(value)}
   </Typography>
-);
+));
 
-const TotalItem = ({
+const TotalItem = React.memo(({
   label,
   value,
   accent = "#057546"
@@ -484,9 +486,9 @@ const TotalItem = ({
       {money(value)}
     </Typography>
   </Box>
-);
+));
 
-const PaymentTotalsSection = ({
+const PaymentTotalsSection = React.memo(({
   totals,
   rowCount
 }) => (
@@ -622,7 +624,7 @@ const PaymentTotalsSection = ({
       </Box>
     </Stack>
   </Paper>
-);
+));
 
 const StudentInfo = ({ row }) => (
   <Paper
@@ -834,6 +836,232 @@ const MultiValueFilter = ({
   );
 };
 
+
+const PaymentFollowDataGrid = React.memo(
+  function PaymentFollowDataGrid({
+    filteredGridRows,
+    mainGridColumns,
+    loading,
+    isDesktop,
+    isPhone,
+    customStudentSelections
+  }) {
+    const getPaymentGridRowClassName =
+      useCallback(
+        (params) => {
+          const key =
+            params.row.studentLevelGuid ||
+            params.row.id;
+
+          const paymentClass =
+            params.row.monthPay !== 0
+              ? "paid-row"
+              : "unpaid-row";
+
+          const selectedClass =
+            customStudentSelections[key]
+              ? "custom-distribution-selected-row"
+              : "";
+
+          return `${paymentClass} ${selectedClass}`.trim();
+        },
+        [customStudentSelections]
+      );
+
+    return (
+<DataGrid
+                rows={filteredGridRows}
+                columns={mainGridColumns}
+                loading={loading}
+                rowHeight={
+                  isDesktop
+                    ? 50
+                    : isPhone
+                      ? 38
+                      : 44
+                }
+                columnHeaderHeight={
+                  isDesktop
+                    ? 60
+                    : isPhone
+                      ? 32
+                      : 42
+                }
+                disableRowSelectionOnClick
+                disableColumnFilter
+                disableColumnMenu={!isDesktop}
+                showToolbar={isDesktop}
+                slots={{
+                  toolbar: GridToolbar
+                }}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: true,
+                    quickFilterProps: {
+                      debounceMs: 300
+                    },
+                    printOptions: {
+                      disableToolbarButton: true
+                    }
+                  }
+                }}
+                pageSizeOptions={[
+                  25,
+                  50,
+                  100
+                ]}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      page: 0,
+                      pageSize: 25
+                    }
+                  }
+                }}
+                getRowClassName={getPaymentGridRowClassName}
+                sx={uiLayout.withUiSx({
+                  direction: "rtl",
+                  fontFamily: "Cairo",
+                  border: 0,
+
+                  "& .MuiDataGrid-main": {
+                    overflow: "hidden"
+                  },
+
+                  "& .MuiDataGrid-virtualScroller": {
+                    overflowX:
+                      "auto"
+                  },
+
+                  "& .MuiDataGrid-virtualScrollerContent": {
+                    minWidth:
+                      "100% !important"
+                  },
+
+                  "& .MuiDataGrid-columnHeaders": {
+                    background:
+                      "linear-gradient(135deg,#057546,#034d31)",
+                    color: "#fff"
+                  },
+
+                  "& .MuiDataGrid-columnHeader": {
+                    background:
+                      "transparent",
+                    px: 0.35
+                  },
+
+                  "& .MuiDataGrid-columnHeaderTitle": {
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow:
+                      "ellipsis",
+                    whiteSpace: "normal",
+                    lineHeight: 1.25,
+                    textAlign: "center",
+                    fontSize: isDesktop
+                      ? "0.75rem"
+                      : isPhone
+                        ? "0.75rem"
+                        : "0.75rem",
+                    fontWeight: 900,
+                    whiteSpace: isDesktop
+                      ? "normal"
+                      : "nowrap"
+                  },
+
+                  "& .MuiDataGrid-cell": {
+                    px: isDesktop
+                      ? 0.25
+                      : isPhone
+                        ? 0.04
+                        : 0.2,
+                    fontSize: !isDesktop
+                      ? isPhone
+                        ? "0.75rem"
+                        : "0.75rem"
+                      : undefined,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:
+                      "center",
+                    borderColor:
+                      "#e5ece8",
+                    overflow: "hidden"
+                  },
+
+                  "& .paid-row": {
+                    backgroundColor:
+                      "#ecfaef"
+                  },
+
+                  "& .unpaid-row": {
+                    backgroundColor:
+                      "#fff1f1"
+                  },
+
+                  "& .custom-distribution-selected-row": {
+                    backgroundColor: "#f2ebff !important",
+                    boxShadow: "inset 4px 0 0 #6f42c1"
+                  },
+
+                  "& .MuiDataGrid-row:hover": {
+                    backgroundColor:
+                      "#fff3d6"
+                  },
+
+                  "& .MuiDataGrid-footerContainer": {
+                    minHeight: isDesktop ? 68 : isPhone ? 58 : 64,
+                    paddingTop: isDesktop ? "8px" : "6px",
+                    paddingBottom: isDesktop ? "14px" : "10px",
+                    paddingLeft: isDesktop ? "10px" : "6px",
+                    paddingRight: isDesktop ? "10px" : "6px",
+                    alignItems: "center"
+                  },
+
+                  "& .MuiTablePagination-root": {
+                    width: "100%",
+                    overflow: "visible"
+                  },
+
+                  "& .MuiTablePagination-toolbar": {
+                    minHeight: "46px !important",
+                    paddingBottom: isDesktop ? "4px" : "2px",
+                    paddingLeft: isDesktop ? "8px !important" : "4px !important",
+                    paddingRight: isDesktop ? "8px !important" : "4px !important",
+                    gap: isDesktop ? "8px" : "4px"
+                  },
+
+                  "& .MuiTablePagination-actions": {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "7px",
+                    marginInlineStart: "8px"
+                  },
+
+                  ...(!isDesktop
+                    ? {
+                        "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
+                          display: "none"
+                        },
+                        "& .MuiDataGrid-columnSeparator": {
+                          display: "none"
+                        },
+                        "& .MuiDataGrid-columnHeaderTitleContainer": {
+                          justifyContent: "center",
+                          minWidth: 0,
+                          overflow: "hidden"
+                        },
+                        "& .MuiDataGrid-toolbarContainer": {
+                          display: "none"
+                        }
+                      }
+                    : {})
+                }, uiLayout.dataGridSx)}
+              />
+    );
+  }
+);
+
 const PaymentFollowReport = () => {
   const theme = useTheme();
 
@@ -850,7 +1078,9 @@ const PaymentFollowReport = () => {
     border: "#67C99D"
   };
 
-  const darkContractStyles = isDark
+  const darkContractStyles = useMemo(
+    () => (
+isDark
     ? {
         ".payment-follow-ui": {
           backgroundColor: `${uiColors.page} !important`,
@@ -1027,10 +1257,25 @@ const PaymentFollowReport = () => {
           border: `1px solid ${uiColors.border} !important`
         }
       }
-    : {};
+    : {}
+    ),
+    [
+      isDark,
+      uiColors.page,
+      uiColors.card,
+      uiColors.section,
+      uiColors.nested,
+      uiColors.hover,
+      uiColors.selected,
+      uiColors.text,
+      uiColors.muted,
+      uiColors.border
+    ]
+  );
 
-
-  const layoutSafetyStyles = {
+  const layoutSafetyStyles = useMemo(
+    () => (
+{
     ".payment-follow-ui": {
       width: "100%",
       maxWidth: "100vw",
@@ -1085,7 +1330,10 @@ const PaymentFollowReport = () => {
         maxWidth: "calc(100vw - 16px) !important"
       }
     }
-  };
+  }
+    ),
+    []
+  );
 
   const isPhone = useMediaQuery(
     theme.breakpoints.down("sm")
@@ -1901,24 +2149,41 @@ const PaymentFollowReport = () => {
     };
   }, [gridRows]);
 
-  const filteredGridRows = useMemo(
+  const activeColumnFilterSets = useMemo(
     () =>
-      gridRows.filter((row) =>
-        Object.entries(columnFilters)
-          .every(([field, selectedValues]) => {
-            if (!selectedValues.length) {
-              return true;
-            }
-
-            return selectedValues.includes(
-              normalizeFilterValue(
-                row[field]
-              )
-            );
-          })
-      ),
-    [gridRows, columnFilters]
+      Object.entries(columnFilters)
+        .filter(
+          ([, selectedValues]) =>
+            selectedValues.length > 0
+        )
+        .map(
+          ([field, selectedValues]) => [
+            field,
+            new Set(selectedValues)
+          ]
+        ),
+    [columnFilters]
   );
+
+  const filteredGridRows = useMemo(() => {
+    if (!activeColumnFilterSets.length) {
+      return gridRows;
+    }
+
+    return gridRows.filter((row) =>
+      activeColumnFilterSets.every(
+        ([field, selectedValues]) =>
+          selectedValues.has(
+            normalizeFilterValue(
+              row[field]
+            )
+          )
+      )
+    );
+  }, [
+    gridRows,
+    activeColumnFilterSets
+  ]);
 
   // الطلاب المتاحون للطريقة الجديدة: غير موزعين فقط.
   // نعتمد على TrainerGuid أولاً، ولو الـBackend لا يرجعه نعتمد على الاسم.
@@ -4106,175 +4371,13 @@ const exportExcel = () => {
                 overflow: "hidden"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
-                rows={filteredGridRows}
-                columns={mainGridColumns}
+              <PaymentFollowDataGrid
+                filteredGridRows={filteredGridRows}
+                mainGridColumns={mainGridColumns}
                 loading={loading}
-                rowHeight={
-                  isDesktop
-                    ? 50
-                    : isPhone
-                      ? 38
-                      : 44
-                }
-                columnHeaderHeight={
-                  isDesktop
-                    ? 60
-                    : isPhone
-                      ? 32
-                      : 42
-                }
-                disableRowSelectionOnClick
-                disableColumnFilter
-                disableColumnMenu={!isDesktop}
-                showToolbar={isDesktop}
-                disableColumnVirtualization={isDesktop}
-                slots={{
-                  toolbar: GridToolbar
-                }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                    quickFilterProps: {
-                      debounceMs: 300
-                    },
-                    printOptions: {
-                      disableToolbarButton: true
-                    }
-                  }
-                }}
-                pageSizeOptions={[
-                  25,
-                  50,
-                  100
-                ]}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      page: 0,
-                      pageSize: 25
-                    }
-                  }
-                }}
-                getRowClassName={(params) => {
-                  const key = params.row.studentLevelGuid || params.row.id;
-                  const paymentClass = params.row.monthPay !== 0
-                    ? "paid-row"
-                    : "unpaid-row";
-                  const selectedClass = customStudentSelections[key]
-                    ? "custom-distribution-selected-row"
-                    : "";
-                  return `${paymentClass} ${selectedClass}`.trim();
-                }}
-                sx={uiLayout.withUiSx({
-                  direction: "rtl",
-                  fontFamily: "Cairo",
-                  border: 0,
-
-                  "& .MuiDataGrid-main": {
-                    overflow: "hidden"
-                  },
-
-                  "& .MuiDataGrid-virtualScroller": {
-                    overflowX:
-                      "auto"
-                  },
-
-                  "& .MuiDataGrid-virtualScrollerContent": {
-                    minWidth:
-                      "100% !important"
-                  },
-
-                  "& .MuiDataGrid-columnHeaders": {
-                    background:
-                      "linear-gradient(135deg,#057546,#034d31)",
-                    color: "#fff"
-                  },
-
-                  "& .MuiDataGrid-columnHeader": {
-                    background:
-                      "transparent",
-                    px: 0.35
-                  },
-
-                  "& .MuiDataGrid-columnHeaderTitle": {
-                    width: "100%",
-                    overflow: "hidden",
-                    textOverflow:
-                      "ellipsis",
-                    whiteSpace: "normal",
-                    lineHeight: 1.25,
-                    textAlign: "center",
-                    fontSize: isDesktop
-                      ? "0.75rem"
-                      : isPhone
-                        ? "0.75rem"
-                        : "0.75rem",
-                    fontWeight: 900,
-                    whiteSpace: isDesktop
-                      ? "normal"
-                      : "nowrap"
-                  },
-
-                  "& .MuiDataGrid-cell": {
-                    px: isDesktop
-                      ? 0.25
-                      : isPhone
-                        ? 0.04
-                        : 0.2,
-                    fontSize: !isDesktop
-                      ? isPhone
-                        ? "0.75rem"
-                        : "0.75rem"
-                      : undefined,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent:
-                      "center",
-                    borderColor:
-                      "#e5ece8",
-                    overflow: "hidden"
-                  },
-
-                  "& .paid-row": {
-                    backgroundColor:
-                      "#ecfaef"
-                  },
-
-                  "& .unpaid-row": {
-                    backgroundColor:
-                      "#fff1f1"
-                  },
-
-                  "& .custom-distribution-selected-row": {
-                    backgroundColor: "#f2ebff !important",
-                    boxShadow: "inset 4px 0 0 #6f42c1"
-                  },
-
-                  "& .MuiDataGrid-row:hover": {
-                    backgroundColor:
-                      "#fff3d6"
-                  },
-
-                  ...(!isDesktop
-                    ? {
-                        "& .MuiDataGrid-menuIcon, & .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-sortIcon": {
-                          display: "none"
-                        },
-                        "& .MuiDataGrid-columnSeparator": {
-                          display: "none"
-                        },
-                        "& .MuiDataGrid-columnHeaderTitleContainer": {
-                          justifyContent: "center",
-                          minWidth: 0,
-                          overflow: "hidden"
-                        },
-                        "& .MuiDataGrid-toolbarContainer": {
-                          display: "none"
-                        }
-                      }
-                    : {})
-                }, uiLayout.dataGridSx)}
+                isDesktop={isDesktop}
+                isPhone={isPhone}
+                customStudentSelections={customStudentSelections}
               />
             </Box>
 

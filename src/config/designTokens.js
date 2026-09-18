@@ -43,12 +43,12 @@ export const designTokens = Object.freeze({
     itemPadding: { xs: '0.3rem 0.45rem', lg: '0.35rem 0.6rem' },
     itemRadius: '7px',
     iconSize: { xs: '0.875rem', lg: fluid(14.4, 18) },
-    titleSize: { xs: '0.6875rem', lg: fluid(11, 14) },
+    titleSize: { xs: '0.6875rem', lg: fluid(11, 16) },
     iconBoxMinWidth: { xs: 22, lg: fluid(26, 30) },
     // Child (leaf) menu links are the most frequently read sidebar text, and
     // previously used flat literals that never grew past the 1200px cutoff.
-    childTitleSize: fluid(11.52, 14),
-    childSecondarySize: fluid(10.24, 12),
+    childTitleSize: fluid(11.52, 16),
+    childSecondarySize: fluid(10.24, 14),
     childIconSize: fluid(16, 19),
     childIconBoxMinWidth: fluid(19, 22),
     childItemHeight: fluid(34, 40),

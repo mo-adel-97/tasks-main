@@ -1,7 +1,7 @@
 import { DESKTOP_BREAKPOINT } from '../config/sidebarLayout';
 import { pinColor } from '../config/themeColors';
 import * as uiLayout from './common/uiLayout';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -272,6 +272,14 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, studentGuid, diplomGuid, branchGuid]);
+
+  // Lazy-mount guard: this dialog is mounted eagerly (but closed) as soon
+  // as the parent page loads, so skip building its JSX until it has
+  // actually been opened once. Once opened, later closes still render
+  // normally so the MUI exit transition keeps working.
+  const hasOpenedRef = useRef(open);
+  if (open) hasOpenedRef.current = true;
+  if (!hasOpenedRef.current) return null;
 
   const openAttachments = async () => {
     const id = String(nationalId || "").trim();

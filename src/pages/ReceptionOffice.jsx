@@ -248,6 +248,45 @@ const DARK_ACTION_GLOBAL_STYLES = (theme) => {
       color: "rgba(155,224,193,.38) !important",
       borderColor: "rgba(103,201,157,.30) !important"
     },
+    ".reception-actions-menu-trigger": {
+      background: "transparent !important",
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      border: "none !important",
+      borderColor: "transparent !important",
+      borderRadius: "0 !important",
+      boxShadow: "none !important",
+      padding: "0 !important"
+    },
+    ".MuiDataGrid-menuIcon .MuiIconButton-root, .MuiDataGrid-iconButtonContainer .MuiIconButton-root, .MuiDataGrid-menuIconButton, .MuiDataGrid-sortButton": {
+      background: "transparent !important",
+      backgroundColor: "transparent !important",
+      backgroundImage: "none !important",
+      border: "none !important",
+      borderColor: "transparent !important",
+      borderRadius: "0 !important",
+      boxShadow: "none !important",
+      outline: "none !important"
+    },
+    ".MuiDataGrid-menuIcon .MuiIconButton-root:hover, .MuiDataGrid-iconButtonContainer .MuiIconButton-root:hover, .MuiDataGrid-menuIconButton:hover, .MuiDataGrid-sortButton:hover": {
+      background: "transparent !important",
+      backgroundColor: "transparent !important",
+      border: "none !important",
+      borderColor: "transparent !important",
+      boxShadow: "none !important"
+    },
+    ".MuiDataGrid-menuIcon .MuiIconButton-root:focus, .MuiDataGrid-menuIcon .MuiIconButton-root:focus-visible, .MuiDataGrid-iconButtonContainer .MuiIconButton-root:focus, .MuiDataGrid-iconButtonContainer .MuiIconButton-root:focus-visible, .MuiDataGrid-menuIconButton:focus, .MuiDataGrid-menuIconButton:focus-visible": {
+      background: "transparent !important",
+      border: "none !important",
+      outline: "none !important",
+      boxShadow: "none !important"
+    },
+    ".reception-actions-menu-trigger:hover": {
+      background: "transparent !important",
+      backgroundColor: "transparent !important",
+      border: "none !important",
+      boxShadow: "none !important"
+    },
     ".MuiChip-root": {
       backgroundColor: "transparent !important",
       backgroundImage: "none !important",
@@ -1365,6 +1404,16 @@ const ReceptionOffice = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [searchType, setSearchType] = useState("nationalId");
   const [searchText, setSearchText] = useState("");
+  // Kept in sync with the state above on every render so handleSearch/
+  // loadOldStudents/buildSearchParams can stay referentially stable
+  // (useCallback with []) instead of gaining a new identity on every
+  // keystroke — a stale-identity onRefresh prop was defeating
+  // FastReceptionDialogsHost's memo() and re-rendering ~9k lines of
+  // closed dialogs on every keystroke.
+  const searchTypeRef = useRef(searchType);
+  const searchTextRef = useRef(searchText);
+  searchTypeRef.current = searchType;
+  searchTextRef.current = searchText;
   const [students, setStudents] = useState([]);
   const [oldStudents, setOldStudents] = useState([]);
   const [showOldGrid, setShowOldGrid] = useState(false);
@@ -1389,6 +1438,7 @@ const [registerDocumentRow, setRegisterDocumentRow] = useState(null);
 
   const [actionAnchorEl, setActionAnchorEl] = useState(null);
   const [actionRow, setActionRow] = useState(null);
+  const actionMenuPaperRef = useRef(null);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -1429,19 +1479,64 @@ const autoSearchTimerRef = useRef(null);
     return "اسم الطالب";
   }, [searchType]);
 
-  const buildSearchParams = (customValue = searchText) => {
+  const buildSearchParams = useCallback((customValue = searchTextRef.current) => {
     const params = new URLSearchParams();
     const value = String(customValue || "").trim();
+    const type = searchTypeRef.current;
 
-    if (searchType === "nationalId") params.append("nationalId", value);
-    if (searchType === "tel") params.append("studentTel", value);
-    if (searchType === "name") params.append("studentName", value);
+    if (type === "nationalId") params.append("nationalId", value);
+    if (type === "tel") params.append("studentTel", value);
+    if (type === "name") params.append("studentName", value);
 
     return params.toString();
-  };
+  }, []);
 
-  const handleSearch = async (customValue = null, silent = false) => {
-    const value = String(customValue ?? searchText).trim();
+  const loadOldStudents = useCallback(async (customValue = searchTextRef.current) => {
+    try {
+      const params = new URLSearchParams();
+
+      const value = String(customValue || "").trim();
+      const type = searchTypeRef.current;
+
+      if (type === "nationalId") params.append("nationalId", value);
+      if (type === "tel") params.append("studentTel", value);
+      if (type === "name") params.append("studentName", value);
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/reception-office/old-students/search?${params.toString()}`
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.message || result?.error || "فشل تحميل بيانات الأرشيف");
+      }
+
+      const data = Array.isArray(result?.data) ? result.data : [];
+
+      setOldStudents(
+        data.map((item, index) => ({
+          ...item,
+          id:
+            item.id ||
+            item.oldCustomerNo ||
+            item.nationalId ||
+            item.studentTel ||
+            index + 1,
+          serial: index + 1
+        }))
+      );
+
+      setShowOldGrid(data.length > 0);
+    } catch (error) {
+      showError(error.message || "حدث خطأ أثناء تحميل بيانات الأرشيف");
+      setOldStudents([]);
+      setShowOldGrid(false);
+    }
+  }, []);
+
+  const handleSearch = useCallback(async (customValue = null, silent = false) => {
+    const value = String(customValue ?? searchTextRef.current).trim();
 
     if (!value) {
       if (!silent) {
@@ -1481,7 +1576,7 @@ const autoSearchTimerRef = useRef(null);
         }))
       );
 
-      if (data.length === 0 && searchType === "nationalId" && value.length === 10) {
+      if (data.length === 0 && searchTypeRef.current === "nationalId" && value.length === 10) {
         await loadOldStudents(value);
       }
     } catch (error) {
@@ -1490,50 +1585,7 @@ const autoSearchTimerRef = useRef(null);
     } finally {
       setLoading(false);
     }
-  };
-
-  const loadOldStudents = async (customValue = searchText) => {
-    try {
-      const params = new URLSearchParams();
-
-      const value = String(customValue || "").trim();
-
-      if (searchType === "nationalId") params.append("nationalId", value);
-      if (searchType === "tel") params.append("studentTel", value);
-      if (searchType === "name") params.append("studentName", value);
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/reception-office/old-students/search?${params.toString()}`
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(result?.message || result?.error || "فشل تحميل بيانات الأرشيف");
-      }
-
-      const data = Array.isArray(result?.data) ? result.data : [];
-
-      setOldStudents(
-        data.map((item, index) => ({
-          ...item,
-          id:
-            item.id ||
-            item.oldCustomerNo ||
-            item.nationalId ||
-            item.studentTel ||
-            index + 1,
-          serial: index + 1
-        }))
-      );
-
-      setShowOldGrid(data.length > 0);
-    } catch (error) {
-      showError(error.message || "حدث خطأ أثناء تحميل بيانات الأرشيف");
-      setOldStudents([]);
-      setShowOldGrid(false);
-    }
-  };
+  }, [buildSearchParams, loadOldStudents]);
 
   useEffect(() => {
     const value = searchText.trim();
@@ -1595,6 +1647,7 @@ setStudentOperationsStudent(null);
   };
 
   const handleOpenActionMenu = (event, row) => {
+    restoreActionMenuVisualState();
     setActionAnchorEl(event.currentTarget);
     setActionRow(row);
 
@@ -1620,6 +1673,29 @@ setStudentOperationsStudent(null);
     }
   };
 
+  const hideActionMenuInstant = () => {
+    const paper = actionMenuPaperRef.current;
+
+    if (!paper) return;
+
+    // Visual close happens immediately, before React state/API work.
+    paper.style.transition = "none";
+    paper.style.opacity = "0";
+    paper.style.visibility = "hidden";
+    paper.style.pointerEvents = "none";
+  };
+
+  const restoreActionMenuVisualState = () => {
+    const paper = actionMenuPaperRef.current;
+
+    if (!paper) return;
+
+    paper.style.transition = "";
+    paper.style.opacity = "";
+    paper.style.visibility = "";
+    paper.style.pointerEvents = "";
+  };
+
   const handleCloseActionMenu = () => {
     setActionAnchorEl(null);
     setActionRow(null);
@@ -1631,7 +1707,16 @@ setStudentOperationsStudent(null);
     showLoader = true
   ) => {
     const row = actionRow;
+
     if (!row || actionLoading) return;
+
+    // Disappear visually on the exact click frame.
+    // This is a direct DOM-only change and does not re-render ReceptionOffice.
+    hideActionMenuInstant();
+
+    // Start the action immediately. Async functions execute synchronously
+    // until their first await, so fast dialogs can start opening now.
+    let actionPromise;
 
     try {
       if (showLoader) {
@@ -1639,15 +1724,20 @@ setStudentOperationsStudent(null);
         setActionLoading(true);
       }
 
-      // Open isolated dialog first.
-      await Promise.resolve(callback(row));
+      actionPromise = Promise.resolve(
+        callback(row)
+      );
 
-      // Close parent Menu one task later, so its render cannot delay dialog paint.
+      // Release the controlled MUI Menu state immediately after the
+      // visual hide. We do not wait for permission checks or endpoints.
       window.setTimeout(() => {
         handleCloseActionMenu();
       }, 0);
+
+      await actionPromise;
     } catch (error) {
       handleCloseActionMenu();
+
       showError(
         error?.message ||
         "حدث خطأ أثناء فتح الشاشة"
@@ -2188,7 +2278,7 @@ const handleStatement = async (row) => {
 };
 
 
-const handleOpenStatementDocument = async (row) => {
+const handleOpenStatementDocument = useCallback(async (row) => {
   const formName = String(row?.formName || "")
     .trim()
     .toLowerCase();
@@ -2247,9 +2337,9 @@ const handleOpenStatementDocument = async (row) => {
       "حدث خطأ أثناء فتح استمارة التسجيل"
     );
   }
-};
+}, []);
 
-const handleOpenStatementHistory = (row) => {
+const handleOpenStatementHistory = useCallback((row) => {
   const actionGuid =
     row?.actionGuid ||
     row?.ActionGuid ||
@@ -2265,15 +2355,15 @@ const handleOpenStatementHistory = (row) => {
 
   setDocumentHistoryRow(row);
   setDocumentHistoryOpen(true);
-};
+}, []);
 
-const handleOpenStatementSalesInvoice = (row) => {
+const handleOpenStatementSalesInvoice = useCallback((row) => {
   showInfo("فاتورة مبيعات", `سيتم فتح فاتورة المبيعات رقم ${row?.invoiceNo || ""}`);
-};
+}, []);
 
-const handleOpenStatementSalesReturn = (row) => {
+const handleOpenStatementSalesReturn = useCallback((row) => {
   showInfo("مرتجع مبيعات", `سيتم فتح مرتجع المبيعات رقم ${row?.returnNo || ""}`);
-};
+}, []);
 
   const handleDiscountOrder = (row) => {
     setSelectedStudent(row);
@@ -2999,16 +3089,26 @@ const handleAcceptOrder = (row) => {
       headerAlign: "center",
       renderCell: (params) => (
         <IconButton
+          className="reception-actions-menu-trigger"
           size="small"
           onClick={(event) => handleOpenActionMenu(event, params.row)}
           aria-label="إجراءات الطالب"
           sx={{
             width: isPhone ? 26 : 30,
             height: isPhone ? 26 : 30,
-            color: whiteColor,
-            background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`,
+            minWidth: 0,
+            color: (theme) =>
+              theme.palette.mode === "dark"
+                ? "#9BE0C1"
+                : primaryColor,
+            background: "transparent",
+            border: "none",
+            borderRadius: 0,
+            boxShadow: "none",
             "&:hover": {
-              background: `linear-gradient(135deg, ${primaryDark}, ${primaryColor})`
+              background: "transparent",
+              border: "none",
+              boxShadow: "none"
             }
           }}
         >
@@ -3751,6 +3851,26 @@ const handleAcceptOrder = (row) => {
                 px: 1.25
               },
 
+              // DataGrid header controls (three-dots column menu + sort arrow):
+              // keep the functionality, remove the circular border/background.
+              "& .MuiDataGrid-menuIcon .MuiIconButton-root, & .MuiDataGrid-iconButtonContainer .MuiIconButton-root, & .MuiDataGrid-menuIconButton, & .MuiDataGrid-sortButton": {
+                background: "transparent !important",
+                backgroundColor: "transparent !important",
+                border: "none !important",
+                borderColor: "transparent !important",
+                borderRadius: "0 !important",
+                boxShadow: "none !important",
+                outline: "none !important",
+                minWidth: "auto !important"
+              },
+
+              "& .MuiDataGrid-menuIcon .MuiIconButton-root:hover, & .MuiDataGrid-iconButtonContainer .MuiIconButton-root:hover, & .MuiDataGrid-menuIconButton:hover, & .MuiDataGrid-sortButton:hover": {
+                background: "transparent !important",
+                backgroundColor: "transparent !important",
+                border: "none !important",
+                boxShadow: "none !important"
+              },
+
               "& .MuiDataGrid-row:hover": {
                 backgroundColor: "#f0faf5"
               },
@@ -3778,10 +3898,12 @@ const handleAcceptOrder = (row) => {
       <Menu
         anchorEl={actionAnchorEl}
         open={Boolean(actionAnchorEl)}
+        onEntered={restoreActionMenuVisualState}
         onClose={handleCloseActionMenu}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
+          ref: actionMenuPaperRef,
           sx: (theme) => {
             const isDark = theme.palette.mode === "dark";
             return {

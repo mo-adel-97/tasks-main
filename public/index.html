@@ -4,10 +4,13 @@
     <meta charset="utf-8" />
     <script>
       (function () {
+        // Kept in sync with COLOR_MODE_KEY in src/contexts/ColorModeContext.jsx
+        // -- must read the exact same key/default so this pre-hydration paint
+        // never flashes a different mode than React settles on after mount.
         var mode;
-        try { mode = localStorage.getItem('sstli-color-mode'); } catch (e) {}
+        try { mode = localStorage.getItem('sstli-color-mode-v2'); } catch (e) {}
         if (mode !== 'light' && mode !== 'dark') {
-          mode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          mode = 'dark';
         }
         document.documentElement.dataset.colorMode = mode;
         document.documentElement.style.colorScheme = mode;
