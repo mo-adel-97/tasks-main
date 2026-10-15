@@ -34,6 +34,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ClearIcon from "@mui/icons-material/Clear";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import BlockIcon from "@mui/icons-material/Block";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
@@ -264,6 +265,12 @@ const VipCustomers = () => {
         row.vipNotes || "-"
     },
     {
+      key: "reviewNotes",
+      title: "ملاحظة المبيعات",
+      render: (row) =>
+        row.reviewNotes || "-"
+    },
+    {
       key: "createdAt",
       title: "تاريخ الإضافة",
       render: (row) =>
@@ -402,6 +409,12 @@ const VipCustomers = () => {
         title: "ملاحظات VIP",
         render: (row) =>
           row.vipNotes || "-"
+      },
+      {
+        key: "reviewNotes",
+        title: "ملاحظة المبيعات",
+        render: (row) =>
+          row.reviewNotes || "-"
       },
       {
         key: "createdAt",
@@ -582,23 +595,32 @@ const VipCustomers = () => {
     customer,
     newStatus
   ) => {
+    const isReject = newStatus === "مرفوض";
     const confirmation =
       await Swal.fire({
-        icon: "question",
-        title: "تأكيد تغيير الحالة",
-        text:
-          `هل تريد تغيير حالة العميل إلى: ${newStatus}؟`,
+        icon: isReject ? "warning" : "question",
+        title: isReject ? "رفض طلب VIP" : `تغيير الحالة إلى: ${newStatus}`,
+        input: "textarea",
+        inputLabel: isReject
+          ? "سبب الرفض (بيظهر لصاحب الطلب)"
+          : "ملاحظة المبيعات (اختياري - بتظهر لصاحب الطلب)",
+        inputValue: customer.reviewNotes || "",
+        inputValidator: (value) =>
+          isReject && !String(value || "").trim()
+            ? "برجاء كتابة سبب الرفض"
+            : undefined,
         showCancelButton: true,
-        confirmButtonText: "نعم",
+        confirmButtonText: isReject ? "رفض الطلب" : "حفظ",
         cancelButtonText: "إلغاء",
-        confirmButtonColor: "#057546",
-        cancelButtonColor: "#ae1e21",
+        confirmButtonColor: isReject ? "#ae1e21" : "#057546",
         reverseButtons: true
       });
 
     if (!confirmation.isConfirmed) {
       return;
     }
+
+    const reviewNotes = String(confirmation.value || "").trim();
 
     Swal.fire({
       title:
@@ -625,7 +647,8 @@ const VipCustomers = () => {
           },
           body: JSON.stringify({
             userGuid,
-            status: newStatus
+            status: newStatus,
+            notes: reviewNotes
           })
         }
       );
@@ -646,7 +669,9 @@ const VipCustomers = () => {
             ? {
                 ...item,
                 orderStatus:
-                  newStatus
+                  newStatus,
+                reviewNotes:
+                  reviewNotes || item.reviewNotes
               }
             : item
         )
@@ -1381,7 +1406,9 @@ const VipCustomers = () => {
                   ? `1px solid ${DARK_BORDER}`
                   : "1px solid rgba(5,117,70,0.14)",
                 borderRadius: isPhone ? 1.3 : isTablet ? 1.7 : 3,
-                overflow: "hidden",
+                // سكرول أفقي بدل ما الجدول يتقص والإجراءات تختفي
+                overflowX: "auto",
+                overflowY: "hidden",
                 minHeight: isPhone
                   ? 360
                   : isTablet
@@ -1710,6 +1737,30 @@ const VipCustomers = () => {
                                   />
                                 </IconButton>
                               </Tooltip>
+
+                              <Tooltip title="رفض الطلب">
+                                <IconButton
+                                  onClick={() =>
+                                    changeStatus(
+                                      row,
+                                      "مرفوض"
+                                    )
+                                  }
+                                  sx={{
+                                    width: isPhone ? 25 : 29,
+                                    height: isPhone ? 25 : 29,
+                                    p: 0,
+                                    color: isDark ? DARK_TEXT : "#7a1418",
+                                    background: "#fde7e7"
+                                  }}
+                                >
+                                  <BlockIcon
+                                    sx={{
+                                      fontSize: isPhone ? 15 : 17
+                                    }}
+                                  />
+                                </IconButton>
+                              </Tooltip>
                             </Stack>
                           </Stack>
                         </Paper>
@@ -1722,7 +1773,7 @@ const VipCustomers = () => {
                   component="table"
                   sx={{
                     width: "100%",
-                    minWidth: 1650,
+                    minWidth: 1400,
                     borderCollapse:
                       "collapse",
                     direction: "rtl",
@@ -1752,6 +1803,29 @@ const VipCustomers = () => {
                       whiteSpace: "nowrap"
                     },
 
+                    // الملاحظات الطويلة تتلف جوه عرض ثابت
+                    "& td.vip-notes-cell": {
+                      whiteSpace: "normal",
+                      minWidth: 220,
+                      maxWidth: 340,
+                      textAlign: "right",
+                      lineHeight: 1.7,
+                      wordBreak: "break-word"
+                    },
+
+                    // عمود الإجراءات ثابت على الشمال وظاهر دايمًا
+                    "& th.vip-actions-cell, & td.vip-actions-cell": {
+                      position: "sticky",
+                      left: 0,
+                      background: isDark ? "#1b2421" : "#fff",
+                      boxShadow: "6px 0 10px -6px rgba(0,0,0,.18)",
+                      zIndex: 1
+                    },
+                    "& th.vip-actions-cell": {
+                      background: isDark ? "#1b2421" : "#f5f7fa",
+                      zIndex: 3
+                    },
+
                     "& tbody tr:hover": {
                       background: "#f1faf6"
                     }
@@ -1767,7 +1841,7 @@ const VipCustomers = () => {
                         )
                       )}
 
-                      <th>الإجراءات</th>
+                      <th className="vip-actions-cell">الإجراءات</th>
                     </tr>
                   </thead>
 
@@ -1800,6 +1874,12 @@ const VipCustomers = () => {
                                   <td
                                     key={
                                       column.key
+                                    }
+                                    className={
+                                      column.key === "vipNotes" ||
+                                      column.key === "reviewNotes"
+                                        ? "vip-notes-cell"
+                                        : undefined
                                     }
                                     style={
                                       adaptiveInlineStyle(column.key ===
@@ -1837,7 +1917,7 @@ const VipCustomers = () => {
                                 )
                               )}
 
-                              <td>
+                              <td className="vip-actions-cell">
                                 <Tooltip title="تغيير الحالة إلى مؤكد">
                                   <IconButton
                                     onClick={() =>
@@ -1869,6 +1949,23 @@ const VipCustomers = () => {
                                     }}
                                   >
                                     <CancelIcon />
+                                  </IconButton>
+                                </Tooltip>
+
+                                <Tooltip title="رفض الطلب">
+                                  <IconButton
+                                    onClick={() =>
+                                      changeStatus(
+                                        row,
+                                        "مرفوض"
+                                      )
+                                    }
+                                    sx={{
+                                      color:
+                                        "#7a1418"
+                                    }}
+                                  >
+                                    <BlockIcon />
                                   </IconButton>
                                 </Tooltip>
                               </td>

@@ -35,7 +35,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 
@@ -59,6 +58,7 @@ import Swal from "sweetalert2";
 
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -2085,7 +2085,7 @@ const DeregistrationRequestsReport =
               "1px solid rgba(5,117,70,0.13)"
           }, uiLayout.tableContainerSx)}
         >
-          <DataGrid
+          <FilterableDataGrid
             rows={filteredGridRows}
             columns={
               isDesktop

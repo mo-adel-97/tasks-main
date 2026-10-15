@@ -35,7 +35,7 @@ import {
   useMediaQuery,
   useTheme
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { GridToolbar } from "@mui/x-data-grid";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
@@ -61,6 +61,13 @@ import Swal from "sweetalert2";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import StudentRegFeesDialog from "../components/StudentRegFeesDialog";
 import StudentPaymentOrderDialog from "../components/StudentPaymentOrderDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import {
+  useContactAssignLock,
+  ContactAssignLockBanner,
+  ContactAssignLockButton,
+  ContactAssignLockDialog
+} from "../components/ContactAssignLock";
 
 
 
@@ -977,6 +984,13 @@ const GraduatesFollowReport = () => {
           ])
         ),
 
+        batchName: String(
+          pick(row, [
+            "BatchName",
+            "batchName"
+          ])
+        ),
+
         studentName: String(
           pick(row, [
             "StudentName",
@@ -1212,6 +1226,15 @@ const GraduatesFollowReport = () => {
             value={params.value}
             align="right"
           />
+        )
+      },
+      {
+        field: "batchName",
+        headerName: "الدفعة",
+        flex: 0.85,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell value={params.value} />
         )
       },
       {
@@ -1661,6 +1684,49 @@ const GraduatesFollowReport = () => {
     }
   };
 
+  // تعيين مسؤول الاتصال: صلاحية "تعيين مسؤول الاتصال للخريجين"
+  // (عرض = يعيّن). القفل لكل الفروع أو لفرع معيّن من زر "قفل التعديل".
+  const [assignStatus, setAssignStatus] = useState({
+    enabled: false,
+    canAssign: false,
+    canToggle: false
+  });
+
+  // قفل إضافة/حذف مسؤول الاتصال لهذا الفرع (صلاحية "قفل تعديل متابعة الخريجين").
+  const contactLock = useContactAssignLock({
+    apiBase: API_BASE_URL,
+    screen: "graduates-follow",
+    userGuid,
+    branchGuid: branch?.guid
+  });
+  const [lockDialogOpen, setLockDialogOpen] = useState(false);
+  const branchLocked = Boolean(branch?.guid) && contactLock.locked;
+
+  const loadAssignStatus = useCallback(async () => {
+    if (!userGuid) return;
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/graduates-follow/assign-status?userGuid=${encodeURIComponent(userGuid)}`,
+        { cache: "no-store" }
+      );
+      const json = await response.json().catch(() => null);
+      if (response.ok && json) {
+        setAssignStatus({
+          enabled: Boolean(json.enabled),
+          canAssign: Boolean(json.canAssign),
+          canToggle: Boolean(json.canToggle)
+        });
+      }
+    } catch {
+      // لو فشل، الأزرار بتفضل مخفية (الافتراضي آمن).
+    }
+  }, [userGuid]);
+
+  useEffect(() => {
+    loadAssignStatus();
+  }, [loadAssignStatus]);
+
+
   const postJson = async (path, body) => {
     const response = await fetch(
       `${API_BASE_URL}/api/graduates-follow/${path}`,
@@ -2064,6 +2130,7 @@ const GraduatesFollowReport = () => {
       const headers = [
         "نوع التسجيل",
         "الدبلوم / الدورة",
+        "الدفعة",
         "اسم الطالب",
         "رقم الجوال",
         "رقم الهوية",
@@ -2082,6 +2149,7 @@ const GraduatesFollowReport = () => {
       const dataRows = filteredGridRows.map((row) => [
         String(row.regTypeName || ""),
         String(row.diplomName || ""),
+        String(row.batchName || ""),
         String(row.studentName || ""),
         String(row.studentTel || ""),
         String(row.nationalId || ""),
@@ -2105,6 +2173,7 @@ const GraduatesFollowReport = () => {
       worksheet["!cols"] = [
         { wch: 16 },
         { wch: 34 },
+        { wch: 18 },
         { wch: 30 },
         { wch: 16 },
         { wch: 16 },
@@ -2423,34 +2492,43 @@ const GraduatesFollowReport = () => {
               />
             )}
 
-            <Button
-              variant="contained"
-              startIcon={
-                bulkActionLoading
-                  ? (
-                    <CircularProgress
-                      size={17}
-                      color="inherit"
-                    />
-                  )
-                  : <GroupAddIcon />
-              }
-              onClick={
-                openBulkAssignDialog
-              }
-              disabled={
-                selectedRows.length === 0 ||
-                bulkActionLoading
-              }
-              sx={uiLayout.withUiSx({
-                fontFamily: "Cairo",
-                fontWeight: 900,
-                background:
-                  "linear-gradient(135deg,#057546,#034d31)"
-              }, uiLayout.buttonSx)}
-            >
-              تعيين جماعي
-            </Button>
+            <ContactAssignLockButton
+              lock={contactLock}
+              onClick={() => setLockDialogOpen(true)}
+            />
+
+
+            {assignStatus.canAssign ? (
+              <Button
+                variant="contained"
+                startIcon={
+                  bulkActionLoading
+                    ? (
+                      <CircularProgress
+                        size={17}
+                        color="inherit"
+                      />
+                    )
+                    : <GroupAddIcon />
+                }
+                onClick={
+                  openBulkAssignDialog
+                }
+                disabled={
+                  branchLocked ||
+                  selectedRows.length === 0 ||
+                  bulkActionLoading
+                }
+                sx={uiLayout.withUiSx({
+                  fontFamily: "Cairo",
+                  fontWeight: 900,
+                  background:
+                    "linear-gradient(135deg,#057546,#034d31)"
+                }, uiLayout.buttonSx)}
+              >
+                تعيين جماعي
+              </Button>
+            ) : null}
 
             <Button
               variant="outlined"
@@ -2469,6 +2547,7 @@ const GraduatesFollowReport = () => {
                 bulkClearTrainer
               }
               disabled={
+                branchLocked ||
                 selectedRows.length === 0 ||
                 bulkActionLoading
               }
@@ -2537,6 +2616,11 @@ const GraduatesFollowReport = () => {
             </Button>
           </Stack>
         </Paper>
+
+        <ContactAssignLockBanner
+          locked={branchLocked}
+          screen="graduates-follow"
+        />
 
         <Paper
           elevation={0}
@@ -2705,7 +2789,7 @@ const GraduatesFollowReport = () => {
               "1px solid rgba(5,117,70,0.13)"
           }, uiLayout.tableContainerSx)}
         >
-          <DataGrid
+          <FilterableDataGrid
             rows={filteredGridRows}
             columns={
               isDesktop
@@ -2977,6 +3061,7 @@ const GraduatesFollowReport = () => {
                     ["رقم الجوال", detailsRow.studentTel],
                     ["نوع التسجيل", detailsRow.regTypeName],
                     ["الدبلوم / الدورة", detailsRow.diplomName],
+                    ["الدفعة", detailsRow.batchName],
                     ["مسؤول الاتصال", detailsRow.trainerName],
                     ["نوع الطالب", detailsRow.studentType],
                     ["الفرع", detailsRow.branchName],
@@ -3388,18 +3473,22 @@ const GraduatesFollowReport = () => {
             إنهاء الدراسة
           </MenuItem>
 
-          <MenuItem
-            onClick={() =>
-              openAction("assign")
-            }
-          >
-            <PersonAddAlt1Icon
-              sx={{ ml: 1 }}
-            />
-            تعيين مسؤول الاتصال
-          </MenuItem>
+          {assignStatus.canAssign ? (
+            <MenuItem
+              disabled={branchLocked}
+              onClick={() =>
+                openAction("assign")
+              }
+            >
+              <PersonAddAlt1Icon
+                sx={{ ml: 1 }}
+              />
+              تعيين مسؤول الاتصال
+            </MenuItem>
+          ) : null}
 
           <MenuItem
+            disabled={branchLocked}
             onClick={() =>
               openAction("clear")
             }
@@ -3409,6 +3498,15 @@ const GraduatesFollowReport = () => {
             حذف مسؤول الاتصال
           </MenuItem>
         </Menu>
+
+        <ContactAssignLockDialog
+          open={lockDialogOpen}
+          onClose={() => setLockDialogOpen(false)}
+          apiBase={API_BASE_URL}
+          screen="graduates-follow"
+          userGuid={userGuid}
+          lock={contactLock}
+        />
 
         <StudentStatementDialog2
           open={statementOpen}

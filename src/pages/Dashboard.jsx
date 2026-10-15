@@ -13,11 +13,10 @@ import {
   useTheme,
 } from "@mui/material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import HomeTab from "./HomeTab";
 import HrEmployeeHomePage from "./HrEmployeeHomePage";
-import TasksTab from "./TasksTab";
 import EmployeeOfTheMonthBanner from "../components/EmployeeOfTheMonthBanner";
 import UpdateDialog from "../components/UpdateDialog";
 
@@ -323,7 +322,7 @@ export default function Dashboard() {
 
               <Route
                 path="tasks"
-                element={<TasksTab />}
+                element={<Navigate to="/dashboard/tasks/inbox" replace />}
               />
             </Routes>
           </Box>

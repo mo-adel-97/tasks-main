@@ -44,6 +44,7 @@ import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import FolderZipRoundedIcon from "@mui/icons-material/FolderZipRounded";
 import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
 import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
 
@@ -70,7 +71,7 @@ const MUTED = "#6d8178";
 const WHITE = "#ffffff";
 
 const ACCEPTED_FILES =
-  ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.txt";
+  ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.txt,.zip,.rar,.7z";
 
 const getUserGuid = () => {
   try {
@@ -111,6 +112,11 @@ const getFileIcon = (file, size = 34) => {
     contentType.startsWith("image/")
   ) {
     return <ImageRoundedIcon sx={{ color: "#3276b1", fontSize: size }} />;
+  }
+
+  // ملفات مضغوطة (ZIP / RAR / 7Z).
+  if ([".zip", ".rar", ".7z"].includes(extension)) {
+    return <FolderZipRoundedIcon sx={{ color: "#b26a00", fontSize: size }} />;
   }
 
   if ([".doc", ".docx", ".txt"].includes(extension)) {
@@ -172,6 +178,66 @@ const showErrorAlert = (message) =>
     confirmButtonText: "حسنًا",
     ...swalOptions,
   });
+
+// نفس حدود الباك إند (CircularsController): 90 ميجا للملف، و95 ميجا إجمالي في المرة
+// (تحت حد Cloudflare 100 ميجا للطلب)، و20 ملف في المرة.
+const MAX_UPLOAD_FILE_BYTES = 90 * 1024 * 1024;
+const MAX_UPLOAD_TOTAL_BYTES = 95 * 1024 * 1024;
+const MAX_UPLOAD_FILES = 20;
+
+const validateUploadFiles = (files) => {
+  if (files.length > MAX_UPLOAD_FILES) {
+    return `الحد الأقصى في المرة الواحدة هو ${MAX_UPLOAD_FILES} ملفًا`;
+  }
+  if (files.reduce((sum, file) => sum + file.size, 0) > MAX_UPLOAD_TOTAL_BYTES) {
+    return "إجمالي حجم الملفات في المرة الواحدة لازم يكون أقل من 95 MB، ارفعهم على دفعات";
+  }
+  const allowed = ACCEPTED_FILES.split(",");
+  for (const file of files) {
+    const name = String(file.name || "");
+    const extension = name.includes(".") ? name.slice(name.lastIndexOf(".")).toLowerCase() : "";
+    if (!allowed.includes(extension)) return `امتداد الملف ${name} غير مسموح`;
+    if (file.size <= 0) return `الملف ${name} فارغ`;
+    if (file.size > MAX_UPLOAD_FILE_BYTES) return `الملف ${name} أكبر من الحد المسموح 90 MB`;
+  }
+  return "";
+};
+
+// رفع بـ XMLHttpRequest علشان نعرض نسبة التقدم (fetch مبيدّيش تقدم الرفع).
+const uploadWithProgress = (url, formData, onProgress) =>
+  new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress(event.loaded, event.total);
+    };
+    xhr.onload = () => {
+      let json = null;
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch {
+        json = null;
+      }
+      resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status, json });
+    };
+    xhr.onerror = () => reject(new Error("انقطع الاتصال أثناء رفع الملفات، حاول مرة أخرى."));
+    xhr.ontimeout = () => reject(new Error("انتهت مهلة رفع الملفات، حاول مرة أخرى."));
+    xhr.send(formData);
+  });
+
+const uploadProgressHtml = (count, totalBytes) => `
+  <div style="direction:rtl;text-align:right;font-family:inherit">
+    <div style="margin-bottom:10px;font-size:14px">جاري رفع <b>${count}</b> ${count === 1 ? "ملف" : "ملفات"} — الحجم الكلي <b>${formatBytes(totalBytes)}</b></div>
+    <div style="height:12px;border-radius:99px;background:#e3ece8;overflow:hidden">
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,${PRIMARY},#0a9a5c);transition:width .2s"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px">
+      <span id="upload-status">جاري الرفع...</span>
+      <b id="upload-percent" dir="ltr">0%</b>
+    </div>
+    <div style="margin-top:8px;font-size:12px;opacity:.75">من فضلك ما تقفلش الصفحة لحد ما الرفع يخلص.</div>
+  </div>`;
 
 const CircularsUpload = () => {
   const theme = useTheme();
@@ -626,6 +692,12 @@ const CircularsUpload = () => {
     const selected = Array.from(fileList || []);
     if (selected.length === 0) return;
 
+    const invalid = validateUploadFiles(selected);
+    if (invalid) {
+      showErrorAlert(invalid);
+      return;
+    }
+
     try {
       setBusy(true);
       setError("");
@@ -634,25 +706,46 @@ const CircularsUpload = () => {
       formData.append("userGuid", userGuid);
       selected.forEach((file) => formData.append("files", file));
 
-      const response = await fetch(
+      // نافذة "جاري الرفع" بنسبة التقدم، ومتتقفلش لحد ما الرفع يخلص.
+      Swal.fire({
+        title: "جاري رفع الملفات",
+        html: uploadProgressHtml(selected.length, selected.reduce((sum, file) => sum + file.size, 0)),
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        ...swalOptions,
+      });
+
+      const setProgress = (percent, status) => {
+        const popup = Swal.getPopup();
+        if (!popup) return;
+        const bar = popup.querySelector("#upload-bar");
+        const label = popup.querySelector("#upload-percent");
+        const text = popup.querySelector("#upload-status");
+        if (bar) bar.style.width = `${percent}%`;
+        if (label) label.textContent = `${percent}%`;
+        if (text && status) text.textContent = status;
+      };
+
+      const { ok, status, json: result } = await uploadWithProgress(
         `${API_BASE_URL}/api/circulars/folders/${encodeURIComponent(
           activeFolder.guid
         )}/files`,
-        {
-          method: "POST",
-          body: formData,
-          headers: { Accept: "application/json" },
+        formData,
+        (loaded, total) => {
+          const percent = Math.min(100, Math.round((loaded / total) * 100));
+          setProgress(percent, percent >= 100 ? "جاري حفظ الملفات على السيرفر..." : "جاري الرفع...");
         }
       );
 
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        if (response.status === 403) setForbidden(true);
+      if (!ok) {
+        if (status === 403) setForbidden(true);
         throw new Error(result?.message || "تعذر رفع الملفات.");
       }
 
+      setProgress(100, "جاري تحديث المجلد...");
       await loadTree();
+      Swal.close();
       showSuccess(result?.message || "تم رفع الملفات بنجاح.");
     } catch (err) {
       console.error("Content files upload error:", err);

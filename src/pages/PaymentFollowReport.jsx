@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from "react";
 import * as XLSX from "xlsx";
@@ -40,7 +41,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 
@@ -71,6 +71,13 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import {
+  useContactAssignLock,
+  ContactAssignLockBanner,
+  ContactAssignLockButton,
+  ContactAssignLockDialog
+} from "../components/ContactAssignLock";
 
 
 
@@ -418,6 +425,94 @@ const MoneyCell = React.memo(({ value }) => (
   </Typography>
 ));
 
+// المتأخرات المالية التقديرية (من دفتر الحسابات، الأقساط تبدأ من بداية الدفعة).
+// تُحسب في الباك: POST /api/payment-follow/arrears
+const ARREARS_STATE_LABEL = {
+  overdue: "متأخر",
+  "course-ended": "انتهت مدة الدبلوم وعليه رصيد",
+  "on-track": "ملتزم بالسداد",
+  "paid-off": "مسدد بالكامل",
+  "not-started": "لم يحن موعد أول قسط",
+  "not-applicable": "غير منطبق (ليس دبلومًا)"
+};
+
+const arrearsFields = (map, row) => {
+  const key = String(
+    pick(row, ["AccountGuid", "accountGuid"], "")
+  ).toLowerCase();
+  const item = map?.[key];
+
+  if (!item || !item.applicable) {
+    return {
+      arrears: null,
+      arrearsInstallments: null,
+      arrearsStart: "",
+      arrearsDueInstallments: 0,
+      arrearsMonths: 24,
+      arrearsMonthly: 0,
+      arrearsExpected: 0,
+      arrearsPaid: 0,
+      arrearsState: item ? "not-applicable" : "",
+      arrearsOpening: false
+    };
+  }
+
+  return {
+    arrears: Number(item.overdue || 0),
+    arrearsInstallments: Number(item.overdueInstallments || 0),
+    arrearsStart: String(item.startDate || ""),
+    arrearsDueInstallments: Number(item.dueInstallments || 0),
+    arrearsMonths: Number(item.months || 24),
+    arrearsMonthly: Number(item.monthlyInstallment || 0),
+    arrearsExpected: Number(item.expectedPaid || 0),
+    arrearsPaid: Number(item.payments || 0),
+    arrearsState: String(item.state || ""),
+    arrearsOpening: Boolean(item.hasOpeningBalance)
+  };
+};
+
+const ArrearsCell = React.memo(({ row }) => {
+  const textSx = {
+    width: "100%",
+    textAlign: "center",
+    fontFamily: "Cairo",
+    fontSize: "0.75rem",
+    fontWeight: 800
+  };
+
+  if (row.arrearsPending) {
+    return <Typography sx={textSx}>…</Typography>;
+  }
+
+  if (row.arrears === null || row.arrears === undefined) {
+    return <Typography sx={textSx}>-</Typography>;
+  }
+
+  const tip =
+    `تقدير تقريبي — بداية الدفعة: ${row.arrearsStart || "-"}` +
+    ` • أقساط مستحقة: ${row.arrearsDueInstallments} من ${row.arrearsMonths}` +
+    ` • قسط الشهر ≈ ${money(row.arrearsMonthly)}` +
+    ` • المستحق سداده: ${money(row.arrearsExpected)}` +
+    ` • المسدد: ${money(row.arrearsPaid)}` +
+    (row.arrears > 0
+      ? ` • متأخر ≈ ${row.arrearsInstallments.toLocaleString("ar-EG", { maximumFractionDigits: 1 })} قسط`
+      : "") +
+    (row.arrearsOpening ? " • يوجد رصيد افتتاحي (تقدير أقل دقة)" : "");
+
+  return (
+    <Tooltip title={tip} arrow>
+      <Typography
+        sx={{
+          ...textSx,
+          color: row.arrears > 0 ? "#c62828" : "inherit"
+        }}
+      >
+        {row.arrears > 0 ? money(row.arrears) : "0"}
+      </Typography>
+    </Tooltip>
+  );
+});
+
 const TotalItem = React.memo(({
   label,
   value,
@@ -569,7 +664,7 @@ const PaymentTotalsSection = React.memo(({
           gridTemplateColumns: {
             xs: "repeat(2, minmax(0, 1fr))",
             sm: "repeat(4, minmax(0, 1fr))",
-            xl: "repeat(8, minmax(0, 1fr))"
+            xl: "repeat(9, minmax(0, 1fr))"
           },
           gap: 1
         }}
@@ -620,6 +715,12 @@ const PaymentTotalsSection = React.memo(({
           label="الرصيد الحالي"
           value={totals.balance}
           accent="#057546"
+        />
+
+        <TotalItem
+          label="المتأخرات (تقديري)"
+          value={totals.arrears}
+          accent="#c62828"
         />
       </Box>
     </Stack>
@@ -869,7 +970,7 @@ const PaymentFollowDataGrid = React.memo(
       );
 
     return (
-<DataGrid
+<FilterableDataGrid
                 rows={filteredGridRows}
                 columns={mainGridColumns}
                 loading={loading}
@@ -1422,7 +1523,27 @@ isDark
   const [rows, setRows] =
     useState([]);
 
+  const [arrearsMap, setArrearsMap] =
+    useState({});
+
+  const [arrearsStatus, setArrearsStatus] =
+    useState("idle"); // idle | loading | ready | error
+
+  const arrearsMapRef = useRef({});
+  const arrearsPromiseRef = useRef(null);
+  const arrearsSeqRef = useRef(0);
+
   const [filterDialogOpen, setFilterDialogOpen] =
+    useState(false);
+
+  // قفل إضافة/حذف مسؤول الاتصال لهذا الفرع (صلاحية "قفل تعديل متابعة السداد").
+  const contactLock = useContactAssignLock({
+    apiBase: API_BASE_URL,
+    screen: "payment-follow",
+    userGuid,
+    branchGuid: branch?.guid
+  });
+  const [lockDialogOpen, setLockDialogOpen] =
     useState(false);
 
   const [columnFilters, setColumnFilters] =
@@ -1708,6 +1829,93 @@ isDark
     loadTrainers();
   }, [loadTrainers]);
 
+  const loadArrears = useCallback(
+    (list) => {
+      const requestId = ++arrearsSeqRef.current;
+
+      const items = (Array.isArray(list) ? list : [])
+        .map((row) => ({
+          accountGuid: String(
+            pick(row, ["AccountGuid", "accountGuid"], "")
+          ),
+          regType: Number(
+            pick(row, ["RegType", "regType"], 0)
+          ),
+          batchName: String(
+            pick(row, ["BatchName", "batchName"], "")
+          )
+        }))
+        .filter((item) => item.accountGuid);
+
+      arrearsMapRef.current = {};
+      setArrearsMap({});
+
+      if (!items.length) {
+        arrearsPromiseRef.current = null;
+        setArrearsStatus("idle");
+        return null;
+      }
+
+      setArrearsStatus("loading");
+
+      const promise = (async () => {
+        try {
+          const map = {};
+
+          const chunks = [];
+          for (let start = 0; start < items.length; start += 1000) {
+            chunks.push(items.slice(start, start + 1000));
+          }
+
+          // كل 1000 طالب في طلب، و3 طلبات بالتوازي بدل واحد ورا التاني.
+          const loadChunk = async (chunk) => {
+            const response = await fetch(
+              `${API_BASE_URL}/api/payment-follow/arrears`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userGuid, items: chunk })
+              }
+            );
+
+            const result = await readJson(response);
+
+            (result?.data || []).forEach((item) => {
+              map[String(item.accountGuid).toLowerCase()] = item;
+            });
+          };
+
+          let next = 0;
+          const worker = async () => {
+            while (next < chunks.length) {
+              const chunk = chunks[next++];
+              await loadChunk(chunk);
+            }
+          };
+
+          await Promise.all(
+            Array.from({ length: Math.min(3, chunks.length) }, worker)
+          );
+
+          // نتجاهل أي رد قديم لو تم تحميل تقرير أحدث.
+          if (requestId === arrearsSeqRef.current) {
+            arrearsMapRef.current = map;
+            setArrearsMap(map);
+            setArrearsStatus("ready");
+          }
+        } catch {
+          if (requestId === arrearsSeqRef.current) {
+            setArrearsStatus("error");
+          }
+        }
+      })();
+
+      arrearsPromiseRef.current = promise;
+      return promise;
+    },
+    [userGuid]
+  );
+
   const loadData = useCallback(
     async () => {
       if (!branch?.guid) {
@@ -1773,8 +1981,10 @@ isDark
         }
 
         setRows(data);
+        loadArrears(data);
       } catch (error) {
         setRows([]);
+        loadArrears([]);
 
         await showError(
           error?.message ||
@@ -1789,7 +1999,8 @@ isDark
       fromDate,
       toDate,
       branch,
-      batch
+      batch,
+      loadArrears
     ]
   );
 
@@ -2096,9 +2307,12 @@ isDark
                 "studentType"
               ]
             )
-          )
+          ),
+
+        ...arrearsFields(arrearsMap, row),
+        arrearsPending: arrearsStatus === "loading"
       })),
-    [rows]
+    [rows, arrearsMap, arrearsStatus]
   );
 
 
@@ -2505,6 +2719,16 @@ isDark
         )
       },
       {
+        field: "arrears",
+        headerName: "المتأخرات (تقديري)",
+        type: "number",
+        flex: 1,
+        minWidth: 0,
+        renderCell: (params) => (
+          <ArrearsCell row={params.row} />
+        )
+      },
+      {
         field: "trainerName",
         headerName: "مسؤول الاتصال",
         flex: 1.2,
@@ -2768,6 +2992,9 @@ isDark
           balance:
             result.balance +
             row.balance,
+          arrears:
+            result.arrears +
+            Number(row.arrears || 0),
           paid:
             result.paid +
             (row.monthPay !== 0
@@ -2788,6 +3015,7 @@ isDark
           mDaily: 0,
           dDaily: 0,
           balance: 0,
+          arrears: 0,
           paid: 0,
           unpaid: 0
         }
@@ -3579,11 +3807,22 @@ isDark
       }
     };
 
-const exportExcel = () => {
+const exportExcel = async () => {
   if (!filteredGridRows.length) {
     showError("لا توجد بيانات متاحة للتصدير");
     return;
   }
+
+  // المتأخرات تُحسب في الخلفية: ننتظرها لو لم تنته حتى يخرج الملف كاملًا.
+  if (arrearsPromiseRef.current) {
+    try {
+      await arrearsPromiseRef.current;
+    } catch {
+      // نخرج الملف بدون أعمدة المتأخرات لو تعذر حسابها.
+    }
+  }
+
+  const latestArrears = arrearsMapRef.current || {};
 
   try {
     const headers = [
@@ -3601,11 +3840,24 @@ const exportExcel = () => {
       "قيد مدين",
       "قيد دائن",
       "الرصيد الحالي",
+      "المتأخرات التقديرية",
+      "أقساط متأخرة",
       "مسؤول الاتصال",
-      "نوع الطالب"
+      "نوع الطالب",
+      "بداية الدفعة (ميلادي)",
+      "الأقساط المستحقة حتى اليوم",
+      "قسط الشهر (تقديري)",
+      "المستحق سداده حتى اليوم",
+      "المسدد فعليًا (بدون رسوم)",
+      "الحالة التقديرية",
+      "ملاحظة"
     ];
 
-    const dataRows = filteredGridRows.map((row) => [
+    const dataRows = filteredGridRows.map((row) => {
+      const a = arrearsFields(latestArrears, row.raw);
+      const hasArrears = a.arrears !== null;
+
+      return [
       String(row.regTypeName || ""),
       String(row.diplomName || ""),
       String(row.batchName || ""),
@@ -3623,10 +3875,19 @@ const exportExcel = () => {
       Number(row.mDaily || 0),
       Number(row.dDaily || 0),
       Number(row.balance || 0),
-
+      hasArrears ? a.arrears : "",
+      hasArrears ? Number(a.arrearsInstallments.toFixed(1)) : "",
       String(row.trainerName || ""),
-      String(row.studentType || "")
-    ]);
+      String(row.studentType || ""),
+      hasArrears ? a.arrearsStart : "",
+      hasArrears ? a.arrearsDueInstallments : "",
+      hasArrears ? a.arrearsMonthly : "",
+      hasArrears ? a.arrearsExpected : "",
+      hasArrears ? a.arrearsPaid : "",
+      ARREARS_STATE_LABEL[a.arrearsState] || "",
+      a.arrearsOpening ? "يوجد رصيد افتتاحي (تقدير أقل دقة)" : ""
+    ];
+    });
 
     const totalsRow = [
       "",
@@ -3643,6 +3904,21 @@ const exportExcel = () => {
       Number(totals.mDaily || 0),
       Number(totals.dDaily || 0),
       Number(totals.balance || 0),
+      Number(
+        filteredGridRows.reduce(
+          (sum, row) =>
+            sum + (arrearsFields(latestArrears, row.raw).arrears || 0),
+          0
+        )
+      ),
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       ""
     ];
@@ -3669,13 +3945,22 @@ const exportExcel = () => {
       { wch: 14 }, // قيد مدين
       { wch: 14 }, // قيد دائن
       { wch: 16 }, // الرصيد الحالي
+      { wch: 18 }, // المتأخرات التقديرية
+      { wch: 14 }, // أقساط متأخرة
       { wch: 26 }, // مسؤول الاتصال
-      { wch: 15 }  // نوع الطالب
+      { wch: 15 }, // نوع الطالب
+      { wch: 18 }, // بداية الدفعة
+      { wch: 18 }, // الأقساط المستحقة
+      { wch: 16 }, // قسط الشهر
+      { wch: 18 }, // المستحق سداده
+      { wch: 18 }, // المسدد فعليًا
+      { wch: 28 }, // الحالة التقديرية
+      { wch: 34 }  // ملاحظة
     ];
 
     // فلتر تلقائي للعناوين
     worksheet["!autofilter"] = {
-      ref: `A1:P${dataRows.length + 1}`
+      ref: `A1:Y${dataRows.length + 1}`
     };
 
     // تثبيت الصف الأول
@@ -3696,7 +3981,11 @@ const exportExcel = () => {
       "K",
       "L",
       "M",
-      "N"
+      "N",
+      "O",
+      "U",
+      "V",
+      "W"
     ];
 
     financialColumns.forEach((columnLetter) => {
@@ -4172,6 +4461,11 @@ const exportExcel = () => {
               </Stack>
             </Paper>
 
+            <ContactAssignLockBanner
+              locked={Boolean(branch?.guid) && contactLock.locked}
+              screen="payment-follow"
+            />
+
             <Stack
               direction="row"
               spacing={1}
@@ -4231,6 +4525,17 @@ const exportExcel = () => {
                 color="primary"
               />
 
+              <Chip
+                label={
+                  arrearsStatus === "loading"
+                    ? "المتأخرات التقديرية: جاري الحساب…"
+                    : arrearsStatus === "error"
+                      ? "المتأخرات التقديرية: تعذر الحساب"
+                      : `المتأخرات التقديرية: ${money(totals.arrears)}`
+                }
+                color={arrearsStatus === "error" ? "default" : "error"}
+              />
+
               <Button
                 size="small"
                 variant="outlined"
@@ -4280,6 +4585,7 @@ const exportExcel = () => {
                 onClick={openDistributionDialog}
                 disabled={
                   !branch?.guid ||
+                  contactLock.locked ||
                   isExcludedDistributionBranch(branch?.name) ||
                   distributionStatus?.canExecute === false
                 }
@@ -4326,7 +4632,7 @@ const exportExcel = () => {
                 variant="outlined"
                 startIcon={<PersonAddAlt1Icon />}
                 onClick={openCustomDistributionDialog}
-                disabled={!branch?.guid || !gridRows.length || !selectedCustomStudents.length}
+                disabled={!branch?.guid || contactLock.locked || !gridRows.length || !selectedCustomStudents.length}
                 sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
                   fontWeight: 900,
@@ -4341,6 +4647,11 @@ const exportExcel = () => {
               >
                 توزيع الطلاب المحددين ({selectedCustomStudents.length})
               </Button>
+
+              <ContactAssignLockButton
+                lock={contactLock}
+                onClick={() => setLockDialogOpen(true)}
+              />
 
               {distributionStatus?.message && (
                 <Chip
@@ -4849,6 +5160,7 @@ const exportExcel = () => {
           </MenuItem>
 
           <MenuItem
+            disabled={contactLock.locked}
             onClick={() => {
               setMenuAnchor(null);
               clearTrainer(
@@ -4954,6 +5266,22 @@ const exportExcel = () => {
             نقل من فرع إلى فرع
           </MenuItem>
         </Menu>
+
+        <ContactAssignLockDialog
+
+          open={lockDialogOpen}
+
+          onClose={() => setLockDialogOpen(false)}
+
+          apiBase={API_BASE_URL}
+
+          screen="payment-follow"
+
+          userGuid={userGuid}
+
+          lock={contactLock}
+
+        />
 
         <StudentStatementDialog2
           open={statementOpen}

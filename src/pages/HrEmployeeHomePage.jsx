@@ -3209,16 +3209,16 @@ const decideLeaveApproval = async (
               {hrPermissions?.attendance && (
                 <Section title="حالة الفريق اليوم" subtitle="الموظفون داخل نطاقك حسب صلاحية الحضور" action={<Button sx={uiLayout.buttonSx} size="small" endIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/dashboard/hr-attendance")}>شاشة الحضور</Button>}>
                   <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx, TABLE_DARK_BORDER_SX)}>
-                    <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
-                      <TableHead><TableRow><TableCell>الموظف</TableCell><TableCell>المسمى</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell></TableRow></TableHead>
+                    <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN }, "& .MuiTableCell-root.hr-center-cell": { textAlign: "center" } }}>
+                      <TableHead><TableRow><TableCell>الموظف</TableCell><TableCell>المسمى</TableCell><TableCell className="hr-center-cell">الحالة</TableCell><TableCell className="hr-center-cell">الدخول</TableCell><TableCell className="hr-center-cell">الخروج</TableCell></TableRow></TableHead>
                       <TableBody>
                         {(management?.teamToday || []).map((row) => (
                           <TableRow key={row.employeeGuid} hover>
                             <TableCell><Typography sx={{ fontWeight: 900, fontSize: 12 }}>{row.employeeName}</Typography><Typography color="text.secondary" sx={{ fontSize: 12 }}>{row.employeeCode}</Typography></TableCell>
                             <TableCell sx={{ fontSize: 12 }}>{row.jobTitleName || "-"}</TableCell>
-                            <TableCell><StatusChip status={row.status || "Pending"} /></TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtTime(row.checkInAt)}</TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtTime(row.checkOutAt)}</TableCell>
+                            <TableCell className="hr-center-cell"><StatusChip status={row.status || "Pending"} /></TableCell>
+                            <TableCell className="hr-center-cell" dir={DATE_DIRECTION} sx={{ fontSize: 12 }}>{fmtTime(row.checkInAt)}</TableCell>
+                            <TableCell className="hr-center-cell" dir={DATE_DIRECTION} sx={{ fontSize: 12 }}>{fmtTime(row.checkOutAt)}</TableCell>
                           </TableRow>
                         ))}
                         {!management?.teamToday?.length && <TableRow><TableCell colSpan={5} align="center"><Typography color="text.secondary" sx={{ py: 2.5, fontSize: 12 }}>لا توجد بيانات حضور متاحة اليوم.</Typography></TableCell></TableRow>}
@@ -3397,15 +3397,15 @@ const decideLeaveApproval = async (
                 <Box sx={{ mt: 1.4 }}>
                   <Typography sx={{ fontSize: 12, fontWeight: 950, mb: 0.7 }}>سجل العقود السابقة</Typography>
                   <TableContainer sx={uiLayout.withUiSx((theme) => ({ border: theme.palette.mode === "dark" ? `1px solid #67C99D` : `1px solid ${border}`, borderRadius: 2 }), uiLayout.tableContainerSx, TABLE_DARK_BORDER_SX)}>
-                    <Table size="small" dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
-                      <TableHead><TableRow><TableCell>رقم العقد</TableCell><TableCell>النوع</TableCell><TableCell>البداية</TableCell><TableCell>النهاية</TableCell><TableCell>الراتب الأساسي</TableCell><TableCell>الحالة</TableCell></TableRow></TableHead>
+                    <Table size="small" dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN }, "& .MuiTableCell-root.hr-center-cell": { textAlign: "center" } }}>
+                      <TableHead><TableRow><TableCell>رقم العقد</TableCell><TableCell>النوع</TableCell><TableCell className="hr-center-cell">البداية</TableCell><TableCell className="hr-center-cell">النهاية</TableCell><TableCell>الراتب الأساسي</TableCell><TableCell>الحالة</TableCell></TableRow></TableHead>
                       <TableBody>
                         {contract.history.map((row) => (
                           <TableRow key={row.contractGuid}>
                             <TableCell sx={{ fontSize: 12 }}>{row.contractNumber || "-"}</TableCell>
                             <TableCell sx={{ fontSize: 12 }}>{contractTypeText(row.contractType)}</TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtDate(row.startDate)}</TableCell>
-                            <TableCell dir={DATE_DIRECTION} sx={{ textAlign: DATE_TEXT_ALIGN, fontSize: 12 }}>{fmtDate(row.endDate)}</TableCell>
+                            <TableCell className="hr-center-cell" dir={DATE_DIRECTION} sx={{ fontSize: 12 }}>{fmtDate(row.startDate)}</TableCell>
+                            <TableCell className="hr-center-cell" dir={DATE_DIRECTION} sx={{ fontSize: 12 }}>{fmtDate(row.endDate)}</TableCell>
                             <TableCell sx={{ fontSize: 12 }}>{money(row.basicSalary)}</TableCell>
                             <TableCell><Chip size="small" label={row.isCurrent ? "الحالي" : row.isTerminated ? "منتهي" : "سابق"} color={row.isCurrent ? "success" : "default"} /></TableCell>
                           </TableRow>
@@ -3452,7 +3452,7 @@ const decideLeaveApproval = async (
           </Box>
 
           <TableContainer sx={uiLayout.withUiSx({ maxHeight: 390 }, uiLayout.tableContainerSx, TABLE_DARK_BORDER_SX)}>
-            <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: TABLE_TEXT_ALIGN } }}>
+            <Table size="small" stickyHeader dir={TABLE_DIRECTION} sx={{ "& .MuiTableCell-root": { textAlign: "center" } }}>
               <TableHead><TableRow><TableCell>التاريخ</TableCell><TableCell>الحالة</TableCell><TableCell>الدخول</TableCell><TableCell>الخروج</TableCell><TableCell>التأخير</TableCell><TableCell>الخروج المبكر</TableCell><TableCell>الإضافي</TableCell></TableRow></TableHead>
               <TableBody>
                 {(attendance?.recent || []).map((row, index) => (

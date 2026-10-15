@@ -1,4 +1,6 @@
 import React from 'react';
+import { splitSection } from '../utils/questionSections';
+
 import {
   Box,
   Typography,
@@ -24,6 +26,12 @@ import {
   PieChart,
   TrendingUp
 } from '@mui/icons-material';
+
+// نص السؤال مع اسم القسم لو موجود: "القسم — السؤال"
+const sectionLabel = (raw) => {
+  const { section, text } = splitSection(raw);
+  return section ? `${section} — ${text}` : text;
+};
 
 // الألوان الأساسية
 const primaryColor = '#80b49e';
@@ -261,7 +269,7 @@ const SurveyReportExporter = ({ survey, responses, isExternal = false }) => {
 
       if (responseCount > maxResponses) {
         maxResponses = responseCount;
-        mostEngagedQuestion = question.text;
+        mostEngagedQuestion = sectionLabel(question.text);
       }
     });
 
@@ -518,7 +526,7 @@ const SurveyReportExporter = ({ survey, responses, isExternal = false }) => {
     <div class="question-card">
       <div class="question-header">
         <div class="question-number">${qIndex + 1}</div>
-        <div class="question-text">${question.text}</div>
+        <div class="question-text">${sectionLabel(question.text)}</div>
         <div class="question-type">${getQuestionTypeText(question.type)}</div>
       </div>
 

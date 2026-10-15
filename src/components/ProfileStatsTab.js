@@ -213,28 +213,40 @@ useEffect(() => {
 }, []);
 
 
+// إحصائيات المهام من نظام المهام الجديد (api/tasks): الجاية (received) والمرسلة (sent).
+// الحالة بنفس الأكواد القديمة: 0 معلقة · 1 جاري التنفيذ · 2 مكتملة.
+const TASKS_API_URL = `${process.env.REACT_APP_API_URL || "https://api4.sstli.com"}/api/tasks`;
+
 const fetchTasks = async (userGuid) => {
   try {
-    setLoadingTasks(true);       // ✅ لودنج المهام فقط
-    setError(null);              // (اختياري) امسح أي خطأ عام لو حابب
-    // setTasksError(null);      // (اختياري) لو عامل state لخطأ المهام
+    setLoadingTasks(true);
+    const get = async (path) => {
+      const response = await fetch(`${TASKS_API_URL}/${path}?userGuid=${encodeURIComponent(userGuid)}`, { cache: "no-store" });
+      if (response.status === 403) return [];
+      if (!response.ok) throw new Error("فشل في جلب بيانات المهام");
+      const json = await response.json();
+      return Array.isArray(json?.data) ? json.data : [];
+    };
+    const [inbox, sent] = await Promise.all([get("inbox"), get("sent")]);
+    const code = (s) => (s === "Done" ? 2 : s === "InProgress" || s === "InReview" ? 1 : 0);
 
-    const response = await fetch(
-      "https://api3.sstli.com/api/PuplicTask/GetPuplicTasksByQuery"
-    );
-    if (!response.ok) throw new Error("فشل في جلب بيانات المهام");
-
-    const tasksData = await response.json();
-    const classifiedTasks = await classifyTasksForUser(tasksData, userGuid);
-
-    setTasks(classifiedTasks);
+    setTasks([
+      ...inbox
+        .filter((t) => t.status !== "Cancelled")
+        .map((t) => ({ id: t.taskNo, createdAt: t.assignedAt || t.createdAt, taskType: "received", finalStatus: code(t.status) })),
+      ...sent.map((t) => ({
+        id: t.taskNo,
+        createdAt: t.createdAt,
+        taskType: "sent",
+        finalStatus: t.taskStatus === "Closed" ? 2 : (t.doneCount || t.avgProgress) ? 1 : 0
+      }))
+    ]);
   } catch (err) {
-    setError(err.message || "حدث خطأ أثناء تحميل المهام"); // لو انت لسه بتستخدم error واحد
+    setError(err.message || "حدث خطأ أثناء تحميل المهام");
   } finally {
-    setLoadingTasks(false);      // ✅ اقفل لودنج المهام
+    setLoadingTasks(false);
   }
 };
-
 
   const checkUnseenPosts = async () => {
     try {
@@ -281,85 +293,6 @@ const fetchTasks = async (userGuid) => {
       return () => clearInterval(interval);
     }
   }, [user]);
-
-  async function mapWithConcurrency(items, limit, mapper) {
-  const results = [];
-  let i = 0;
-
-  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (i < items.length) {
-      const idx = i++;
-      results[idx] = await mapper(items[idx], idx);
-    }
-  });
-
-  await Promise.all(workers);
-  return results;
-}
-
-
-const classifyTasksForUser = async (tasksData, userGuid) => {
-  // 1) صنّف المهام من غير ما تجيب updates
-  const preClassified = tasksData.map((task) => {
-    let taskType = null;
-    let assignedByObj = null;
-
-    try { assignedByObj = JSON.parse(task.assignedBy); } catch {}
-    if (assignedByObj?.guid === userGuid) taskType = "sent";
-
-    if (!taskType) {
-      try {
-        let assignedTo = task.assignedTo;
-        if (typeof assignedTo === "string" && assignedTo.startsWith("[")) assignedTo = JSON.parse(assignedTo);
-
-        const isRecipient = Array.isArray(assignedTo) && assignedTo.some((r) =>
-          (typeof r === "object" && r?.guid ? r.guid === userGuid : r === userGuid)
-        );
-
-        if (isRecipient) taskType = "received";
-      } catch {}
-    }
-
-    return taskType ? { ...task, taskType } : null;
-  }).filter(Boolean);
-
-  // 2) هات updates بالتوازي (مثلاً 10 في نفس الوقت)
-  const enriched = await mapWithConcurrency(preClassified, 10, async (task) => {
-    const updates = await fetchTaskUpdates(task.id);
-
-    let finalStatus = 0;
-    if (updates?.length) {
-      if (task.taskType === "sent") {
-        const last = updates.reduce((a, b) => new Date(b.updatedAt) > new Date(a.updatedAt) ? b : a);
-        finalStatus = last.status ?? 0;
-      } else {
-        const userUpdates = updates.filter(u => u.updatedBy === userGuid);
-        if (userUpdates.length) {
-          const last = userUpdates.reduce((a, b) => new Date(b.updatedAt) > new Date(a.updatedAt) ? b : a);
-          finalStatus = last.status ?? 0;
-        }
-      }
-    }
-
-    return { ...task, updates, finalStatus };
-  });
-
-  return enriched;
-};
-
-
-  const fetchTaskUpdates = async (taskId) => {
-    try {
-      const response = await fetch(
-        `https://api3.sstli.com/api/PuplicTask/GetTaskUpdates/${taskId}`
-      );
-      if (response.ok) return await response.json();
-      return [];
-    } catch (err) {
-      console.error(`فشل في جلب تحديثات المهمة ${taskId}:`, err);
-      return [];
-    }
-  };
 
   const filterTasksByTypeAndDate = (type, year, month) => {
     const MONTHS = [

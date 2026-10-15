@@ -35,7 +35,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 
@@ -59,6 +58,7 @@ import Swal from "sweetalert2";
 
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -593,10 +593,12 @@ const RefundRequestsReport =
             ])
           ),
 
+          // سبب الطلب متخزن في RePayOrder.Notes
           reason: String(
             pick(row, [
               "Reason",
-              "reason"
+              "reason",
+              "Notes"
             ])
           ),
 
@@ -614,8 +616,10 @@ const RefundRequestsReport =
             ])
           ),
 
+          // ملاحظة المشرف العام بتتحفظ في RePayOrder.Notes2 (AddRePayNotes)
           notes: String(
             pick(row, [
+              "Notes2",
               "Notes_",
               "notes"
             ])
@@ -2085,7 +2089,7 @@ const RefundRequestsReport =
               "1px solid rgba(5,117,70,0.13)"
           }, uiLayout.tableContainerSx)}
         >
-          <DataGrid
+          <FilterableDataGrid
             rows={filteredGridRows}
             columns={
               isDesktop

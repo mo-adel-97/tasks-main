@@ -33,6 +33,7 @@ import {
   DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
+import * as XLSX from "xlsx";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -667,60 +668,57 @@ const RewardsList = () => {
   const collectionTotal =
     totals.Collection ?? 0;
 
-  const exportCsv = () => {
+  const exportExcel = () => {
     if (rows.length === 0) {
       return;
     }
 
-    const escapeValue = (value) =>
-      `"${String(
-        unwrapValue(value) ?? ""
-      ).replaceAll('"', '""')}"`;
+    // الأرقام تتصدر كأرقام حقيقية عشان الجمع والفلترة يشتغلوا في Excel.
+    // النصوص اللي تبدأ بصفر (هوية/جوال) أو الطويلة تفضل نص عشان ما تضيعش أصفارها.
+    const toCellValue = (value) => {
+      const raw = unwrapValue(value);
+      if (raw === null || raw === undefined) return "";
+      if (typeof raw === "number" || raw instanceof Date) return raw;
 
-    const csv = [
-      visibleFields
-        .map((field) =>
-          escapeValue(
-            COLUMN_CAPTIONS[field] ||
-            field
-          )
-        )
-        .join(","),
-
-      ...rows.map((row) =>
-        visibleFields
-          .map((field) =>
-            escapeValue(
-              row?.[field]
-            )
-          )
-          .join(",")
-      )
-    ].join("\r\n");
-
-    const blob = new Blob(
-      ["\uFEFF", csv],
-      {
-        type:
-          "text/csv;charset=utf-8;"
+      const text = String(raw).trim();
+      if (
+        /^-?\d+(\.\d+)?$/.test(text) &&
+        !/^-?0\d/.test(text) &&
+        text.replace(/[-.]/g, "").length <= 12
+      ) {
+        return Number(text);
       }
+      return text;
+    };
+
+    const headers = visibleFields.map(
+      (field) => COLUMN_CAPTIONS[field] || field
     );
 
-    const url =
-      URL.createObjectURL(blob);
+    const data = rows.map((row) =>
+      visibleFields.map((field) => toCellValue(row?.[field]))
+    );
 
-    const link =
-      document.createElement("a");
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data]);
 
-    link.href = url;
-    link.download =
-      `قائمة المكافآت ${selectedMonth}.csv`;
+    worksheet["!cols"] = headers.map((header, columnIndex) => ({
+      wch: Math.min(
+        40,
+        Math.max(
+          String(header).length,
+          ...data.map((line) => String(line[columnIndex] ?? "").length)
+        ) + 2
+      )
+    }));
 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const workbook = XLSX.utils.book_new();
+    workbook.Workbook = { Views: [{ RTL: true }] };
+    XLSX.utils.book_append_sheet(workbook, worksheet, "المكافآت");
 
-    URL.revokeObjectURL(url);
+    XLSX.writeFile(
+      workbook,
+      `قائمة المكافآت ${selectedMonth}.xlsx`
+    );
   };
 
   return (
@@ -1178,7 +1176,7 @@ const RewardsList = () => {
                   startIcon={
                     <FileDownloadIcon />
                   }
-                  onClick={exportCsv}
+                  onClick={exportExcel}
                   disabled={
                     loading ||
                     rows.length === 0
@@ -1272,10 +1270,9 @@ const RewardsList = () => {
                     quickFilterProps: {
                       debounceMs: 300
                     },
+                    // التصدير من زر "تصدير" أعلى الصفحة (Excel xlsx) بدل CSV الجدول.
                     csvOptions: {
-                      utf8WithBom: true,
-                      fileName:
-                        "قائمة المكافآت"
+                      disableToolbarButton: true
                     },
                     printOptions: {
                       disableToolbarButton: true
@@ -2009,7 +2006,7 @@ const RewardsList = () => {
                 <Button
                   variant="outlined"
                   startIcon={<FileDownloadIcon />}
-                  onClick={exportCsv}
+                  onClick={exportExcel}
                   disabled={
                     loading ||
                     rows.length === 0

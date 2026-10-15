@@ -42,6 +42,7 @@ import {
   useTheme
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import useColumnValueFilters from "../components/columnFilters/useColumnValueFilters";
 
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -96,6 +97,15 @@ const SHARED_CONVERSION_OPTIONS = [
 const isSharedOrder = (row) => Boolean(row?.isSharedRegistration);
 
 const getSharedStatus = (row) => Number(row?.sharedConversionStatus ?? 0);
+
+// ما تعرضه الخلية فعليًا لأعمدة لا تعرض قيمة الحقل نفسه (لفلتر القيم).
+const ADMISSION_FILTER_ACCESSORS = {
+  sharedOrder: (row) => (isSharedOrder(row) ? "مشترك" : "غير مشترك"),
+  sharedConversionStatus: (row) =>
+    isSharedOrder(row)
+      ? SHARED_CONVERSION_OPTIONS.find((option) => option.value === getSharedStatus(row))?.label || ""
+      : "-"
+};
 
 const canConvertSharedOrder = (row) => {
   if (!isSharedOrder(row)) return true;
@@ -773,7 +783,7 @@ const [convertOtherInstituteName, setConvertOtherInstituteName] = useState("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filteredRows = useMemo(() => {
+  const statusFilteredRows = useMemo(() => {
     if (statusFilter === "all") return rows;
 
     const selected = STATUS_FILTERS.find((item) => item.value === statusFilter);
@@ -1389,7 +1399,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
     );
   };
 
-  const columns = useMemo(() => {
+  const baseColumns = useMemo(() => {
     const actionColumn = {
       field: "actions",
       headerName: isCompact ? "" : "الإجراءات",
@@ -1567,6 +1577,11 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                     ? "0.75rem"
                     : "0.75rem",
                 fontWeight: 900,
+                "&& .MuiSelect-select": {
+                  whiteSpace: "nowrap !important",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                },
                 borderRadius: isPhone ? 1 : 1.3,
                 backgroundColor:
                   canConvertSharedOrder(params.row)
@@ -1802,8 +1817,8 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       {
         field: "sharedConversionStatus",
         headerName: "التحويل",
-        flex: 0.92,
-        minWidth: 118,
+        flex: 1.25,
+        minWidth: 190,
         align: "center",
         headerAlign: "center",
         sortable: false,
@@ -1812,7 +1827,7 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
           return (
             <FormControl
               size="small"
-              sx={uiLayout.withUiSx({ minWidth: 104 }, uiLayout.formFieldSx)}
+              sx={uiLayout.withUiSx({ minWidth: 168 }, uiLayout.formFieldSx)}
               onClick={(e) => e.stopPropagation()}
             >
               <Select
@@ -1824,6 +1839,12 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                   height: 30,
                   fontSize: "0.75rem",
                   fontWeight: 900,
+                  // النص (مثل "إمكانية التحويل") في سطر واحد دائمًا.
+                  "&& .MuiSelect-select": {
+                    whiteSpace: "nowrap !important",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  },
                   backgroundColor: canConvertSharedOrder(params.row)
                     ? "#e8f5e9"
                     : "#fff5f5"
@@ -1844,6 +1865,16 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       actionColumn
     ];
   }, [isPhone, isTablet, isCompact, isDark]);
+
+  // فلتر قيم لكل عمود (اختيار أكثر من قيمة) بدل فلتر الجريد.
+  const columnFilters = useColumnValueFilters({
+    rows: statusFilteredRows,
+    columns: baseColumns,
+    accessors: ADMISSION_FILTER_ACCESSORS,
+    disableSorting: true
+  });
+  const columns = columnFilters.columns;
+  const filteredRows = columnFilters.rows;
 
   const handleExportCsv = () => {
     const headers = [
@@ -2509,12 +2540,15 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
           }}
         >
           <Box sx={uiLayout.withUiSx({ width: "100%", overflow: "hidden" }, uiLayout.tableContainerSx)}>
+            {columnFilters.chips}
+            {columnFilters.popover}
             <DataGrid
               rows={filteredRows}
               columns={columns}
               loading={loading}
               disableRowSelectionOnClick
               disableColumnMenu
+              disableColumnFilter
               rowHeight={isPhone ? 36 : isTablet ? 42 : 48}
               columnHeaderHeight={isPhone ? 34 : isTablet ? 40 : 46}
               pageSizeOptions={[10, 25, 50, 100]}
@@ -2548,6 +2582,10 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
                 fontFamily: "Cairo, Arial, sans-serif",
                 direction: "rtl",
 
+                // لا أسهم ترتيب ولا قايمة التلات نقط في عنوان العمود: الفلتر فقط.
+                "& .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-menuIcon": {
+                  display: "none !important"
+                },
                 "& .MuiDataGrid-main": {
                   overflow: "hidden"
                 },

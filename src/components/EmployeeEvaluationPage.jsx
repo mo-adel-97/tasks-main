@@ -131,12 +131,9 @@ const PRODUCTIVITY_API = "https://filesregsiteration.sstli.com/erp/api.php";
 
 // ✅ Tasks API (المهام) - جميع الـ APIs المطلوبة
 const TASKS_API = {
-  PUBLIC_TASKS: "https://api3.sstli.com/api/PuplicTask/GetPuplicTasksByQuery",
-  PASSED_TASKS: "https://filesregsiteration.sstli.com/tasks/get_passed_tasks.php",
-  EXTERNAL_TASKS: "https://filesregsiteration.sstli.com/tasks/get_ubdated_tasks.php",
-  DOWNLOAD: "https://api3.sstli.com/api/PuplicTask/DownloadFile",
-  GET_TASK_UPDATES: "https://api3.sstli.com/api/PuplicTask/GetTaskUpdates",
-  DOWNLOAD_TASK_ATTACHMENT: "https://api3.sstli.com/api/PuplicTask/DownloadTaskAttachment",
+  EMPLOYEE_SUMMARY: `${process.env.REACT_APP_API_URL || "https://api4.sstli.com"}/api/tasks/employee-summary`,
+  DOWNLOAD: "",
+  DOWNLOAD_TASK_ATTACHMENT: "",
 };
 
 // ✅ HR Evaluations API
@@ -962,175 +959,66 @@ const EmployeeEvaluationPage = () => {
     });
 
     try {
-      const publicTasksRes = await fetch(TASKS_API.PUBLIC_TASKS);
-      const publicTasks = await publicTasksRes.json();
-      
-      const passedTasksRes = await fetch(`${TASKS_API.PASSED_TASKS}?userGuid=${userGuid}`);
-      const passedTasksData = await passedTasksRes.json();
-      
-      const externalTasksRes = await fetch(TASKS_API.EXTERNAL_TASKS);
-      const externalTasksData = await externalTasksRes.json();
-      const externalTasks = externalTasksData.success ? externalTasksData.data : [];
-
-      const filteredTasks = (publicTasks || []).filter(task => {
-        const taskDate = new Date(task.createdAt);
-        const taskYear = taskDate.getFullYear();
-        const taskMonth = taskDate.getMonth() + 1;
-        
-        if (taskYear !== evalYear || taskMonth !== evalMonth) {
-          return false;
-        }
-
-        const isModifiedExternally = externalTasks.some(externalTask => 
-          parseInt(externalTask.TaskId) === parseInt(task.id)
-        );
-
-        if (isModifiedExternally) {
-          const externalTask = externalTasks.find(et => parseInt(et.TaskId) === parseInt(task.id));
-          if (externalTask && externalTask.AssignedTo) {
-            try {
-              const externalAssignedTo = typeof externalTask.AssignedTo === 'string' 
-                ? JSON.parse(externalTask.AssignedTo) 
-                : externalTask.AssignedTo;
-              
-              const isInExternalAssignedTo = Array.isArray(externalAssignedTo) && 
-                externalAssignedTo.some(user => user.guid === userGuid);
-              
-              return isInExternalAssignedTo;
-            } catch (e) {
-              console.error("Error parsing external AssignedTo:", e);
-            }
-          }
-          return false;
-        }
-
+      // نظام المهام الجديد (api/tasks/employee-summary): مهام الموظف في شهر التقييم.
+      const monthFrom = `${evalYear}-${String(evalMonth).padStart(2, "0")}-01`;
+      const monthEnd = new Date(evalYear, evalMonth, 0);
+      const monthTo = `${evalYear}-${String(evalMonth).padStart(2, "0")}-${String(monthEnd.getDate()).padStart(2, "0")}`;
+      const viewerGuid = (() => {
         try {
-          const assignedToString = task.assignedTo?.replace(/\\/g, '') || '[]';
-          const assignedUsers = JSON.parse(assignedToString);
-          const isDirectlyAssigned = Array.isArray(assignedUsers) && 
-            assignedUsers.some(user => user.guid === userGuid);
-          
-          const isPassedToUser = passedTasksData.success && 
-            passedTasksData.data.some(passedTask => 
-              passedTask.task_info.task_id === task.id.toString() &&
-              passedTask.passing_history[passedTask.passing_history.length - 1].receiver_guid === userGuid
-            );
-          
-          return isDirectlyAssigned || isPassedToUser;
-        } catch (e) {
-          console.error("Error parsing assignedTo:", e);
-          return false;
+          const me = JSON.parse(localStorage.getItem("user") || "{}");
+          return String(me?.guid || me?.Guid || me?.userGuid || "").trim();
+        } catch {
+          return "";
         }
-      });
-
-      const tasksWithUpdates = await Promise.all(
-        filteredTasks.map(async (task) => {
-          try {
-            const updatesRes = await fetch(`${TASKS_API.GET_TASK_UPDATES}/${task.id}`);
-            let updates = [];
-            if (updatesRes.ok) {
-              updates = await updatesRes.json();
-            }
-            
-            const userUpdates = updates.filter(update => update.updatedBy === userGuid);
-            const lastUpdate = userUpdates[userUpdates.length - 1];
-            
-            const passedTaskInfo = passedTasksData.success 
-              ? passedTasksData.data.find(pt => pt.task_info.task_id === task.id.toString())
-              : null;
-            
-            const isModifiedExternally = externalTasks.some(externalTask => 
-              parseInt(externalTask.TaskId) === parseInt(task.id)
-            );
-            const externalTaskData = isModifiedExternally ? 
-              externalTasks.find(et => parseInt(et.TaskId) === parseInt(task.id)) : null;
-
-            const createdAt = externalTaskData?.ModifiedDate || task.createdAt;
-            const created = new Date(createdAt);
-            created.setTime(created.getTime() + 3 * 60 * 60 * 1000);
-            
-            const taskTimeInHours = externalTaskData?.TaskTimeInMinutes || task.taskTimeInMinutes;
-            const deadline = created.getTime() + taskTimeInHours * 60 * 60 * 1000;
-            const timeLeft = Math.max(0, deadline - Date.now());
-            const ended = timeLeft <= 0;
-
-            const finalStatus = lastUpdate ? lastUpdate.status : task.status;
-            const finalStatusNote = lastUpdate ? lastUpdate.statusNote : null;
-            const finalAttachment = lastUpdate ? lastUpdate.attachmentFilePath : null;
-
-            const getStatusInfo = (status) => {
-              switch(status) {
-                case 0: return { 
-                  label: "معلقة", 
-                  color: "warning", 
-                  icon: <HourglassEmptyIcon />,
-                  description: "لم يبدأ الموظف العمل على المهمة بعد"
-                };
-                case 1: return { 
-                  label: "جاري التنفيذ", 
-                  color: "info", 
-                  icon: <HourglassFullIcon />,
-                  description: "الموظف يعمل حالياً على المهمة"
-                };
-                case 2: return { 
-                  label: "مكتملة", 
-                  color: "success", 
-                  icon: <CheckCircleOutlineIcon />,
-                  description: "أنهى الموظف المهمة بنجاح"
-                };
-                case 3: return { 
-                  label: "مرفوضة", 
-                  color: "error", 
-                  icon: <CancelIcon />,
-                  description: "رفض الموظف المهمة"
-                };
-                default: return { 
-                  label: "غير محددة", 
-                  color: "default", 
-                  icon: <TaskIcon />,
-                  description: "حالة غير محددة"
-                };
-              }
-            };
-
-            return {
-              id: task.id,
-              name: externalTaskData?.TaskName || task.taskName,
-              description: externalTaskData?.TaskDescription || task.taskDescription,
-              createdAt: task.createdAt,
-              deadline: deadline,
-              status: finalStatus,
-              originalStatus: task.status,
-              statusInfo: getStatusInfo(finalStatus),
-              ended: ended,
-              taskTimeInHours: taskTimeInHours,
-              allowAttach: task.allowAttach,
-              attachmentPath: externalTaskData?.AttachFileName || task.attachmentPath,
-              
-              hasUserResponse: !!lastUpdate,
-              lastUpdate: lastUpdate ? {
-                status: lastUpdate.status,
-                statusNote: lastUpdate.statusNote,
-                attachmentFilePath: lastUpdate.attachmentFilePath,
-                updatedAt: lastUpdate.updatedAt,
-                hasAttachment: !!lastUpdate.attachmentFilePath && 
-                              lastUpdate.attachmentFilePath.toLowerCase() !== "fake.txt",
-                updatedBy: lastUpdate.updatedBy
-              } : null,
-              allUpdates: userUpdates,
-              updateCount: userUpdates.length,
-              
-              isModifiedExternally: isModifiedExternally,
-              isPassedTask: !!passedTaskInfo,
-              passingHistory: passedTaskInfo ? passedTaskInfo.passing_history : null,
-              assignedByName: task.assignedBy ? JSON.parse(task.assignedBy).fullName : "غير معروف"
-            };
-          } catch (error) {
-            console.error(`Error fetching updates for task ${task.id}:`, error);
-            return null;
-          }
-        })
+      })();
+      const summaryRes = await fetch(
+        `${TASKS_API.EMPLOYEE_SUMMARY}?${new URLSearchParams({ userGuid: viewerGuid, employeeGuid: userGuid, fromDate: monthFrom, toDate: monthTo })}`,
+        { cache: "no-store" }
       );
+      const summaryJson = await summaryRes.json().catch(() => null);
+      if (!summaryRes.ok) throw new Error(summaryJson?.message || "حدث خطأ أثناء تحميل المهام");
+
+      // نفس شكل البيانات القديم: 0 معلقة · 1 جاري التنفيذ · 2 مكتملة · 3 مرفوضة
+      const statusCode = (s) => (s === "Done" ? 2 : s === "Rejected" ? 3 : s === "InProgress" || s === "InReview" ? 1 : 0);
+      const getStatusInfo = (status) => {
+        switch (status) {
+          case 0: return { label: "معلقة", color: "warning", icon: <HourglassEmptyIcon />, description: "لم يبدأ الموظف العمل على المهمة بعد" };
+          case 1: return { label: "جاري التنفيذ", color: "info", icon: <HourglassFullIcon />, description: "الموظف يعمل حالياً على المهمة" };
+          case 2: return { label: "مكتملة", color: "success", icon: <CheckCircleOutlineIcon />, description: "أنهى الموظف المهمة بنجاح" };
+          case 3: return { label: "مرفوضة", color: "error", icon: <CancelIcon />, description: "اعتذر الموظف عن المهمة" };
+          default: return { label: "غير محددة", color: "default", icon: <TaskIcon />, description: "حالة غير محددة" };
+        }
+      };
+
+      const tasksWithUpdates = (summaryJson?.data || []).map((t) => {
+        const status = statusCode(t.status);
+        const deadline = t.dueAt ? new Date(t.dueAt).getTime() : null;
+        const ended = deadline !== null && deadline < Date.now();
+        return {
+          id: t.taskNo,
+          name: t.title,
+          description: t.description,
+          createdAt: t.createdAt,
+          deadline,
+          status,
+          originalStatus: status,
+          statusInfo: getStatusInfo(status),
+          ended,
+          taskTimeInHours: deadline ? Math.max(0, Math.round((deadline - new Date(t.createdAt).getTime()) / 36e5)) : 0,
+          allowAttach: false,
+          attachmentPath: null,
+          hasUserResponse: t.status !== "New",
+          lastUpdate: null,
+          allUpdates: [],
+          updateCount: 0,
+          isModifiedExternally: false,
+          isPassedTask: false,
+          passingHistory: null,
+          assignedByName: t.createdByName || "غير معروف",
+          progress: t.progress,
+          taskGuid: t.taskGuid
+        };
+      });
 
       const enhancedTasks = tasksWithUpdates.filter(task => task !== null);
 

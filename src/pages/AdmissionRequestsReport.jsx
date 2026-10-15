@@ -24,6 +24,7 @@ import {
   DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
+import useColumnValueFilters from "../components/columnFilters/useColumnValueFilters";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -148,6 +149,11 @@ const formatGregorianDate = (value) => {
     month: "2-digit",
     year: "numeric"
   }).format(date);
+};
+
+// ما تعرضه الخلية فعليًا لعمود التاريخ.
+const REPORT_FILTER_ACCESSORS = {
+  orderDate: (row) => formatGregorianDate(row.orderDate)
 };
 
 const normalizeText = (value) => {
@@ -430,7 +436,7 @@ const AdmissionRequestsReport = () => {
     );
   }, [filteredRows]);
 
-  const columns = useMemo(() => {
+  const baseColumns = useMemo(() => {
     const vipColumn = {
       field: "vip",
       headerName: isCompact ? "" : "VIP",
@@ -691,6 +697,22 @@ const AdmissionRequestsReport = () => {
     ];
   }, [isPhone, isTablet, isCompact, isDark]);
 
+  // فلتر قيم لكل عمود (اختيار أكثر من قيمة) بدل فلتر الجريد.
+  const columnFilters = useColumnValueFilters({
+    rows: dataGridRows,
+    columns: baseColumns,
+    accessors: REPORT_FILTER_ACCESSORS,
+    disableSorting: true
+  });
+  const columns = columnFilters.columns;
+  const gridRows = columnFilters.rows;
+
+  // الصفوف الأصلية الظاهرة بعد كل الفلاتر: للتصدير والعدّاد.
+  const exportRows = useMemo(
+    () => gridRows.map((row) => row.originalRow),
+    [gridRows]
+  );
+
   const clearFilters = () => {
     setGlobalFilter("");
   };
@@ -796,7 +818,7 @@ const AdmissionRequestsReport = () => {
   }, []);
 
   const exportToExcel = async () => {
-    if (filteredRows.length === 0) {
+    if (exportRows.length === 0) {
       await Swal.fire({
         icon: "warning",
         title: "لا توجد بيانات",
@@ -826,7 +848,7 @@ const AdmissionRequestsReport = () => {
           .map(escapeCsvValue)
           .join(","),
 
-        ...filteredRows.map((row) => {
+        ...exportRows.map((row) => {
           return [
             getValue(row, [
               "Code",
@@ -1796,7 +1818,7 @@ const AdmissionRequestsReport = () => {
                   variant="outlined"
                   startIcon={<FileDownloadIcon />}
                   onClick={exportToExcel}
-                  disabled={loading || filteredRows.length === 0}
+                  disabled={loading || exportRows.length === 0}
                   sx={uiLayout.withUiSx({
                     color: isDark ? DARK_TEXT : "#ae1e21",
                     borderColor: isDark ? DARK_BORDER : "#ae1e21"
@@ -1835,7 +1857,7 @@ const AdmissionRequestsReport = () => {
                     whiteSpace: "nowrap"
                   }}
                 >
-                  العدد: {filteredRows.length}
+                  العدد: {exportRows.length}
                 </Box>
               </Box>
             </Box>
@@ -1861,14 +1883,16 @@ const AdmissionRequestsReport = () => {
                 backgroundColor: isDark ? darkSection : "#fff"
               }, uiLayout.tableContainerSx)}
             >
+              {columnFilters.chips}
+              {columnFilters.popover}
               <DataGrid
-                rows={dataGridRows}
+                rows={gridRows}
                 columns={columns}
                 loading={loading}
                 disableRowSelectionOnClick
                 showToolbar={!isPhone}
-                disableColumnMenu={isPhone}
-                disableColumnFilter={isPhone}
+                disableColumnMenu
+                disableColumnFilter
                 rowHeight={
                   isPhone
                     ? 34
@@ -1983,6 +2007,10 @@ const AdmissionRequestsReport = () => {
                   direction: "rtl",
                   fontFamily: "Cairo",
 
+                  // لا أسهم ترتيب ولا قايمة التلات نقط في عنوان العمود: الفلتر فقط.
+                  "& .MuiDataGrid-iconButtonContainer, & .MuiDataGrid-menuIcon": {
+                    display: "none !important"
+                  },
                   "& .MuiDataGrid-main": {
                     overflowX: isCompact
                       ? "hidden"

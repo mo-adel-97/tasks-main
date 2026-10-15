@@ -38,8 +38,6 @@ import DesktopDevicesAccessPage from './pages/DesktopDevicesAccessPage';
 import CircularsList from "./pages/CircularsList";
 import CircularsUpload from "./pages/CircularsUpload";
 import PrivateRoute from './components/PrivateRoute';
-import AdminDashboard from './components/AdminDashboard';
-import AdminStats from "./components/AdminStats";
 import AdmissionRequests from "./pages/AdmissionRequests";
 import UploadUpdate from './components/UploadUpdate';
 import TrainerStudentGrid from './components/TrainerStudentGrid';
@@ -90,6 +88,16 @@ import AdminStudentNotes from './components/AdminStudentNotes';
 import UploadGrades from './components/UploadGrades';
 import AdminIncomeDashboard from './components/AdminIncomeDashboard';
 import ReceptionOffice from './pages/ReceptionOffice';
+import OfferPricePage from './pages/OfferPricePage';
+import HrEmployeeListPage from './pages/HrEmployeeListPage';
+import StudentLevelHistoryReport from './pages/StudentLevelHistoryReport';
+import { TasksInboxPage, TasksSentPage, TasksTeamPage } from './pages/tasks/TasksListPages';
+import { TasksReportsPage, TasksSettingsPage, TaskViewPage } from './pages/tasks/TasksAdminPages';
+import AssetsBranchPage from './pages/assets/AssetsBranchPage';
+import AssetsReviewPage from './pages/assets/AssetsReviewPage';
+import AssetsCatalogPage from './pages/assets/AssetsCatalogPage';
+import AssetsReportPage from './pages/assets/AssetsReportPage';
+import AssetsPurchasesPage from './pages/assets/AssetsPurchasesPage';
 import OtherInstituteRegistrationsPage from './pages/OtherInstituteRegistrationsPage';
 import AfterSalesFollow from './pages/AfterSalesFollow';
 import AfterSalesReport from './pages/AfterSalesReport';
@@ -97,6 +105,7 @@ import TrainingAgreementsFollow from './pages/TrainingAgreementsFollow';
 import RegistrationRequestReport from './pages/RegistrationRequestReport';
 import BatchSeatsCounter from './pages/BatchSeatsCounter';
 import CollectionCommissionsReport from './pages/CollectionCommissionsReport';
+import BranchIncomeReport from "./pages/BranchIncomeReport";
 import RewardsList from './pages/RewardsList';
 import BatchStatistics from './pages/BatchStatistics';
 import PaymentFollowReport from './pages/PaymentFollowReport';
@@ -551,6 +560,17 @@ function App() {
           />
 
           <Route
+            path="/dashboard/branch-income"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <BranchIncomeReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
             path="/dashboard/collection-commissions-report"
             element={
               <PrivateRoute>
@@ -789,6 +809,163 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <BranchDailyReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          {/* عرض سعر (قائمة ملف) — الصلاحية من Form_Name كود 52 عبر PrivateRoute */}
+          <Route
+            path="/dashboard/offer-price"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <OfferPricePage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/student-level-history"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <StudentLevelHistoryReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          {/* إدارة الأصول */}
+          <Route
+            path="/dashboard/assets/branch"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <AssetsBranchPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/assets/review"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <AssetsReviewPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/assets/catalog"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <AssetsCatalogPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/assets/purchases"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <AssetsPurchasesPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/assets/report"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <AssetsReportPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          {/* نظام المهام */}
+          <Route
+            path="/dashboard/tasks/inbox"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TasksInboxPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tasks/sent"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TasksSentPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tasks/team"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TasksTeamPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tasks/reports"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TasksReportsPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tasks/settings"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TasksSettingsPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/tasks/view/:taskGuid"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <TaskViewPage />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/hr-employee-list"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <HrEmployeeListPage />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1322,13 +1499,7 @@ function App() {
 
           <Route
             path="/admin-stats"
-            element={
-              <PrivateRoute>
-                <LayoutWithoutHeader>
-                  <AdminStats />
-                </LayoutWithoutHeader>
-              </PrivateRoute>
-            }
+            element={<Navigate to="/dashboard/tasks/reports" replace />}
           />
 
           <Route

@@ -34,6 +34,7 @@ import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import FolderZipRoundedIcon from "@mui/icons-material/FolderZipRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 
 import Swal from "sweetalert2";
@@ -109,6 +110,11 @@ const getFileIcon = (file, size = 34) => {
     contentType.startsWith("image/")
   ) {
     return <ImageRoundedIcon sx={{ color: "#3276b1", fontSize: size }} />;
+  }
+
+  // ملفات مضغوطة (ZIP / RAR / 7Z).
+  if ([".zip", ".rar", ".7z"].includes(extension)) {
+    return <FolderZipRoundedIcon sx={{ color: "#b26a00", fontSize: size }} />;
   }
 
   if ([".doc", ".docx", ".txt"].includes(extension)) {

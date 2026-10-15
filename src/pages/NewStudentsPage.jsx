@@ -32,7 +32,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
@@ -58,6 +57,9 @@ import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 import RegisterDocumentDialog
   from "../components/RegisterDocumentDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { withVipNameColumn } from "../components/VipBadge";
+import { useVipLookup } from "../utils/receptionExtras";
 
 
 
@@ -412,6 +414,8 @@ const NewStudentsPage = () => {
   const [branchGuid, setBranchGuid] =
     useState(defaultBranchGuid);
   const [rows, setRows] = useState([]);
+  // الصفوف الظاهرة في الجدول بعد فلاتر الأعمدة (للتصدير).
+  const [gridRows, setGridRows] = useState(null);
   const [typeTab, setTypeTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [acceptingId, setAcceptingId] = useState("");
@@ -654,34 +658,13 @@ const NewStudentsPage = () => {
     const isPackage =
       toBoolean(pick(row, ["IsPackage"], false));
 
-    let courseGuid =
+    /*
+     * الدورة التطويرية غير المجمعة لا تحمل CourseGuid في التسجيل.
+     * لا نطلب من الموظف إدخاله: الـ API يختار الدورة النشطة لنفس
+     * البرنامج والفرع تلقائيًا ويرجع اسمها في رسالة النجاح.
+     */
+    const courseGuid =
       toGuid(pick(row, ["CourseGuid"], ZERO_GUID));
-
-    if (
-      regType === 2 &&
-      !isPackage &&
-      courseGuid === ZERO_GUID
-    ) {
-      const prompt = await Swal.fire({
-        icon: "info",
-        title: "تحديد الدورة التطويرية",
-        text:
-          "أدخل CourseGuid الخاص بالدورة المراد إلحاق الطالب بها",
-        input: "text",
-        showCancelButton: true,
-        confirmButtonText: "متابعة القبول",
-        cancelButtonText: "إلغاء",
-        confirmButtonColor: "#057546",
-        inputValidator: (value) =>
-          toGuid(value) === ZERO_GUID
-            ? "أدخل CourseGuid صحيحًا"
-            : undefined
-      });
-
-      if (!prompt.isConfirmed) return;
-
-      courseGuid = toGuid(prompt.value);
-    }
 
     const accountGuid =
       toGuid(
@@ -913,7 +896,8 @@ const NewStudentsPage = () => {
   };
 
   const exportXlsx = () => {
-    if (filteredRows.length === 0) {
+    const exportRows = gridRows ?? filteredRows;
+    if (exportRows.length === 0) {
       showError("لا توجد بيانات للتصدير");
       return;
     }
@@ -932,7 +916,7 @@ const NewStudentsPage = () => {
       "البريد الإلكتروني"
     ];
 
-    const data = filteredRows.map((row) => [
+    const data = exportRows.map((row) => [
       String(row.regTypeName ?? ""),
       String(row.code ?? ""),
       String(row.regDate ?? ""),
@@ -985,7 +969,7 @@ const NewStudentsPage = () => {
     );
   };
 
-  const columns = useMemo(() => {
+  const rawColumns = useMemo(() => {
     const actionColumn = {
       field: "actions",
       headerName: isCompact ? "" : "الإجراءات",
@@ -1205,6 +1189,13 @@ const NewStudentsPage = () => {
     isLargeScreen,
     isMediumScreen
   ]);
+
+  // علامة VIP جنب اسم الطالب
+  const { isVip } = useVipLookup();
+  const columns = useMemo(
+    () => withVipNameColumn(rawColumns, isVip),
+    [rawColumns, isVip]
+  );
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
@@ -1676,10 +1667,11 @@ const NewStudentsPage = () => {
               overflow: "hidden"
             }, uiLayout.tableContainerSx)}
           >
-            <DataGrid
+            <FilterableDataGrid
               key={gridKey}
               autoHeight
               rows={filteredRows}
+              onFilteredRowsChange={setGridRows}
               columns={columns}
               loading={loading}
               disableRowSelectionOnClick

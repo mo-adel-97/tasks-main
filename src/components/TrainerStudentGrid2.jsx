@@ -3,6 +3,8 @@ import { PRINT_READY_SCRIPT } from '../utils/printReady';
 import * as uiLayout from './common/uiLayout';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from './NavigationShell';
+import ArrearsEstimateCard from './ArrearsEstimateCard';
+import { estimateArrears, fromServerArrears } from '../utils/arrearsEstimate';
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -43,6 +45,20 @@ import axios from 'axios';
 
 
 const API_BASE = 'https://api3.sstli.com';
+
+// المتأخرات التقديرية للتصدير: تُحسب في الباك بنفس معادلة كارت المتأخرات.
+const ARREARS_API_URL =
+  `${process.env.REACT_APP_API_URL || 'https://api4.sstli.com'}/api/payment-follow/arrears`;
+
+const ARREARS_STATE_LABEL = {
+  overdue: 'متأخر',
+  'course-ended': 'انتهت مدة الدبلوم وعليه رصيد',
+  'on-track': 'ملتزم بالسداد',
+  'paid-off': 'مسدد بالكامل',
+  'not-started': 'لم يحن موعد أول قسط',
+  'not-applicable': 'غير منطبق (ليس دبلومًا)',
+  'not-found': 'الطالب غير موجود'
+};
 const PHP_BASE = 'https://filesregsiteration.sstli.com';
 
 // تعريف اللون الأساسي
@@ -661,6 +677,9 @@ const TrainerStudentGrid2 = () => {
   const fetchSeqRef = useRef(0);
   const abortRef = useRef(null);
   const openActionDialogRef = useRef(null);
+  // كاش آخر طلب سداد لكل طالب (studentId -> { result, at }) حتى لا نعيد طلبه بعد كل حفظ حالة.
+  const lastOrderCacheRef = useRef(new Map());
+  const autoOrderSeqRef = useRef(0);
 
   const [showSpecial, setShowSpecial] = useState(false);
 
@@ -675,6 +694,28 @@ const TrainerStudentGrid2 = () => {
   // معلومات الدراسة
   const [studyInfo, setStudyInfo] = useState([]);
   const [studyLoading, setStudyLoading] = useState(false);
+  // تاريخ بداية الدفعة (هجري) من معلومات الدراسة المحمّلة في نفس الحوار.
+  const arrearsBatchDate = useMemo(() => {
+    const list = Array.isArray(studyInfo) ? studyInfo : [];
+    const program = String(currentActionRow?.diplomName || '').trim();
+    const match =
+      list.find((item) => String(item?.diplom || '').trim() === program) ||
+      list.find((item) => String(item?.diplom || '').includes('دبلوم')) ||
+      list[0];
+    return match?.batch || null;
+  }, [studyInfo, currentActionRow]);
+
+  // المتأخرات تقدير لطلاب الدبلومات فقط (مدة سنتان).
+  const isDiplomaProgram = /دبلوم/.test(String(currentActionRow?.diplomName || ''));
+
+  const arrearsEstimate = useMemo(
+    () =>
+      isDiplomaProgram
+        ? estimateArrears(statements, { batchDate: arrearsBatchDate })
+        : { available: false, reason: 'not-diploma' },
+    [statements, arrearsBatchDate, isDiplomaProgram]
+  );
+
 
   // ✅ كاش للاكونت جيو آي دي لكل nationalId
   const [accountGuidCache, setAccountGuidCache] = useState({});
@@ -698,6 +739,38 @@ const user = useMemo(() => {
   }
 }, []);
 
+  // الباك هو المصدر الأدق (يقرأ أنواع القيود من دفتر الحسابات)؛ نسأله أولًا،
+  // وإن لم يتوفر (صلاحية أو اتصال) نبقى على حساب الفرونت من كشف الحساب.
+  const [arrearsRemote, setArrearsRemote] = useState(null);
+
+  useEffect(() => {
+    const nationalId = String(currentActionRow?.nationalId || '').trim();
+    setArrearsRemote(null);
+
+    if (!actionDialogOpen || !isDiplomaProgram || !nationalId || !user?.guid) return undefined;
+
+    const controller = new AbortController();
+
+    fetch(ARREARS_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userGuid: user.guid, items: [{ nationalId }] }),
+      signal: controller.signal
+    })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+      .then((result) => {
+        const item = result?.data?.[0];
+        if (item?.applicable) setArrearsRemote(fromServerArrears(item));
+      })
+      .catch(() => {
+        // نكتفي بحساب الفرونت.
+      });
+
+    return () => controller.abort();
+  }, [actionDialogOpen, currentActionRow, isDiplomaProgram, user]);
+
+  const arrearsForCard = arrearsRemote || arrearsEstimate;
+
 const branchGuid = user?.branchForWork;
 const trainerGuid = user?.trainerGuid;
 
@@ -713,12 +786,18 @@ const isYoussefFleih =
    * @param {string} studentId - معرف الطالب
    * @returns {boolean} - true إذا كان هناك طلب سداد صالح
    */
-const hasValidPaymentInPeriod = (studentId) => {
-  const lastOrder = lastOrderData[studentId];
+const LAST_ORDER_CACHE_TTL_MS = 5 * 60 * 1000;
 
-  if (!lastOrder?.data?.orderDate) return false;
+const getCachedLastOrder = (studentId) => {
+  const cached = lastOrderCacheRef.current.get(studentId);
+  if (!cached || Date.now() - cached.at > LAST_ORDER_CACHE_TTL_MS) return null;
+  return cached.result;
+};
 
-  const orderDayjs = dayjs(lastOrder.data.orderDate);
+const isOrderDateInPeriod = (orderDate) => {
+  if (!orderDate) return false;
+
+  const orderDayjs = dayjs(orderDate);
   const start = fromDate.startOf('day');
   const end = toDate.endOf('day');
 
@@ -726,6 +805,12 @@ const hasValidPaymentInPeriod = (studentId) => {
     (orderDayjs.isAfter(start) || orderDayjs.isSame(start)) &&
     (orderDayjs.isBefore(end) || orderDayjs.isSame(end))
   );
+};
+
+const hasValidPaymentInPeriod = (studentId) => {
+  // الكاش يُقرأ أولًا لأنه يتحدث فورًا، بينما lastOrderData قد تكون قيمة قديمة داخل نفس الدالة.
+  const lastOrder = getCachedLastOrder(studentId) || lastOrderData[studentId];
+  return isOrderDateInPeriod(lastOrder?.data?.orderDate);
 };
 
   /**
@@ -919,7 +1004,7 @@ const isStudentPaid = (row) => {
   };
 
   // ✅ تجهيز بيانات الطلاب للتصدير (معدل)
-  const buildExcelRows = () => {
+  const buildExcelRows = (arrearsByNid = {}, arrearsFailed = false) => {
     const targetRows = filteredRows;
 
     return targetRows.map((row, index) => {
@@ -929,6 +1014,7 @@ const isStudentPaid = (row) => {
       const last = getLastHistoryEntry(row.id);
 
       const paidAmount = isPaid ? Number(row.monthpay || 0) : 0;
+      const arrears = arrearsByNid[String(row.nationalId || '').trim()] || null;
 
       return {
         '#': index + 1,
@@ -945,7 +1031,21 @@ const isStudentPaid = (row) => {
         'آخر تحديث حالة': last?.dateRecorded ? dayjs(last.dateRecorded).format('YYYY/MM/DD HH:mm') : '',
         'آخر مدرب حدّث': last?.trainerGuid ? getTrainerName(last.trainerGuid) : '',
         'المبلغ المدفوع': paidAmount,
-'ملاحظة السداد': !isValidMonthpay(row.monthpay) ? '⚠️ القسط أقل من 250 ريال' : '',      };
+'ملاحظة السداد': !isValidMonthpay(row.monthpay) ? '⚠️ القسط أقل من 250 ريال' : '',
+        // المتأخرات التقديرية (من دفتر الحسابات، والأقساط تبدأ من بداية الدفعة)
+        'المتأخرات التقديرية': arrears ? Number(arrears.overdue || 0) : '',
+        'أقساط متأخرة': arrears ? Number(Number(arrears.overdueInstallments || 0).toFixed(1)) : '',
+        'بداية الدفعة (ميلادي)': arrears ? String(arrears.startDate || '') : '',
+        'الأقساط المستحقة حتى اليوم': arrears ? Number(arrears.dueInstallments || 0) : '',
+        'المستحق سداده حتى اليوم': arrears ? Number(arrears.expectedPaid || 0) : '',
+        'المسدد فعليًا (بدون رسوم)': arrears ? Number(arrears.payments || 0) : '',
+        'ملاحظة المتأخرات': arrears
+          ? (ARREARS_STATE_LABEL[arrears.state] || '') +
+            (arrears.hasOpeningBalance ? ' — يوجد رصيد افتتاحي (تقدير أقل دقة)' : '')
+          : (arrearsFailed && /دبلوم/.test(String(row.diplomName || ''))
+              ? 'تعذر حساب المتأخرات'
+              : (/دبلوم/.test(String(row.diplomName || '')) ? '' : 'غير منطبق (ليس دبلومًا)')),
+      };
     });
   };
 
@@ -988,10 +1088,53 @@ const isStudentPaid = (row) => {
   };
 
   // ✅ تصدير Excel
-  const handleExportExcelReport = () => {
+  // يجلب المتأخرات لطلاب الدبلوم في الجدول الحالي (بالهوية). لو فشل يخرج الملف بدونها.
+  const fetchArrearsForExport = async () => {
+    const nationalIds = Array.from(
+      new Set(
+        filteredRows
+          .filter((row) => /دبلوم/.test(String(row.diplomName || '')))
+          .map((row) => String(row.nationalId || '').trim())
+          .filter(Boolean)
+      )
+    );
+
+    if (!nationalIds.length) return { map: {}, failed: false };
+
+    try {
+      const map = {};
+
+      for (let start = 0; start < nationalIds.length; start += 1000) {
+        const response = await fetch(ARREARS_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userGuid: user?.guid,
+            items: nationalIds.slice(start, start + 1000).map((nationalId) => ({ nationalId }))
+          })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const result = await response.json();
+        (result?.data || []).forEach((item) => {
+          if (item.applicable) map[String(item.nationalId || '').trim()] = item;
+        });
+      }
+
+      return { map, failed: false };
+    } catch (e) {
+      console.warn('تعذر حساب المتأخرات للتصدير:', e);
+      return { map: {}, failed: true };
+    }
+  };
+
+  const handleExportExcelReport = async () => {
     setExportLoading(true);
 
     try {
+      const { map: arrearsByNid, failed: arrearsFailed } = await fetchArrearsForExport();
+
       const wb = XLSX.utils.book_new();
 
       // ✅ RTL (Safe)
@@ -1009,7 +1152,7 @@ const isStudentPaid = (row) => {
       XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
 
       // 2) Students sheet
-      const studentsRows = buildExcelRows();
+      const studentsRows = buildExcelRows(arrearsByNid, arrearsFailed);
       const wsStudents = XLSX.utils.json_to_sheet(studentsRows, { skipHeader: false });
       wsStudents['!cols'] = [
         { wch: 6 },   // #
@@ -1027,6 +1170,13 @@ const isStudentPaid = (row) => {
         { wch: 22 },  // آخر مدرب
         { wch: 14 },  // مدفوع
         { wch: 30 },  // ملاحظة السداد
+        { wch: 18 },  // المتأخرات التقديرية
+        { wch: 12 },  // أقساط متأخرة
+        { wch: 18 },  // بداية الدفعة
+        { wch: 16 },  // الأقساط المستحقة
+        { wch: 18 },  // المستحق سداده
+        { wch: 18 },  // المسدد فعليًا
+        { wch: 34 },  // ملاحظة المتأخرات
       ];
       wsStudents['!views'] = [{ rightToLeft: true }];
       XLSX.utils.book_append_sheet(wb, wsStudents, 'Students');
@@ -1087,8 +1237,8 @@ const api = {
 
   // ✅ دالة جديدة لجلب آخر طلب سداد
   const fetchLastOrderPay = async (accountGuid, studentId) => {
-    if (!accountGuid) return;
-    
+    if (!accountGuid) return null;
+
     try {
       const response = await fetch(api.lastOrderPay(accountGuid));
       if (!response.ok) {
@@ -1100,16 +1250,18 @@ const api = {
             message: 'فشل في جلب البيانات'
           }
         }));
-        return;
+        return null;
       }
-      
+
       const result = await response.json();
-      
+      lastOrderCacheRef.current.set(studentId, { result, at: Date.now() });
+
       setLastOrderData(prev => ({
         ...prev,
         [studentId]: result
       }));
-      
+      return result;
+
     } catch (error) {
       console.error(`❌ Error fetching last order for ${studentId}:`, error);
       setLastOrderData(prev => ({
@@ -1119,7 +1271,43 @@ const api = {
           message: 'حدث خطأ في جلب البيانات'
         }
       }));
+      return null;
     }
+  };
+
+  // ✅ تحديد "لديه طلب سداد" تلقائيًا لكل طالب غير مسدد عنده طلب سداد داخل الفترة المحددة.
+  // يعمل في الخلفية بعد تحميل الجدول، ولا يحفظ في سجل المتابعة حتى لا يملأه بإدخالات آلية.
+  const autoMarkPaymentOrders = async (targetRows) => {
+    const seq = ++autoOrderSeqRef.current;
+    const pending = targetRows.filter(
+      (row) => !isStudentPaid(row) && !getCachedLastOrder(row.id)
+    );
+    if (pending.length === 0) return;
+
+    const found = [];
+    let next = 0;
+    const worker = async () => {
+      while (next < pending.length) {
+        if (seq !== autoOrderSeqRef.current) return;
+        const row = pending[next++];
+        const accountGuid = await getOrFetchAccountGuid(row);
+        if (!accountGuid) continue;
+        const result = await fetchLastOrderPay(accountGuid, row.id);
+        if (isOrderDateInPeriod(result?.data?.orderDate)) found.push(row.id);
+      }
+    };
+
+    // 6 طلبات متوازية كحد أقصى حتى لا نضغط على السيرفر مع المدربين ذوي الأعداد الكبيرة.
+    await Promise.all(Array.from({ length: Math.min(6, pending.length) }, worker));
+
+    if (seq !== autoOrderSeqRef.current || found.length === 0) return;
+    setRowStatuses((prev) => {
+      const updated = { ...prev };
+      found.forEach((id) => {
+        if (updated[id] !== 'paid') updated[id] = 'has_order';
+      });
+      return updated;
+    });
   };
 
   // Fetch trainers data
@@ -1381,6 +1569,19 @@ const fetchData = async () => {
       }
 
       // ✅ باقي المستخدمين نفس المنطق القديم
+      // طالب غير مسدد وعنده طلب سداد داخل الفترة (من الكاش) => "لديه طلب سداد" تلقائيًا.
+      if (
+        !isStudentPaid(row) &&
+        isOrderDateInPeriod(getCachedLastOrder(row.id)?.data?.orderDate)
+      ) {
+        const latestEntry = Array.isArray(history) && history.length > 0
+          ? [...history].sort((a, b) => new Date(b.dateRecorded) - new Date(a.dateRecorded))[0]
+          : null;
+        updatedStatuses[row.id] = latestEntry?.status === 'paid' ? 'paid' : 'has_order';
+        updatedNotes[row.id] = latestEntry?.note || '';
+        return;
+      }
+
       if (Array.isArray(history) && history.length > 0) {
         const filtered = history.filter((entry) => {
           const entryDate = dayjs(entry.dateRecorded).startOf('day');
@@ -1392,7 +1593,10 @@ const fetchData = async () => {
         });
 
         if (filtered.length > 0) {
-          const latest = filtered[filtered.length - 1];
+          // لا نعتمد على ترتيب السيرفر: نأخذ الأحدث حسب التاريخ.
+          const latest = [...filtered].sort(
+            (a, b) => new Date(b.dateRecorded) - new Date(a.dateRecorded)
+          )[0];
           updatedStatuses[row.id] = latest.status || '';
           updatedNotes[row.id] = latest.note || '';
         } else {
@@ -1409,6 +1613,8 @@ const fetchData = async () => {
     setRowStatuses(updatedStatuses);
     setRowNotes(updatedNotes);
     setStudentHistory(updatedHistory);
+
+    if (!isYoussefFleih) autoMarkPaymentOrders(rowsWithId);
 
   } catch (err) {
     if (err?.name === 'AbortError') return;
@@ -1444,6 +1650,12 @@ const handleStatusChange = async (id, status) => {
   setStatusError('');
 
   const row = rows.find((r) => r.id === id);
+
+  // النافذة تفتح قبل اكتمال تحميل آخر طلب سداد؛ لو لم يصل بعد نجلبه وننتظره بدل رفض الحالة.
+  if ((status === 'paid' || status === 'has_order') && row && !getCachedLastOrder(id)) {
+    const accountGuid = await getOrFetchAccountGuid(row);
+    if (accountGuid) await fetchLastOrderPay(accountGuid, id);
+  }
 
   // ✅ لو اختار "تم السداد"
   if (status === 'paid') {
@@ -4007,6 +4219,14 @@ isDesktop
                         </CardContent>
                       </Card>
 
+                      {/* المتأخرات التقديرية: من كشف حساب الطالب (سعر الدبلوم ومدته سنتان) */}
+                      <ArrearsEstimateCard
+                        estimate={arrearsForCard}
+                        loading={statementsLoading || studyLoading}
+                        cardSx={(theme) => ({ ...dialogCardSx(theme), borderRadius: 2 })}
+                        tileSx={dialogTileSx}
+                      />
+
                       {/* Current Status Card */}
                       <Card sx={dialogCardSx}>
                         <CardContent sx={{ p: 3 }}>
@@ -4539,7 +4759,7 @@ isDesktop
                         }}
                       >
                         {studentHistory[currentActionRow?.id] && studentHistory[currentActionRow?.id].length > 0 ? (
-                          studentHistory[currentActionRow?.id]
+                          [...studentHistory[currentActionRow?.id]]
                             .sort((a, b) => new Date(b.dateRecorded) - new Date(a.dateRecorded))
                             .map((record, index) => (
                               <React.Fragment key={index}>

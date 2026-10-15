@@ -2,7 +2,15 @@ import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'r
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import QRCode from 'qrcode';
-import { QrCode2 } from '@mui/icons-material';
+import { QrCode2, FileDownload } from '@mui/icons-material';
+import * as XLSX from 'xlsx';
+import {
+  splitSection,
+  stripSection,
+  joinSection,
+  sectionRuns,
+  orderBySection
+} from '../utils/questionSections';
 import { useTheme } from '@mui/material/styles';
 import {
   Pagination,
@@ -38,7 +46,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Tooltip
 } from '@mui/material';
 
 import {
@@ -53,6 +62,8 @@ import {
   Close,
   Save,
   ContentCopy,
+  FileCopy,
+  AddPhotoAlternate,
   OpenInNew,
   Assessment,
   Cancel
@@ -128,18 +139,169 @@ const emptyExam = (currentUser = {}) => ({
   is_active: 1,
   created_by_guid: currentUser?.guid || '',
   created_by_name: currentUser?.fullName || currentUser?.userName || '',
-  questions: [
-    {
-      text: '',
-      type: 'single_choice',
-      points: 1,
-      answers: [
-        { text: '', is_correct: 1 },
-        { text: '', is_correct: 0 }
-      ]
-    }
-  ]
+  questions: [newExamQuestion()]
 });
+
+// sectionKey معرف داخلي للقسم في المحرر بس (عشان مسح الاسم أثناء الكتابة ما يدمجش الأقسام)،
+// واللي بيتحفظ هو اسم القسم (section) كبادئة في نص السؤال.
+const newSectionKey = () => `sec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+const sectionKeyFromTitle = (title) => (title ? `title:${title}` : '');
+
+// سؤال جديد فاضي، اختياري يتحدد قسمه ونوعه.
+function newExamQuestion(section = '', type = 'single_choice', sectionKey = sectionKeyFromTitle(section)) {
+  return {
+    sectionKey,
+    section,
+    text: '',
+    type,
+    points: 1,
+    answers:
+      type === 'true_false'
+        ? [
+            { text: 'صح', is_correct: 1 },
+            { text: 'غلط', is_correct: 0 }
+          ]
+        : [
+            { text: '', is_correct: 1 },
+            { text: '', is_correct: 0 }
+          ]
+  };
+}
+
+// عنوان قسم داخل عرض الأسئلة (تفاصيل الاختبار / النتائج).
+const SectionHeading = ({ title, isDark }) => (
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1,
+      mt: 2.5,
+      mb: 1.2,
+      px: 1.5,
+      py: 1,
+      borderRadius: 2,
+      borderInlineStart: `5px solid ${primaryColor}`,
+      backgroundColor: isDark ? 'rgba(128,180,158,0.12)' : '#eef7f2'
+    }}
+  >
+    <Typography sx={{ fontWeight: 900, color: isDark ? '#cfe7dc' : primaryDark }}>
+      {title}
+    </Typography>
+  </Box>
+);
+
+const pickAttachment = (item = {}) => ({
+  attachment_url: item.attachment_url || '',
+  attachment_name: item.attachment_name || '',
+  attachment_type: item.attachment_type || ''
+});
+
+const isImageAttachment = (item = {}) =>
+  String(item.attachment_type || '').startsWith('image/') ||
+  /\.(jpe?g|png|gif|webp)$/i.test(String(item.attachment_url || '').split('?')[0]);
+
+const uploadAttachment = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await axios.post(
+    `${EXAM_API_BASE_URL}?action=upload_attachment`,
+    formData,
+    { timeout: 60000 }
+  );
+
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'فشل رفع الصورة');
+  }
+
+  return {
+    attachment_url: response.data.data.url,
+    attachment_name: response.data.data.name,
+    attachment_type: response.data.data.type
+  };
+};
+
+const AttachmentField = ({ item, onChange, compact = false }) => {
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef(null);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showErrorAlert('مسموح برفع الصور فقط');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      onChange(await uploadAttachment(file));
+    } catch (error) {
+      console.error(error);
+      showErrorAlert(error?.message || 'فشل رفع الصورة');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const size = compact ? 56 : 120;
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+      <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFile} />
+
+      {item.attachment_url ? (
+        <>
+          {isImageAttachment(item) ? (
+            <Box
+              component="img"
+              src={item.attachment_url}
+              alt={item.attachment_name}
+              onClick={() => window.open(item.attachment_url, '_blank')}
+              sx={{ width: size, height: size, objectFit: 'cover', borderRadius: 1.5, border: '1px solid #ddd', cursor: 'pointer' }}
+            />
+          ) : (
+            <Chip size="small" label={item.attachment_name || 'مرفق'} />
+          )}
+
+          <Tooltip title="تغيير الصورة">
+            <IconButton size="small" onClick={() => inputRef.current?.click()} disabled={uploading}>
+              {uploading ? <CircularProgress size={18} /> : <Edit fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="حذف الصورة">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => onChange({ attachment_url: '', attachment_name: '', attachment_type: '' })}
+            >
+              <Close fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </>
+      ) : compact ? (
+        <Tooltip title="إضافة صورة للإجابة">
+          <IconButton onClick={() => inputRef.current?.click()} disabled={uploading} sx={{ color: primaryDark }}>
+            {uploading ? <CircularProgress size={20} /> : <AddPhotoAlternate />}
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={uploading ? <CircularProgress size={16} /> : <AddPhotoAlternate />}
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+        >
+          {uploading ? 'جاري الرفع...' : 'إضافة صورة للسؤال'}
+        </Button>
+      )}
+    </Box>
+  );
+};
 
 const showSuccessAlert = (message) => {
   Swal.fire({
@@ -390,18 +552,23 @@ const HRCreateExams = () => {
         is_active: Number(exam.is_active ?? 1),
         created_by_guid: exam.created_by_guid || currentUserGuid,
         created_by_name: exam.created_by_name || currentUser?.fullName || currentUser?.userName || '',
-        questions: (exam.questions || []).map((q) => ({
+        // أسئلة كل قسم تتجمع جنب بعض في المحرر (لو سؤال اتضاف لقسم بعد الإنشاء وجه في الآخر).
+        questions: orderBySection((exam.questions || []).map((q) => ({
           id: q.id,
           question_order: q.question_order,
-          text: q.question_text || '',
+          section: splitSection(q.question_text).section,
+          sectionKey: sectionKeyFromTitle(splitSection(q.question_text).section),
+          text: stripSection(q.question_text || ''),
           type: q.question_type || 'single_choice',
           points: Number(q.points || 1),
+          ...pickAttachment(q),
           answers: (q.answers || []).map((a) => ({
             id: a.id,
             text: a.answer_text || '',
-            is_correct: Number(a.is_correct || 0)
+            is_correct: Number(a.is_correct || 0),
+            ...pickAttachment(a)
           }))
-        }))
+        })))
       });
 
       setIsEditMode(true);
@@ -446,6 +613,106 @@ const HRCreateExams = () => {
     }
   };
 
+  // تصدير نتائج وإجابات الاختبار إلى Excel (xlsx):
+  // ملخص لكل طالب + الإجابات التفصيلية + مصفوفة (طالب × سؤال) لسهولة التحليل.
+  const handleExportAttemptsExcel = () => {
+    const exam = selectedExamAttempts?.exam || {};
+    const attempts = selectedExamAttempts?.attempts || [];
+    if (!attempts.length) return;
+
+    const num = (value) => {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : value ?? '';
+    };
+    const isPassed = (attempt) => Number(attempt.is_passed) === 1;
+    const isCorrect = (answer) => Number(answer.is_correct) === 1;
+
+    const summaryRows = attempts.map((attempt, index) => ({
+      '#': index + 1,
+      'اسم الطالب': attempt.student_name || '',
+      'رقم الهوية': String(attempt.national_id ?? ''),
+      'الجوال': String(attempt.student_tel ?? ''),
+      'البريد': attempt.student_email || '',
+      'وقت الإرسال': attempt.submitted_at || '',
+      'الدرجة': num(attempt.score),
+      'الدرجة الكلية': num(attempt.total_score),
+      'النسبة %': num(attempt.percentage),
+      'النتيجة': isPassed(attempt) ? 'ناجح' : 'راسب',
+      'عدد الإجابات الصحيحة': (attempt.answers || []).filter(isCorrect).length,
+    }));
+
+    // ترتيب الأسئلة من أول محاولة فيها إجابات، والباقي يتضاف بالترتيب لو ظهر.
+    const questionOrder = [];
+    const questionTitles = new Map();
+    attempts.forEach((attempt) =>
+      (attempt.answers || []).forEach((answer) => {
+        const key = String(answer.question_id ?? answer.question_text);
+        if (!questionTitles.has(key)) {
+          questionOrder.push(key);
+          questionTitles.set(key, `س${questionOrder.length}: ${stripSection(answer.question_text)}`.slice(0, 120));
+        }
+      })
+    );
+
+    const detailRows = attempts.flatMap((attempt) =>
+      (attempt.answers || []).map((answer) => ({
+        'اسم الطالب': attempt.student_name || '',
+        'رقم الهوية': String(attempt.national_id ?? ''),
+        'رقم السؤال': questionOrder.indexOf(String(answer.question_id ?? answer.question_text)) + 1,
+        'القسم': splitSection(answer.question_text).section,
+        'السؤال': stripSection(answer.question_text),
+        'إجابة الطالب': answer.selected_answer_text || 'لم تتم الإجابة',
+        'الإجابة الصحيحة': answer.correct_answer_text || '',
+        'الحالة': isCorrect(answer) ? 'صحيح' : 'خطأ',
+        'الدرجة المحققة': num(answer.points_earned),
+        'درجة السؤال': num(answer.question_points),
+      }))
+    );
+
+    const matrixRows = attempts.map((attempt) => {
+      const row = {
+        'اسم الطالب': attempt.student_name || '',
+        'رقم الهوية': String(attempt.national_id ?? ''),
+      };
+      const byQuestion = new Map(
+        (attempt.answers || []).map((answer) => [String(answer.question_id ?? answer.question_text), answer])
+      );
+      questionOrder.forEach((key) => {
+        const answer = byQuestion.get(key);
+        row[questionTitles.get(key)] = answer
+          ? `${answer.selected_answer_text || 'لم تتم الإجابة'} ${isCorrect(answer) ? '✔' : '✘'}`
+          : '';
+      });
+      row['الدرجة'] = num(attempt.score);
+      row['النسبة %'] = num(attempt.percentage);
+      row['النتيجة'] = isPassed(attempt) ? 'ناجح' : 'راسب';
+      return row;
+    });
+
+    const makeSheet = (rows) => {
+      const sheet = XLSX.utils.json_to_sheet(rows);
+      const headers = Object.keys(rows[0] || {});
+      sheet['!cols'] = headers.map((header) => ({
+        wch: Math.min(
+          50,
+          Math.max(String(header).length, ...rows.map((r) => String(r[header] ?? '').length)) + 2
+        ),
+      }));
+      return sheet;
+    };
+
+    const workbook = XLSX.utils.book_new();
+    workbook.Workbook = { Views: [{ RTL: true }, { RTL: true }, { RTL: true }] };
+    XLSX.utils.book_append_sheet(workbook, makeSheet(summaryRows), 'ملخص النتائج');
+    if (detailRows.length) {
+      XLSX.utils.book_append_sheet(workbook, makeSheet(detailRows), 'الإجابات التفصيلية');
+      XLSX.utils.book_append_sheet(workbook, makeSheet(matrixRows), 'مصفوفة الإجابات');
+    }
+
+    const safeTitle = String(exam.title || 'اختبار').replace(/[\\/:*?"<>|]/g, '-').trim();
+    XLSX.writeFile(workbook, `نتائج وإجابات - ${safeTitle}.xlsx`);
+  };
+
   const updateExamField = (field, value) => {
     setExamForm((prev) => ({
       ...prev,
@@ -453,23 +720,62 @@ const HRCreateExams = () => {
     }));
   };
 
+  // سؤال جديد في آخر الاختبار تابع لآخر قسم.
   const addQuestion = () => {
+    setExamForm((prev) => {
+      const last = prev.questions[prev.questions.length - 1];
+      return {
+        ...prev,
+        questions: [
+          ...prev.questions,
+          newExamQuestion(last?.section || '', last?.type, last?.sectionKey || '')
+        ]
+      };
+    });
+  };
+
+  // ===== الأقسام =====
+  const addSection = () => {
+    setExamForm((prev) => {
+      const count = sectionRuns(prev.questions, (q) => q.sectionKey || '').filter((run) => run.section).length;
+      return {
+        ...prev,
+        questions: [...prev.questions, newExamQuestion(`القسم ${count + 1}`, 'single_choice', newSectionKey())]
+      };
+    });
+  };
+
+  // سؤال جديد في آخر القسم بنفس نوع آخر سؤال فيه.
+  const addQuestionToRun = (run) => {
+    setExamForm((prev) => {
+      const questions = [...prev.questions];
+      const lastInRun = questions[run.end];
+      questions.splice(
+        run.end + 1,
+        0,
+        newExamQuestion(lastInRun?.section || '', lastInRun?.type, lastInRun?.sectionKey || '')
+      );
+      return { ...prev, questions };
+    });
+  };
+
+  const updateRunQuestions = (run, patch) => {
     setExamForm((prev) => ({
       ...prev,
-      questions: [
-        ...prev.questions,
-        {
-          text: '',
-          type: 'single_choice',
-          points: 1,
-          answers: [
-            { text: '', is_correct: 1 },
-            { text: '', is_correct: 0 }
-          ]
-        }
-      ]
+      questions: prev.questions.map((q, index) =>
+        index >= run.start && index <= run.end ? { ...q, ...patch } : q
+      )
     }));
   };
+
+  const renameRun = (run, title) => updateRunQuestions(run, { section: title });
+
+  // تحويل أسئلة بدون قسم لقسم جديد.
+  const makeRunSection = (run) =>
+    updateRunQuestions(run, { section: 'قسم جديد', sectionKey: newSectionKey() });
+
+  // إلغاء القسم: الأسئلة تفضل موجودة لكن بدون قسم.
+  const ungroupRun = (run) => updateRunQuestions(run, { section: '', sectionKey: '' });
 
   const removeQuestion = (questionIndex) => {
     setExamForm((prev) => ({
@@ -532,6 +838,24 @@ const HRCreateExams = () => {
     });
   };
 
+  const updateQuestionAttachment = (questionIndex, attachment) => {
+    setExamForm((prev) => {
+      const questions = [...prev.questions];
+      questions[questionIndex] = { ...questions[questionIndex], ...attachment };
+      return { ...prev, questions };
+    });
+  };
+
+  const updateAnswerAttachment = (questionIndex, answerIndex, attachment) => {
+    setExamForm((prev) => {
+      const questions = [...prev.questions];
+      const answers = [...questions[questionIndex].answers];
+      answers[answerIndex] = { ...answers[answerIndex], ...attachment };
+      questions[questionIndex] = { ...questions[questionIndex], answers };
+      return { ...prev, questions };
+    });
+  };
+
   const setCorrectAnswer = (questionIndex, answerIndex) => {
     setExamForm((prev) => {
       const questions = [...prev.questions];
@@ -569,7 +893,7 @@ const HRCreateExams = () => {
         return false;
       }
 
-      if (!q.answers.some((a) => String(a.text || '').trim() !== '')) {
+      if (q.answers.some((a) => String(a.text || '').trim() === '' && !a.attachment_url)) {
         showErrorAlert(`إجابات السؤال رقم ${i + 1} مطلوبة`);
         return false;
       }
@@ -596,6 +920,10 @@ const HRCreateExams = () => {
       if (!isEditMode) {
         const payload = {
           ...examForm,
+          questions: examForm.questions.map(({ section, sectionKey, ...q }) => ({
+            ...q,
+            text: joinSection(section, q.text)
+          })),
           created_by_guid: currentUserGuid,
           created_by_name: currentUser?.fullName || currentUser?.userName || ''
         };
@@ -647,10 +975,11 @@ const HRCreateExams = () => {
               `${EXAM_API_BASE_URL}?action=update_question`,
               {
                 question_id: q.id,
-                text: q.text,
+                text: joinSection(q.section, q.text),
                 type: q.type,
                 points: q.points,
                 question_order: index + 1,
+                ...pickAttachment(q),
                 answers: q.answers
               },
               { timeout: 30000 }
@@ -670,9 +999,11 @@ const HRCreateExams = () => {
             `${EXAM_API_BASE_URL}?action=add_question`,
             {
               exam_id: examForm.id,
-              text: q.text,
+              text: joinSection(q.section, q.text),
+              question_order: index + 1,
               type: q.type,
               points: q.points,
+              ...pickAttachment(q),
               answers: q.answers
             },
             { timeout: 30000 }
@@ -704,6 +1035,74 @@ const HRCreateExams = () => {
       Swal.close();
       console.error(error);
       showErrorAlert(error?.message || 'حدث خطأ أثناء حفظ الاختبار');
+    }
+  };
+
+  const handleDuplicateExam = async (examId) => {
+    const result = await Swal.fire({
+      title: 'نسخ الاختبار',
+      text: 'هل تريد إنشاء اختبار جديد بنفس الأسئلة والإجابات ومفتاح الإجابة؟',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، نسخ',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: primaryColor
+    });
+
+    if (!result.isConfirmed) return;
+
+    Swal.fire({
+      title: 'جاري نسخ الاختبار...',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    try {
+      const exam = await fetchExamById(examId, { force: true });
+
+      // نسخة جديدة بدون أي IDs قديمة، مسجلة باسم المستخدم الحالي
+      const payload = {
+        title: `${exam.title || ''} - نسخة`,
+        description: exam.description || '',
+        start_date: exam.start_date ? String(exam.start_date).slice(0, 10) : '',
+        end_date: exam.end_date ? String(exam.end_date).slice(0, 10) : '',
+        duration_minutes: Number(exam.duration_minutes || 30),
+        pass_score: Number(exam.pass_score || 50),
+        is_active: Number(exam.is_active ?? 1),
+        created_by_guid: currentUserGuid,
+        created_by_name: currentUser?.fullName || currentUser?.userName || '',
+        questions: (exam.questions || []).map((q, qIndex) => ({
+          text: q.question_text || '',
+          type: q.question_type || 'single_choice',
+          points: Number(q.points || 1),
+          question_order: qIndex + 1,
+          attachment_url: q.attachment_url || '',
+          attachment_name: q.attachment_name || '',
+          attachment_type: q.attachment_type || '',
+          answers: (q.answers || []).map((a) => ({
+            text: a.answer_text || '',
+            is_correct: Number(a.is_correct || 0),
+            attachment_url: a.attachment_url || '',
+            attachment_name: a.attachment_name || '',
+            attachment_type: a.attachment_type || ''
+          }))
+        }))
+      };
+
+      const response = await axios.post(`${EXAM_API_BASE_URL}?action=create_exam`, payload);
+
+      Swal.close();
+
+      if (response.data.success) {
+        showSuccessAlert('تم نسخ الاختبار بنجاح');
+        fetchAllExams();
+      } else {
+        showErrorAlert(response.data.message || 'فشل في نسخ الاختبار');
+      }
+    } catch (error) {
+      Swal.close();
+      console.error(error);
+      showErrorAlert(error?.message || 'حدث خطأ أثناء نسخ الاختبار');
     }
   };
 
@@ -1293,6 +1692,12 @@ const exportExamQrCode = async (exam) => {
                         <Edit />
                       </IconButton>
 
+                      <Tooltip title="نسخ الاختبار بكل الأسئلة والإجابات" arrow placement="top">
+                        <IconButton onClick={() => handleDuplicateExam(exam.id)} sx={{ color: '#0097a7' }}>
+                          <FileCopy />
+                        </IconButton>
+                      </Tooltip>
+
                       <IconButton onClick={() => copyExamLink(exam.id)} sx={{ color: '#6a1b9a' }}>
                         <ContentCopy />
                       </IconButton>
@@ -1459,17 +1864,79 @@ const exportExamQrCode = async (exam) => {
             </Grid>
           </Grid>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1, mb: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: isDark ? theme.palette.text.primary : primaryDark }}>
               الأسئلة
             </Typography>
 
-            <Button variant="outlined" startIcon={<Add />} onClick={addQuestion}>
-              إضافة سؤال
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Button variant="contained" startIcon={<Add />} onClick={addSection} sx={{ backgroundColor: primaryColor, fontWeight: 'bold' }}>
+                إضافة قسم
+              </Button>
+              <Button variant="outlined" startIcon={<Add />} onClick={addQuestion}>
+                إضافة سؤال
+              </Button>
+            </Box>
           </Box>
 
-          {examForm.questions.map((q, qIndex) => (
+          <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+            تقدر تقسّم الاختبار لأقسام (مثلًا: قسم صح وغلط، قسم اختياري). كل سؤال يتبع القسم اللي هو فيه، والطالب يشوف الأسئلة متقسمة بنفس الترتيب.
+          </Typography>
+
+          {sectionRuns(examForm.questions, (q) => q.sectionKey || '').map((run, runIndex) => {
+            const isSection = Boolean(run.section);
+            const sectionTitle = examForm.questions[run.start]?.section || '';
+            const count = run.end - run.start + 1;
+
+            return (
+          <Box
+            key={`run-${run.section || 'none'}-${run.start}`}
+            sx={{
+              mb: 2.5,
+              p: { xs: 1, sm: 1.5 },
+              borderRadius: 3,
+              border: isSection
+                ? `1.5px solid ${isDark ? focusBorderColor : 'rgba(5,117,70,0.28)'}`
+                : `1px dashed ${isDark ? focusBorderColor : 'rgba(5,117,70,0.2)'}`,
+              backgroundColor: isSection ? (isDark ? darkSection : '#f4faf7') : 'transparent'
+            }}
+          >
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap', mb: 1.5 }}>
+              {isSection ? (
+                <TextField
+                  size="small"
+                  label={`اسم القسم ${runIndex + 1}`}
+                  value={sectionTitle}
+                  onChange={(e) => renameRun(run, e.target.value)}
+                  placeholder="مثلًا: أسئلة صح وغلط"
+                  sx={{ flex: 1, minWidth: 220, '& input': { fontWeight: 'bold' } }}
+                />
+              ) : (
+                <Typography sx={{ flex: 1, fontWeight: 'bold', color: 'text.secondary' }}>
+                  أسئلة بدون قسم
+                </Typography>
+              )}
+
+              <Chip size="small" label={`${count} سؤال`} />
+
+              <Button size="small" startIcon={<Add />} onClick={() => addQuestionToRun(run)}>
+                سؤال في {isSection ? 'هذا القسم' : 'هنا'}
+              </Button>
+
+              {isSection ? (
+                <Button size="small" color="inherit" onClick={() => ungroupRun(run)}>
+                  إلغاء القسم
+                </Button>
+              ) : (
+                <Button size="small" onClick={() => makeRunSection(run)}>
+                  تحويلها لقسم
+                </Button>
+              )}
+            </Box>
+
+          {examForm.questions.slice(run.start, run.end + 1).map((q, offset) => {
+            const qIndex = run.start + offset;
+            return (
             <Accordion
               key={qIndex}
               defaultExpanded={qIndex === 0}
@@ -1479,6 +1946,7 @@ const exportExamQrCode = async (exam) => {
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Typography sx={{ fontWeight: 'bold' }}>
                   السؤال رقم {qIndex + 1}
+                  {q.text ? ` — ${String(q.text).slice(0, 60)}` : ''}
                 </Typography>
               </AccordionSummary>
 
@@ -1522,6 +1990,13 @@ const exportExamQrCode = async (exam) => {
                       <Delete />
                     </IconButton>
                   </Grid>
+
+                  <Grid item xs={12}>
+                    <AttachmentField
+                      item={q}
+                      onChange={(attachment) => updateQuestionAttachment(qIndex, attachment)}
+                    />
+                  </Grid>
                 </Grid>
 
                 <Box sx={{ mt: 2 }}>
@@ -1545,6 +2020,14 @@ const exportExamQrCode = async (exam) => {
                         disabled={q.type === 'true_false'}
                       />
 
+                      {q.type !== 'true_false' && (
+                        <AttachmentField
+                          compact
+                          item={answer}
+                          onChange={(attachment) => updateAnswerAttachment(qIndex, aIndex, attachment)}
+                        />
+                      )}
+
                       {Number(answer.is_correct) === 1 && (
                         <Chip icon={<CheckCircle />} label="مفتاح الإجابة" color="success" size="small" />
                       )}
@@ -1565,7 +2048,11 @@ const exportExamQrCode = async (exam) => {
                 </Box>
               </AccordionDetails>
             </Accordion>
-          ))}
+            );
+          })}
+          </Box>
+            );
+          })}
         </DialogContent>
 
         <DialogActions>
@@ -1629,15 +2116,24 @@ const exportExamQrCode = async (exam) => {
                 )}
               </Box>
 
-              {selectedExamDetails.questions?.map((q, index) => (
+              {orderBySection(
+                selectedExamDetails.questions || [],
+                (item) => splitSection(item.question_text).section
+              ).map((q, index, list) => {
+                const section = splitSection(q.question_text).section;
+                const prevSection = index > 0 ? splitSection(list[index - 1].question_text).section : null;
+                return (
+                <React.Fragment key={q.id}>
+                {section && section !== prevSection && (
+                  <SectionHeading title={section} isDark={isDark} />
+                )}
                 <Accordion
-                  key={q.id}
                   TransitionProps={{ unmountOnExit: true }}
                   sx={{ mb: 1, borderRadius: 2 }}
                 >
                   <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography sx={{ fontWeight: 'bold' }}>
-                      {index + 1}. {q.question_text}
+                      {index + 1}. {stripSection(q.question_text)}
                     </Typography>
                   </AccordionSummary>
 
@@ -1647,6 +2143,15 @@ const exportExamQrCode = async (exam) => {
                       size="small"
                       sx={{ mb: 2 }}
                     />
+
+                    {q.attachment_url && isImageAttachment(q) && (
+                      <Box
+                        component="img"
+                        src={q.attachment_url}
+                        alt={q.attachment_name}
+                        sx={{ display: 'block', maxWidth: '100%', maxHeight: 280, objectFit: 'contain', borderRadius: 2, mb: 2 }}
+                      />
+                    )}
 
                     {q.answers?.map((a) => (
                       <Box
@@ -1673,6 +2178,14 @@ const exportExamQrCode = async (exam) => {
                         }}
                       >
                         {Number(a.is_correct) === 1 && <CheckCircle sx={{ color: '#4caf50' }} />}
+                        {a.attachment_url && isImageAttachment(a) && (
+                          <Box
+                            component="img"
+                            src={a.attachment_url}
+                            alt={a.attachment_name}
+                            sx={{ width: 90, height: 90, objectFit: 'contain', borderRadius: 1.5 }}
+                          />
+                        )}
                         <Typography>{a.answer_text}</Typography>
 
                         {Number(a.is_correct) === 1 && (
@@ -1697,7 +2210,9 @@ const exportExamQrCode = async (exam) => {
                     </Box>
                   </AccordionDetails>
                 </Accordion>
-              ))}
+                </React.Fragment>
+                );
+              })}
             </Box>
           )}
         </DialogContent>
@@ -1810,9 +2325,30 @@ const exportExamQrCode = async (exam) => {
                           </TableHead>
 
                           <TableBody>
-                            {attempt.answers?.map((ans, index) => (
+                            {orderBySection(
+                              attempt.answers || [],
+                              (item) => splitSection(item.question_text).section
+                            ).map((ans, index, list) => {
+                              const section = splitSection(ans.question_text).section;
+                              const prevSection = index > 0 ? splitSection(list[index - 1].question_text).section : null;
+                              return (
+                              <React.Fragment key={`${attempt.id}-${ans.question_id}`}>
+                              {section && section !== prevSection && (
+                                <TableRow>
+                                  <TableCell
+                                    colSpan={6}
+                                    sx={{
+                                      fontWeight: 900,
+                                      color: isDark ? '#cfe7dc' : primaryDark,
+                                      backgroundColor: isDark ? 'rgba(128,180,158,0.12)' : '#e6f3ec',
+                                      borderInlineStart: `5px solid ${primaryColor}`
+                                    }}
+                                  >
+                                    {section}
+                                  </TableCell>
+                                </TableRow>
+                              )}
                               <TableRow
-                                key={`${attempt.id}-${ans.question_id}`}
                                 sx={{
                                   backgroundColor: isDark
                                     ? 'transparent'
@@ -1823,7 +2359,7 @@ const exportExamQrCode = async (exam) => {
                               >
                                 <TableCell align="center">{index + 1}</TableCell>
                                 <TableCell align="right" sx={{ minWidth: 260 }}>
-                                  {ans.question_text}
+                                  {stripSection(ans.question_text)}
                                 </TableCell>
                                 <TableCell align="right">
                                   {ans.selected_answer_text || 'لم تتم الإجابة'}
@@ -1842,7 +2378,9 @@ const exportExamQrCode = async (exam) => {
                                   {ans.points_earned} / {ans.question_points}
                                 </TableCell>
                               </TableRow>
-                            ))}
+                              </React.Fragment>
+                              );
+                            })}
                           </TableBody>
                         </Table>
                       </TableContainer>
@@ -1862,7 +2400,16 @@ const exportExamQrCode = async (exam) => {
           )}
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions sx={{ justifyContent: 'space-between' }}>
+          <Button
+            variant="contained"
+            startIcon={<FileDownload />}
+            onClick={handleExportAttemptsExcel}
+            disabled={loadingAttempts || !selectedExamAttempts?.attempts?.length}
+            sx={{ backgroundColor: primaryColor, fontWeight: 'bold' }}
+          >
+            تصدير Excel
+          </Button>
           <Button onClick={() => setShowAttemptsDialog(false)}>إغلاق</Button>
         </DialogActions>
       </Dialog>

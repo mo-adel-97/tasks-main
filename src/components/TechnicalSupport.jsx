@@ -1,7 +1,6 @@
 import * as uiLayout from './common/uiLayout';
 import { navigationContentSx } from '../config/sidebarLayout';
-import NavigationShell from './NavigationShell';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useDeferredValue } from 'react';
 
 import {
   Box,
@@ -84,14 +83,42 @@ const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/tech_tickets.php'
 const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
 const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
 
+// المستخدمين والفروع (للأسماء بس) بيتحفظوا في الجلسة 10 دقايق بدل ما يتنزلوا كل مرة الصفحة تتفتح.
+const LOOKUP_CACHE_TTL_MS = 10 * 60 * 1000;
+const cachedLookup = async (url) => {
+  const key = `sstli_lookup_${url}`;
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Date.now() - Number(parsed?.timestamp || 0) < LOOKUP_CACHE_TTL_MS && parsed?.data) {
+        return { data: parsed.data };
+      }
+    }
+  } catch {
+    // الكاش تحسين بس
+  }
+  const response = await axios.get(url);
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data: response.data }));
+  } catch {
+    // مساحة الجلسة مليانة — نكمل من غير كاش
+  }
+  return response;
+};
+
 const DESKTOP_BREAKPOINT = 1200;
 
 const SUPPORT_TICKETS_CACHE_KEY = 'sstli_support_all_tickets_v4';
 const SUPPORT_TICKETS_CACHE_TTL_MS = 60 * 1000;
 
+// الفترة المعروضة حاليًا (آخر N يوم + المفتوح كله، 0 = الكل) — الكاش منفصل لكل فترة.
+let supportCacheDays = 60;
+const supportCacheKey = () => `${SUPPORT_TICKETS_CACHE_KEY}_${supportCacheDays}`;
+
 const readSupportTicketsCache = () => {
   try {
-    const raw = sessionStorage.getItem(SUPPORT_TICKETS_CACHE_KEY);
+    const raw = sessionStorage.getItem(supportCacheKey());
     if (!raw) return null;
 
     const parsed = JSON.parse(raw);
@@ -101,7 +128,7 @@ const readSupportTicketsCache = () => {
       !timestamp ||
       Date.now() - timestamp > SUPPORT_TICKETS_CACHE_TTL_MS
     ) {
-      sessionStorage.removeItem(SUPPORT_TICKETS_CACHE_KEY);
+      sessionStorage.removeItem(supportCacheKey());
       return null;
     }
 
@@ -114,7 +141,7 @@ const readSupportTicketsCache = () => {
 const writeSupportTicketsCache = (tickets) => {
   try {
     sessionStorage.setItem(
-      SUPPORT_TICKETS_CACHE_KEY,
+      supportCacheKey(),
       JSON.stringify({
         timestamp: Date.now(),
         data: Array.isArray(tickets) ? tickets : []
@@ -152,6 +179,10 @@ const TechnicalSupport = () => {
   const [tabValue, setTabValue] = useState(0);
   const [tickets, setTickets] = useState([]);
   const [allUsersTickets, setAllUsersTickets] = useState([]);
+  // آخر N يوم + كل المفتوح (بدل تاريخ التذاكر كله في كل فتحة) — 0 = الكل
+  const [ticketsDays, setTicketsDays] = useState(60);
+  const [ticketsSummary, setTicketsSummary] = useState(null);
+  supportCacheDays = ticketsDays;
   const [loadingTickets, setLoadingTickets] = useState(true);
   const [usersData, setUsersData] = useState({});
   const [branchesData, setBranchesData] = useState({});
@@ -258,7 +289,7 @@ const TechnicalSupport = () => {
     } else {
       fetchUserTickets();
     }
-  }, [isSupportStaff, viewAllTickets]);
+  }, [isSupportStaff, viewAllTickets, ticketsDays]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset pagination when data changes
   useEffect(() => {
@@ -288,7 +319,7 @@ const TechnicalSupport = () => {
 
   const fetchBranchesData = async () => {
     try {
-      const response = await axios.get(BRANCHES_API_URL);
+      const response = await cachedLookup(BRANCHES_API_URL);
       if (response.data) {
         const branchesMap = {};
         response.data.forEach(branch => {
@@ -307,7 +338,7 @@ const TechnicalSupport = () => {
 
   const fetchUsersData = async () => {
     try {
-      const response = await axios.get(USER_API_URL);
+      const response = await cachedLookup(USER_API_URL);
       if (response.data) {
         const usersMap = {};
         response.data.forEach(user => {
@@ -365,9 +396,13 @@ const TechnicalSupport = () => {
       // مهم: نحفظ القائمة الكاملة دائمًا.
       // status/search/employee يتم تطبيقهم محليًا في getDisplayedTickets.
       const response = await axios.get(
-        `${API_BASE_URL}?request=all_tickets`,
+        `${API_BASE_URL}?request=all_tickets${ticketsDays ? `&days=${ticketsDays}` : ''}`,
         { timeout: 30000 }
       );
+
+      if (response.data?.summary) {
+        setTicketsSummary(response.data.summary);
+      }
 
       if (response.data.status !== 'success') {
         throw new Error(
@@ -974,20 +1009,27 @@ const TechnicalSupport = () => {
     }
   };
 
-  // الموظفون الموجودون فعلياً داخل التذاكر
-  const employeeOptions = Array.from(
-    new Map(
-      allUsersTickets
-        .filter(ticket => ticket.user_guid)
-        .map(ticket => [
-          ticket.user_guid,
-          {
-            guid: ticket.user_guid,
-            name: getUserNameFromGuid(ticket.user_guid),
-          },
-        ])
-    ).values()
-  ).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  // الموظفون الموجودون فعلياً داخل التذاكر (بيتحسب لما التذاكر أو الأسماء تتغير بس)
+  const employeeOptions = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          allUsersTickets
+            .filter(ticket => ticket.user_guid)
+            .map(ticket => [
+              ticket.user_guid,
+              {
+                guid: ticket.user_guid,
+                name: getUserNameFromGuid(ticket.user_guid),
+              },
+            ])
+        ).values()
+      ).sort((a, b) => a.name.localeCompare(b.name, 'ar')),
+    [allUsersTickets, usersData] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  // البحث بيتطبق بعد ما الكتابة تهدى، فالكتابة نفسها مابتهنّجش.
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   const exportTicketsToExcel = () => {
     const rows = displayedTickets.map((ticket, index) => {
@@ -1058,8 +1100,8 @@ const TechnicalSupport = () => {
         list = list.filter(t => t.user_guid === selectedEmployeeGuid);
       }
 
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim().toLowerCase();
+      if (deferredSearchQuery.trim()) {
+        const q = deferredSearchQuery.trim().toLowerCase();
         list = list.filter(t => {
           const subject = (t.subject || '').toLowerCase();
           const desc = (t.description || '').toLowerCase();
@@ -1089,7 +1131,10 @@ const TechnicalSupport = () => {
     });
   };
 
-  const displayedTickets = getDisplayedTickets();
+  const displayedTickets = useMemo(
+    getDisplayedTickets,
+    [isSupportStaff, allUsersTickets, statusFilter, selectedEmployeeGuid, deferredSearchQuery, usersData, branchesData, tickets, tabValue] // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   // Pagination handlers
   const handleChangePage = (event, newPage) => {
@@ -1108,7 +1153,7 @@ const TechnicalSupport = () => {
   );
 
   return (
-    <NavigationShell variant="standard" ><Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: isDark ? theme.palette.background.default : '#f6faf8' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: isDark ? theme.palette.background.default : '#f6faf8' }}>
       
       
       <Box 
@@ -1860,7 +1905,7 @@ const TechnicalSupport = () => {
                   >
                     <Chip
                       size="small"
-                      label={`${allUsersTickets.length} إجمالي`}
+                      label={`${ticketsSummary?.total ?? allUsersTickets.length} إجمالي`}
                       sx={{
                         height: 26,
                         bgcolor: isDark ? 'rgba(103,201,157,.16)' : '#edf7f2',
@@ -1897,6 +1942,25 @@ const TechnicalSupport = () => {
                         '& .MuiChip-label': { px: 0.8 }
                       }}
                     />
+                    {/* الفترة: المفتوح كله دايمًا + المقفول آخر N يوم */}
+                    {[
+                      { days: 30, label: '30 يوم' },
+                      { days: 60, label: '60 يوم' },
+                      { days: 180, label: '6 شهور' },
+                      { days: 0, label: 'الكل' }
+                    ].map((option) => (
+                      <Chip
+                        key={option.days}
+                        size="small"
+                        clickable
+                        disabled={loadingTickets}
+                        onClick={() => setTicketsDays(option.days)}
+                        label={option.label}
+                        variant={ticketsDays === option.days ? 'filled' : 'outlined'}
+                        color={ticketsDays === option.days ? 'primary' : 'default'}
+                        sx={{ height: 26, fontWeight: 800, fontSize: '0.62rem', '& .MuiChip-label': { px: 0.8 } }}
+                      />
+                    ))}
                   </Box>
                 </Box>
 
@@ -3602,7 +3666,7 @@ const TechnicalSupport = () => {
           </Alert>
         </Snackbar>
       </Box>
-    </Box></NavigationShell>
+    </Box>
   );
 };
 

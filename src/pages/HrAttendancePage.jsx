@@ -57,6 +57,10 @@ import GroupWorkRoundedIcon from "@mui/icons-material/GroupWorkRounded";
 import UploadFileRoundedIcon from "@mui/icons-material/UploadFileRounded";
 
 import Swal from "sweetalert2";
+import HrBioTimePeriodDialog from "./HrBioTimePeriodDialog";
+import HrBioTimeSyncDialog from "./HrBioTimeSyncDialog";
+import HrBioExcelLinkDialog from "./HrBioExcelLinkDialog";
+import HrDebouncedSearchField from "./HrDebouncedSearchField";
 
 
 
@@ -330,23 +334,6 @@ const statusMeta = (status) => {
   return { label, color };
 };
 
-const excelBioStatusMeta = (status) => {
-  const map = {
-    strong: ["مطابق قوي", "success"],
-    likely: ["مطابق محتمل قوي", "success"],
-    review: ["يحتاج مراجعة", "warning"],
-    "employee-conflict": ["تعارض موظف", "warning"],
-    "already-linked": ["مربوط بالفعل", "info"],
-    "duplicate-code": ["رقم بصمة مكرر", "error"],
-    unmatched: ["غير مطابق", "default"]
-  };
-
-  const [label, color] =
-    map[status] || [status || "غير محدد", "default"];
-
-  return { label, color };
-};
-
 const todayValue = () =>
   new Date().toISOString().slice(0, 10);
 
@@ -501,6 +488,7 @@ export default function HrAttendancePage() {
   const [departmentGuid, setDepartmentGuid] =
     useState("");
   const [status, setStatus] = useState("all");
+  const [bioLink, setBioLink] = useState(""); // "" | "linked" | "unlinked"
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
@@ -612,34 +600,13 @@ export default function HrAttendancePage() {
   };
 
   const [bioExcelOpen, setBioExcelOpen] = useState(false);
-  const [bioExcelFile, setBioExcelFile] = useState(null);
-  const [bioExcelLoading, setBioExcelLoading] = useState(false);
-  const [bioExcelSaving, setBioExcelSaving] = useState(false);
-  const [bioExcelRows, setBioExcelRows] = useState([]);
-  const [bioExcelStats, setBioExcelStats] = useState({
-    totalRows: 0,
-    strongMatches: 0,
-    likelyMatches: 0,
-    reviewMatches: 0,
-    alreadyLinked: 0,
-    unmatched: 0,
-    duplicateCodes: 0,
-    sheetCount: 0
-  });
-  const [bioExcelSheets, setBioExcelSheets] = useState([]);
-  const [bioExcelSelections, setBioExcelSelections] = useState({});
-  const [bioExcelApproved, setBioExcelApproved] = useState({});
-  const [bioExcelSearch, setBioExcelSearch] = useState("");
-  const [bioExcelStatus, setBioExcelStatus] = useState("all");
 
-  const [bioSyncLoading, setBioSyncLoading] =
-    useState(false);
   const [bioSyncInfo, setBioSyncInfo] =
     useState(null);
-  const bioSyncedDatesRef = useRef(new Set());
-  const bioSyncInFlightRef = useRef(false);
 
   const [reportOpen, setReportOpen] = useState(false);
+  const [periodOpen, setPeriodOpen] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
   const [reportMode, setReportMode] = useState(false);
   const [reportEmployees, setReportEmployees] = useState([]);
   const [reportEmployeeSearch, setReportEmployeeSearch] = useState("");
@@ -705,7 +672,17 @@ export default function HrAttendancePage() {
     }
   }, []);
 
+  const loadRowsSeqRef = useRef(0);
+  const loadRowsAbortRef = useRef(null);
+
   const loadRows = useCallback(async ({ silent = false } = {}) => {
+    // Only the LATEST request may update the screen. Without this, a slow
+    // older request (all names) could finish after the search and overwrite it.
+    const requestId = ++loadRowsSeqRef.current;
+    loadRowsAbortRef.current?.abort();
+    const controller = new AbortController();
+    loadRowsAbortRef.current = controller;
+
     if (!silent) {
       setLoading(true);
     }
@@ -736,9 +713,13 @@ export default function HrAttendancePage() {
         params.set("status", status);
       }
 
+      if (bioLink) {
+        params.set("bioLink", bioLink);
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/api/hr/attendance?${params.toString()}`,
-        { cache: "no-store" }
+        { cache: "no-store", signal: controller.signal }
       );
 
       const result = await response
@@ -753,6 +734,8 @@ export default function HrAttendancePage() {
               "تعذر تحميل الحضور والانصراف"
         );
       }
+
+      if (requestId !== loadRowsSeqRef.current) return;
 
       setRows(
         Array.isArray(result?.data)
@@ -787,6 +770,13 @@ export default function HrAttendancePage() {
           Number(result?.stats?.overtimeMinutes || 0)
       });
     } catch (error) {
+      if (
+        error?.name === "AbortError" ||
+        requestId !== loadRowsSeqRef.current
+      ) {
+        return;
+      }
+
       if (!silent) {
         setRows([]);
         setTotalCount(0);
@@ -800,7 +790,7 @@ export default function HrAttendancePage() {
         });
       }
     } finally {
-      if (!silent) {
+      if (requestId === loadRowsSeqRef.current) {
         setLoading(false);
       }
     }
@@ -810,6 +800,7 @@ export default function HrAttendancePage() {
     branchGuid,
     departmentGuid,
     status,
+    bioLink,
     pageNumber,
     pageSize
   ]);
@@ -821,7 +812,7 @@ export default function HrAttendancePage() {
   useEffect(() => {
     const timer = setTimeout(
       loadRows,
-      search.trim() ? 300 : 0
+      0
     );
 
     return () => clearTimeout(timer);
@@ -1246,78 +1237,6 @@ export default function HrAttendancePage() {
   ]);
 
 
-  const syncBioTimeAttendance = useCallback(
-    async ({ silent = false } = {}) => {
-      if (bioSyncInFlightRef.current) return;
-
-      bioSyncInFlightRef.current = true;
-      setBioSyncLoading(true);
-
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/hr/attendance/biotime/sync?date=${encodeURIComponent(date)}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(getActor())
-          }
-        );
-
-        const result = await response
-          .json()
-          .catch(() => null);
-
-        if (!response.ok) {
-          throw new Error(
-            result?.error
-              ? `${result?.message || "تعذر مزامنة BioTime"}: ${result.error}`
-              : result?.message || "تعذر مزامنة BioTime"
-          );
-        }
-
-        setBioSyncInfo(result?.data || null);
-        bioSyncedDatesRef.current.add(date);
-        await loadRows({ silent: true });
-
-        if (!silent) {
-          const data = result?.data || {};
-          await Swal.fire({
-            icon: "success",
-            title: "تمت مزامنة BioTime",
-            html: `
-              <div style="text-align:right;line-height:1.9">
-                <b>البصمات المستلمة:</b> ${Number(data.received || 0)}<br/>
-                <b>الجديدة:</b> ${Number(data.inserted || 0)}<br/>
-                <b>موظفو النظام المرتبطون بـ BioTime:</b> ${Number(data.linkedEmployees || 0)}<br/>
-                <b>موظفون لهم بصمة اليوم:</b> ${Number(data.employeesWithPunches || 0)}<br/>
-                <b>البصمات المربوطة:</b> ${Number(data.mapped || 0)}<br/>
-                <b>الموظفون المحدّث حضورهم:</b> ${Number(data.attendanceUpdated || 0)}<br/>
-                <b>بصمات غير مربوطة:</b> ${Number(data.unmapped || 0)}
-              </div>
-            `
-          });
-        }
-      } catch (error) {
-        setBioSyncInfo({
-          error: error?.message || "تعذر مزامنة BioTime"
-        });
-
-        if (!silent) {
-          await Swal.fire({
-            icon: "error",
-            title: "تعذر مزامنة BioTime",
-            text: error?.message || "حدث خطأ أثناء مزامنة البصمات"
-          });
-        }
-      } finally {
-        bioSyncInFlightRef.current = false;
-        setBioSyncLoading(false);
-      }
-    },
-    [date, loadRows]
-  );
 
   // المزامنة مع BioTime تتم الآن داخل BackgroundService في الـ API،
   // وليس من المتصفح. الصفحة هنا تقوم فقط بتحديث الجريد بهدوء
@@ -2111,284 +2030,6 @@ export default function HrAttendancePage() {
     };
   }, []);
 
-  const previewBioExcel = useCallback(async (file) => {
-    if (!file) return;
-
-    if (!String(file.name || "").toLowerCase().endsWith(".xlsx")) {
-      await Swal.fire({
-        icon: "warning",
-        title: "ملف غير مدعوم",
-        text: "اختر ملف Excel بصيغة XLSX"
-      });
-      return;
-    }
-
-    setBioExcelLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/hr/attendance/biotime/excel/preview`,
-        {
-          method: "POST",
-          body: formData
-        }
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          result?.error
-            ? `${result?.message || "تعذر قراءة ملف البصمة"}: ${result.error}`
-            : result?.message || "تعذر قراءة ملف البصمة"
-        );
-      }
-
-      const nextRows = Array.isArray(result?.data)
-        ? result.data
-        : [];
-
-      const nextSelections = {};
-      nextRows.forEach((row) => {
-        if (row?.bestMatch?.employeeGuid) {
-          nextSelections[row.rowKey] = row.bestMatch;
-        }
-      });
-
-      setBioExcelFile(file);
-      setBioExcelRows(nextRows);
-      setBioExcelSheets(
-        Array.isArray(result?.sheets) ? result.sheets : []
-      );
-      setBioExcelStats({
-        totalRows: Number(result?.stats?.totalRows || 0),
-        strongMatches: Number(result?.stats?.strongMatches || 0),
-        likelyMatches: Number(result?.stats?.likelyMatches || 0),
-        reviewMatches: Number(result?.stats?.reviewMatches || 0),
-        alreadyLinked: Number(result?.stats?.alreadyLinked || 0),
-        unmatched: Number(result?.stats?.unmatched || 0),
-        duplicateCodes: Number(result?.stats?.duplicateCodes || 0),
-        sheetCount: Number(result?.stats?.sheetCount || 0)
-      });
-      setBioExcelSelections(nextSelections);
-      setBioExcelApproved({});
-    } catch (error) {
-      setBioExcelRows([]);
-      setBioExcelSheets([]);
-      setBioExcelSelections({});
-      setBioExcelApproved({});
-
-      await Swal.fire({
-        icon: "error",
-        title: "تعذر مطابقة ملف البصمة",
-        text:
-          error?.message ||
-          "حدث خطأ أثناء قراءة ملف Excel"
-      });
-    } finally {
-      setBioExcelLoading(false);
-    }
-  }, []);
-
-  const bioExcelVisibleRows = useMemo(() => {
-    const term = bioExcelSearch.trim().toLowerCase();
-
-    return bioExcelRows.filter((row) => {
-      if (
-        bioExcelStatus !== "all" &&
-        row?.status !== bioExcelStatus
-      ) {
-        return false;
-      }
-
-      if (!term) return true;
-
-      const selected = bioExcelSelections[row.rowKey];
-
-      return [
-        row.sheetName,
-        row.excelName,
-        row.identityNumber,
-        row.fingerprintCode,
-        row.statusLabel,
-        selected?.employeeName,
-        selected?.employeeCode,
-        selected?.branchName
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(term);
-    });
-  }, [
-    bioExcelRows,
-    bioExcelSearch,
-    bioExcelStatus,
-    bioExcelSelections
-  ]);
-
-  const bioExcelApprovedLinks = useMemo(() => {
-    return bioExcelRows
-      .filter((row) => Boolean(bioExcelApproved[row.rowKey]))
-      .map((row) => {
-        const selected = bioExcelSelections[row.rowKey];
-
-        if (!selected?.employeeGuid || !row?.fingerprintCode) {
-          return null;
-        }
-
-        return {
-          rowKey: row.rowKey,
-          employeeGuid: selected.employeeGuid,
-          fingerprintCode: String(row.fingerprintCode),
-          bioTimeEmployeeId:
-            Number(row.bioTimeEmployeeId || 0) > 0
-              ? Number(row.bioTimeEmployeeId)
-              : null
-        };
-      })
-      .filter(Boolean);
-  }, [bioExcelRows, bioExcelApproved, bioExcelSelections]);
-
-  const approveStrongBioExcelMatches = useCallback(() => {
-    const next = {};
-
-    bioExcelRows.forEach((row) => {
-      const selected = bioExcelSelections[row.rowKey];
-      const score = Number(selected?.score || 0);
-
-      if (
-        row?.canLink &&
-        row?.status !== "employee-conflict" &&
-        row?.status !== "duplicate-code" &&
-        row?.status !== "already-linked" &&
-        selected?.employeeGuid &&
-        score >= 85
-      ) {
-        next[row.rowKey] = true;
-      }
-    });
-
-    setBioExcelApproved(next);
-  }, [bioExcelRows, bioExcelSelections]);
-
-  const saveBioExcelLinks = useCallback(async () => {
-    if (!bioExcelApprovedLinks.length) {
-      await Swal.fire({
-        icon: "warning",
-        title: "لا توجد روابط معتمدة",
-        text: "راجع المطابقات وحدد اعتماد أمام الموظفين الصحيحين أولًا."
-      });
-      return;
-    }
-
-    const employeeGuids = bioExcelApprovedLinks.map(
-      (item) => item.employeeGuid
-    );
-    const fingerprintCodes = bioExcelApprovedLinks.map(
-      (item) => String(item.fingerprintCode)
-    );
-
-    const hasDuplicateEmployee = employeeGuids.some(
-      (value, index) => employeeGuids.indexOf(value) !== index
-    );
-    const hasDuplicateFingerprint = fingerprintCodes.some(
-      (value, index) => fingerprintCodes.indexOf(value) !== index
-    );
-
-    if (hasDuplicateEmployee || hasDuplicateFingerprint) {
-      await Swal.fire({
-        icon: "error",
-        title: "يوجد تعارض في الاختيارات",
-        text: hasDuplicateEmployee
-          ? "نفس موظف النظام مختار لأكثر من صف. عدّل الاختيارات قبل الحفظ."
-          : "نفس رقم البصمة مختار أكثر من مرة. عدّل الاختيارات قبل الحفظ."
-      });
-      return;
-    }
-
-    const confirm = await Swal.fire({
-      icon: "question",
-      title: "اعتماد ربط ملف البصمة؟",
-      html: `
-        <div style="text-align:right;line-height:1.9">
-          سيتم ربط <b>${bioExcelApprovedLinks.length}</b> موظف فقط.<br/>
-          رقم البصمة الموجود في Excel سيُحفظ كـ <b>BioTime EmpCode</b>.<br/>
-          الصفوف غير المحدد أمامها اعتماد لن يتم تعديلها.
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: "اعتماد الربط",
-      cancelButtonText: "مراجعة أكثر"
-    });
-
-    if (!confirm.isConfirmed) return;
-
-    setBioExcelSaving(true);
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/hr/attendance/biotime/excel/link`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            links: bioExcelApprovedLinks.map((item) => ({
-              employeeGuid: item.employeeGuid,
-              fingerprintCode: item.fingerprintCode,
-              bioTimeEmployeeId: item.bioTimeEmployeeId
-            })),
-            ...getActor()
-          })
-        }
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          result?.error
-            ? `${result?.message || "تعذر حفظ روابط Excel"}: ${result.error}`
-            : result?.message || "تعذر حفظ روابط Excel"
-        );
-      }
-
-      await loadRows({ silent: true });
-
-      if (bioExcelFile) {
-        await previewBioExcel(bioExcelFile);
-      }
-
-      await Swal.fire({
-        icon: "success",
-        title: "تم ربط ملف البصمة",
-        text:
-          result?.message ||
-          "تم حفظ روابط الموظفين بنجاح"
-      });
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        title: "تعذر ربط ملف البصمة",
-        text:
-          error?.message ||
-          "حدث خطأ أثناء حفظ الروابط"
-      });
-    } finally {
-      setBioExcelSaving(false);
-    }
-  }, [
-    bioExcelApprovedLinks,
-    bioExcelFile,
-    previewBioExcel,
-    loadRows
-  ]);
-
   const loadReportEmployees = useCallback(async (searchValue = "") => {
     setReportLoadingEmployees(true);
     try {
@@ -2859,11 +2500,7 @@ export default function HrAttendancePage() {
               <Button
                 variant="outlined"
                 startIcon={<UploadFileRoundedIcon />}
-                onClick={() => {
-                  setBioExcelOpen(true);
-                  setBioExcelSearch("");
-                  setBioExcelStatus("all");
-                }}
+                onClick={() => setBioExcelOpen(true)}
                 sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.45)",
@@ -2922,26 +2559,28 @@ export default function HrAttendancePage() {
 
               <Button
                 variant="outlined"
-                startIcon={
-                  bioSyncLoading ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : (
-                    <FingerprintRoundedIcon />
-                  )
-                }
-                onClick={() =>
-                  syncBioTimeAttendance({ silent: false })
-                }
-                disabled={bioSyncLoading}
+                startIcon={<FingerprintRoundedIcon />}
+                onClick={() => setSyncOpen(true)}
                 sx={uiLayout.withUiSx({
                   color: "#fff",
                   borderColor: "rgba(255,255,255,.45)",
                   fontWeight: 900
                 }, uiLayout.buttonSx)}
               >
-                {bioSyncLoading
-                  ? "جارٍ مزامنة البصمات..."
-                  : "مزامنة BioTime"}
+                مزامنة BioTime
+              </Button>
+
+              <Button
+                variant="outlined"
+                startIcon={<CalendarMonthRoundedIcon />}
+                onClick={() => setPeriodOpen(true)}
+                sx={uiLayout.withUiSx({
+                  color: "#fff",
+                  borderColor: "rgba(255,255,255,.45)",
+                  fontWeight: 900
+                }, uiLayout.buttonSx)}
+              >
+                سحب فترة وفحص فرع
               </Button>
 
               <Button
@@ -3509,21 +3148,14 @@ export default function HrAttendancePage() {
               }}
              inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }} />
 
-            <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-              size="small"
+            <HrDebouncedSearchField
+              sx={uiLayout.formFieldSx}
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
+              onChange={(value) => {
+                setSearch(value);
                 setPageNumber(1);
               }}
               placeholder="ابحث باسم الموظف أو الكود..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchRoundedIcon />
-                  </InputAdornment>
-                )
-              }}
             />
 
             <FormControl sx={uiLayout.formFieldSx} size="small">
@@ -3612,6 +3244,23 @@ export default function HrAttendancePage() {
                     </MenuItem>
                   )
                 )}
+              </Select>
+            </FormControl>
+
+            <FormControl sx={uiLayout.formFieldSx} size="small">
+              <InputLabel>الربط بالبصمة</InputLabel>
+              <Select
+                MenuProps={RTL_MENU_PROPS}
+                label="الربط بالبصمة"
+                value={bioLink}
+                onChange={(e) => {
+                  setBioLink(e.target.value);
+                  setPageNumber(1);
+                }}
+              >
+                <MenuItem value="">الكل</MenuItem>
+                <MenuItem value="linked">مربوط بالبصمة</MenuItem>
+                <MenuItem value="unlinked">غير مربوط بالبصمة</MenuItem>
               </Select>
             </FormControl>
 
@@ -5366,6 +5015,32 @@ export default function HrAttendancePage() {
 
       {/* BioTime employee linking dialog */}
 
+      <HrBioTimeSyncDialog
+        open={syncOpen}
+        onClose={() => setSyncOpen(false)}
+        apiBaseUrl={API_BASE_URL}
+        actor={getActor()}
+        defaultDate={date}
+        onFinished={(info) => {
+          setBioSyncInfo({
+            linkedEmployees: info.linkedEmployees,
+            employeesWithPunches: info.employeesWithPunches,
+            inserted: info.inserted,
+            unmapped: info.unmapped
+          });
+          loadRows({ silent: true });
+        }}
+      />
+
+      <HrBioTimePeriodDialog
+        open={periodOpen}
+        onClose={() => setPeriodOpen(false)}
+        apiBaseUrl={API_BASE_URL}
+        branches={lookups.branches || []}
+        actor={getActor()}
+        onFinished={() => loadRows({ silent: true })}
+      />
+
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
         open={reportOpen}
@@ -5660,511 +5335,13 @@ export default function HrAttendancePage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}
+      <HrBioExcelLinkDialog
         open={bioExcelOpen}
-        onClose={() =>
-          !bioExcelSaving &&
-          !bioExcelLoading &&
-          setBioExcelOpen(false)
-        }
-        fullWidth
-        maxWidth="xl"
-        dir={DIALOG_DIRECTION}
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            minHeight: "82vh"
-          }
-        }}
-      >
-        <DialogTitle
-          sx={{
-            fontWeight: 950,
-            pb: 1
-          }}
-        >
-          مطابقة ملف Excel مع موظفي البصمة
-        </DialogTitle>
-
-        <DialogContent dividers>
-          <Stack spacing={1.2}>
-            <Alert severity="info">
-              ارفع ملف <strong>XLSX</strong> الذي يحتوي على
-              الاسم ورقم البصمة. النظام يقرأ كل شيت كفرع،
-              يقارن اسم الموظف داخل نفس نطاق الفرع تقريبًا،
-              ثم يعرض نسبة التشابه قبل أي حفظ. لا يتم ربط أي
-              موظف إلا بعد تحديد <strong>اعتماد</strong>.
-            </Alert>
-
-            <Stack sx={uiLayout.actionBarSx}
-              direction={{ xs: "column", md: "row" }}
-              spacing={0.8}
-              alignItems={{ xs: "stretch", md: "center" }}
-            >
-              <Button
-                component="label"
-                variant="contained"
-                startIcon={
-                  bioExcelLoading ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : (
-                    <UploadFileRoundedIcon />
-                  )
-                }
-                disabled={bioExcelLoading || bioExcelSaving}
-                sx={uiLayout.withUiSx({
-                  bgcolor: primary,
-                  fontWeight: 950,
-                  minHeight: 42
-                }, uiLayout.buttonSx)}
-              >
-                {bioExcelLoading
-                  ? "جاري قراءة ومطابقة الملف..."
-                  : bioExcelFile
-                    ? "رفع ملف آخر"
-                    : "اختيار ملف Excel"}
-                <input
-                  hidden
-                  type="file"
-                  accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    event.target.value = "";
-                    if (file) {
-                      previewBioExcel(file);
-                    }
-                  }}
-                />
-              </Button>
-
-              <Paper
-                variant="outlined"
-                sx={{
-                  px: 1.2,
-                  py: 0.8,
-                  borderRadius: 2,
-                  minHeight: 42,
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center"
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: 12,
-                    fontWeight: 850,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap"
-                  }}
-                >
-                  {bioExcelFile?.name ||
-                    "لم يتم اختيار ملف حتى الآن"}
-                </Typography>
-              </Paper>
-
-              {!!bioExcelRows.length && (
-                <Button
-                  variant="outlined"
-                  onClick={approveStrongBioExcelMatches}
-                  disabled={bioExcelSaving}
-                  sx={uiLayout.withUiSx({ fontWeight: 900, minHeight: 42 }, uiLayout.buttonSx)}
-                >
-                  تحديد المطابق القوي
-                </Button>
-              )}
-            </Stack>
-
-            {!!bioExcelRows.length && (
-              <>
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "repeat(2,minmax(0,1fr))",
-                      md: "repeat(4,minmax(0,1fr))",
-                      xl: "repeat(8,minmax(0,1fr))"
-                    },
-                    gap: 0.7
-                  }}
-                >
-                  {[
-                    ["إجمالي الصفوف", bioExcelStats.totalRows],
-                    ["مطابق قوي", bioExcelStats.strongMatches],
-                    ["مطابق محتمل", bioExcelStats.likelyMatches],
-                    ["يحتاج مراجعة", bioExcelStats.reviewMatches],
-                    ["مربوط بالفعل", bioExcelStats.alreadyLinked],
-                    ["غير مطابق", bioExcelStats.unmatched],
-                    ["بصمة مكررة", bioExcelStats.duplicateCodes],
-                    ["عدد الشيتات", bioExcelStats.sheetCount]
-                  ].map(([label, value]) => (
-                    <Paper
-                      key={label}
-                      variant="outlined"
-                      sx={{
-                        p: 0.9,
-                        borderRadius: 2,
-                        textAlign: "center"
-                      }}
-                    >
-                      <Typography
-                        color="text.secondary"
-                        sx={{ fontSize: 12 }}
-                      >
-                        {label}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontWeight: 950,
-                          fontSize: 18,
-                          color: primaryDark
-                        }}
-                      >
-                        {Number(value || 0)}
-                      </Typography>
-                    </Paper>
-                  ))}
-                </Box>
-
-                {!!bioExcelSheets.length && (
-                  <Stack
-                    direction="row"
-                    spacing={0.5}
-                    useFlexGap
-                    flexWrap="wrap"
-                  >
-                    {bioExcelSheets.map((sheet) => (
-                      <Chip
-                        key={sheet.sheetName}
-                        size="small"
-                        variant="outlined"
-                        label={`${sheet.sheetName}: ${sheet.total}`}
-                        sx={{ fontWeight: 800 }}
-                      />
-                    ))}
-                  </Stack>
-                )}
-
-                <Stack sx={uiLayout.formGridSx}
-                  direction={{ xs: "column", md: "row" }}
-                  spacing={0.8}
-                >
-                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                    size="small"
-                    fullWidth
-                    value={bioExcelSearch}
-                    onChange={(event) =>
-                      setBioExcelSearch(event.target.value)
-                    }
-                    placeholder="بحث بالاسم أو رقم البصمة أو الفرع..."
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchRoundedIcon />
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-
-                  <FormControl
-                    size="small"
-                    sx={uiLayout.withUiSx({ minWidth: 220 }, uiLayout.formFieldSx)}
-                  >
-                    <InputLabel>حالة المطابقة</InputLabel>
-                    <Select
-                  MenuProps={RTL_MENU_PROPS}
-                      label="حالة المطابقة"
-                      value={bioExcelStatus}
-                      onChange={(event) =>
-                        setBioExcelStatus(event.target.value)
-                      }
-                    >
-                      <MenuItem value="all">كل الحالات</MenuItem>
-                      <MenuItem value="strong">مطابق قوي</MenuItem>
-                      <MenuItem value="likely">مطابق محتمل قوي</MenuItem>
-                      <MenuItem value="review">يحتاج مراجعة</MenuItem>
-                      <MenuItem value="employee-conflict">تعارض موظف</MenuItem>
-                      <MenuItem value="already-linked">مربوط بالفعل</MenuItem>
-                      <MenuItem value="unmatched">غير مطابق</MenuItem>
-                      <MenuItem value="duplicate-code">رقم بصمة مكرر</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Stack>
-
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    borderRadius: 2,
-                    overflow: "hidden"
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns:
-                        "54px minmax(115px,.85fr) minmax(180px,1.25fr) 90px minmax(260px,1.7fr) minmax(125px,.9fr) 90px 110px",
-                      gap: 0.7,
-                      alignItems: "center",
-                      px: 1,
-                      py: 0.9,
-                      bgcolor: "#eef6f2",
-                      color: primaryDark,
-                      fontSize: 12,
-                      fontWeight: 950,
-                      borderBottom: `1px solid ${border}`
-                    }}
-                  >
-                    <Box>اعتماد</Box>
-                    <Box>فرع الشيت</Box>
-                    <Box>اسم Excel</Box>
-                    <Box>رقم البصمة</Box>
-                    <Box>موظف النظام المقترح</Box>
-                    <Box>فرع النظام</Box>
-                    <Box>التشابه</Box>
-                    <Box>الحالة</Box>
-                  </Box>
-
-                  <Stack
-                    sx={{
-                      maxHeight: "48vh",
-                      overflow: "auto"
-                    }}
-                  >
-                    {bioExcelVisibleRows.map((row) => {
-                      const selected =
-                        bioExcelSelections[row.rowKey] || null;
-                      const meta = excelBioStatusMeta(row.status);
-                      const canApprove =
-                        Boolean(row.canLink) &&
-                        Boolean(selected?.employeeGuid) &&
-                        row.status !== "already-linked" &&
-                        row.status !== "duplicate-code";
-
-                      return (
-                        <Box
-                          key={row.rowKey}
-                          sx={{
-                            display: "grid",
-                            gridTemplateColumns:
-                              "54px minmax(115px,.85fr) minmax(180px,1.25fr) 90px minmax(260px,1.7fr) minmax(125px,.9fr) 90px 110px",
-                            gap: 0.7,
-                            alignItems: "center",
-                            px: 1,
-                            py: 0.75,
-                            borderBottom: `1px solid ${border}`,
-                            bgcolor:
-                              row.status === "duplicate-code"
-                                ? "#fff6f6"
-                                : row.status === "already-linked"
-                                  ? "#f6fbff"
-                                  : "#fff"
-                          }}
-                        >
-                          <Checkbox
-                            size="small"
-                            checked={Boolean(
-                              bioExcelApproved[row.rowKey]
-                            )}
-                            disabled={!canApprove || bioExcelSaving}
-                            onChange={(event) =>
-                              setBioExcelApproved((current) => ({
-                                ...current,
-                                [row.rowKey]: event.target.checked
-                              }))
-                            }
-                          />
-
-                          <Box>
-                            <Typography
-                              sx={{ fontSize: 12, fontWeight: 900 }}
-                            >
-                              {row.sheetName || "-"}
-                            </Typography>
-                            <Typography
-                              color="text.secondary"
-                              sx={{ fontSize: 12 }}
-                            >
-                              صف {row.excelRowNumber || "-"}
-                            </Typography>
-                          </Box>
-
-                          <Box sx={{ minWidth: 0 }}>
-                            <Typography
-                              sx={{
-                                fontSize: 12,
-                                fontWeight: 900,
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis"
-                              }}
-                            >
-                              {row.excelName || "-"}
-                            </Typography>
-                            <Typography
-                              color="text.secondary"
-                              sx={{ fontSize: 12 }}
-                            >
-                              الهوية: {row.identityNumber || "-"}
-                            </Typography>
-                          </Box>
-
-                          <Chip
-                            size="small"
-                            icon={<FingerprintRoundedIcon />}
-                            label={row.fingerprintCode || "-"}
-                            variant="outlined"
-                            sx={[hrChipSx("small"), { fontWeight: 950 }]}
-                          />
-
-                          {row.status === "already-linked" ? (
-                            <Box>
-                              <Typography
-                                sx={{ fontSize: 12, fontWeight: 950 }}
-                              >
-                                {row.bestMatch?.employeeName || "-"}
-                              </Typography>
-                              <Typography
-                                color="text.secondary"
-                                sx={{ fontSize: 12 }}
-                              >
-                                مربوط بنفس رقم البصمة
-                              </Typography>
-                            </Box>
-                          ) : (
-                            <Autocomplete
-              ListboxProps={RTL_AUTOCOMPLETE_LISTBOX_PROPS}
-                              size="small"
-                              options={
-                                Array.isArray(row.suggestions)
-                                  ? row.suggestions
-                                  : []
-                              }
-                              value={selected}
-                              disabled={
-                                row.status === "duplicate-code" ||
-                                bioExcelSaving
-                              }
-                              isOptionEqualToValue={(option, value) =>
-                                option?.employeeGuid === value?.employeeGuid
-                              }
-                              getOptionLabel={(option) =>
-                                `${option?.employeeName || "-"} • ${option?.employeeCode || "-"}`
-                              }
-                              onChange={(_, value) => {
-                                setBioExcelSelections((current) => ({
-                                  ...current,
-                                  [row.rowKey]: value || null
-                                }));
-                                setBioExcelApproved((current) => ({
-                                  ...current,
-                                  [row.rowKey]: false
-                                }));
-                              }}
-                              renderOption={(props, option) => (
-                                <li {...props} key={option.employeeGuid}>
-                                  <Box sx={{ width: "100%" }}>
-                                    <Typography
-                                      sx={{ fontSize: 12, fontWeight: 900 }}
-                                    >
-                                      {option.employeeName}
-                                    </Typography>
-                                    <Typography
-                                      color="text.secondary"
-                                      sx={{ fontSize: 12 }}
-                                    >
-                                      {option.branchName || "بدون فرع"}
-                                      {" • "}
-                                      تشابه {Number(option.score || 0)}%
-                                    </Typography>
-                                  </Box>
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                                  {...params}
-                                  placeholder="اختر الموظف المطابق..."
-                                />
-                              )}
-                            />
-                          )}
-
-                          <Typography
-                            sx={{ fontSize: 12, fontWeight: 850 }}
-                          >
-                            {selected?.branchName ||
-                              row.bestMatch?.branchName ||
-                              "-"}
-                          </Typography>
-
-                          <Chip
-                            size="small"
-                            label={`${Number(selected?.score || row.bestMatch?.score || 0)}%`}
-                            color={
-                              Number(selected?.score || row.bestMatch?.score || 0) >= 85
-                                ? "success"
-                                : Number(selected?.score || row.bestMatch?.score || 0) >= 60
-                                  ? "warning"
-                                  : "default"
-                            }
-                            variant="outlined"
-                            sx={{ fontWeight: 900 }}
-                          />
-
-                          <Tooltip
-                            title={
-                              Array.isArray(selected?.reasons)
-                                ? selected.reasons.join(" • ")
-                                : row.statusLabel || ""
-                            }
-                          >
-                            <Chip
-                              size="small"
-                              color={meta.color}
-                              label={row.statusLabel || meta.label}
-                              sx={{ fontWeight: 850, maxWidth: 108 }}
-                            />
-                          </Tooltip>
-                        </Box>
-                      );
-                    })}
-
-                    {!bioExcelVisibleRows.length && (
-                      <Alert severity="info" sx={{ m: 1 }}>
-                        لا توجد نتائج ضمن الفلتر الحالي.
-                      </Alert>
-                    )}
-                  </Stack>
-                </Paper>
-              </>
-            )}
-          </Stack>
-        </DialogContent>
-
-        <DialogActions sx={uiLayout.dialogActionsSx}>
-          <Button sx={uiLayout.buttonSx}
-            onClick={() => setBioExcelOpen(false)}
-            disabled={bioExcelSaving || bioExcelLoading}
-          >
-            إغلاق
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={saveBioExcelLinks}
-            disabled={
-              bioExcelSaving ||
-              bioExcelLoading ||
-              !bioExcelApprovedLinks.length
-            }
-            sx={uiLayout.withUiSx({ bgcolor: primary, fontWeight: 950 }, uiLayout.buttonSx)}
-          >
-            {bioExcelSaving
-              ? "جاري حفظ الربط..."
-              : `ربط المحدد (${bioExcelApprovedLinks.length})`}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onClose={() => setBioExcelOpen(false)}
+        apiBaseUrl={API_BASE_URL}
+        actor={getActor()}
+        onLinked={() => loadRows({ silent: true })}
+      />
 
       <Dialog
         sx={uiLayout.withUiSx(RTL_DIALOG_SX, uiLayout.dialogLayoutSx)}

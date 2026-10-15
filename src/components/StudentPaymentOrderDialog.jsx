@@ -1439,7 +1439,8 @@ const StudentPaymentOrderDialog = ({
         minWidth: 95,
         align: "center",
         headerAlign: "center",
-        editable: true,
+        // النسبة جاية من الدورة نفسها (Diplom.TaxValue) ومش بتتكتب يدوي:
+        // اتكتب فيها 250 بالغلط فطلعت فاتورة 240479 صافي 71.43 وضريبة 178.57
         type: "number",
         renderCell: (p) => infoCell({ value: p.row?.taxPercent ?? 0 })
       },

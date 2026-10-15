@@ -37,7 +37,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 
@@ -72,7 +71,12 @@ import VisibilityOutlinedIcon
 import CloseIcon
   from "@mui/icons-material/Close";
 
+import ReceiptLongIcon
+  from "@mui/icons-material/ReceiptLong";
+
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 
 
 
@@ -507,6 +511,13 @@ const TransferRequestsReport = () => {
   const [menuRow, setMenuRow] =
     useState(null);
 
+  // كشف حساب الطالب (StudentStatementDialog2) من قائمة العمليات.
+  const [statementOpen, setStatementOpen] =
+    useState(false);
+
+  const [statementStudent, setStatementStudent] =
+    useState(null);
+
   const [
     filterDialogOpen,
     setFilterDialogOpen
@@ -784,6 +795,27 @@ const TransferRequestsReport = () => {
             ])
           ),
 
+          // ملاحظات الطلب (من مكتب الاستقبال) + الإشراف العام + الحسابات
+          requestNotes: String(
+            pick(row, ["RequestNotes", "requestNotes"])
+          ),
+
+          supervisionNotes: String(
+            pick(row, ["SupervisionNotes", "supervisionNotes"])
+          ),
+
+          accountsNotes: String(
+            pick(row, ["AccountsNotes", "accountsNotes"])
+          ),
+
+          appliedAt: String(
+            pick(row, ["AppliedAt", "appliedAt"])
+          ),
+
+          formUrl: String(
+            pick(row, ["FormAttachmentUrl", "formUrl"])
+          ),
+
           oldValue,
           newValue,
           type
@@ -1022,6 +1054,19 @@ const TransferRequestsReport = () => {
         )
       },
       {
+        // ملاحظة مقدم الطلب (من مكتب الاستقبال) جنب اسمه عشان تبقى واضحة
+        field: "requestNotes",
+        headerName: "ملاحظة مقدم الطلب",
+        flex: 1.3,
+        minWidth: 150,
+        renderCell: (params) => (
+          <TextCell
+            value={params.value}
+            align="right"
+          />
+        )
+      },
+      {
         field: "confirmStatus",
         headerName: "الحالة",
         flex: 0.75,
@@ -1055,6 +1100,50 @@ const TransferRequestsReport = () => {
             align="right"
           />
         )
+      },
+      {
+        field: "formUrl",
+        headerName: "النموذج",
+        flex: 0.6,
+        minWidth: 0,
+        sortable: false,
+        renderCell: (params) =>
+          params.value ? (
+            <a
+              href={params.value}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontWeight: 900, color: "#057546" }}
+            >
+              عرض النموذج
+            </a>
+          ) : (
+            "-"
+          )
+      },
+      {
+        field: "supervisionNotes",
+        headerName: "ملاحظة الإشراف العام",
+        flex: 1.1,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell
+            value={params.value}
+            align="right"
+          />
+        )
+      },
+      {
+        field: "accountsNotes",
+        headerName: "ملاحظة الحسابات",
+        flex: 1.1,
+        minWidth: 0,
+        renderCell: (params) => (
+          <TextCell
+            value={params.value}
+            align="right"
+          />
+        )
       }
     ],
     [activeTab]
@@ -1079,7 +1168,8 @@ const TransferRequestsReport = () => {
       "oldValue",
       "newValue",
       "confirmStatus",
-      "actorUserName"
+      "actorUserName",
+      "requestNotes"
     ];
 
     const fields = isPhone
@@ -1206,6 +1296,28 @@ const TransferRequestsReport = () => {
   const closeMenu = () =>
     setMenuAnchor(null);
 
+  const openStatement = () => {
+    closeMenu();
+
+    if (!menuRow?.accountGuid) {
+      Swal.fire({
+        icon: "warning",
+        title: "تنبيه",
+        text: "تعذر قراءة حساب الطالب لهذا الطلب",
+        confirmButtonText: "حسنًا"
+      });
+      return;
+    }
+
+    setStatementStudent({
+      accountGuid: menuRow.accountGuid,
+      studentName: menuRow.studentName || "",
+      nationalId: menuRow.nationalId || ""
+    });
+
+    setStatementOpen(true);
+  };
+
   const openAttachment = () => {
     closeMenu();
 
@@ -1243,8 +1355,47 @@ const TransferRequestsReport = () => {
       }
 
       let reason = "";
+      let supervisionNotes = "";
+      let accountsNotes = "";
 
-      if (requireReason) {
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      if (status === 1) {
+        const isBranch = menuRow.type === "branch";
+        const result =
+          await Swal.fire({
+            icon: "question",
+            title: isBranch ? "تأكيد نقل الفرع" : "تأكيد تحويل التخصص",
+            html: `
+              <div style="text-align:right;font-family:Cairo,sans-serif;font-size:.92rem;line-height:1.8">
+                <div><b>الطالب:</b> ${escapeHtml(menuRow.studentName)}</div>
+                <div><b>من:</b> ${escapeHtml(menuRow.oldValue)} &nbsp; ⟵ &nbsp; <b>إلى:</b> ${escapeHtml(menuRow.newValue)}</div>
+                ${menuRow.requestNotes ? `<div><b>ملاحظة مقدم الطلب:</b> ${escapeHtml(menuRow.requestNotes)}</div>` : ""}
+                ${menuRow.formUrl ? `<div><b>النموذج:</b> <a href="${escapeHtml(menuRow.formUrl)}" target="_blank" rel="noopener noreferrer">عرض النموذج</a></div>` : ""}
+                <label style="display:block;margin-top:12px;font-weight:700">ملاحظة الإشراف العام</label>
+                <textarea id="swal-supervision" class="swal2-textarea" style="margin:4px 0 0;width:100%;box-sizing:border-box" placeholder="اختياري">${escapeHtml(menuRow.supervisionNotes)}</textarea>
+                <label style="display:block;margin-top:10px;font-weight:700">ملاحظة الحسابات</label>
+                <textarea id="swal-accounts" class="swal2-textarea" style="margin:4px 0 0;width:100%;box-sizing:border-box" placeholder="اختياري">${escapeHtml(menuRow.accountsNotes)}</textarea>
+              </div>`,
+            showCancelButton: true,
+            confirmButtonText: "تأكيد وتنفيذ",
+            cancelButtonText: "إلغاء",
+            confirmButtonColor: "#057546",
+            focusConfirm: false,
+            preConfirm: () => ({
+              supervisionNotes: document.getElementById("swal-supervision")?.value || "",
+              accountsNotes: document.getElementById("swal-accounts")?.value || ""
+            })
+          });
+
+        if (!result.isConfirmed) {
+          return;
+        }
+
+        supervisionNotes = String(result.value?.supervisionNotes || "").trim();
+        accountsNotes = String(result.value?.accountsNotes || "").trim();
+      } else if (requireReason) {
         const result =
           await Swal.fire({
             icon: "warning",
@@ -1321,7 +1472,9 @@ const TransferRequestsReport = () => {
               requestType:
                 menuRow.type,
               status,
-              reason
+              reason,
+              supervisionNotes,
+              accountsNotes
             })
           }
         );
@@ -2253,7 +2406,7 @@ const TransferRequestsReport = () => {
               "1px solid rgba(5,117,70,0.13)"
           }, uiLayout.tableContainerSx)}
         >
-          <DataGrid
+          <FilterableDataGrid
             rows={filteredRows}
             columns={
               isDesktop
@@ -2435,6 +2588,15 @@ const TransferRequestsReport = () => {
           onClose={closeMenu}
         >
           <MenuItem
+            onClick={openStatement}
+          >
+            <ReceiptLongIcon
+              sx={{ ml: 1 }}
+            />
+            كشف حساب
+          </MenuItem>
+
+          <MenuItem
             onClick={openAttachment}
           >
             <AttachFileIcon
@@ -2482,6 +2644,16 @@ const TransferRequestsReport = () => {
             إرجاع إلى معلق
           </MenuItem>
         </Menu>
+
+        <StudentStatementDialog2
+          open={statementOpen}
+          onClose={() => {
+            setStatementOpen(false);
+            setStatementStudent(null);
+          }}
+          student={statementStudent}
+          apiBaseUrl={API_BASE_URL}
+        />
 
         <Dialog sx={uiLayout.dialogLayoutSx}
           open={detailsOpen}
@@ -2585,6 +2757,9 @@ const TransferRequestsReport = () => {
                       detailsRow.newValue
                     ],
                     ["مقدم الطلب", detailsRow.actorUserName],
+                    ["ملاحظة مقدم الطلب", detailsRow.requestNotes],
+                    ["ملاحظة الإشراف العام", detailsRow.supervisionNotes],
+                    ["ملاحظة الحسابات", detailsRow.accountsNotes],
                     ["الحالة", detailsRow.statusName],
                     ["الرد", detailsRow.response],
                     ["منفذ الإجراء", detailsRow.confirmedByName],

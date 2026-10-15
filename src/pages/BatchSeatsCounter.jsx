@@ -28,7 +28,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -39,6 +38,7 @@ import LayersIcon from "@mui/icons-material/Layers";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -1707,7 +1707,7 @@ const BatchSeatsCounter = () => {
                 background: "#fff"
               }, uiLayout.tableContainerSx, darkBoxWrapperSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 rows={summaryRows}
                 columns={summaryColumns}
                 loading={loadingSummary}
@@ -2028,7 +2028,7 @@ const BatchSeatsCounter = () => {
                 background: "#fff"
               }, uiLayout.tableContainerSx, darkBoxWrapperSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 rows={detailsRows}
                 columns={detailsColumns}
                 loading={loadingDetails}

@@ -38,7 +38,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
@@ -55,6 +54,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -740,7 +740,6 @@ const BatchStatistics = () => {
           field,
           headerName: getHeaderName(field),
           sortable: false,
-          filterable: false,
           disableColumnMenu: true,
           resizable: false,
           align: "center",
@@ -1791,7 +1790,7 @@ const BatchStatistics = () => {
               </Box>
 
               <Box sx={uiLayout.withUiSx({ width: "100%", height: { xs: 590, md: 690 } }, uiLayout.tableContainerSx)}>
-                <DataGrid
+                <FilterableDataGrid
                   rows={dataGridRows}
                   columns={columns}
                   loading={loading}
@@ -2944,7 +2943,7 @@ const BatchStatistics = () => {
                 overflow: "hidden"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 rows={dataGridRows}
                 columns={compactColumns}
                 loading={loading}

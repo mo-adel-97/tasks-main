@@ -353,6 +353,38 @@ const selectMenuProps = {
   }
 };
 
+// بيانات القبول من الأرشيف (نفس MainFindStudent / IfStudentNotRegister / CourseStudentInfo في الديسكتوب).
+const ARCHIVE_KIND_DIPLOMA = 0;
+const ARCHIVE_KIND_COURSE = 1;
+
+const emptyPlacement = {
+  archiveKind: "",
+  branchGuid: "",
+  diplomGuid: "",
+  batchGuid: "",
+  levelGuid: "",
+  courseGuid: "",
+  caseGuid: ""
+};
+
+const archiveLookupCache = new Map();
+
+const loadArchiveLookup = async (kind, branchGuid = "") => {
+  const key = `${kind}|${branchGuid}`;
+  if (archiveLookupCache.has(key)) return archiveLookupCache.get(key);
+
+  const params = new URLSearchParams({ kind });
+  if (branchGuid) params.set("branchGuid", branchGuid);
+
+  const json = await fetchJsonOrThrow(
+    `${API_BASE_URL}/api/students/archive-lookups?${params.toString()}`,
+    "تعذر تحميل القائمة"
+  );
+  const data = Array.isArray(json?.data) ? json.data : [];
+  archiveLookupCache.set(key, data);
+  return data;
+};
+
 const isValidGregorianDate = (value) => {
   if (!value) return false;
 
@@ -388,6 +420,20 @@ const AddStudentDialog = ({
 
   const [loadingContext, setLoadingContext] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const isArchive = Boolean(initialData?.fromArchive);
+  const [archiveCtx, setArchiveCtx] = useState(null);
+  const [archiveLoading, setArchiveLoading] = useState(false);
+  const [archiveError, setArchiveError] = useState("");
+  const [placement, setPlacement] = useState(emptyPlacement);
+  const [lookups, setLookups] = useState({
+    branches: [],
+    diplomas: [],
+    batches: [],
+    levels: [],
+    statuses: [],
+    courses: []
+  });
 
   const birthDatePickerValue = useMemo(() => {
     if (!form.birthDate) return null;
@@ -545,6 +591,159 @@ const AddStudentDialog = ({
     }
   }, [open, initialData]);
 
+  // قبول من الأرشيف: مكان الطالب في الأرشيف (Student2 / Student3 / غير موجود) + الرصيد من CalcCustBAlance.
+  useEffect(() => {
+    if (!open || !isArchive) {
+      setArchiveCtx(null);
+      setArchiveError("");
+      setPlacement(emptyPlacement);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadArchive = async () => {
+      setArchiveLoading(true);
+      setArchiveError("");
+      setArchiveCtx(null);
+      setPlacement(emptyPlacement);
+
+      try {
+        const params = new URLSearchParams({
+          nationalId: String(initialData?.nationalId || "").trim(),
+          oldCustomerNo: String(initialData?.oldCustomerNo || "").trim(),
+          oldBranchCode: String(initialData?.branchCode || "0"),
+          userGuid: getUserGuidFromLocalStorage()
+        });
+
+        const ctx = await fetchJsonOrThrow(
+          `${API_BASE_URL}/api/students/archive-accept-context?${params.toString()}`,
+          "تعذر تجهيز بيانات القبول من الأرشيف"
+        );
+        if (cancelled) return;
+
+        setArchiveCtx(ctx);
+        setForm((prev) => ({
+          ...prev,
+          maden: Number(ctx?.maden || 0),
+          daen: Number(ctx?.daen || 0)
+        }));
+
+        if (ctx?.source === "student2") return;
+
+        if (ctx?.source === "student3") {
+          setPlacement((prev) => ({ ...prev, archiveKind: ARCHIVE_KIND_COURSE }));
+        }
+
+        const [branches, statuses, diplomas, batches, levels] = await Promise.all([
+          loadArchiveLookup("branches"),
+          loadArchiveLookup("statuses"),
+          ctx?.source === "none" ? loadArchiveLookup("diplomas") : [],
+          ctx?.source === "none" ? loadArchiveLookup("batches") : [],
+          ctx?.source === "none" ? loadArchiveLookup("levels") : []
+        ]);
+        if (cancelled) return;
+
+        setLookups((prev) => ({ ...prev, branches, statuses, diplomas, batches, levels, courses: [] }));
+      } catch (error) {
+        if (!cancelled) setArchiveError(error.message || "تعذر تجهيز بيانات القبول من الأرشيف");
+      } finally {
+        if (!cancelled) setArchiveLoading(false);
+      }
+    };
+
+    loadArchive();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialData]);
+
+  const setPlacementValue = (name, value) => {
+    setPlacement((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // الدورات بتتحمل حسب الفرع (CourseList في الديسكتوب).
+  const handleArchiveBranchChange = async (branchGuid) => {
+    setPlacement((prev) => ({ ...prev, branchGuid, courseGuid: "" }));
+    setLookups((prev) => ({ ...prev, courses: [] }));
+
+    if (!branchGuid || Number(placement.archiveKind) !== ARCHIVE_KIND_COURSE) return;
+
+    try {
+      const courses = await loadArchiveLookup("courses", branchGuid);
+      setLookups((prev) => ({ ...prev, courses }));
+    } catch (error) {
+      showError(error.message || "تعذر تحميل الدورات");
+    }
+  };
+
+  const handleArchiveKindChange = async (kind) => {
+    setPlacement({ ...emptyPlacement, archiveKind: kind });
+    setLookups((prev) => ({ ...prev, courses: [] }));
+  };
+
+  const validateArchivePlacement = () => {
+    if (!isArchive) return "";
+    if (archiveLoading) return "جاري تجهيز بيانات القبول من الأرشيف...";
+    if (!archiveCtx) return archiveError || "تعذر تجهيز بيانات القبول من الأرشيف";
+    if (archiveCtx.source === "student2") return "";
+
+    const kind = Number(placement.archiveKind);
+    if (placement.archiveKind === "" || ![ARCHIVE_KIND_DIPLOMA, ARCHIVE_KIND_COURSE].includes(kind)) {
+      return "برجاء تحديد نوع القبول (دبلوم أو دورة)";
+    }
+    if (!placement.branchGuid) return "برجاء اختيار الفرع";
+
+    if (kind === ARCHIVE_KIND_DIPLOMA) {
+      if (!placement.diplomGuid) return "برجاء اختيار الدبلوم";
+      if (!placement.batchGuid) return "برجاء اختيار الدفعة";
+      if (!placement.levelGuid) return "برجاء اختيار المستوى";
+    } else if (!placement.courseGuid) {
+      return "برجاء اختيار الدورة";
+    }
+
+    if (!placement.caseGuid) return "برجاء اختيار الحالة";
+    return "";
+  };
+
+  const renderLookupSelect = (label, name, items, { onChange, disabled = false, emptyText } = {}) => (
+    <Grid item xs={12} sm={6} md={4}>
+      <FieldLabel>{label}</FieldLabel>
+      <FormControl sx={uiLayout.formFieldSx} fullWidth size="small" error={!placement[name]}>
+        <Select
+          value={placement[name]}
+          displayEmpty
+          disabled={disabled}
+          MenuProps={selectMenuProps}
+          sx={selectSx}
+          onChange={(e) => (onChange ? onChange(e.target.value) : setPlacementValue(name, e.target.value))}
+        >
+          <MenuItem value="">{emptyText || `اختر ${label}`}</MenuItem>
+          {items.map((item) => (
+            <MenuItem key={item.guid} value={item.guid}>
+              {item.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Grid>
+  );
+
+  const renderReadOnly = (label, value, md = 4) => (
+    <Grid item xs={12} sm={6} md={md}>
+      <FieldLabel>{label}</FieldLabel>
+      <TextField
+        fullWidth
+        size="small"
+        value={value || "-"}
+        disabled
+        sx={uiLayout.withUiSx(inputSx, uiLayout.formFieldSx)}
+      />
+    </Grid>
+  );
+
   const validate = () => {
     if (!form.studentName.trim()) return "برجاء إدخال اسم الطالب";
 
@@ -684,7 +883,7 @@ const AddStudentDialog = ({
   };
 
   const handleSave = async () => {
-    const validationMessage = validate();
+    const validationMessage = validate() || validateArchivePlacement();
 
     if (validationMessage) {
       showWarning(validationMessage);
@@ -745,7 +944,16 @@ const AddStudentDialog = ({
         isUse: Boolean(form.isUse),
         noData: Boolean(form.noData),
 
-        notes: form.notes || ""
+        notes: form.notes || "",
+
+        // بيانات الملف التدريبي للطالب المقبول من الأرشيف (Student2 بيتحدد في الباك إند من الأرشيف نفسه).
+        archiveKind: placement.archiveKind === "" ? -1 : Number(placement.archiveKind),
+        branchGuid: placement.branchGuid || null,
+        diplomGuid: placement.diplomGuid || null,
+        batchGuid: placement.batchGuid || null,
+        levelGuid: placement.levelGuid || null,
+        courseGuid: placement.courseGuid || null,
+        caseGuid: placement.caseGuid || null
       };
 
       const response = await fetch(`${API_BASE_URL}/api/students`, {
@@ -917,8 +1125,115 @@ const AddStudentDialog = ({
                         : textColor
                     }}
                   >
-                    الرصيد الافتتاحي: مدين {Number(initialData?.maden || 0).toLocaleString("en-US")} / دائن {Number(initialData?.daen || 0).toLocaleString("en-US")}
+                    الرصيد الافتتاحي: مدين {Number(form.maden || 0).toLocaleString("en-US")} / دائن {Number(form.daen || 0).toLocaleString("en-US")}
                   </Typography>
+                </Paper>
+              ) : null}
+
+              {isArchive ? (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    mb: isPhone ? 0.5 : isTablet ? 0.7 : 2,
+                    p: isPhone ? 0.55 : isTablet ? 0.8 : 2,
+                    borderRadius: isPhone ? 1.2 : isTablet ? 1.6 : 3,
+                    border: (theme) => theme.palette.mode === "dark" ? "1px solid #67C99D" : `1px solid ${primaryLight}`,
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === "dark"
+                        ? (theme.palette.surfaces?.section || "#172b22")
+                        : whiteColor
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 950, mb: 1, color: isDark ? "#9BE0C1" : primaryColor }}>
+                    بيانات القبول (الملف التدريبي)
+                  </Typography>
+
+                  {archiveLoading ? (
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <CircularProgress size={18} sx={{ color: primaryColor }} />
+                      <Typography sx={{ fontWeight: 800 }}>جاري البحث عن الطالب في الأرشيف...</Typography>
+                    </Stack>
+                  ) : archiveError ? (
+                    <Typography sx={{ fontWeight: 800, color: accentColor }}>{archiveError}</Typography>
+                  ) : archiveCtx?.source === "student2" ? (
+                    <>
+                      <Typography sx={{ fontWeight: 800, mb: 1 }}>
+                        الطالب مسجل في برنامج الدبلومات القديم، وهيتسجل بنفس بياناته:
+                      </Typography>
+                      <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}>
+                        {renderReadOnly("الفرع", archiveCtx?.diploma?.branchName)}
+                        {renderReadOnly("الدبلوم", archiveCtx?.diploma?.diplomName)}
+                        {renderReadOnly("الدفعة", archiveCtx?.diploma?.batchName)}
+                        {renderReadOnly("المستوى", archiveCtx?.diploma?.levelName)}
+                        {renderReadOnly("الحالة", archiveCtx?.diploma?.caseName)}
+                      </Grid>
+                    </>
+                  ) : archiveCtx ? (
+                    <>
+                      {archiveCtx.source === "student3" ? (
+                        <Box sx={{ mb: 1.5 }}>
+                          <Typography sx={{ fontWeight: 800, mb: 1 }}>
+                            الطالب مسجل في برنامج الدورات القديم:
+                          </Typography>
+                          {(archiveCtx.courses || []).map((course, index) => (
+                            <Typography key={index} sx={{ fontWeight: 700, fontSize: "0.85rem" }}>
+                              {[course.branch, course.courseName, course.dateStart && `من ${course.dateStart}`, course.dateEnd && `إلى ${course.dateEnd}`, course.courseStatus, course.typeNotes, course.notes]
+                                .filter(Boolean)
+                                .join(" — ")}
+                            </Typography>
+                          ))}
+                        </Box>
+                      ) : (
+                        <Typography sx={{ fontWeight: 800, mb: 1 }}>
+                          الطالب غير موجود في برنامج الطلبة القديم، حدد بيانات قبوله:
+                        </Typography>
+                      )}
+
+                      <Grid container spacing={isPhone ? 0.55 : isTablet ? 0.8 : 2}>
+                        {archiveCtx.source === "none" ? (
+                          <Grid item xs={12} sm={6} md={4}>
+                            <FieldLabel>نوع القبول</FieldLabel>
+                            <FormControl sx={uiLayout.formFieldSx} fullWidth size="small" error={placement.archiveKind === ""}>
+                              <Select
+                                value={placement.archiveKind}
+                                displayEmpty
+                                MenuProps={selectMenuProps}
+                                sx={selectSx}
+                                onChange={(e) => handleArchiveKindChange(e.target.value)}
+                              >
+                                <MenuItem value="">اختر النوع</MenuItem>
+                                <MenuItem value={ARCHIVE_KIND_DIPLOMA}>دبلوم</MenuItem>
+                                <MenuItem value={ARCHIVE_KIND_COURSE}>دورة</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                        ) : null}
+
+                        {placement.archiveKind !== "" ? (
+                          <>
+                            {renderLookupSelect("الفرع", "branchGuid", lookups.branches, {
+                              onChange: handleArchiveBranchChange
+                            })}
+
+                            {Number(placement.archiveKind) === ARCHIVE_KIND_DIPLOMA ? (
+                              <>
+                                {renderLookupSelect("الدبلوم", "diplomGuid", lookups.diplomas)}
+                                {renderLookupSelect("الدفعة", "batchGuid", lookups.batches)}
+                                {renderLookupSelect("المستوى", "levelGuid", lookups.levels)}
+                              </>
+                            ) : (
+                              renderLookupSelect("الدورة", "courseGuid", lookups.courses, {
+                                disabled: !placement.branchGuid,
+                                emptyText: placement.branchGuid ? "اختر الدورة" : "اختر الفرع أولاً"
+                              })
+                            )}
+
+                            {renderLookupSelect("الحالة", "caseGuid", lookups.statuses)}
+                          </>
+                        ) : null}
+                      </Grid>
+                    </>
+                  ) : null}
                 </Paper>
               ) : null}
 

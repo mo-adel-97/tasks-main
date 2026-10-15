@@ -26,6 +26,8 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import { RECEPTION_EXTRAS_API, getCurrentUserGuid, readApiJson, useReceptionExtrasPermissions } from "../utils/receptionExtras";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SchoolIcon from "@mui/icons-material/School";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -196,6 +198,10 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
   const [savingClass, setSavingClass] = useState(false);
   const [studyInfo, setStudyInfo] = useState(null);
   const [manualClassGuid, setManualClassGuid] = useState("");
+  // إضافة مرفق لمجلد الطالب: الزرار ظاهر للكل، والصلاحية (study-file-attachment-add) بتتفحص عند الضغط.
+  const attachmentPermission = useReceptionExtrasPermissions();
+  const attachmentInputRef = useRef(null);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
   const getResponsiveSwalOptions = () => {
     if (!isCompact) return {};
@@ -312,6 +318,86 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       showError(error.message || "حدث خطأ أثناء عرض المرفقات");
+    }
+  };
+
+  const pickAttachment = () => {
+    if (attachmentPermission.loading) {
+      showWarning("جاري التحقق من الصلاحية، حاول مرة أخرى بعد لحظة.");
+      return;
+    }
+    if (!attachmentPermission.attachmentAdd) {
+      showWarning("ليس لديك صلاحية إضافة مرفق للملف التدريبي.");
+      return;
+    }
+    const id = String(student?.nationalId || "").trim();
+    if (!/^\d+$/.test(id)) {
+      showWarning("رقم الهوية غير صحيح.");
+      return;
+    }
+    attachmentInputRef.current?.click();
+  };
+
+  const uploadAttachment = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      showWarning("حجم الملف أكبر من 10 ميجا.");
+      return;
+    }
+
+    const titleResult = await Swal.fire({
+      ...getResponsiveSwalOptions(),
+      title: "إضافة مرفق للطالب",
+      html: `<div style="font-size:.9rem">${file.name.replace(/[<>&"]/g, "")}</div>`,
+      input: "text",
+      inputLabel: "وصف المرفق (اختياري)",
+      inputPlaceholder: "مثلًا: صورة الهوية، شهادة، خطاب...",
+      showCancelButton: true,
+      confirmButtonText: "رفع المرفق",
+      cancelButtonText: "إلغاء",
+      confirmButtonColor: primaryColor
+    });
+    if (!titleResult.isConfirmed) return;
+
+    setUploadingAttachment(true);
+    Swal.fire({
+      ...getResponsiveSwalOptions(),
+      title: "جاري رفع المرفق...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    try {
+      const form = new FormData();
+      form.append("userGuid", getCurrentUserGuid());
+      form.append("nationalId", String(student?.nationalId || "").trim());
+      form.append("title", String(titleResult.value || "").trim());
+      form.append("file", file);
+
+      const response = await fetch(`${RECEPTION_EXTRAS_API}/study-file-attachment`, {
+        method: "POST",
+        body: form
+      });
+      const result = await readApiJson(response);
+
+      const next = await Swal.fire({
+        ...getResponsiveSwalOptions(),
+        icon: "success",
+        title: result?.message || "تم رفع المرفق",
+        showCancelButton: true,
+        confirmButtonText: "عرض المرفقات",
+        cancelButtonText: "تمام",
+        confirmButtonColor: primaryColor
+      });
+      if (next.isConfirmed) openAttachments();
+    } catch (error) {
+      Swal.close();
+      showError(error.message || "تعذر رفع المرفق");
+    } finally {
+      setUploadingAttachment(false);
     }
   };
 
@@ -457,6 +543,8 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
       <Dialog
       open={open}
       onClose={() => !loading && !savingClass && onClose?.()}
+      // من غيرها الـ Dialog بيسحب التركيز من خانة وصف المرفق في SweetAlert ومش بيخلي المستخدم يكتب.
+      disableEnforceFocus
       fullWidth
       maxWidth="md"
       fullScreen={isPhone}
@@ -810,6 +898,31 @@ const StudentStudyFileDialog = ({ open, onClose, student, apiBaseUrl }) => {
         >
           عرض المرفقات
         </Button>
+
+        <>
+            <input
+              ref={attachmentInputRef}
+              type="file"
+              hidden
+              accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.txt"
+              onChange={uploadAttachment}
+            />
+            <Button
+              onClick={pickAttachment}
+              startIcon={<UploadFileIcon />}
+              disabled={!student || loading || savingClass || uploadingAttachment}
+              sx={uiLayout.withUiSx({
+                fontWeight: 950,
+                color: primaryColor,
+                direction: "rtl",
+                minHeight: isPhone ? 29 : isTablet ? 33 : undefined,
+                px: isPhone ? 0.7 : isTablet ? 1 : undefined,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : undefined
+              }, uiLayout.buttonSx)}
+            >
+              إضافة مرفق
+            </Button>
+        </>
 
         <Button
           onClick={onClose}

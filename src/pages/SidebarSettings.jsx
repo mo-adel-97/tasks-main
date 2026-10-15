@@ -1,7 +1,7 @@
 import PageContainer from '../components/common/PageContainer';
 import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
-import { SIDEBAR_ICON_OPTIONS as ICON_OPTIONS } from '../config/sidebarNavigation';
+import IconPickerField from '../components/sidebarSettings/IconPickerField';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -435,14 +435,11 @@ export default function SidebarSettings() {
             renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="القائمة الرئيسية" placeholder="اختر من القوائم المعرفة في WebSidebarGroup" />}
           />
 
-          <Autocomplete
-            freeSolo
-            size="small"
-            options={ICON_OPTIONS}
+          <IconPickerField
             value={screen.iconKey || ""}
-            onChange={(_, value) => setScreenField("iconKey", value || "")}
-            onInputChange={(_, value) => setScreenField("iconKey", value || "")}
-            renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="IconKey" />}
+            onChange={(value) => setScreenField("iconKey", value)}
+            label="الأيقونة (IconKey)"
+            textFieldSx={uiLayout.formFieldSx}
           />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" type="number" label="الترتيب" value={screen.sortOrder} onChange={(e) => setScreenField("sortOrder", Number(e.target.value))} />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="Badge" value={screen.badgeText || ""} onChange={(e) => setScreenField("badgeText", e.target.value)} />
@@ -505,7 +502,7 @@ export default function SidebarSettings() {
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="اسم القائمة" value={group.name || ""} onChange={(e) => setGroupField("name", e.target.value)} />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="كود صلاحية القائمة القديمة (اختياري)" value={group.code || group.permissionMenuCode || ""} onChange={(e) => setGroupField("code", e.target.value)} helperText="مثال: sales / report / maintools. اتركه فارغًا للقوائم الويب فقط." />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" label="GroupKey" value={group.groupKey || ""} disabled={Boolean(group.groupGuid)} onChange={(e) => setGroupField("groupKey", e.target.value)} />
-          <Autocomplete freeSolo size="small" options={ICON_OPTIONS} value={group.iconKey || ""} onChange={(_, value) => setGroupField("iconKey", value || "")} onInputChange={(_, value) => setGroupField("iconKey", value || "")} renderInput={(params) => <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} {...params} label="IconKey" />} />
+          <IconPickerField value={group.iconKey || ""} onChange={(value) => setGroupField("iconKey", value)} label="الأيقونة (IconKey)" textFieldSx={uiLayout.formFieldSx} />
           <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }} size="small" type="number" label="الترتيب" value={group.sortOrder} onChange={(e) => setGroupField("sortOrder", Number(e.target.value))} />
         </Box>
         <Box sx={{ mt: 1.2, display: "flex", gap: 1.5, flexWrap: "wrap" }}>

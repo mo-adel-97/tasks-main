@@ -42,6 +42,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
+import { groupBySection, stripSection } from '../utils/questionSections';
 
 
 // الألوان الأساسية
@@ -879,7 +880,32 @@ const fetchSubmittedSurveys = async (user) => {
                     )}
 
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
-                      {selectedSurvey?.questions.map((question, index) => (
+                      {/* الأسئلة متجمعة حسب القسم، مع الحفاظ على رقمها الأصلي (الردود متخزنة عليه) */}
+                      {groupBySection(selectedSurvey?.questions || [], (q) => q.text).flatMap((group, groupIndex, groups) => {
+                        const header = group.section ? [(
+                          <Box
+                            key={`section-${groupIndex}`}
+                            sx={{
+                              mt: groupIndex === 0 ? 0 : 1,
+                              px: 1.2,
+                              py: 0.8,
+                              borderRadius: 2,
+                              borderInlineStart: `4px solid ${primaryColor}`,
+                              bgcolor: '#edf7f2',
+                              color: '#17372b',
+                              fontFamily: '"Cairo", sans-serif',
+                              fontWeight: 950,
+                              fontSize: '0.85rem'
+                            }}
+                          >
+                            {group.section}
+                            <Box component="span" sx={{ mx: 0.8, color: '#5c7a6d', fontWeight: 700, fontSize: '0.72rem' }}>
+                              ({group.items.length} سؤال)
+                            </Box>
+                          </Box>
+                        )] : [];
+                        const before = groups.slice(0, groupIndex).reduce((n, g) => n + g.items.length, 0);
+                        return [...header, ...group.items.map(({ item: question, index }, offset) => (
                         <Box
                           key={index}
                           sx={{
@@ -915,13 +941,14 @@ const fetchSubmittedSurveys = async (user) => {
                                 flexShrink: 0
                               }}
                             >
-                              {index + 1}
+                              {before + offset + 1}
                             </Box>
-                            {question.text}
+                            {stripSection(question.text)}
                           </Typography>
                           {renderQuestion(question, index)}
                         </Box>
-                      ))}
+                      ))];
+                      })}
                     </Box>
                   </>
                 )}

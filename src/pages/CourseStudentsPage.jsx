@@ -9,7 +9,7 @@ import {
   DialogContent, DialogTitle, FormControlLabel, GlobalStyles, IconButton, Menu, MenuItem,
   Paper, Stack, Tab, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { GridToolbar } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -25,6 +25,9 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import EditStudentDialog from "../components/EditStudentDialog";
 import RegisterDocumentDialog from "../components/RegisterDocumentDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { withVipNameColumn } from "../components/VipBadge";
+import { useVipLookup } from "../utils/receptionExtras";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
 const ATTACHMENTS_BASE_URL = "https://sstli.com/arc-api/images_view.php";
@@ -207,6 +210,8 @@ export default function CourseStudentsPage() {
   const [courses, setCourses] = useState([]);
   const [courseGuid, setCourseGuid] = useState("");
   const [rows, setRows] = useState([]);
+  // الصفوف الظاهرة في الجدول بعد فلاتر الأعمدة (للتصدير).
+  const [gridRows, setGridRows] = useState(null);
   const [selectionModel, setSelectionModel] = useState([]);
   const [loading, setLoading] = useState(false);
   const [workingText, setWorkingText] = useState("");
@@ -482,8 +487,9 @@ export default function CourseStudentsPage() {
   };
 
   const exportXlsx = () => {
-    if (!rows.length) { alertError("لا توجد بيانات للتصدير"); return; }
-    const data = rows.map((row) => ({
+    const exportRows = gridRows ?? rows;
+    if (!exportRows.length) { alertError("لا توجد بيانات للتصدير"); return; }
+    const data = exportRows.map((row) => ({
       "كود": row.code,
       "اسم الطالب": row.studentName,
       "رقم الهوية": row.nationalId,
@@ -589,7 +595,7 @@ export default function CourseStudentsPage() {
     }
   };
 
-  const columns = useMemo(() => {
+  const rawColumns = useMemo(() => {
     const actionColumn = {
       field: "actions",
       headerName: isCompact ? "" : "الإجراءات",
@@ -730,6 +736,13 @@ export default function CourseStudentsPage() {
       { field: "ahliTrainingStatus", headerName: "موقف التدريب الأهلي", minWidth: 130, flex: 1 }
     ];
   }, [isPhone, isTablet, isCompact]);
+
+  // علامة VIP جنب اسم الطالب
+  const { isVip } = useVipLookup();
+  const columns = useMemo(
+    () => withVipNameColumn(rawColumns, isVip),
+    [rawColumns, isVip]
+  );
 
   return (
     <NavigationShell variant="standard" mobileOpen={mobileSidebarOpen} onMobileClose={() =>
@@ -929,8 +942,9 @@ export default function CourseStudentsPage() {
           </Stack>
 
           <Box sx={uiLayout.withUiSx({ height: "calc(100vh - 225px)", minHeight: 520 }, uiLayout.tableContainerSx)}>
-            <DataGrid
+            <FilterableDataGrid
               rows={rows}
+              onFilteredRowsChange={setGridRows}
               columns={columns}
               loading={loading}
               checkboxSelection
@@ -1375,8 +1389,9 @@ export default function CourseStudentsPage() {
               minHeight: isPhone ? 360 : isTablet ? 430 : 520
             }, uiLayout.tableContainerSx)}
           >
-            <DataGrid
+            <FilterableDataGrid
               rows={rows}
+              onFilteredRowsChange={setGridRows}
               columns={columns}
               loading={loading}
               checkboxSelection

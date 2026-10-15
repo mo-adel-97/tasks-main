@@ -46,6 +46,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 import SecurityIcon from "@mui/icons-material/Security";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+import PermissionPackagesDialog from "../components/userManagement/PermissionPackagesDialog";
+import BulkPermissionsDialog from "../components/userManagement/BulkPermissionsDialog";
+import GroupsIcon from "@mui/icons-material/Groups";
+import DesktopAccessDialog from "../components/userManagement/DesktopAccessDialog";
+import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
 
 import Swal from "sweetalert2";
 
@@ -372,6 +380,100 @@ const emptyPermission = (form) => ({
   view: false
 });
 
+// ============================================================
+// صفوف الصلاحيات (Memo): المستخدم اللي ليه مئات الشاشات كان أي تعديل
+// بيرسم كل الصفوف من الأول. دلوقتي الصف اللي اتغير بس هو اللي بيترسم.
+// ============================================================
+const PERMISSION_FIELDS = [
+  ["add", "جديد"],
+  ["edit", "تعديل"],
+  ["del", "حذف"],
+  ["print", "طباعة"],
+  ["find", "بحث"],
+  ["view", "عرض"]
+];
+
+// الصفوف دي بتترسم بالمئات (System Admin ≈ 160 صف × 6 = ~1000 checkbox)،
+// فبنستخدم عناصر HTML عادية + ستايل ثابت بدل MUI Checkbox/Chip/Box
+// عشان فتح تابة الصلاحيات ميعملش لاج.
+const permStyles = {
+  check: { width: 18, height: 18, margin: 0, cursor: "pointer", accentColor: primary },
+  chip: {
+    flexShrink: 0,
+    height: 20,
+    lineHeight: "18px",
+    padding: "0 7px",
+    border: "1px solid color-mix(in srgb, currentColor 35%, transparent)",
+    borderRadius: 10,
+    fontSize: 10,
+    fontWeight: 900,
+    whiteSpace: "nowrap"
+  },
+  card: { padding: 5, border: `1px solid ${border}`, borderRadius: 4 },
+  cardHead: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 5, marginBottom: 3 },
+  cardName: { minWidth: 0, fontSize: 12, fontWeight: 900, lineHeight: 1.2 },
+  cardGrid: { display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 1 },
+  cardLabel: { display: "flex", alignItems: "center", gap: 4, minWidth: 0, padding: "2px 2px", fontSize: 12, lineHeight: 1.1, cursor: "pointer" },
+  row: {
+    display: "grid",
+    gridTemplateColumns: "minmax(230px,1fr) repeat(6,70px)",
+    alignItems: "center",
+    minHeight: 42,
+    borderBottom: `1px solid ${border}`
+  },
+  rowHead: { display: "flex", alignItems: "center", gap: 6, padding: "0 8px", minWidth: 0 },
+  rowName: { minWidth: 0, flex: 1, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  cell: { display: "flex", justifyContent: "center", alignItems: "center", height: 42 }
+};
+
+const PermissionCard = React.memo(function PermissionCard({ p, index, onChange }) {
+  return (
+    <div style={permStyles.card}>
+      <div style={permStyles.cardHead}>
+        <span style={permStyles.cardName}>{p.name}</span>
+        <span style={permStyles.chip}>{formPlatformLabel(p)}</span>
+      </div>
+
+      <div style={permStyles.cardGrid}>
+        {PERMISSION_FIELDS.map(([field, label]) => (
+          <label key={field} style={permStyles.cardLabel}>
+            <input
+              type="checkbox"
+              style={{ ...permStyles.check, width: 16, height: 16 }}
+              checked={Boolean(p[field])}
+              onChange={(e) => onChange(index, field, e.target.checked)}
+            />
+            {label}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+const PermissionRow = React.memo(function PermissionRow({ p, index, onChange }) {
+  return (
+    <div style={permStyles.row}>
+      <div style={permStyles.rowHead}>
+        <span style={permStyles.rowName} title={p.name}>{p.name}</span>
+        <span style={permStyles.chip}>{formPlatformLabel(p)}</span>
+      </div>
+
+      {PERMISSION_FIELDS.map(([field, label]) => (
+        <label key={field} style={permStyles.cell}>
+          <input
+            type="checkbox"
+            aria-label={`${label} - ${p.name}`}
+            style={permStyles.check}
+            checked={Boolean(p[field])}
+            onChange={(e) => onChange(index, field, e.target.checked)}
+          />
+        </label>
+      ))}
+    </div>
+  );
+});
+
 function LookupDialog({
   open,
   title,
@@ -596,6 +698,11 @@ export default function UserManagement() {
   const [jobTitles, setJobTitles] = useState([]);
   const [jobTitlesLoading, setJobTitlesLoading] = useState(false);
   const [jobTitlesError, setJobTitlesError] = useState("");
+
+  // باكدجات الصلاحيات / نسخ صلاحيات: "apply" | "copy" | "manage" | ""
+  const [packagesMode, setPackagesMode] = useState("");
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [desktopAccessOpen, setDesktopAccessOpen] = useState(false);
 
   const [lookup, setLookup] = useState({
     open: false,
@@ -1184,6 +1291,71 @@ export default function UserManagement() {
     // مطابق CmdDelAll: FormGrid.Rows.Clear()
     setPermissions([]);
   }, []);
+
+  // تطبيق باكدج / صلاحيات مستخدم تاني على المستخدم المفتوح.
+  // merge: أي صلاحية موجودة في الاتنين بتتجمع (OR) — replace: صلاحيات الباكدج بس.
+  const applyPermissionSet = useCallback(
+    (set, mode) => {
+      const replace = mode === "replace";
+      const menuGuids = new Set(
+        (set?.menus || []).filter((m) => m.view).map((m) => norm(m.guid))
+      );
+
+      setMenus((current) =>
+        current.map((item) => ({
+          ...item,
+          view: replace
+            ? menuGuids.has(norm(item.guid))
+            : Boolean(item.view) || menuGuids.has(norm(item.guid))
+        }))
+      );
+
+      setPermissions((current) => {
+        const next = replace ? [] : current.map((p) => ({ ...p }));
+        const indexByGuid = new Map(next.map((p, i) => [norm(p.guid), i]));
+
+        (set?.permissions || []).forEach((p) => {
+          const form = forms.find((f) => norm(f.guid) === norm(p.guid));
+          if (!form) return;
+
+          const flags = {
+            add: Boolean(p.add),
+            edit: Boolean(p.edit),
+            del: Boolean(p.del),
+            print: Boolean(p.print),
+            find: Boolean(p.find),
+            view: Boolean(p.view)
+          };
+
+          const existingIndex = indexByGuid.get(norm(form.guid));
+          if (existingIndex !== undefined) {
+            const existing = next[existingIndex];
+            next[existingIndex] = {
+              ...existing,
+              ...Object.fromEntries(
+                Object.entries(flags).map(([key, value]) => [key, Boolean(existing[key]) || value])
+              )
+            };
+          } else {
+            indexByGuid.set(norm(form.guid), next.length);
+            next.push({ ...emptyPermission(form), ...flags });
+          }
+        });
+
+        return next;
+      });
+
+      setTab(1);
+    },
+    [forms]
+  );
+
+  // الشاشات اللي لسه مش مضافة (قائمة "ابحث في كل الشاشات"):
+  // كانت بتتحسب مع كل رسم بمقارنة كل شاشة بكل صلاحية؛ دلوقتي Set ومرة واحدة لكل تغيير.
+  const availableForms = useMemo(() => {
+    const used = new Set(permissions.map((item) => norm(item.guid)));
+    return forms.filter((form) => !used.has(norm(form.guid)));
+  }, [forms, permissions]);
 
   const addFormToPermissions = useCallback(
     (form) => {
@@ -2071,8 +2243,7 @@ export default function UserManagement() {
               />
             </Box>
 
-            {(model.chkTrainer ||
-              model.chkBranch) && (
+            {model.chkTrainer && (
               <Box
                 sx={uiLayout.withUiSx({
                   mt: 1.5,
@@ -2109,30 +2280,9 @@ export default function UserManagement() {
                   />
                 )}
 
-                {model.chkBranch && (
-                  <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
-                    size="small"
-                    label="فرع التقارير"
-                    value={model.branchName}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() =>
-                              openLookup(
-                                "reportBranch",
-                                "قائمة الفروع"
-                              )
-                            }
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                )}
+                {/* "فرع التقارير" (User_Info.BranchGuid) اتشال: مش مستخدم في أي مكان
+                    (في الديسكتوب متعلّق ومحدش ليه قيمة فيه). علامة "فروع مخصصة للتقارير"
+                    فاضلة وبتقصر الفروع على "الفروع المسموح بها للمستخدم" تحت. */}
               </Box>
             )}
 
@@ -2267,10 +2417,12 @@ export default function UserManagement() {
             <Stack
               direction="row"
               spacing={0.5}
+              flexWrap="wrap"
+              useFlexGap
               sx={uiLayout.withUiSx({
                 mb: { xs: 0.7, sm: 1 },
                 "& .MuiButton-root": {
-                  flex: { xs: 1, sm: "0 0 auto" },
+                  flex: { xs: "1 1 45%", sm: "0 0 auto" },
                   fontSize: { xs: 12, sm: 13 }
                 }
               }, uiLayout.actionBarSx)}
@@ -2290,6 +2442,47 @@ export default function UserManagement() {
                 onClick={deleteAllPermissions}
               >
                 حذف الكل
+              </Button>
+
+              <Button sx={uiLayout.buttonSx}
+                variant="contained"
+                startIcon={<Inventory2Icon />}
+                onClick={() => setPackagesMode("apply")}
+              >
+                تطبيق باكدج
+              </Button>
+
+              <Button sx={uiLayout.buttonSx}
+                variant="outlined"
+                startIcon={<ContentCopyIcon />}
+                onClick={() => setPackagesMode("copy")}
+              >
+                نسخ من مستخدم
+              </Button>
+
+              <Button sx={uiLayout.buttonSx}
+                variant="outlined"
+                startIcon={<SettingsSuggestIcon />}
+                onClick={() => setPackagesMode("manage")}
+              >
+                إدارة الباكدجات
+              </Button>
+
+              <Button sx={uiLayout.buttonSx}
+                variant="outlined"
+                startIcon={<GroupsIcon />}
+                onClick={() => setBulkOpen(true)}
+              >
+                صلاحيات لمجموعة مستخدمين
+              </Button>
+
+              <Button sx={uiLayout.buttonSx}
+                variant="outlined"
+                color="error"
+                startIcon={<DesktopAccessDisabledIcon />}
+                onClick={() => setDesktopAccessOpen(true)}
+              >
+                منع الديسكتوب
               </Button>
             </Stack>
 
@@ -2321,15 +2514,6 @@ export default function UserManagement() {
                 >
                   <Typography sx={{ fontWeight: 900 }}>
                     القوائم الرئيسية
-                  </Typography>
-                  <Typography
-                    sx={{
-                      mt: 0.15,
-                      fontSize: 11,
-                      color: "text.secondary"
-                    }}
-                  >
-                    صلاحيات القوائم المشتركة المستخدمة في تنظيم الـ Sidebar.
                   </Typography>
                 </Box>
 
@@ -2401,27 +2585,11 @@ export default function UserManagement() {
                     <Typography sx={{ fontWeight: 900 }}>
                       كل الشاشات والصلاحيات
                     </Typography>
-                    <Typography
-                      sx={{
-                        mt: 0.15,
-                        fontSize: 11.5,
-                        color: "text.secondary"
-                      }}
-                    >
-                      تظهر هنا كل الشاشات الفعّالة من Form_Name؛ بجانب كل شاشة توضيح إن كانت ويب أو ديسكتوب.
-                    </Typography>
                   </Box>
 
                   <Autocomplete
                     size="small"
-                    options={forms.filter(
-                      (form) =>
-                        !permissions.some(
-                          (item) =>
-                            norm(item.guid) ===
-                            norm(form.guid)
-                        )
-                    )}
+                    options={availableForms}
                     getOptionLabel={(o) =>
                       o?.name || ""
                     }
@@ -2553,90 +2721,8 @@ export default function UserManagement() {
                       p: 0.5
                     }}
                   >
-                    {permissions.map((p, index) => (
-                      <Paper
-                        key={p.guid}
-                        variant="outlined"
-                        sx={{
-                          p: 0.6,
-                          borderColor: border
-                        }}
-                      >
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          spacing={0.6}
-                          sx={{ mb: 0.35 }}
-                        >
-                          <Typography
-                            sx={{
-                              minWidth: 0,
-                              fontSize: 12,
-                              fontWeight: 900,
-                              lineHeight: 1.2
-                            }}
-                          >
-                            {p.name}
-                          </Typography>
-                          <Chip
-                            size="small"
-                            variant="outlined"
-                            label={formPlatformLabel(p)}
-                            sx={{ height: 20, fontSize: 10, fontWeight: 900, flexShrink: 0 }}
-                          />
-                        </Stack>
-
-                        <Box
-                          sx={{
-                            display: "grid",
-                            gridTemplateColumns:
-                              "repeat(3,minmax(0,1fr))",
-                            gap: 0.1
-                          }}
-                        >
-                          {[
-                            ["add", "جديد"],
-                            ["edit", "تعديل"],
-                            ["del", "حذف"],
-                            ["print", "طباعة"],
-                            ["find", "بحث"],
-                            ["view", "عرض"]
-                          ].map(([field, label]) => (
-                            <FormControlLabel
-                              key={field}
-                              sx={{
-                                m: 0,
-                                minWidth: 0,
-                                "& .MuiFormControlLabel-label": {
-                                  fontSize: 12,
-                                  lineHeight: 1.1
-                                }
-                              }}
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={Boolean(p[field])}
-                                  onChange={(e) =>
-                                    updatePermission(
-                                      index,
-                                      field,
-                                      e.target.checked
-                                    )
-                                  }
-                                  sx={{
-                                    p: 0.3,
-                                    "& .MuiSvgIcon-root": {
-                                      fontSize: 17
-                                    }
-                                  }}
-                                />
-                              }
-                              label={label}
-                            />
-                          ))}
-                        </Box>
-                      </Paper>
+                    {isMobile && permissions.map((p, index) => (
+                      <PermissionCard key={p.guid} p={p} index={index} onChange={updatePermission} />
                     ))}
 
                     {!permissions.length && (
@@ -2693,71 +2779,8 @@ export default function UserManagement() {
                       ))}
                     </Box>
 
-                    {permissions.map((p, index) => (
-                      <Box
-                        key={p.guid}
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns:
-                            "minmax(230px,1fr) repeat(6,70px)",
-                          alignItems: "center",
-                          borderBottom:
-                            `1px solid ${border}`
-                        }}
-                      >
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={0.7}
-                          sx={{ px: 1, minWidth: 0 }}
-                        >
-                          <Typography
-                            sx={{
-                              minWidth: 0,
-                              flex: 1,
-                              fontWeight: 700,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap"
-                            }}
-                          >
-                            {p.name}
-                          </Typography>
-                          <Chip
-                            size="small"
-                            variant="outlined"
-                            label={formPlatformLabel(p)}
-                            sx={{ height: 21, fontSize: 10, fontWeight: 900, flexShrink: 0 }}
-                          />
-                        </Stack>
-
-                        {[
-                          "add",
-                          "edit",
-                          "del",
-                          "print",
-                          "find",
-                          "view"
-                        ].map((field) => (
-                          <Box
-                            key={field}
-                            sx={{
-                              textAlign: "center"
-                            }}
-                          >
-                            <Checkbox
-                              checked={Boolean(p[field])}
-                              onChange={(e) =>
-                                updatePermission(
-                                  index,
-                                  field,
-                                  e.target.checked
-                                )
-                              }
-                            />
-                          </Box>
-                        ))}
-                      </Box>
+                    {!isMobile && permissions.map((p, index) => (
+                      <PermissionRow key={p.guid} p={p} index={index} onChange={updatePermission} />
                     ))}
                   </Box>
                 </Box>
@@ -2783,6 +2806,41 @@ export default function UserManagement() {
         onClose={closeLookup}
         onPick={pickLookup}
         columns={lookupColumns}
+      />
+
+      <PermissionPackagesDialog
+        mode={packagesMode}
+        onClose={() => setPackagesMode("")}
+        apiBaseUrl={API_BASE_URL}
+        userGuid={userGuid}
+        menus={menus}
+        forms={forms}
+        currentState={{ menus, permissions }}
+        currentUserName={model.fullName || (isEdit ? model.userName : "المستخدم الجديد")}
+        onApply={applyPermissionSet}
+      />
+
+      <BulkPermissionsDialog
+        open={bulkOpen}
+        onClose={() => setBulkOpen(false)}
+        apiBaseUrl={API_BASE_URL}
+        userGuid={userGuid}
+        menus={menus}
+        forms={forms}
+        onDone={({ allUsers, userGuids }) => {
+          // لو المستخدم المفتوح في الشاشة اتعدّل، نعيد تحميله علشان الحفظ العادي ما يرجّعش صلاحياته القديمة.
+          const openGuid = norm(model.guid);
+          if (isEdit && model.code && (allUsers || (userGuids || []).includes(openGuid))) {
+            loadUser(model.code);
+          }
+        }}
+      />
+
+      <DesktopAccessDialog
+        open={desktopAccessOpen}
+        onClose={() => setDesktopAccessOpen(false)}
+        apiBaseUrl={API_BASE_URL}
+        userGuid={userGuid}
       />
     </PageContainer>
   );

@@ -35,6 +35,8 @@ import HistoryIcon from "@mui/icons-material/History";
 import SalesInvoiceDialog from "./SalesInvoiceDialog";
 import RegisterDocumentDialog from "./RegisterDocumentDialog";
 import ArchiveIcon from "@mui/icons-material/Archive";
+import MergeTypeIcon from "@mui/icons-material/MergeType";
+import ArchiveMergeDialog from "./ArchiveMergeDialog";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
 
@@ -345,6 +347,9 @@ const StudentStatementDialog2 = ({
   const [oldStatementData, setOldStatementData] = useState(null);
   const [oldStatementError, setOldStatementError] = useState("");
   const [selectedOldArchiveRow, setSelectedOldArchiveRow] = useState(null);
+
+  // دمج حساب الأرشيف (المرحلة التانية في الديسكتوب: FindOldStudentData ← IfStudentNotRegister).
+  const [mergeArchiveRow, setMergeArchiveRow] = useState(null);
 
   const accountGuid = student?.accountGuid || student?.AccountGuid || "";
 
@@ -2507,24 +2512,37 @@ const StudentStatementDialog2 = ({
                         {
                           field: "actions",
                           headerName: "",
-                          width: isPhone ? 42 : 48,
+                          width: isPhone ? 72 : 80,
                           sortable: false,
                           filterable: false,
                           disableColumnMenu: true,
                           align: "center",
                           headerAlign: "center",
                           renderCell: (params) => (
-                            <IconButton
-                              onClick={() => loadOldStatement(params.row)}
-                              sx={{
-                                color: primaryColor,
-                                backgroundColor: primaryLight,
-                                width: isPhone ? 25 : 28,
-                                height: isPhone ? 25 : 28
-                              }}
-                            >
-                              <VisibilityIcon sx={{ fontSize: isPhone ? 14 : 16 }} />
-                            </IconButton>
+                            <Stack direction="row" spacing={0.4}>
+                              <IconButton
+                                onClick={() => loadOldStatement(params.row)}
+                                sx={{
+                                  color: primaryColor,
+                                  backgroundColor: primaryLight,
+                                  width: isPhone ? 25 : 28,
+                                  height: isPhone ? 25 : 28
+                                }}
+                              >
+                                <VisibilityIcon sx={{ fontSize: isPhone ? 14 : 16 }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => setMergeArchiveRow(params.row)}
+                                sx={{
+                                  color: primaryColor,
+                                  backgroundColor: primaryLight,
+                                  width: isPhone ? 25 : 28,
+                                  height: isPhone ? 25 : 28
+                                }}
+                              >
+                                <MergeTypeIcon sx={{ fontSize: isPhone ? 14 : 16 }} />
+                              </IconButton>
+                            </Stack>
                           )
                         }
                       ]
@@ -2581,17 +2599,30 @@ const StudentStatementDialog2 = ({
                           align: "center",
                           headerAlign: "center",
                           renderCell: (params) => (
-                            <Tooltip title="كشف الحساب السابق">
-                              <IconButton
-                                onClick={() => loadOldStatement(params.row)}
-                                sx={{
-                                  color: primaryColor,
-                                  backgroundColor: primaryLight
-                                }}
-                              >
-                                <VisibilityIcon />
-                              </IconButton>
-                            </Tooltip>
+                            <Stack direction="row" spacing={0.8}>
+                              <Tooltip title="كشف الحساب السابق">
+                                <IconButton
+                                  onClick={() => loadOldStatement(params.row)}
+                                  sx={{
+                                    color: primaryColor,
+                                    backgroundColor: primaryLight
+                                  }}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="دمج الحساب">
+                                <IconButton
+                                  onClick={() => setMergeArchiveRow(params.row)}
+                                  sx={{
+                                    color: primaryColor,
+                                    backgroundColor: primaryLight
+                                  }}
+                                >
+                                  <MergeTypeIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Stack>
                           )
                         }
                       ]
@@ -2673,6 +2704,19 @@ const StudentStatementDialog2 = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ArchiveMergeDialog
+        open={Boolean(mergeArchiveRow)}
+        row={mergeArchiveRow}
+        accountGuid={accountGuid}
+        userGuid={getUserGuid(getCurrentUser())}
+        apiBaseUrl={apiBaseUrl}
+        onClose={() => setMergeArchiveRow(null)}
+        onMerged={() => {
+          // القيد الجديد لازم يظهر في كشف الحساب فورًا.
+          void loadStatement({ preferCache: false });
+        }}
+      />
 
       <Dialog sx={uiLayout.withUiSx(uiLayout.dialogLayoutSx, FOCUS_BORDER_SX)}
         open={oldStatementOpen}

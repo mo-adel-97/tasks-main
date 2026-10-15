@@ -45,6 +45,8 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import DiscountIcon from "@mui/icons-material/Discount";
 import ReplayIcon from "@mui/icons-material/Replay";
 import BlockIcon from "@mui/icons-material/Block";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import SchoolIcon from "@mui/icons-material/School";
 import SendIcon from "@mui/icons-material/Send";
@@ -237,6 +239,8 @@ const tabs = [
   { key: "discount", label: "طلبات الخصم", icon: <DiscountIcon /> },
   { key: "refund", label: "طلبات الاسترداد", icon: <ReplayIcon /> },
   { key: "de-registration", label: "طلبات طي القيد", icon: <BlockIcon /> },
+  { key: "transfer", label: "طلبات النقل / التحويل", icon: <SwapHorizRoundedIcon /> },
+  { key: "vip", label: "طلبات VIP", icon: <WorkspacePremiumRoundedIcon /> },
   { key: "approvals", label: "الموافقات الدراسية", icon: <VerifiedIcon /> },
   { key: "other-institutes", label: "تسجيلات في معاهد أخرى", icon: <SchoolIcon /> }
 ];
@@ -2747,6 +2751,63 @@ ${PRINT_READY_SCRIPT}</head>
     { field: "accountNotes", headerName: "ملاحظات الحسابات", minWidth: 320, flex: 1.3, align: "center", headerAlign: "center" }
   ]);
 
+  // حالة الطلب بلون واضح: مقبول / مرفوض أو ملغي / لسه
+  const requestStatusCell = ({ value }) => {
+    const text = value || "-";
+    const accepted = text === "تم التأكيد" || text === "مؤكد";
+    const rejected = text === "ملغي" || text === "مرفوض";
+    return (
+      <Chip
+        size="small"
+        label={text}
+        sx={{
+          fontWeight: 900,
+          color: accepted ? "#0b6b3a" : rejected ? "#a01318" : "#7a5200",
+          backgroundColor: accepted ? "#e3f6ea" : rejected ? "#fde7e7" : "#fff4d6",
+          border: `1px solid ${accepted ? "#9fd8b5" : rejected ? "#f3b5b7" : "#f1d27c"}`
+        }}
+      />
+    );
+  };
+
+  const transferColumns = [
+    commonDateColumn,
+    { field: "typeName", headerName: "نوع الطلب", minWidth: 110, align: "center", headerAlign: "center" },
+    { field: "studentName", headerName: "اسم الطالب", minWidth: 150, flex: 1, align: "center", headerAlign: "center" },
+    { field: "nationalId", headerName: "رقم الهوية", minWidth: 110, align: "center", headerAlign: "center" },
+    { field: "oldValue", headerName: "من", minWidth: 190, flex: 1, align: "center", headerAlign: "center" },
+    { field: "newValue", headerName: "إلى", minWidth: 190, flex: 1, align: "center", headerAlign: "center" },
+    { field: "orderStatus", headerName: "حالة الطلب", minWidth: 120, align: "center", headerAlign: "center", renderCell: requestStatusCell },
+    { field: "supervisionNotes", headerName: "ملاحظة الإشراف العام", minWidth: 220, flex: 1, align: "center", headerAlign: "center" },
+    { field: "accountNotes", headerName: "ملاحظة الحسابات", minWidth: 220, flex: 1, align: "center", headerAlign: "center" },
+    { field: "response", headerName: "الرد", minWidth: 200, flex: 1, align: "center", headerAlign: "center" },
+    { field: "requestNotes", headerName: "ملاحظاتي على الطلب", minWidth: 200, flex: 1, align: "center", headerAlign: "center" },
+    {
+      field: "formUrl",
+      headerName: "النموذج",
+      minWidth: 120,
+      sortable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ value }) =>
+        value ? (
+          <a href={value} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 900, color: "#057546" }}>
+            عرض النموذج
+          </a>
+        ) : "-"
+    },
+    { field: "confirmedByName", headerName: "منفذ الإجراء", minWidth: 150, align: "center", headerAlign: "center" }
+  ];
+
+  const vipColumns = commonRequestColumns([
+    { field: "branchName", headerName: "الفرع", minWidth: 170, flex: 1, align: "center", headerAlign: "center" },
+    { field: "diplomName", headerName: "الدبلوم / الدورة", minWidth: 200, flex: 1, align: "center", headerAlign: "center" },
+    { field: "orderStatus", headerName: "حالة الطلب", minWidth: 150, align: "center", headerAlign: "center", renderCell: requestStatusCell },
+    { field: "accountNotes", headerName: "ملاحظة المبيعات", minWidth: 240, flex: 1.2, align: "center", headerAlign: "center" },
+    { field: "requestNotes", headerName: "ملاحظاتي على الطلب", minWidth: 200, flex: 1, align: "center", headerAlign: "center" },
+    { field: "reviewedByName", headerName: "راجعه", minWidth: 140, align: "center", headerAlign: "center" }
+  ]);
+
   const deregistrationColumns = [
     { field: "code", headerName: "كود", minWidth: 90, align: "center", headerAlign: "center" },
     { ...commonDateColumn, field: "actionDate" },
@@ -3014,6 +3075,8 @@ ${PRINT_READY_SCRIPT}</head>
     activeTab === "discount" ? discountColumns :
     activeTab === "refund" ? refundColumns :
     activeTab === "de-registration" ? deregistrationColumns :
+    activeTab === "transfer" ? transferColumns :
+    activeTab === "vip" ? vipColumns :
     activeTab === "approvals" ? approvalColumns :
     activeTab === "other-institutes" ? otherInstitutesColumns :
     nonContractColumns;
@@ -3227,6 +3290,30 @@ ${PRINT_READY_SCRIPT}</head>
         nationalIdColumn,
         statusColumn,
         accountNotesColumn
+      ];
+    }
+
+    if (activeTab === "transfer" || activeTab === "vip") {
+      return [
+        studentColumn,
+        { ...statusColumn, renderCell: requestStatusCell },
+        {
+          field: "__compactNotes",
+          headerName: "الملاحظات",
+          flex: 1.2,
+          minWidth: isPhone ? 80 : 110,
+          sortable: false,
+          filterable: false,
+          align: "center",
+          headerAlign: "center",
+          renderCell: ({ row }) => {
+            const note = activeTab === "transfer"
+              ? [row?.supervisionNotes && `الإشراف: ${row.supervisionNotes}`, row?.accountNotes && `الحسابات: ${row.accountNotes}`, row?.response && row.orderStatus === "ملغي" ? row.response : ""]
+                  .filter(Boolean).join(" • ") || "-"
+              : row?.accountNotes || "-";
+            return compactTextCell(note, note);
+          }
+        }
       ];
     }
 

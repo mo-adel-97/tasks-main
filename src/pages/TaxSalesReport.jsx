@@ -38,7 +38,6 @@ import {
   useTheme
 } from "@mui/material";
 
-import { DataGrid } from "@mui/x-data-grid";
 
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -55,6 +54,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -1909,7 +1909,7 @@ export default function TaxSalesReport() {
                   "hidden"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 rows={
                   filteredRows
                 }

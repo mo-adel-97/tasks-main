@@ -37,7 +37,6 @@ import {
   useTheme
 } from "@mui/material";
 
-import { DataGrid } from "@mui/x-data-grid";
 
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -57,6 +56,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 
 
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -3013,7 +3013,7 @@ export default function SalesReport() {
                 overflow: "hidden"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 autoHeight
                 rows={filteredRows}
                 columns={tabletColumns}
@@ -3137,7 +3137,7 @@ export default function SalesReport() {
                 overflowX: "auto"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 autoHeight
                 rows={filteredRows}
                 columns={columns}

@@ -25,7 +25,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
@@ -35,6 +34,7 @@ import ClearAllIcon from "@mui/icons-material/ClearAll";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -1669,7 +1669,7 @@ const AfterSalesFollow = () => {
                 backgroundColor: isDark ? darkSection : "#fff"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 rows={dataGridRows}
                 columns={columns}
                 loading={loading}

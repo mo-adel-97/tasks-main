@@ -24,6 +24,12 @@ import AdmissionOrderDialog from "../components/AdmissionOrderDialog";
 import StudentPaymentOrderDialog from "../components/StudentPaymentOrderDialog";
 import StudentRegFeesDialog from "../components/StudentRegFeesDialog";
 import StudentStudyFileDialog from "../components/StudentStudyFileDialog";
+import VipBadge from "../components/VipBadge";
+import ReceptionVipDialog from "../components/ReceptionVipDialog";
+import ReceptionTransferDialog from "../components/ReceptionTransferDialog";
+import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+import { useVipLookup } from "../utils/receptionExtras";
 import EditStudentDialog from "../components/EditStudentDialog";
 import StudentOperationsDialog from "../components/StudentOperationsDialog";
 import DiscountOrderDialog from "../components/DiscountOrderDialog";
@@ -1438,6 +1444,30 @@ const [registerDocumentRow, setRegisterDocumentRow] = useState(null);
 
   const [actionAnchorEl, setActionAnchorEl] = useState(null);
   const [actionRow, setActionRow] = useState(null);
+
+  // صلاحية "تحويل لخريج" المنفصلة: بتتحمل مرة واحدة علشان الزرار يظهر بس لأصحابها.
+  const [canGraduate, setCanGraduate] = useState(false);
+  useEffect(() => {
+    const userGuid = getUserGuid(getCurrentUser());
+    if (!userGuid) return undefined;
+
+    let alive = true;
+    fetch(
+      `${API_BASE_URL}/api/reception-office/students/graduate/permission?userGuid=${encodeURIComponent(userGuid)}`,
+      { cache: "no-store" }
+    )
+      .then((response) => (response.ok ? response.json() : null))
+      .then((result) => {
+        if (alive) setCanGraduate(Boolean(result?.allowed));
+      })
+      .catch(() => {
+        if (alive) setCanGraduate(false);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, []);
   const actionMenuPaperRef = useRef(null);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -1445,6 +1475,10 @@ const [registerDocumentRow, setRegisterDocumentRow] = useState(null);
   const [studentDetails, setStudentDetails] = useState(null);
 
   const [studyFileOpen, setStudyFileOpen] = useState(false);
+  // VIP + طلب نقل/تحويل (صلاحيات جديدة)
+  const { isVip, hasVipRequest } = useVipLookup();
+  const [vipDialogStudent, setVipDialogStudent] = useState(null);
+  const [transferDialogStudent, setTransferDialogStudent] = useState(null);
 const [studyFileStudent, setStudyFileStudent] = useState(null);
 
 const [studentOperationsOpen, setStudentOperationsOpen] = useState(false);
@@ -1536,7 +1570,8 @@ const autoSearchTimerRef = useRef(null);
   }, []);
 
   const handleSearch = useCallback(async (customValue = null, silent = false) => {
-    const value = String(customValue ?? searchTextRef.current).trim();
+    // زرار البحث بيبعت الـ event نفسه (onClick={handleSearch}) — نتجاهله ونستخدم النص المكتوب
+    const value = String(typeof customValue === "string" ? customValue : searchTextRef.current ?? "").trim();
 
     if (!value) {
       if (!silent) {
@@ -2183,6 +2218,23 @@ const handleFeesForm = (row) => {
   };
 
 
+const handleConvertVip = (row) => {
+  setSelectedStudent(row);
+  if (hasVipRequest(row)) {
+    showWarning(isVip(row) ? "الطالب ده عميل VIP بالفعل" : "الطالب ده عليه طلب تحويل VIP لسه في انتظار التأكيد من المبيعات");
+    return;
+  }
+  setVipDialogStudent(row);
+};
+
+// متاح للطالب المقبول والطالب الجديد (استمارة لم تُقبل) وصاحب طلب الالتحاق؛
+// الشاشة نفسها بترفض لو الطالب ملوش طلب التحاق ولا استمارة.
+const handleTransferRequest = (row) => {
+  setSelectedStudent(row);
+  if (!ensureStudentActive(row)) return;
+  setTransferDialogStudent(row);
+};
+
 const handleStudyFile = (row) => {
   setSelectedStudent(row);
 
@@ -2604,6 +2656,74 @@ const handleAcceptOrder = (row) => {
     setChangePaymentStatusOpen(true);
   };
 
+  // تحويل لخريج: الحالة الدراسية + المستوى الدراسي = خريج مع بعض.
+  // صلاحية منفصلة "تحويل لخريج" (reception-graduate) — الزرار بيظهر بس لأصحابها.
+  const handleGraduate = async (row) => {
+    const accountGuid = row?.accountGuid || row?.AccountGuid || "";
+    const studentLevelGuid = row?.levelGuid || row?.studentLevelGuid || row?.StudentLevelGuid || "";
+    const emptyGuid = "00000000-0000-0000-0000-000000000000";
+
+    if (!accountGuid || accountGuid === emptyGuid || !studentLevelGuid || studentLevelGuid === emptyGuid) {
+      showWarning("لا يمكن قراءة الملف التدريبي للطالب");
+      return;
+    }
+
+    const userGuid = getUserGuid(getCurrentUser());
+    if (!userGuid) {
+      showWarning("تعذر قراءة بيانات المستخدم، برجاء تسجيل الدخول مرة أخرى");
+      return;
+    }
+
+    const permissionResponse = await fetch(
+      `${API_BASE_URL}/api/reception-office/students/graduate/permission?userGuid=${encodeURIComponent(userGuid)}`,
+      { cache: "no-store" }
+    );
+    const permission = await permissionResponse.json().catch(() => null);
+    if (!permissionResponse.ok || !permission?.allowed) {
+      showWarning(permission?.message || "ليس لديك صلاحية «تحويل لخريج»");
+      return;
+    }
+
+    const confirmResult = await Swal.fire({
+      icon: "question",
+      title: "تحويل لخريج",
+      html: `
+        <div style="font-weight:800;line-height:1.9">
+          <div>${row?.studentName || ""}</div>
+          <div>${row?.nationalId || ""}</div>
+          <div>${[row?.diplomName, row?.batchName].filter(Boolean).join(" — ")}</div>
+          <div style="margin-top:8px">سيتم تحويل <b>الحالة الدراسية</b> و<b>المستوى الدراسي</b> إلى «خريج» مع إنهاء الدراسة في هذا الملف.</div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "نعم، تحويل لخريج",
+      cancelButtonText: "تراجع",
+      confirmButtonColor: primaryColor,
+      cancelButtonColor: "#777",
+      reverseButtons: true
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reception-office/students/graduate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userGuid, accountGuid, studentLevelGuid })
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.message || result?.error || "تعذر تحويل الطالب إلى خريج");
+      }
+
+      await showSuccess(result?.message || "تم تحويل الطالب إلى خريج");
+      handleSearch(searchText, true);
+    } catch (error) {
+      showError(error.message || "تعذر تحويل الطالب إلى خريج");
+    }
+  };
+
   const handleToggleProfileLock = async (row, lockProfile) => {
     const accountGuid =
       row?.accountGuid ||
@@ -2795,7 +2915,14 @@ const handleAcceptOrder = (row) => {
         minWidth: 150,
         align: "center",
         headerAlign: "center",
-        renderCell: (params) => <EllipsisCell value={params.value} />
+        renderCell: (params) => (
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5, width: "100%", minWidth: 0 }}>
+            <Box sx={{ minWidth: 0, overflow: "hidden" }}>
+              <EllipsisCell value={params.value} />
+            </Box>
+            {isVip(params.row) && <VipBadge />}
+          </Box>
+        )
       },
       {
         field: "studentTel",
@@ -2873,6 +3000,16 @@ const handleAcceptOrder = (row) => {
         renderCell: (params) => <EllipsisCell value={params.row?.diplomName || "-"} />
       },
       {
+        // دفعة الملف التدريبي (دبلوم / دورة تأهيلية / دورة تطويرية).
+        field: "batchName",
+        headerName: "الدفعة",
+        width: 110,
+        minWidth: 100,
+        align: "center",
+        headerAlign: "center",
+        renderCell: (params) => <EllipsisCell value={params.row?.batchName || "-"} />
+      },
+      {
         field: "actions",
         headerName: "الإجراءات",
         width: 180,
@@ -2913,7 +3050,7 @@ const handleAcceptOrder = (row) => {
           </Button>
         )
       }    ],
-    []
+    [isVip]
   );
 
   const oldStudentColumns = useMemo(
@@ -3030,6 +3167,7 @@ const handleAcceptOrder = (row) => {
             }}
           >
             {getCompactStudentName(params.value) || "-"}
+            {isVip(params.row) && <VipBadge sx={{ mr: 0.5 }} />}
           </Typography>
         </Tooltip>
       )
@@ -3060,21 +3198,43 @@ const handleAcceptOrder = (row) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <Tooltip title={params.row?.diplomName || ""} arrow>
-          <Typography
-            sx={{
-              width: "100%",
-              fontWeight: 900,
-              fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
-              lineHeight: 1.2,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              textAlign: "center"
-            }}
-          >
-            {params.row?.diplomName || "-"}
-          </Typography>
+        <Tooltip
+          title={[params.row?.diplomName, params.row?.batchName && `الدفعة: ${params.row.batchName}`].filter(Boolean).join(" — ")}
+          arrow
+        >
+          <Box sx={{ width: "100%", minWidth: 0 }}>
+            <Typography
+              sx={{
+                width: "100%",
+                fontWeight: 900,
+                fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "0.75rem",
+                lineHeight: 1.2,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                textAlign: "center"
+              }}
+            >
+              {params.row?.diplomName || "-"}
+            </Typography>
+            {params.row?.batchName ? (
+              // في الموبايل الدفعة تحت اسم الدبلوم بدل عمود منفصل.
+              <Typography
+                sx={{
+                  width: "100%",
+                  fontWeight: 700,
+                  fontSize: "0.68rem",
+                  lineHeight: 1.2,
+                  opacity: 0.75,
+                  whiteSpace: "nowrap",
+                  textAlign: "center",
+                  direction: "ltr"
+                }}
+              >
+                {params.row.batchName}
+              </Typography>
+            ) : null}
+          </Box>
         </Tooltip>
       )
     },
@@ -3988,6 +4148,7 @@ const handleAcceptOrder = (row) => {
             {actionRow?.studentName
               ? getCompactStudentName(actionRow.studentName)
               : "اختر الإجراء المطلوب"}
+            {actionRow && isVip(actionRow) && <VipBadge sx={{ mr: 0.75 }} />}
           </Typography>
         </Box>
 
@@ -3998,6 +4159,11 @@ const handleAcceptOrder = (row) => {
           <ActionMenuItem icon={<DescriptionIcon />} label="استمارة رسوم" color="#ef6c00" onClick={() => runAction(handleFeesForm, "جاري تجهيز استمارة الرسوم...", false)} />
           <ActionMenuItem icon={<RequestQuoteIcon />} label="طلب سداد" color="#00838f" onClick={() => runAction(handlePaymentOrder, "جاري تجهيز بيانات السداد...", false)} />
           <ActionMenuItem icon={<MenuBookIcon />} label="الملف التدريبي" color="#3949ab" onClick={() => runAction(handleStudyFile, "جاري فتح الملف التدريبي...")} />
+          {/* متاحين لكل المستخدمين */}
+          <ActionMenuItem icon={<SwapHorizRoundedIcon />} label="طلب نقل / تحويل" color="#00796b" onClick={() => runAction(handleTransferRequest, "", false)} />
+          {!(actionRow && hasVipRequest(actionRow)) && (
+            <ActionMenuItem icon={<WorkspacePremiumRoundedIcon />} label="طلب تحويل VIP" color="#b7791f" onClick={() => runAction(handleConvertVip, "", false)} />
+          )}
         </ActionMenuSection>
 
         <Divider
@@ -4035,6 +4201,24 @@ const handleAcceptOrder = (row) => {
           <ActionMenuItem icon={<ManageHistoryIcon />} label="العمليات" color="#5d4037" onClick={() => runAction(handleHistory, "جاري تحميل سجل العمليات...")} />
           <ActionMenuItem icon={<CreditScoreIcon />} label="تغيير حالة السداد" color="#455a64" onClick={() => runAction(handleChangePayStatus, "جاري تحميل حالة السداد...")} />
         </ActionMenuSection>
+
+        {/* إجراء منفصل بصلاحية منفصلة "تحويل لخريج" — بيظهر بس لأصحاب الصلاحية */}
+        {canGraduate ? (
+          <>
+            <Divider
+              sx={(theme) => ({
+                mx: isDesktop ? 1.2 : 0.55,
+                borderColor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(103,201,157,.42)"
+                    : undefined
+              })}
+            />
+            <ActionMenuSection>
+              <ActionMenuItem icon={<SchoolIcon />} label="تحويل لخريج" color="#1b5e20" onClick={() => runAction(handleGraduate, "", false)} />
+            </ActionMenuSection>
+          </>
+        ) : null}
       </Menu>
 
         </PageContainer>
@@ -4233,6 +4417,25 @@ const handleAcceptOrder = (row) => {
     ""
   }
   apiBaseUrl={API_BASE_URL}
+/>
+<ReceptionVipDialog
+  open={Boolean(vipDialogStudent)}
+  student={vipDialogStudent}
+  onClose={() => setVipDialogStudent(null)}
+  onDone={(message) => {
+    setVipDialogStudent(null);
+    showSuccess(message);
+  }}
+/>
+<ReceptionTransferDialog
+  open={Boolean(transferDialogStudent)}
+  student={transferDialogStudent}
+  onClose={() => setTransferDialogStudent(null)}
+  onDone={(message) => {
+    setTransferDialogStudent(null);
+    if (message.includes("تعذر رفع النموذج")) showWarning(message);
+    else showSuccess(message);
+  }}
 />
 <StudentStudyFileDialog
   open={studyFileOpen}

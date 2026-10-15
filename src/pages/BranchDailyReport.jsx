@@ -23,7 +23,6 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
@@ -32,6 +31,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -1033,7 +1033,7 @@ const BranchDailyReport = () => {
               p: 1.2
             }, uiLayout.tableContainerSx)}
           >
-            <DataGrid
+            <FilterableDataGrid
               rows={
                 tab === 0
                   ? payOrderData

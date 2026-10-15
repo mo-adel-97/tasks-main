@@ -89,7 +89,12 @@ const FEATURES = [
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  // جاي من انتهاء الجلسة (apiAuth بيحوّل لـ /login?expired=1).
+  const [errorMsg, setErrorMsg] = useState(() =>
+    new URLSearchParams(window.location.search).get('expired') === '1'
+      ? 'انتهت الجلسة، برجاء تسجيل الدخول مرة أخرى'
+      : ''
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [animate, setAnimate] = useState(false);

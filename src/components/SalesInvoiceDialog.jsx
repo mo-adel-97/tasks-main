@@ -22,6 +22,8 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import PrintIcon from "@mui/icons-material/Print";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import QRCode from "qrcode";
 import logoImage from "../images/logo.jpg";
 
 const primaryColor = "#057546";
@@ -31,10 +33,43 @@ const accentColor = "#ae1e21";
 const REFUND_POLICY_URL =
   "https://sstli.com/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/";
 
-const refundQrUrl = (size = 240) =>
-  `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=0&data=${encodeURIComponent(
-    REFUND_POLICY_URL
-  )}`;
+// الـ QR بيتولد محلياً (بدل api.qrserver.com) علشان الطباعة والـ PDF ما يعتمدوش على موقع خارجي.
+const makeQr = (text) =>
+  QRCode.toDataURL(text, { margin: 0, width: 240, errorCorrectionLevel: "M" }).catch(() => "");
+
+// PDF مضغوط من نفس شكل الطباعة: صورة JPEG بجودة متوسطة على صفحة A4.
+const htmlToCompressedPdf = async (html) => {
+  const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
+
+  const frame = document.createElement("iframe");
+  Object.assign(frame.style, { position: "fixed", left: "-10000px", top: "0", width: "794px", height: "1123px", border: "0" });
+  document.body.appendChild(frame);
+
+  try {
+    const doc = frame.contentDocument;
+    doc.open();
+    // في الطباعة الهوامش من @page؛ هنا بنحطها padding علشان الصفحة تطلع بنفس الشكل.
+    doc.write(html.replace("</head>", "<style>body{width:210mm;padding:9mm;}</style></head>"));
+    doc.close();
+
+    await Promise.all(
+      Array.from(doc.images).map((img) =>
+        img.complete ? null : new Promise((resolve) => { img.onload = resolve; img.onerror = resolve; })
+      )
+    );
+    if (doc.fonts?.ready) await doc.fonts.ready;
+
+    const canvas = await html2canvas(doc.body, { scale: 1.6, backgroundColor: "#ffffff", useCORS: true, logging: false, windowWidth: 794 });
+    const pdf = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
+    const pageW = 210;
+    const pageH = 297;
+    const imgH = (canvas.height * pageW) / canvas.width;
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.72), "JPEG", 0, 0, pageW, Math.min(imgH, pageH), undefined, "FAST");
+    return pdf.output("blob");
+  } finally {
+    frame.remove();
+  }
+};
 
 
 const numberValue = (value) => {
@@ -256,6 +291,8 @@ export default function SalesInvoiceDialog({
   const [printing, setPrinting] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState(null);
+  const [qr, setQr] = useState({ verify: "", refund: "" });
+  const [exporting, setExporting] = useState(false);
 
   const billGuid =
     invoice?.billGuid ||
@@ -326,6 +363,17 @@ export default function SalesInvoiceDialog({
     };
   }, [open, billGuid, apiBaseUrl]);
 
+  // رموز الـ QR: التحقق من الفاتورة + سياسة الاسترداد.
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([data?.verifyUrl ? makeQr(data.verifyUrl) : "", makeQr(REFUND_POLICY_URL)]).then(([verify, refund]) => {
+      if (!cancelled) setQr({ verify, refund });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.verifyUrl]);
+
   const totals = useMemo(() => {
     const items = Array.isArray(data?.items)
       ? data.items
@@ -379,32 +427,47 @@ export default function SalesInvoiceDialog({
 
     const rows = items
       .map(
-        (item) => `
+        (item, index) => `
           <tr>
+            <td class="num-col">${index + 1}</td>
             <td class="statement">${escapeHtml(item.diplomName)}</td>
             <td>${escapeHtml(item.unit || "PCS")}</td>
             <td>${escapeHtml(item.qty)}</td>
             <td>${money(item.cost)}</td>
-            <td>${escapeHtml(item.taxValue)}</td>
+            <td>${escapeHtml(item.taxValue)}%</td>
             <td>${money(item.tax)}</td>
-            <td>${money(item.subTotal)}</td>
+            <td class="net">${money(item.subTotal)}</td>
           </tr>
         `
       )
       .join("");
 
+    const verifyBlock =
+      data?.verifyUrl && qr.verify
+        ? `
+        <a class="verify-card" href="${escapeHtml(data.verifyUrl)}" target="_blank" rel="noreferrer">
+          <img src="${qr.verify}" alt="QR التحقق من الفاتورة" />
+          <span class="verify-title">التحقق من الفاتورة</span>
+          <span class="verify-sub">امسح الرمز للتأكد من صحتها</span>
+          <span class="verify-badge">&#10003; فاتورة موثقة</span>
+        </a>`
+        : `<div></div>`;
+
+    const metaRow = (ar, en, value, ltr = false) => `
+      <div class="meta-row">
+        <span class="meta-label"><b>${ar}</b><small>${en}</small></span>
+        <span class="meta-value${ltr ? " ltr" : ""}">${escapeHtml(value) || "—"}</span>
+      </div>`;
+
     return `
 <!doctype html>
-<html lang="ar" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <title>فاتورة رقم ${escapeHtml(header.code)}</title>
 
   <style>
-    @page {
-      size: A4 portrait;
-      margin: 9mm;
-    }
+    @page { size: A4 portrait; margin: 9mm; }
 
     * {
       box-sizing: border-box;
@@ -412,401 +475,229 @@ export default function SalesInvoiceDialog({
       print-color-adjust: exact !important;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       background: #fff;
-      color: #111;
-      font-family: Arial, Tahoma, sans-serif;
-    }
-
-    body {
-      direction: ltr;
+      color: #1b2a23;
+      font-family: Tahoma, Arial, sans-serif;
     }
 
     .page {
       width: 100%;
-      min-height: 278mm;
-      padding: 5mm 6mm 7mm;
-      border: 1.8px solid #2f2f2f;
-      border-radius: 12px;
+      min-height: 277mm;
+      display: flex;
+      flex-direction: column;
+      border: 1.4px solid #cfdcd5;
+      border-radius: 14px;
+      overflow: hidden;
       background: #fff;
     }
 
+    .brand-bar { height: 7px; background: linear-gradient(90deg, #057546, #0a9a5c 55%, #ae1e21); }
+
+    .content { padding: 5mm 7mm 6mm; display: flex; flex-direction: column; flex: 1; }
+
+    /* ===== الهيدر: بيانات المعهد | QR التحقق | اللوجو ===== */
     .top-header {
       display: grid;
-      grid-template-columns: 1fr 120px;
+      grid-template-columns: 1fr 150px 1fr;
       align-items: center;
-      gap: 18px;
-      direction: ltr;
-      padding: 2mm 1mm 5mm;
-      border-bottom: 2.5px solid #111;
-      margin-bottom: 6mm;
+      gap: 5mm;
+      padding-bottom: 4mm;
+      border-bottom: 1.5px solid #dfe9e4;
     }
 
-    .logo-wrap {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 110px;
-      min-height: 110px;
-      border: 1.6px solid #b7b7b7;
-      border-radius: 16px;
-      padding: 10px;
-      background: #fafafa;
-      justify-self: start;
-    }
+    .company-name { font-size: 16px; font-weight: 900; color: #034d31; line-height: 1.5; margin-bottom: 1.5mm; }
+    .company-line { font-size: 10.5px; font-weight: 700; color: #33443c; line-height: 1.85; }
+    .company-line span { color: #6b7d74; font-weight: 600; }
+    .company-line .ltr { direction: ltr; unicode-bidi: isolate; color: #1b2a23; font-weight: 800; }
 
-    .logo {
-      width: 82px;
-      height: 82px;
-      object-fit: contain;
-      display: block;
-    }
-
-.company-block {
-  direction: rtl;
-  text-align: right;
-  line-height: 2;
-  justify-self: stretch;
-  width: 100%;
-  min-width: 0;
-  padding-right: 2mm;
-}
-
-  .company-name {
-  font-size: 18px;
-  font-weight: 900;
-  margin-bottom: 2mm;
-  white-space: nowrap;
-  word-break: keep-all;
-}
-
-.company-line {
-  font-size: 11.5px;
-  font-weight: 700;
-  margin-bottom: 1px;
-  white-space: nowrap;
-  word-break: keep-all;
-}
-
-    .invoice-title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: 900;
-      margin: 1mm 0 6mm;
-    }
-
-    .meta-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10mm;
-      direction: ltr;
-      margin-bottom: 6mm;
-    }
-
-    .meta-box {
-      border: 1.5px solid #555;
-      border-radius: 10px;
-      padding: 3.5mm 4.5mm;
-      min-height: 38mm;
-      direction: ltr;
-    }
-
-    .meta-box-title {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 900;
-      margin-bottom: 2mm;
-      padding-bottom: 1.5mm;
-      border-bottom: 1px solid #e3e3e3;
-    }
-
-    .meta-row {
-      display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) 92px;
-      align-items: center;
-      gap: 8px;
-      min-height: 8mm;
-      padding: 1.2mm 0;
-      border-bottom: 1px solid #eeeeee;
-      font-size: 11.5px;
-    }
-
-    .meta-row:last-child {
-      border-bottom: 0;
-    }
-
-    .meta-label-en {
-      text-align: left;
-      direction: ltr;
-      font-size: 10.4px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .meta-label-ar {
-      text-align: right;
-      font-size: 10.4px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .meta-value {
-      text-align: center;
-      font-size: 10px;
-      font-weight: 500;
-      line-height: 1.35;
-      word-break: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .meta-value-ltr {
-      direction: ltr;
-      unicode-bidi: isolate;
-      white-space: nowrap;
-    }
-
-    .items-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      margin-bottom: 5mm;
-      direction: rtl;
-    }
-
-    .items-table thead th {
-      background: #ececec;
-      border-top: 1.5px solid #888;
-      border-bottom: 1.5px solid #888;
-      padding: 8px 4px;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .items-table tbody td {
-      border-bottom: 1px solid #b8b8b8;
-      padding: 8px 4px;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
-      vertical-align: middle;
-    }
-
-    .items-table th.statement,
-    .items-table td.statement {
-      width: 37%;
-      text-align: right;
-      padding-right: 8px;
-      line-height: 1.5;
-    }
-
-    .note-line {
-      min-height: 15mm;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 5mm;
-    }
-
-    .bottom-section {
-        display: grid;
-  grid-template-columns: 285px 1fr;
-      gap: 12mm;
-      align-items: start;
-      direction: rtl;
-      margin-top: 2mm;
-    }
-
-    .totals-box {
-      border: 1.5px solid #555;
-      border-radius: 10px;
-      padding: 5mm 6mm;
-    }
-
- .totals-row {
-  display: grid;
-  grid-template-columns: minmax(145px, 1fr) 85px;
-  align-items: center;
-  gap: 12px;
-  min-height: 10mm;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.totals-row > span:first-child {
-  white-space: nowrap;
-  word-break: keep-all;
-  text-align: right;
-}
-
-    .totals-value {
-      text-align: center;
-      direction: ltr;
-      font-weight: 900;
-    }
-
-    .policy-side {
+    .verify-card {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      min-height: 48mm;
-      padding-top: 2mm;
-    }
-
-    .policy-side a {
-      color: #111;
       text-decoration: none;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 800;
-      line-height: 1.6;
+      color: #1b2a23;
+      border: 1.6px solid #057546;
+      border-radius: 14px;
+      padding: 7px 6px 6px;
+      background: #f3faf6;
     }
-
-    .refund-qr {
-      width: 122px;
-      height: 122px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 6px;
-    }
-
-    .footer-note {
-      margin-top: 10mm;
-      text-align: center;
-      font-size: 16px;
+    .verify-card img { width: 100px; height: 100px; display: block; background: #fff; padding: 4px; border-radius: 8px; }
+    .verify-title { margin-top: 4px; font-size: 11px; font-weight: 900; color: #034d31; }
+    .verify-sub { font-size: 9px; font-weight: 700; color: #5d6f66; }
+    .verify-badge {
+      margin-top: 4px;
+      font-size: 9.5px;
       font-weight: 900;
+      color: #fff;
+      background: #057546;
+      border-radius: 99px;
+      padding: 1px 10px;
     }
 
-    .footer-sub-note {
-      margin-top: 3mm;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
-    }
+    .logo-wrap { justify-self: end; display: flex; flex-direction: column; align-items: center; gap: 2mm; }
+    .logo { width: 92px; height: 92px; object-fit: contain; display: block; }
+    .logo-caption { font-size: 9.5px; font-weight: 800; color: #034d31; text-align: center; line-height: 1.5; }
 
-    .muted {
-      color: #333;
+    /* ===== العنوان ===== */
+    .title-band {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5mm 0 4mm;
+      padding: 3mm 5mm;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #057546, #034d31);
+      color: #fff;
     }
+    .title-band h1 { margin: 0; font-size: 21px; font-weight: 900; line-height: 1.3; }
+    .title-band small { display: block; font-size: 10px; font-weight: 700; opacity: .85; direction: ltr; text-align: right; }
+    .invoice-no { text-align: center; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.35); border-radius: 10px; padding: 2mm 4mm; }
+    .invoice-no span { display: block; font-size: 9.5px; font-weight: 700; opacity: .85; }
+    .invoice-no b { font-size: 17px; letter-spacing: .5px; direction: ltr; unicode-bidi: isolate; }
+
+    /* ===== بيانات العميل والفاتورة ===== */
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-bottom: 5mm; }
+    .meta-box { border: 1.3px solid #dfe9e4; border-radius: 12px; overflow: hidden; }
+    .meta-box-title { background: #eef6f2; color: #034d31; font-size: 12px; font-weight: 900; padding: 2mm 4mm; border-bottom: 1px solid #dfe9e4; }
+    .meta-row { display: grid; grid-template-columns: 95px 1fr; align-items: center; gap: 3mm; padding: 1.7mm 4mm; border-bottom: 1px solid #f0f4f2; min-height: 9mm; }
+    .meta-row:last-child { border-bottom: 0; }
+    .meta-label b { display: block; font-size: 10.5px; font-weight: 900; color: #33443c; line-height: 1.3; }
+    .meta-label small { display: block; font-size: 8.5px; font-weight: 700; color: #8a9b92; direction: ltr; text-align: right; }
+    .meta-value { font-size: 11px; font-weight: 700; line-height: 1.45; overflow-wrap: anywhere; }
+    .meta-value.ltr { direction: ltr; unicode-bidi: isolate; text-align: right; }
+
+    /* ===== البنود ===== */
+    .items-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; border: 1.3px solid #dfe9e4; border-radius: 12px; overflow: hidden; }
+    .items-table thead th { background: #057546; color: #fff; padding: 2.4mm 1.5mm; font-size: 10.5px; font-weight: 900; text-align: center; line-height: 1.35; }
+    .items-table tbody td { padding: 2.6mm 1.5mm; text-align: center; font-size: 11px; font-weight: 700; border-top: 1px solid #edf2ef; }
+    .items-table tbody tr:nth-child(even) td { background: #f8fbf9; }
+    .items-table .num-col { width: 7%; color: #6b7d74; }
+    .items-table .statement { width: 33%; text-align: right; padding-right: 3mm; line-height: 1.5; }
+    .items-table td.net { font-weight: 900; color: #034d31; }
+
+    .note-line { margin: 4mm 0; padding: 2.5mm 4mm; border-radius: 10px; background: #f6f9f7; border-right: 4px solid #057546; font-size: 12.5px; font-weight: 800; color: #33443c; }
+    .note-line span { font-size: 10px; font-weight: 700; color: #6b7d74; margin-left: 2mm; }
+
+    /* ===== الإجماليات + سياسة الاسترداد ===== */
+    .bottom-section { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; align-items: center; margin-top: 1mm; }
+    .totals-box { border: 1.3px solid #dfe9e4; border-radius: 12px; overflow: hidden; }
+    .totals-row { display: flex; justify-content: space-between; align-items: center; padding: 2.4mm 4mm; font-size: 11.5px; font-weight: 800; border-bottom: 1px solid #f0f4f2; }
+    .totals-row .val { direction: ltr; unicode-bidi: isolate; font-weight: 900; }
+    .totals-row.grand { background: #057546; color: #fff; font-size: 13.5px; font-weight: 900; border-bottom: 0; }
+    .totals-row .cur { font-size: 9.5px; font-weight: 700; opacity: .8; margin-left: 1.5mm; }
+
+    .refund-side { display: flex; align-items: center; gap: 4mm; justify-content: flex-end; text-decoration: none; color: #1b2a23; }
+    .refund-side img { width: 78px; height: 78px; display: block; }
+    .refund-side div { text-align: right; font-size: 10.5px; font-weight: 800; line-height: 1.7; max-width: 150px; }
+    .refund-side small { display: block; font-size: 9px; color: #6b7d74; font-weight: 700; }
+
+    .footer { margin-top: auto; padding-top: 5mm; }
+    .footer-note { text-align: center; font-size: 14px; font-weight: 900; color: #ae1e21; padding: 2.5mm; border: 1.3px dashed #e6b8b9; border-radius: 10px; background: #fdf5f5; }
+    .footer-line { margin-top: 3mm; display: flex; justify-content: space-between; font-size: 9px; color: #8a9b92; font-weight: 700; }
   </style>
 </head>
 
 <body>
   <main class="page">
-    <section class="top-header">
-      <div class="logo-wrap">
-        <img class="logo" src="${logoImage}" alt="SSTLI" />
-      </div>
-
-      <div class="company-block">
-        <div class="company-name">${escapeHtml(branch.name || "")}</div>
-        <div class="company-line">${escapeHtml(branch.address || "")}</div>
-        <div class="company-line">الرقم الضريبي - ${escapeHtml(branch.vatNumber || "")}</div>
-        <div class="company-line">الهاتف - ${escapeHtml(branch.tel || "")}</div>
-        <div class="company-line">السجل التجاري - ${escapeHtml(branch.commercialRegister || "")}</div>
-      </div>
-    </section>
-
-    <div class="invoice-title">فاتورة ضريبية مبسطة</div>
-
-    <section class="meta-grid">
-      <div class="meta-box">
-        <div class="meta-box-title">بيانات العميل</div>
-
-        <div class="meta-row">
-          <span class="meta-label-en">Customer Name</span>
-          <span class="meta-value">${escapeHtml(header.studentName)}</span>
-          <span class="meta-label-ar">اسم العميل</span>
+    <div class="brand-bar"></div>
+    <div class="content">
+      <section class="top-header">
+        <div class="company-block">
+          <div class="company-name">${escapeHtml(branch.name || "المعهد السعودي المتخصص العالي للتدريب")}</div>
+          ${branch.address ? `<div class="company-line">${escapeHtml(branch.address)}</div>` : ""}
+          <div class="company-line"><span>الرقم الضريبي:</span> <b class="ltr">${escapeHtml(branch.vatNumber || "—")}</b></div>
+          <div class="company-line"><span>السجل التجاري:</span> <b class="ltr">${escapeHtml(branch.commercialRegister || "—")}</b></div>
+          <div class="company-line"><span>الهاتف:</span> <b class="ltr">${escapeHtml(branch.tel || "—")}</b></div>
         </div>
 
-        <div class="meta-row">
-          <span class="meta-label-en">ID Number</span>
-          <span class="meta-value meta-value-ltr">${escapeHtml(header.nationalId)}</span>
-          <span class="meta-label-ar">رقم الهوية</span>
+        ${verifyBlock}
+
+        <div class="logo-wrap">
+          <img class="logo" src="${logoImage}" alt="SSTLI" />
+          <div class="logo-caption">المعهد السعودي المتخصص<br />العالي للتدريب</div>
+        </div>
+      </section>
+
+      <section class="title-band">
+        <div>
+          <h1>فاتورة ضريبية مبسطة</h1>
+          <small>Simplified Tax Invoice</small>
+        </div>
+        <div class="invoice-no">
+          <span>رقم الفاتورة · Invoice No</span>
+          <b>${escapeHtml(header.code)}</b>
+        </div>
+      </section>
+
+      <section class="meta-grid">
+        <div class="meta-box">
+          <div class="meta-box-title">بيانات العميل</div>
+          ${metaRow("اسم العميل", "Customer Name", header.studentName)}
+          ${metaRow("رقم الهوية", "ID Number", header.nationalId, true)}
+          ${metaRow("رقم الجوال", "Mobile No", header.studentTel, true)}
         </div>
 
-        <div class="meta-row">
-          <span class="meta-label-en">Mobile No</span>
-          <span class="meta-value meta-value-ltr">${escapeHtml(header.studentTel)}</span>
-          <span class="meta-label-ar">رقم الجوال</span>
+        <div class="meta-box">
+          <div class="meta-box-title">بيانات الفاتورة</div>
+          ${metaRow("تاريخ الفاتورة", "Invoice Date", formatDate(header.billDate), true)}
+          ${metaRow("وقت الفاتورة", "Invoice Time", formatTime(header.billDate), true)}
+          ${metaRow("البائع", "Seller Name", header.fullName)}
         </div>
-      </div>
+      </section>
 
-      <div class="meta-box">
-        <div class="meta-box-title">بيانات الفاتورة</div>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th class="statement">البيان</th>
+            <th>الوحدة</th>
+            <th>الكمية</th>
+            <th>السعر</th>
+            <th>الضريبة</th>
+            <th>مبلغ الضريبة</th>
+            <th>الصافي</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || '<tr><td colspan="8">لا توجد بنود</td></tr>'}
+        </tbody>
+      </table>
 
-        <div class="meta-row">
-          <span class="meta-label-en">Invoice No</span>
-          <span class="meta-value meta-value-ltr">${escapeHtml(header.code)}</span>
-          <span class="meta-label-ar">رقم الفاتورة</span>
+      ${header.notes ? `<div class="note-line"><span>البيان:</span>${escapeHtml(header.notes).replaceAll("\n", "<br />")}</div>` : `<div style="height:4mm"></div>`}
+
+      <section class="bottom-section">
+        <div class="totals-box">
+          <div class="totals-row">
+            <span>الإجمالي قبل الضريبة</span>
+            <span class="val">${money(totals.total)}<span class="cur">ر.س</span></span>
+          </div>
+          <div class="totals-row">
+            <span>ضريبة القيمة المضافة</span>
+            <span class="val">${money(totals.tax)}<span class="cur">ر.س</span></span>
+          </div>
+          <div class="totals-row grand">
+            <span>الإجمالي بعد الضريبة</span>
+            <span class="val">${money(totals.subTotal)}<span class="cur">ر.س</span></span>
+          </div>
         </div>
 
-        <div class="meta-row">
-          <span class="meta-label-en">Invoice Date</span>
-          <span class="meta-value meta-value-ltr">${escapeHtml(formatDate(header.billDate))}</span>
-          <span class="meta-label-ar">تاريخ الفاتورة</span>
-        </div>
-
-        <div class="meta-row">
-          <span class="meta-label-en">Invoice Time</span>
-          <span class="meta-value meta-value-ltr">${escapeHtml(formatTime(header.billDate))}</span>
-          <span class="meta-label-ar">وقت الفاتورة</span>
-        </div>
-
-        <div class="meta-row">
-          <span class="meta-label-en">Seller Name</span>
-          <span class="meta-value">${escapeHtml(header.fullName)}</span>
-          <span class="meta-label-ar">البائع</span>
-        </div>
-      </div>
-    </section>
-
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th class="statement">البيان</th>
-          <th>الوحدة</th>
-          <th>الكمية</th>
-          <th>السعر</th>
-          <th>الضريبة %</th>
-          <th>مبلغ الضريبة</th>
-          <th>الصافي</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows || '<tr><td colspan="7">لا توجد بنود</td></tr>'}
-      </tbody>
-    </table>
-
-    <div class="note-line muted">${escapeHtml(header.notes || "--").replaceAll("\n", "<br />")}</div>
-
-    <section class="bottom-section">
-      <div class="totals-box">
-        <div class="totals-row">
-          <span>الإجمالي قبل الضريبة</span>
-          <span class="totals-value">${money(totals.total)}</span>
-        </div>
-        <div class="totals-row">
-          <span>ضريبة القيمة المضافة</span>
-          <span class="totals-value">${money(totals.tax)}</span>
-        </div>
-        <div class="totals-row">
-          <span>الإجمالي بعد الضريبة</span>
-          <span class="totals-value">${money(totals.subTotal)}</span>
-        </div>
-      </div>
-
-      <div class="policy-side">
-        <a href="${REFUND_POLICY_URL}" target="_blank" rel="noreferrer">
-          <img class="refund-qr" src="${refundQrUrl(240)}" alt="QR سياسة الاسترداد المالي" />
-          <span>يرجى متابعة سياسة الاسترداد المالي</span>
+        <a class="refund-side" href="${REFUND_POLICY_URL}" target="_blank" rel="noreferrer">
+          <div>يرجى متابعة سياسة الاسترداد المالي<small>امسح الرمز لعرض السياسة</small></div>
+          ${qr.refund ? `<img src="${qr.refund}" alt="QR سياسة الاسترداد المالي" />` : ""}
         </a>
-      </div>
-    </section>
+      </section>
 
-    <div class="footer-note">المبالغ المدفوعة رسوم دراسية غير مستردة</div>
+      <div class="footer">
+        <div class="footer-note">المبالغ المدفوعة رسوم دراسية غير مستردة</div>
+        <div class="footer-line">
+          <span>المعهد السعودي المتخصص العالي للتدريب</span>
+          <span>Saudi Specialized Institute for Higher Training</span>
+        </div>
+      </div>
+    </div>
   </main>
 </body>
 </html>`;
@@ -888,6 +779,27 @@ export default function SalesInvoiceDialog({
         "تعذر طباعة الفاتورة"
       );
       setPrinting(false);
+    }
+  };
+
+  // تصدير PDF مضغوط بنفس شكل الطباعة (فيه QR التحقق من الفاتورة).
+  const exportPdf = async () => {
+    if (!data) return;
+    try {
+      setExporting(true);
+      const blob = await htmlToCompressedPdf(buildPrintHtml());
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `فاتورة-${data?.invoice?.code || "مبيعات"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (e) {
+      setError(e.message || "تعذر تصدير الفاتورة PDF");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -1243,6 +1155,22 @@ export default function SalesInvoiceDialog({
             }, uiLayout.buttonSx)}
           >
             طباعة الفاتورة
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={exportPdf}
+            disabled={loading || printing || exporting || !data}
+            startIcon={exporting ? <CircularProgress size={18} color="inherit" /> : <PictureAsPdfIcon />}
+            sx={uiLayout.withUiSx({
+              minWidth: isPhone ? "100%" : 145,
+              minHeight: isPhone ? 44 : undefined,
+              fontWeight: 900,
+              borderColor: primaryColor,
+              color: primaryColor
+            }, uiLayout.buttonSx)}
+          >
+            تصدير PDF
           </Button>
 
           <Button

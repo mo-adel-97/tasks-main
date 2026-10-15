@@ -30,7 +30,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
@@ -43,6 +42,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -1463,7 +1463,7 @@ const MarketersReport = () => {
                 overflowY: "visible"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 autoHeight
                 rows={dataGridRows}
                 columns={columns}
@@ -2380,7 +2380,7 @@ const MarketersReport = () => {
                 overflow: "hidden"
               }, uiLayout.tableContainerSx)}
             >
-              <DataGrid
+              <FilterableDataGrid
                 rows={dataGridRows}
                 columns={compactColumns}
                 loading={loading}

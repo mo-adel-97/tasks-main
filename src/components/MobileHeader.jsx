@@ -15,9 +15,10 @@ export default function MobileHeader({ title = 'نظام الإدارة', open, 
   </AppBar>;
 }
 
-export function DrawerHeader({ onClose }) {
+export function DrawerHeader({ onClose, actions }) {
   return <Toolbar sx={{ minHeight: 56, gap: 1, px: '12px', flexShrink: 0 }}>
     <Typography sx={{ flex: 1, fontSize: '0.875rem', fontWeight: 700 }}>القائمة الرئيسية</Typography>
+    {actions}
     <IconButton aria-label="إغلاق القائمة" onClick={onClose} sx={{ color: 'inherit', width: 40, height: 40 }}>
       <CloseRoundedIcon />
     </IconButton>

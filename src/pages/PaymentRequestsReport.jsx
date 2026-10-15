@@ -26,7 +26,6 @@ import {
   useMediaQuery,
   useTheme
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -50,6 +49,7 @@ import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import StudentOperationsDialog from "../components/StudentOperationsDialog";
 import PaymentOrderDialog from "../components/PaymentOrderDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 
 
@@ -307,7 +307,7 @@ const PaymentRequestsDataGrid = React.memo(
     isPhone
   }) {
     return (
-<DataGrid 
+<FilterableDataGrid 
   autoHeight 
   rows={rows} 
   columns={columns} 

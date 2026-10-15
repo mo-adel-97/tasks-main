@@ -139,6 +139,24 @@ const toDateInputValue = (value) => {
   return `${year}-${month}-${day}`;
 };
 
+const round2 = (value) => Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
+
+// نسبة ضريبة البند: من الدبلوم/الدورة، ولو صفر والطلب أصلاً عليه ضريبة
+// (طالب غير سعودي) نستنتجها من الضريبة المحفوظة
+const toEditItem = (item) => {
+  const cost = Number(item?.cost || 0);
+  const tax = Number(item?.tax || 0);
+  const taxRate = Number(item?.taxRate || 0);
+  return {
+    ...item,
+    cost,
+    tax,
+    subTotal: Number(item?.subTotal || 0),
+    effectiveTaxRate:
+      taxRate > 0 ? taxRate : tax > 0 && cost > 0 ? Math.round((tax / cost) * 100) : 0
+  };
+};
+
 const escapeHtml = (value) =>
   String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -264,12 +282,7 @@ export default function PaymentOrderDialog({
         setEditCostCenterGuid(loadedData?.costCenterGuid || "");
         setEditItems(
           Array.isArray(loadedData?.items)
-            ? loadedData.items.map((item) => ({
-                ...item,
-                cost: Number(item?.cost || 0),
-                tax: Number(item?.tax || 0),
-                subTotal: Number(item?.subTotal || 0)
-              }))
+            ? loadedData.items.map(toEditItem)
             : []
         );
       } catch (e) {
@@ -439,12 +452,7 @@ export default function PaymentOrderDialog({
     setEditCostCenterGuid(data?.costCenterGuid || "");
     setEditItems(
       Array.isArray(data?.items)
-        ? data.items.map((item) => ({
-            ...item,
-            cost: Number(item?.cost || 0),
-            tax: Number(item?.tax || 0),
-            subTotal: Number(item?.subTotal || 0)
-          }))
+        ? data.items.map(toEditItem)
         : []
     );
     setEditMode(true);
@@ -467,21 +475,31 @@ export default function PaymentOrderDialog({
     setEditCostCenterGuid(data?.costCenterGuid || "");
   };
 
+  // تعديل المبلغ أو التكلفة يعيد حساب الضريبة تلقائياً بنفس نسبة البند
   const changeEditItem = (
     index,
     field,
     value
   ) => {
     setEditItems((previous) =>
-      previous.map((item, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...item,
-              [field]:
-                Number(value || 0)
-            }
-          : item
-      )
+      previous.map((item, itemIndex) => {
+        if (itemIndex !== index) return item;
+
+        const amount = Number(value || 0);
+        const rate = Number(item.effectiveTaxRate || 0) / 100;
+
+        if (field === "subTotal") {
+          const cost = round2(amount / (1 + rate));
+          return { ...item, subTotal: amount, cost, tax: round2(amount - cost) };
+        }
+
+        if (field === "cost") {
+          const tax = round2(amount * rate);
+          return { ...item, cost: amount, tax, subTotal: round2(amount + tax) };
+        }
+
+        return { ...item, [field]: amount };
+      })
     );
   };
 
@@ -735,20 +753,7 @@ export default function PaymentOrderDialog({
           Array.isArray(
             refreshedResult.data?.items
           )
-            ? refreshedResult.data.items.map(
-                (item) => ({
-                  ...item,
-                  cost: Number(
-                    item?.cost || 0
-                  ),
-                  tax: Number(
-                    item?.tax || 0
-                  ),
-                  subTotal: Number(
-                    item?.subTotal || 0
-                  )
-                })
-              )
+            ? refreshedResult.data.items.map(toEditItem)
             : []
         );
       }
@@ -1429,7 +1434,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                             ["الكمية", item.quantity, null],
                             ["التكلفة", item.cost, "cost"],
                             ["% الضريبة", item.taxRate, null],
-                            ["الضريبة", item.tax, "tax"],
+                            ["الضريبة", item.tax, null],
                             ["الصافي", item.subTotal, "subTotal"]
                           ].map(([label, value, field]) => (
                             <Box
@@ -1574,31 +1579,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid
                           </TableCell>
 
                           <TableCell align="center">
-                            {editMode &&
-                            Number(data?.status) === 0 ? (
-                              <TextField InputLabelProps={{ shrink: true }}
-                                size="small"
-                                type="number"
-                                value={item.tax}
-                                onChange={(e) =>
-                                  changeEditItem(
-                                    index,
-                                    "tax",
-                                    e.target.value
-                                  )
-                                }
-                                inputProps={{
-                                  min: 0,
-                                  step: "0.01",
-                                  style: {
-                                    textAlign: "center"
-                                  , direction: "ltr", unicodeBidi: "isolate" }
-                                , dir: "ltr" }}
-                                sx={uiLayout.withUiSx({ width: 95 }, uiLayout.formFieldSx)}
-                              />
-                            ) : (
-                              money(item.tax)
-                            )}
+                            {money(item.tax)}
                           </TableCell>
 
                           <TableCell

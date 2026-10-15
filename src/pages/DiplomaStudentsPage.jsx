@@ -37,7 +37,6 @@ import {
   useTheme
 } from "@mui/material";
 import {
-  DataGrid,
   GridToolbar
 } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
@@ -70,6 +69,9 @@ import EditStudentDialog
   from "../components/EditStudentDialog";
 import RegisterDocumentDialog
   from "../components/RegisterDocumentDialog";
+import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { withVipNameColumn } from "../components/VipBadge";
+import { useVipLookup } from "../utils/receptionExtras";
 
 
 
@@ -508,6 +510,7 @@ const downloadBlob = (blob, fileName) => {
 const DiplomaStudentsDataGrid = React.memo(
   function DiplomaStudentsDataGrid({
     rows,
+    onFilteredRowsChange,
     columns,
     loading,
     selectionModel,
@@ -517,9 +520,10 @@ const DiplomaStudentsDataGrid = React.memo(
     isCompact
   }) {
     return (
-<DataGrid
+<FilterableDataGrid
             autoHeight
             rows={rows}
+            onFilteredRowsChange={onFilteredRowsChange}
             columns={columns}
             loading={loading}
             checkboxSelection
@@ -708,7 +712,25 @@ const DiplomaStudentsPage = () => {
 
   const [branches, setBranches] = useState([]);
   const [levels, setLevels] = useState([]);
-  const [branchGuid, setBranchGuid] = useState("");
+  // آخر فرع اتفتح: نبدأ تحميل الطلاب فورًا بالتوازي مع الفروع والمستويات
+  // بدل ما نستنى قائمة الفروع الأول. لو الفرع مش مسموح، loadLookups بيغيّره.
+  const branchStorageKey = `diplomaStudents.branchGuid.${userGuid}`;
+  const [branchGuid, setBranchGuid] = useState(() => {
+    try {
+      return localStorage.getItem(branchStorageKey) || "";
+    } catch {
+      return "";
+    }
+  });
+
+  useEffect(() => {
+    if (!branchGuid) return;
+    try {
+      localStorage.setItem(branchStorageKey, branchGuid);
+    } catch {
+      // التخزين مش متاح: عادي، هنستنى الفروع زي الأول.
+    }
+  }, [branchGuid, branchStorageKey]);
   const [newLevelGuid, setNewLevelGuid] = useState("");
   const [filterLevelGuid, setFilterLevelGuid] = useState("");
   const [filterDiplomaGuid, setFilterDiplomaGuid] = useState("");
@@ -728,6 +750,8 @@ const DiplomaStudentsPage = () => {
   const [sections, setSections] = useState([]);
   const [targetSectionGuid, setTargetSectionGuid] = useState("");
   const [rows, setRows] = useState([]);
+  // الصفوف الظاهرة في الجدول بعد فلاتر الأعمدة (للتصدير).
+  const [gridRows, setGridRows] = useState(null);
   const [selectionModel, setSelectionModel] = useState([]);
   const [loading, setLoading] = useState(false);
   const [workingText, setWorkingText] = useState("");
@@ -2675,12 +2699,13 @@ const DiplomaStudentsPage = () => {
   };
 
   const exportAllXlsx = () => {
-    if (filteredRows.length === 0) {
+    const exportRows = gridRows ?? filteredRows;
+    if (exportRows.length === 0) {
       showError("لا توجد بيانات مطابقة للفلاتر الحالية للتصدير");
       return;
     }
 
-    const data = filteredRows.map((row) => ({
+    const data = exportRows.map((row) => ({
       "كود": String(row.acadmyId ?? ""),
       "اسم الطالب": String(row.studentName ?? ""),
       "الاسم بالإنجليزية": String(row.studentNameEn ?? ""),
@@ -2734,12 +2759,13 @@ const DiplomaStudentsPage = () => {
   };
 
   const exportInstitution = () => {
-    if (rows.length === 0) {
+    const exportRows = gridRows ?? filteredRows;
+    if (exportRows.length === 0) {
       showError("لا توجد بيانات للتصدير");
       return;
     }
 
-    const sortedRows = [...rows].sort((a, b) => {
+    const sortedRows = [...exportRows].sort((a, b) => {
       const aDate = new Date(a.sortDate || 0).getTime() || 0;
       const bDate = new Date(b.sortDate || 0).getTime() || 0;
 
@@ -2835,7 +2861,7 @@ const DiplomaStudentsPage = () => {
     );
   };
 
-  const columns = useMemo(() => {
+  const rawColumns = useMemo(() => {
     const actionColumn = {
       field: "actions",
       headerName: isCompact ? "" : "الإجراءات",
@@ -2958,6 +2984,13 @@ const DiplomaStudentsPage = () => {
       { field: "typeStudent", headerName: "النوع", minWidth: 70, flex: .5 }
     ];
   }, [isPhone, isTablet, isCompact]);
+
+  // علامة VIP جنب اسم الطالب
+  const { isVip } = useVipLookup();
+  const columns = useMemo(
+    () => withVipNameColumn(rawColumns, isVip),
+    [rawColumns, isVip]
+  );
 
   const compactGlobalStyles = useMemo(
     () => ({
@@ -4072,6 +4105,7 @@ const DiplomaStudentsPage = () => {
         >
           <DiplomaStudentsDataGrid
             rows={filteredRows}
+            onFilteredRowsChange={setGridRows}
             columns={columns}
             loading={loading}
             selectionModel={selectionModel}

@@ -79,6 +79,30 @@ const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/tech_tickets.php'
 const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
 const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
 
+// المستخدمين والفروع (للأسماء بس) بيتحفظوا في الجلسة 10 دقايق بدل ما يتنزلوا كل مرة الصفحة تتفتح.
+const LOOKUP_CACHE_TTL_MS = 10 * 60 * 1000;
+const cachedLookup = async (url) => {
+  const key = `sstli_lookup_${url}`;
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Date.now() - Number(parsed?.timestamp || 0) < LOOKUP_CACHE_TTL_MS && parsed?.data) {
+        return { data: parsed.data };
+      }
+    }
+  } catch {
+    // الكاش تحسين بس
+  }
+  const response = await axios.get(url);
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data: response.data }));
+  } catch {
+    // مساحة الجلسة مليانة — نكمل من غير كاش
+  }
+  return response;
+};
+
 const TechnicalSupport = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userGuid = user?.guid || '';
@@ -245,7 +269,7 @@ const TechnicalSupport = () => {
 
   const fetchBranchesData = async () => {
     try {
-      const response = await axios.get(BRANCHES_API_URL);
+      const response = await cachedLookup(BRANCHES_API_URL);
       if (response.data) {
         const branchesMap = {};
         response.data.forEach(branch => {
@@ -264,7 +288,7 @@ const TechnicalSupport = () => {
 
   const fetchUsersData = async () => {
     try {
-      const response = await axios.get(USER_API_URL);
+      const response = await cachedLookup(USER_API_URL);
       if (response.data) {
         const usersMap = {};
         response.data.forEach(user => {

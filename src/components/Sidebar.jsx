@@ -52,7 +52,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 
 
@@ -98,6 +98,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 
 import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded';
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 
 
 
@@ -256,6 +259,50 @@ const logoRingOrbit = keyframes`
   to { --border-angle: 360deg; }
 `;
 
+// جرس الإشعارات: هزة خفيفة + نغمة قصيرة لما يوصل إشعار جديد.
+const bellShake = keyframes`
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(9deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(3deg); }
+`;
+
+const BELL_MUTE_KEY = 'sstli-bell-muted';
+
+const readBellMuted = () => {
+  try {
+    return localStorage.getItem(BELL_MUTE_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+// نغمتين قصيرتين بـ WebAudio (من غير ملف صوت). المتصفح بيسمح بيها بعد أول ضغطة في الصفحة.
+const playBellChime = () => {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    [[880, 0], [1320, 0.16]].forEach(([freq, at]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + at);
+      gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + at + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + at + 0.45);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + at);
+      osc.stop(ctx.currentTime + at + 0.5);
+    });
+    window.setTimeout(() => ctx.close().catch(() => {}), 1200);
+  } catch {
+    // الصوت اختياري.
+  }
+};
+
 const organicRingMorph = keyframes`
   0%, 100% {
     border-radius: 18px 14px 19px 13px / 14px 19px 13px 18px;
@@ -351,6 +398,29 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
+  const [bellRinging, setBellRinging] = useState(false);
+  const [bellMuted, setBellMuted] = useState(readBellMuted);
+  const previousUnreadRef = useRef(null);
+  const bellMutedRef = useRef(bellMuted);
+  bellMutedRef.current = bellMuted;
+
+  const toggleBellMuted = () => {
+    setBellMuted((current) => {
+      const next = !current;
+      try {
+        localStorage.setItem(BELL_MUTE_KEY, next ? '1' : '0');
+      } catch {
+        // تفضيل محلي فقط.
+      }
+      return next;
+    });
+  };
+
+  // عدد غير المقروء في عنوان التبويب: "(3) ..."
+  useEffect(() => {
+    const base = document.title.replace(/^\(\d+\)\s*/, '');
+    document.title = notificationUnreadCount > 0 ? `(${notificationUnreadCount}) ${base}` : base;
+  }, [notificationUnreadCount]);
 
   const [sidebarConfig, setSidebarConfig] = useState(() => {
     const cached = sidebarMemoryCache || readSidebarCache();
@@ -510,9 +580,17 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
           ? result.data
           : []
       );
-      setNotificationUnreadCount(
-        Number(result?.unreadCount || 0)
-      );
+      const unread = Number(result?.unreadCount || 0);
+
+      // إشعار جديد وصل من آخر تحديث: الجرس يهتز ويرن (مش أول تحميل للصفحة).
+      if (previousUnreadRef.current !== null && unread > previousUnreadRef.current) {
+        setBellRinging(true);
+        window.setTimeout(() => setBellRinging(false), 1600);
+        if (!bellMutedRef.current) playBellChime();
+      }
+      previousUnreadRef.current = unread;
+
+      setNotificationUnreadCount(unread);
     } catch (notificationError) {
       console.warn(
         "HR notifications error:",
@@ -528,7 +606,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
 
     const timer = window.setInterval(
       loadHrNotifications,
-      60000
+      30000
     );
 
     return () => window.clearInterval(timer);
@@ -592,6 +670,49 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
       );
     }
   };
+
+  // جرس الإشعارات: زر عائم فوق زر الوضع الليلي (نفس شكله ومقاسه) — ظاهر في كل الشاشات.
+  const notificationBell = (
+    <Tooltip title={notificationUnreadCount ? `لديك ${notificationUnreadCount} إشعار غير مقروء` : 'الإشعارات'} placement="right">
+      <IconButton
+        aria-label="الإشعارات"
+        onClick={(event) => {
+          setNotificationAnchor(event.currentTarget);
+          loadHrNotifications();
+        }}
+        sx={{
+          position: 'fixed',
+          bottom: 70,
+          left: 16,
+          zIndex: 1201,
+          width: 44,
+          height: 44,
+          bgcolor: 'background.paper',
+          color: notificationUnreadCount ? 'primary.main' : 'text.primary',
+          border: 1,
+          borderColor: 'divider',
+          boxShadow: 3,
+          '&:hover': { bgcolor: 'action.hover' }
+        }}
+      >
+        <Badge
+          badgeContent={notificationUnreadCount}
+          max={99}
+          color="error"
+          sx={{ '& .MuiBadge-badge': { fontFamily: 'Cairo', fontWeight: 700, fontSize: 11, minWidth: 18, height: 18, px: .5, top: -2, right: -2 } }}
+        >
+          <NotificationsRoundedIcon
+            sx={{
+              fontSize: 23,
+              transformOrigin: '50% 10%',
+              animation: bellRinging ? `${bellShake} .8s ease-in-out 2` : 'none',
+              '@media (prefers-reduced-motion: reduce)': { animation: 'none' }
+            }}
+          />
+        </Badge>
+      </IconButton>
+    </Tooltip>
+  );
 
   const handleDbGroupToggle = (groupKey, currentlyOpen) => {
     setDbGroupUi({
@@ -1418,12 +1539,12 @@ const childItemSx = (selected) => ({
             anchorEl={notificationAnchor}
             onClose={() => setNotificationAnchor(null)}
             anchorOrigin={{
-              vertical: "bottom",
-              horizontal: isDesktop ? "left" : "center"
+              vertical: "top",
+              horizontal: "left"
             }}
             transformOrigin={{
-              vertical: "top",
-              horizontal: isDesktop ? "right" : "center"
+              vertical: "bottom",
+              horizontal: "left"
             }}
             marginThreshold={8}
             PaperProps={{
@@ -1437,7 +1558,7 @@ const childItemSx = (selected) => ({
                   xs: "72dvh",
                   sm: "70vh"
                 },
-                mt: { xs: .45, sm: .7 },
+                mt: -1,
                 borderRadius: { xs: 2.2, sm: 2.5 },
                 overflow: "hidden",
                 bgcolor: isDarkMode ? theme.palette.surfaces.card : '#ffffff',
@@ -1467,15 +1588,22 @@ const childItemSx = (selected) => ({
                   fontFamily: "Cairo",
                   fontSize: 12
                 }}>
-                  موافقات الإجازات وتحديثات طلباتك
+                  المهام والإجازات
                 </Typography>
               </Box>
 
-              <Tooltip title="تعليم الكل كمقروء">
-                <IconButton size="small" onClick={markAllNotificationsRead}>
-                  <DoneAllRoundedIcon />
-                </IconButton>
-              </Tooltip>
+              <Box sx={{ display: 'flex', gap: .25 }}>
+                <Tooltip title={bellMuted ? 'تشغيل صوت التنبيه' : 'كتم صوت التنبيه'}>
+                  <IconButton size="small" onClick={toggleBellMuted}>
+                    {bellMuted ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="تعليم الكل كمقروء">
+                  <IconButton size="small" onClick={markAllNotificationsRead}>
+                    <DoneAllRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Box>
 
             <Divider />
@@ -1537,7 +1665,7 @@ const childItemSx = (selected) => ({
                       fontFamily: "Cairo",
                       fontSize: 12
                     }}>
-                      {new Date(item.eventAt).toLocaleString("ar-SA")}
+                      {new Date(item.eventAt).toLocaleString("ar-SA-u-ca-gregory-nu-latn", { dateStyle: "short", timeStyle: "short" })}
                     </Typography>
                   )}
                 </Box>
@@ -1658,12 +1786,13 @@ const childItemSx = (selected) => ({
 
   // الديسكتوب: نفس السايدبار القديم بدون أي Drawer أو تغيير في المنطق.
   if (isDesktop) {
-    return sidebarContent;
+    return <>{sidebarContent}{notificationBell}</>;
   }
 
   // الموبايل والتابلت: Drawer صغير، بدون لوجو/هيدر، ولا يحجز مساحة من الصفحة.
   // Explicit paper positioning bypasses physical-property mirroring.
   return (
+    <>
     <Drawer
       anchor="right"
       SlideProps={{ direction: "left" }}
@@ -1699,6 +1828,8 @@ const childItemSx = (selected) => ({
     >
       {sidebarContent}
     </Drawer>
+    {notificationBell}
+    </>
   );
 };
 
