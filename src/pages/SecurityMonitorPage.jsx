@@ -324,7 +324,7 @@ const OverviewTab = ({ onError, goTab }) => {
           <Chip key={h} label={label} clickable color={hours === h ? "primary" : "default"} variant={hours === h ? "filled" : "outlined"} onClick={() => setHours(h)} sx={{ fontWeight: 800 }} />
         ))}
         <IconButton onClick={load} disabled={loading} aria-label="تحديث">{loading ? <CircularProgress size={20} /> : <RefreshIcon />}</IconButton>
-        {data?.collector?.xe ? <Typography sx={{ fontSize: 12, color: "text.secondary" }}>آخر تجميع: {formatAt(data.collector.xe)}</Typography> : null}
+        {data?.collector?.run || data?.collector?.xe ? <Typography sx={{ fontSize: 12, color: "text.secondary" }}>آخر تجميع: {formatAt(data.collector.run || data.collector.xe)}</Typography> : null}
       </Stack>
 
       {status ? <Warnings warnings={status.warnings} /> : null}

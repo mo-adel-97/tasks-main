@@ -110,7 +110,15 @@ const HR_API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL ||
   process.env.REACT_APP_API_URL ||
   "https://api4.sstli.com";
-const user = JSON.parse(localStorage.getItem('user') || '{}');
+// المستخدم الحالي وقت الطلب (مش وقت فتح الصفحة): لو حد خرج ودخل بحساب تاني من غير تحديث للصفحة،
+// الإشعارات كانت بتتطلب باسم الحساب القديم بتوكن الحساب الجديد.
+const readCurrentUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || '{}') || {};
+  } catch {
+    return {};
+  }
+};
 // Same key/shape PrivateRoute.jsx writes ({ userKey, loadedAt, groups, items }
 // from the identical token-fingerprint hash) after it fetches
 // /api/sidebar-navigation/me to decide route access. PrivateRoute always
@@ -549,7 +557,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
 
   const loadHrNotifications = async () => {
     const userGuid = String(
-      user?.guid || user?.Guid || ""
+      readCurrentUser()?.guid || readCurrentUser()?.Guid || ""
     ).trim();
 
     if (!userGuid) {
@@ -617,7 +625,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
 
   const markNotificationRead = async (item) => {
     const userGuid = String(
-      user?.guid || user?.Guid || ""
+      readCurrentUser()?.guid || readCurrentUser()?.Guid || ""
     ).trim();
 
     if (!userGuid || !item?.notificationKey) return;
@@ -649,7 +657,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
 
   const markAllNotificationsRead = async () => {
     const userGuid = String(
-      user?.guid || user?.Guid || ""
+      readCurrentUser()?.guid || readCurrentUser()?.Guid || ""
     ).trim();
 
     if (!userGuid) return;
