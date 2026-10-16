@@ -1,4 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { trackIfUnguarded } from './security/activityTracker';
+import BlockedOverlay from './components/BlockedOverlay';
 import React, { useEffect, useState } from 'react';
 import AdmissionRequestsReport from "./pages/AdmissionRequestsReport";
 import HrEmployeesPage from "./pages/HrEmployeesPage.jsx";
@@ -27,6 +29,7 @@ import DiscountTypeManagement from "./pages/DiscountTypeManagement.jsx";
 import ServiceManagement from "./pages/ServiceManagement.jsx";
 import ChangeUserPassword from "./pages/ChangeUserPassword.jsx";
 import UserActionReport from "./pages/UserActionReport.jsx";
+import SecurityMonitorPage from "./pages/SecurityMonitorPage.jsx";
 import QualityFormsAudit from "./pages/QualityFormsAudit.jsx";
 import BatchManagement from "./pages/BatchManagement.jsx";
 import BatchCountManagement from "./pages/BatchCountManagement.jsx";
@@ -407,6 +410,15 @@ const LayoutWithoutHeader = ({ children }) => {
   return <NavigationShell variant="standard">{content}</NavigationShell>;
 };
 
+// مراقبة الأمان: الصفحات اللي برا PrivateRoute برضه بتتسجل (ما عدا صفحة الدخول).
+const RouteTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (!location.pathname.startsWith('/login')) trackIfUnguarded(location.pathname);
+  }, [location.pathname]);
+  return null;
+};
+
 function App() {
   useEffect(() => {
     const style = document.createElement('style');
@@ -419,6 +431,8 @@ function App() {
   return (
     <>
       <Router>
+        <RouteTracker />
+        <BlockedOverlay />
         <Routes>
           <Route path="/login" element={<Login />} />
 
@@ -1628,6 +1642,17 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <ChangeUserPassword />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/security-monitor"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <SecurityMonitorPage />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }

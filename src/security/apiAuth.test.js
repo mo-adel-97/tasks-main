@@ -64,6 +64,19 @@ test('writes to api4 carry the real device info; api1 and reads do not', async (
   await window.fetch('https://api1.sstli.com/api/userinfo/login-secure', { method: 'POST', body: '{}' });
   expect(transport.mock.calls[2][1].headers.get('X-Client-Device-Id')).toBeNull();
 
+  // القراءة: معرّف الجهاز بس (للحظر)، من غير باقي البيانات
   await window.fetch('https://api4.sstli.com/api/user-management/users');
-  expect(transport.mock.calls[3][1].headers.get('X-Client-Device-Id')).toBeNull();
+  expect(transport.mock.calls[3][1].headers.get('X-Client-Device-Id')).toBe(id);
+  expect(transport.mock.calls[3][1].headers.get('X-Client-Page')).toBeNull();
+});
+
+test('a blocked device (403 blocked) raises the blocked event', async () => {
+  const listener = jest.fn();
+  window.addEventListener('sstli-device-blocked', listener);
+  transport.mockResolvedValue({ status: 403, clone: () => ({ json: async () => ({ blocked: true, message: 'محظور' }) }) });
+  await window.fetch('https://api4.sstli.com/api/anything');
+  await new Promise((r) => setTimeout(r, 0));
+  expect(listener).toHaveBeenCalledTimes(1);
+  expect(listener.mock.calls[0][0].detail).toBe('محظور');
+  window.removeEventListener('sstli-device-blocked', listener);
 });

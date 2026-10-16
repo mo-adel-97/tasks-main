@@ -51,6 +51,17 @@ const getToken = () => localStorage.getItem('token') || '';
 // بتتبعت مع طلبات الكتابة لـ api4 بس (مش api1). أي خطأ هنا مايوقفش الطلب.
 const CLIENT_INFO_HOSTS = new Set(['api4.sstli.com', 'localhost:5258', '127.0.0.1:5258', 'localhost:5275', '127.0.0.1:5275']);
 
+const isClientInfoHost = (rawUrl) => {
+  try {
+    const url = new URL(rawUrl, window.location.origin);
+    if (url.host === 'api1.sstli.com') return false;
+    const sameOriginApi = url.origin === window.location.origin && url.pathname.startsWith('/api/');
+    return CLIENT_INFO_HOSTS.has(url.host) || configuredApiOrigins.has(url.origin) || sameOriginApi;
+  } catch {
+    return false;
+  }
+};
+
 const shouldAttachClientInfo = (rawUrl, method) => {
   if (!method || ['GET', 'HEAD', 'OPTIONS'].includes(String(method).toUpperCase())) return false;
   try {
@@ -198,6 +209,25 @@ const clientInfoHeaders = () => {
   return headers;
 };
 
+const deviceIdHeaders = () => ({
+  'X-Client-Device-Id': getDeviceId(),
+  'X-Client-Fingerprint': getClientFingerprint()
+});
+
+// الجهاز محظور من شاشة مراقبة الأمان: رسالة على الشاشة كلها (BlockedOverlay).
+export const BLOCKED_EVENT = 'sstli-device-blocked';
+const announceBlocked = (data) => {
+  if (data?.blocked === true) window.dispatchEvent(new CustomEvent(BLOCKED_EVENT, { detail: data.message }));
+};
+const notifyIfBlocked = (response) => {
+  try {
+    if (typeof response?.clone !== 'function') return;
+    response.clone().json().then(announceBlocked).catch(() => {});
+  } catch {
+    // مش JSON
+  }
+};
+
 const clearInvalidSession = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
@@ -248,12 +278,21 @@ window.fetch = async (input, init = {}) => {
         if (value && !headers.has(key)) headers.set(key, value);
       });
       requestInit = { ...requestInit, headers };
+    } else if (rawUrl && isClientInfoHost(rawUrl)) {
+      // القراءة: معرّف الجهاز والبصمة بس (عشان الحظر من شاشة مراقبة الأمان يشتغل على كل الطلبات)
+      const headers = new Headers(requestInit.headers || (input instanceof Request ? input.headers : undefined));
+      Object.entries(deviceIdHeaders()).forEach(([key, value]) => {
+        if (value && !headers.has(key)) headers.set(key, value);
+      });
+      requestInit = { ...requestInit, headers };
     }
   } catch {
     // بيانات الجهاز اختيارية
   }
 
   const response = await originalFetch(input, requestInit);
+
+  if (response.status === 403 && rawUrl && isClientInfoHost(rawUrl)) notifyIfBlocked(response);
 
   if (response.status === 401 && token && rawUrl && shouldAttachAuth(rawUrl)) {
     // 401 = الجلسة نفسها غير صالحة. 403 لا يمسح الجلسة لأنه منع صلاحية فقط.
@@ -283,6 +322,11 @@ axios.interceptors.request.use((config) => {
       Object.entries(clientInfoHeaders()).forEach(([key, value]) => {
         if (value && !config.headers[key]) config.headers[key] = value;
       });
+    } else if (full && isClientInfoHost(full)) {
+      config.headers = config.headers || {};
+      Object.entries(deviceIdHeaders()).forEach(([key, value]) => {
+        if (value && !config.headers[key]) config.headers[key] = value;
+      });
     }
   } catch {
     // بيانات الجهاز اختيارية
@@ -295,6 +339,7 @@ axios.interceptors.response.use(
   (error) => {
     const status = error?.response?.status;
     const url = error?.config?.url;
+    if (status === 403) announceBlocked(error?.response?.data);
     if (status === 401 && getToken() && url && shouldAttachAuth(url)) {
       endSessionAndGoToLogin();
     }

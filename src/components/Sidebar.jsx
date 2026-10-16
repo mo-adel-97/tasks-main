@@ -10,6 +10,8 @@ import {
   sidebarPositionStyle,
 } from '../config/sidebarLayout';
 import { resolveSidebarIcon, normalizeSidebarKey, getAdminNavigation } from '../config/sidebarNavigation';
+import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
+import { isSecurityAdmin } from '../security/activityTracker';
 import { designTokens, fluid } from '../config/designTokens';
 import { keyframes } from '@mui/system';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -800,9 +802,14 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   ]);
 
   const configuredStandaloneItems = useMemo(() => {
-    return configuredSidebarItems
+    const items = configuredSidebarItems
       .filter((item) => item.placement === 'standalone')
       .sort((a, b) => a.__sortOrder - b.__sortOrder);
+    // مراقبة الأمان: لمدير النظام فقط، ومش متسجلة في الصلاحيات عشان محدش يقدر يديها لحد.
+    if (isSecurityAdmin()) {
+      items.push({ itemKey: 'security-monitor', text: 'مراقبة الأمان', icon: <SecurityRoundedIcon />, path: '/dashboard/security-monitor' });
+    }
+    return items;
   }, [configuredSidebarItems]);
 
 

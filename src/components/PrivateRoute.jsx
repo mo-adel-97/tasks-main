@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { markGuarded, trackPage } from '../security/activityTracker';
 
 const ME_URL = 'https://api1.sstli.com/api/userinfo/me';
 const API_BASE_URL =
@@ -355,6 +356,16 @@ export default function PrivateRoute({ children }) {
     window.addEventListener('sstli:sidebar-refresh', refreshPermissions);
     return () => window.removeEventListener('sstli:sidebar-refresh', refreshPermissions);
   }, []);
+
+  // مراقبة الأمان: كل شاشة اتفتحت، وكل محاولة فتح شاشة غير مسموحة.
+  useEffect(() => {
+    markGuarded(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (status === 'allowed') trackPage(`${location.pathname}${location.search || ''}`);
+    else if (status === 'forbidden') trackPage(location.pathname, 'denied');
+  }, [status, location.pathname, location.search]);
 
   if (status === 'error') {
     return (
