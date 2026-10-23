@@ -53,12 +53,29 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
+import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 import Swal from "sweetalert2";
 
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
+
+// ألوان حالة الطلب: مؤكد أخضر، غير مؤكد كهرماني، مرفوض أحمر (جاهزة لو اتضافت حالة الرفض).
+export const STATUS_META = {
+  confirmed: { label: "مؤكد", color: "#0f8a52", bg: "rgba(15,138,82,.14)", border: "rgba(15,138,82,.45)", Icon: CheckCircleIcon },
+  pending: { label: "غير مؤكد", color: "#c77800", bg: "rgba(237,150,0,.15)", border: "rgba(237,150,0,.5)", Icon: HourglassTopRoundedIcon },
+  rejected: { label: "مرفوض", color: "#c62828", bg: "rgba(211,47,47,.14)", border: "rgba(211,47,47,.45)", Icon: CancelRoundedIcon }
+};
+
+export const statusKeyOf = (row) => {
+  const text = String(row?.requestStatus || "").trim();
+  if (row?.statusCode === 2 || text.includes("مرفوض") || text.includes("رفض")) return "rejected";
+  if (row?.statusCode === 1 || text === "مؤكد") return "confirmed";
+  return "pending";
+};
 
 
 
@@ -740,6 +757,18 @@ const DeregistrationRequestsReport =
       [advancedFilters]
     );
 
+  const statusCounts = useMemo(
+    () =>
+      gridRows.reduce(
+        (acc, row) => {
+          acc[statusKeyOf(row)] += 1;
+          return acc;
+        },
+        { confirmed: 0, pending: 0, rejected: 0 }
+      ),
+    [gridRows]
+  );
+
   const updateAdvancedFilter =
     (field, values) =>
       setAdvancedFilters(
@@ -893,15 +922,20 @@ const DeregistrationRequestsReport =
       renderCell: (params) => (
   <Chip
     size="small"
-    label={params.value || "غير مؤكد"}
-    color={
-      params.row.statusCode === 1
-        ? "success"
-        : "default"
-    }
+    icon={React.createElement(STATUS_META[statusKeyOf(params.row)].Icon)}
+    label={params.value || STATUS_META[statusKeyOf(params.row)].label}
     sx={{
       fontFamily: "Cairo",
       fontWeight: 900,
+      color: STATUS_META[statusKeyOf(params.row)].color,
+      backgroundColor: STATUS_META[statusKeyOf(params.row)].bg,
+      border: `1px solid ${STATUS_META[statusKeyOf(params.row)].border}`,
+      "& .MuiChip-icon": {
+        color: "inherit",
+        fontSize: 16,
+        marginInlineStart: "6px",
+        marginInlineEnd: "-2px"
+      },
 
       "@media (max-width: 599px)": {
         height: 18,
@@ -1319,10 +1353,7 @@ const DeregistrationRequestsReport =
         .join("\n");
 
     const blob =
-      new Blob([csv], {
-        type:
-          "text/csv;charset=utf-8;"
-      });
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -1332,7 +1363,7 @@ const DeregistrationRequestsReport =
 
     anchor.href = url;
     anchor.download =
-      `طلبات-طي-القيد-${today()}.csv`;
+      `طلبات-طي-القيد-${today()}.xlsx`;
 
     anchor.click();
 
@@ -1882,6 +1913,37 @@ const DeregistrationRequestsReport =
               طلبات طي القيد
             </Typography>
 
+            {["confirmed", "pending", "rejected"]
+              .filter((key) => key !== "rejected" || statusCounts.rejected > 0)
+              .map((key) => {
+                const meta = STATUS_META[key];
+                const statusValues = [...new Set(gridRows.filter((row) => statusKeyOf(row) === key).map((row) => String(row.requestStatus || "").trim()))];
+                const active =
+                  statusValues.length > 0 &&
+                  advancedFilters.requestStatus.length === statusValues.length &&
+                  statusValues.every((value) => advancedFilters.requestStatus.includes(value));
+                const Icon = meta.Icon;
+                return (
+                  <Tooltip key={key} title={active ? "إلغاء التصفية" : `عرض الطلبات ${meta.label === "مرفوض" ? "المرفوضة" : meta.label === "مؤكد" ? "المؤكدة" : "غير المؤكدة"} فقط`}>
+                    <Chip
+                      clickable
+                      icon={<Icon />}
+                      label={`${meta.label}: ${statusCounts[key]}`}
+                      onClick={() => updateAdvancedFilter("requestStatus", active ? [] : statusValues)}
+                      sx={{
+                        fontFamily: "Cairo",
+                        fontWeight: 900,
+                        color: active ? "#fff" : meta.color,
+                        backgroundColor: active ? meta.color : meta.bg,
+                        border: `1px solid ${meta.border}`,
+                        "& .MuiChip-icon": { color: "inherit" },
+                        "&:hover": { backgroundColor: active ? meta.color : meta.border }
+                      }}
+                    />
+                  </Tooltip>
+                );
+              })}
+
             <Chip
               label={`النتائج: ${filteredGridRows.length} من ${gridRows.length}`}
               sx={{
@@ -2125,14 +2187,16 @@ const DeregistrationRequestsReport =
               }
             }}
             pageSizeOptions={[
-              25, 50, 100, 200
+              25, 50, 100
             ]}
             getRowClassName={(params) =>
-              params.indexRelativeToCurrentPage %
-                2 ===
-              0
-                ? "even-row"
-                : "odd-row"
+              `${
+                params.indexRelativeToCurrentPage %
+                  2 ===
+                0
+                  ? "even-row"
+                  : "odd-row"
+              } status-${statusKeyOf(params.row)}`
             }
             rowHeight={
               isDesktop
@@ -2242,6 +2306,14 @@ const DeregistrationRequestsReport =
                 backgroundColor:
                   "#eef8f3 !important"
               },
+
+              // شريط ملون على بداية الصف حسب حالة الطلب
+              ...Object.fromEntries(
+                Object.entries(STATUS_META).map(([key, meta]) => [
+                  `& .status-${key}`,
+                  { boxShadow: `inset -4px 0 0 ${meta.color}` }
+                ])
+              ),
 
               ...(!isDesktop
                 ? {

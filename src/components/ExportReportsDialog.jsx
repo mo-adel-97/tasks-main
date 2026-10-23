@@ -793,7 +793,7 @@ export default function ExportReportsDialog({
       setBranchesLoading(true);
       setBranchesError(null);
       try {
-        const res = await fetch("https://api1.sstli.com/api/branches/all");
+        const res = await fetch("https://api4.sstli.com/api/branches/all");
         const data = await res.json();
         if (!res.ok) throw new Error(data?.message || "فشل تحميل الفروع");
         setBranches(Array.isArray(data) ? data : []);

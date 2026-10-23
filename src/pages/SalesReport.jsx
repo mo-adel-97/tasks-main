@@ -57,6 +57,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -1495,13 +1496,7 @@ export default function SalesReport() {
         .join("\r\n");
 
     const blob =
-      new Blob(
-        [csv],
-        {
-          type:
-            "text/csv;charset=utf-8;"
-        }
-      );
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(
@@ -1513,7 +1508,7 @@ export default function SalesReport() {
 
     link.href = url;
     link.download =
-      `تقرير_المبيعات_${fromDate}_${toDate}.csv`;
+      `تقرير_المبيعات_${fromDate}_${toDate}.xlsx`;
 
     document.body
       .appendChild(link);

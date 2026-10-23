@@ -209,10 +209,17 @@ const clientInfoHeaders = () => {
   return headers;
 };
 
-const deviceIdHeaders = () => ({
-  'X-Client-Device-Id': getDeviceId(),
-  'X-Client-Fingerprint': getClientFingerprint()
-});
+// طلبات القراءة: معرّف الجهاز والبصمة + نسخة النظام ومقاس الشاشة (عشان وصف الجهاز يطلع زي طلبات الكتابة بالظبط)
+const deviceIdHeaders = () => {
+  const headers = {
+    'X-Client-Device-Id': getDeviceId(),
+    'X-Client-Fingerprint': getClientFingerprint(),
+    'X-Client-Screen': `${window.screen?.width || 0}x${window.screen?.height || 0}`
+  };
+  if (clientHints.platform) headers['X-Client-Platform'] = ascii(clientHints.platform);
+  if (clientHints.model) headers['X-Client-Model'] = ascii(clientHints.model);
+  return headers;
+};
 
 // الجهاز محظور من شاشة مراقبة الأمان: رسالة على الشاشة كلها (BlockedOverlay).
 export const BLOCKED_EVENT = 'sstli-device-blocked';

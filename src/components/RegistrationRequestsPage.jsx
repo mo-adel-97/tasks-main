@@ -22,6 +22,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -44,7 +45,7 @@ const exportCsv = (rows, fileName) => {
     )
   ];
 
-  const blob = new Blob(["\uFEFF", lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const blob = excelBlobFromCsv(["\uFEFF", lines.join("\r\n")]);
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

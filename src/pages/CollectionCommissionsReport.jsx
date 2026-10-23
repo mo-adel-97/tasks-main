@@ -45,6 +45,8 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
+import { fetchMigrationPreview, notMigratedHtml, previewHtml } from "../utils/migrationPreview";
 
 
 
@@ -805,13 +807,7 @@ const CollectionCommissionsReport = () => {
       )
     ].join("\r\n");
 
-    const blob = new Blob(
-      ["\uFEFF", csv],
-      {
-        type:
-          "text/csv;charset=utf-8;"
-      }
-    );
+    const blob = excelBlobFromCsv(["\uFEFF", csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -821,7 +817,7 @@ const CollectionCommissionsReport = () => {
 
     link.href = url;
     link.download =
-      `تقرير عمولات التحصيل ${fromDate} إلى ${toDate}.csv`;
+      `تقرير عمولات التحصيل ${fromDate} إلى ${toDate}.xlsx`;
 
     document.body.appendChild(link);
     link.click();
@@ -838,16 +834,40 @@ const CollectionCommissionsReport = () => {
       return;
     }
 
+    // المعاينة الأول: مين هيترحّل ومين لأ وليه
+    const migrateBody = {
+      userGuid,
+      fromDate,
+      toDate,
+      branchGuid:
+        selectedBranch?.guid ||
+        null
+    };
+
+    let preview;
+    setMigrating(true);
+    try {
+      preview = await fetchMigrationPreview(
+        `${API_BASE_URL}/api/collection-commissions-report/migrate-preview`,
+        migrateBody
+      );
+    } catch (error) {
+      await showError(error?.message || "تعذر تجهيز معاينة الترحيل");
+      return;
+    } finally {
+      setMigrating(false);
+    }
+
     const confirmation =
       await Swal.fire({
-        icon: "question",
+        icon: preview?.summary?.notMigrated ? "warning" : "question",
         title:
           "ترحيل عمولات التحصيل",
-        text:
-          "سيتم ترحيل عمولات التحصيل الظاهرة إلى شيت المكافآت.",
+        html: previewHtml(preview, `${fromDate} إلى ${toDate}`),
+        width: 920,
         showCancelButton: true,
         confirmButtonText:
-          "نعم، ترحيل",
+          `نعم، ترحيل ${preview?.summary?.willMigrate ?? 0} سطر`,
         cancelButtonText: "إلغاء",
         confirmButtonColor: "#057546",
         cancelButtonColor: "#ae1e21",
@@ -870,14 +890,7 @@ const CollectionCommissionsReport = () => {
               "application/json",
             Accept: "application/json"
           },
-          body: JSON.stringify({
-            userGuid,
-            fromDate,
-            toDate,
-            branchGuid:
-              selectedBranch?.guid ||
-              null
-          })
+          body: JSON.stringify(migrateBody)
         }
       );
 
@@ -925,7 +938,9 @@ const CollectionCommissionsReport = () => {
               ${result?.data?.failed ?? 0}
             </strong>
           </div>
+          ${notMigratedHtml(preview)}
         `,
+        width: 920,
         confirmButtonText: "حسنًا",
         confirmButtonColor: "#057546"
       });

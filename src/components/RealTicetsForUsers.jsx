@@ -77,7 +77,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/tech_tickets.php';
 const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
-const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
+const BRANCHES_API_URL = 'https://api4.sstli.com/api/branches/all';
 
 // المستخدمين والفروع (للأسماء بس) بيتحفظوا في الجلسة 10 دقايق بدل ما يتنزلوا كل مرة الصفحة تتفتح.
 const LOOKUP_CACHE_TTL_MS = 10 * 60 * 1000;

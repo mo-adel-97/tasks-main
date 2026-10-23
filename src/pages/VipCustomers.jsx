@@ -38,6 +38,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -727,16 +728,10 @@ const VipCustomers = () => {
         )
       ];
 
-      const blob = new Blob(
-        [
+      const blob = excelBlobFromCsv([
           "\uFEFF",
           csvRows.join("\r\n")
-        ],
-        {
-          type:
-            "text/csv;charset=utf-8;"
-        }
-      );
+        ]);
 
       const url =
         URL.createObjectURL(blob);
@@ -746,7 +741,7 @@ const VipCustomers = () => {
 
       link.href = url;
       link.download =
-        "عملاء VIP.csv";
+        "عملاء VIP.xlsx";
 
       document.body.appendChild(link);
       link.click();

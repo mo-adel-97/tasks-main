@@ -53,7 +53,7 @@ import {
   apiGet,
   apiPost,
   apiPostForm,
-  attachmentUrl,
+  openAttachment,
   checkFiles,
   dueText,
   formatDate,
@@ -757,7 +757,7 @@ export const TaskDetails = ({ taskGuid, onChanged, onClose, showOpenPage = false
             <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
               {taskFiles.map((f) => (
                 <Chip key={f.guid} variant="outlined" icon={<InsertDriveFileOutlinedIcon />} label={`${f.fileName} (${formatSize(f.sizeBytes)})`}
-                  component="a" href={attachmentUrl(f.guid)} target="_blank" clickable />
+                  onClick={() => openAttachment(f.guid, f.fileName).catch(showError)} clickable />
               ))}
             </Stack>
           </Box>
@@ -909,7 +909,7 @@ export const TaskDetails = ({ taskGuid, onChanged, onClose, showOpenPage = false
                     </Typography>
                     <Typography sx={{ whiteSpace: "pre-wrap", fontSize: 14, mt: 0.25, color: p.text, lineHeight: 1.7 }}>{c.body}</Typography>
                     {(filesByComment[c.id] || []).map((f) => (
-                      <Chip key={f.guid} size="small" variant="outlined" icon={<InsertDriveFileOutlinedIcon />} label={f.fileName} component="a" href={attachmentUrl(f.guid)} target="_blank" clickable sx={{ mt: 0.75, ml: 0.5 }} />
+                      <Chip key={f.guid} size="small" variant="outlined" icon={<InsertDriveFileOutlinedIcon />} label={f.fileName} onClick={() => openAttachment(f.guid, f.fileName).catch(showError)} clickable sx={{ mt: 0.75, ml: 0.5 }} />
                     ))}
                     <Typography sx={{ fontSize: 11, color: p.muted, mt: 0.5, textAlign: "left" }}>{formatDateTime(c.createdAt)}</Typography>
                   </Box>

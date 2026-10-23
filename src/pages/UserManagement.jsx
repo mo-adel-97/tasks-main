@@ -3,7 +3,7 @@ import * as uiLayout from '../components/common/uiLayout';
 import './rtl-forms-fix.css';
 import { DESKTOP_BREAKPOINT, navigationContentSx } from '../config/sidebarLayout';
 import NavigationShell from '../components/NavigationShell';
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Alert,
@@ -54,6 +54,8 @@ import BulkPermissionsDialog from "../components/userManagement/BulkPermissionsD
 import GroupsIcon from "@mui/icons-material/Groups";
 import DesktopAccessDialog from "../components/userManagement/DesktopAccessDialog";
 import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import UserDocumentsTab from "../components/userManagement/UserDocumentsTab";
 
 import Swal from "sweetalert2";
 
@@ -688,6 +690,7 @@ export default function UserManagement() {
   const [saving, setSaving] = useState(false);
 
   const [model, setModel] = useState(emptyUser());
+  const documentsTabRef = useRef(null);
 
   const [menus, setMenus] = useState([]);
   const [forms, setForms] = useState([]);
@@ -1593,14 +1596,19 @@ export default function UserManagement() {
         })
       );
 
+      // الدفاتر اتغيّرت في تابة "الدفاتر"؟ نحفظها مع المستخدم
+      const documentsResult =
+        await documentsTabRef.current?.saveIfDirty?.();
+
       await Swal.fire({
         icon: "success",
         title: isEdit
           ? "تم تعديل المستخدم"
           : "تم حفظ المستخدم",
         text:
-          result?.message ||
-          "تمت العملية بنجاح"
+          (result?.message ||
+          "تمت العملية بنجاح") +
+          (documentsResult ? " وتم حفظ الدفاتر." : "")
       });
     } catch (e) {
       await Swal.fire({
@@ -1866,6 +1874,12 @@ export default function UserManagement() {
             icon={<SecurityIcon />}
             iconPosition="start"
             label="القوائم والصلاحيات"
+          />
+          <Tab
+            icon={<MenuBookIcon />}
+            iconPosition="start"
+            label="الدفاتر"
+            disabled={!isEdit}
           />
         </Tabs>
 
@@ -2786,6 +2800,21 @@ export default function UserManagement() {
                 </Box>
               </Paper>
             </Box>
+          </Box>
+        )}
+
+        {isEdit && (
+          <Box hidden={tab !== 2}>
+          <UserDocumentsTab
+            ref={documentsTabRef}
+            key={model.guid}
+            apiBaseUrl={API_BASE_URL}
+            actorGuid={getUserGuid()}
+            targetUserGuid={model.guid}
+            targetUserName={model.fullName}
+            border={border}
+            primary={primary}
+          />
           </Box>
         )}
       </Paper>

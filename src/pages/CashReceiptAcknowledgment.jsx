@@ -40,6 +40,7 @@ import PersonIcon
   from "@mui/icons-material/Person";
 import PrintIcon
   from "@mui/icons-material/Print";
+import { printCashVoucher } from "../utils/cashVoucherPrint";
 import ReceiptLongIcon
   from "@mui/icons-material/ReceiptLong";
 import SaveIcon
@@ -623,17 +624,11 @@ const CashReceiptAcknowledgment = () => {
       return;
     }
 
-    const params =
-      new URLSearchParams({
-        userGuid,
-        guid: form.guid
-      });
-
-    window.open(
-      `${API_BASE_URL}/api/cash-receipt-acknowledgments/print?${params.toString()}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    try {
+      await printCashVoucher("receipt-acknowledgment", form);
+    } catch (error) {
+      await showError(error?.message || "تعذرت الطباعة");
+    }
   };
 
   return (

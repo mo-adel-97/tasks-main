@@ -58,6 +58,7 @@ import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import TodayIcon from "@mui/icons-material/Today";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -909,13 +910,7 @@ export default function GeneralDaily() {
       ].join("\n");
 
     const blob =
-      new Blob(
-        [csv],
-        {
-          type:
-            "text/csv;charset=utf-8"
-        }
-      );
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(
@@ -929,7 +924,7 @@ export default function GeneralDaily() {
 
     a.href = url;
     a.download =
-      `اليومية-العامة-${fromDate}-${toDate}.csv`;
+      `اليومية-العامة-${fromDate}-${toDate}.xlsx`;
 
     a.click();
 

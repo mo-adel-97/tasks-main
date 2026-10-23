@@ -111,6 +111,49 @@ test("control tab: manual block asks for the screen password; sa cannot be disab
   expect(await screen.findByText("تم الحظر")).toBeInTheDocument();
 });
 
+test("API users tab: create a key limited to one endpoint and show it once", async () => {
+  const calls = [];
+  global.fetch = jest.fn(async (url, init = {}) => {
+    calls.push({ url, init });
+    if (url.endsWith("/gate")) return json(200, { configured: true, lockedUntil: null, unlocked: false });
+    if (url.endsWith("/unlock")) return json(200, { token: "session-token-123456789012345", expiresAt: "2099-01-01T00:00:00" });
+    if (url.includes("/overview")) return json(200, overview);
+    if (url.endsWith("/server-status")) return json(200, status);
+    if (url.endsWith("/api-clients/endpoints"))
+      return json(200, [
+        { controller: "InstituteDirectory", method: "GET", route: "/api/institute-directory/students/national-id/{nationalId}/latest-payment-order", action: "LatestPaymentOrderByNationalId" },
+        { controller: "InstituteDirectory", method: "GET", route: "/api/institute-directory/branches", action: "Branches" }
+      ]);
+    if (url.endsWith("/api-clients") && init.method === "POST") return json(200, { id: 1, key: "sk_ABCDEFGHIJ_secret-value" });
+    if (url.endsWith("/api-clients")) return json(200, []);
+    return json(404, {});
+  });
+
+  render(<SecurityMonitorPage />);
+  fireEvent.change(await screen.findByLabelText("كلمة مرور الشاشة"), { target: { value: "right" } });
+  fireEvent.click(screen.getByRole("button", { name: "دخول" }));
+  fireEvent.click(await screen.findByRole("tab", { name: "مستخدمو الـ API" }));
+
+  expect(await screen.findByText("عدد الـ endpoints المتاحة: 2")).toBeInTheDocument();
+  fireEvent.click(await screen.findByRole("button", { name: "مستخدم API جديد" }));
+  fireEvent.change(screen.getByLabelText("الاسم (الجهة أو المبرمج)"), { target: { value: "تطبيق الدفع" } });
+  fireEvent.change(screen.getByPlaceholderText(/ابحث في الـ endpoints/), { target: { value: "latest-payment" } });
+  fireEvent.click(screen.getByText(/latest-payment-order/));
+  expect(screen.getByText("المحدد: 1")).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("كلمة مرور الشاشة للتأكيد"), { target: { value: "right" } });
+  fireEvent.click(screen.getByRole("button", { name: "إنشاء وإظهار المفتاح" }));
+
+  expect(await screen.findByDisplayValue("sk_ABCDEFGHIJ_secret-value")).toBeInTheDocument();
+  const post = calls.find((c) => c.url.endsWith("/api-clients") && c.init.method === "POST");
+  expect(JSON.parse(post.init.body)).toEqual(
+    expect.objectContaining({
+      name: "تطبيق الدفع",
+      endpoints: ["GET /api/institute-directory/students/national-id/{nationalId}/latest-payment-order"],
+      password: "right"
+    })
+  );
+});
+
 test("password not configured shows a notice instead of the form", async () => {
   global.fetch = jest.fn(async () => json(200, { configured: false, lockedUntil: null, unlocked: false }));
   render(<SecurityMonitorPage />);

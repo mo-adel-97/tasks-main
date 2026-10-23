@@ -106,7 +106,7 @@ const API_URL = "https://filesregsiteration.sstli.com/erp/api.php";
 const FILES_BASE_URL = "https://filesregsiteration.sstli.com/erp/";
 
 // ✅ branches endpoint (داخلي)
-const BRANCHES_URL = "https://api1.sstli.com/api/branches/all";
+const BRANCHES_URL = "https://api4.sstli.com/api/branches/all";
 
 // ✅ users endpoint (داخلي)
 const USERINFO_URL = "https://api1.sstli.com/api/userinfo";

@@ -53,7 +53,7 @@ import {
 const NOTES_API = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
 const FILE_BASE = "http://filesregsiteration.sstli.com/erp";
 const USERS_API = "https://api1.sstli.com/api/userinfo";
-const BRANCHES_API = "https://api1.sstli.com/api/branches/all";
+const BRANCHES_API = "https://api4.sstli.com/api/branches/all";
 const ADMIN_TOKEN = "PUT_ADMIN_TOKEN_HERE";
 
 const DARK_BORDER = "#67C99D";

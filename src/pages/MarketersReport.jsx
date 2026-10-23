@@ -43,6 +43,8 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
+import { fetchMigrationPreview, notMigratedHtml, previewHtml } from "../utils/migrationPreview";
 
 
 
@@ -757,13 +759,7 @@ const MarketersReport = () => {
       )
     ].join("\r\n");
 
-    const blob = new Blob(
-      ["\uFEFF", csv],
-      {
-        type:
-          "text/csv;charset=utf-8;"
-      }
-    );
+    const blob = excelBlobFromCsv(["\uFEFF", csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -773,7 +769,7 @@ const MarketersReport = () => {
 
     link.href = url;
     link.download =
-      `تقرير المسوقين ${fromDate} إلى ${toDate}.csv`;
+      `تقرير المسوقين ${fromDate} إلى ${toDate}.xlsx`;
 
     document.body.appendChild(
       link
@@ -793,30 +789,31 @@ const MarketersReport = () => {
       return;
     }
 
+    // المعاينة الأول: مين هيترحّل ومين لأ وليه
+    let preview;
+    setMigrating(true);
+    try {
+      preview = await fetchMigrationPreview(
+        `${API_BASE_URL}/api/marketers-report/migrate-preview`,
+        { userGuid, fromDate, toDate }
+      );
+    } catch (error) {
+      await showError(error?.message || "تعذر تجهيز معاينة الترحيل");
+      return;
+    } finally {
+      setMigrating(false);
+    }
+
     const confirmation =
       await Swal.fire({
-        icon: "question",
+        icon: preview?.summary?.notMigrated ? "warning" : "question",
         title:
           "ترحيل لشيت المكافآت",
-        html: `
-          <div style="
-            font-family:Cairo,Arial;
-            direction:rtl;
-            line-height:2;
-          ">
-            سيتم ترحيل عمولة التسجيل
-            لكل الموظفين عن الفترة:
-            <br />
-            <strong>
-              ${fromDate}
-              إلى
-              ${toDate}
-            </strong>
-          </div>
-        `,
+        html: previewHtml(preview, `${fromDate} إلى ${toDate}`),
+        width: 920,
         showCancelButton: true,
         confirmButtonText:
-          "نعم، ترحيل",
+          `نعم، ترحيل ${preview?.summary?.willMigrate ?? 0} سطر`,
         cancelButtonText: "إلغاء",
         confirmButtonColor: "#057546",
         cancelButtonColor: "#ae1e21",
@@ -882,7 +879,9 @@ const MarketersReport = () => {
               ${result?.data?.failed ?? 0}
             </strong>
           </div>
+          ${notMigratedHtml(preview)}
         `,
+        width: 920,
         confirmButtonText: "حسنًا",
         confirmButtonColor: "#057546"
       });

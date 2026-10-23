@@ -77,6 +77,9 @@ import ReceiptLongIcon
 import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
+import LegacyDiplomChangesPanel from "../components/transfer/LegacyDiplomChangesPanel";
+import PriceDiffDialog from "../components/transfer/PriceDiffDialog";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -816,6 +819,15 @@ const TransferRequestsReport = () => {
             pick(row, ["FormAttachmentUrl", "formUrl"])
           ),
 
+          // فرق سعر تغيير التخصص وقيد اليومية اللي اتعمل بيه
+          priceDiff: pick(row, ["PriceDiff", "priceDiff"]),
+          priceJournalCode: String(
+            pick(row, ["PriceJournalCode", "priceJournalCode"]) ?? ""
+          ),
+          priceBranchName: String(
+            pick(row, ["PriceBranchName", "priceBranchName"]) ?? ""
+          ),
+
           oldValue,
           newValue,
           type
@@ -1340,6 +1352,61 @@ const TransferRequestsReport = () => {
     );
   };
 
+  // إرسال حالة الطلب (تأكيد/إلغاء/إرجاع) للسيرفر
+  const postStatus = async (row, status, extra = {}) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/transfer-requests/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userGuid,
+          requestGuid: row.requestGuid,
+          requestType: row.type,
+          status,
+          reason: extra.reason || "",
+          supervisionNotes: extra.supervisionNotes || "",
+          accountsNotes: extra.accountsNotes || "",
+          priceDiff: extra.priceDiff ?? null,
+          newPrice: extra.newPrice ?? null
+        })
+      });
+      const result = await readJson(response);
+      await showSuccess(result?.message || "تم تحديث حالة الطلب");
+      await loadData();
+      return true;
+    } catch (error) {
+      await showError(error?.message || "تعذر تحديث حالة الطلب");
+      return false;
+    }
+  };
+
+  // تأكيد تغيير تخصص: نافذة فرق السعر (بتتبع ثيم البرنامج)
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, row: null, data: null, loading: false, submitting: false });
+
+  const openDiplomConfirm = async (row) => {
+    setConfirmDialog({ open: true, row, data: null, loading: true, submitting: false });
+    let data = null;
+    try {
+      const params = new URLSearchParams({ userGuid });
+      const previewResponse = await fetch(
+        `${API_BASE_URL}/api/transfer-requests/diplom/${encodeURIComponent(row.requestGuid)}/price-diff?${params}`,
+        { cache: "no-store" }
+      );
+      data = (await readJson(previewResponse))?.data || null;
+    } catch (previewError) {
+      data = { warning: previewError?.message || "تعذر حساب فرق السعر" };
+    }
+    setConfirmDialog((current) => (current.row === row ? { ...current, data, loading: false } : current));
+  };
+
+  const submitDiplomConfirm = async (values) => {
+    const row = confirmDialog.row;
+    if (!row) return;
+    setConfirmDialog((current) => ({ ...current, submitting: true }));
+    const ok = await postStatus(row, 1, values);
+    setConfirmDialog((current) => (ok ? { open: false, row: null, data: null, loading: false, submitting: false } : { ...current, submitting: false }));
+  };
+
   const changeStatus =
     async (
       status,
@@ -1348,152 +1415,79 @@ const TransferRequestsReport = () => {
       closeMenu();
 
       if (!menuRow?.requestGuid) {
-        await showError(
-          "رقم الطلب غير موجود"
-        );
+        await showError("رقم الطلب غير موجود");
         return;
       }
 
-      let reason = "";
-      let supervisionNotes = "";
-      let accountsNotes = "";
+      const row = menuRow;
+      const isBranch = row.type === "branch";
 
-      const escapeHtml = (value) =>
-        String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      // تأكيد تغيير تخصص => نافذة فرق السعر
+      if (status === 1 && !isBranch) {
+        await openDiplomConfirm(row);
+        return;
+      }
 
       if (status === 1) {
-        const isBranch = menuRow.type === "branch";
-        const result =
-          await Swal.fire({
-            icon: "question",
-            title: isBranch ? "تأكيد نقل الفرع" : "تأكيد تحويل التخصص",
-            html: `
-              <div style="text-align:right;font-family:Cairo,sans-serif;font-size:.92rem;line-height:1.8">
-                <div><b>الطالب:</b> ${escapeHtml(menuRow.studentName)}</div>
-                <div><b>من:</b> ${escapeHtml(menuRow.oldValue)} &nbsp; ⟵ &nbsp; <b>إلى:</b> ${escapeHtml(menuRow.newValue)}</div>
-                ${menuRow.requestNotes ? `<div><b>ملاحظة مقدم الطلب:</b> ${escapeHtml(menuRow.requestNotes)}</div>` : ""}
-                ${menuRow.formUrl ? `<div><b>النموذج:</b> <a href="${escapeHtml(menuRow.formUrl)}" target="_blank" rel="noopener noreferrer">عرض النموذج</a></div>` : ""}
-                <label style="display:block;margin-top:12px;font-weight:700">ملاحظة الإشراف العام</label>
-                <textarea id="swal-supervision" class="swal2-textarea" style="margin:4px 0 0;width:100%;box-sizing:border-box" placeholder="اختياري">${escapeHtml(menuRow.supervisionNotes)}</textarea>
-                <label style="display:block;margin-top:10px;font-weight:700">ملاحظة الحسابات</label>
-                <textarea id="swal-accounts" class="swal2-textarea" style="margin:4px 0 0;width:100%;box-sizing:border-box" placeholder="اختياري">${escapeHtml(menuRow.accountsNotes)}</textarea>
-              </div>`,
-            showCancelButton: true,
-            confirmButtonText: "تأكيد وتنفيذ",
-            cancelButtonText: "إلغاء",
-            confirmButtonColor: "#057546",
-            focusConfirm: false,
-            preConfirm: () => ({
-              supervisionNotes: document.getElementById("swal-supervision")?.value || "",
-              accountsNotes: document.getElementById("swal-accounts")?.value || ""
-            })
-          });
-
-        if (!result.isConfirmed) {
-          return;
-        }
-
-        supervisionNotes = String(result.value?.supervisionNotes || "").trim();
-        accountsNotes = String(result.value?.accountsNotes || "").trim();
-      } else if (requireReason) {
-        const result =
-          await Swal.fire({
-            icon: "warning",
-            title: "سبب الإلغاء",
-            input: "textarea",
-            inputLabel:
-              "اكتب سبب إلغاء الطلب",
-            inputPlaceholder:
-              "سبب الإلغاء...",
-            showCancelButton: true,
-            confirmButtonText:
-              "تأكيد الإلغاء",
-            cancelButtonText: "رجوع",
-            confirmButtonColor:
-              "#ae1e21",
-            inputValidator: (
-              value
-            ) =>
-              !value?.trim()
-                ? "لازم تكتب سبب الإلغاء"
-                : undefined
-          });
-
-        if (!result.isConfirmed) {
-          return;
-        }
-
-        reason =
-          String(
-            result.value || ""
-          ).trim();
-      } else {
-        const label =
-          status === 1
-            ? "تأكيد الطلب"
-            : "إرجاع الطلب إلى معلق";
-
-        const result =
-          await Swal.fire({
-            icon:
-              status === 1
-                ? "question"
-                : "info",
-            title: label,
-            text:
-              `الطالب: ${menuRow.studentName}`,
-            showCancelButton: true,
-            confirmButtonText:
-              "تنفيذ",
-            cancelButtonText:
-              "إلغاء",
-            confirmButtonColor:
-              "#057546"
-          });
-
-        if (!result.isConfirmed) {
-          return;
-        }
+        const escapeHtml = (value) =>
+          String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const result = await Swal.fire({
+          icon: "question",
+          title: "تأكيد نقل الفرع",
+          html: `
+            <div style="text-align:right;font-size:.92rem;line-height:1.8">
+              <div><b>الطالب:</b> ${escapeHtml(row.studentName)}</div>
+              <div><b>من:</b> ${escapeHtml(row.oldValue)} &nbsp; ⟵ &nbsp; <b>إلى:</b> ${escapeHtml(row.newValue)}</div>
+              ${row.requestNotes ? `<div><b>ملاحظة مقدم الطلب:</b> ${escapeHtml(row.requestNotes)}</div>` : ""}
+              <label style="display:block;margin-top:12px;font-weight:700">ملاحظة الإشراف العام</label>
+              <textarea id="swal-supervision" class="swal2-textarea" style="margin:4px 0 0;width:100%;box-sizing:border-box" placeholder="اختياري">${escapeHtml(row.supervisionNotes)}</textarea>
+              <label style="display:block;margin-top:10px;font-weight:700">ملاحظة الحسابات</label>
+              <textarea id="swal-accounts" class="swal2-textarea" style="margin:4px 0 0;width:100%;box-sizing:border-box" placeholder="اختياري">${escapeHtml(row.accountsNotes)}</textarea>
+            </div>`,
+          showCancelButton: true,
+          confirmButtonText: "تأكيد وتنفيذ",
+          cancelButtonText: "إلغاء",
+          focusConfirm: false,
+          preConfirm: () => ({
+            supervisionNotes: document.getElementById("swal-supervision")?.value || "",
+            accountsNotes: document.getElementById("swal-accounts")?.value || ""
+          })
+        });
+        if (!result.isConfirmed) return;
+        await postStatus(row, 1, {
+          supervisionNotes: String(result.value?.supervisionNotes || "").trim(),
+          accountsNotes: String(result.value?.accountsNotes || "").trim()
+        });
+        return;
       }
 
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/transfer-requests/status`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              userGuid,
-              requestGuid:
-                menuRow.requestGuid,
-              requestType:
-                menuRow.type,
-              status,
-              reason,
-              supervisionNotes,
-              accountsNotes
-            })
-          }
-        );
-
-        const result =
-          await readJson(response);
-
-        await showSuccess(
-          result?.message ||
-          "تم تحديث حالة الطلب"
-        );
-
-        await loadData();
-      } catch (error) {
-        await showError(
-          error?.message ||
-          "تعذر تحديث حالة الطلب"
-        );
+      if (requireReason) {
+        const result = await Swal.fire({
+          icon: "warning",
+          title: "سبب الإلغاء",
+          input: "textarea",
+          inputLabel: "اكتب سبب إلغاء الطلب",
+          inputPlaceholder: "سبب الإلغاء...",
+          showCancelButton: true,
+          confirmButtonText: "تأكيد الإلغاء",
+          cancelButtonText: "رجوع",
+          inputValidator: (value) => (!value?.trim() ? "برجاء كتابة سبب الإلغاء" : undefined)
+        });
+        if (!result.isConfirmed) return;
+        await postStatus(row, status, { reason: String(result.value || "").trim() });
+        return;
       }
+
+      const result = await Swal.fire({
+        icon: "info",
+        title: "إرجاع الطلب إلى معلق",
+        text: `الطالب: ${row.studentName}`,
+        showCancelButton: true,
+        confirmButtonText: "تنفيذ",
+        cancelButtonText: "إلغاء"
+      });
+      if (!result.isConfirmed) return;
+      await postStatus(row, status);
     };
 
   const exportCsv = () => {
@@ -1548,10 +1542,7 @@ const TransferRequestsReport = () => {
         .join("\n");
 
     const blob =
-      new Blob([csv], {
-        type:
-          "text/csv;charset=utf-8;"
-      });
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -1562,8 +1553,8 @@ const TransferRequestsReport = () => {
     anchor.href = url;
     anchor.download =
       activeTab === 0
-        ? `طلبات-النقل-${today()}.csv`
-        : `طلبات-تغيير-التخصص-${today()}.csv`;
+        ? `طلبات-النقل-${today()}.xlsx`
+        : `طلبات-تغيير-التخصص-${today()}.xlsx`;
 
     anchor.click();
     URL.revokeObjectURL(url);
@@ -2385,6 +2376,21 @@ const TransferRequestsReport = () => {
           </Box>
         </Paper>
 
+        {activeTab === 1 && (
+          <LegacyDiplomChangesPanel
+            apiBaseUrl={API_BASE_URL}
+            userGuid={userGuid}
+            onOpenStatement={(row) => {
+              setStatementStudent({
+                accountGuid: row.accountGuid,
+                studentName: row.studentName || "",
+                nationalId: row.nationalId || ""
+              });
+              setStatementOpen(true);
+            }}
+          />
+        )}
+
         <Paper
           elevation={0}
           sx={uiLayout.withUiSx({
@@ -2645,6 +2651,17 @@ const TransferRequestsReport = () => {
           </MenuItem>
         </Menu>
 
+        <PriceDiffDialog
+          open={confirmDialog.open}
+          mode="confirm"
+          data={confirmDialog.data}
+          request={confirmDialog.row}
+          loading={confirmDialog.loading}
+          submitting={confirmDialog.submitting}
+          onClose={() => setConfirmDialog({ open: false, row: null, data: null, loading: false, submitting: false })}
+          onSubmit={submitDiplomConfirm}
+        />
+
         <StudentStatementDialog2
           open={statementOpen}
           onClose={() => {
@@ -2760,6 +2777,18 @@ const TransferRequestsReport = () => {
                     ["ملاحظة مقدم الطلب", detailsRow.requestNotes],
                     ["ملاحظة الإشراف العام", detailsRow.supervisionNotes],
                     ["ملاحظة الحسابات", detailsRow.accountsNotes],
+                    ...(detailsRow.type === "branch"
+                      ? []
+                      : [
+                          ["فرع الدراسة للتخصص الجديد", detailsRow.priceBranchName],
+                          [
+                            "فرق السعر",
+                            detailsRow.priceDiff === null || detailsRow.priceDiff === undefined || detailsRow.priceDiff === ""
+                              ? ""
+                              : `${Number(detailsRow.priceDiff) > 0 ? "+" : ""}${Number(detailsRow.priceDiff).toLocaleString("en-US")} ريال`
+                          ],
+                          ["رقم قيد فرق السعر", detailsRow.priceJournalCode]
+                        ]),
                     ["الحالة", detailsRow.statusName],
                     ["الرد", detailsRow.response],
                     ["منفذ الإجراء", detailsRow.confirmedByName],

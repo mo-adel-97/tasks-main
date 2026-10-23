@@ -41,6 +41,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PrintIcon from "@mui/icons-material/Print";
+import { printCashVoucher } from "../utils/cashVoucherPrint";
 import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -607,17 +608,11 @@ const CashPaymentOrder = () => {
       return;
     }
 
-    const params =
-      new URLSearchParams({
-        userGuid,
-        guid: form.guid
-      });
-
-    window.open(
-      `${API_BASE_URL}/api/cash-payment-orders/print?${params.toString()}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    try {
+      await printCashVoucher("payment-order", form);
+    } catch (error) {
+      await fireError(error?.message || "تعذرت الطباعة");
+    }
   };
 
   const branchColumns = [

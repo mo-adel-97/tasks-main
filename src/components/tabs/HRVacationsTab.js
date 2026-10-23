@@ -73,7 +73,7 @@ const COLOR_SCHEME = {
 
 const HR_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/hr_vacations_permissions.php';
 const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
-const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
+const BRANCHES_API_URL = 'https://api4.sstli.com/api/branches/all';
 const IMAGE_API_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php'; // أضف هذا
 
 

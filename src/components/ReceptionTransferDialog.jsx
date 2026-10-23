@@ -36,6 +36,8 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
   const [options, setOptions] = useState({ branches: [], diploms: [] });
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
+  // تحويل تخصص: الفرع اللي هيدرس فيه التخصص الجديد (سعر الدبلوم بيتحسب من عروض/قائمة أسعار الفرع ده)
+  const [priceBranch, setPriceBranch] = useState(null);
   const [notes, setNotes] = useState("");
   const [formFile, setFormFile] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -53,6 +55,7 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
     if (!open) return;
     setType("diplom");
     setSelected(null);
+    setPriceBranch(null);
     setNotes("");
     setFormFile(null);
     setError("");
@@ -87,7 +90,15 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
         }
         const optionsResponse = await fetch(`${RECEPTION_EXTRAS_API}/transfer-options?${optionParams.toString()}`, { cache: "no-store" });
         const optionsResult = await readApiJson(optionsResponse);
-        if (alive) setOptions({ branches: optionsResult?.branches || [], diploms: optionsResult?.diploms || [] });
+        if (alive) {
+          const branches = optionsResult?.branches || [];
+          setOptions({ branches, diploms: optionsResult?.diploms || [] });
+          // الافتراضي: فرع الطالب الحالي
+          const current = branches.find(
+            (b) => String(b.guid).toLowerCase() === String(contextResult?.branchGuid || "").toLowerCase()
+          );
+          setPriceBranch(current || null);
+        }
       } catch (err) {
         if (alive) setError(err?.message || "تعذر تحميل البيانات");
       } finally {
@@ -113,6 +124,10 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
       setError(type === "branch" ? "برجاء اختيار الفرع الجديد" : "برجاء اختيار التخصص الجديد");
       return;
     }
+    if (type === "diplom" && !priceBranch?.guid) {
+      setError("برجاء اختيار الفرع الذي سيدرس فيه الطالب التخصص الجديد");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -132,6 +147,8 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
           studentName: student?.studentName || "",
           newGuid: selected.guid,
           newName: selected.name,
+          priceBranchGuid: type === "diplom" ? priceBranch?.guid || null : null,
+          priceBranchName: type === "diplom" ? priceBranch?.name || "" : "",
           notes: notes.trim()
         })
       });
@@ -242,6 +259,27 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
               )}
               disabled={saving || !context}
             />
+
+            {type === "diplom" && (
+              <Autocomplete
+                sx={{ mt: 2 }}
+                options={options.branches}
+                value={priceBranch}
+                onChange={(_, value) => setPriceBranch(value)}
+                getOptionLabel={(option) => option?.name || ""}
+                isOptionEqualToValue={(option, value) => option.guid === value.guid}
+                noOptionsText="لا توجد نتائج"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    required
+                    label="الفرع الذي سيدرس فيه التخصص الجديد"
+                    helperText="يُحسب سعر التخصص الجديد من عروض وقائمة أسعار هذا الفرع"
+                  />
+                )}
+                disabled={saving || !context}
+              />
+            )}
 
             <TextField
               fullWidth

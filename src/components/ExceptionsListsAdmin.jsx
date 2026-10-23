@@ -45,7 +45,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 // Backend base
 const BASE_URL = "https://filesregsiteration.sstli.com";
 const API_URL = `${BASE_URL}/exceptions.php`;
-const BRANCHES_API = "https://api1.sstli.com/api/branches/all";
+const BRANCHES_API = "https://api4.sstli.com/api/branches/all";
 
 // Admin header key
 const ADMIN_KEY = "MOHAMED";

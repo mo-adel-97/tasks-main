@@ -59,6 +59,7 @@ import Swal from "sweetalert2";
 import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -1323,10 +1324,7 @@ const RefundRequestsReport =
         .join("\n");
 
     const blob =
-      new Blob([csv], {
-        type:
-          "text/csv;charset=utf-8;"
-      });
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -1336,7 +1334,7 @@ const RefundRequestsReport =
 
     anchor.href = url;
     anchor.download =
-      `طلبات-الاسترداد-${today()}.csv`;
+      `طلبات-الاسترداد-${today()}.xlsx`;
 
     anchor.click();
 

@@ -294,7 +294,12 @@ export default function SalesInvoiceDialog({
   const [qr, setQr] = useState({ verify: "", refund: "" });
   const [exporting, setExporting] = useState(false);
 
+  // سند مرتجع (تقرير مرتجعات الضرائب): invoice.reBillGuid → /api/sales-invoices/returns/{guid}
+  const reBillGuid = invoice?.reBillGuid || invoice?.ReBillGuid || "";
+  const isReturnDoc = Boolean(reBillGuid);
+
   const billGuid =
+    reBillGuid ||
     invoice?.billGuid ||
     invoice?.BillGuid ||
     invoice?.guid ||
@@ -320,7 +325,7 @@ export default function SalesInvoiceDialog({
         setData(null);
 
         const response = await fetch(
-          `${apiBaseUrl}/api/sales-invoices/${encodeURIComponent(billGuid)}`,
+          `${apiBaseUrl}/api/sales-invoices/${isReturnDoc ? "returns/" : ""}${encodeURIComponent(billGuid)}`,
           {
             cache: "no-store",
             headers: {
@@ -361,7 +366,7 @@ export default function SalesInvoiceDialog({
     return () => {
       cancelled = true;
     };
-  }, [open, billGuid, apiBaseUrl]);
+  }, [open, billGuid, isReturnDoc, apiBaseUrl]);
 
   // رموز الـ QR: التحقق من الفاتورة + سياسة الاسترداد.
   useEffect(() => {
@@ -420,6 +425,7 @@ export default function SalesInvoiceDialog({
 
   const buildPrintHtml = () => {
     const header = data?.invoice || {};
+    const returnOf = header.returnOf || {};
     const branch = data?.branch || {};
     const items = Array.isArray(data?.items)
       ? data.items
@@ -464,7 +470,7 @@ export default function SalesInvoiceDialog({
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <title>فاتورة رقم ${escapeHtml(header.code)}</title>
+  <title>${isReturnDoc ? "سند مرتجع" : "فاتورة"} رقم ${escapeHtml(header.code)}</title>
 
   <style>
     @page { size: A4 portrait; margin: 9mm; }
@@ -623,11 +629,11 @@ export default function SalesInvoiceDialog({
 
       <section class="title-band">
         <div>
-          <h1>فاتورة ضريبية مبسطة</h1>
-          <small>Simplified Tax Invoice</small>
+          <h1>${isReturnDoc ? "إشعار دائن (سند مرتجع)" : "فاتورة ضريبية مبسطة"}</h1>
+          <small>${isReturnDoc ? "Credit Note" : "Simplified Tax Invoice"}</small>
         </div>
         <div class="invoice-no">
-          <span>رقم الفاتورة · Invoice No</span>
+          <span>${isReturnDoc ? "رقم المرتجع · Credit Note No" : "رقم الفاتورة · Invoice No"}</span>
           <b>${escapeHtml(header.code)}</b>
         </div>
       </section>
@@ -641,10 +647,12 @@ export default function SalesInvoiceDialog({
         </div>
 
         <div class="meta-box">
-          <div class="meta-box-title">بيانات الفاتورة</div>
-          ${metaRow("تاريخ الفاتورة", "Invoice Date", formatDate(header.billDate), true)}
-          ${metaRow("وقت الفاتورة", "Invoice Time", formatTime(header.billDate), true)}
-          ${metaRow("البائع", "Seller Name", header.fullName)}
+          <div class="meta-box-title">${isReturnDoc ? "بيانات المرتجع" : "بيانات الفاتورة"}</div>
+          ${isReturnDoc ? metaRow("تاريخ المرتجع", "Credit Note Date", formatDate(header.billDate), true) : metaRow("تاريخ الفاتورة", "Invoice Date", formatDate(header.billDate), true)}
+          ${isReturnDoc ? metaRow("الفاتورة المرتبطة", "Original Invoice No", returnOf.code, true) : metaRow("وقت الفاتورة", "Invoice Time", formatTime(header.billDate), true)}
+          ${isReturnDoc ? metaRow("تاريخ الفاتورة المرتبطة", "Original Invoice Date", formatDate(returnOf.billDate), true) : ""}
+          ${isReturnDoc && header.notes ? metaRow("سبب المرتجع", "Reason", header.notes) : ""}
+          ${metaRow(isReturnDoc ? "المستخدم" : "البائع", isReturnDoc ? "User" : "Seller Name", header.fullName)}
         </div>
       </section>
 
@@ -791,7 +799,7 @@ export default function SalesInvoiceDialog({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `فاتورة-${data?.invoice?.code || "مبيعات"}.pdf`;
+      link.download = `${isReturnDoc ? "سند-مرتجع" : "فاتورة"}-${data?.invoice?.code || "مبيعات"}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -858,7 +866,11 @@ export default function SalesInvoiceDialog({
         >
           <Stack direction="row" spacing={1} alignItems="center">
             <ReceiptLongIcon />
-            <span>فاتورة مبيعات رقم {header.code || invoice?.invoiceNo || ""}</span>
+            <span>
+              {isReturnDoc
+                ? `سند مرتجع رقم ${header.code || invoice?.code || ""}${header.returnOf?.code ? ` — للفاتورة رقم ${header.returnOf.code}` : ""}`
+                : `فاتورة مبيعات رقم ${header.code || invoice?.invoiceNo || ""}`}
+            </span>
           </Stack>
 
           <IconButton
@@ -907,17 +919,32 @@ export default function SalesInvoiceDialog({
                 }}
               >
                 <Grid container spacing={1.5}>
-                  {[
-                    ["كود الفاتورة", header.code],
-                    ["التاريخ", formatDate(header.billDate)],
-                    ["نوع المستند", header.documentName],
-                    ["الفرع", data?.branch?.name],
-                    ["اسم الطالب", header.studentName],
-                    ["رقم الهوية", header.nationalId],
-                    ["رقم الجوال", header.studentTel],
-                    ["المحصل", header.fullName],
-                    ["تاريخ التحويل", formatDate(header.payDate)]
-                  ].map(([label, value]) => (
+                  {(isReturnDoc
+                    ? [
+                        ["رقم المرتجع", header.code],
+                        ["تاريخ المرتجع", formatDate(header.billDate)],
+                        ["الفاتورة المرتبطة", header.returnOf?.code],
+                        ["تاريخ الفاتورة المرتبطة", formatDate(header.returnOf?.billDate)],
+                        ["نوع المستند", header.documentName],
+                        ["الفرع", data?.branch?.name],
+                        ["اسم الطالب", header.studentName],
+                        ["رقم الهوية", header.nationalId],
+                        ["رقم الجوال", header.studentTel],
+                        ["المستخدم", header.fullName],
+                        ["سبب المرتجع", header.notes]
+                      ]
+                    : [
+                        ["كود الفاتورة", header.code],
+                        ["التاريخ", formatDate(header.billDate)],
+                        ["نوع المستند", header.documentName],
+                        ["الفرع", data?.branch?.name],
+                        ["اسم الطالب", header.studentName],
+                        ["رقم الهوية", header.nationalId],
+                        ["رقم الجوال", header.studentTel],
+                        ["المحصل", header.fullName],
+                        ["تاريخ التحويل", formatDate(header.payDate)]
+                      ]
+                  ).map(([label, value]) => (
                     <Grid
                       item
                       xs={12}
@@ -1154,7 +1181,7 @@ export default function SalesInvoiceDialog({
               background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`
             }, uiLayout.buttonSx)}
           >
-            طباعة الفاتورة
+            {isReturnDoc ? "طباعة السند" : "طباعة الفاتورة"}
           </Button>
 
           <Button

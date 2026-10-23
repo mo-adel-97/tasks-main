@@ -529,7 +529,7 @@ const EmployeeEvaluationPage = () => {
     try {
       const [usersRes, branchesRes] = await Promise.all([
         fetch(`${API_BASE}/api/userinfo`),
-        fetch(`${API_BASE}/api/branches/all`),
+        fetch("https://api4.sstli.com/api/branches/all"),
       ]);
 
       if (!usersRes.ok) throw new Error("فشل تحميل الموظفين");

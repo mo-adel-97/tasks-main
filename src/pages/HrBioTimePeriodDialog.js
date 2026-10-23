@@ -33,6 +33,7 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import HrBioEmployeeDetailDialog, { fmtClock, fmtDateTimeText } from "./HrBioEmployeeDetailDialog";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_DAYS = 93;
@@ -390,11 +391,11 @@ export default function HrBioTimePeriodDialog({
         .map((line) => line.map(escape).join(","))
         .join("\r\n");
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = excelBlobFromCsv([csv]);
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `تقرير-${report?.branch?.name || "الفرع"}-${reportRange.from}-${reportRange.to}.csv`;
+    link.download = `تقرير-${report?.branch?.name || "الفرع"}-${reportRange.from}-${reportRange.to}.xlsx`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -620,7 +621,7 @@ export default function HrBioTimePeriodDialog({
                 </ToggleButtonGroup>
                 <Box sx={{ flex: 1 }} />
                 <Button variant="outlined" onClick={exportCsv}>
-                  Excel / CSV
+                  Excel
                 </Button>
               </Stack>
 

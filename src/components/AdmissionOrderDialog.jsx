@@ -787,6 +787,47 @@ const EllipsisCell = ({ value, align = "start" }) => (
   </Tooltip>
 );
 
+// اسم الدبلوم/الدورة + شارة العرض لو عليه عرض سعر ساري (شاشة العروض في الإعدادات العامة)
+const DiplomNameCell = ({ row }) => (
+  <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, minWidth: 0, width: "100%" }}>
+    {row?.offerName ? (
+      <Tooltip title={`${row.offerName}${row.offerEndDate ? ` — ساري حتى ${row.offerEndDate}` : ""}`} arrow>
+        <Chip
+          size="small"
+          label={`🎁 ${row.offerName}`}
+          sx={{
+            height: 20,
+            maxWidth: 150,
+            fontWeight: 900,
+            fontSize: "0.68rem",
+            color: "#fff",
+            background: "linear-gradient(135deg,#e65100,#ff9800)",
+            "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis" }
+          }}
+        />
+      </Tooltip>
+    ) : null}
+    <Box sx={{ minWidth: 0, flex: 1 }}>
+      <EllipsisCell value={row?.diplomName} align="start" />
+    </Box>
+  </Box>
+);
+
+// السعر بعد العرض + السعر الأصلي مشطوب
+const OfferPriceCell = ({ row }) =>
+  row?.offerName && Number(row?.originalSubTotal) > 0 ? (
+    <Box sx={{ width: "100%", textAlign: "center", lineHeight: 1.1 }}>
+      <Typography component="div" sx={{ fontWeight: 1000, color: "#e65100", fontSize: "0.84rem", "@media (max-width:599px)": { fontSize: "0.75rem" } }}>
+        {money(row.subTotal)}
+      </Typography>
+      <Typography component="div" sx={{ textDecoration: "line-through", color: "text.secondary", fontSize: "0.7rem", fontWeight: 700 }}>
+        {money(row.originalSubTotal)}
+      </Typography>
+    </Box>
+  ) : (
+    <MoneyCell value={row?.subTotal} color={row?.offerName ? "#e65100" : textColor} />
+  );
+
 const EmptyBox = ({ text }) => (
   <Box
     sx={{
@@ -1569,7 +1610,9 @@ setAmount(
         regType: String(targetRegType),
         branchGuid: targetBranchGuid,
         batchGuid: targetBatchGuid,
-        studentNational: String(studentNational)
+        studentNational: String(studentNational),
+        // نوع الدراسة (حضوري / عن بعد) — عروض الأسعار بتتطبق على نوعها بس
+        studyType: String(Number(studyType) === 1 ? 1 : 0)
       });
 
       const result = await fetchJson(
@@ -1819,6 +1862,12 @@ setAmount(
       }
 
       setSelectedDiplomas([{ ...row, id: row.diplomGuid || row.id }]);
+
+      // اسم العرض في الملاحظات عشان يبان في الطلب والتقارير
+      if (row.offerName) {
+        const offerNote = `عرض: ${row.offerName}`;
+        setNotes((prev) => (String(prev || "").includes(offerNote) ? prev : [String(prev || "").trim(), offerNote].filter(Boolean).join(" - ")));
+      }
       setError("");
     } catch (err) {
       const message = err.message || "حدث خطأ أثناء فحص المقاعد";
@@ -2963,7 +3012,7 @@ ${PRINT_READY_SCRIPT}</head>
       headerName: "الدبلوم / الدورة",
       flex: 1,
       minWidth: 280,
-      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
+      renderCell: (params) => <DiplomNameCell row={params.row} />
     },
     {
       field: "cost",
@@ -2987,7 +3036,7 @@ ${PRINT_READY_SCRIPT}</head>
       width: 120,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => <MoneyCell value={params.row.subTotal} />
+      renderCell: (params) => <OfferPriceCell row={params.row} />
     }
   ];
 
@@ -3014,7 +3063,7 @@ ${PRINT_READY_SCRIPT}</head>
       headerName: "الدبلوم / الدورة المختارة",
       flex: 1,
       minWidth: 280,
-      renderCell: (params) => <EllipsisCell value={params.value} align="start" />
+      renderCell: (params) => <DiplomNameCell row={params.row} />
     },
     {
       field: "cost",
@@ -3038,7 +3087,7 @@ ${PRINT_READY_SCRIPT}</head>
       width: 120,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => <MoneyCell value={params.row.subTotal} />
+      renderCell: (params) => <OfferPriceCell row={params.row} />
     }
   ];
 
@@ -3565,7 +3614,6 @@ ${PRINT_READY_SCRIPT}</head>
               <TextInfo
                 label="قائمة السعر"
                 value={contextData?.priceSaleNotes || contextData?.priceSource || "-"}
-                strong={contextData?.ramadanOfferEnabled}
               />
             </Grid>
           </Grid>
@@ -3821,10 +3869,7 @@ ${PRINT_READY_SCRIPT}</head>
     sx={{
       fontSize: isPhone ? "0.75rem" : isTablet ? "0.75rem" : "1.15rem",
       lineHeight: 1.15,
-      color:
-        Number(regType) === 0 && contextData?.ramadanOfferEnabled
-          ? accentColor
-          : textColor,
+      color: textColor,
       fontWeight: 1000
     }}
   >
@@ -3841,18 +3886,7 @@ ${PRINT_READY_SCRIPT}</head>
                 size="small"
                 label="الملاحظات"
                 value={notes}
-                onChange={(e) => {
-                  const prefix = contextData?.ramadanPrefix
-                    ? `${contextData.ramadanPrefix} - `
-                    : "";
-
-                  if (contextData?.ramadanOfferEnabled && !e.target.value.startsWith(prefix)) {
-                    setNotes(prefix);
-                    return;
-                  }
-
-                  setNotes(e.target.value);
-                }}
+                onChange={(e) => setNotes(e.target.value)}
                 multiline
                 minRows={isPhone ? 1 : isTablet ? 1 : 2}
                 inputProps={{ style: { direction: "rtl", textAlign: "start", fontWeight: 800 } }}
@@ -3938,6 +3972,15 @@ ${PRINT_READY_SCRIPT}</head>
                     الدبلومات / الدورات المتاحة
                   </Typography>
 
+                  {availableDiplomas.some((x) => x.offerName) ? (
+                    <Alert
+                      icon={false}
+                      severity="warning"
+                      sx={{ mb: 0.8, py: 0, fontWeight: 900, borderRadius: 2, background: "linear-gradient(135deg,rgba(230,81,0,.12),rgba(255,152,0,.12))" }}
+                    >
+                      🎁 عروض سارية على هذا الفرع: {[...new Set(availableDiplomas.filter((x) => x.offerName).map((x) => x.offerName))].join("، ")}
+                    </Alert>
+                  ) : null}
                   <Box sx={uiLayout.withUiSx({ height: isPhone ? 190 : isTablet ? 230 : 330, minWidth: 0 }, uiLayout.tableContainerSx)}>
                     {availableDiplomas.length ? (
                       <DataGrid

@@ -37,6 +37,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -921,11 +922,11 @@ export default function BalanceReviewPage() {
     );
 
     const csv = "\uFEFF" + [header.join(","), ...lines].join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const blob = excelBlobFromCsv([csv]);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `مراجعة-الميزان-${fromDate}-${toDate}.csv`;
+    a.download = `مراجعة-الميزان-${fromDate}-${toDate}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -1648,7 +1649,7 @@ export default function BalanceReviewPage() {
               <Typography sx={{ fontWeight: 950, fontSize: isPhone ? 12 : isTablet ? 15 : 18, flexGrow: 1 }}>
                 الفحوصات الرئيسية
               </Typography>
-              <Tooltip title="تصدير المشاكل CSV">
+              <Tooltip title="تصدير المشاكل Excel">
                 <Button
                   variant="outlined"
                   startIcon={<FileDownloadIcon />}

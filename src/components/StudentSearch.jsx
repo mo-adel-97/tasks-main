@@ -118,7 +118,7 @@ useEffect(() => {
             // نجيب بيانات المستخدمين والفروع مع بعض
             const [usersRes, branchesRes] = await Promise.all([
                 axios.get("https://api1.sstli.com/api/userinfo"),
-                axios.get("https://api1.sstli.com/api/branches/all")
+                axios.get("https://api4.sstli.com/api/branches/all")
             ]);
 
             const allUsers = usersRes.data;

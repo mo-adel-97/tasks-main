@@ -55,6 +55,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -949,13 +950,7 @@ export default function TaxSalesReport() {
       ].join("\n");
 
     const blob =
-      new Blob(
-        [csv],
-        {
-          type:
-            "text/csv;charset=utf-8"
-        }
-      );
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -965,7 +960,7 @@ export default function TaxSalesReport() {
 
     a.href = url;
     a.download =
-      `تقرير-الضرائب-${fromDate}-${toDate}.csv`;
+      `تقرير-الضرائب-${fromDate}-${toDate}.xlsx`;
 
     a.click();
 

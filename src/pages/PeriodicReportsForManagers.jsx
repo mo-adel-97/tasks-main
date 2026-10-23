@@ -269,7 +269,7 @@ const AdminBranchesReports = () => {
   /* ============== Fetch Branches ============== */
   const fetchBranches = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/branches/all');
+      const response = await fetch('https://api4.sstli.com/api/branches/all');
       if (!response.ok) throw new Error('Failed to fetch branches');
       const data = await response.json();
       setBranches(data);

@@ -6,7 +6,7 @@ const OfflineRegistrationRequests = () => (
     mode="offline"
     title="طلبات الدراسة الحضوري"
     subtitle="عرض طلبات الدراسة الحضوري خلال الفترة المحددة"
-    exportFileName="تقرير تسجيلات حضوري الموقع.csv"
+    exportFileName="تقرير تسجيلات حضوري الموقع.xlsx"
   />
 );
 

@@ -55,6 +55,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -144,7 +145,11 @@ const FILTER_FIELDS = [
   },
   {
     key: "code",
-    label: "رقم الفاتورة"
+    label: "رقم المرتجع"
+  },
+  {
+    key: "originalBillCode",
+    label: "الفاتورة المرتبطة"
   },
   {
     key: "docName",
@@ -330,14 +335,15 @@ export default function TaxReturnsReport() {
     // ShowTaxReport / ShowReTaxReport أصبحا يرجعان BillGuid الحقيقي.
     // نفس استراتيجية كشف الحساب: نمرر BillGuid إلى SalesInvoiceDialog
     // بدون تغيير طريقة تحميل فاتورة المبيعات.
-    const billGuid =
-      row?.billGuid ||
-      row?.BillGuid ||
+    // سند المرتجع نفسه (ReBillGuid) مش الفاتورة الأصلية
+    const reBillGuid =
+      row?.reBillGuid ||
+      row?.ReBillGuid ||
       "";
 
-    if (!billGuid) {
+    if (!reBillGuid) {
       setError(
-        "الفاتورة لا تحتوي على BillGuid. تأكد أن الـ Stored Procedure والـ API يرجعان BillGuid."
+        "تعذر تحديد سند المرتجع. تأكد من تحديث ShowReTaxReport و api4."
       );
       return;
     }
@@ -346,7 +352,7 @@ export default function TaxReturnsReport() {
 
     setSelectedInvoice({
       ...row,
-      billGuid
+      reBillGuid
     });
 
     setInvoiceDialogOpen(true);
@@ -580,6 +586,7 @@ export default function TaxReturnsReport() {
           searchText: [
             row?.reDate,
             row?.code,
+            row?.originalBillCode,
             row?.docName,
             row?.studentName,
             row?.nationalId,
@@ -908,7 +915,8 @@ export default function TaxReturnsReport() {
 
     const header = [
       "تاريخ المرتجع",
-      "رقم الفاتورة",
+      "رقم المرتجع",
+      "الفاتورة المرتبطة",
       "نوع المستند",
       "اسم الطالب",
       "رقم الهوية",
@@ -923,8 +931,9 @@ export default function TaxReturnsReport() {
     const lines =
       filteredRows.map((row) =>
         [
-          dateOnly(row.billDate),
+          dateOnly(row.reDate || row.billDate),
           row.code,
+          row.originalBillCode,
           row.docName,
           row.studentName,
           row.nationalId,
@@ -949,13 +958,7 @@ export default function TaxReturnsReport() {
       ].join("\n");
 
     const blob =
-      new Blob(
-        [csv],
-        {
-          type:
-            "text/csv;charset=utf-8"
-        }
-      );
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -965,7 +968,7 @@ export default function TaxReturnsReport() {
 
     a.href = url;
     a.download =
-      `تقرير-مرتجعات-الضرائب-${fromDate}-${toDate}.csv`;
+      `تقرير-مرتجعات-الضرائب-${fromDate}-${toDate}.xlsx`;
 
     a.click();
 
@@ -993,9 +996,19 @@ export default function TaxReturnsReport() {
         {
           field: "code",
           headerName:
-            "رقم الفاتورة",
+            "رقم المرتجع",
           flex: 0.75,
           minWidth: 70,
+          align: "center",
+          headerAlign:
+            "center"
+        },
+        {
+          field: "originalBillCode",
+          headerName:
+            "الفاتورة المرتبطة",
+          flex: 0.85,
+          minWidth: 80,
           align: "center",
           headerAlign:
             "center"
@@ -1156,7 +1169,7 @@ export default function TaxReturnsReport() {
         },
         {
           field: "code",
-          headerName: "الفاتورة",
+          headerName: "المرتجع",
           flex: 0.8,
           minWidth: 0,
           sortable: false,
@@ -1230,7 +1243,7 @@ export default function TaxReturnsReport() {
           renderCell: (params) => (
             <IconButton
               size="small"
-              title="عرض الفاتورة"
+              title="عرض سند المرتجع"
               onClick={(event) => {
                 event.stopPropagation();
                 openInvoiceDialog(params.row);
@@ -2427,13 +2440,17 @@ export default function TaxReturnsReport() {
               [
                 "تاريخ المرتجع",
                 dateOnly(
-                  detailRow
-                    ?.billDate
+                  detailRow?.reDate ||
+                  detailRow?.billDate
                 )
               ],
               [
-                "رقم الفاتورة",
+                "رقم المرتجع",
                 detailRow?.code
+              ],
+              [
+                "الفاتورة المرتبطة",
+                detailRow?.originalBillCode
               ],
               [
                 "نوع المستند",

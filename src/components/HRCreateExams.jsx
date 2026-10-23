@@ -50,6 +50,7 @@ import {
   Tooltip
 } from '@mui/material';
 
+import { bestAttemptPerStudent } from '../utils/examAttempts';
 import {
   Add,
   Delete,
@@ -116,7 +117,38 @@ const writeSessionCache = (key, data) => {
   }
 };
 
-const runInBatches = async (items, worker, batchSize = 6) => {
+// استضافة الاختبارات (Hostinger) بترفض الطلبات المتوازية الكتير بخطأ 500 فاضي (من غير أي رد).
+// الخطأ ده بيحصل قبل ما الطلب يتنفذ، فإعادة المحاولة آمنة. أخطاء الـ API الحقيقية بترجع JSON وما بتتعادش.
+const EXAM_RETRY_DELAYS = [400, 900, 1800, 3000, 5000];
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// انقطاع النت بيتعاد في القراءة بس (الحفظ ممكن يكون اتنفذ قبل الانقطاع)
+const isExamOverload = (error, method) => {
+  const response = error?.response;
+  if (!response) return method === 'get' && !axios.isCancel?.(error);
+  const emptyBody = response.data === '' || response.data == null;
+  return [500, 502, 503, 504, 508].includes(response.status) && emptyBody;
+};
+
+const withExamRetry = async (method, url, request) => {
+  if (!String(url).startsWith(EXAM_API_BASE_URL)) return request();
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await request();
+    } catch (error) {
+      if (attempt >= EXAM_RETRY_DELAYS.length || !isExamOverload(error, method)) throw error;
+      await sleep(EXAM_RETRY_DELAYS[attempt] + Math.floor(Math.random() * 300));
+    }
+  }
+};
+
+const examHttp = {
+  get: (url, ...rest) => withExamRetry('get', url, () => axios.get(url, ...rest)),
+  post: (url, ...rest) => withExamRetry('post', url, () => axios.post(url, ...rest))
+};
+
+// طلبين بس في نفس الوقت عشان الاستضافة ما ترفضش
+const runInBatches = async (items, worker, batchSize = 2) => {
   for (let start = 0; start < items.length; start += batchSize) {
     const batch = items.slice(start, start + batchSize);
     await Promise.all(batch.map(worker));
@@ -204,7 +236,7 @@ const uploadAttachment = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await axios.post(
+  const response = await examHttp.post(
     `${EXAM_API_BASE_URL}?action=upload_attachment`,
     formData,
     { timeout: 60000 }
@@ -385,7 +417,7 @@ const HRCreateExams = () => {
 
   const fetchUsers = async ({ silent = false } = {}) => {
     try {
-      const response = await axios.get(
+      const response = await examHttp.get(
         'https://api1.sstli.com/api/userinfo',
         { timeout: 20000 }
       );
@@ -408,7 +440,7 @@ const HRCreateExams = () => {
         setLoadingExams(true);
       }
 
-      const response = await axios.get(
+      const response = await examHttp.get(
         `${EXAM_API_BASE_URL}?action=get_exams`,
         { timeout: 30000 }
       );
@@ -512,7 +544,7 @@ const HRCreateExams = () => {
       return examDetailsCacheRef.current.get(cacheKey);
     }
 
-    const response = await axios.get(
+    const response = await examHttp.get(
       `${EXAM_API_BASE_URL}?action=get_exam&id=${examId}`,
       { timeout: 30000 }
     );
@@ -598,10 +630,17 @@ const HRCreateExams = () => {
       setShowAttemptsDialog(true);
       setSelectedExamAttempts(null);
 
-      const response = await axios.get(`${EXAM_API_BASE_URL}?action=get_exam_attempts&exam_id=${examId}`);
+      const response = await examHttp.get(`${EXAM_API_BASE_URL}?action=get_exam_attempts&exam_id=${examId}`);
 
       if (response.data.success) {
-        setSelectedExamAttempts(response.data.data);
+        const data = response.data.data || {};
+        const allAttempts = data.attempts || [];
+        // أعلى نتيجة لكل طالب (الطالب ممكن يختبر أكثر من مرة)
+        setSelectedExamAttempts({
+          ...data,
+          attempts: bestAttemptPerStudent(allAttempts),
+          total_attempts: allAttempts.length
+        });
       } else {
         showErrorAlert(response.data.message || 'فشل في جلب نتائج الاختبار');
       }
@@ -639,6 +678,7 @@ const HRCreateExams = () => {
       'النسبة %': num(attempt.percentage),
       'النتيجة': isPassed(attempt) ? 'ناجح' : 'راسب',
       'عدد الإجابات الصحيحة': (attempt.answers || []).filter(isCorrect).length,
+      'عدد المحاولات': attempt.attempts_count || 1,
     }));
 
     // ترتيب الأسئلة من أول محاولة فيها إجابات، والباقي يتضاف بالترتيب لو ظهر.
@@ -928,7 +968,7 @@ const HRCreateExams = () => {
           created_by_name: currentUser?.fullName || currentUser?.userName || ''
         };
 
-        const response = await axios.post(`${EXAM_API_BASE_URL}?action=create_exam`, payload);
+        const response = await examHttp.post(`${EXAM_API_BASE_URL}?action=create_exam`, payload);
 
         Swal.close();
 
@@ -943,7 +983,7 @@ const HRCreateExams = () => {
         return;
       }
 
-      const basicResponse = await axios.post(`${EXAM_API_BASE_URL}?action=update_exam`, {
+      const basicResponse = await examHttp.post(`${EXAM_API_BASE_URL}?action=update_exam`, {
         id: examForm.id,
         title: examForm.title,
         description: examForm.description,
@@ -971,7 +1011,7 @@ const HRCreateExams = () => {
         questionJobs,
         async ({ question: q, index }) => {
           if (q.id) {
-            const response = await axios.post(
+            const response = await examHttp.post(
               `${EXAM_API_BASE_URL}?action=update_question`,
               {
                 question_id: q.id,
@@ -995,7 +1035,7 @@ const HRCreateExams = () => {
             return;
           }
 
-          const response = await axios.post(
+          const response = await examHttp.post(
             `${EXAM_API_BASE_URL}?action=add_question`,
             {
               exam_id: examForm.id,
@@ -1016,7 +1056,7 @@ const HRCreateExams = () => {
             );
           }
         },
-        6
+        2
       );
 
       examDetailsCacheRef.current.delete(
@@ -1089,7 +1129,7 @@ const HRCreateExams = () => {
         }))
       };
 
-      const response = await axios.post(`${EXAM_API_BASE_URL}?action=create_exam`, payload);
+      const response = await examHttp.post(`${EXAM_API_BASE_URL}?action=create_exam`, payload);
 
       Swal.close();
 
@@ -1120,7 +1160,7 @@ const HRCreateExams = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const response = await axios.get(`${EXAM_API_BASE_URL}?action=delete_exam&id=${examId}`);
+      const response = await examHttp.get(`${EXAM_API_BASE_URL}?action=delete_exam&id=${examId}`);
 
       if (response.data.success) {
         examDetailsCacheRef.current.delete(String(examId));
@@ -1149,7 +1189,7 @@ const HRCreateExams = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const response = await axios.get(`${EXAM_API_BASE_URL}?action=delete_question&id=${questionId}`);
+      const response = await examHttp.get(`${EXAM_API_BASE_URL}?action=delete_question&id=${questionId}`);
 
       if (response.data.success) {
         if (selectedExamDetails?.id) {
@@ -2256,7 +2296,9 @@ const exportExamQrCode = async (exam) => {
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  <Chip label={`عدد المحاولات: ${selectedExamAttempts.attempts?.length || 0}`} />
+                  <Chip label={`عدد الطلاب: ${selectedExamAttempts.attempts?.length || 0}`} />
+                  <Chip label={`إجمالي المحاولات: ${selectedExamAttempts.total_attempts || 0}`} />
+                  <Chip label="المعروض: أعلى نتيجة لكل طالب" color="success" variant="outlined" />
                   <Chip label={`عدد الأسئلة: ${selectedExamAttempts.exam?.questions_count || 0}`} />
                 </Box>
               </Box>
@@ -2288,6 +2330,9 @@ const exportExamQrCode = async (exam) => {
                           <Chip label={`الهوية: ${attempt.national_id}`} size="small" />
                           <Chip label={`الدرجة: ${attempt.score} / ${attempt.total_score}`} size="small" />
                           <Chip label={`النسبة: ${attempt.percentage}%`} size="small" />
+                          {attempt.attempts_count > 1 ? (
+                            <Chip label={`أعلى نتيجة من ${attempt.attempts_count} محاولات`} size="small" color="info" variant="outlined" />
+                          ) : null}
                           <Chip
                             label={Number(attempt.is_passed) === 1 ? 'ناجح' : 'راسب'}
                             color={Number(attempt.is_passed) === 1 ? 'success' : 'error'}

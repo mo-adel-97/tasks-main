@@ -1511,6 +1511,10 @@ isDark
   const [trainers, setTrainers] =
     useState([]);
 
+  // مسؤولي اتصال مش متاحين للتوزيع (مش مربوطين بيوزر واحد نشط) — بيرجعوا من السيرفر بالسبب
+  const [excludedTrainers, setExcludedTrainers] =
+    useState([]);
+
   const [diploms, setDiploms] =
     useState([]);
 
@@ -1779,6 +1783,11 @@ isDark
             : [];
 
         setTrainers(values);
+        setExcludedTrainers(
+          Array.isArray(result?.excluded)
+            ? result.excluded
+            : []
+        );
 
         const currentFixedTrainer =
           getFixedCompanyTrainer(
@@ -5636,6 +5645,31 @@ const exportExcel = async () => {
                     سيتم توزيع الطلاب بالتساوي النسبي.
                   </Typography>
                 </Paper>
+
+                {excludedTrainers.length > 0 && (
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      mb: 2,
+                      p: 1.55,
+                      borderRadius: 2,
+                      border: "1px solid #fca5a5",
+                      bgcolor: "rgba(254,226,226,.55)"
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 900, color: "#991b1b", mb: 0.6 }}>
+                      مسؤولو اتصال غير متاحين للتوزيع ({excludedTrainers.length})
+                    </Typography>
+                    <Typography sx={{ fontSize: 12.5, color: "text.secondary", mb: 0.8 }}>
+                      لا يمكن التوزيع على مسؤول اتصال إلا إذا كان مربوطًا بمستخدم واحد نشط في البرنامج، حتى تُرحَّل عمولته لصاحبها.
+                    </Typography>
+                    {excludedTrainers.map((item) => (
+                      <Typography key={item.guid} sx={{ fontSize: 13, fontWeight: 700 }}>
+                        • {item.name} — {item.reason}
+                      </Typography>
+                    ))}
+                  </Paper>
+                )}
 
                 {fixedCompanyTrainer && (
                   <Paper

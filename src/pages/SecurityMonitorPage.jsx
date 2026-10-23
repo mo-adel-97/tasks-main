@@ -35,6 +35,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import BlockRoundedIcon from "@mui/icons-material/BlockRounded";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import VpnKeyRoundedIcon from "@mui/icons-material/VpnKeyRounded";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
@@ -100,7 +102,11 @@ const KINDS = {
   "monitor-ok": { label: "دخول شاشة المراقبة", color: "#7c3aed" },
   "monitor-fail": { label: "كلمة مرور خاطئة لشاشة المراقبة", color: "#dc2626" },
   "monitor-locked": { label: "محاولة أثناء قفل شاشة المراقبة", color: "#dc2626" },
-  "monitor-denied": { label: "محاولة فتح شاشة المراقبة بدون صلاحية", color: "#dc2626" }
+  "monitor-denied": { label: "محاولة فتح شاشة المراقبة بدون صلاحية", color: "#dc2626" },
+  "api-call": { label: "طلب بمفتاح API", color: "#0d9488" },
+  "api-denied": { label: "طلب مرفوض بمفتاح API", color: "#b91c1c" },
+  "admin-action": { label: "إجراء إداري", color: "#7c3aed" },
+  blocked: { label: "طلب من جهاز محظور", color: "#991b1b" }
 };
 const KindChip = ({ kind }) => {
   const k = KINDS[kind] || { label: kind, color: "#9ca3af" };
@@ -142,7 +148,7 @@ const Grid = ({ rows, columns, loading, height = 560, empty = "لا توجد ب�
         columnHeaderHeight={46}
         disableRowSelectionOnClick
         disableVirtualization={Boolean(small)}
-        pageSizeOptions={[50, 100, 200]}
+        pageSizeOptions={[50, 100]}
         initialState={{ pagination: { paginationModel: { pageSize: 100 } }, columns: { columnVisibilityModel: hidden || {} } }}
         localeText={{ noRowsLabel: empty }}
         sx={gridSx(theme.palette.mode === "dark")}
@@ -576,14 +582,25 @@ const ActivityTab = ({ onError }) => {
   const [from, setFrom] = useState(daysAgo(0));
   const [to, setTo] = useState(daysAgo(0));
   const [user, setUser] = useState("");
-  const [kinds, setKinds] = useState({ visits: true, denied: true, actions: true, monitor: true });
+  const [kinds, setKinds] = useState({ visits: true, denied: true, actions: true, monitor: true, api: true });
   const [rows, setRows] = useState([]);
   const [users, setUsers] = useState([]);
   const [truncated, setTruncated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [blockOptions, setBlockOptions] = useState(null);
   const [notice, setNotice] = useState("");
+  const [query, setQuery] = useState("");
   const knownUsers = useRef(new Map());
+
+  // بحث سريع: بصمة الجهاز / معرّفه / IP / المستخدم / الشاشة / التفاصيل
+  const shownRows = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((r) =>
+      [r.fingerprint, r.deviceId, r.ip, r.user, r.branch, r.screen, r.detail, r.device, r.code]
+        .some((v) => String(v ?? "").toLowerCase().includes(q))
+    );
+  }, [rows, query]);
 
   const load = useCallback(
     async (userGuid = user) => {
@@ -641,7 +658,8 @@ const ActivityTab = ({ onError }) => {
           ["visits", "فتح الشاشات"],
           ["denied", "المحاولات غير المسموحة"],
           ["actions", "الحركات"],
-          ["monitor", "شاشة المراقبة"]
+          ["monitor", "شاشة المراقبة"],
+          ["api", "مفاتيح API"]
         ].map(([key, label]) => (
           <FormControlLabel
             key={key}
@@ -685,30 +703,62 @@ const ActivityTab = ({ onError }) => {
       </Paper>
 
       <Stack direction="row" spacing={1} sx={{ mb: 1 }} alignItems="center" flexWrap="wrap" useFlexGap>
-        <Chip label={`السجلات: ${num(rows.length)}`} sx={{ fontWeight: 800 }} />
+        <TextField
+          size="small"
+          placeholder="بحث: بصمة الجهاز، IP، المستخدم، الشاشة..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          sx={{ width: 320 }}
+          InputProps={{
+            startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>,
+            endAdornment: query ? (
+              <InputAdornment position="end">
+                <IconButton size="small" onClick={() => setQuery("")} aria-label="مسح البحث">×</IconButton>
+              </InputAdornment>
+            ) : null
+          }}
+        />
+        <Chip label={`السجلات: ${num(shownRows.length)}${query ? ` من ${num(rows.length)}` : ""}`} sx={{ fontWeight: 800 }} />
         {user ? <Chip label={`المستخدم: ${knownUsers.current.get(user) || user}`} onDelete={() => pickUser("")} color="primary" sx={{ fontWeight: 800 }} /> : null}
         {truncated ? <Chip color="warning" label="تم عرض أحدث 20,000 سجل فقط — ضيّق الفترة" sx={{ fontWeight: 800 }} /> : null}
       </Stack>
       <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
         <Grid
-          rows={rows}
+          rows={shownRows}
           loading={loading}
           columns={[
             { field: "block", headerName: "", width: 50, sortable: false, renderCell: ({ row }) => <BlockRowButton options={activityBlockOptions(row)} onBlock={setBlockOptions} /> },
             { field: "at", headerName: "الوقت", width: 145, valueFormatter: ({ value }) => formatAt(value) },
             { field: "kindText", headerName: "النوع", width: 230, renderCell: ({ row }) => <KindChip kind={row.kind} /> },
             { field: "user", headerName: "المستخدم", width: 190 },
+            {
+              field: "fingerprint",
+              headerName: "بصمة الجهاز",
+              width: 160,
+              renderCell: ({ value }) =>
+                value ? (
+                  <Tooltip title="كل حركات الجهاز ده (بأي حساب)">
+                    <Chip
+                      size="small"
+                      label={value}
+                      onClick={() => setQuery(value)}
+                      sx={{ fontFamily: "monospace", fontWeight: 800, cursor: "pointer", direction: "ltr" }}
+                    />
+                  </Tooltip>
+                ) : (
+                  <Typography sx={{ fontSize: 12, color: "text.disabled" }}>—</Typography>
+                )
+            },
             { field: "branch", headerName: "الفرع", width: 130 },
             { field: "screen", headerName: "الشاشة", width: 200 },
             { field: "detail", headerName: "التفاصيل", flex: 1, minWidth: 180 },
             { field: "code", headerName: "رقم المستند", width: 100 },
             { field: "ip", headerName: "عنوان IP", width: 140 },
             { field: "device", headerName: "الجهاز", width: 230 },
-            { field: "fingerprint", headerName: "بصمة الجهاز", width: 120 },
             { field: "deviceId", headerName: "معرّف الجهاز", width: 120 },
             { field: "path", headerName: "رابط الصفحة (تقني)", width: 230 }
           ]}
-          hidden={{ fingerprint: false, deviceId: false, path: false }}
+          hidden={{ deviceId: false, path: false }}
         />
       </Paper>
       {notice ? <Alert severity="success" onClose={() => setNotice("")} sx={{ mt: 2, fontWeight: 700 }}>{notice}</Alert> : null}
@@ -868,7 +918,7 @@ const ConfirmField = ({ value, onChange }) => (
 );
 
 // نافذة عامة لأي عملية بتحتاج تأكيد بكلمة مرور الشاشة
-const ActionDialog = ({ open, title, danger, submitLabel = "تنفيذ", canSubmit = true, onClose, onSubmit, onError, children }) => {
+const ActionDialog = ({ open, title, danger, submitLabel = "تنفيذ", canSubmit = true, onClose, onSubmit, onError, children, maxWidth = "sm" }) => {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -897,7 +947,7 @@ const ActionDialog = ({ open, title, danger, submitLabel = "تنفيذ", canSubm
   };
 
   return (
-    <Dialog open={open} onClose={() => !busy && onClose(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { direction: "rtl", borderRadius: 3 } }}>
+    <Dialog open={open} onClose={() => !busy && onClose(false)} fullWidth maxWidth={maxWidth} PaperProps={{ sx: { direction: "rtl", borderRadius: 3 } }}>
       <DialogTitle sx={{ fontWeight: 900, color: "#fff", background: danger ? "linear-gradient(135deg,#b91c1c,#7f1d1d)" : `linear-gradient(135deg,${primary},${primaryDark})` }}>
         {title}
       </DialogTitle>
@@ -1230,7 +1280,336 @@ const ControlTab = ({ onError }) => {
   );
 };
 
-const TABS = ["نظرة عامة", "محاولات دخول قاعدة البيانات", "اتصالات قاعدة البيانات", "تغييرات السيرفر", "نشاط المستخدمين", "حالة السيرفر", "التحكم والحظر"];
+// ===================== مستخدمو الـ API =====================
+
+const METHOD_COLORS = { GET: "#2563eb", POST: "#16a34a", PUT: "#d97706", PATCH: "#d97706", DELETE: "#dc2626" };
+const MethodChip = ({ method }) => (
+  <Chip size="small" label={method} sx={{ height: 20, fontSize: 11, fontWeight: 900, color: "#fff", bgcolor: METHOD_COLORS[method] || "#64748b", minWidth: 52 }} />
+);
+
+const toLocalInput = (value) => {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+const inDays = (days) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return toLocalInput(d);
+};
+
+const clientState = (c) => {
+  if (!c.active) return { label: "موقوف", color: "default" };
+  if (c.expiresAt && new Date(c.expiresAt) <= new Date()) return { label: "منتهي", color: "warning" };
+  return { label: "يعمل", color: "success" };
+};
+
+// اختيار الـ endpoints: بحث + تجميع حسب القسم (controller) + تحديد القسم كله
+const EndpointPicker = ({ catalog, selected, onChange }) => {
+  const [q, setQ] = useState("");
+  // الأقسام مقفولة: بنرسم endpoints القسم المفتوح أو نتايج البحث بس (أكتر من 600 endpoint كانت بتتقل الشاشة)
+  const [open, setOpen] = useState(() => new Set());
+  const searching = q.trim().length > 0;
+  const toggleOpen = (controller) =>
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(controller)) next.delete(controller);
+      else next.add(controller);
+      return next;
+    });
+  const groups = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    const map = new Map();
+    catalog
+      .filter((e) => !term || `${e.method} ${e.route} ${e.controller}`.toLowerCase().includes(term))
+      .forEach((e) => {
+        if (!map.has(e.controller)) map.set(e.controller, []);
+        map.get(e.controller).push(e);
+      });
+    return [...map.entries()];
+  }, [catalog, q]);
+
+  const keyOf = (e) => `${e.method} ${e.route}`;
+  const toggle = (keys, on) => {
+    const next = new Set(selected);
+    keys.forEach((k) => (on ? next.add(k) : next.delete(k)));
+    onChange(next);
+  };
+
+  return (
+    <Box>
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="ابحث في الـ endpoints (مثال: latest-payment-order)"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }}
+        />
+        <Chip label={`المحدد: ${selected.size}`} color={selected.size ? "primary" : "default"} sx={{ fontWeight: 800 }} />
+      </Stack>
+      <Box sx={{ maxHeight: 360, overflowY: "auto", border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
+        {groups.length === 0 ? <Typography sx={{ p: 2, color: "text.secondary" }}>لا توجد نتائج</Typography> : null}
+        {groups.map(([controller, items]) => {
+          const keys = items.map(keyOf);
+          const count = keys.filter((k) => selected.has(k)).length;
+          const expanded = searching || open.has(controller);
+          return (
+            <Box key={controller} sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
+              <Stack direction="row" alignItems="center" sx={{ px: 1, py: 0.3, bgcolor: "action.hover" }}>
+                <Checkbox
+                  size="small"
+                  checked={count === keys.length}
+                  indeterminate={count > 0 && count < keys.length}
+                  onChange={(e) => toggle(keys, e.target.checked)}
+                  inputProps={{ "aria-label": `القسم ${controller}` }}
+                />
+                <Box onClick={() => toggleOpen(controller)} sx={{ flex: 1, cursor: "pointer", display: "flex", alignItems: "center", gap: 1, py: 0.5 }}>
+                  <Typography sx={{ fontWeight: 900, fontSize: 13.5 }}>{controller}</Typography>
+                  <Typography sx={{ fontSize: 12.5, opacity: 0.6 }}>({count}/{keys.length})</Typography>
+                  <Typography sx={{ fontSize: 12, color: primary, fontWeight: 800, mr: "auto" }}>{searching ? "" : expanded ? "إخفاء ▲" : "عرض ▼"}</Typography>
+                </Box>
+              </Stack>
+              {expanded && items.map((e) => (
+                <FormControlLabel
+                  key={keyOf(e)}
+                  sx={{ pr: 4, pl: 1, m: 0, width: "100%" }}
+                  control={<Checkbox size="small" checked={selected.has(keyOf(e))} onChange={(ev) => toggle([keyOf(e)], ev.target.checked)} />}
+                  label={
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ direction: "ltr" }}>
+                      <MethodChip method={e.method} />
+                      <Typography sx={{ fontSize: 12.5, fontFamily: "monospace", wordBreak: "break-all" }}>{e.route}</Typography>
+                    </Stack>
+                  }
+                />
+              ))}
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+};
+
+const ApiClientsTab = ({ onError }) => {
+  const [clients, setClients] = useState([]);
+  const [catalog, setCatalog] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(null); // {} = جديد، أو المستخدم
+  const [form, setForm] = useState({ name: "", notes: "", expiresAt: "", rateLimit: 60, active: true, endpoints: new Set() });
+  const [regenerating, setRegenerating] = useState(null);
+  const [issued, setIssued] = useState(null); // { name, key }
+  const [copied, setCopied] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [c, e] = await Promise.all([call("api-clients"), call("api-clients/endpoints")]);
+      setClients((c || []).map((x) => ({ ...x, endpointCount: (x.endpoints || []).length })));
+      setCatalog(e || []);
+    } catch (err) {
+      onError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [onError]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const openEditor = (client) => {
+    setForm(
+      client
+        ? { name: client.name || "", notes: client.notes || "", expiresAt: toLocalInput(client.expiresAt), rateLimit: client.rateLimit || 60, active: Boolean(client.active), endpoints: new Set(client.endpoints || []) }
+        : { name: "", notes: "", expiresAt: inDays(30), rateLimit: 60, active: true, endpoints: new Set() }
+    );
+    setEditing(client || {});
+  };
+
+  const save = async (password) => {
+    const body = {
+      name: form.name,
+      notes: form.notes,
+      expiresAt: form.expiresAt || null,
+      rateLimit: Number(form.rateLimit) || 60,
+      active: form.active,
+      endpoints: [...form.endpoints],
+      password
+    };
+    if (editing?.id) {
+      await call(`api-clients/${editing.id}`, { method: "POST", body });
+    } else {
+      const res = await call("api-clients", { method: "POST", body });
+      setIssued({ name: form.name, key: res.key });
+    }
+  };
+
+  const copy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // المتصفح مانع النسخ — المفتاح ظاهر ويتنسخ يدويًا
+    }
+  };
+
+  const rows = useMemo(() => clients.map((c) => ({ ...c, stateText: clientState(c).label })), [clients]);
+  const sampleEndpoint = issued ? catalog.find((e) => form.endpoints.has(`${e.method} ${e.route}`)) : null;
+
+  return (
+    <Box>
+      <Alert severity="info" sx={{ mb: 1.5, fontWeight: 600 }}>
+        مستخدمو الـ API منفصلون عن مستخدمي البرنامج: كل مستخدم له مفتاح خاص يفتح الـ endpoints التي تحددها فقط، لمدة تحددها، ويمكنك إيقافه في أي وقت. المفتاح يُرسل في الهيدر <b dir="ltr">X-Api-Key</b>، وكل طلب يُسجَّل في «نشاط المستخدمين».
+      </Alert>
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+        <Button variant="contained" startIcon={<VpnKeyRoundedIcon />} onClick={() => openEditor(null)} sx={{ fontWeight: 900, bgcolor: primary, "&:hover": { bgcolor: primaryDark } }}>
+          مستخدم API جديد
+        </Button>
+        <IconButton onClick={load} disabled={loading} aria-label="تحديث">{loading ? <CircularProgress size={20} /> : <RefreshIcon />}</IconButton>
+        <Typography sx={{ fontSize: 12.5, color: "text.secondary" }}>عدد الـ endpoints المتاحة: {catalog.length}</Typography>
+      </Stack>
+
+      <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
+        <Grid
+          small
+          height={420}
+          rows={rows}
+          loading={loading}
+          empty="لا يوجد مستخدمو API بعد"
+          columns={[
+            { field: "name", headerName: "الاسم", flex: 1, minWidth: 180 },
+            {
+              field: "stateText",
+              headerName: "الحالة",
+              width: 100,
+              renderCell: ({ row }) => {
+                const s = clientState(row);
+                return <Chip size="small" label={s.label} color={s.color} sx={{ fontWeight: 800 }} />;
+              }
+            },
+            { field: "expiresAt", headerName: "ينتهي في", width: 145, valueFormatter: ({ value }) => (value ? formatAt(value) : "بدون انتهاء") },
+            { field: "endpointCount", headerName: "endpoints", width: 95 },
+            { field: "rateLimit", headerName: "حد/دقيقة", width: 90 },
+            { field: "calls", headerName: "الطلبات", width: 90, valueFormatter: ({ value }) => num(value) },
+            { field: "lastUsedAt", headerName: "آخر استخدام", width: 145, valueFormatter: ({ value }) => formatAt(value) },
+            { field: "lastUsedIp", headerName: "آخر IP", width: 130 },
+            { field: "keyPrefix", headerName: "بداية المفتاح", width: 130, valueFormatter: ({ value }) => (value ? `sk_${value}_…` : "") },
+            {
+              field: "actions",
+              headerName: "",
+              width: 200,
+              sortable: false,
+              renderCell: ({ row }) => (
+                <Stack direction="row" spacing={0.5}>
+                  <Button size="small" onClick={() => openEditor(row)} sx={{ fontWeight: 800, minWidth: 0 }}>تعديل</Button>
+                  <Button size="small" color="warning" onClick={() => setRegenerating(row)} sx={{ fontWeight: 800, minWidth: 0 }}>مفتاح جديد</Button>
+                </Stack>
+              )
+            }
+          ]}
+        />
+      </Paper>
+
+      <ActionDialog
+        open={Boolean(editing)}
+        maxWidth="md"
+        title={editing?.id ? `تعديل مستخدم الـ API: ${editing.name}` : "مستخدم API جديد"}
+        submitLabel={editing?.id ? "حفظ" : "إنشاء وإظهار المفتاح"}
+        canSubmit={Boolean(form.name.trim()) && form.endpoints.size > 0}
+        onError={onError}
+        onClose={(ok) => {
+          setEditing(null);
+          if (ok) load();
+        }}
+        onSubmit={save}
+      >
+        <Stack spacing={1.5}>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5}>
+            <TextField size="small" label="الاسم (الجهة أو المبرمج)" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} sx={{ flex: 1 }} />
+            <TextField size="small" type="number" label="حد الطلبات في الدقيقة" value={form.rateLimit} onChange={(e) => setForm((f) => ({ ...f, rateLimit: e.target.value }))} sx={{ width: 190 }} inputProps={{ min: 1, max: 6000 }} />
+          </Stack>
+          <TextField size="small" label="ملاحظات (اختياري)" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1} alignItems={{ md: "center" }} flexWrap="wrap" useFlexGap>
+            <TextField
+              size="small"
+              type="datetime-local"
+              label="ينتهي في"
+              value={form.expiresAt}
+              onChange={(e) => setForm((f) => ({ ...f, expiresAt: e.target.value }))}
+              InputLabelProps={{ shrink: true }}
+              sx={{ width: 230 }}
+            />
+            {[
+              ["يوم", 1],
+              ["أسبوع", 7],
+              ["شهر", 30],
+              ["3 شهور", 90],
+              ["سنة", 365]
+            ].map(([label, days]) => (
+              <Chip key={label} label={label} clickable onClick={() => setForm((f) => ({ ...f, expiresAt: inDays(days) }))} sx={{ fontWeight: 800 }} />
+            ))}
+            <Chip label="بدون انتهاء" clickable variant="outlined" onClick={() => setForm((f) => ({ ...f, expiresAt: "" }))} sx={{ fontWeight: 800 }} />
+          </Stack>
+          {editing?.id ? (
+            <FormControlLabel
+              control={<Checkbox checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} />}
+              label={<Typography sx={{ fontWeight: 800 }}>{form.active ? "المفتاح يعمل" : "المفتاح موقوف"}</Typography>}
+            />
+          ) : null}
+          <Typography sx={{ fontWeight: 900 }}>الـ endpoints المسموحة</Typography>
+          <EndpointPicker catalog={catalog} selected={form.endpoints} onChange={(endpoints) => setForm((f) => ({ ...f, endpoints }))} />
+          <Alert severity="warning" sx={{ fontWeight: 600 }}>
+            الـ endpoints التي تتحقق من صلاحيات مستخدم البرنامج (userGuid) لن تعمل بالمفتاح — المفتاح مناسب لطلبات القراءة مثل دليل المعهد.
+          </Alert>
+        </Stack>
+      </ActionDialog>
+
+      <ActionDialog
+        open={Boolean(regenerating)}
+        danger
+        title={`مفتاح جديد لـ ${regenerating?.name || ""}`}
+        submitLabel="إنشاء مفتاح جديد"
+        onError={onError}
+        onClose={(ok) => {
+          setRegenerating(null);
+          if (ok) load();
+        }}
+        onSubmit={async (password) => {
+          const res = await call(`api-clients/${regenerating.id}/regenerate`, { method: "POST", body: { password } });
+          setIssued({ name: regenerating.name, key: res.key });
+        }}
+      >
+        <Typography>المفتاح الحالي سيتوقف فورًا، ويجب إرسال المفتاح الجديد لصاحبه.</Typography>
+      </ActionDialog>
+
+      <Dialog open={Boolean(issued)} onClose={() => setIssued(null)} fullWidth maxWidth="sm" PaperProps={{ sx: { direction: "rtl", borderRadius: 3 } }}>
+        <DialogTitle sx={{ fontWeight: 900, color: "#fff", background: `linear-gradient(135deg,${primary},${primaryDark})` }}>مفتاح {issued?.name}</DialogTitle>
+        <DialogContent dividers>
+          <Alert severity="warning" sx={{ mb: 1.5, fontWeight: 700 }}>انسخ المفتاح الآن — لن يظهر مرة أخرى. لو ضاع، اعمل مفتاح جديد.</Alert>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <TextField fullWidth size="small" value={issued?.key || ""} InputProps={{ readOnly: true }} inputProps={{ dir: "ltr", "aria-label": "المفتاح" }} />
+            <Button variant="contained" startIcon={<ContentCopyRoundedIcon />} onClick={() => copy(issued.key)} sx={{ fontWeight: 900, whiteSpace: "nowrap" }}>
+              {copied ? "تم النسخ" : "نسخ"}
+            </Button>
+          </Stack>
+          <Typography sx={{ fontWeight: 900, mt: 2, mb: 0.5 }}>طريقة الاستخدام</Typography>
+          <Box component="pre" sx={{ direction: "ltr", textAlign: "left", bgcolor: "action.hover", p: 1.5, borderRadius: 2, fontSize: 12.5, whiteSpace: "pre-wrap", wordBreak: "break-all", m: 0 }}>
+            {`${sampleEndpoint ? `${sampleEndpoint.method} https://api4.sstli.com${sampleEndpoint.route}` : "GET https://api4.sstli.com/api/..."}\nX-Api-Key: ${issued?.key || ""}`}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 2, py: 1.5 }}>
+          <Button onClick={() => setIssued(null)} sx={{ fontWeight: 800 }}>تم</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+const TABS = ["نظرة عامة", "محاولات دخول قاعدة البيانات", "اتصالات قاعدة البيانات", "تغييرات السيرفر", "نشاط المستخدمين", "حالة السيرفر", "التحكم والحظر", "مستخدمو الـ API"];
 
 export default function SecurityMonitorPage() {
   const [phase, setPhase] = useState("checking"); // checking | denied | gate | open | error
@@ -1360,6 +1739,7 @@ export default function SecurityMonitorPage() {
       {tab === 4 ? <ActivityTab onError={onError} /> : null}
       {tab === 5 ? <ServerStatusTab onError={onError} /> : null}
       {tab === 6 ? <ControlTab onError={onError} /> : null}
+      {tab === 7 ? <ApiClientsTab onError={onError} /> : null}
     </Box>
   );
 }

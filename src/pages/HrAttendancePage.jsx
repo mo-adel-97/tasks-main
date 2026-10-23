@@ -61,6 +61,7 @@ import HrBioTimePeriodDialog from "./HrBioTimePeriodDialog";
 import HrBioTimeSyncDialog from "./HrBioTimeSyncDialog";
 import HrBioExcelLinkDialog from "./HrBioExcelLinkDialog";
 import HrDebouncedSearchField from "./HrDebouncedSearchField";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -2270,13 +2271,11 @@ export default function HrAttendancePage() {
         .map((line) => line.map(escapeCsv).join(","))
         .join("\r\n");
 
-    const blob = new Blob([csv], {
-      type: "text/csv;charset=utf-8;"
-    });
+    const blob = excelBlobFromCsv([csv]);
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `attendance-report-${reportForm.fromDate}-${reportForm.toDate}.csv`;
+    anchor.download = `attendance-report-${reportForm.fromDate}-${reportForm.toDate}.xlsx`;
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -2836,7 +2835,7 @@ export default function HrAttendancePage() {
                         onClick={exportAttendanceReportCsv}
                         sx={uiLayout.withUiSx({ fontWeight: 850 }, uiLayout.buttonSx)}
                       >
-                        Excel / CSV
+                        Excel
                       </Button>
                       <Button
                         size="small"
@@ -5198,7 +5197,7 @@ export default function HrAttendancePage() {
                         variant="outlined"
                         onClick={exportAttendanceReportCsv}
                       >
-                        Excel / CSV
+                        Excel
                       </Button>
                       <Button sx={uiLayout.buttonSx}
                         size="small"

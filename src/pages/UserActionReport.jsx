@@ -394,7 +394,7 @@ export default function UserActionReport() {
           onRowClick={({ row }) => setDetails(row)}
           onFilteredRowsChange={setFiltered}
           initialState={{ columns: { columnVisibilityModel: { program: false, page: false } } }}
-          pageSizeOptions={[50, 100, 200]}
+          pageSizeOptions={[50, 100]}
           slots={{ toolbar: Toolbar }}
           localeText={{ noRowsLabel: rows.length ? "لا توجد نتائج مطابقة" : "اختر الفترة واضغط عرض" }}
           sx={{

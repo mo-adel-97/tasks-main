@@ -2,6 +2,9 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import UserActionReport from "./UserActionReport";
 
+// apiAuth (بصمة الجهاز) بيستورد axios، ونسخته ESM مابتشتغلش في jest من غير mock
+jest.mock("axios", () => ({ interceptors: { request: { use: jest.fn() }, response: { use: jest.fn() } } }));
+
 const columns = ["id", "at", "screen", "action", "code", "reason", "user", "branch", "source", "device", "ip", "deviceId", "page", "program", "agent", "fingerprint"];
 const rows = [
   [3, "2026-10-15T15:20:00", "عرض سعر", "جديد", "55", "", "أحمد علي", "المدينة رجال", "Web", "كمبيوتر · Windows 11 · Chrome 129", "94.1.2.3", "d-111", "/dashboard/offer-price", "EFCore/10.0.2", "Mozilla/5.0", "fp-aaa"],

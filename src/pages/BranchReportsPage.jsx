@@ -153,7 +153,7 @@ const BranchReportsPage = () => {
     const fetchBranches = async () => {
       try {
         setBranchLoading(true);
-        const response = await fetch('https://api1.sstli.com/api/branches/all');
+        const response = await fetch('https://api4.sstli.com/api/branches/all');
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Failed to fetch branches');
         setBranches(data);

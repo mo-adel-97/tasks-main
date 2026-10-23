@@ -59,6 +59,7 @@ import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ClearAllOutlinedIcon from "@mui/icons-material/ClearAllOutlined";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -946,13 +947,7 @@ export default function GeneralAccountStatement() {
       ].join("\n");
 
     const blob =
-      new Blob(
-        [csv],
-        {
-          type:
-            "text/csv;charset=utf-8"
-        }
-      );
+      excelBlobFromCsv([csv]);
 
     const url =
       URL.createObjectURL(blob);
@@ -965,7 +960,7 @@ export default function GeneralAccountStatement() {
       `كشف-حساب-${
         selectedAccount?.name ||
         "حساب"
-      }-${fromDate}-${toDate}.csv`;
+      }-${fromDate}-${toDate}.xlsx`;
 
     a.click();
     URL.revokeObjectURL(url);

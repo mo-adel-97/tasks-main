@@ -125,6 +125,38 @@ export const apiPostForm = async (path, fields, files = []) => {
 export const attachmentUrl = (guid) =>
   `${TASKS_API}/attachments/${guid}?userGuid=${encodeURIComponent(getUserGuid())}`;
 
+// الـ API بيطلب توكن الدخول في الهيدر، والرابط المفتوح في تاب جديد مش بيبعته —
+// فالملف بيتجاب بـ fetch (بيضيف التوكن) ويتفتح من الذاكرة: PDF/صور/نص في تاب، والباقي تحميل باسمه.
+const PREVIEWABLE = /\.(pdf|png|jpe?g|gif|webp|bmp|txt)$/i;
+
+export const openAttachment = async (guid, fileName = "") => {
+  const preview = PREVIEWABLE.test(fileName);
+  // التاب لازم يتفتح مع الضغطة نفسها وإلا المتصفح يمنعه كـ popup
+  const win = preview ? window.open("", "_blank") : null;
+  try {
+    const response = await fetch(attachmentUrl(guid), { cache: "no-store" });
+    if (!response.ok) {
+      const result = await response.json().catch(() => null);
+      throw new Error(result?.message || "تعذر فتح الملف");
+    }
+    const url = URL.createObjectURL(await response.blob());
+    if (win) {
+      win.location.href = url;
+    } else {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName || "attachment";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) {
+    win?.close();
+    throw e;
+  }
+};
+
 const pad = (n) => String(n).padStart(2, "0");
 
 export const formatDate = (value) => {

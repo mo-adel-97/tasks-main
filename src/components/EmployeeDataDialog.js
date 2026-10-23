@@ -97,7 +97,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
 
   const fetchBranches = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/branches/all', {
+      const response = await fetch('https://api4.sstli.com/api/branches/all', {
         headers: {
           'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json'

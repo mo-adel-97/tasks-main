@@ -35,6 +35,7 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -722,18 +723,12 @@ const TrainingAgreementsFollow = () => {
       ];
 
       const blob =
-        new Blob(
-          [
+        excelBlobFromCsv([
             "\uFEFF",
             csvRows.join(
               "\r\n"
             )
-          ],
-          {
-            type:
-              "text/csv;charset=utf-8;"
-          }
-        );
+          ]);
 
       const url =
         URL.createObjectURL(
@@ -747,7 +742,7 @@ const TrainingAgreementsFollow = () => {
 
       link.href = url;
       link.download =
-        "متابعة اتفاقيات التدريب.csv";
+        "متابعة اتفاقيات التدريب.xlsx";
 
       document.body.appendChild(
         link

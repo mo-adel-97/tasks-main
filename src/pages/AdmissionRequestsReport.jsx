@@ -34,6 +34,7 @@ import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -901,16 +902,10 @@ const AdmissionRequestsReport = () => {
         })
       ];
 
-      const blob = new Blob(
-        [
+      const blob = excelBlobFromCsv([
           "\uFEFF",
           csvRows.join("\r\n")
-        ],
-        {
-          type:
-            "text/csv;charset=utf-8;"
-        }
-      );
+        ]);
 
       const url =
         URL.createObjectURL(blob);
@@ -920,7 +915,7 @@ const AdmissionRequestsReport = () => {
 
       link.href = url;
       link.download =
-        "تقرير طلبات الالتحاق.csv";
+        "تقرير طلبات الالتحاق.xlsx";
 
       document.body.appendChild(link);
       link.click();

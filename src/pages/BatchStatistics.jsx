@@ -55,6 +55,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -998,9 +999,7 @@ const BatchStatistics = () => {
       )
     ].join("\r\n");
 
-    const blob = new Blob(["\uFEFF", csv], {
-      type: "text/csv;charset=utf-8;"
-    });
+    const blob = excelBlobFromCsv(["\uFEFF", csv]);
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -1015,7 +1014,7 @@ const BatchStatistics = () => {
     link.href = url;
     link.download = `إحصائيات الدفعات - ${
       selectedBatch?.name || "دفعة"
-    } - ${filterName}.csv`;
+    } - ${filterName}.xlsx`;
 
     document.body.appendChild(link);
     link.click();
@@ -1596,7 +1595,7 @@ const BatchStatistics = () => {
                       }
                     }, uiLayout.buttonSx)}
                   >
-                    تصدير CSV
+                    تصدير Excel
                   </Button>
                 </Stack>
               </Stack>
@@ -2771,7 +2770,7 @@ const BatchStatistics = () => {
                       : "span 2"
                   }, uiLayout.buttonSx)}
                 >
-                  تصدير CSV
+                  تصدير Excel
                 </Button>
               </Box>
             </Paper>

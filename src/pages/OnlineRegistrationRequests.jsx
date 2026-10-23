@@ -6,7 +6,7 @@ const OnlineRegistrationRequests = () => (
     mode="online"
     title="طلبات دراسة عن بعد"
     subtitle="عرض طلبات الدراسة عن بعد خلال الفترة المحددة"
-    exportFileName="تقرير تسجيلات عن بعد الموقع.csv"
+    exportFileName="تقرير تسجيلات عن بعد الموقع.xlsx"
   />
 );
 

@@ -93,7 +93,7 @@ const COLOR_SCHEME = {
 
 // APIs
 const USERS_API_URL = 'https://api1.sstli.com/api/userinfo';
-const BRANCHES_API_URL = 'https://api1.sstli.com/api/branches/all';
+const BRANCHES_API_URL = 'https://api4.sstli.com/api/branches/all';
 const PERMISSIONS_API_URL = 'https://filesregsiteration.sstli.com/erp/vacation_permissions_settings.php';
 const IMAGE_API_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php';
 

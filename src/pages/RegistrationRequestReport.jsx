@@ -35,6 +35,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import Swal from "sweetalert2";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -612,18 +613,12 @@ const RegistrationRequestReport = () => {
       ];
 
       const blob =
-        new Blob(
-          [
+        excelBlobFromCsv([
             "\uFEFF",
             csvRows.join(
               "\r\n"
             )
-          ],
-          {
-            type:
-              "text/csv;charset=utf-8;"
-          }
-        );
+          ]);
 
       const url =
         URL.createObjectURL(
@@ -637,7 +632,7 @@ const RegistrationRequestReport = () => {
 
       link.href = url;
       link.download =
-        "تقرير طلب التسجيل.csv";
+        "تقرير طلب التسجيل.xlsx";
 
       document.body.appendChild(
         link

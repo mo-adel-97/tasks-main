@@ -30,6 +30,10 @@ import ServiceManagement from "./pages/ServiceManagement.jsx";
 import ChangeUserPassword from "./pages/ChangeUserPassword.jsx";
 import UserActionReport from "./pages/UserActionReport.jsx";
 import SecurityMonitorPage from "./pages/SecurityMonitorPage.jsx";
+import RegistrationsReview from "./pages/RegistrationsReview.jsx";
+import CashBoxHistory from "./pages/CashBoxHistory.jsx";
+import RegDownPayment from "./pages/RegDownPayment.jsx";
+import PriceOffers from "./pages/PriceOffers.jsx";
 import QualityFormsAudit from "./pages/QualityFormsAudit.jsx";
 import BatchManagement from "./pages/BatchManagement.jsx";
 import BatchCountManagement from "./pages/BatchCountManagement.jsx";
@@ -81,8 +85,7 @@ import Announcements from './components/Announcements';
 import AchievementsPage from './components/Achievements';
 import AdminAchievementsPage from './components/AdminAchievementsPage';
 
-import P2PMarketing from './components/P2PMarketing';
-import P2PMarketingAdmin from './components/P2PMarketingAdmin';
+import P2PCenter from './pages/p2p/P2PCenter';
 
 import EmployeeEvaluationPage from './components/EmployeeEvaluationPage';
 
@@ -233,14 +236,6 @@ const AchievementsRoute = () => (
   />
 );
 
-const P2PRoute = () => (
-  <PermissionModeRoute
-    permissionKey="p2p-admin-mode"
-    adminComponent={<P2PMarketingAdmin />}
-    defaultComponent={<P2PMarketing />}
-  />
-);
-
 const StudentNotesRoute = () => (
   <PermissionModeRoute
     permissionKey="student-notes-admin-mode"
@@ -303,7 +298,7 @@ const loadBranchesShared = async () => {
   if (branchesRequestPromise) return branchesRequestPromise;
 
   branchesRequestPromise = (async () => {
-    const response = await fetch('https://api1.sstli.com/api/branches/all', {
+    const response = await fetch('https://api4.sstli.com/api/branches/all', {
       headers: {
         'ngrok-skip-browser-warning': 'true',
         'Content-Type': 'application/json'
@@ -1472,7 +1467,18 @@ function App() {
             element={
               <PrivateRoute>
                 <LayoutWithoutHeader>
-                  <P2PRoute />
+                  <P2PCenter mode="staff" />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/p2p-reports"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <P2PCenter mode="manager" />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1642,6 +1648,50 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <ChangeUserPassword />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/price-offers"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <PriceOffers />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/reg-down-payment"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <RegDownPayment />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/cash-box-history"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <CashBoxHistory />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/registrations-review"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <RegistrationsReview />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }

@@ -50,6 +50,7 @@ import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import StudentOperationsDialog from "../components/StudentOperationsDialog";
 import PaymentOrderDialog from "../components/PaymentOrderDialog";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -1723,11 +1724,11 @@ export default function PaymentRequestsReport() {
 
     const escapeCsv = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
     const csv = "\uFEFF" + [headers, ...csvRows].map((r) => r.map(escapeCsv).join(",")).join("\r\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = excelBlobFromCsv([csv]);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `طلبات_السداد_${fromDate}_${toDate}.csv`;
+    a.download = `طلبات_السداد_${fromDate}_${toDate}.xlsx`;
     document.body.appendChild(a);
     a.click();
     a.remove();

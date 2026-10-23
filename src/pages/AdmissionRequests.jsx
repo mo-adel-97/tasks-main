@@ -56,6 +56,7 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 
@@ -1925,13 +1926,11 @@ const responsibleUserGuid = convertRegisteredInOtherInstitute
       )
       .join("\n");
 
-    const blob = new Blob(["\uFEFF" + csvContent], {
-      type: "text/csv;charset=utf-8;"
-    });
+    const blob = excelBlobFromCsv(["\uFEFF" + csvContent]);
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `طلبات الالتحاق ${fromDate} - ${toDate}.csv`;
+    link.download = `طلبات الالتحاق ${fromDate} - ${toDate}.xlsx`;
     link.click();
 
     URL.revokeObjectURL(link.href);

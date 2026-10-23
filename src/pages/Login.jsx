@@ -163,7 +163,7 @@ export default function Login() {
       }
 
       const branchesResponse = await fetch(
-        'https://api1.sstli.com/api/branches/all',
+        'https://api4.sstli.com/api/branches/all',
         {
           mode: 'cors',
           credentials: 'omit',
