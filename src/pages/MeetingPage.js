@@ -13,6 +13,7 @@ import {
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
 import io from "socket.io-client";
+import { FILES_SERVER_URL, SIGNALING_SERVER_URL } from "../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: "#80b49e",
@@ -29,8 +30,8 @@ const COLOR_SCHEME = {
 };
 
 // ===== اضبط دول حسب بيئتك =====
-const API_BASE_URL = "https://filesregsiteration.sstli.com/erp"; // للعنوان/المنظم/الخ
-const SIGNALING_URL = "https://192.168.50.169:8443"; // غيّره إلى سيرفر السوكيت عندك
+const API_BASE_URL = `${FILES_SERVER_URL}/erp`; // للعنوان/المنظم/الخ
+const SIGNALING_URL = SIGNALING_SERVER_URL; // غيّره إلى سيرفر السوكيت عندك
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
 
 const MeetingPage = () => {

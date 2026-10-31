@@ -2,8 +2,9 @@
 import { useMemo } from "react";
 import { alpha, useTheme } from "@mui/material";
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../../config/apiUrls";
 
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+export const API_BASE_URL = SSTLI_API_URL;
 export const GREEN = "#057546";
 export const GREEN_DARK = "#034d31";
 export const BLUE = "#1565c0";
@@ -43,6 +44,7 @@ export const STAGES = [
 
 export const REPORT_STATUS = {
   draft: { label: "مسودة", color: "default" },
+  sent: { label: "مُرسل", color: "info" },
   submitted: { label: "بانتظار المراجعة", color: "warning" },
   returned: { label: "معاد للاستكمال", color: "error" },
   reviewed: { label: "تمت المراجعة", color: "success" }

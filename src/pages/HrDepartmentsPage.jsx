@@ -63,6 +63,7 @@ import AccountTreeRoundedIcon from "@mui/icons-material/AccountTreeRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import SupervisorAccountRoundedIcon from "@mui/icons-material/SupervisorAccountRounded";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -287,8 +288,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 const DARK_BORDER = "#67C99D";
@@ -2749,6 +2749,7 @@ const HrDepartmentsPage = () => {
       // والفلتر departmentGuid مدعوم بالفعل هناك.
       const params = new URLSearchParams();
       params.set("departmentGuid", departmentGuid);
+      params.set("isActive", "true");
 
       const response = await fetch(
         `${API_BASE_URL}/api/hr/employees?${params.toString()}`,

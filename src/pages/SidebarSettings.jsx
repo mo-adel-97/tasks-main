@@ -16,14 +16,13 @@ import SecurityIcon from "@mui/icons-material/Security";
 import TuneIcon from "@mui/icons-material/Tune";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 

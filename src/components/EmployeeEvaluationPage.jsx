@@ -117,27 +117,28 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 // Users/Branches API
-const API_BASE = "https://api1.sstli.com";
+const API_BASE = SSTLI_API_URL;
 
 // ✅ Trainer payments API (السداد والتحصيل)
-const TRAINER_API_BASE = "https://api3.sstli.com";
+const TRAINER_API_BASE = SSTLI_API_URL;
 
 // ✅ Productivity API (الإنتاجية الأسبوعية)
-const PRODUCTIVITY_API = "https://filesregsiteration.sstli.com/erp/api.php";
+const PRODUCTIVITY_API = `${FILES_SERVER_URL}/erp/api.php`;
 
 // ✅ Tasks API (المهام) - جميع الـ APIs المطلوبة
 const TASKS_API = {
-  EMPLOYEE_SUMMARY: `${process.env.REACT_APP_API_URL || "https://api4.sstli.com"}/api/tasks/employee-summary`,
+  EMPLOYEE_SUMMARY: `${SSTLI_API_URL}/api/tasks/employee-summary`,
   DOWNLOAD: "",
   DOWNLOAD_TASK_ATTACHMENT: "",
 };
 
 // ✅ HR Evaluations API
-const HR_EVALUATIONS_API = "https://filesregsiteration.sstli.com/erp/hr_evaluations_api.php";
+const HR_EVALUATIONS_API = `${FILES_SERVER_URL}/erp/hr_evaluations_api.php`;
 
 // Brand
 const BRAND = "#80b49e";
@@ -145,7 +146,7 @@ const BRAND_DARK = "#6a9a87";
 const BRAND_LIGHT = "#9ac9b5";
 
 // Helper function to resolve file URLs
-const FILES_BASE_URL = 'https://filesregsiteration.sstli.com/erp/';
+const FILES_BASE_URL = `${FILES_SERVER_URL}/erp/`;
 const resolveFileUrl = (u) => {
   if (!u) return '';
   const s = String(u).trim();
@@ -529,7 +530,7 @@ const EmployeeEvaluationPage = () => {
     try {
       const [usersRes, branchesRes] = await Promise.all([
         fetch(`${API_BASE}/api/userinfo`),
-        fetch("https://api4.sstli.com/api/branches/all"),
+        fetch(`${SSTLI_API_URL}/api/branches/all`),
       ]);
 
       if (!usersRes.ok) throw new Error("فشل تحميل الموظفين");

@@ -12,6 +12,7 @@ import { useMediaQuery } from '@mui/material';
 import MobileHeader from './MobileHeader';
 import { designTokens } from '../config/designTokens';
 import Sidebar from './Sidebar';
+import GlobalAnnouncements from './announcements/GlobalAnnouncements';
 import { getSidebarOffset, SIDEBAR_DESKTOP_QUERY } from '../config/sidebarLayout';
 
 const NavigationContext = createContext(null);
@@ -119,6 +120,9 @@ export default function NavigationShell({ children, variant = 'standard', ...sid
           collapsed={collapsed}
           onCollapsedChange={setCollapsed}
         />
+
+        {/* التنبيهات وإعلانات الإدارة غير المقروءة — في أي صفحة */}
+        <GlobalAnnouncements />
 
         {/*
           Older screens already have a page-header menu button and pass a

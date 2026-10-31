@@ -1,7 +1,8 @@
 // نظام المهام: ثوابت ومساعدات مشتركة بين الشاشات (api/tasks — TasksController).
 import { alpha, lighten, useTheme } from "@mui/material/styles";
+import { SSTLI_API_URL } from "../../config/apiUrls";
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+export const API_BASE_URL = SSTLI_API_URL;
 export const TASKS_API = `${API_BASE_URL}/api/tasks`;
 
 export const STATUS = {

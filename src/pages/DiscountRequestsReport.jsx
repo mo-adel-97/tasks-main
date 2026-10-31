@@ -75,16 +75,16 @@ import StudentStatementDialog2
   from "../components/StudentStatementDialog2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL, SSTLI_SITE_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const ATTACHMENT_URL =
-  "https://sstli.com/arc/api/view.php";
+  `${SSTLI_SITE_URL}/arc/api/view.php`;
 
 const STATUS_OPTIONS = [
   {
@@ -1417,7 +1417,7 @@ const DiscountRequestsReport = () => {
     }
 
     const url =
-      `${ATTACHMENT_URL}` +
+      ATTACHMENT_URL +
       `?nationalId=${encodeURIComponent(row.nationalId)}` +
       `&kind=discount`;
 

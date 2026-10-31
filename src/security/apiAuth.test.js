@@ -50,7 +50,7 @@ test('expired session (401 with token) clears it and goes to login once', async 
   }
 });
 
-test('writes to api4 carry the real device info; api1 and reads do not', async () => {
+test('writes to api4 carry the real device info; other servers and reads do not', async () => {
   localStorage.setItem('token', 'current-token');
   await window.fetch('https://api4.sstli.com/api/offer-price', { method: 'POST', body: '{}' });
   const api4 = transport.mock.calls[0][1].headers;
@@ -61,8 +61,8 @@ test('writes to api4 carry the real device info; api1 and reads do not', async (
   await window.fetch('https://api4.sstli.com/api/offer-price', { method: 'POST', body: '{}' });
   expect(transport.mock.calls[1][1].headers.get('X-Client-Device-Id')).toBe(id);
 
-  await window.fetch('https://api1.sstli.com/api/userinfo/login-secure', { method: 'POST', body: '{}' });
-  expect(transport.mock.calls[2][1].headers.get('X-Client-Device-Id')).toBeNull();
+  await window.fetch('https://filesregsiteration.sstli.com/erp/api.php', { method: 'POST', body: '{}' });
+  expect(new Headers(transport.mock.calls[2][1]?.headers).get('X-Client-Device-Id')).toBeNull();
 
   // القراءة: معرّف الجهاز بس (للحظر)، من غير باقي البيانات
   await window.fetch('https://api4.sstli.com/api/user-management/users');

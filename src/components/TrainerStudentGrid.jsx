@@ -27,10 +27,11 @@ import FolderIcon from '@mui/icons-material/Folder';
 import SchoolIcon from '@mui/icons-material/School';
 import axios from 'axios';
 
-import SpecialComponent from './SpecialComponent'; // تأكد من تعديل المسار حسب حاجتك
+import SpecialComponent from './SpecialComponent';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls"; // تأكد من تعديل المسار حسب حاجتك
 
-const API_BASE = 'https://api1.sstli.com';
-const PHP_BASE = 'https://filesregsiteration.sstli.com';
+const API_BASE = SSTLI_API_URL;
+const PHP_BASE = FILES_SERVER_URL;
 
 // تعريف اللون الأساسي
 const PRIMARY_COLOR = '#80b49e';
@@ -333,7 +334,7 @@ const fetchTrainingFile = async (accountGuid) => {
   }
   setTrainingLoading(true);
   try {
-    const resp = await axios.get(`https://api1.sstli.com/api/studyinfo/${accountGuid}`);
+    const resp = await axios.get(`${SSTLI_API_URL}/api/studyinfo/${accountGuid}`);
     setTrainingFile(resp?.data || []);
   } catch (error) {
     console.error('Error fetching training file', error);

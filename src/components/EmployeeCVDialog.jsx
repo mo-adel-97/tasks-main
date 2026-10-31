@@ -20,8 +20,9 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Swal from "sweetalert2";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
-const API_URL = "https://filesregsiteration.sstli.com/erp/EmployeeCV.php";
+const API_URL = `${FILES_SERVER_URL}/erp/EmployeeCV.php`;
 
 const emptyItem = {
   title: "",

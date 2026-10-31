@@ -60,6 +60,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ExportReportsDialog from "../components/ExportReportsDialog";
 import appTheme from "../theme";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 // Create custom theme with #80b49e as primary color
@@ -153,7 +154,7 @@ const BranchReportsPage = () => {
     const fetchBranches = async () => {
       try {
         setBranchLoading(true);
-        const response = await fetch('https://api4.sstli.com/api/branches/all');
+        const response = await fetch(`${SSTLI_API_URL}/api/branches/all`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Failed to fetch branches');
         setBranches(data);
@@ -199,7 +200,7 @@ const BranchReportsPage = () => {
       
       setDateLoading(true);
       const response = await fetch(
-        `https://filesregsiteration.sstli.com/get_all_reports_by_day.php?report_date=${formattedDate}`
+        `${FILES_SERVER_URL}/get_all_reports_by_day.php?report_date=${formattedDate}`
       );
       const data = await response.json();
       
@@ -247,7 +248,7 @@ const BranchReportsPage = () => {
       setError(null);
       
       const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-      const url = `https://filesregsiteration.sstli.com/get_reports_by_branch.php?branch_guid=${branchGuid}&report_date=${formattedDate}`;
+      const url = `${FILES_SERVER_URL}/get_reports_by_branch.php?branch_guid=${branchGuid}&report_date=${formattedDate}`;
 
       const response = await fetch(url);
       const data = await response.json();

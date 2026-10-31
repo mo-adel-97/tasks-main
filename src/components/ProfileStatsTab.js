@@ -21,6 +21,7 @@ import VacationPermissionsTab from "../components/tabs/VacationPermissionsTab";
 import EmployeeOfTheMonthTab from "../components/tabs/EmployeeOfTheMonthTab";
 import PostsDialog from "../components/PostsDialog";
 import FloatingParticles from "../components/FloatingParticles";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: "#76ae97",
@@ -215,7 +216,7 @@ useEffect(() => {
 
 // إحصائيات المهام من نظام المهام الجديد (api/tasks): الجاية (received) والمرسلة (sent).
 // الحالة بنفس الأكواد القديمة: 0 معلقة · 1 جاري التنفيذ · 2 مكتملة.
-const TASKS_API_URL = `${process.env.REACT_APP_API_URL || "https://api4.sstli.com"}/api/tasks`;
+const TASKS_API_URL = `${SSTLI_API_URL}/api/tasks`;
 
 const fetchTasks = async (userGuid) => {
   try {
@@ -255,7 +256,7 @@ const fetchTasks = async (userGuid) => {
       if (!userGuid) return;
 
       const response = await fetch(
-        `https://filesregsiteration.sstli.com/erp/posts_api.php?action=check_unseen&user_guid=${userGuid}`
+        `${FILES_SERVER_URL}/erp/posts_api.php?action=check_unseen&user_guid=${userGuid}`
       );
       if (response.ok) {
         const result = await response.json();
@@ -272,7 +273,7 @@ const fetchTasks = async (userGuid) => {
       const { guid } = JSON.parse(localStorage.getItem("user") || "{}");
       if (!guid) return;
       const res = await fetch(
-        "https://filesregsiteration.sstli.com/erp/posts_api.php?action=mark_all_viewed",
+        `${FILES_SERVER_URL}/erp/posts_api.php?action=mark_all_viewed`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

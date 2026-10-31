@@ -4,6 +4,10 @@ import BlockedOverlay from './components/BlockedOverlay';
 import React, { useEffect, useState } from 'react';
 import AdmissionRequestsReport from "./pages/AdmissionRequestsReport";
 import HrEmployeesPage from "./pages/HrEmployeesPage.jsx";
+import HrInactiveEmployeesPage from "./pages/HrInactiveEmployeesPage.jsx";
+import HrEstablishmentsPage from "./pages/HrEstablishmentsPage.jsx";
+import HrInboxPage from "./pages/HrInboxPage.jsx";
+import HrGosiPage from "./pages/HrGosiPage.jsx";
 import HrAttendancePage from "./pages/HrAttendancePage.js";
 import HrLeavesPage from "./pages/HrLeavesPage";
 import HrPermissionsPage from "./pages/HrPermissionsPage.jsx";
@@ -112,6 +116,10 @@ import RegistrationRequestReport from './pages/RegistrationRequestReport';
 import BatchSeatsCounter from './pages/BatchSeatsCounter';
 import CollectionCommissionsReport from './pages/CollectionCommissionsReport';
 import BranchIncomeReport from "./pages/BranchIncomeReport";
+import IncomeLive from "./pages/IncomeLive";
+import CustomersHub from "./pages/CustomersHub";
+import MyRegistrationLeads from "./pages/MyRegistrationLeads";
+import AnnouncementsAdmin from "./pages/AnnouncementsAdmin";
 import RewardsList from './pages/RewardsList';
 import BatchStatistics from './pages/BatchStatistics';
 import PaymentFollowReport from './pages/PaymentFollowReport';
@@ -132,11 +140,10 @@ import QualityFormsPage from './pages/QualityFormsPage';
 import NewStudentsPage from './pages/NewStudentsPage';
 import DiplomaStudentsPage from './pages/DiplomaStudentsPage';
 import CourseStudentsPage from './pages/CourseStudentsPage';
+import { SSTLI_API_URL } from "./config/apiUrls";
 
 const PERMISSION_API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  'https://api4.sstli.com';
+  SSTLI_API_URL;
 
 const permissionFlagCache = new Map();
 const permissionFlagPromises = new Map();
@@ -298,7 +305,7 @@ const loadBranchesShared = async () => {
   if (branchesRequestPromise) return branchesRequestPromise;
 
   branchesRequestPromise = (async () => {
-    const response = await fetch('https://api4.sstli.com/api/branches/all', {
+    const response = await fetch(`${SSTLI_API_URL}/api/branches/all`, {
       headers: {
         'ngrok-skip-browser-warning': 'true',
         'Content-Type': 'application/json'
@@ -454,6 +461,50 @@ function App() {
 />
 
 <Route
+  path="/dashboard/hr-inactive-employees"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrInactiveEmployeesPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/dashboard/hr-establishments"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrEstablishmentsPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/dashboard/hr-inbox"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrInboxPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/dashboard/hr-gosi"
+  element={
+    <PrivateRoute>
+      <LayoutWithoutHeader>
+        <HrGosiPage />
+      </LayoutWithoutHeader>
+    </PrivateRoute>
+  }
+/>
+
+<Route
   path="/dashboard/hr-contracts"
   element={
     <PrivateRoute>
@@ -563,6 +614,50 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <MarketersReport />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/announcements"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <AnnouncementsAdmin />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/my-registration-leads"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <MyRegistrationLeads />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/customers-hub"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <CustomersHub />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/income-live"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <IncomeLive />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }

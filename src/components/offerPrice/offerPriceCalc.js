@@ -1,3 +1,4 @@
+import { FILES_SERVER_URL } from "../../config/apiUrls";
 // حسابات شاشة "عرض سعر" — منقولة حرفيًا من EncodingOfferPrice / FrmOfferPriceEditBeforePreview في الديسكتوب.
 
 export const OFFER_MODE_ITEMS = 0; // عرض مختصر - بنود فقط
@@ -440,7 +441,7 @@ export const issueNoText = (code) => {
   return `${c} / ${currentHijriYearText()} هـ`;
 };
 
-export const OFFER_VERIFY_BASE_URL = "https://filesregsiteration.sstli.com/_rightchkofferprice.php?code=";
+export const OFFER_VERIFY_BASE_URL = `${FILES_SERVER_URL}/_rightchkofferprice.php?code=`;
 
 export const offerVerifyUrl = (code) => OFFER_VERIFY_BASE_URL + encodeURIComponent(String(code || "").trim());
 

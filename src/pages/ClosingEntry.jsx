@@ -44,14 +44,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import SaveIcon from "@mui/icons-material/Save";
 
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 

@@ -30,6 +30,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import SaveIcon from "@mui/icons-material/Save";
 import SchoolIcon from "@mui/icons-material/School";
 import Swal from "sweetalert2";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 const primaryColor = "#057546";
 const accentColor = "#ae1e21";
@@ -1070,7 +1071,7 @@ const StudyApprovalDialog = ({
       }
 
       const d = result?.data || {};
-      const qrUrl = `https://filesregsiteration.sstli.com/Auth.php?orderGuid=${savedOrder.orderGuid}&code=${savedOrder.code}`;
+      const qrUrl = `${FILES_SERVER_URL}/Auth.php?orderGuid=${savedOrder.orderGuid}&code=${savedOrder.code}`;
 
       const printWindow = window.open("", "_blank", "width=900,height=1100");
 

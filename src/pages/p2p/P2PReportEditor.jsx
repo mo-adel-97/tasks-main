@@ -28,6 +28,7 @@ import PrintRoundedIcon from "@mui/icons-material/PrintRounded";
 import AddBusinessRoundedIcon from "@mui/icons-material/AddBusinessRounded";
 import P2PCompanyDialog from "./P2PCompanyDialog";
 import P2PReportView from "./P2PReportView";
+import P2PThread from "./P2PThread";
 import {
   CONTACT_METHODS,
   EVALUATION_QUESTIONS,
@@ -94,6 +95,8 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [declaration, setDeclaration] = useState(false);
+  // من غير طلب مراجعة التقرير بيتسجل "مُرسل"، ومع الطلب "بانتظار المراجعة"
+  const [requiresReview, setRequiresReview] = useState(false);
   const [companyDialog, setCompanyDialog] = useState(null); // { target: "visit"|"opp", key }
 
   const [visits, setVisits] = useState([]);
@@ -136,6 +139,7 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
         planMainGoal: r.planMainGoal || ""
       });
       setDeclaration(false);
+      setRequiresReview(Boolean(r.requiresReview));
       if ((r.status === "reviewed" || r.status === "returned") && !r.reviewSeen) {
         p2pApi(`/reports/${guid}/seen`, { method: "POST", body: {} }).catch(() => {});
       }
@@ -146,6 +150,13 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
       setLoading(false);
     }
   }, [date]);
+
+  // تحديث المحادثة فقط بدون المساس بالتعديلات غير المحفوظة
+  const reloadComments = useCallback(async () => {
+    if (!report?.guid) return;
+    const r = await p2pApi(`/reports/${report.guid}`);
+    setReport((prev) => (prev ? { ...prev, comments: r.comments, canComment: r.canComment } : prev));
+  }, [report?.guid]);
 
   useEffect(() => {
     loadCompanies();
@@ -180,7 +191,8 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
       followUpDate: o.followUpDate || null
     })),
     submit,
-    declarationAccepted: submit ? declaration : false
+    declarationAccepted: submit ? declaration : false,
+    requiresReview: submit ? requiresReview : false
   });
 
   const validate = () => {
@@ -201,7 +213,10 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
     if (problem) return toast("warning", "بيانات ناقصة", problem);
     if (submit) {
       if (!declaration) return toast("warning", "الإقرار", "يجب الإقرار بصحة البيانات قبل الإرسال");
-      if (!(await confirmBox("إرسال التقرير", "بعد الإرسال لن تتمكن من التعديل إلا إذا أعاده المدير. إرسال؟", "إرسال"))) return;
+      const confirmText = requiresReview
+        ? "سيظهر التقرير لدى الإدارة بحالة «بانتظار المراجعة». بعد الإرسال لن تتمكن من التعديل إلا إذا أعاده المدير. إرسال؟"
+        : "سيُرسل التقرير إلى الإدارة للاطلاع دون طلب مراجعة. بعد الإرسال لن تتمكن من التعديل إلا إذا أعاده المدير. إرسال؟";
+      if (!(await confirmBox("إرسال التقرير", confirmText, "إرسال"))) return;
     }
     setSaving(true);
     try {
@@ -295,6 +310,8 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
           أعاد المدير التقرير للاستكمال: {report.returnNotes}
         </Alert>
       ) : null}
+
+      {report.status === "returned" ? <P2PThread report={report} onChanged={reloadComments} /> : null}
 
       <Section number={2}
         title={`ثانيًا: تفاصيل زيارات الشركات (${visits.length})`}
@@ -488,6 +505,18 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
             </Typography>
           }
         />
+        <FormControlLabel
+          control={<Checkbox checked={requiresReview} onChange={(e) => setRequiresReview(e.target.checked)} color="warning" />}
+          label={
+            <Box>
+              <Typography sx={{ fontWeight: 800 }}>يتطلب هذا التقرير مراجعة الإدارة</Typography>
+              <Typography variant="caption" color="text.secondary">
+                عند التحديد يظهر التقرير لدى الإدارة بحالة «بانتظار المراجعة»، وإلا يُرسل للاطلاع فقط
+              </Typography>
+            </Box>
+          }
+          sx={{ alignItems: "flex-start", mt: 0.5, "& .MuiCheckbox-root": { pt: 0.5 } }}
+        />
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mt: 1 }} alignItems={{ sm: "center" }}>
           <P2PToneChip label={status.label} tone={status.color} sx={{ fontWeight: 900 }} />
           <Box sx={{ flex: 1 }} />
@@ -503,7 +532,7 @@ export default function P2PReportEditor({ me, date, onDateChange, onSaved }) {
             حفظ كمسودة
           </Button>
           <Button variant="contained" startIcon={<SendRoundedIcon />} disabled={saving || !declaration} onClick={() => save(true)} sx={ui.primaryBtn}>
-            إرسال للمدير
+            {requiresReview ? "إرسال للمراجعة" : "إرسال التقرير"}
           </Button>
         </Stack>
       </Section>

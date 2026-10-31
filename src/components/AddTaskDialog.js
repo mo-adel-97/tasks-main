@@ -23,10 +23,11 @@ import {
 import Swal from "sweetalert2";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
-const TASKS_API = "https://api3.sstli.com/api/NewTasks";
-const DEPTS_API = "https://api3.sstli.com/api/Department/Load";
-const USERS_API = "https://api1.sstli.com/api/userinfo";
+const TASKS_API = `${SSTLI_API_URL}/api/NewTasks`;
+const DEPTS_API = `${SSTLI_API_URL}/api/Department/Load`;
+const USERS_API = `${SSTLI_API_URL}/api/userinfo`;
 
 const getApprovalLevelColor = (level) => {
   switch(level) {
@@ -243,7 +244,7 @@ export default function AddTaskDailog({
   }, []);
 
   useEffect(() => {
-    axios.get('https://filesregsiteration.sstli.com/GetTemplates.php')
+    axios.get(`${FILES_SERVER_URL}/GetTemplates.php`)
       .then(res => {
         if(res.data.success){
           setTemplates(res.data.data); // البيانات كلها من الجدول
@@ -368,7 +369,7 @@ export default function AddTaskDailog({
           console.warn("No template found for attachment", att.name);
           continue;
         }
-        const url = `https://filesregsiteration.sstli.com/${matchedTemplate.filePath}`;
+        const url = `${FILES_SERVER_URL}/${matchedTemplate.filePath}`;
         try {
           console.log("Trying to download template file:", url);
           const response = await fetch(url);
@@ -455,7 +456,7 @@ export default function AddTaskDailog({
   
     setLoading(true);
     try {
-      await axios.post("https://api3.sstli.com/api/NewTasks/route/assign", formData, {
+      await axios.post(`${SSTLI_API_URL}/api/NewTasks/route/assign`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       Swal.fire({ 
@@ -850,7 +851,7 @@ export default function AddTaskDailog({
         );
 
         const downloadUrl = matchedTemplate
-          ? `https://filesregsiteration.sstli.com/${matchedTemplate.filePath}`
+          ? `${FILES_SERVER_URL}/${matchedTemplate.filePath}`
           : null;
 
         return (

@@ -43,14 +43,13 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 
@@ -812,16 +811,14 @@ export default function TrialBalance() {
       if (!snapshotId) return;
 
       try {
-        const allRows =
-          await getAllRows();
-
+        // التصدير بالحسابات الظاهرة في الشجرة فقط (المفتوحة)، بنفس ترتيبها ومستواها
         const body =
-          allRows
+          visibleRows
             .map(
               (r) => `
                 <tr>
                   <td>${String(r.code || "")}</td>
-                  <td>${String(r.accountName || "")}</td>
+                  <td style="padding-right:${(r.depth || 0) * 18}px">${String(r.accountName || "")}</td>
                   <td>${money(r.openingMaden)}</td>
                   <td>${money(r.openingDaen)}</td>
                   <td>${money(r.transMaden)}</td>
@@ -897,7 +894,7 @@ export default function TrialBalance() {
       }
     }, [
       snapshotId,
-      getAllRows,
+      visibleRows,
       fromDate,
       toDate
     ]);

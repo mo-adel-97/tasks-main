@@ -51,10 +51,11 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 import Swal from "sweetalert2";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
-const API_URL = "https://filesregsiteration.sstli.com/erp/Desktop/device_admin.php";
-const USERS_API_URL = "https://api1.sstli.com/api/userinfo";
+const API_URL = `${FILES_SERVER_URL}/erp/Desktop/device_admin.php`;
+const USERS_API_URL = `${SSTLI_API_URL}/api/userinfo`;
 
 // فتح الصفحة أصبح من Form_Name + User_Premision عبر PrivateRoute.
 

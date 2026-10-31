@@ -34,8 +34,9 @@ import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { getClientFingerprint, getClientFingerprintParts, getDeviceId } from "../security/apiAuth";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const primary = "#057546";
 const primaryDark = "#034d31";
 

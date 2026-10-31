@@ -12,6 +12,7 @@ import {
     styled
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 // تعريف الألوان الجديدة
@@ -74,7 +75,7 @@ const ChatSystem = () => {
         }
 
         // Fetch users
-        const usersResponse = await fetch('https://api1.sstli.com/api/userinfo');
+        const usersResponse = await fetch(`${SSTLI_API_URL}/api/userinfo`);
         const usersData = await usersResponse.json();
         setUsers(usersData);
 

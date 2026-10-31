@@ -23,6 +23,7 @@ import {
   getCurrentUserGuid,
   readApiJson
 } from "../utils/receptionExtras";
+import DiplomSignPanel from "./transfer/DiplomSignPanel";
 
 const isGuid = (value) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value || "")) &&
@@ -43,6 +44,8 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [blocked, setBlocked] = useState("");
+  // تحويل التخصص: نموذج التوقيع الإلكتروني (الإرسال مايتمش غير بعد توقيع الطالب)
+  const [signState, setSignState] = useState({ signGuid: null, signed: false });
 
   const studentKey = [
     student?.accountGuid,
@@ -62,6 +65,7 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
     setBlocked("");
     setSaving(false);
     setContext(null);
+    setSignState({ signGuid: null, signed: false });
 
     let alive = true;
     (async () => {
@@ -128,6 +132,10 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
       setError("برجاء اختيار الفرع الذي سيدرس فيه الطالب التخصص الجديد");
       return;
     }
+    if (type === "diplom" && !signState.signed) {
+      setError("لا يمكن إرسال طلب تغيير التخصص قبل توقيع الطالب على النموذج إلكترونيًا");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -149,6 +157,7 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
           newName: selected.name,
           priceBranchGuid: type === "diplom" ? priceBranch?.guid || null : null,
           priceBranchName: type === "diplom" ? priceBranch?.name || "" : "",
+          signGuid: type === "diplom" ? signState.signGuid : null,
           notes: notes.trim()
         })
       });
@@ -225,6 +234,7 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
                 if (value) {
                   setType(value);
                   setSelected(null);
+                  setFormFile(null);
                   setError("");
                 }
               }}
@@ -281,6 +291,17 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
               />
             )}
 
+            {type === "diplom" && (
+              <DiplomSignPanel
+                student={student}
+                context={context}
+                newDiplom={selected}
+                priceBranch={priceBranch}
+                disabled={saving || !context}
+                onChange={setSignState}
+              />
+            )}
+
             <TextField
               fullWidth
               multiline
@@ -292,6 +313,7 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
               sx={{ mt: 2 }}
             />
 
+            {type === "branch" && (
             <Box sx={{ mt: 2, display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
               <Button
                 component="label"
@@ -325,6 +347,7 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
                 />
               )}
             </Box>
+            )}
           </>
         )}
 
@@ -334,9 +357,9 @@ const ReceptionTransferDialog = ({ open, student, onClose, onDone }) => {
         <Button
           variant="contained"
           onClick={handleSave}
-          disabled={saving || loading || !context || Boolean(blocked)}
+          disabled={saving || loading || !context || Boolean(blocked) || (type === "diplom" && !signState.signed)}
           startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <SwapHorizRoundedIcon />}
-          sx={{ fontWeight: 900 }}
+          sx={{ fontWeight: 900, bgcolor: "#057546", color: "#fff", "&:hover": { bgcolor: "#034d31" }, "&.Mui-disabled": { bgcolor: "rgba(5,117,70,.25)", color: "rgba(255,255,255,.7)" } }}
         >
           إرسال الطلب
         </Button>

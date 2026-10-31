@@ -38,8 +38,9 @@ import BlockRoundedIcon from "@mui/icons-material/BlockRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import VpnKeyRoundedIcon from "@mui/icons-material/VpnKeyRounded";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const primary = "#057546";
 const primaryDark = "#034d31";
 
@@ -1396,9 +1397,11 @@ const EndpointPicker = ({ catalog, selected, onChange }) => {
 const ApiClientsTab = ({ onError }) => {
   const [clients, setClients] = useState([]);
   const [catalog, setCatalog] = useState([]);
+  const [api1Catalog, setApi1Catalog] = useState([]);
+  const [api1Failed, setApi1Failed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(null); // {} = جديد، أو المستخدم
-  const [form, setForm] = useState({ name: "", notes: "", expiresAt: "", rateLimit: 60, active: true, endpoints: new Set() });
+  const [form, setForm] = useState({ name: "", notes: "", expiresAt: "", rateLimit: 60, active: true, endpoints: new Set(), api1Origin: new Set() });
   const [regenerating, setRegenerating] = useState(null);
   const [issued, setIssued] = useState(null); // { name, key }
   const [copied, setCopied] = useState(false);
@@ -1406,9 +1409,16 @@ const ApiClientsTab = ({ onError }) => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [c, e] = await Promise.all([call("api-clients"), call("api-clients/endpoints")]);
-      setClients((c || []).map((x) => ({ ...x, endpointCount: (x.endpoints || []).length })));
+      // endpoints اللي جت من api1 قبل الدمج ليها كتالوج لوحدها (بتتحفظ في قاعدة البيانات باسم api1)؛
+      // لو ماتحملتش، باقي القايمة تفضل شغالة.
+      const api1 = fetch(`${SSTLI_API_URL}/api/api-clients/catalog`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+      const [c, e, e1] = await Promise.all([call("api-clients"), call("api-clients/endpoints"), api1]);
+      setClients((c || []).map((x) => ({ ...x, endpointCount: (x.endpoints || []).length + (x.api1Endpoints || []).length })));
       setCatalog(e || []);
+      setApi1Catalog(Array.isArray(e1) ? e1 : []);
+      setApi1Failed(!Array.isArray(e1));
     } catch (err) {
       onError(err);
     } finally {
@@ -1420,11 +1430,23 @@ const ApiClientsTab = ({ onError }) => {
     load();
   }, [load]);
 
+  // قايمة واحدة للمستخدم؛ كل endpoint بيتحفظ وراه في المكان بتاعه (api4 أو api1).
+  const allCatalog = useMemo(() => {
+    const keys = new Set(catalog.map((e) => `${e.method} ${e.route}`));
+    return [...catalog, ...api1Catalog.filter((e) => !keys.has(`${e.method} ${e.route}`))];
+  }, [catalog, api1Catalog]);
+  const api1Keys = useMemo(() => {
+    const api4Keys = new Set(catalog.map((e) => `${e.method} ${e.route}`));
+    return new Set(api1Catalog.map((e) => `${e.method} ${e.route}`).filter((k) => !api4Keys.has(k)));
+  }, [catalog, api1Catalog]);
+  // endpoint مش موجود في الكتالوج (اتشال من الكود مثلًا) بيفضل في نفس مكانه القديم
+  const isApi1 = (key) => api1Keys.has(key) || (form.api1Origin.has(key) && !catalog.some((e) => `${e.method} ${e.route}` === key));
+
   const openEditor = (client) => {
     setForm(
       client
-        ? { name: client.name || "", notes: client.notes || "", expiresAt: toLocalInput(client.expiresAt), rateLimit: client.rateLimit || 60, active: Boolean(client.active), endpoints: new Set(client.endpoints || []) }
-        : { name: "", notes: "", expiresAt: inDays(30), rateLimit: 60, active: true, endpoints: new Set() }
+        ? { name: client.name || "", notes: client.notes || "", expiresAt: toLocalInput(client.expiresAt), rateLimit: client.rateLimit || 60, active: Boolean(client.active), endpoints: new Set([...(client.endpoints || []), ...(client.api1Endpoints || [])]), api1Origin: new Set(client.api1Endpoints || []) }
+        : { name: "", notes: "", expiresAt: inDays(30), rateLimit: 60, active: true, endpoints: new Set(), api1Origin: new Set() }
     );
     setEditing(client || {});
   };
@@ -1436,7 +1458,8 @@ const ApiClientsTab = ({ onError }) => {
       expiresAt: form.expiresAt || null,
       rateLimit: Number(form.rateLimit) || 60,
       active: form.active,
-      endpoints: [...form.endpoints],
+      endpoints: [...form.endpoints].filter((k) => !isApi1(k)),
+      api1Endpoints: [...form.endpoints].filter(isApi1),
       password
     };
     if (editing?.id) {
@@ -1458,7 +1481,13 @@ const ApiClientsTab = ({ onError }) => {
   };
 
   const rows = useMemo(() => clients.map((c) => ({ ...c, stateText: clientState(c).label })), [clients]);
-  const sampleEndpoint = issued ? catalog.find((e) => form.endpoints.has(`${e.method} ${e.route}`)) : null;
+  const sample = (() => {
+    if (!issued) return null;
+    const first = [...form.endpoints][0];
+    if (!first) return null;
+    const i = first.indexOf(" ");
+    return `${first.slice(0, i)} ${SSTLI_API_URL}${first.slice(i + 1)}`;
+  })();
 
   return (
     <Box>
@@ -1470,7 +1499,9 @@ const ApiClientsTab = ({ onError }) => {
           مستخدم API جديد
         </Button>
         <IconButton onClick={load} disabled={loading} aria-label="تحديث">{loading ? <CircularProgress size={20} /> : <RefreshIcon />}</IconButton>
-        <Typography sx={{ fontSize: 12.5, color: "text.secondary" }}>عدد الـ endpoints المتاحة: {catalog.length}</Typography>
+        <Typography sx={{ fontSize: 12.5, color: "text.secondary" }}>
+          عدد الـ endpoints المتاحة: {allCatalog.length}
+        </Typography>
       </Stack>
 
       <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
@@ -1492,7 +1523,7 @@ const ApiClientsTab = ({ onError }) => {
               }
             },
             { field: "expiresAt", headerName: "ينتهي في", width: 145, valueFormatter: ({ value }) => (value ? formatAt(value) : "بدون انتهاء") },
-            { field: "endpointCount", headerName: "endpoints", width: 95 },
+            { field: "endpointCount", headerName: "الـ endpoints", width: 100 },
             { field: "rateLimit", headerName: "حد/دقيقة", width: 90 },
             { field: "calls", headerName: "الطلبات", width: 90, valueFormatter: ({ value }) => num(value) },
             { field: "lastUsedAt", headerName: "آخر استخدام", width: 145, valueFormatter: ({ value }) => formatAt(value) },
@@ -1561,7 +1592,10 @@ const ApiClientsTab = ({ onError }) => {
             />
           ) : null}
           <Typography sx={{ fontWeight: 900 }}>الـ endpoints المسموحة</Typography>
-          <EndpointPicker catalog={catalog} selected={form.endpoints} onChange={(endpoints) => setForm((f) => ({ ...f, endpoints }))} />
+          {api1Failed ? (
+            <Alert severity="error" sx={{ fontWeight: 600 }}>تعذر تحميل جزء من الـ endpoints — تأكد أنك مسجّل الدخول بحساب من الإدارة العليا، ثم اضغط تحديث.</Alert>
+          ) : null}
+          <EndpointPicker catalog={allCatalog} selected={form.endpoints} onChange={(endpoints) => setForm((f) => ({ ...f, endpoints }))} />
           <Alert severity="warning" sx={{ fontWeight: 600 }}>
             الـ endpoints التي تتحقق من صلاحيات مستخدم البرنامج (userGuid) لن تعمل بالمفتاح — المفتاح مناسب لطلبات القراءة مثل دليل المعهد.
           </Alert>
@@ -1598,7 +1632,7 @@ const ApiClientsTab = ({ onError }) => {
           </Stack>
           <Typography sx={{ fontWeight: 900, mt: 2, mb: 0.5 }}>طريقة الاستخدام</Typography>
           <Box component="pre" sx={{ direction: "ltr", textAlign: "left", bgcolor: "action.hover", p: 1.5, borderRadius: 2, fontSize: 12.5, whiteSpace: "pre-wrap", wordBreak: "break-all", m: 0 }}>
-            {`${sampleEndpoint ? `${sampleEndpoint.method} https://api4.sstli.com${sampleEndpoint.route}` : "GET https://api4.sstli.com/api/..."}\nX-Api-Key: ${issued?.key || ""}`}
+            {`${sample || `GET ${SSTLI_API_URL}/api/...`}\nX-Api-Key: ${issued?.key || ""}`}
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 2, py: 1.5 }}>

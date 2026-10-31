@@ -64,10 +64,11 @@ import StudyApprovalDialog from "./components/StudyApprovalDialog";
 import Swal from "sweetalert2";
 
 import instituteLogo from "./images/logo.jpg";
+import { SSTLI_API_URL, SSTLI_SITE_URL } from "./config/apiUrls";
 
 
 
-const API_BASE_URL = "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -602,7 +603,7 @@ const admissionDateText = (value) => {
 };
 
 const refundPolicyUrl =
-  "https://sstli.com/%d8%b3%d9%8a%d8%a7%d8%b3%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/";
+  `${SSTLI_SITE_URL}/%d8%b3%d9%8a%d8%a7%d8%b3%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/`;
 
 const refundQrUrl =
   `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=${encodeURIComponent(refundPolicyUrl)}`;

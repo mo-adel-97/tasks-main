@@ -25,13 +25,14 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import QRCode from "qrcode";
 import logoImage from "../images/logo.jpg";
+import { SSTLI_SITE_URL } from "../config/apiUrls";
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const accentColor = "#ae1e21";
 
 const REFUND_POLICY_URL =
-  "https://sstli.com/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/";
+  `${SSTLI_SITE_URL}/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/`;
 
 // الـ QR بيتولد محلياً (بدل api.qrserver.com) علشان الطباعة والـ PDF ما يعتمدوش على موقع خارجي.
 const makeQr = (text) =>

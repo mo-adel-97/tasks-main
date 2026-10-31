@@ -48,6 +48,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import BranchesDashboard from "./BranchesDashboard";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 // الألوان الأساسية
@@ -58,7 +59,7 @@ const PRIMARY_COLOR_SUPER_LIGHT = '#e8f3ef';
 const DARK_MODE_BORDER = '#67C99D';
 
 // تعريف الـ API base
-const PHP_BASE = 'https://filesregsiteration.sstli.com';
+const PHP_BASE = FILES_SERVER_URL;
 
 const SpecialComponent = () => {
   const navigate = useNavigate();
@@ -319,7 +320,7 @@ const SpecialComponent = () => {
     const user = userRaw ? JSON.parse(userRaw) : null;
 
     if (user?.guid) {
-      fetch(`https://api3.sstli.com/api/Trainer/UserBranchForWork?userGuid=${user.guid}`)
+      fetch(`${SSTLI_API_URL}/api/Trainer/UserBranchForWork?userGuid=${user.guid}`)
         .then((res) => res.json())
         .then((result) => {
           if (result && result.length > 0) {
@@ -353,7 +354,7 @@ const SpecialComponent = () => {
     const from = fromDate.startOf('day').format("YYYY-MM-DD");
     const to = toDate.endOf('day').format("YYYY-MM-DD");
 
-    fetch(`https://api3.sstli.com/api/Trainer/BranchTrainerSummary?fromDate=${from}&toDate=${to}&branchGuid=${branchGuid}`)
+    fetch(`${SSTLI_API_URL}/api/Trainer/BranchTrainerSummary?fromDate=${from}&toDate=${to}&branchGuid=${branchGuid}`)
       .then(res => res.json())
       .then(result => {
         if (result.success && Array.isArray(result.data)) {
@@ -447,7 +448,7 @@ const SpecialComponent = () => {
 
     try {
       const response = await fetch(
-        `https://api3.sstli.com/api/Trainer/StudentList?branchGuid=${branchGuid}&trainerGuid=${trainerGuid}&fromDate=${from}&toDate=${to}`
+        `${SSTLI_API_URL}/api/Trainer/StudentList?branchGuid=${branchGuid}&trainerGuid=${trainerGuid}&fromDate=${from}&toDate=${to}`
       );
       const result = await response.json();
 

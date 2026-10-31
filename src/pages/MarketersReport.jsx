@@ -45,13 +45,13 @@ import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import { excelBlobFromCsv } from "../utils/excelExport";
 import { fetchMigrationPreview, notMigratedHtml, previewHtml } from "../utils/migrationPreview";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const pad2 = (value) =>
   String(value).padStart(2, "0");

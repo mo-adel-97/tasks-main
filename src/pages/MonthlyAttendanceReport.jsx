@@ -57,6 +57,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Document, Paragraph, Packer, AlignmentType, HeadingLevel, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, WidthType, BorderStyle } from 'docx';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 // Color palette based on #80b49e
@@ -228,7 +229,7 @@ const MonthlyAttendanceReport = () => {
         throw new Error('User GUID not found');
       }
       
-      const response = await fetch(`https://api3.sstli.com/api/Trainer/UserBranchForWork?userGuid=${user.guid}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/Trainer/UserBranchForWork?userGuid=${user.guid}`);
       if (!response.ok) throw new Error('Failed to fetch branch name');
       
       const data = await response.json();
@@ -247,7 +248,7 @@ const MonthlyAttendanceReport = () => {
         throw new Error('Branch information not found');
       }
       
-      const response = await fetch(`https://api1.sstli.com/api/StudentStudyInfo/by-branch/${user.branchForWork}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${user.branchForWork}`);
       if (!response.ok) throw new Error('Failed to fetch students');
   
       const data = await response.json();
@@ -260,7 +261,7 @@ const MonthlyAttendanceReport = () => {
   const fetchAttendanceData = async () => {
     try {
       await fetchBranchName();
-      const response = await fetch('https://filesregsiteration.sstli.com/get_attendance.php');
+      const response = await fetch(`${FILES_SERVER_URL}/get_attendance.php`);
       const result = await response.json();
 
       if (result.success) {
@@ -325,7 +326,7 @@ const MonthlyAttendanceReport = () => {
     if (!student) return;
 
     try {
-      const response = await fetch(`https://api1.sstli.com/api/student/${student.nationalId}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/student/${student.nationalId}`);
       if (!response.ok) throw new Error('Failed to fetch student data');
       
       const studentData = await response.json();

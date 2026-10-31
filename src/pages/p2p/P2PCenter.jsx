@@ -2,6 +2,7 @@
 //   mode="staff"   → P2P - إدخال الزيارات      (صلاحية "P2P"):  تقريري اليومي، تقاريري، شركاتي، فرصي، مؤشراتي — بياناتي بس.
 //   mode="manager" → P2P - التقارير والمتابعة   (صلاحية "إدارة P2P"): لوحة الإدارة، مراجعة التقارير، فرص وشركات الكل.
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "../rtl-forms-fix.css";
 import { Alert, Box, Chip, CircularProgress, Paper, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
 import HandshakeRoundedIcon from "@mui/icons-material/HandshakeRounded";
@@ -13,6 +14,10 @@ import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import P2PReportEditor from "./P2PReportEditor";
 import P2PDashboard from "./P2PDashboard";
+import P2PDocuments from "./P2PDocuments";
+import P2PAppointments from "./P2PAppointments";
+import EventRoundedIcon from "@mui/icons-material/EventRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import { P2PCompaniesList, P2POpportunitiesList, P2PReportsList } from "./P2PLists";
 import { GREEN, GREEN_DARK, dayName, p2pApi, setP2PScope, useUi } from "./p2pShared";
 
@@ -27,7 +32,9 @@ const MODES = {
       { label: "تقاريري", icon: <ListAltRoundedIcon /> },
       { label: "شركاتي", icon: <BusinessRoundedIcon /> },
       { label: "فرصي", icon: <TrendingUpRoundedIcon /> },
-      { label: "مؤشراتي", icon: <InsightsRoundedIcon /> }
+      { label: "مؤشراتي", icon: <InsightsRoundedIcon /> },
+      { label: "مواعيدي", icon: <EventRoundedIcon /> },
+      { label: "المستندات", icon: <DescriptionRoundedIcon /> }
     ]
   },
   manager: {
@@ -39,7 +46,8 @@ const MODES = {
       { label: "لوحة الإدارة", icon: <InsightsRoundedIcon /> },
       { label: "التقارير اليومية", icon: <ListAltRoundedIcon /> },
       { label: "الفرص التعاقدية", icon: <TrendingUpRoundedIcon /> },
-      { label: "الشركات", icon: <BusinessRoundedIcon /> }
+      { label: "الشركات", icon: <BusinessRoundedIcon /> },
+      { label: "مواعيد الفريق", icon: <EventRoundedIcon /> }
     ]
   }
 };
@@ -67,6 +75,32 @@ export default function P2PCenter({ mode = "staff" }) {
       })
       .catch((e) => setError(e.message));
   }, [mode]);
+
+  // روابط الإشعارات: ?date=YYYY-MM-DD (تقرير الموظف) أو ?report=<guid> (فتح التقرير عند الإدارة)
+  const location = useLocation();
+  const [openRequest, setOpenRequest] = useState(null);
+  const [focusAppointment, setFocusAppointment] = useState("");
+  useEffect(() => {
+    if (!me) return;
+    const params = new URLSearchParams(location.search);
+    const date = params.get("date");
+    const report = params.get("report");
+    const appointment = params.get("appointment");
+    // تذكير موعد من الجرس => تاب المواعيد والموعد نفسه
+    if (appointment) {
+      setTab(mode === "staff" ? 5 : 4);
+      setFocusAppointment(appointment);
+      return;
+    }
+    if (mode === "staff" && date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      setReportDate(date);
+      setRefreshKey((k) => k + 1);
+      setTab(0);
+    } else if (mode === "manager" && report) {
+      setTab(1);
+      setOpenRequest({ guid: report, key: location.key });
+    }
+  }, [me, mode, location.search, location.key]);
 
   const allowed = me ? (mode === "manager" ? me.isManager : me.isStaff) : false;
   // الأجزاء الداخلية بتعتمد على role: في الشاشة دي هو نوع الشاشة نفسها
@@ -135,9 +169,10 @@ export default function P2PCenter({ mode = "staff" }) {
           {mode === "manager" ? (
             <>
               {tab === 0 ? <P2PDashboard me={view} /> : null}
-              {tab === 1 ? <P2PReportsList me={view} /> : null}
+              {tab === 1 ? <P2PReportsList me={view} openRequest={openRequest} /> : null}
               {tab === 2 ? <P2POpportunitiesList me={view} /> : null}
               {tab === 3 ? <P2PCompaniesList me={view} /> : null}
+              {tab === 4 ? <P2PAppointments me={view} focusGuid={focusAppointment} /> : null}
             </>
           ) : (
             <>
@@ -155,6 +190,8 @@ export default function P2PCenter({ mode = "staff" }) {
               {tab === 2 ? <P2PCompaniesList me={view} /> : null}
               {tab === 3 ? <P2POpportunitiesList me={view} /> : null}
               {tab === 4 ? <P2PDashboard me={view} /> : null}
+              {tab === 5 ? <P2PAppointments me={view} focusGuid={focusAppointment} /> : null}
+              {tab === 6 ? <P2PDocuments /> : null}
             </>
           )}
         </>

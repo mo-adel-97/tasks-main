@@ -32,6 +32,7 @@ import {
   Fingerprint as FingerprintIcon,
   Phone as PhoneIcon
 } from '@mui/icons-material';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // Helper function to normalize course names for comparison
 const normalizeCourseName = (name) => {
@@ -210,7 +211,7 @@ const CourseAttendanceStats = ({ attendanceData, studentsData, fromDate, toDate 
     setOpenStudentDialog(true);
     
     try {
-      const response = await fetch(`https://api1.sstli.com/api/student/${nationalId}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/student/${nationalId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

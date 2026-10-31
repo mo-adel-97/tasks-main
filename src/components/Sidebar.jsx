@@ -49,6 +49,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
 import logo from "../images/logo.jpg";
+import NotificationInbox from "./NotificationInbox";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
 
@@ -99,17 +100,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 
 
-import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 const HR_API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 // المستخدم الحالي وقت الطلب (مش وقت فتح الصفحة): لو حد خرج ودخل بحساب تاني من غير تحديث للصفحة،
 // الإشعارات كانت بتتطلب باسم الحساب القديم بتوكن الحساب الجديد.
 const readCurrentUser = () => {
@@ -1566,9 +1563,11 @@ const childItemSx = (selected) => ({
               sx: {
                 width: {
                   xs: "calc(100vw - 16px)",
-                  sm: 390
+                  sm: 420
                 },
-                maxWidth: 420,
+                maxWidth: 440,
+                display: "flex",
+                flexDirection: "column",
                 maxHeight: {
                   xs: "72dvh",
                   sm: "70vh"
@@ -1585,107 +1584,19 @@ const childItemSx = (selected) => ({
               }
             }}
           >
-            <Box sx={{
-              p: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between"
-            }}>
-              <Box>
-                <Typography sx={{
-                  fontFamily: "Cairo",
-                  fontWeight: 950,
-                  fontSize: 14
-                }}>
-                  إشعاراتي
-                </Typography>
-                <Typography color="text.secondary" sx={{
-                  fontFamily: "Cairo",
-                  fontSize: 12
-                }}>
-                  المهام والإجازات
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', gap: .25 }}>
-                <Tooltip title={bellMuted ? 'تشغيل صوت التنبيه' : 'كتم صوت التنبيه'}>
-                  <IconButton size="small" onClick={toggleBellMuted}>
-                    {bellMuted ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="تعليم الكل كمقروء">
-                  <IconButton size="small" onClick={markAllNotificationsRead}>
-                    <DoneAllRoundedIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
-
-            <Divider />
-
-            <Box sx={{ maxHeight: "58vh", overflowY: "auto" }}>
-              {notificationsLoading && (
-                <Box sx={{ p: 2, textAlign: "center" }}>
-                  <CircularProgress size={22} />
-                </Box>
-              )}
-
-              {!notificationsLoading && notifications.length === 0 && (
-                <Box sx={{ p: 2 }}>
-                  <Typography color="text.secondary" sx={{
-                    textAlign: "center",
-                    fontFamily: "Cairo",
-                    fontSize: 12
-                  }}>
-                    لا توجد إشعارات حالياً
-                  </Typography>
-                </Box>
-              )}
-
-              {notifications.map((item) => (
-                <Box
-                  key={item.notificationKey}
-                  onClick={() => markNotificationRead(item)}
-                  sx={{
-                    p: 1,
-                    cursor: "pointer",
-                    borderBottom: isDarkMode ? '1px solid #67C99D' : "1px solid rgba(5,117,70,.10)",
-                    bgcolor: isDarkMode
-                      ? (item.isRead ? theme.palette.surfaces.card : theme.palette.surfaces.selected)
-                      : (item.isRead ? "#fff" : "#f0fbf5"),
-                    "&:hover": { bgcolor: isDarkMode ? theme.palette.surfaces.hover : "#e9f7f0" }
-                  }}
-                >
-                  <Typography sx={{
-                    fontFamily: "Cairo",
-                    fontWeight: item.isRead ? 800 : 950,
-                    fontSize: 12,
-                    color: isDarkMode ? sidebarColors.text : textColor
-                  }}>
-                    {item.title}
-                  </Typography>
-
-                  <Typography color="text.secondary" sx={{
-                    mt: .2,
-                    fontFamily: "Cairo",
-                    fontSize: 12,
-                    lineHeight: 1.6
-                  }}>
-                    {item.message}
-                  </Typography>
-
-                  {item.eventAt && (
-                    <Typography color="text.secondary" sx={{
-                      mt: .35,
-                      fontFamily: "Cairo",
-                      fontSize: 12
-                    }}>
-                      {new Date(item.eventAt).toLocaleString("ar-SA-u-ca-gregory-nu-latn", { dateStyle: "short", timeStyle: "short" })}
-                    </Typography>
-                  )}
-                </Box>
-              ))}
-            </Box>
+            <NotificationInbox
+              items={notifications}
+              loading={notificationsLoading}
+              unreadCount={notificationUnreadCount}
+              muted={bellMuted}
+              onToggleMute={toggleBellMuted}
+              onMarkAll={markAllNotificationsRead}
+              onOpenItem={markNotificationRead}
+              onNavigate={(path) => {
+                setNotificationAnchor(null);
+                navigate(path);
+              }}
+            />
           </Popover>
 
           {sidebarConfig.loading ? (

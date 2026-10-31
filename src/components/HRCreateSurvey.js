@@ -89,6 +89,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { splitSection, stripSection, joinSection } from '../utils/questionSections';
+import { FILES_SERVER_URL, SSTLI_API_URL, SURVEYS_SITE_URL } from "../config/apiUrls";
 
 
 // الألوان الأساسية
@@ -99,8 +100,8 @@ const backgroundColor = '#f6faf8';
 const textColor = '#17372b';
 const focusBorderColor = '#67C99D';
 
-const IMAGE_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php';
-const SURVEY_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/survey_api.php';
+const IMAGE_API_BASE_URL = `${FILES_SERVER_URL}/erp/image_api.php`;
+const SURVEY_API_BASE_URL = `${FILES_SERVER_URL}/erp/survey_api.php`;
 
 // ===== أقسام الاستبيان =====
 // القسم بيتخزن كبادئة في نص السؤال (⟦اسم القسم⟧ نص السؤال). في المحرر بنفصله في section،
@@ -747,7 +748,7 @@ function autoFitColumns(ws, min = 10, max = 60) {
 }
 
 // دالة لتحميل الملفات
-const UPLOADS_PUBLIC_BASE = "https://filesregsiteration.sstli.com/erp/"; // علشان file_path = uploads/...
+const UPLOADS_PUBLIC_BASE = `${FILES_SERVER_URL}/erp/`; // علشان file_path = uploads/...
 
 const handleDownloadFile = async (fileInfo) => {
   try {
@@ -1068,7 +1069,7 @@ const [externalSurvey, setExternalSurvey] = useState({
     try {
       // جلب الأقسام
       setLoadingDepts(true);
-      const deptResponse = await fetch("https://api3.sstli.com/api/Department/Load");
+      const deptResponse = await fetch(`${SSTLI_API_URL}/api/Department/Load`);
       const deptData = await deptResponse.json();
       const filteredDepartments = deptData.filter(
         dept => dept.departName !== "الإدارة التنفيذية"
@@ -1077,7 +1078,7 @@ const [externalSurvey, setExternalSurvey] = useState({
 
       // جلب المستخدمين
       setLoadingUsers(true);
-      const userResponse = await fetch("https://api1.sstli.com/api/userinfo");
+      const userResponse = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       const userData = await userResponse.json();
       setUsers(userData);
 
@@ -1339,7 +1340,7 @@ const fetchExternalSurveyResponses = async (surveyId) => {
 
   // فانكشن لتوليد رابط الاستبيان الخارجي
 const generateSurveyLink = (survey, trainer = null) => {
-  const baseUrl = 'https://surveys.sstli.com';
+  const baseUrl = SURVEYS_SITE_URL;
 
   const params = new URLSearchParams();
 

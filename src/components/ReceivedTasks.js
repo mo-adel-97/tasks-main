@@ -53,16 +53,17 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { format } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
-const TASKS_API = "https://api3.sstli.com/api/NewTasks/routes/all";
+const TASKS_API = `${SSTLI_API_URL}/api/NewTasks/routes/all`;
 const APPROVE_API = id =>
-  `https://api3.sstli.com/api/NewTasks/routes/${id}/approve`;
+  `${SSTLI_API_URL}/api/NewTasks/routes/${id}/approve`;
 const STATUS_API = taskGuid =>
-  `https://api3.sstli.com/api/NewTasks/routes/${taskGuid}/status`;
+  `${SSTLI_API_URL}/api/NewTasks/routes/${taskGuid}/status`;
 const ATTACHMENT_API = (taskGuid, attId) =>
-  `https://api3.sstli.com/api/NewTasks/routes/${taskGuid}/attachments/${attId}`;
-const SAVE_DETAILS_API = "https://filesregsiteration.sstli.com/save_task_details.php";
-const TASK_HISTORY_API = "https://filesregsiteration.sstli.com/GetTaskDetails.php";
+  `${SSTLI_API_URL}/api/NewTasks/routes/${taskGuid}/attachments/${attId}`;
+const SAVE_DETAILS_API = `${FILES_SERVER_URL}/save_task_details.php`;
+const TASK_HISTORY_API = `${FILES_SERVER_URL}/GetTaskDetails.php`;
 
 const STATUS_OPTIONS = [
   { value: "معلقة", label: "معلقة" },

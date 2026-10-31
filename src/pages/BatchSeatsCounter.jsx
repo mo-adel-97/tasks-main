@@ -39,13 +39,13 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const PROGRAM_TYPES = [
   {

@@ -27,6 +27,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PrintIcon from "@mui/icons-material/Print";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import { FILES_SERVER_URL, SSTLI_SITE_URL } from "../config/apiUrls";
 
 const logoImage = new URL(
   `${process.env.PUBLIC_URL || ""}/logo.jpg`,
@@ -45,7 +46,7 @@ const FOCUS_BORDER_SX = (theme) => (theme.palette.mode !== "dark" ? {} : {
 });
 
 const REFUND_POLICY_URL =
-  "https://sstli.com/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/";
+  `${SSTLI_SITE_URL}/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/`;
 
 const REFUND_POLICY_QR =
   `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
@@ -53,7 +54,7 @@ const REFUND_POLICY_QR =
   )}`;
 
 const REGISTER_VERIFICATION_PAGE_URL =
-  "https://filesregsiteration.sstli.com/erp/auth.php";
+  `${FILES_SERVER_URL}/erp/auth.php`;
 
 const COMPANY_NAME = "شركة معهد السعودي المتخصص العالي للتدريب";
 const COMPANY_TAX_NO = "312191561600003";

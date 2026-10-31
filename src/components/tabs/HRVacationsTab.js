@@ -59,6 +59,7 @@ import {
   Description,
   Clear
 } from "@mui/icons-material";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: '#76ae97',
@@ -71,10 +72,10 @@ const COLOR_SCHEME = {
   card: '#ffffff'
 };
 
-const HR_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/hr_vacations_permissions.php';
-const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
-const BRANCHES_API_URL = 'https://api4.sstli.com/api/branches/all';
-const IMAGE_API_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php'; // أضف هذا
+const HR_API_BASE_URL = `${FILES_SERVER_URL}/erp/hr_vacations_permissions.php`;
+const USER_API_URL = `${SSTLI_API_URL}/api/userinfo`;
+const BRANCHES_API_URL = `${SSTLI_API_URL}/api/branches/all`;
+const IMAGE_API_URL = `${FILES_SERVER_URL}/erp/image_api.php`; // أضف هذا
 
 
 const HRVacationsTab = ({ onPendingRequestsUpdate }) => {
@@ -186,7 +187,7 @@ const fetchHRRequests = async () => {
   
   setLoading(true);
   try {
-    const response = await fetch(`${HR_API_BASE_URL}`);
+    const response = await fetch(HR_API_BASE_URL);
     const result = await response.json();
     
     if (result.success) {
@@ -1044,7 +1045,7 @@ const fetchHRRequests = async () => {
                         variant="outlined"
                         size="small"
                         startIcon={<AttachFile />}
-                        href={`https://filesregsiteration.sstli.com/erp/uploads/requests/${detailsDialog.request.attached_file}`}
+                        href={`${FILES_SERVER_URL}/erp/uploads/requests/${detailsDialog.request.attached_file}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

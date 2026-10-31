@@ -23,10 +23,11 @@ import SaveIcon from "@mui/icons-material/Save";
 import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 
 
 

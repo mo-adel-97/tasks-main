@@ -49,6 +49,7 @@ import SharedCoursesManager from "./SharedCoursesManager";
 import html2pdf from "html2pdf.js";
 import logo1 from "../images/logo1.jpg";
 import logo2 from "../images/logo2.jpg";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // ===== الكومبوننتات المُصممة بمتريال =====
 
@@ -772,7 +773,7 @@ export default function PrintExamPage({ userBranch }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const STUDENTS_API = userBranch?.guid 
-    ? `https://api1.sstli.com/api/StudentStudyInfo/by-branch/${userBranch.guid}`
+    ? `${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${userBranch.guid}`
     : null;
 
   // تحميل بيانات الطلاب

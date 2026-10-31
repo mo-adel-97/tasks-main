@@ -25,6 +25,7 @@ import {
   Security,
   Work
 } from "@mui/icons-material";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: "#057546",
@@ -37,7 +38,7 @@ const COLOR_SCHEME = {
   gold: "#f4b740"
 };
 
-const API_BASE_URL = "https://filesregsiteration.sstli.com/erp/image_api.php";
+const API_BASE_URL = `${FILES_SERVER_URL}/erp/image_api.php`;
 
 const fadeIn = {
   hidden: { opacity: 0, y: 28, scale: 0.985 },

@@ -25,6 +25,7 @@ import StudentStatementDialog from './StudentStatementDialog';
 import MyCallHistoryDialog from './MyCallHistoryDialog';
 import NotificationsIcon from "@mui/icons-material/InfoOutlined";
 import { Badge } from '@mui/material';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // الألوان الجديدة
 const primaryColor = '#80b49e';
@@ -87,7 +88,7 @@ export default function StudentSearch({ onLogout }) {
     useEffect(() => {
         const fetchFollowUpCount = async () => {
             try {
-                const res = await axios.get('https://api1.sstli.com/api/call/all');
+                const res = await axios.get(`${SSTLI_API_URL}/api/call/all`);
                 const count = res.data.filter(c => c.callStatus === 1).length;
                 setFollowUpCount(count);
             } catch (err) {
@@ -102,7 +103,7 @@ export default function StudentSearch({ onLogout }) {
     useEffect(() => {
         const fetchAllCalls = async () => {
             try {
-                const res = await axios.get('https://api1.sstli.com/api/call/all');
+                const res = await axios.get(`${SSTLI_API_URL}/api/call/all`);
                 setAllCalls(res.data);
             } catch (err) {
                 console.error("Error fetching all calls:", err);
@@ -117,8 +118,8 @@ useEffect(() => {
         try {
             // نجيب بيانات المستخدمين والفروع مع بعض
             const [usersRes, branchesRes] = await Promise.all([
-                axios.get("https://api1.sstli.com/api/userinfo"),
-                axios.get("https://api4.sstli.com/api/branches/all")
+                axios.get(`${SSTLI_API_URL}/api/userinfo`),
+                axios.get(`${SSTLI_API_URL}/api/branches/all`)
             ]);
 
             const allUsers = usersRes.data;
@@ -189,11 +190,11 @@ useEffect(() => {
         setStudent(null);
         setError('');
         try {
-            const response = await axios.get(`https://api1.sstli.com/api/student/${nationalId}`);
+            const response = await axios.get(`${SSTLI_API_URL}/api/student/${nationalId}`);
             setStudent(response.data);
             // Fetch study info when student is found
             try {
-                const studyResponse = await axios.get(`https://api1.sstli.com/api/studyinfo/${response.data.accountGuid}`);
+                const studyResponse = await axios.get(`${SSTLI_API_URL}/api/studyinfo/${response.data.accountGuid}`);
                 setStudyInfo(studyResponse.data);
             } catch (studyError) {
                 console.error("Error fetching study info:", studyError);
@@ -209,7 +210,7 @@ useEffect(() => {
 
     const fetchFollowUpCalls = async (accountGuid) => {
         try {
-            const response = await axios.get(`https://api1.sstli.com/api/calls/${accountGuid}`);
+            const response = await axios.get(`${SSTLI_API_URL}/api/calls/${accountGuid}`);
             const filtered = response.data.filter(call => call.status === 'متابعة لاحقا');
             setFollowUpCalls(filtered);
         } catch (error) {
@@ -293,7 +294,7 @@ useEffect(() => {
 
             console.log("Submitting call data:", requestData);
 
-            const response = await axios.post("https://api1.sstli.com/api/call", requestData);
+            const response = await axios.post(`${SSTLI_API_URL}/api/call`, requestData);
 
             Swal.fire({
                 icon: 'success',
@@ -349,7 +350,7 @@ useEffect(() => {
 
     const fetchStudyInfo = async () => {
         try {
-            const response = await axios.get(`https://api1.sstli.com/api/studyinfo/${student.accountGuid}`);
+            const response = await axios.get(`${SSTLI_API_URL}/api/studyinfo/${student.accountGuid}`);
             setStudyInfo(response.data);
             console.log("studyinfostudyinfo", setStudyInfo)
             setOpenStudyDialog(true);

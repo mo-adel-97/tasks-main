@@ -26,8 +26,9 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const primary = "#057546";
 const primaryDark = "#034d31";
 

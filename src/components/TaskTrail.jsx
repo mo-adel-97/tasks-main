@@ -5,9 +5,10 @@ import {
   Box, Typography, Button, Dialog, DialogTitle, DialogContent, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, Chip, Paper
 } from '@mui/material';
 import axios from 'axios';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
-const TASK_FLOW_API = "https://api3.sstli.com/api/TaskFlow/History";
-const USERS_API = "https://api1.sstli.com/api/userinfo";
+const TASK_FLOW_API = `${SSTLI_API_URL}/api/TaskFlow/History`;
+const USERS_API = `${SSTLI_API_URL}/api/userinfo`;
 
 export default function TaskTrail({ subTaskGuid, currentUserGuid }) {
   const [trail, setTrail] = useState([]);

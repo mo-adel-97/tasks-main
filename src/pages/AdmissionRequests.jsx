@@ -57,6 +57,7 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -72,7 +73,7 @@ const softBg = "#f8fbfa";
 const DARK_BORDER = "#67C99D";
 const DARK_TEXT = "#9BE0C1";
 
-const API_BASE_URL = "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const today = new Date().toISOString().slice(0, 10);
 
 const STATUS_FILTERS = [
@@ -325,7 +326,7 @@ const getActionTypeGuid = (user) => {
   );
 };
 
-const USERINFO_API_URL = "https://api1.sstli.com/api/userinfo";
+const USERINFO_API_URL = `${SSTLI_API_URL}/api/userinfo`;
 
 const normalizeGuid = (value) => String(value || "").trim().toLowerCase();
 

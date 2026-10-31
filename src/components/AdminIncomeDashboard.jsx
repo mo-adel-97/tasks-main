@@ -42,6 +42,7 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -53,7 +54,7 @@ const PANEL2 = "#111c33";
 const MUTED = "#94a3b8";
 
 // ✅ Endpoint
-const BILLS_API = "https://api1.sstli.com/api/Branches/bills/by-date";
+const BILLS_API = `${SSTLI_API_URL}/api/Branches/bills/by-date`;
 // ✅ Polling interval
 const POLL_MS = 2000;
 // ✅ UI animation durations

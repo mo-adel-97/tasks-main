@@ -30,14 +30,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 

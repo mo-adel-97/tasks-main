@@ -22,8 +22,6 @@ import {
   Stack,
   Switch,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
@@ -37,6 +35,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 /*
   شاشة "قائمة الموظفين" — نقل EmpHome من الديسكتوب (قائمة الموارد البشرية).
@@ -44,7 +43,7 @@ import PaidIcon from "@mui/icons-material/Paid";
   وتعديل بيانات الموظف بصلاحية "تعديل" على إضافة مستخدم (زي الديسكتوب).
 */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const API = `${API_BASE_URL}/api/hr-employee-list`;
 
 const primaryColor = "#057546";
@@ -388,7 +387,6 @@ const HrEmployeeListPage = () => {
   const [loadedMonth, setLoadedMonth] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [menu, setMenu] = useState({ anchor: null, row: null });
   const [editRow, setEditRow] = useState(null);
   const [allowRow, setAllowRow] = useState(null);
@@ -452,19 +450,17 @@ const HrEmployeeListPage = () => {
     const q = norm(deferredSearch);
     const out = [];
     for (const { row, text } of indexed) {
-      if (statusFilter === "active" && !row.isActive) continue;
-      if (statusFilter === "inactive" && row.isActive) continue;
       if (q && !text.includes(q)) continue;
       out.push(row);
     }
     return out;
-  }, [indexed, deferredSearch, statusFilter]);
+  }, [indexed, deferredSearch]);
 
   // أي تغيير في الفلتر يرجّع الجدول لأوله.
   useEffect(() => {
     setRenderCount(PAGE_SIZE);
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [deferredSearch, statusFilter, loadedMonth]);
+  }, [deferredSearch, loadedMonth]);
 
   const onScroll = useCallback(
     (e) => {
@@ -509,7 +505,7 @@ const HrEmployeeListPage = () => {
       .map((r) => `<tr>${COLUMNS.map((c) => `<td class="${c.ltr || c.money ? "ltr" : ""}">${escapeHtml(cellValue(r, c))}</td>`).join("")}</tr>`)
       .join("");
     const foot = COLUMNS.map((c, i) =>
-      `<td>${i === 0 ? `الإجمالي: ${totals.count}<br>نشط: ${totals.active} — موقوف: ${totals.inactive}` : c.money ? money(totals.sums[c.key]) : ""}</td>`
+      `<td>${i === 0 ? `الإجمالي: ${totals.count}` : c.money ? money(totals.sums[c.key]) : ""}</td>`
     ).join("");
     const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>قائمة الموظفين ${escapeHtml(loadedMonth)}</title>
       <style>
@@ -676,7 +672,6 @@ const HrEmployeeListPage = () => {
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 1.5 }}>
         {stat("إجمالي الموظفين", totals.count, "text.primary")}
         {stat("نشط", totals.active, accent)}
-        {stat("موقوف", totals.inactive, isDark ? theme.palette.error.light : accentColor)}
         {stat("إجمالي البدلات", money(totals.sums.totalAllowances), isDark ? theme.palette.info.light : "#1f4e79")}
       </Stack>
 
@@ -690,11 +685,6 @@ const HrEmployeeListPage = () => {
             fullWidth
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }}
           />
-          <ToggleButtonGroup exclusive size="small" value={statusFilter} onChange={(_, v) => v && setStatusFilter(v)} sx={{ flexShrink: 0, "& .MuiToggleButton-root": { fontWeight: 800 } }}>
-            <ToggleButton value="all">الكل</ToggleButton>
-            <ToggleButton value="active">نشط</ToggleButton>
-            <ToggleButton value="inactive">موقوف</ToggleButton>
-          </ToggleButtonGroup>
         </Stack>
 
         <Box sx={{ height: 3 }}>{loading && !firstLoad ? <LinearProgress color="success" sx={{ height: 3 }} /> : null}</Box>
@@ -724,7 +714,7 @@ const HrEmployeeListPage = () => {
                   <td />
                   {COLUMNS.map((c, i) => (
                     <td key={c.key} style={{ direction: c.money ? "ltr" : undefined }}>
-                      {i === 0 ? `الإجمالي: ${totals.count}` : i === 1 ? `نشط: ${totals.active} — موقوف: ${totals.inactive}` : c.money ? money(totals.sums[c.key]) : ""}
+                      {i === 0 ? `الإجمالي: ${totals.count}` : c.money ? money(totals.sums[c.key]) : ""}
                     </td>
                   ))}
                 </tr>

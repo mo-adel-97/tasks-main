@@ -36,11 +36,10 @@ import SupervisorAccountRoundedIcon from "@mui/icons-material/SupervisorAccountR
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../../config/apiUrls";
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const primary = "#057546";
 const primaryDark = "#034d31";

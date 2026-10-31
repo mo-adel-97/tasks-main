@@ -33,6 +33,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import axios from 'axios';
 import { format } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 const InquiriesPage = () => {
   const theme = useTheme();
@@ -119,9 +120,9 @@ useEffect(() => {
     setLoading(true);
     try {
       const [callsRes, usersRes, followUpsRes] = await Promise.all([
-        axios.get('https://api1.sstli.com/api/call/all'),
-        axios.get('https://api1.sstli.com/api/userinfo'),
-        axios.get('https://api1.sstli.com/api/followcall')
+        axios.get(`${SSTLI_API_URL}/api/call/all`),
+        axios.get(`${SSTLI_API_URL}/api/userinfo`),
+        axios.get(`${SSTLI_API_URL}/api/followcall`)
       ]);
 
       setCalls(callsRes.data);
@@ -157,7 +158,7 @@ const loadStudentInfo = async (accountGuid) => {
 
   try {
     const { data } = await axios.get(
-      `https://api1.sstli.com/api/StudyInfo/by-account/${accountGuid}`
+      `${SSTLI_API_URL}/api/StudyInfo/by-account/${accountGuid}`
     );
 
     setStudentsInfo(prev => ({ ...prev, [accountGuid]: data }));
@@ -308,8 +309,8 @@ const submitFollowUp = async () => {
   };
 
   try {
-    await axios.post('https://api1.sstli.com/api/callfollowup/add', payload);
-    const followUpsRes = await axios.get('https://api1.sstli.com/api/followcall');
+    await axios.post(`${SSTLI_API_URL}/api/callfollowup/add`, payload);
+    const followUpsRes = await axios.get(`${SSTLI_API_URL}/api/followcall`);
     setFollowUps(followUpsRes.data);
 
     if (followUpStatus === "0") { // Changed this condition to match the corrected status
@@ -343,7 +344,7 @@ const submitFollowUp = async () => {
 
   const handleCompleteCall = async (callGuid) => {
     try {
-      await axios.put(`https://api1.sstli.com/api/call/complete/${callGuid}`);
+      await axios.put(`${SSTLI_API_URL}/api/call/complete/${callGuid}`);
       setCalls(calls.map(call => 
         call.guid === callGuid ? { ...call, callStatus: 0 } : call
       ));

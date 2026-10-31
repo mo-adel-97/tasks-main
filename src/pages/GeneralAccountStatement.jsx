@@ -60,6 +60,7 @@ import ClearAllOutlinedIcon from "@mui/icons-material/ClearAllOutlined";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -67,8 +68,7 @@ import { excelBlobFromCsv } from "../utils/excelExport";
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 const DARK_BORDER = "#67C99D";

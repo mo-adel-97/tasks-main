@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns'; // Add this import
+import { format } from 'date-fns';
+import { FILES_SERVER_URL } from "../config/apiUrls"; // Add this import
 
 const useFetchReports = (branchGuid, selectedDate) => {
   const [reports, setReports] = useState([]);
@@ -16,7 +17,7 @@ const useFetchReports = (branchGuid, selectedDate) => {
       setLoading(true);
       setError(null);
       
-      let url = `https://filesregsiteration.sstli.com/get_reports_by_branch.php?branch_guid=${branchGuid}`;
+      let url = `${FILES_SERVER_URL}/get_reports_by_branch.php?branch_guid=${branchGuid}`;
       
       if (selectedDate) {
         const formattedDate = format(selectedDate, 'yyyy-MM-dd');

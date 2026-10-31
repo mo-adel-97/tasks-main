@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, CircularProgress } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from "axios";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 export default function AddNewStudentButton({ nationalId }) {
   const [open, setOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function AddNewStudentButton({ nationalId }) {
   useEffect(() => {
     const fetchSectors = async () => {
       try {
-        const res = await axios.get('https://api1.sstli.com/api/call/sectors');
+        const res = await axios.get(`${SSTLI_API_URL}/api/call/sectors`);
         setSectors(res.data);
       } catch (err) {
         Swal.fire('خطأ', 'حدث خطأ أثناء تحميل القطاعات', 'error');
@@ -38,7 +39,7 @@ export default function AddNewStudentButton({ nationalId }) {
 
     const fetchAccountSettings = async () => {
       try {
-        const res = await axios.get('https://api1.sstli.com/api/call/account-settings?depGuid=10');
+        const res = await axios.get(`${SSTLI_API_URL}/api/call/account-settings?depGuid=10`);
         if (res.data.length > 0) {
           setAccountSetting(res.data[0]);
         }
@@ -105,7 +106,7 @@ if (!validateNationalId(formData.NationalId)) {
     setIsSubmitting(true); // ← تشغيل اللودر
 
     try {
-      await axios.post('https://api1.sstli.com/api/Call/AddStudentWithAccount', dataToPost);
+      await axios.post(`${SSTLI_API_URL}/api/Call/AddStudentWithAccount`, dataToPost);
       Swal.fire('تم', 'تم إضافة الطالب بنجاح', 'success');
       setOpen(false);
       setFormData({

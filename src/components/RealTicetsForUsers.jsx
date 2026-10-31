@@ -74,10 +74,11 @@ import {
   Block,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
-const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/tech_tickets.php';
-const USER_API_URL = 'https://api1.sstli.com/api/userinfo';
-const BRANCHES_API_URL = 'https://api4.sstli.com/api/branches/all';
+const API_BASE_URL = `${FILES_SERVER_URL}/erp/tech_tickets.php`;
+const USER_API_URL = `${SSTLI_API_URL}/api/userinfo`;
+const BRANCHES_API_URL = `${SSTLI_API_URL}/api/branches/all`;
 
 // المستخدمين والفروع (للأسماء بس) بيتحفظوا في الجلسة 10 دقايق بدل ما يتنزلوا كل مرة الصفحة تتفتح.
 const LOOKUP_CACHE_TTL_MS = 10 * 60 * 1000;
@@ -626,7 +627,7 @@ const TechnicalSupport = () => {
 
   const downloadFile = (filePath, fileName) => {
     const link = document.createElement('a');
-    link.href = `https://filesregsiteration.sstli.com/erp/${filePath}`;
+    link.href = `${FILES_SERVER_URL}/erp/${filePath}`;
     link.download = fileName;
     link.target = '_blank';
     document.body.appendChild(link);

@@ -2,7 +2,8 @@ import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'r
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import QRCode from 'qrcode';
-import { QrCode2, FileDownload } from '@mui/icons-material';
+import { QrCode2, FileDownload, PictureAsPdf } from '@mui/icons-material';
+import ExamAnswerSheetsDialog from './exams/ExamAnswerSheets';
 import * as XLSX from 'xlsx';
 import {
   splitSection,
@@ -69,6 +70,7 @@ import {
   Assessment,
   Cancel
 } from '@mui/icons-material';
+import { FILES_SERVER_URL, SSTLI_API_URL, STUDENT_EXAMS_URL } from "../config/apiUrls";
 
 const primaryColor = '#80b49e';
 const primaryDark = '#6a9a87';
@@ -77,8 +79,8 @@ const backgroundColor = '#f8fbfa';
 const textColor = '#2c3e50';
 const focusBorderColor = '#67C99D';
 
-const EXAM_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/exam_api.php';
-const STUDENT_EXAM_BASE_URL = 'http://examsforstudents.sstli.com';
+const EXAM_API_BASE_URL = `${FILES_SERVER_URL}/erp/exam_api.php`;
+const STUDENT_EXAM_BASE_URL = STUDENT_EXAMS_URL;
 
 const EXAMS_PER_PAGE = 12;
 const USERS_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -158,7 +160,8 @@ const runInBatches = async (items, worker, batchSize = 2) => {
 const EXAM_ADMINS = [
   'f426653a-b389-4036-95f0-907920e7f205',
   '3f69ccb6-e2cf-4d6d-b801-7d727c977d8e',
-  '35efb423-5491-4775-a5cc-98625fb66fa5'
+  '35efb423-5491-4775-a5cc-98625fb66fa5',
+  'e810f702-5fa0-481e-964b-2253fe0847ec' // sa1
 ];
 
 const emptyExam = (currentUser = {}) => ({
@@ -383,6 +386,8 @@ const HRCreateExams = () => {
   const [showAttemptsDialog, setShowAttemptsDialog] = useState(false);
   const [selectedExamAttempts, setSelectedExamAttempts] = useState(null);
   const [loadingAttempts, setLoadingAttempts] = useState(false);
+  // نماذج الإجابة PDF: null = مقفول، وإلا قائمة المتدربين المطلوب طباعتهم
+  const [answerSheetsFor, setAnswerSheetsFor] = useState(null);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [examForm, setExamForm] = useState(emptyExam(currentUser));
@@ -418,7 +423,7 @@ const HRCreateExams = () => {
   const fetchUsers = async ({ silent = false } = {}) => {
     try {
       const response = await examHttp.get(
-        'https://api1.sstli.com/api/userinfo',
+        `${SSTLI_API_URL}/api/userinfo`,
         { timeout: 20000 }
       );
 
@@ -2347,6 +2352,15 @@ const exportExamQrCode = async (exam) => {
                         <Chip label={`الجوال: ${attempt.student_tel || 'غير مسجل'}`} />
                         <Chip label={`البريد: ${attempt.student_email || 'غير مسجل'}`} />
                         <Chip label={`وقت الإرسال: ${attempt.submitted_at || '-'}`} />
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<PictureAsPdf />}
+                          onClick={() => setAnswerSheetsFor([attempt])}
+                          sx={{ fontWeight: 'bold', borderRadius: 4, color: isDark ? '#cfe7dc' : primaryColor, borderColor: isDark ? focusBorderColor : primaryColor }}
+                        >
+                          نموذج الإجابة
+                        </Button>
                       </Box>
 
                       <TableContainer
@@ -2446,18 +2460,37 @@ const exportExamQrCode = async (exam) => {
         </DialogContent>
 
         <DialogActions sx={{ justifyContent: 'space-between' }}>
-          <Button
-            variant="contained"
-            startIcon={<FileDownload />}
-            onClick={handleExportAttemptsExcel}
-            disabled={loadingAttempts || !selectedExamAttempts?.attempts?.length}
-            sx={{ backgroundColor: primaryColor, fontWeight: 'bold' }}
-          >
-            تصدير Excel
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              startIcon={<FileDownload />}
+              onClick={handleExportAttemptsExcel}
+              disabled={loadingAttempts || !selectedExamAttempts?.attempts?.length}
+              sx={{ backgroundColor: primaryColor, fontWeight: 'bold' }}
+            >
+              تصدير Excel
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<PictureAsPdf />}
+              onClick={() => setAnswerSheetsFor(selectedExamAttempts?.attempts || [])}
+              disabled={loadingAttempts || !selectedExamAttempts?.attempts?.length}
+              sx={{ fontWeight: 'bold', color: isDark ? '#cfe7dc' : primaryColor, borderColor: isDark ? focusBorderColor : primaryColor }}
+            >
+              طباعة نماذج الإجابة PDF
+            </Button>
+          </Box>
           <Button onClick={() => setShowAttemptsDialog(false)}>إغلاق</Button>
         </DialogActions>
       </Dialog>
+
+      <ExamAnswerSheetsDialog
+        open={Boolean(answerSheetsFor)}
+        onClose={() => setAnswerSheetsFor(null)}
+        exam={selectedExamAttempts?.exam}
+        attempts={answerSheetsFor}
+        loadExam={(examId) => fetchExamById(examId)}
+      />
     </Container>
   );
 };

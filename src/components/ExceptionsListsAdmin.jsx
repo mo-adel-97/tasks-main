@@ -39,13 +39,14 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 // Backend base
-const BASE_URL = "https://filesregsiteration.sstli.com";
+const BASE_URL = FILES_SERVER_URL;
 const API_URL = `${BASE_URL}/exceptions.php`;
-const BRANCHES_API = "https://api4.sstli.com/api/branches/all";
+const BRANCHES_API = `${SSTLI_API_URL}/api/branches/all`;
 
 // Admin header key
 const ADMIN_KEY = "MOHAMED";

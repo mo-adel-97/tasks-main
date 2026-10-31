@@ -13,6 +13,7 @@ import { Close, EmojiEvents, VolumeUp } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import dangerSound from "../images/danger.mp3";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 const EmployeeOfTheMonthDialog = () => {
   const [open, setOpen] = useState(false);
@@ -22,9 +23,9 @@ const EmployeeOfTheMonthDialog = () => {
   const [userBranch, setUserBranch] = useState(null);
   const audioRef = useRef(null);
 
-  const API_BASE_URL = "https://filesregsiteration.sstli.com/erp/best-employee.php";
-  const IMAGE_API_URL = "https://filesregsiteration.sstli.com/erp/image_api.php";
-  const USER_INFO_URL = "https://api1.sstli.com/api/userinfo";
+  const API_BASE_URL = `${FILES_SERVER_URL}/erp/best-employee.php`;
+  const IMAGE_API_URL = `${FILES_SERVER_URL}/erp/image_api.php`;
+  const USER_INFO_URL = `${SSTLI_API_URL}/api/userinfo`;
 
   useEffect(() => {
     fetchUserInfoAndWinner();

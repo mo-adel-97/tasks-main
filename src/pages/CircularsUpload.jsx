@@ -50,15 +50,14 @@ import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
 
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 
 const API_BASE_URL = (
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com"
+  SSTLI_API_URL
 ).replace(/\/+$/, "");
 
 const PRIMARY = "#057445";

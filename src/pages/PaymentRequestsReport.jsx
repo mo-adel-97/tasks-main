@@ -51,10 +51,11 @@ import StudentOperationsDialog from "../components/StudentOperationsDialog";
 import PaymentOrderDialog from "../components/PaymentOrderDialog";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL, SSTLI_SITE_URL } from "../config/apiUrls";
 
 
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -941,7 +942,7 @@ export default function PaymentRequestsReport() {
       });
       return;
     }
-    const url = `https://sstli.com/arc/api/view.php?nationalId=${encodeURIComponent(row.nationalId)}&billCode=${encodeURIComponent(row.code)}`;
+    const url = `${SSTLI_SITE_URL}/arc/api/view.php?nationalId=${encodeURIComponent(row.nationalId)}&billCode=${encodeURIComponent(row.code)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setMenuAnchor(null);
   };

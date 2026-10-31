@@ -26,6 +26,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 const callTypeLabels = {
   0: 'استفسار عام',
@@ -267,7 +268,7 @@ const [userFilter, setUserFilter] = useState('');
 
         try {
           const response = await axios.get(
-            `https://api1.sstli.com/api/StudyInfo/by-account/${accountGuid}`,
+            `${SSTLI_API_URL}/api/StudyInfo/by-account/${accountGuid}`,
             { timeout: 15000 }
           );
 
@@ -330,13 +331,13 @@ const [userFilter, setUserFilter] = useState('');
       // These three requests run together.
       // The page does not wait for StudyInfo of every call anymore.
       const [callsRes, usersRes, followRes] = await Promise.all([
-        axios.get("https://api1.sstli.com/api/call/all", {
+        axios.get(`${SSTLI_API_URL}/api/call/all`, {
           timeout: 30000
         }),
-        axios.get("https://api1.sstli.com/api/userinfo", {
+        axios.get(`${SSTLI_API_URL}/api/userinfo`, {
           timeout: 20000
         }),
-        axios.get("https://api1.sstli.com/api/followcall", {
+        axios.get(`${SSTLI_API_URL}/api/followcall`, {
           timeout: 20000
         })
       ]);
@@ -381,7 +382,7 @@ const [userFilter, setUserFilter] = useState('');
   const handleDeleteCall = async (callGuid) => {
   if (window.confirm('هل أنت متأكد من حذف هذه المكالمة؟')) {
     try {
-      await axios.delete(`https://api1.sstli.com/api/call/${callGuid}`);
+      await axios.delete(`${SSTLI_API_URL}/api/call/${callGuid}`);
       // Refresh the data after successful deletion
       refreshData();
     } catch (error) {

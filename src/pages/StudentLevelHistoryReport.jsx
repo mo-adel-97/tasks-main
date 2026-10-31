@@ -30,6 +30,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import CloseIcon from "@mui/icons-material/Close";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 /*
   تقرير "سجل تغييرات ملفات الطلاب" (قائمة التقارير):
@@ -38,7 +39,7 @@ import CloseIcon from "@mui/icons-material/Close";
   الفلاتر زي متابعة السداد: الفترة + الفرع (فروع المستخدم) + الدفعة، وفلاتر متقدمة على النتايج.
 */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const API = `${API_BASE_URL}/api/student-level-history`;
 
 const primaryColor = "#057546";

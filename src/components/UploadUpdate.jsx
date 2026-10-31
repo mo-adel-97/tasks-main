@@ -12,8 +12,9 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import Swal from "sweetalert2";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
-const API_BASE = "https://filesregsiteration.sstli.com/erp/update_api.php"; 
+const API_BASE = `${FILES_SERVER_URL}/erp/update_api.php`; 
 // مثال: https://sstli.com/erp/update_api.php
 
 export default function UploadUpdate() {

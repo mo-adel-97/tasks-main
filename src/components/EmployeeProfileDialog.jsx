@@ -56,6 +56,7 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { alpha } from '@mui/material/styles';
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: '#76ae97',
@@ -69,7 +70,7 @@ const COLOR_SCHEME = {
 };
 
 // API URLs
-const HR_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/hr_vacations_permissions.php';
+const HR_API_BASE_URL = `${FILES_SERVER_URL}/erp/hr_vacations_permissions.php`;
 
 const EmployeeProfileDialog = ({ open, onClose, employee, permissions, userImage, branches = [] }) => {
   const [activeTab, setActiveTab] = React.useState(0);

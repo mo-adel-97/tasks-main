@@ -79,14 +79,14 @@ export function useEmployees(isManager) {
 
 // ============================== التقارير ==============================
 
-export function P2PReportsList({ me, onOpenOwnReport }) {
+export function P2PReportsList({ me, onOpenOwnReport, openRequest }) {
   const ui = useUi();
   const fullScreen = useMediaQuery(ui.theme.breakpoints.down("md"));
   const isManager = me?.role === "manager";
   const employees = useEmployees(isManager);
   const [from, setFrom] = useState(monthStart());
   const [to, setTo] = useState(me?.today || "");
-  const [status, setStatus] = useState(isManager ? "submitted" : "all");
+  const [status, setStatus] = useState("all");
   const [employee, setEmployee] = useState("");
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -122,6 +122,12 @@ export function P2PReportsList({ me, onOpenOwnReport }) {
       setOpenLoading(false);
     }
   };
+
+  // فتح تقرير مباشرة من إشعار
+  useEffect(() => {
+    if (isManager && openRequest?.guid) openReport({ guid: openRequest.guid });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openRequest?.guid, openRequest?.key]);
 
   const exportExcel = () => {
     const data = [

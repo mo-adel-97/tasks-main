@@ -78,19 +78,21 @@ import Swal from "sweetalert2";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import StudentStatementDialog2 from "../components/StudentStatementDialog2";
 import LegacyDiplomChangesPanel from "../components/transfer/LegacyDiplomChangesPanel";
-import PriceDiffDialog from "../components/transfer/PriceDiffDialog";
+import PricePendingPanel from "../components/transfer/PricePendingPanel";
+import DiplomSignatureDialog from "../components/transfer/DiplomSignatureDialog";
+import DrawRoundedIcon from "@mui/icons-material/DrawRounded";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL, SSTLI_SITE_URL } from "../config/apiUrls";
 
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const ATTACHMENT_URL =
-  "https://sstli.com/arc/api/view.php";
+  `${SSTLI_SITE_URL}/arc/api/view.php`;
 
 const STATUS_OPTIONS = [
   {
@@ -493,6 +495,20 @@ const TransferRequestsReport = () => {
   const [activeTab, setActiveTab] =
     useState(0);
 
+  // قيد فرق سعر تغيير التخصص بصلاحية منفصلة (transfer-requests-journal): لوحات القيد بتظهر لأصحابها بس
+  const [canJournal, setCanJournal] = useState(false);
+  useEffect(() => {
+    if (!userGuid) return undefined;
+    let alive = true;
+    fetch(`${API_BASE_URL}/api/transfer-requests/access?${new URLSearchParams({ userGuid })}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((r) => alive && setCanJournal(Boolean(r?.canJournal)))
+      .catch(() => alive && setCanJournal(false));
+    return () => {
+      alive = false;
+    };
+  }, [userGuid]);
+
   const [fromDate, setFromDate] =
     useState(today());
 
@@ -826,6 +842,11 @@ const TransferRequestsReport = () => {
           ),
           priceBranchName: String(
             pick(row, ["PriceBranchName", "priceBranchName"]) ?? ""
+          ),
+
+          // نموذج "طلب تغيير تخصص" الموقّع إلكترونيًا
+          signGuid: String(
+            pick(row, ["SignGuid", "signGuid"]) ?? ""
           ),
 
           oldValue,
@@ -1380,31 +1401,23 @@ const TransferRequestsReport = () => {
     }
   };
 
-  // تأكيد تغيير تخصص: نافذة فرق السعر (بتتبع ثيم البرنامج)
-  const [confirmDialog, setConfirmDialog] = useState({ open: false, row: null, data: null, loading: false, submitting: false });
+  // تأكيد تغيير تخصص: عرض نموذج التوقيع الإلكتروني ثم التأكيد (من غير قيد — القيد بصلاحية منفصلة)
+  const [signDialog, setSignDialog] = useState({ open: false, mode: "view", row: null, submitting: false });
 
-  const openDiplomConfirm = async (row) => {
-    setConfirmDialog({ open: true, row, data: null, loading: true, submitting: false });
-    let data = null;
-    try {
-      const params = new URLSearchParams({ userGuid });
-      const previewResponse = await fetch(
-        `${API_BASE_URL}/api/transfer-requests/diplom/${encodeURIComponent(row.requestGuid)}/price-diff?${params}`,
-        { cache: "no-store" }
-      );
-      data = (await readJson(previewResponse))?.data || null;
-    } catch (previewError) {
-      data = { warning: previewError?.message || "تعذر حساب فرق السعر" };
-    }
-    setConfirmDialog((current) => (current.row === row ? { ...current, data, loading: false } : current));
+  const openDiplomConfirm = (row) => setSignDialog({ open: true, mode: "confirm", row, submitting: false });
+
+  const openSignature = () => {
+    closeMenu();
+    if (!menuRow) return;
+    setSignDialog({ open: true, mode: "view", row: menuRow, submitting: false });
   };
 
   const submitDiplomConfirm = async (values) => {
-    const row = confirmDialog.row;
+    const row = signDialog.row;
     if (!row) return;
-    setConfirmDialog((current) => ({ ...current, submitting: true }));
+    setSignDialog((current) => ({ ...current, submitting: true }));
     const ok = await postStatus(row, 1, values);
-    setConfirmDialog((current) => (ok ? { open: false, row: null, data: null, loading: false, submitting: false } : { ...current, submitting: false }));
+    setSignDialog((current) => (ok ? { open: false, mode: "view", row: null, submitting: false } : { ...current, submitting: false }));
   };
 
   const changeStatus =
@@ -1424,7 +1437,7 @@ const TransferRequestsReport = () => {
 
       // تأكيد تغيير تخصص => نافذة فرق السعر
       if (status === 1 && !isBranch) {
-        await openDiplomConfirm(row);
+        openDiplomConfirm(row);
         return;
       }
 
@@ -2376,7 +2389,11 @@ const TransferRequestsReport = () => {
           </Box>
         </Paper>
 
-        {activeTab === 1 && (
+        {activeTab === 1 && canJournal && (
+          <PricePendingPanel apiBaseUrl={API_BASE_URL} userGuid={userGuid} onChanged={loadData} />
+        )}
+
+        {activeTab === 1 && canJournal && (
           <LegacyDiplomChangesPanel
             apiBaseUrl={API_BASE_URL}
             userGuid={userGuid}
@@ -2611,6 +2628,13 @@ const TransferRequestsReport = () => {
             عرض المرفقات
           </MenuItem>
 
+          {menuRow?.type === "diplom" && menuRow?.signGuid ? (
+            <MenuItem onClick={openSignature}>
+              <DrawRoundedIcon sx={{ ml: 1 }} />
+              نموذج التوقيع الإلكتروني
+            </MenuItem>
+          ) : null}
+
           <MenuItem
             onClick={() =>
               changeStatus(1)
@@ -2651,14 +2675,13 @@ const TransferRequestsReport = () => {
           </MenuItem>
         </Menu>
 
-        <PriceDiffDialog
-          open={confirmDialog.open}
-          mode="confirm"
-          data={confirmDialog.data}
-          request={confirmDialog.row}
-          loading={confirmDialog.loading}
-          submitting={confirmDialog.submitting}
-          onClose={() => setConfirmDialog({ open: false, row: null, data: null, loading: false, submitting: false })}
+        <DiplomSignatureDialog
+          open={signDialog.open}
+          mode={signDialog.mode}
+          row={signDialog.row}
+          userGuid={userGuid}
+          submitting={signDialog.submitting}
+          onClose={() => setSignDialog({ open: false, mode: "view", row: null, submitting: false })}
           onSubmit={submitDiplomConfirm}
         />
 

@@ -26,13 +26,14 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SaveIcon from "@mui/icons-material/Save";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 
 
 
 
 // API
-const API_BASE = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
+const API_BASE = `${FILES_SERVER_URL}/erp/student_notes_api.php`;
 
 // مكان ملفات الرفع الحقيقي (ERP Base)
 const FILE_BASE = "http://filesregsiteration.sstli.com/erp";

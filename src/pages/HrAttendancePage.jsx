@@ -62,6 +62,7 @@ import HrBioTimeSyncDialog from "./HrBioTimeSyncDialog";
 import HrBioExcelLinkDialog from "./HrBioExcelLinkDialog";
 import HrDebouncedSearchField from "./HrDebouncedSearchField";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -269,9 +270,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 

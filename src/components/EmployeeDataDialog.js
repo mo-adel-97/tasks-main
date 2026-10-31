@@ -35,11 +35,10 @@ import {
   Smartphone as SmartphoneIcon,
   Badge as BadgeIcon
 } from '@mui/icons-material';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 const HR_API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const EmployeeDataDialog = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -97,7 +96,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
 
   const fetchBranches = async () => {
     try {
-      const response = await fetch('https://api4.sstli.com/api/branches/all', {
+      const response = await fetch(`${SSTLI_API_URL}/api/branches/all`, {
         headers: {
           'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json'
@@ -295,7 +294,7 @@ const EmployeeDataDialog = ({ onSuccess }) => {
         }))
       };
 
-      const response = await fetch('https://filesregsiteration.sstli.com/erp/EmployeeDataDialog.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/erp/EmployeeDataDialog.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

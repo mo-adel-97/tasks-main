@@ -51,6 +51,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import appTheme from '../theme';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 // إنشاء الثيم الجديد باللون #80b49e
 const theme = createTheme(deepmerge(appTheme, {
@@ -337,7 +338,7 @@ const Complaints = () => {
     const fetchEmployees = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://api1.sstli.com/api/userinfo');
+        const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
         const data = await response.json();
         
         const filteredEmployees = data.filter(emp => 
@@ -369,17 +370,17 @@ const Complaints = () => {
         
         if ([0, 1, 2].includes(user.userJop)) {
           // For admins: fetch complaints sent to them
-          const response = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?toUserId=${user.guid}`);
+          const response = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?toUserId=${user.guid}`);
           const data = await response.json();
           setComplaints(data);
         } else {
           // For regular employees: fetch complaints sent to them
-          const incomingResponse = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?toUserId=${user.guid}`);
+          const incomingResponse = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?toUserId=${user.guid}`);
           const incomingData = await incomingResponse.json();
           setComplaints(incomingData);
           
           // Fetch complaints they sent (previous)
-          const previousResponse = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?fromUserId=${user.guid}`);
+          const previousResponse = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?fromUserId=${user.guid}`);
           const previousData = await previousResponse.json();
           setPreviousComplaints(previousData);
         }
@@ -430,7 +431,7 @@ const Complaints = () => {
     setSubmitting(true);
     
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/Post_Compalimient.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -471,15 +472,15 @@ const Complaints = () => {
         
         // Refresh complaints after submission
         if ([0, 1, 2].includes(user.userJop)) {
-          const refreshResponse = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?toUserId=${user.guid}`);
+          const refreshResponse = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?toUserId=${user.guid}`);
           const refreshData = await refreshResponse.json();
           setComplaints(refreshData);
         } else {
-          const incomingResponse = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?toUserId=${user.guid}`);
+          const incomingResponse = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?toUserId=${user.guid}`);
           const incomingData = await incomingResponse.json();
           setComplaints(incomingData);
           
-          const previousResponse = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?fromUserId=${user.guid}`);
+          const previousResponse = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?fromUserId=${user.guid}`);
           const previousData = await previousResponse.json();
           setPreviousComplaints(previousData);
         }
@@ -567,7 +568,7 @@ const Complaints = () => {
         comment: comment
       });
 
-      const response = await fetch(`https://filesregsiteration.sstli.com/Post_Compalimient.php?id=${selectedComplaintRef.current.id}`, {
+      const response = await fetch(`${FILES_SERVER_URL}/Post_Compalimient.php?id=${selectedComplaintRef.current.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

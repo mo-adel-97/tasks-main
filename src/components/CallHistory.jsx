@@ -17,6 +17,7 @@ import {
   Select, InputLabel, FormControl, Collapse, Box
 } from '@mui/material';
 import axios from 'axios';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 export default function CallHistory({ accountGuid, newCall, user, supervisors, salesUsers }){
   const [errors, setErrors] = useState({
@@ -52,9 +53,9 @@ useEffect(() => {
     setLoading(true);
     try {
       const [callsRes, followUpsRes, usersRes] = await Promise.all([
-        axios.get(`https://api1.sstli.com/api/calls/${accountGuid}`),
-        axios.get('https://api1.sstli.com/api/followcall'),
-        axios.get('https://api1.sstli.com/api/userinfo')
+        axios.get(`${SSTLI_API_URL}/api/calls/${accountGuid}`),
+        axios.get(`${SSTLI_API_URL}/api/followcall`),
+        axios.get(`${SSTLI_API_URL}/api/userinfo`)
       ]);
       
       // Enhance users with branch information for supervisors
@@ -62,7 +63,7 @@ useEffect(() => {
         usersRes.data.map(async (user) => {
           if (user.userJop === 9) { // Only for supervisors
             try {
-              const branchRes = await axios.get(`https://api3.sstli.com/api/Trainer/UserBranchForWork`, {
+              const branchRes = await axios.get(`${SSTLI_API_URL}/api/Trainer/UserBranchForWork`, {
                 params: { userGuid: user.guid }
               });
               return {
@@ -100,7 +101,7 @@ useEffect(() => {
     const fetchUpdatedCalls = async () => {
       try {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        const res = await axios.get(`https://api1.sstli.com/api/calls/${accountGuid}`);
+        const res = await axios.get(`${SSTLI_API_URL}/api/calls/${accountGuid}`);
         setCalls(res.data);
       } catch (err) {
         console.error("فشل في جلب المكالمات بعد إضافة جديدة:", err);
@@ -191,8 +192,8 @@ const submitFollowUp = async () => {
   };
 
   try {
-    await axios.post('https://api1.sstli.com/api/callfollowup/add', payload);
-    const followUpsRes = await axios.get('https://api1.sstli.com/api/followcall');
+    await axios.post(`${SSTLI_API_URL}/api/callfollowup/add`, payload);
+    const followUpsRes = await axios.get(`${SSTLI_API_URL}/api/followcall`);
     setFollowUps(followUpsRes.data);
 
     if (followUpStatus === "0") {  // Changed this condition
@@ -258,10 +259,10 @@ const handleUpdateCall = async () => {
       supervisorGuid: editingCall.supervisorGuid || null
     };
 
-    await axios.put(`https://api1.sstli.com/api/call/${editingCall.guid}`, payload);
+    await axios.put(`${SSTLI_API_URL}/api/call/${editingCall.guid}`, payload);
     
     // Refresh calls after update
-    const res = await axios.get(`https://api1.sstli.com/api/calls/${accountGuid}`);
+    const res = await axios.get(`${SSTLI_API_URL}/api/calls/${accountGuid}`);
     setCalls(res.data);
     
     await import('sweetalert2').then(Swal => {

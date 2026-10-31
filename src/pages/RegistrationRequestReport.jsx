@@ -36,13 +36,13 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import Swal from "sweetalert2";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const DARK_BORDER = "#67C99D";
 const DARK_TEXT = "#9BE0C1";

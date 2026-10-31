@@ -23,11 +23,12 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const today = () => new Date().toISOString().slice(0, 10);
 
 const DARK_BORDER = "#67C99D";

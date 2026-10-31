@@ -41,6 +41,7 @@ import {
   useUi
 } from "./p2pShared";
 import P2PToneChip from "./P2PToneChip";
+import P2PThread from "./P2PThread";
 
 function Section({ number, title, children }) {
   const ui = useUi();
@@ -317,9 +318,13 @@ export default function P2PReportView({ report, onChanged }) {
             </Typography>
           </Stack>
         ) : (
-          <Typography color="text.secondary">لم تتم المراجعة بعد.</Typography>
+          <Typography color="text.secondary">
+            {report.status === "sent" ? "أُرسل التقرير للاطلاع دون طلب مراجعة من الإدارة." : "لم تتم المراجعة بعد."}
+          </Typography>
         )}
       </Section>
+
+      <P2PThread number={9} report={report} onChanged={onChanged} />
     </Stack>
   );
 }

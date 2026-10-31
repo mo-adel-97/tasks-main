@@ -42,13 +42,14 @@ import WarningIcon from '@mui/icons-material/Warning';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import SpecialComponent from './SpecialComponent';
 import axios from 'axios';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
-const API_BASE = 'https://api3.sstli.com';
+const API_BASE = SSTLI_API_URL;
 
 // المتأخرات التقديرية للتصدير: تُحسب في الباك بنفس معادلة كارت المتأخرات.
 const ARREARS_API_URL =
-  `${process.env.REACT_APP_API_URL || 'https://api4.sstli.com'}/api/payment-follow/arrears`;
+  `${SSTLI_API_URL}/api/payment-follow/arrears`;
 
 const ARREARS_STATE_LABEL = {
   overdue: 'متأخر',
@@ -59,7 +60,7 @@ const ARREARS_STATE_LABEL = {
   'not-applicable': 'غير منطبق (ليس دبلومًا)',
   'not-found': 'الطالب غير موجود'
 };
-const PHP_BASE = 'https://filesregsiteration.sstli.com';
+const PHP_BASE = FILES_SERVER_URL;
 
 // تعريف اللون الأساسي
 const PRIMARY_COLOR = '#80b49e';
@@ -1211,11 +1212,11 @@ const isStudentPaid = (row) => {
 
   // ✅ API Calls (ثابتة)
 const api = {
-  trainers: `https://api1.sstli.com/api/userinfo`,
-  studentByNational: (nationalId) => `https://api1.sstli.com/api/student/${nationalId}`,
-  statementsByAccount: (guid) => `https://api1.sstli.com/api/studentstatement/${guid}`,
-  trainingFileByAccount: (guid) => `https://api1.sstli.com/api/trainingfile/${guid}`,
-  studyInfoByAccount: (guid) => `https://api1.sstli.com/api/studyinfo/${guid}`,
+  trainers: `${SSTLI_API_URL}/api/userinfo`,
+  studentByNational: (nationalId) => `${SSTLI_API_URL}/api/student/${nationalId}`,
+  statementsByAccount: (guid) => `${SSTLI_API_URL}/api/studentstatement/${guid}`,
+  trainingFileByAccount: (guid) => `${SSTLI_API_URL}/api/trainingfile/${guid}`,
+  studyInfoByAccount: (guid) => `${SSTLI_API_URL}/api/studyinfo/${guid}`,
 
   studentList: (branch, trainer, fromD, toD) =>
     `${API_BASE}/api/Trainer/StudentList?branchGuid=${branch}&trainerGuid=${trainer}&fromDate=${fromD}&toDate=${toD}`,
@@ -1232,7 +1233,7 @@ const api = {
     `${PHP_BASE}/getStudentHistory.php?nationalId=${nationalId}`,
 
   lastOrderPay: (accountGuid) => 
-    `https://api3.sstli.com/api/Trainer/LastOrderPay?accountGuid=${accountGuid}`,
+    `${SSTLI_API_URL}/api/Trainer/LastOrderPay?accountGuid=${accountGuid}`,
 };
 
   // ✅ دالة جديدة لجلب آخر طلب سداد
@@ -1757,7 +1758,7 @@ const handleStatusChange = async (id, status) => {
     }
     setTrainingLoading(true);
     try {
-      const resp = await axios.get(`https://api1.sstli.com/api/studyinfo/${accountGuid}`);
+      const resp = await axios.get(`${SSTLI_API_URL}/api/studyinfo/${accountGuid}`);
       setTrainingFile(resp?.data || []);
     } catch (error) {
       console.error('Error fetching training file', error);

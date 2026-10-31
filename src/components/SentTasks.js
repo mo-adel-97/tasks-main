@@ -23,11 +23,12 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { format } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
-const TASKS_API = "https://api3.sstli.com/api/NewTasks/routes/all";
+const TASKS_API = `${SSTLI_API_URL}/api/NewTasks/routes/all`;
 const ATTACHMENT_API = (taskGuid, attId) =>
-  `https://api3.sstli.com/api/NewTasks/routes/${taskGuid}/attachments/${attId}`;
-const TASK_HISTORY_API = "https://filesregsiteration.sstli.com/GetTaskDetails.php";
+  `${SSTLI_API_URL}/api/NewTasks/routes/${taskGuid}/attachments/${attId}`;
+const TASK_HISTORY_API = `${FILES_SERVER_URL}/GetTaskDetails.php`;
 
 // Utility functions
 const safeArray = (array) => Array.isArray(array) ? array : [];

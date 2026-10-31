@@ -17,8 +17,9 @@ import {
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import logo from "../images/logo.jpg";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
-const API_URL = "https://filesregsiteration.sstli.com/erp/EmployeeCV.php";
+const API_URL = `${FILES_SERVER_URL}/erp/EmployeeCV.php`;
 const CURRENT_YEAR = 2026;
 
 const safeText = (value) => {

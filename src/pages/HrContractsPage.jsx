@@ -55,6 +55,7 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -262,9 +263,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 

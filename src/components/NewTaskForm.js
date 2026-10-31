@@ -9,9 +9,10 @@ import {
 import axios from "axios";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Swal from "sweetalert2";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
-const API_DEPT_URL = "https://api3.sstli.com/api/Department/Load";
+const API_DEPT_URL = `${SSTLI_API_URL}/api/Department/Load`;
 
 // Define task groups as integers with Arabic labels
 const TASK_GROUPS = [
@@ -24,7 +25,7 @@ const TASK_GROUPS = [
 ];
 
 export default function NewTaskForm() {
-  const TEMPLATE_UPLOAD_URL = "https://filesregsiteration.sstli.com/TaskTemplate.php";
+  const TEMPLATE_UPLOAD_URL = `${FILES_SERVER_URL}/TaskTemplate.php`;
 
   const [error, setError] = useState("");
   const [templateFiles, setTemplateFiles] = useState({});
@@ -87,7 +88,7 @@ export default function NewTaskForm() {
     setForm({ ...form, requiredAttachments: list });
   };
 
-  const BASE_URL = "https://api3.sstli.com/api/NewTasks";
+  const BASE_URL = `${SSTLI_API_URL}/api/NewTasks`;
 
   const handleSubmit = async (e) => {
     console.log("HANDLE SUBMIT CLICKED");

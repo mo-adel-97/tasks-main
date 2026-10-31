@@ -57,6 +57,7 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { alpha } from "@mui/material/styles";
+import { FILES_SERVER_URL, MEETINGS_SERVER_URL, SSTLI_API_URL } from "../../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: "#80b49e",
@@ -104,7 +105,7 @@ const jobTitles = [
   const canCreatePost = ALLOWED_POST_ROLES.includes(Number(userJob));
   
 // Base URL للباكيند
-const API_BASE_URL = "https://filesregsiteration.sstli.com/erp";
+const API_BASE_URL = `${FILES_SERVER_URL}/erp`;
 
 const MeetingRoomTab = () => {
   const [meetings, setMeetings] = useState([]);
@@ -161,7 +162,7 @@ const MeetingRoomTab = () => {
   const fetchDepartments = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://api3.sstli.com/api/Department/Load");
+      const response = await fetch(`${SSTLI_API_URL}/api/Department/Load`);
       const data = await response.json();
       const filteredDepartments = data.filter(
         dept => dept.guid !== "de110cb9-b040-4af0-b303-4e57da831ba0"
@@ -177,7 +178,7 @@ const MeetingRoomTab = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://api1.sstli.com/api/userinfo");
+      const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -380,7 +381,7 @@ const handleStartMeeting = () => {
     const encodedUserData = btoa(encodeURIComponent(JSON.stringify(userData)));
     
     // اباصي البيانات في الـ URL
-    const meetingUrl = `https://meetings.sstli.com/meeting/${currentMeeting.meeting_id}?user=${encodedUserData}`;
+    const meetingUrl = `${MEETINGS_SERVER_URL}/meeting/${currentMeeting.meeting_id}?user=${encodedUserData}`;
     
     window.open(meetingUrl, '_blank');
     setJoinMeetingDialog(false);
@@ -474,7 +475,7 @@ const copyToClipboard = (text) => {
     };
     const encodedUserData = btoa(encodeURIComponent(JSON.stringify(userData)));
     
-    meetingLink = `https://meetings.sstli.com/meeting/${meetingId}?user=${encodedUserData}`;
+    meetingLink = `${MEETINGS_SERVER_URL}/meeting/${meetingId}?user=${encodedUserData}`;
   }
   
   navigator.clipboard.writeText(meetingLink);

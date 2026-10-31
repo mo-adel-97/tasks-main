@@ -47,8 +47,9 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { SSTLI_API_URL, SSTLI_SITE_URL } from "../config/apiUrls";
 
-const DEFAULT_API_BASE_URL = "https://api4.sstli.com";
+const DEFAULT_API_BASE_URL = SSTLI_API_URL;
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -2174,7 +2175,7 @@ const openAdmissionPrint = async (printData) => {
   const rows = Array.isArray(data.rows) && data.rows.length ? data.rows : [];
 
   const refundPolicyUrl =
-    "https://sstli.com/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/";
+    `${SSTLI_SITE_URL}/%d8%b3%d9%8a%d8%a7%d8%b3%d9%8a%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d8%aa%d8%b1%d8%af%d8%a7%d8%af-%d8%a7%d9%84%d9%85%d8%a7%d9%84%d9%8a/`;
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
     refundPolicyUrl

@@ -39,6 +39,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { SSTLI_SITE_URL } from "../config/apiUrls";
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -794,7 +795,7 @@ export default function PaymentOrderDialog({
     const nationalId = data?.nationalId || order?.nationalId || "";
     const code = data?.code || order?.code || "";
     if (!nationalId || !code) return "";
-    return `https://sstli.com/arc/api/view.php?nationalId=${encodeURIComponent(nationalId)}&billCode=${encodeURIComponent(code)}`;
+    return `${SSTLI_SITE_URL}/arc/api/view.php?nationalId=${encodeURIComponent(nationalId)}&billCode=${encodeURIComponent(code)}`;
   }, [data, order]);
 
   // Lazy-mount guard: this dialog is mounted eagerly (but closed) as soon

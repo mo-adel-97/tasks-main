@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { markGuarded, trackPage } from '../security/activityTracker';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
-const ME_URL = 'https://api1.sstli.com/api/userinfo/me';
+const ME_URL = `${SSTLI_API_URL}/api/userinfo/me`;
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  'https://api4.sstli.com';
+  SSTLI_API_URL;
 
 const SIDEBAR_CACHE_KEY = 'sstli_sidebar_config_v4';
 

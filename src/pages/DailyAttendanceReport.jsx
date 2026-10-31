@@ -63,6 +63,7 @@ import {
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Document, Paragraph, Packer, AlignmentType, HeadingLevel, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, WidthType, BorderStyle } from 'docx';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 // Color palette based on #80b49e
@@ -231,7 +232,7 @@ const DailyAttendanceReport = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user || !user.guid) throw new Error('User GUID not found');
 
-      const response = await fetch(`https://api3.sstli.com/api/Trainer/UserBranchForWork?userGuid=${user.guid}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/Trainer/UserBranchForWork?userGuid=${user.guid}`);
       if (!response.ok) throw new Error('Failed to fetch branch name');
       const data = await response.json();
       setBranchName(data?.[0]?.brEName ?? 'غير محدد');
@@ -246,7 +247,7 @@ const DailyAttendanceReport = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user || !user.branchForWork) throw new Error('Branch information not found');
 
-      const response = await fetch(`https://api1.sstli.com/api/StudentStudyInfo/by-branch/${user.branchForWork}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${user.branchForWork}`);
       if (!response.ok) throw new Error('Failed to fetch students');
       const data = await response.json();
       setStudents(data);
@@ -259,7 +260,7 @@ const DailyAttendanceReport = () => {
 
   const fetchUsersMap = async () => {
     try {
-      const res = await fetch('https://api1.sstli.com/api/userinfo');
+      const res = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       if (!res.ok) throw new Error('Failed to fetch users');
       const users = await res.json();
       const map = {};
@@ -282,7 +283,7 @@ const DailyAttendanceReport = () => {
         fetchUsersMap()
       ]);
 
-      const response = await fetch('https://filesregsiteration.sstli.com/get_attendance.php');
+      const response = await fetch(`${FILES_SERVER_URL}/get_attendance.php`);
       const result = await response.json();
 
       if (result.success && studentsData.length > 0) {
@@ -613,7 +614,7 @@ const DailyAttendanceReport = () => {
   const handleSendToWhatsApp = async (student) => {
     if (!student) return;
     try {
-      const response = await fetch(`https://api1.sstli.com/api/student/${student.national_id}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/student/${student.national_id}`);
       if (!response.ok) throw new Error('Failed to fetch student data');
       const studentData = await response.json();
 

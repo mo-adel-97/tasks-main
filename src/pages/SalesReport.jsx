@@ -58,13 +58,13 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import SalesInvoiceDialog from "../components/SalesInvoiceDialog";
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import { excelBlobFromCsv } from "../utils/excelExport";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";

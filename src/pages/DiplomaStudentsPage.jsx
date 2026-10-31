@@ -72,15 +72,15 @@ import RegisterDocumentDialog
 import FilterableDataGrid from "../components/columnFilters/FilterableDataGrid";
 import { withVipNameColumn } from "../components/VipBadge";
 import { useVipLookup } from "../utils/receptionExtras";
+import { SSTLI_API_URL, SSTLI_SITE_URL } from "../config/apiUrls";
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const ATTACHMENTS_BASE_URL =
-  "https://sstli.com/arc-api/images_view.php";
+  `${SSTLI_SITE_URL}/arc-api/images_view.php`;
 
 const ZERO_GUID =
   "00000000-0000-0000-0000-000000000000";

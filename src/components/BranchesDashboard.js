@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 const COLORS = [
   "#1976d2", "#fbc02d", "#00bfae", "#ef5350", "#8e24aa", "#43a047",
@@ -41,7 +42,7 @@ const BranchesDashboardReport = () => {
     const from = fromDate.format("YYYY-MM-DD");
     const to = toDate.format("YYYY-MM-DD");
     fetch(
-      `https://api3.sstli.com/api/Trainer/BranchBocketMoney?fromDate=${from}&toDate=${to}`
+      `${SSTLI_API_URL}/api/Trainer/BranchBocketMoney?fromDate=${from}&toDate=${to}`
     )
       .then(res => res.json())
       .then(result => {

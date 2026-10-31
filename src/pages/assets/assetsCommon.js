@@ -1,8 +1,9 @@
 // إدارة الأصول: ثوابت ومساعدات مشتركة بين الشاشات (api/assets — AssetsController).
 import { useEffect, useState } from "react";
 import { getUserGuid, readJson } from "../tasks/tasksCommon";
+import { SSTLI_API_URL } from "../../config/apiUrls";
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+export const API_BASE_URL = SSTLI_API_URL;
 export const ASSETS_API = `${API_BASE_URL}/api/assets`;
 
 export { getUserGuid };

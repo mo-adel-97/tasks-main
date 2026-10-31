@@ -50,6 +50,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // Print/export output must always read as a clean, official document —
 // white paper with dark ink — no matter which theme (dark or light) the
@@ -100,8 +101,7 @@ const PRINT_THEME = createTheme({
 });
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const TEMPLATES = [
   {

@@ -60,6 +60,7 @@ import {
 } from "@mui/icons-material";
 import { API_BASE, apiPost, courseApi } from "../config/apiConfig";
 import { LEVEL_ORDER, levelRank, COURSES_DATA } from "../constants/courseData";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 // ===== المكونات المساعدة =====
@@ -1459,7 +1460,7 @@ const editExamFromCombination = (combination) => {
 
   // استخدام branch المستخدم بدلاً من الرابط الثابت
   const STUDENTS_API = userBranch?.guid 
-    ? `https://api1.sstli.com/api/StudentStudyInfo/by-branch/${userBranch.guid}`
+    ? `${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${userBranch.guid}`
     : null;
 
   /* تحميل الدبلومات/المستويات */

@@ -48,6 +48,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import InfoIcon from "@mui/icons-material/Info";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -62,8 +63,7 @@ const warningColor = "#ed6c02";
 const DARK_BORDER = "#67C99D";
 const DARK_TEXT = "#9BE0C1";
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "https://api4.sstli.com/api";
+const API_BASE_URL = `${SSTLI_API_URL}/api`;
 
 // صلاحية الصفحة أصبحت من Form_Name + User_Premision.
 

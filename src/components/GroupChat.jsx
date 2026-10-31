@@ -38,6 +38,7 @@ import {
 } from '@mui/icons-material';
 import EmojiPicker from 'emoji-picker-react';
 import notificationSoundFile from "../../src/notification-sound-effect-372475.mp3";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 // تعريف الألوان الجديدة
 const colorPalette = {
@@ -102,7 +103,7 @@ const GroupChat = ({
 
     const fetchUserGroups = async () => {
       try {
-        const response = await fetch(`https://filesregsiteration.sstli.com/get_user_groups.php?user_guid=${currentUser.guid}`);
+        const response = await fetch(`${FILES_SERVER_URL}/get_user_groups.php?user_guid=${currentUser.guid}`);
         const data = await response.json();
         
         if (data.success) {
@@ -126,7 +127,7 @@ const GroupChat = ({
     
     const fetchGroupMembers = async () => {
       try {
-        const response = await fetch(`https://filesregsiteration.sstli.com/get_group_members.php?group_id=${selectedGroup.group_id}`);
+        const response = await fetch(`${FILES_SERVER_URL}/get_group_members.php?group_id=${selectedGroup.group_id}`);
         const data = await response.json();
         if (data.success) {
           setGroupMembers(data.members);
@@ -160,7 +161,7 @@ const GroupChat = ({
     const fetchUpdates = async () => {
       try {
         const response = await fetch(
-          `https://filesregsiteration.sstli.com/get_user_groups.php?user_guid=${currentUser.guid}`
+          `${FILES_SERVER_URL}/get_user_groups.php?user_guid=${currentUser.guid}`
         );
         const groupsData = await response.json();
   
@@ -202,14 +203,14 @@ const GroupChat = ({
     if (!groupId || !currentUser) return;
   
     try {
-      const response = await fetch(`https://filesregsiteration.sstli.com/get_group_messages.php?group_id=${groupId}&user_guid=${currentUser.guid}`);
+      const response = await fetch(`${FILES_SERVER_URL}/get_group_messages.php?group_id=${groupId}&user_guid=${currentUser.guid}`);
       const data = await response.json();
       
       if (data.success) {
         const processedMessages = data.messages.map(msg => ({
           ...msg,
           created_at: new Date(msg.created_at),
-          file_url: msg.file_url || (msg.file_path ? `https://filesregsiteration.sstli.com/${msg.file_path}` : null),
+          file_url: msg.file_url || (msg.file_path ? `${FILES_SERVER_URL}/${msg.file_path}` : null),
           is_read: msg.is_read || 0,
           seen_by: msg.seen_by || [],
           not_seen_by: msg.not_seen_by || []
@@ -226,7 +227,7 @@ const GroupChat = ({
     if (!groupId || !currentUser?.guid) return;
   
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/mark_group_messages_as_read.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/mark_group_messages_as_read.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -267,7 +268,7 @@ const GroupChat = ({
     if (!groupId || !currentUser?.guid) return;
   
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/delete_read_messages.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/delete_read_messages.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -307,7 +308,7 @@ const GroupChat = ({
     }
     
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/create_group.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/create_group.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -322,7 +323,7 @@ const GroupChat = ({
       const data = await response.json();
       
       if (data.success) {
-        const groupsResponse = await fetch(`https://filesregsiteration.sstli.com/get_user_groups.php?user_guid=${currentUser.guid}`);
+        const groupsResponse = await fetch(`${FILES_SERVER_URL}/get_user_groups.php?user_guid=${currentUser.guid}`);
         const groupsData = await groupsResponse.json();
         
         if (groupsData.success) {
@@ -391,7 +392,7 @@ const GroupChat = ({
       setAttachments([]);
       setAudioChunks([]);
   
-      const response = await fetch('https://filesregsiteration.sstli.com/send_group_message.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/send_group_message.php`, {
         method: 'POST',
         body: formData
       });
@@ -404,7 +405,7 @@ const GroupChat = ({
             ? {
                 ...msg,
                 id: result.message_id,
-                file_url: result.file_url || (result.file_path ? `https://filesregsiteration.sstli.com/${result.file_path}` : null),
+                file_url: result.file_url || (result.file_path ? `${FILES_SERVER_URL}/${result.file_path}` : null),
                 file_path: result.file_path || null
               }
             : msg
@@ -449,7 +450,7 @@ const GroupChat = ({
     if (!selectedGroup || !currentUser) return;
   
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/leave_group.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/leave_group.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -463,7 +464,7 @@ const GroupChat = ({
       const data = await response.json();
   
       if (data.success) {
-        const groupsResponse = await fetch(`https://filesregsiteration.sstli.com/get_user_groups.php?user_guid=${currentUser.guid}`);
+        const groupsResponse = await fetch(`${FILES_SERVER_URL}/get_user_groups.php?user_guid=${currentUser.guid}`);
         const groupsData = await groupsResponse.json();
         
         if (groupsData.success) {
@@ -485,7 +486,7 @@ const GroupChat = ({
     if (!selectedGroup || !currentUser) return;
   
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/promote_to_admin.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/promote_to_admin.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -500,7 +501,7 @@ const GroupChat = ({
       const data = await response.json();
   
       if (data.success) {
-        const membersResponse = await fetch(`https://filesregsiteration.sstli.com/get_group_members.php?group_id=${selectedGroup.group_id}`);
+        const membersResponse = await fetch(`${FILES_SERVER_URL}/get_group_members.php?group_id=${selectedGroup.group_id}`);
         const membersData = await membersResponse.json();
         
         if (membersData.success) {
@@ -533,7 +534,7 @@ const GroupChat = ({
     if (!selectedUserToAdd || !selectedGroup) return;
   
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/add_group_member.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/add_group_member.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -548,7 +549,7 @@ const GroupChat = ({
       const data = await response.json();
   
       if (data.success) {
-        const membersResponse = await fetch(`https://filesregsiteration.sstli.com/get_group_members.php?group_id=${selectedGroup.group_id}`);
+        const membersResponse = await fetch(`${FILES_SERVER_URL}/get_group_members.php?group_id=${selectedGroup.group_id}`);
         const membersData = await membersResponse.json();
         
         if (membersData.success) {
@@ -572,7 +573,7 @@ const GroupChat = ({
           
           setMessages(prev => [...prev, tempNotification]);
           
-          await fetch('https://filesregsiteration.sstli.com/send_group_message.php', {
+          await fetch(`${FILES_SERVER_URL}/send_group_message.php`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -606,7 +607,7 @@ const GroupChat = ({
     if (!selectedGroup || !currentUser) return;
   
     try {
-      const response = await fetch('https://filesregsiteration.sstli.com/remove_group_member.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/remove_group_member.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -621,7 +622,7 @@ const GroupChat = ({
       const data = await response.json();
   
       if (data.success) {
-        const membersResponse = await fetch(`https://filesregsiteration.sstli.com/get_group_members.php?group_id=${selectedGroup.group_id}`);
+        const membersResponse = await fetch(`${FILES_SERVER_URL}/get_group_members.php?group_id=${selectedGroup.group_id}`);
         const membersData = await membersResponse.json();
         
         if (membersData.success) {

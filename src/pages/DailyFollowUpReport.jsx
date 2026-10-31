@@ -73,6 +73,7 @@ import {
 import DiplomaStatistics from '../components/DiplomaStatistics';
 import ComplaintsSuggestionsTasks from '../components/ComplaintsSuggestionsTasks';
 import appTheme from '../theme';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 // Professional theme with Cairo font and updated color scheme
 const theme = createTheme(deepmerge(appTheme, {
   typography: {
@@ -1655,7 +1656,7 @@ const [complaintsData, setComplaintsData] = useState({
 useEffect(() => {
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/userinfo');
+      const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -1726,7 +1727,7 @@ const submitReport = async () => {
       suggestions: complaintsData.suggestions.filter(s => s.trim() !== '')
     };
 
-    const response = await fetch('https://filesregsiteration.sstli.com/save_report.php', {
+    const response = await fetch(`${FILES_SERVER_URL}/save_report.php`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

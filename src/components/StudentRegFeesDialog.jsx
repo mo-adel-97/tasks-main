@@ -36,6 +36,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 const primaryColor = "#80b49e";
 // Always-visible focus-green outline (never hover/focus-only) for every field
@@ -318,7 +319,7 @@ const StudentRegFeesDialog = ({
   open,
   onClose,
   student,
-  apiBaseUrl = "https://api4.sstli.com",
+  apiBaseUrl = SSTLI_API_URL,
   onSaved
 }) => {
   const theme = useTheme();

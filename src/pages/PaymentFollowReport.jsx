@@ -78,13 +78,18 @@ import {
   ContactAssignLockButton,
   ContactAssignLockDialog
 } from "../components/ContactAssignLock";
+import HubIcon from "@mui/icons-material/Hub";
+import {
+  useCentralDistribution,
+  CentralDistributionDialog
+} from "../components/CentralDistribution";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 const pad2 = (value) =>
   String(value).padStart(2, "0");
@@ -1549,6 +1554,18 @@ isDark
   });
   const [lockDialogOpen, setLockDialogOpen] =
     useState(false);
+
+  // التوزيع بقى مركزي: المشرف بيحدد مسؤولي الاتصال بس، وصاحب صلاحية "توزيع مسئولي الاتصال المركزي" بيوزع.
+  const central = useCentralDistribution({
+    apiBase: API_BASE_URL,
+    userGuid
+  });
+  const [centralOpen, setCentralOpen] =
+    useState(false);
+  const [savingNominations, setSavingNominations] =
+    useState(false);
+  const [nominationInfo, setNominationInfo] =
+    useState(null);
 
   const [columnFilters, setColumnFilters] =
     useState({
@@ -3179,10 +3196,63 @@ isDark
       return;
     }
 
-    await loadDistributionStatus();
     setDistributionPreview(null);
     setDistributionStep(1);
+    setNominationInfo(null);
     setDistributionDialogOpen(true);
+
+    // المسؤولون اللي اتحددوا قبل كده للفرع
+    setLoadingDistribution(true);
+    try {
+      const params = new URLSearchParams({ userGuid, branchGuid: branch.guid });
+      const response = await fetch(
+        `${API_BASE_URL}/api/payment-follow/central/nominations?${params.toString()}`
+      );
+      const result = await readJson(response);
+      const saved = {};
+      (result?.data || []).forEach((item) => {
+        saved[item.guid] = { selected: true, role: item.role || "primary" };
+      });
+      setDistributionSelections(saved);
+      setNominationInfo(result?.updatedBy ? { by: result.updatedBy, at: result.updatedAt } : null);
+    } catch (error) {
+      await showError(error?.message || "تعذر تحميل مسؤولي التوزيع المحددين");
+    } finally {
+      setLoadingDistribution(false);
+    }
+  };
+
+  const saveNominations = async () => {
+    setSavingNominations(true);
+    setLoadingDistribution(true);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/payment-follow/central/nominations`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userGuid,
+            branchGuid: branch.guid,
+            branchName: branch.name || "",
+            trainers: selectedDistributionTrainers
+          })
+        }
+      );
+      const result = await readJson(response);
+      setDistributionDialogOpen(false);
+      await Swal.fire({
+        icon: "success",
+        title: "تم الحفظ",
+        text: `${result?.message || "تم حفظ مسؤولي التوزيع"}. سيتم التوزيع مركزيًا من الإدارة.`,
+        confirmButtonText: "حسنًا"
+      });
+    } catch (error) {
+      await showError(error?.message || "تعذر حفظ مسؤولي التوزيع");
+    } finally {
+      setSavingNominations(false);
+      setLoadingDistribution(false);
+    }
   };
 
   const closeDistributionDialog = () => {
@@ -3213,50 +3283,6 @@ isDark
       ...current,
       [trainerGuid]: { selected: true, role }
     }));
-  };
-
-  const previewDistribution = async () => {
-    if (selectedDistributionTrainers.length === 0) {
-      await showError("برجاء اختيار مدرب واحد على الأقل");
-      return;
-    }
-
-    setLoadingDistribution(true);
-    setPreviewingDistribution(true);
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/payment-follow/monthly-distribution/preview`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            userGuid,
-            branchGuid: branch.guid,
-            branchName: branch.name || "",
-            trainers: selectedDistributionTrainers
-          })
-        }
-      );
-
-      const result = await readJson(response);
-
-      setDistributionPreview(
-        result?.data || null
-      );
-
-      setDistributionStep(2);
-    } catch (error) {
-      await showError(
-        error?.message ||
-        "تعذر تجهيز معاينة التوزيع"
-      );
-    } finally {
-      setPreviewingDistribution(false);
-      setLoadingDistribution(false);
-    }
   };
 
   const openDistributionConfirmation = () => {
@@ -4595,8 +4621,7 @@ const exportExcel = async () => {
                 disabled={
                   !branch?.guid ||
                   contactLock.locked ||
-                  isExcludedDistributionBranch(branch?.name) ||
-                  distributionStatus?.canExecute === false
+                  isExcludedDistributionBranch(branch?.name)
                 }
                 sx={uiLayout.withUiSx({
                   fontFamily: "Cairo",
@@ -4604,9 +4629,27 @@ const exportExcel = async () => {
                   background: "linear-gradient(135deg,#057546,#034d31)"
                 }, uiLayout.buttonSx)}
               >
-                تعيين مسؤولي الاتصال للشهر الحالي
+                تحديد مسؤولي التوزيع
               </Button>
 
+              {central.canCentral && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<HubIcon />}
+                  onClick={() => setCentralOpen(true)}
+                  sx={uiLayout.withUiSx({
+                    fontFamily: "Cairo",
+                    fontWeight: 900,
+                    color: "#b77900",
+                    borderColor: "rgba(215,165,31,.6)"
+                  }, uiLayout.buttonSx)}
+                >
+                  التوزيع المركزي
+                </Button>
+              )}
+
+              {central.canCentral && (<>
               <Chip
                 size="small"
                 label={`المحدد للتوزيع: ${selectedCustomStudents.length}`}
@@ -4656,13 +4699,14 @@ const exportExcel = async () => {
               >
                 توزيع الطلاب المحددين ({selectedCustomStudents.length})
               </Button>
+              </>)}
 
               <ContactAssignLockButton
                 lock={contactLock}
                 onClick={() => setLockDialogOpen(true)}
               />
 
-              {distributionStatus?.message && (
+              {central.canCentral && distributionStatus?.message && (
                 <Chip
                   label={distributionStatus.message}
                   color={distributionStatus.canExecute ? "success" : "warning"}
@@ -5276,6 +5320,16 @@ const exportExcel = async () => {
           </MenuItem>
         </Menu>
 
+        <CentralDistributionDialog
+          open={centralOpen}
+          onClose={() => setCentralOpen(false)}
+          apiBase={API_BASE_URL}
+          userGuid={userGuid}
+          onExecuted={(done) => {
+            if (done?.guid && done.guid === branch?.guid) loadDistributionStatus();
+          }}
+        />
+
         <ContactAssignLockDialog
 
           open={lockDialogOpen}
@@ -5586,7 +5640,7 @@ const exportExcel = async () => {
             <Stack direction="row" spacing={1} alignItems="center">
               <Groups2Icon sx={{ color: "#fff", fontSize: 34 }} />
               <Box>
-                <Typography sx={{ fontFamily: "Cairo", fontWeight: 900 }}>التعيين الجماعي لمسؤولي الاتصال</Typography>
+                <Typography sx={{ fontFamily: "Cairo", fontWeight: 900 }}>تحديد مسؤولي الاتصال للتوزيع المركزي</Typography>
                 <Typography sx={{ fontFamily: "Cairo", fontSize: "0.78rem", color: "rgba(255,255,255,.82)" }}>{branch?.name || ""}</Typography>
               </Box>
             </Stack>
@@ -5603,14 +5657,7 @@ const exportExcel = async () => {
               maxHeight: "72vh"
             }}
           >
-            {distributionStatus?.canExecute === false ? (
-              <Paper elevation={0} sx={{ p: 2, borderRadius: 3, border: "1px solid #f0b8b8", background: "#fff5f5" }}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <WarningAmberIcon color="error" />
-                  <Typography sx={{ fontFamily: "Cairo", fontWeight: 900, color: "#9b1c1c" }}>{distributionStatus?.message}</Typography>
-                </Stack>
-              </Paper>
-            ) : distributionStep === 1 ? (
+            {distributionStep === 1 ? (
               <>
                 <Paper
                   elevation={0}
@@ -5630,7 +5677,7 @@ const exportExcel = async () => {
                       color: "#034d31"
                     }}
                   >
-                    اختر المدربين المشاركين وحدد نوع كل مدرب
+                    اختر مسؤولي الاتصال الذين سيدخلون التوزيع وحدد نوع كل منهم
                   </Typography>
 
                   <Typography
@@ -5641,9 +5688,15 @@ const exportExcel = async () => {
                       color: "text.secondary"
                     }}
                   >
-                    الأساسي وزنه 100%، والمتعاون وزنه 50%.
-                    سيتم توزيع الطلاب بالتساوي النسبي.
+                    الأساسي وزنه 100%، والمتعاون وزنه 50%. يتم التوزيع مركزيًا من الإدارة،
+                    وتُوزَّع كل فئة التزام بالسداد على المسؤولين المحددين بالتساوي.
                   </Typography>
+                  {nominationInfo?.by && (
+                    <Typography sx={{ mt: 0.5, fontFamily: "Cairo", fontSize: "0.78rem", color: "text.secondary" }}>
+                      آخر تحديد: {nominationInfo.by}
+                      {nominationInfo.at ? ` — ${new Date(nominationInfo.at).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}` : ""}
+                    </Typography>
+                  )}
                 </Paper>
 
                 {excludedTrainers.length > 0 && (
@@ -6081,8 +6134,8 @@ const exportExcel = async () => {
 
           <DialogActions sx={uiLayout.withUiSx({ p: 2, gap: 1 }, uiLayout.dialogActionsSx)}>
             <Button variant="outlined" color="inherit" onClick={distributionStep === 2 ? () => setDistributionStep(1) : closeDistributionDialog} disabled={loadingDistribution} sx={uiLayout.withUiSx({ fontFamily: "Cairo", fontWeight: 800 }, uiLayout.buttonSx)}>{distributionStep === 2 ? "رجوع" : "إلغاء"}</Button>
-            {distributionStatus?.canExecute !== false && distributionStep === 1 && (
-              <Button variant="contained" startIcon={<PreviewIcon />} onClick={previewDistribution} disabled={loadingDistribution || selectedDistributionTrainers.length === 0} sx={uiLayout.withUiSx({ background: "#057546", fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}>معاينة التوزيع</Button>
+            {distributionStep === 1 && (
+              <Button variant="contained" startIcon={savingNominations ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />} onClick={saveNominations} disabled={loadingDistribution} sx={uiLayout.withUiSx({ background: "#057546", fontFamily: "Cairo", fontWeight: 900 }, uiLayout.buttonSx)}>حفظ المسؤولين المحددين ({selectedDistributionTrainers.length})</Button>
             )}
             {distributionStatus?.canExecute !== false && distributionStep === 2 && (
               <Button

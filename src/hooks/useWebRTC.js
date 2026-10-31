@@ -1,8 +1,9 @@
 // hooks/useWebRTC.js
 import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+import { SIGNALING_SERVER_URL } from "../config/apiUrls";
 
-const SOCKET_SERVER = 'https://192.168.50.169:8443';
+const SOCKET_SERVER = SIGNALING_SERVER_URL;
 
 export const useWebRTC = (meetingId, currentUser) => {
   const [socket, setSocket] = useState(null);

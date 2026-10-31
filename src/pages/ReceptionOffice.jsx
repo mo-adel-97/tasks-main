@@ -111,9 +111,10 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import AddStudentDialog from "../components/AddStudentDialog";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
-const API_BASE_URL = "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 
 const RECEPTION_PERMISSION_TTL_MS = 30 * 1000;
 const receptionPermissionCache = new Map();

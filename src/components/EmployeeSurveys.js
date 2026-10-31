@@ -43,6 +43,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
 import { groupBySection, stripSection } from '../utils/questionSections';
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 
 // الألوان الأساسية
@@ -80,7 +81,7 @@ const fetchActiveSurveys = async (user) => {
     
     // استخدام الاسم بدل الجيUID
     const userName = user.fullName || user.userName || 'غير معروف';
-    const response = await axios.get(`https://filesregsiteration.sstli.com/erp/survey_api.php/user_eligible_surveys?user_name=${encodeURIComponent(userName)}`);
+    const response = await axios.get(`${FILES_SERVER_URL}/erp/survey_api.php/user_eligible_surveys?user_name=${encodeURIComponent(userName)}`);
     
     // فلتر علشان نجيب بس الاستبيانات اللي اليوزر الحالي موجود في target_users
     const activeSurveys = response.data.filter(survey => {
@@ -103,7 +104,7 @@ const fetchActiveSurveys = async (user) => {
     console.error('Error fetching active surveys:', error);
     // في حالة الخطأ، استخدم الطريقة القديمة كـ fallback
     try {
-      const fallbackResponse = await axios.get('https://filesregsiteration.sstli.com/erp/survey_api.php/active_surveys');
+      const fallbackResponse = await axios.get(`${FILES_SERVER_URL}/erp/survey_api.php/active_surveys`);
       
       // نفس الفلتر علشان الـ fallback
       const filteredSurveys = fallbackResponse.data.filter(survey => {
@@ -132,7 +133,7 @@ const fetchSubmittedSurveys = async (user) => {
   try {
     // استخدام الاسم بدل الجيUID
     const userName = user.fullName || user.userName || 'غير معروف';
-    const response = await axios.get(`https://filesregsiteration.sstli.com/erp/survey_api.php/user_submitted_surveys?user_name=${encodeURIComponent(userName)}`);
+    const response = await axios.get(`${FILES_SERVER_URL}/erp/survey_api.php/user_submitted_surveys?user_name=${encodeURIComponent(userName)}`);
     
     // فلتر علشان نجيب بس الاستبيانات اللي اليوزر الحالي كان موجود في target_users
     const filteredSubmitted = response.data.filter(survey => {
@@ -210,7 +211,7 @@ const fetchSubmittedSurveys = async (user) => {
         responses: responses
       };
 
-      await axios.post('https://filesregsiteration.sstli.com/erp/survey_api.php/submit_response', responseData);
+      await axios.post(`${FILES_SERVER_URL}/erp/survey_api.php/submit_response`, responseData);
       
       setSubmitSuccess(true);
       setTimeout(() => {

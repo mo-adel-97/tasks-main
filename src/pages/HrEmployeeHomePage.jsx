@@ -42,6 +42,7 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import PersonOffRoundedIcon from "@mui/icons-material/PersonOffRounded";
 import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
 import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import ApartmentRoundedIcon from "@mui/icons-material/ApartmentRounded";
@@ -52,7 +53,6 @@ import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsActiveRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
 import HistoryToggleOffRoundedIcon from "@mui/icons-material/HistoryToggleOffRounded";
@@ -87,6 +87,7 @@ import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import TodayRoundedIcon from "@mui/icons-material/TodayRounded";
 import HrOrgOverviewPanel from "./components/HrOrgOverviewPanel";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 // ============================================================
 // RTL dialog form system
@@ -309,7 +310,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 /* =========================================================
    DIRECTION / TEXT ALIGN
@@ -1188,196 +1189,6 @@ function ProfileDetailsDialog({
 }
 
 
-function HomeAlertDialog({ alert, open, acknowledging, onAcknowledge }) {
-  const tone = String(alert?.alertType || "info").toLowerCase();
-  const toneColor =
-    tone === "error"
-      ? "#d94a4a"
-      : tone === "warning"
-        ? "#d79a2b"
-        : tone === "success"
-          ? "#2f9b68"
-          : "#4d8fe8";
-
-  return (
-    <Dialog
-      open={open}
-      onClose={() => {}}
-      disableEscapeKeyDown
-      fullWidth
-      maxWidth="xs"
-      dir="rtl"
-      sx={{
-        zIndex: (theme) => theme.zIndex.modal + 30,
-        "& .MuiBackdrop-root": {
-          backdropFilter: "blur(4px)",
-          backgroundColor: "rgba(0,0,0,.58)"
-        }
-      }}
-      PaperProps={{
-        sx: (theme) => ({
-          width: { xs: "calc(100% - 24px)", sm: "min(480px, calc(100% - 40px))" },
-          maxWidth: "480px !important",
-          m: { xs: 1.5, sm: 2.5 },
-          borderRadius: 3.2,
-          overflow: "hidden",
-          direction: "rtl",
-          textAlign: "right",
-          backgroundImage: "none",
-          backgroundColor: theme.palette.mode === "dark" ? "#111916" : "#ffffff",
-          border: theme.palette.mode === "dark"
-            ? "1px solid #67C99D"
-            : "1px solid rgba(5,117,70,.13)",
-          boxShadow: theme.palette.mode === "dark"
-            ? "0 26px 70px rgba(0,0,0,.56)"
-            : "0 26px 70px rgba(10,65,43,.18)"
-        })
-      }}
-    >
-      <Box
-        sx={(theme) => ({
-          position: "relative",
-          px: { xs: 1.6, sm: 2.2 },
-          pt: { xs: 2, sm: 2.4 },
-          pb: { xs: 1.45, sm: 1.7 },
-          borderBottom: theme.palette.mode === "dark"
-            ? "1px solid #67C99D"
-            : "1px solid rgba(5,117,70,.10)",
-          background: theme.palette.mode === "dark"
-            ? "linear-gradient(135deg, rgba(16,52,38,.95), rgba(17,25,22,.98))"
-            : "linear-gradient(135deg,#f0faf5 0%,#ffffff 75%)"
-        })}
-      >
-        <Stack direction="row" spacing={1.2} alignItems="center">
-          <Box
-            sx={(theme) => ({
-              width: 46,
-              height: 46,
-              borderRadius: 2.2,
-              display: "grid",
-              placeItems: "center",
-              flexShrink: 0,
-              color: theme.palette.mode === "dark" ? "#d8f4e5" : toneColor,
-              backgroundColor: theme.palette.mode === "dark"
-                ? "rgba(75,166,118,.16)"
-                : `${toneColor}12`,
-              border: theme.palette.mode === "dark"
-                ? "1px solid #67C99D"
-                : `1px solid ${toneColor}28`
-            })}
-          >
-            <NotificationsActiveRoundedIcon />
-          </Box>
-
-          <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Stack direction="row" spacing={0.7} alignItems="center" sx={{ mb: 0.35, flexWrap: "wrap", rowGap: 0.5 }}>
-              <Typography
-                sx={(theme) => ({
-                  fontWeight: 950,
-                  fontSize: { xs: 16, sm: 18 },
-                  color: theme.palette.mode === "dark" ? "#eef8f2" : "#17372b"
-                })}
-              >
-                {alert?.title || "تنبيه"}
-              </Typography>
-              <Chip
-                size="small"
-                label={`تنبيه #${alert?.alertId ?? "-"}`}
-                sx={(theme) => ({
-                  height: 22,
-                  fontSize: 11,
-                  fontWeight: 900,
-                  color: theme.palette.mode === "dark" ? "#bfe8d2" : "#057546",
-                  backgroundColor: theme.palette.mode === "dark"
-                    ? "rgba(69,168,121,.12)"
-                    : "rgba(5,117,70,.07)",
-                  border: theme.palette.mode === "dark"
-                    ? "1px solid #67C99D"
-                    : "1px solid rgba(5,117,70,.16)"
-                })}
-              />
-            </Stack>
-            <Typography
-              sx={(theme) => ({
-                fontSize: 12,
-                lineHeight: 1.55,
-                color: theme.palette.mode === "dark" ? "rgba(226,238,231,.72)" : "#6a7c74"
-              })}
-            >
-              يرجى قراءة التنبيه ثم تأكيد الاطلاع عليه.
-            </Typography>
-          </Box>
-        </Stack>
-      </Box>
-
-      <DialogContent
-        sx={(theme) => ({
-          px: { xs: "16px !important", sm: "22px !important" },
-          py: { xs: "18px !important", sm: "22px !important" },
-          backgroundColor: theme.palette.mode === "dark" ? "#111916" : "#ffffff"
-        })}
-      >
-        <Paper
-          elevation={0}
-          sx={(theme) => ({
-            p: { xs: 1.5, sm: 1.8 },
-            borderRadius: 2.4,
-            backgroundColor: theme.palette.mode === "dark" ? "#151f1b" : "#f8fbf9",
-            border: theme.palette.mode === "dark"
-              ? "1px solid #67C99D"
-              : "1px solid rgba(5,117,70,.09)"
-          })}
-        >
-          <Typography
-            sx={(theme) => ({
-              whiteSpace: "pre-wrap",
-              overflowWrap: "anywhere",
-              fontSize: { xs: 13.2, sm: 14 },
-              lineHeight: 2,
-              fontWeight: 750,
-              color: theme.palette.mode === "dark" ? "#e7f2eb" : "#263d34"
-            })}
-          >
-            {alert?.message || ""}
-          </Typography>
-        </Paper>
-      </DialogContent>
-
-      <DialogActions
-        sx={(theme) => ({
-          px: { xs: 1.6, sm: 2.2 },
-          py: { xs: 1.2, sm: 1.35 },
-          justifyContent: "flex-start",
-          backgroundColor: theme.palette.mode === "dark" ? "#0f1714" : "#fbfdfc",
-          borderTop: theme.palette.mode === "dark"
-            ? "1px solid #67C99D"
-            : "1px solid rgba(5,117,70,.09)"
-        })}
-      >
-        <Button
-          variant="contained"
-          disabled={acknowledging}
-          onClick={onAcknowledge}
-          startIcon={<CheckCircleRoundedIcon />}
-          sx={(theme) => ({
-            minWidth: 145,
-            minHeight: 40,
-            borderRadius: 2,
-            fontWeight: 950,
-            boxShadow: "none",
-            backgroundColor: theme.palette.mode === "dark" ? "#1b7c52" : primary,
-            "&:hover": {
-              backgroundColor: theme.palette.mode === "dark" ? "#238d60" : primaryDark,
-              boxShadow: "none"
-            }
-          })}
-        >
-          {acknowledging ? "جاري الحفظ..." : "تم الاطلاع"}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
 
 function MetricCard({ title, value, subtitle, icon, tone = "default", onClick }) {
   const theme = useTheme();
@@ -1673,8 +1484,6 @@ export default function HrEmployeeHomePage() {
 
   const [workDetailsOpen, setWorkDetailsOpen] = useState(false);
   const [personalDetailsOpen, setPersonalDetailsOpen] = useState(false);
-  const [homeAlerts, setHomeAlerts] = useState([]);
-  const [homeAlertAcknowledging, setHomeAlertAcknowledging] = useState(false);
 
   const userGuid = String(user?.guid || user?.Guid || "").trim();
   const userName = user?.fullName || user?.FullName || user?.userName || "الموظف";
@@ -1900,81 +1709,7 @@ export default function HrEmployeeHomePage() {
     }
   }, [userGuid]);
 
-  const loadHomeAlerts = useCallback(async () => {
-    if (!userGuid) {
-      setHomeAlerts([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/hr/home-alerts/unread/${encodeURIComponent(userGuid)}`,
-        {
-          method: "GET",
-          cache: "no-store",
-          headers: selfHeaders
-        }
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          result?.message || result?.error || "تعذر تحميل التنبيهات"
-        );
-      }
-
-      setHomeAlerts(Array.isArray(result?.data) ? result.data : []);
-    } catch (homeAlertError) {
-      console.warn("Employee home alerts load failed:", homeAlertError);
-      setHomeAlerts([]);
-    }
-  }, [selfHeaders, userGuid]);
-
-  const acknowledgeHomeAlert = useCallback(async () => {
-    const currentAlert = homeAlerts[0];
-    if (!currentAlert?.alertGuid || !userGuid || homeAlertAcknowledging) return;
-
-    setHomeAlertAcknowledging(true);
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/hr/home-alerts/${encodeURIComponent(currentAlert.alertGuid)}/seen`,
-        {
-          method: "POST",
-          headers: {
-            ...selfHeaders,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ employeeGuid: userGuid })
-        }
-      );
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          result?.message || result?.error || "تعذر حفظ الاطلاع على التنبيه"
-        );
-      }
-
-      setHomeAlerts((current) =>
-        current.filter((item) => item?.alertGuid !== currentAlert.alertGuid)
-      );
-    } catch (homeAlertError) {
-      console.error("Employee home alert acknowledge failed:", homeAlertError);
-      setNotice({
-        severity: "error",
-        text: homeAlertError?.message || "تعذر حفظ الاطلاع على التنبيه"
-      });
-    } finally {
-      setHomeAlertAcknowledging(false);
-    }
-  }, [homeAlerts, homeAlertAcknowledging, selfHeaders, userGuid]);
-
-  useEffect(() => {
-    loadHomeAlerts();
-  }, [loadHomeAlerts]);
+  // التنبيهات بقت عامة في أي صفحة (components/announcements/GlobalAnnouncements في NavigationShell)
 
   useEffect(() => {
     loadData({ initial: true });
@@ -2019,7 +1754,7 @@ export default function HrEmployeeHomePage() {
       : null;
 
   const imageUrl = userGuid
-    ? `https://filesregsiteration.sstli.com/erp/image_api.php?action=get&userGuid=${encodeURIComponent(userGuid)}`
+    ? `${FILES_SERVER_URL}/erp/image_api.php?action=get&userGuid=${encodeURIComponent(userGuid)}`
     : "";
 
   const quickLinks = useMemo(() => {
@@ -2027,6 +1762,7 @@ export default function HrEmployeeHomePage() {
 
     const all = [
       ["employees", "ملفات الموظفين", "/dashboard/hr-employees", <GroupsRoundedIcon fontSize="small" />],
+      ["employees", "الموظفون غير النشطين", "/dashboard/hr-inactive-employees", <PersonOffRoundedIcon fontSize="small" />],
       ["departments", "الأقسام", "/dashboard/hr-departments", <ApartmentRoundedIcon fontSize="small" />],
       ["jobTitles", "المسميات الوظيفية", "/dashboard/hr-job-titles", <WorkRoundedIcon fontSize="small" />],
       ["contracts", "عقود الموظفين", "/dashboard/hr-contracts", <DescriptionRoundedIcon fontSize="small" />],
@@ -2722,12 +2458,6 @@ const decideLeaveApproval = async (
         </Alert>
       )}
 
-      <HomeAlertDialog
-        alert={homeAlerts[0] || null}
-        open={Boolean(homeAlerts[0])}
-        acknowledging={homeAlertAcknowledging}
-        onAcknowledge={acknowledgeHomeAlert}
-      />
 
       <Paper
         elevation={0}

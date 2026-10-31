@@ -30,6 +30,7 @@ import ProfessionalCard from "../components/common/ProfessionalCard";
 import StudentSearchForm from "../components/attendance/StudentSearchForm";
 import StudentInfoCard from "../components/attendance/StudentInfoCard";
 import AttendanceDialog from "../components/attendance/AttendanceDialog";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 const theme = createTheme(deepmerge(appTheme, {
@@ -147,7 +148,7 @@ const AttendancePage = () => {
     setError(null);
 
     try {
-      const response = await fetch(`https://api1.sstli.com/api/student/${studentId}`, {
+      const response = await fetch(`${SSTLI_API_URL}/api/student/${studentId}`, {
         headers: {
           'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json',
@@ -211,7 +212,7 @@ const AttendancePage = () => {
     };
 
     try {
-      const response = await fetch("https://filesregsiteration.sstli.com/PostAttendent.php", {
+      const response = await fetch(`${FILES_SERVER_URL}/PostAttendent.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

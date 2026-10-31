@@ -55,15 +55,16 @@ import {
 
 import { format, startOfWeek, endOfWeek, getISOWeek, getISOWeekYear } from 'date-fns';
 import arLocale from 'date-fns/locale/ar-SA';
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 
 
 
 // ✅ api.php
-const API_URL = 'https://filesregsiteration.sstli.com/erp/api.php';
+const API_URL = `${FILES_SERVER_URL}/erp/api.php`;
 
 // ✅ Base URL للملفات
-const FILES_BASE_URL = 'https://filesregsiteration.sstli.com/erp/';
+const FILES_BASE_URL = `${FILES_SERVER_URL}/erp/`;
 
 function resolveFileUrl(u) {
   if (!u) return '';

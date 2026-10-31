@@ -1,6 +1,7 @@
+import { SSTLI_API_URL } from "../config/apiUrls";
 // تسجيل تنقل المستخدم بين الشاشات + محاولات فتح شاشات غير مسموحة (شاشة مراقبة الأمان).
 // الهوية بتتحدد في السيرفر من التوكن نفسه، والجهاز من هيدرات apiAuth.
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 
 // System Admin (يوزر sa) — الوحيد اللي بيشوف شاشة مراقبة الأمان. السيرفر هو الحماية الحقيقية.
 export const SECURITY_ADMIN_GUID = "f426653a-b389-4036-95f0-907920e7f205";

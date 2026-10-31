@@ -58,6 +58,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // Custom
 
@@ -65,7 +66,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 /* ===================== Config ===================== */
 const API_BASE =
   import.meta?.env?.VITE_API_BASE?.replace(/\/+$/, "") ||
-  "https://api1.sstli.com";
+  SSTLI_API_URL;
 
 /* ===================== Color Palette ===================== */
 const colorPalette = {

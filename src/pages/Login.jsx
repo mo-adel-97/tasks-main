@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import logo from '../images/logo.jpg';
 import { useAuth } from '../contexts/AuthContext';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 const COLORS = {
   primary: '#057546',
@@ -128,7 +129,7 @@ export default function Login() {
 
     try {
       const loginResponse = await fetch(
-        'https://api1.sstli.com/api/userinfo/login-secure',
+        `${SSTLI_API_URL}/api/userinfo/login-secure`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -163,7 +164,7 @@ export default function Login() {
       }
 
       const branchesResponse = await fetch(
-        'https://api4.sstli.com/api/branches/all',
+        `${SSTLI_API_URL}/api/branches/all`,
         {
           mode: 'cors',
           credentials: 'omit',

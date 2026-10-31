@@ -50,7 +50,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import GroupsIcon from "@mui/icons-material/Groups";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 import BusinessIcon from "@mui/icons-material/Business";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -84,6 +83,7 @@ import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -293,14 +293,13 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 const DARK_BORDER = "#67C99D";
 const DARK_TEXT = "#9BE0C1";
 const EMPLOYEE_IMAGE_API =
-  "https://filesregsiteration.sstli.com/erp/image_api.php";
+  `${FILES_SERVER_URL}/erp/image_api.php`;
 
 const primaryColor = "#057546";
 const primaryDark = "#034d31";
@@ -566,7 +565,8 @@ const HrEmployeesPage = () => {
     branchGuid: "",
     departmentGuid: "",
     jobCode: "",
-    isActive: ""
+    isActive: "",
+    establishmentGuid: ""
   });
 
   const [appliedFilters, setAppliedFilters] = useState({
@@ -574,16 +574,60 @@ const HrEmployeesPage = () => {
     branchGuid: "",
     departmentGuid: "",
     jobCode: "",
-    isActive: ""
+    isActive: "",
+    establishmentGuid: ""
   });
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
+  // المنشآت (السجل التجاري + الرقم المميز) لفلتر القائمة
+  const [establishments, setEstablishments] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/hr/establishments`, { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((result) =>
+        setEstablishments(Array.isArray(result?.data) ? result.data : [])
+      )
+      .catch(() => setEstablishments([]));
+  }, []);
+
   const [employeeCardOpen, setEmployeeCardOpen] =
     useState(false);
   const [selectedEmployee, setSelectedEmployee] =
     useState(null);
+
+  // آخر استعلام من التأمينات الاجتماعية للموظف المفتوح (لمن يملك صلاحية شاشة الربط)
+  const [gosiInfo, setGosiInfo] = useState(null);
+  const gosiEmployeeGuid = selectedEmployee?.employeeGuid;
+
+  useEffect(() => {
+    setGosiInfo(null);
+    let viewerGuid = "";
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      viewerGuid = user?.guid || user?.Guid || "";
+    } catch {
+      viewerGuid = "";
+    }
+    if (!gosiEmployeeGuid || !viewerGuid) return;
+
+    let cancelled = false;
+    fetch(
+      `${API_BASE_URL}/api/hr/gosi/employee/${encodeURIComponent(gosiEmployeeGuid)}?userGuid=${encodeURIComponent(viewerGuid)}`,
+      { cache: "no-store" }
+    )
+      .then((response) => (response.ok ? response.json() : null))
+      .then((result) => {
+        if (!cancelled && result?.allowed) setGosiInfo(result.data || "none");
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gosiEmployeeGuid]);
 
   const [editMode, setEditMode] = useState(false);
   const [savingEmployee, setSavingEmployee] =
@@ -1079,13 +1123,16 @@ const HrEmployeesPage = () => {
 
       setSelectedEmployee(updatedEmployee);
 
+      // الموظف الذي أصبح غير نشط ينتقل لشاشة غير النشطين
       setEmployees((current) =>
-        current.map((item) =>
-          String(item?.employeeGuid || "").toLowerCase() ===
-          String(selectedEmployee.employeeGuid).toLowerCase()
-            ? updatedEmployee
-            : item
-        )
+        current
+          .map((item) =>
+            String(item?.employeeGuid || "").toLowerCase() ===
+            String(selectedEmployee.employeeGuid).toLowerCase()
+              ? updatedEmployee
+              : item
+          )
+          .filter((item) => item?.isActive === true)
       );
 
       const successMessage =
@@ -2958,14 +3005,13 @@ const HrEmployeesPage = () => {
         );
       }
 
-      if (
-        appliedFilters.isActive !== "" &&
-        appliedFilters.isActive !== null &&
-        appliedFilters.isActive !== undefined
-      ) {
+      // ملفات الموظفين تعرض النشطين فقط؛ غير النشطين في شاشة مستقلة
+      params.set("isActive", "true");
+
+      if (appliedFilters.establishmentGuid) {
         params.set(
-          "isActive",
-          String(appliedFilters.isActive)
+          "establishmentGuid",
+          appliedFilters.establishmentGuid
         );
       }
 
@@ -3073,7 +3119,8 @@ const HrEmployeesPage = () => {
       branchGuid: "",
       departmentGuid: "",
       jobCode: "",
-      isActive: ""
+      isActive: "",
+      establishmentGuid: ""
     };
 
     setFilters(emptyFilters);
@@ -3093,12 +3140,6 @@ const HrEmployeesPage = () => {
       value: stats.active,
       icon: <CheckCircleIcon />,
       description: "حالتهم نشط"
-    },
-    {
-      title: "غير النشطين",
-      value: stats.inactive,
-      icon: <CancelIcon />,
-      description: "حالتهم غير نشط"
     },
     {
       title: "الفروع",
@@ -3985,6 +4026,28 @@ const HrEmployeesPage = () => {
               </FormControl>
 
               <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
+                <InputLabel>المنشأة</InputLabel>
+                <Select
+                  MenuProps={RTL_MENU_PROPS}
+                  label="المنشأة"
+                  value={filters.establishmentGuid}
+                  onChange={(event) =>
+                    handleFilterChange("establishmentGuid", event.target.value)
+                  }
+                >
+                  <MenuItem value="">كل المنشآت</MenuItem>
+                  <MenuItem value="00000000-0000-0000-0000-000000000000">
+                    غير مربوطين بمنشأة
+                  </MenuItem>
+                  {establishments.map((item) => (
+                    <MenuItem key={item.establishmentGuid} value={item.establishmentGuid}>
+                      {item.establishmentName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
                 <InputLabel>القسم</InputLabel>
                 <Select
                   MenuProps={RTL_MENU_PROPS}
@@ -4022,22 +4085,6 @@ const HrEmployeesPage = () => {
                       {job?.name}
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-
-              <FormControl sx={uiLayout.formFieldSx} size="small" fullWidth>
-                <InputLabel>الحالة</InputLabel>
-                <Select
-                  MenuProps={RTL_MENU_PROPS}
-                  label="الحالة"
-                  value={filters.isActive}
-                  onChange={(event) =>
-                    handleFilterChange("isActive", event.target.value)
-                  }
-                >
-                  <MenuItem value="">كل الحالات</MenuItem>
-                  <MenuItem value={true}>نشط</MenuItem>
-                  <MenuItem value={false}>غير نشط</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -4315,7 +4362,7 @@ const HrEmployeesPage = () => {
                     width: "14%"
                   },
 
-                  /* الحالة */
+                  /* المنشأة */
                   "& th:nth-of-type(8), & td:nth-of-type(8)": {
                     width: "6%"
                   },
@@ -4336,7 +4383,7 @@ const HrEmployeesPage = () => {
                       "الفرع",
                       "القسم",
                       "المسمى الوظيفي",
-                      "الحالة",
+                      "المنشأة",
                       "بطاقة الموظف"
                     ].map((header) => (
                       <TableCell
@@ -4469,29 +4516,30 @@ const HrEmployeesPage = () => {
                       </TableCell>
 
                       <TableCell align="right">
-                        <Chip
-                          size="small"
-                          label={
-                            employee?.statusName ||
-                            (employee?.isActive
-                              ? "نشط"
-                              : "غير نشط")
+                        <Tooltip
+                          title={
+                            employee?.establishmentName
+                              ? `السجل التجاري: ${employee?.commercialRegNo || "-"} — الرقم المميز: ${employee?.distinctiveNo || "-"}`
+                              : "غير مربوط بمنشأة"
                           }
-                          color={
-                            employee?.isActive
-                              ? "success"
-                              : "default"
-                          }
-                          variant={
-                            employee?.isActive
-                              ? "filled"
-                              : "outlined"
-                          }
-                          sx={{
-                            fontFamily: "Cairo",
-                            fontWeight: 800
-                          }}
-                        />
+                        >
+                          <Typography
+                            sx={{
+                              width: "100%",
+                              fontFamily: "Cairo",
+                              fontSize: "0.72rem",
+                              fontWeight: 700,
+                              lineHeight: 1.4,
+                              whiteSpace: "normal",
+                              overflowWrap: "anywhere",
+                              color: employee?.establishmentName
+                                ? "inherit"
+                                : "text.disabled"
+                            }}
+                          >
+                            {employee?.establishmentName || "-"}
+                          </Typography>
+                        </Tooltip>
                       </TableCell>
 
                       <TableCell align="center">
@@ -5477,6 +5525,30 @@ const HrEmployeesPage = () => {
                               </Select>
                             </FormControl>
 
+                            {/* نقل مدرب: ملف المدرب ينتقل معه (Trigger على User_Info) */}
+                            {selectedEmployee?.isTrainer &&
+                              editForm.branchGuid &&
+                              String(editForm.branchGuid).toLowerCase() !==
+                                String(selectedEmployee?.branchGuid || "").toLowerCase() && (
+                                <Box
+                                  sx={{
+                                    gridColumn: { xs: "auto", sm: "1 / -1" },
+                                    p: 1.2,
+                                    borderRadius: 2,
+                                    fontFamily: "Cairo",
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    lineHeight: 1.8,
+                                    color: "#9a3412",
+                                    backgroundColor: "rgba(194,65,12,.08)",
+                                    border: "1px solid rgba(194,65,12,.25)"
+                                  }}
+                                >
+                                  هذا الموظف مدرب: عند الحفظ يُنقل ملف المدرب نفسه إلى الفرع الجديد
+                                  (بدون إنشاء مدرب جديد)، وتُحسب فلوسه في تقارير الفرع الجديد.
+                                </Box>
+                              )}
+
                             <FormControl sx={uiLayout.formFieldSx}
                               size="small"
                               fullWidth
@@ -5770,6 +5842,38 @@ const HrEmployeesPage = () => {
                               selectedEmployee?.jobTitle
                             }
                           />
+                          <EmployeeDetail
+                            label="المنشأة"
+                            value={
+                              selectedEmployee?.establishmentName ||
+                              "غير مربوط بمنشأة"
+                            }
+                          />
+                          <EmployeeDetail
+                            label="السجل التجاري"
+                            value={
+                              selectedEmployee?.commercialRegNo || "-"
+                            }
+                          />
+                          <EmployeeDetail
+                            label="الرقم المميز"
+                            value={
+                              selectedEmployee?.distinctiveNo || "-"
+                            }
+                          />
+                          {gosiInfo && (
+                            <EmployeeDetail
+                              label="التأمينات الاجتماعية (آخر استعلام)"
+                              value={
+                                gosiInfo === "none"
+                                  ? "لم يُستعلم بعد"
+                                  : gosiInfo.success
+                                    ? `نسبة الموظف ${gosiInfo.employeeRate ?? "—"}% — نسبة صاحب العمل ${gosiInfo.employerRate ?? "—"}% (${new Date(gosiInfo.queriedAt).toLocaleDateString("ar-EG-u-nu-latn")})`
+                                    : `فشل آخر استعلام: ${gosiInfo.errorMessage || ""}`
+                              }
+                              wide
+                            />
+                          )}
                         </Box>
                       )}
                     </Paper>

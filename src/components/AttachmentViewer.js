@@ -10,6 +10,7 @@ import {
   Button
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 export default function AttachmentViewer({ open, onClose, filePath, sourceType = "main" }) {
   const isImage = (path) =>
@@ -26,8 +27,8 @@ export default function AttachmentViewer({ open, onClose, filePath, sourceType =
   // تحديد رابط التحميل حسب نوع الملف
   const fileUrl =
     sourceType === "main"
-      ? `https://api3.sstli.com/api/TaskAssignment/File/${fileName}`
-      : `https://api3.sstli.com/api/SubTaskStatus/CompletedFile?filePath=${encodeURIComponent(filePath)}`;
+      ? `${SSTLI_API_URL}/api/TaskAssignment/File/${fileName}`
+      : `${SSTLI_API_URL}/api/SubTaskStatus/CompletedFile?filePath=${encodeURIComponent(filePath)}`;
 
   return (
     <Dialog sx={uiLayout.dialogLayoutSx} open={open} onClose={onClose} maxWidth="md" fullWidth>

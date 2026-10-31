@@ -38,10 +38,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import NotesIcon from "@mui/icons-material/Notes";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
-const BASE_URL = "https://filesregsiteration.sstli.com";
+const BASE_URL = FILES_SERVER_URL;
 const API_URL = `${BASE_URL}/exceptions.php`;
-const BRANCHES_URL = "https://api4.sstli.com/api/institute-directory/branches";
+const BRANCHES_URL = `${SSTLI_API_URL}/api/institute-directory/branches`;
 
 const ADMIN_KEY = "CHANGE_ME_TO_SOMETHING_STRONG";
 const DARK_BORDER = "#67C99D";

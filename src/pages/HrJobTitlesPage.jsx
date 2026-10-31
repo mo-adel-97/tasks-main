@@ -50,6 +50,7 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
 
 import Swal from "sweetalert2";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 
 
@@ -315,9 +316,7 @@ const RTL_AUTOCOMPLETE_LISTBOX_PROPS = {
 };
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  process.env.REACT_APP_API_URL ||
-  "https://api4.sstli.com";
+  SSTLI_API_URL;
 
 
 
@@ -377,6 +376,7 @@ const emptyForm = () => ({
   isActive: true,
   isLegacy: false,
   showInUserSelection: true,
+  hideFromEmployeeLists: false,
   employeeCount: 0,
   activeEmployeeCount: 0,
   inactiveEmployeeCount: 0
@@ -402,6 +402,9 @@ const normalizeJobTitle = (row) => ({
   isLegacy: Boolean(row?.isLegacy),
   showInUserSelection: Boolean(
     row?.showInUserSelection
+  ),
+  hideFromEmployeeLists: Boolean(
+    row?.hideFromEmployeeLists
   )
 });
 
@@ -820,6 +823,10 @@ export default function HrJobTitlesPage() {
         Number(form.legacyJobCode) === 12
           ? false
           : Boolean(form.showInUserSelection);
+
+      payload.hideFromEmployeeLists = Boolean(
+        form.hideFromEmployeeLists
+      );
 
       payload.reason = reason;
     }
@@ -1988,6 +1995,19 @@ export default function HrJobTitlesPage() {
                     }}
                   />
 
+                  {row.hideFromEmployeeLists && (
+                    <Chip
+                      size="small"
+                      color="warning"
+                      label="مخفي من قوائم الموظفين"
+                      variant="outlined"
+                      sx={{
+                        height: 24,
+                        fontSize: 12
+                      }}
+                    />
+                  )}
+
                   {row.jobLevel !== null &&
                     row.jobLevel !== undefined &&
                     row.jobLevel !== "" && (
@@ -2556,6 +2576,23 @@ export default function HrJobTitlesPage() {
                   />
                 }
                 label="نشط"
+              />
+            )}
+
+            {editMode === "edit" && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.hideFromEmployeeLists}
+                    onChange={(e) =>
+                      setFormField(
+                        "hideFromEmployeeLists",
+                        e.target.checked
+                      )
+                    }
+                  />
+                }
+                label="إخفاء أصحاب هذا المسمى من قوائم الموظفين"
               />
             )}
           </Box>

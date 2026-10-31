@@ -55,6 +55,7 @@ import {
   Security,
   Today
 } from "@mui/icons-material";
+import { FILES_SERVER_URL } from "../../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: '#76ae97',
@@ -67,9 +68,9 @@ const COLOR_SCHEME = {
   background: '#f8fafc'
 };
 
-const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/vacations_permissions.php';
-const LIMITS_API_URL = 'https://filesregsiteration.sstli.com/erp/vacation_permissions_settings.php';
-const STATS_API_URL = 'https://filesregsiteration.sstli.com/erp/vacation_permissions_stats.php';
+const API_BASE_URL = `${FILES_SERVER_URL}/erp/vacations_permissions.php`;
+const LIMITS_API_URL = `${FILES_SERVER_URL}/erp/vacation_permissions_settings.php`;
+const STATS_API_URL = `${FILES_SERVER_URL}/erp/vacation_permissions_stats.php`;
 
 const VacationsTab = ({ employeeData }) => {
   const [requests, setRequests] = useState([]);

@@ -46,6 +46,7 @@ import {
   Visibility
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: '#76ae97',
@@ -57,8 +58,8 @@ const COLOR_SCHEME = {
   background: '#f8fbfa'
 };
 
-const IMAGE_API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php';
-const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp/best-employee.php';
+const IMAGE_API_BASE_URL = `${FILES_SERVER_URL}/erp/image_api.php`;
+const API_BASE_URL = `${FILES_SERVER_URL}/erp/best-employee.php`;
 
 const EmployeeOfTheMonthTab = () => {
   const [employees, setEmployees] = useState([]);
@@ -104,7 +105,7 @@ const EmployeeOfTheMonthTab = () => {
   // جلب بيانات الموظفين
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/userinfo');
+      const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       if (response.ok) {
         const data = await response.json();
         setEmployees(data);

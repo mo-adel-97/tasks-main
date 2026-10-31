@@ -90,6 +90,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar, Line, Doughnut, Pie } from 'react-chartjs-2';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 // Register Chart.js components
 ChartJS.register(
@@ -333,7 +334,7 @@ const PeriodicReports = () => {
 
   const fetchTrainers = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/userinfo');
+      const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       if (!response.ok) throw new Error('Failed to fetch trainers');
       const data = await response.json();
       setTrainers(data);
@@ -350,7 +351,7 @@ const PeriodicReports = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user || !user.guid) throw new Error('User GUID not found');
 
-      const response = await fetch(`https://api3.sstli.com/api/Trainer/UserBranchForWork?userGuid=${user.guid}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/Trainer/UserBranchForWork?userGuid=${user.guid}`);
       if (!response.ok) throw new Error('Failed to fetch branch name');
       const data = await response.json();
       setBranchName(data?.[0]?.brEName ?? 'غير محدد');
@@ -365,7 +366,7 @@ const PeriodicReports = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user || !user.branchForWork) throw new Error('Branch information not found');
 
-      const response = await fetch(`https://api1.sstli.com/api/StudentStudyInfo/by-branch/${user.branchForWork}`);
+      const response = await fetch(`${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${user.branchForWork}`);
       if (!response.ok) throw new Error('Failed to fetch students');
       const data = await response.json();
       setStudents(data);
@@ -382,7 +383,7 @@ const PeriodicReports = () => {
       await fetchBranchName();
       const studentsData = await fetchStudents();
 
-      const response = await fetch('https://filesregsiteration.sstli.com/get_attendance.php');
+      const response = await fetch(`${FILES_SERVER_URL}/get_attendance.php`);
       const result = await response.json();
 
       if (result.success && studentsData.length > 0) {
@@ -415,7 +416,7 @@ const PeriodicReports = () => {
         await fetchTrainers();
         await fetchStudents();
         
-        const response = await fetch('https://filesregsiteration.sstli.com/get_attendance.php');
+        const response = await fetch(`${FILES_SERVER_URL}/get_attendance.php`);
         const result = await response.json();
 
         if (result.success && students.length > 0) {

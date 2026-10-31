@@ -227,3 +227,19 @@
   overflow-y: auto !important;
   resize: none !important;
 }
+
+/* استثناء: حقول النصوص الطويلة (زي نص خطاب الشكر) بتحتاج مساحة تشوف فيها النص كله.
+ * ضيف className="tall-multiline" على الـ TextField. */
+.MuiOutlinedInput-root.MuiInputBase-multiline:has(textarea.tall-multiline-input) {
+  align-items: flex-start !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.MuiFormControl-root.tall-multiline textarea.MuiInputBase-inputMultiline:not([aria-hidden="true"]) {
+  min-height: 300px !important;
+  height: 300px !important;
+  max-height: none !important;
+  line-height: 1.9 !important;
+  resize: vertical !important;
+}

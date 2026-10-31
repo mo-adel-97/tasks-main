@@ -78,6 +78,7 @@ import {
   DateRange
 } from "@mui/icons-material";
 import EmployeeProfileDialog from '../EmployeeProfileDialog';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: '#76ae97',
@@ -92,10 +93,10 @@ const COLOR_SCHEME = {
 };
 
 // APIs
-const USERS_API_URL = 'https://api1.sstli.com/api/userinfo';
-const BRANCHES_API_URL = 'https://api4.sstli.com/api/branches/all';
-const PERMISSIONS_API_URL = 'https://filesregsiteration.sstli.com/erp/vacation_permissions_settings.php';
-const IMAGE_API_URL = 'https://filesregsiteration.sstli.com/erp/image_api.php';
+const USERS_API_URL = `${SSTLI_API_URL}/api/userinfo`;
+const BRANCHES_API_URL = `${SSTLI_API_URL}/api/branches/all`;
+const PERMISSIONS_API_URL = `${FILES_SERVER_URL}/erp/vacation_permissions_settings.php`;
+const IMAGE_API_URL = `${FILES_SERVER_URL}/erp/image_api.php`;
 
 const VacationPermissionsTab = () => {
   const [users, setUsers] = useState([]);

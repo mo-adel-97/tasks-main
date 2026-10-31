@@ -85,6 +85,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar, Line, Doughnut, Pie } from 'react-chartjs-2';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 // Register Chart.js components
 ChartJS.register(
@@ -269,7 +270,7 @@ const AdminBranchesReports = () => {
   /* ============== Fetch Branches ============== */
   const fetchBranches = async () => {
     try {
-      const response = await fetch('https://api4.sstli.com/api/branches/all');
+      const response = await fetch(`${SSTLI_API_URL}/api/branches/all`);
       if (!response.ok) throw new Error('Failed to fetch branches');
       const data = await response.json();
       setBranches(data);
@@ -284,7 +285,7 @@ const AdminBranchesReports = () => {
   /* ============== Fetch Trainers ============== */
   const fetchTrainers = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/userinfo');
+      const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       if (!response.ok) throw new Error('Failed to fetch trainers');
       const data = await response.json();
       setTrainers(data);
@@ -301,7 +302,7 @@ const AdminBranchesReports = () => {
       setLoading(true);
       
       // Fetch attendance data
-      const attendanceResponse = await fetch('https://filesregsiteration.sstli.com/get_attendance.php');
+      const attendanceResponse = await fetch(`${FILES_SERVER_URL}/get_attendance.php`);
       const attendanceResult = await attendanceResponse.json();
 
       if (!attendanceResult.success) {
@@ -313,7 +314,7 @@ const AdminBranchesReports = () => {
       if (branchGuid === 'all') {
         // Fetch students from all branches
         const studentsPromises = branches.map(branch => 
-          fetch(`https://api1.sstli.com/api/StudentStudyInfo/by-branch/${branch.guid}`)
+          fetch(`${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${branch.guid}`)
             .then(res => res.json())
             .then(data => data.map(student => ({ ...student, branchGuid: branch.guid, branchName: branch.name })))
         );
@@ -321,7 +322,7 @@ const AdminBranchesReports = () => {
         studentsData = studentsResults.flat();
       } else {
         // Fetch students from specific branch
-        const response = await fetch(`https://api1.sstli.com/api/StudentStudyInfo/by-branch/${branchGuid}`);
+        const response = await fetch(`${SSTLI_API_URL}/api/StudentStudyInfo/by-branch/${branchGuid}`);
         studentsData = await response.json();
       }
 

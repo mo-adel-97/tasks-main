@@ -31,6 +31,7 @@ import {
   Search as SearchIcon,
   InfoOutlined as NotificationsIcon
 } from '@mui/icons-material';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 // تعريف الألوان الجديدة
 const colorPalette = {
@@ -130,7 +131,7 @@ const Chats = () => {
     const fetchInitialData = async () => {
       try {
         // Fetch users
-        const usersResponse = await fetch('https://api1.sstli.com/api/userinfo');
+        const usersResponse = await fetch(`${SSTLI_API_URL}/api/userinfo`);
         const usersData = await usersResponse.json();
         setUsers(usersData);
         
@@ -143,7 +144,7 @@ const Chats = () => {
         
         // Fetch conversations with unread counts
         if (userData?.guid) {
-          const convResponse = await fetch(`https://filesregsiteration.sstli.com/get_unread_messages.php?user_guid=${userData.guid}`);
+          const convResponse = await fetch(`${FILES_SERVER_URL}/get_unread_messages.php?user_guid=${userData.guid}`);
           const convData = await convResponse.json();
           if (convData.success) {
             setConversations(convData.conversations);
@@ -157,7 +158,7 @@ const Chats = () => {
         }
 
         // Fetch all messages sent/received by current user
-        const allMsgsResponse = await fetch(`https://filesregsiteration.sstli.com/get_all_user_messages.php?user_guid=${userData.guid}`);
+        const allMsgsResponse = await fetch(`${FILES_SERVER_URL}/get_all_user_messages.php?user_guid=${userData.guid}`);
         const allMsgsData = await allMsgsResponse.json();
         if (allMsgsData.success) {
           const processed = allMsgsData.messages.map(m => ({
@@ -190,7 +191,7 @@ const Chats = () => {
     if (!userGuid || !currentUser) return;
 
     try {
-      const response = await fetch(`https://filesregsiteration.sstli.com/get_messages.php?sender=${currentUser.guid}&receiver=${userGuid}`);
+      const response = await fetch(`${FILES_SERVER_URL}/get_messages.php?sender=${currentUser.guid}&receiver=${userGuid}`);
       const data = await response.json();
 
       if (data.success) {
@@ -198,7 +199,7 @@ const Chats = () => {
           let fileUrl = null;
           if ((msg.file_url && msg.message_type === 'file') || msg.message_type === 'audio') {
             const encodedPath = encodeURI(msg.file_url || msg.file_path);
-            fileUrl = `https://filesregsiteration.sstli.com/${encodedPath}`;
+            fileUrl = `${FILES_SERVER_URL}/${encodedPath}`;
           }
 
           return {
@@ -266,7 +267,7 @@ const Chats = () => {
   
     const checkForNewMessages = async () => {
       try {
-        const convResponse = await fetch(`https://filesregsiteration.sstli.com/get_unread_messages.php?user_guid=${currentUser.guid}`);
+        const convResponse = await fetch(`${FILES_SERVER_URL}/get_unread_messages.php?user_guid=${currentUser.guid}`);
         const convData = await convResponse.json();
         
         if (convData.success) {
@@ -301,7 +302,7 @@ const Chats = () => {
 
   const markMessagesAsRead = async (senderGuid) => {
     try {
-      await fetch(`https://filesregsiteration.sstli.com/mark_messages_as_read.php`, {
+      await fetch(`${FILES_SERVER_URL}/mark_messages_as_read.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -416,7 +417,7 @@ const Chats = () => {
       setAttachments([]);
       setAudioChunks([]);
   
-      const response = await fetch('https://filesregsiteration.sstli.com/send_message.php', {
+      const response = await fetch(`${FILES_SERVER_URL}/send_message.php`, {
         method: 'POST',
         body: formData
       });
@@ -429,7 +430,7 @@ const Chats = () => {
             ? {
                 ...msg,
                 id: result.message_id,
-                file_url: result.file_path ? `https://filesregsiteration.sstli.com/${result.file_path}` : null,
+                file_url: result.file_path ? `${FILES_SERVER_URL}/${result.file_path}` : null,
                 file_path: result.file_path || null
               }
             : msg

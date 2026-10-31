@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // إضافات مكتب الاستقبال وشئون الطلاب (VIP / طلب نقل وتحويل / مرفقات الملف التدريبي).
 // الباك إند: api/reception-extras (ReceptionExtrasController).
 export const RECEPTION_EXTRAS_API =
-  `${process.env.REACT_APP_API_URL || "https://api4.sstli.com"}/api/reception-extras`;
+  `${SSTLI_API_URL}/api/reception-extras`;
 
 export const getCurrentUserGuid = () => {
   try {

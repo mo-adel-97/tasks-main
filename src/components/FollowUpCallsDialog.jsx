@@ -16,6 +16,7 @@ import {
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { arSA } from 'date-fns/locale';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 export default function FollowUpCallsDialog({ open, onClose }) {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -59,9 +60,9 @@ export default function FollowUpCallsDialog({ open, onClose }) {
     try {
       setIsSubmitting(true);
       const [callsRes, followUpsRes, usersRes] = await Promise.all([
-        axios.get('https://api1.sstli.com/api/call/all'),
-        axios.get('https://api1.sstli.com/api/followcall'),
-        axios.get('https://api1.sstli.com/api/userinfo')
+        axios.get(`${SSTLI_API_URL}/api/call/all`),
+        axios.get(`${SSTLI_API_URL}/api/followcall`),
+        axios.get(`${SSTLI_API_URL}/api/userinfo`)
       ]);
 
       // ترتيب المكالمات من الأحدث للأقدم
@@ -79,7 +80,7 @@ export default function FollowUpCallsDialog({ open, onClose }) {
       // Load student info for each call
       const studentInfoPromises = filteredCallsData.map(call => 
         call.accountGuid 
-          ? axios.get(`https://api1.sstli.com/api/StudyInfo/by-account/${call.accountGuid}`)
+          ? axios.get(`${SSTLI_API_URL}/api/StudyInfo/by-account/${call.accountGuid}`)
               .then(res => ({ [call.accountGuid]: res.data }))
               .catch(() => ({ [call.accountGuid]: null }))
           : Promise.resolve({})
@@ -178,8 +179,8 @@ export default function FollowUpCallsDialog({ open, onClose }) {
     };
 
     try {
-      await axios.post('https://api1.sstli.com/api/callfollowup/add', payload);
-      const updatedFollowUps = await axios.get('https://api1.sstli.com/api/followcall');
+      await axios.post(`${SSTLI_API_URL}/api/callfollowup/add`, payload);
+      const updatedFollowUps = await axios.get(`${SSTLI_API_URL}/api/followcall`);
       setFollowUps(updatedFollowUps.data);
 
       if (followUpStatus === "1") {

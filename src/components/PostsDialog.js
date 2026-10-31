@@ -48,6 +48,7 @@ import {
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import EmojiPicker from 'emoji-picker-react';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 const COLOR_SCHEME = {
   primary: '#80b49e',
@@ -63,7 +64,7 @@ const COLOR_SCHEME = {
   error: '#f44336'
 };
 
-const API_BASE_URL = 'https://filesregsiteration.sstli.com/erp';
+const API_BASE_URL = `${FILES_SERVER_URL}/erp`;
 
 const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
   const [posts, setPosts] = useState([]);
@@ -138,7 +139,7 @@ const PostsDialog = ({ open, onClose, onUnseenCountChange }) => {
   // ===== API: users/images =====
   const fetchAllUsers = async () => {
     try {
-      const response = await fetch('https://api1.sstli.com/api/userinfo');
+      const response = await fetch(`${SSTLI_API_URL}/api/userinfo`);
       if (response.ok) {
         const users = await response.json();
         setAllUsersCache(users);

@@ -10,6 +10,7 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ExpandMore, ExpandLess, FilterList, Download } from '@mui/icons-material';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
   const [calls, setCalls] = useState([]);
@@ -46,7 +47,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
   const fetchUsers = async () => {
     setUsersLoading(true);
     try {
-      const response = await axios.get('https://api1.sstli.com/api/userinfo');
+      const response = await axios.get(`${SSTLI_API_URL}/api/userinfo`);
       setUsers(response.data);
     } catch (error) {
       console.error("فشل تحميل بيانات المستخدمين:", error);
@@ -59,7 +60,7 @@ export default function MyCallHistoryDialog({ open, onClose, userGuid }) {
   const fetchCalls = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://api1.sstli.com/api/calls/user/${userGuid}`);
+      const response = await axios.get(`${SSTLI_API_URL}/api/calls/user/${userGuid}`);
       // ترتيب المكالمات من الأحدث للأقدم
       const sortedCalls = response.data.sort((a, b) => new Date(b.callDate) - new Date(a.callDate));
       setCalls(sortedCalls);

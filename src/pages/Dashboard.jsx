@@ -19,12 +19,13 @@ import HomeTab from "./HomeTab";
 import HrEmployeeHomePage from "./HrEmployeeHomePage";
 import EmployeeOfTheMonthBanner from "../components/EmployeeOfTheMonthBanner";
 import UpdateDialog from "../components/UpdateDialog";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 
 
 
 const UPDATE_URL =
-  "https://filesregsiteration.sstli.com/erp/check_update.php";
+  `${FILES_SERVER_URL}/erp/check_update.php`;
 
 export default function Dashboard() {
   const theme = useTheme();

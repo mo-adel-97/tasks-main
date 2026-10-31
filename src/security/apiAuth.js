@@ -1,12 +1,14 @@
 import axios from 'axios';
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 const API_HOSTS = new Set([
-  'api1.sstli.com',
   'api4.sstli.com',
   'localhost:5258',
   '127.0.0.1:5258',
   'localhost:5275',
-  '127.0.0.1:5275'
+  '127.0.0.1:5275',
+  // السيرفر من ملف الإعدادات (src/config/apiUrls.js)
+  new URL(SSTLI_API_URL).host
 ]);
 
 const configuredApiOrigins = new Set(
@@ -32,8 +34,8 @@ const shouldAttachAuth = (rawUrl) => {
 // النسخة المبنية للإنتاج (npm run build) لا تتأثر لأن NODE_ENV فيها = production.
 // لإيقاف التحويل أثناء التطوير: خلّي القيمة '' .
 const LOCAL_API4_ORIGIN =
-  process.env.NODE_ENV === 'development' ? 'https://api4.sstli.com' : '';
-const PROD_API4_ORIGIN = 'https://api4.sstli.com';
+  process.env.NODE_ENV === 'development' ? SSTLI_API_URL : '';
+const PROD_API4_ORIGIN = SSTLI_API_URL;
 
 const rewriteApi4Url = (rawUrl) => {
   if (!LOCAL_API4_ORIGIN || typeof rawUrl !== 'string') return rawUrl;
@@ -48,13 +50,13 @@ const getToken = () => localStorage.getItem('token') || '';
 
 // ===== بيانات جهاز المستخدم الحقيقي (نشاط المستخدمين) =====
 // api4 (DbAuditUser) بيحطها في SESSION_CONTEXT وtrg_UserAction_CaptureDevice بيسجلها بدل جهاز السيرفر.
-// بتتبعت مع طلبات الكتابة لـ api4 بس (مش api1). أي خطأ هنا مايوقفش الطلب.
+// بتتبعت مع طلبات api4. أي خطأ هنا مايوقفش الطلب.
 const CLIENT_INFO_HOSTS = new Set(['api4.sstli.com', 'localhost:5258', '127.0.0.1:5258', 'localhost:5275', '127.0.0.1:5275']);
+CLIENT_INFO_HOSTS.add(new URL(SSTLI_API_URL).host);
 
 const isClientInfoHost = (rawUrl) => {
   try {
     const url = new URL(rawUrl, window.location.origin);
-    if (url.host === 'api1.sstli.com') return false;
     const sameOriginApi = url.origin === window.location.origin && url.pathname.startsWith('/api/');
     return CLIENT_INFO_HOSTS.has(url.host) || configuredApiOrigins.has(url.origin) || sameOriginApi;
   } catch {
@@ -66,7 +68,6 @@ const shouldAttachClientInfo = (rawUrl, method) => {
   if (!method || ['GET', 'HEAD', 'OPTIONS'].includes(String(method).toUpperCase())) return false;
   try {
     const url = new URL(rawUrl, window.location.origin);
-    if (url.host === 'api1.sstli.com') return false;
     const sameOriginApi = url.origin === window.location.origin && url.pathname.startsWith('/api/');
     return CLIENT_INFO_HOSTS.has(url.host) || configuredApiOrigins.has(url.origin) || sameOriginApi;
   } catch {
@@ -256,7 +257,7 @@ const endSessionAndGoToLogin = () => {
   window.location.assign(`${LOGIN_PATH}?expired=1`);
 };
 
-// كل fetch متجه إلى api1 يحصل على التوكن تلقائياً، بدون تعديل عشرات الشاشات.
+// كل fetch متجه إلى api4 يحصل على التوكن تلقائياً، بدون تعديل عشرات الشاشات.
 const originalFetch = window.fetch.bind(window);
 window.fetch = async (input, init = {}) => {
   const originalUrl = typeof input === 'string'

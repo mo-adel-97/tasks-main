@@ -22,11 +22,12 @@ import SchoolIcon from "@mui/icons-material/School";
 
 // ✅ Excel reader
 import * as XLSX from "xlsx";
+import { FILES_SERVER_URL } from "../config/apiUrls";
 
 
 
 // ✅ API Endpoint الحقيقي
-const UPLOAD_URL = "https://filesregsiteration.sstli.com/erp/grades.php";
+const UPLOAD_URL = `${FILES_SERVER_URL}/erp/grades.php`;
 
 const UploadGrades = () => {
   const theme = useTheme();

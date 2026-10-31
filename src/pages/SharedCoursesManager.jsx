@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./SharedCoursesManager.css"
+import { HASSEN_API_URL } from "../config/apiUrls";
 // إضافة الدالة apiPost هنا أو استيرادها
-const API_BASE = "https://hassen.sstli.com/api/index.php";
+const API_BASE = HASSEN_API_URL;
 async function apiPost(action, payload) {
   const res = await fetch(`${API_BASE}?action=${encodeURIComponent(action)}`, {
     method: "POST",

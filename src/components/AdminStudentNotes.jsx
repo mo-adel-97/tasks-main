@@ -44,16 +44,17 @@ import {
   CalendarToday as CalendarIcon,
   MenuRounded as MenuRoundedIcon
 } from "@mui/icons-material";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 
 
 
 
 // APIs
-const NOTES_API = "https://filesregsiteration.sstli.com/erp/student_notes_api.php";
+const NOTES_API = `${FILES_SERVER_URL}/erp/student_notes_api.php`;
 const FILE_BASE = "http://filesregsiteration.sstli.com/erp";
-const USERS_API = "https://api1.sstli.com/api/userinfo";
-const BRANCHES_API = "https://api4.sstli.com/api/branches/all";
+const USERS_API = `${SSTLI_API_URL}/api/userinfo`;
+const BRANCHES_API = `${SSTLI_API_URL}/api/branches/all`;
 const ADMIN_TOKEN = "PUT_ADMIN_TOKEN_HERE";
 
 const DARK_BORDER = "#67C99D";

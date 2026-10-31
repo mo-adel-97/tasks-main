@@ -1,4 +1,5 @@
-export const API_BASE = "https://hassen.sstli.com/api/index.php";
+import { HASSEN_API_URL } from "./apiUrls";
+export const API_BASE = HASSEN_API_URL;
 
 export async function apiPost(action, payload) {
   try {

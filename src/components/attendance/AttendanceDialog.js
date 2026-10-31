@@ -22,6 +22,7 @@ import {
   Fade
 } from '@mui/material';
 import { Assignment, Person, Badge, Close, Check, Warning } from '@mui/icons-material';
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../../config/apiUrls";
 
 const AttendanceDialog = ({
   open,
@@ -89,7 +90,7 @@ const AttendanceDialog = ({
       }
       
       const response = await fetch(
-        `https://api1.sstli.com/api/StudentStudyInfo/${studentData.accountGuid}/${branchId}`
+        `${SSTLI_API_URL}/api/StudentStudyInfo/${studentData.accountGuid}/${branchId}`
       );
       
       if (!response.ok) {
@@ -129,7 +130,7 @@ const AttendanceDialog = ({
     try {
       setLoadingSubjects(true);
       
-      const response = await fetch('https://filesregsiteration.sstli.com/get_teaching_data.php');
+      const response = await fetch(`${FILES_SERVER_URL}/get_teaching_data.php`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch teaching data');

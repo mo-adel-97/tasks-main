@@ -60,6 +60,7 @@ import {
   syncItemsFromTrainees,
   toNum
 } from "../components/offerPrice/offerPriceCalc";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 /*
   شاشة "عرض سعر" — نقل EncodingOfferPrice من الديسكتوب (قائمة ملف).
@@ -67,7 +68,7 @@ import {
   بعد الحفظ: تعديل قبل المعاينة ← معاينة ← طباعة / PDF (نفس PRINTOFFERPRICE).
 */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://api4.sstli.com";
+const API_BASE_URL = SSTLI_API_URL;
 const OFFER_API = `${API_BASE_URL}/api/offer-price`;
 
 const primaryColor = "#057546";

@@ -36,6 +36,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import HtmlIcon from "@mui/icons-material/Html";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
 
 // ===== Helpers =====
 const safeParseReportDate = (val) => {
@@ -793,7 +794,7 @@ export default function ExportReportsDialog({
       setBranchesLoading(true);
       setBranchesError(null);
       try {
-        const res = await fetch("https://api4.sstli.com/api/branches/all");
+        const res = await fetch(`${SSTLI_API_URL}/api/branches/all`);
         const data = await res.json();
         if (!res.ok) throw new Error(data?.message || "فشل تحميل الفروع");
         setBranches(Array.isArray(data) ? data : []);
@@ -839,7 +840,7 @@ export default function ExportReportsDialog({
       for (let i = 0; i < selectedBranches.length; i++) {
         const b = selectedBranches[i];
 
-        const response = await fetch(`https://filesregsiteration.sstli.com/get_reports_all_branches.php?branch_guid=${b.guid}`);
+        const response = await fetch(`${FILES_SERVER_URL}/get_reports_all_branches.php?branch_guid=${b.guid}`);
         const payload = await response.json();
 
         if (!response.ok || !payload?.success) {

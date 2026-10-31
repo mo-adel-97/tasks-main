@@ -42,6 +42,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import { styled, useTheme } from "@mui/material/styles";
+import { SSTLI_API_URL } from "../config/apiUrls";
 
 // الألوان الجديدة بناءً على اللون المطلوب
 const primaryColor = '#80b49e';
@@ -126,7 +127,7 @@ const ExplorerNetwork = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get("https://api3.sstli.com/api/files/browse", {
+      const response = await axios.get(`${SSTLI_API_URL}/api/files/browse`, {
         params: { path },
         timeout: 2000000,
       });
@@ -157,7 +158,7 @@ const ExplorerNetwork = () => {
       fetchItems(item.fullPath);
     } else {
       window.open(
-        `https://api3.sstli.com/api/files/download?path=${encodeURIComponent(
+        `${SSTLI_API_URL}/api/files/download?path=${encodeURIComponent(
           item.fullPath
         )}`,
         "_blank"
