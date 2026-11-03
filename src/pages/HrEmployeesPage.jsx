@@ -84,6 +84,7 @@ import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { FILES_SERVER_URL, SSTLI_API_URL } from "../config/apiUrls";
+import { getNickname, saveNickname, useNicknames, withNickname } from "../utils/nicknames";
 
 
 
@@ -510,6 +511,7 @@ const formatMinutesAsHours = (minutes) => {
 };
 
 const HrEmployeesPage = () => {
+  useNicknames();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const surfaces = theme.palette.surfaces || {};
@@ -598,37 +600,6 @@ const HrEmployeesPage = () => {
   const [selectedEmployee, setSelectedEmployee] =
     useState(null);
 
-  // آخر استعلام من التأمينات الاجتماعية للموظف المفتوح (لمن يملك صلاحية شاشة الربط)
-  const [gosiInfo, setGosiInfo] = useState(null);
-  const gosiEmployeeGuid = selectedEmployee?.employeeGuid;
-
-  useEffect(() => {
-    setGosiInfo(null);
-    let viewerGuid = "";
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "null");
-      viewerGuid = user?.guid || user?.Guid || "";
-    } catch {
-      viewerGuid = "";
-    }
-    if (!gosiEmployeeGuid || !viewerGuid) return;
-
-    let cancelled = false;
-    fetch(
-      `${API_BASE_URL}/api/hr/gosi/employee/${encodeURIComponent(gosiEmployeeGuid)}?userGuid=${encodeURIComponent(viewerGuid)}`,
-      { cache: "no-store" }
-    )
-      .then((response) => (response.ok ? response.json() : null))
-      .then((result) => {
-        if (!cancelled && result?.allowed) setGosiInfo(result.data || "none");
-      })
-      .catch(() => {});
-
-    return () => {
-      cancelled = true;
-    };
-  }, [gosiEmployeeGuid]);
-
   const [editMode, setEditMode] = useState(false);
   const [savingEmployee, setSavingEmployee] =
     useState(false);
@@ -639,6 +610,7 @@ const HrEmployeesPage = () => {
 
   const [editForm, setEditForm] = useState({
     fullName: "",
+    nickname: "",
     nationalId: "",
     mobile: "",
     mobile2: "",
@@ -673,6 +645,8 @@ const HrEmployeesPage = () => {
   const [profileForm, setProfileForm] = useState({
     birthDate: "",
     nationality: "",
+    profession: "",
+    hireDate: "",
     gender: "",
     maritalStatus: "",
     educationLevel: "",
@@ -839,6 +813,8 @@ const HrEmployeesPage = () => {
           ? ""
           : profile.educationLevel,
       specialization: profile?.specialization || "",
+      profession: profile?.profession || "",
+      hireDate: profile?.hireDate ? String(profile.hireDate).slice(0, 10) : "",
       address: profile?.address || "",
       city: profile?.city || "",
       emergencyContactName:
@@ -854,6 +830,7 @@ const HrEmployeesPage = () => {
   const fillEditForm = (employee) => {
     setEditForm({
       fullName: employee?.fullName || "",
+      nickname: getNickname(employee?.employeeGuid, employee?.fullName),
       nationalId: employee?.nationalId || "",
       mobile: employee?.mobile || "",
       mobile2: employee?.mobile2 || "",
@@ -1071,6 +1048,17 @@ const HrEmployeesPage = () => {
         );
       }
 
+      if (
+        (editForm.nickname || "").trim() !==
+        getNickname(selectedEmployee.employeeGuid, selectedEmployee.fullName)
+      ) {
+        await saveNickname(
+          selectedEmployee.employeeGuid,
+          (editForm.nickname || "").trim(),
+          getCurrentActor().changedByUserGuid
+        );
+      }
+
       const selectedBranch =
         lookups.branches.find(
           (item) =>
@@ -1226,6 +1214,8 @@ const HrEmployeesPage = () => {
 
       const payload = {
         birthDate: profileForm.birthDate || null,
+        profession: (profileForm.profession || "").trim() || null,
+        hireDate: profileForm.hireDate || null,
         nationality:
           profileForm.nationality.trim() || null,
         gender:
@@ -3322,7 +3312,7 @@ const HrEmployeesPage = () => {
             textOverflow: "ellipsis"
           }}
         >
-          {employee?.fullName ||
+          {withNickname(employee?.fullName, employee?.employeeGuid) ||
             "بدون اسم"}
         </Typography>
 
@@ -4441,7 +4431,7 @@ const HrEmployeesPage = () => {
                             overflowWrap: "anywhere"
                           }}
                         >
-                          {employee?.fullName || "بدون اسم"}
+                          {withNickname(employee?.fullName, employee?.employeeGuid) || "بدون اسم"}
                         </Typography>
                       </TableCell>
 
@@ -4906,7 +4896,7 @@ const HrEmployeesPage = () => {
                             lineHeight: 1.45
                           }}
                         >
-                          {selectedEmployee?.fullName ||
+                          {withNickname(selectedEmployee?.fullName, selectedEmployee?.employeeGuid) ||
                             "بدون اسم"}
                         </Typography>
 
@@ -5315,6 +5305,23 @@ const HrEmployeesPage = () => {
                                   event.target.value
                                 )
                               }
+                              sx={uiLayout.withUiSx({
+                                gridColumn: "1 / -1"
+                              }, uiLayout.formFieldSx)}
+                            />
+
+                            <TextField InputLabelProps={{ shrink: true }}
+                              size="small"
+                              label="الاسم الحركي"
+                              placeholder="يظهر بين قوسين جنب الاسم"
+                              value={editForm.nickname}
+                              onChange={(event) =>
+                                handleEditField(
+                                  "nickname",
+                                  event.target.value
+                                )
+                              }
+                              inputProps={{ maxLength: 100 }}
                               sx={uiLayout.withUiSx({
                                 gridColumn: "1 / -1"
                               }, uiLayout.formFieldSx)}
@@ -5861,19 +5868,6 @@ const HrEmployeesPage = () => {
                               selectedEmployee?.distinctiveNo || "-"
                             }
                           />
-                          {gosiInfo && (
-                            <EmployeeDetail
-                              label="التأمينات الاجتماعية (آخر استعلام)"
-                              value={
-                                gosiInfo === "none"
-                                  ? "لم يُستعلم بعد"
-                                  : gosiInfo.success
-                                    ? `نسبة الموظف ${gosiInfo.employeeRate ?? "—"}% — نسبة صاحب العمل ${gosiInfo.employerRate ?? "—"}% (${new Date(gosiInfo.queriedAt).toLocaleDateString("ar-EG-u-nu-latn")})`
-                                    : `فشل آخر استعلام: ${gosiInfo.errorMessage || ""}`
-                              }
-                              wide
-                            />
-                          )}
                         </Box>
                       )}
                     </Paper>
@@ -6037,6 +6031,33 @@ const HrEmployeesPage = () => {
                                   e.target.value
                               }))
                             }
+                          />
+
+                          <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+                            size="small"
+                            label="المهنة"
+                            value={profileForm.profession}
+                            onChange={(e) =>
+                              setProfileForm((c) => ({
+                                ...c,
+                                profession: e.target.value
+                              }))
+                            }
+                          />
+
+                          <TextField sx={uiLayout.formFieldSx}
+                            size="small"
+                            type="date"
+                            label="مباشرة العمل"
+                            value={profileForm.hireDate}
+                            onChange={(e) =>
+                              setProfileForm((c) => ({
+                                ...c,
+                                hireDate: e.target.value
+                              }))
+                            }
+                            InputLabelProps={{ shrink: true }}
+                            inputProps={{ dir: "ltr", style: { direction: "ltr", unicodeBidi: "isolate" } }}
                           />
 
                           <FormControl sx={uiLayout.formFieldSx}
@@ -6312,6 +6333,18 @@ const HrEmployeesPage = () => {
                           label="الجنسية"
                           value={
                             profileData?.nationality
+                          }
+                        />
+                        <EmployeeDetail
+                          label="المهنة"
+                          value={profileData?.profession || "-"}
+                        />
+                        <EmployeeDetail
+                          label="مباشرة العمل"
+                          value={
+                            profileData?.hireDate
+                              ? String(profileData.hireDate).slice(0, 10)
+                              : "-"
                           }
                         />
                         <EmployeeDetail
@@ -10148,7 +10181,7 @@ const HrEmployeesPage = () => {
                       EMPLOYEE_DIALOG_TEXT_ALIGN
                   }}
                 >
-                  {selectedEmployee?.fullName || "-"}
+                  {withNickname(selectedEmployee?.fullName, selectedEmployee?.employeeGuid) || "-"}
                 </Typography>
 
                 <Typography

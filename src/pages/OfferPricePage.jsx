@@ -278,6 +278,8 @@ const NewServiceDialog = ({ open, onClose, onCreated, userGuid }) => {
 };
 
 // ===================== اختيار الخدمات (AddServicesOfferPrice) =====================
+const SERVICE_TYPE_LABELS = { 0: "دبلومات", 1: "دورات تأهيلية", 2: "دورات تطويرية", 3: "رسوم" };
+
 const ServicesPickerDialog = ({ open, onClose, onSelect, userGuid, canAdd }) => {
   const [newOpen, setNewOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -333,9 +335,14 @@ const ServicesPickerDialog = ({ open, onClose, onSelect, userGuid, canAdd }) => 
           <Stack alignItems="center" sx={{ py: 4 }}><CircularProgress sx={{ color: primaryColor }} /></Stack>
         ) : (
           <Box sx={{ maxHeight: 420, overflowY: "auto" }}>
-            {filtered.map((s) => (
+            {filtered.map((s, index) => (
+              <React.Fragment key={s.guid}>
+              {index === 0 || filtered[index - 1].studyType !== s.studyType ? (
+                <Box sx={{ px: 1, py: 0.75, mt: index ? 1 : 0, fontWeight: 900, fontSize: "0.9rem", color: primaryColor, borderBottom: `2px solid ${primaryColor}` }}>
+                  {SERVICE_TYPE_LABELS[s.studyType] ?? "أخرى"}
+                </Box>
+              ) : null}
               <Stack
-                key={s.guid}
                 direction="row"
                 alignItems="center"
                 onClick={() => toggle(s.guid)}
@@ -352,6 +359,7 @@ const ServicesPickerDialog = ({ open, onClose, onSelect, userGuid, canAdd }) => 
                 <Typography sx={{ fontWeight: 800, flex: 1 }}>{s.name}</Typography>
                 <Typography sx={{ fontWeight: 800, color: primaryColor, whiteSpace: "nowrap" }}>{money(s.total)}</Typography>
               </Stack>
+              </React.Fragment>
             ))}
             {!filtered.length && !error ? (
               <Typography sx={{ textAlign: "center", py: 3, color: "text.secondary", fontWeight: 700 }}>لا توجد خدمات</Typography>

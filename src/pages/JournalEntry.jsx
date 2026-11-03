@@ -1984,7 +1984,7 @@ ${PRINT_READY_SCRIPT}</head>
             size="small"
             value={journalSearch}
             onChange={(e) => setJournalSearch(e.target.value)}
-            placeholder="بحث برقم القيد أو البيان..."
+            placeholder="بحث برقم أي قيد (يدوي أو سند أو فاتورة أو استمارة) أو ببيان القيد اليدوي..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -2010,7 +2010,7 @@ ${PRINT_READY_SCRIPT}</head>
                 >
                   <Stack direction="row" justifyContent="space-between">
                     <Typography sx={{ fontWeight: 900 }}>
-                      قيد {j.code}
+                      قيد {j.code}{j.sourceName ? ` — ${j.sourceName}` : ""}
                     </Typography>
                     <Typography variant="body2">{displayGregorianDate(j.dayDate)}</Typography>
                   </Stack>
@@ -2030,6 +2030,7 @@ ${PRINT_READY_SCRIPT}</head>
                 <TableHead>
                   <TableRow>
                     <TableCell>رقم القيد</TableCell>
+                    <TableCell>النوع</TableCell>
                     <TableCell>التاريخ</TableCell>
                     <TableCell>البيان</TableCell>
                     <TableCell>الحالة</TableCell>
@@ -2040,6 +2041,7 @@ ${PRINT_READY_SCRIPT}</head>
                   {journalList.map((j) => (
                     <TableRow hover key={j.guid}>
                       <TableCell>{j.code}</TableCell>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>{j.sourceName || "-"}</TableCell>
                       <TableCell>{displayGregorianDate(j.dayDate)}</TableCell>
                       <TableCell>{j.notes}</TableCell>
                       <TableCell>

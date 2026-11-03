@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Button, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
@@ -47,6 +47,34 @@ function ColumnFilterHeader({ title, active, count, onOpen }) {
 
 const DEFAULT_EXCLUDE = ["actions", "vip"];
 
+// حفظ الفلاتر في الجلسة (persistKey): القيم Set فبتتحفظ كمصفوفات.
+const readStoredFilters = (persistKey) => {
+  if (!persistKey) return {};
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(persistKey) || "{}");
+    const restored = {};
+    Object.entries(stored || {}).forEach(([field, values]) => {
+      if (Array.isArray(values)) restored[field] = new Set(values);
+    });
+    return restored;
+  } catch {
+    return {};
+  }
+};
+
+const writeStoredFilters = (persistKey, filters) => {
+  if (!persistKey) return;
+  try {
+    const plain = {};
+    Object.entries(filters).forEach(([field, values]) => {
+      if (values) plain[field] = Array.from(values);
+    });
+    sessionStorage.setItem(persistKey, JSON.stringify(plain));
+  } catch {
+    // التخزين مش متاح (وضع خاص مثلًا): الفلاتر تشتغل عادي من غير حفظ
+  }
+};
+
 // النص الظاهر في الخلية من valueGetter / valueFormatter الخاصين بالعمود (لو موجودين)،
 // حتى لا تحتاج كل صفحة لكتابة accessors بنفسها.
 const buildColumnAccessor = (column) => {
@@ -81,14 +109,19 @@ export default function useColumnValueFilters({
   columns: sourceColumns,
   accessors: customAccessors,
   excludeFields = DEFAULT_EXCLUDE,
-  disableSorting = false
+  disableSorting = false,
+  persistKey
 }) {
   const rows = useMemo(() => (Array.isArray(sourceRows) ? sourceRows : []), [sourceRows]);
   const columns = useMemo(
     () => (Array.isArray(sourceColumns) ? sourceColumns : []),
     [sourceColumns]
   );
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState(() => readStoredFilters(persistKey));
+
+  useEffect(() => {
+    writeStoredFilters(persistKey, filters);
+  }, [persistKey, filters]);
   // { field, title, anchorEl, open } — بيفضل موجود بعد القفل عشان أنيميشن القفل.
   const [panel, setPanel] = useState(null);
   const openPanel = useCallback(

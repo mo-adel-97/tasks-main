@@ -153,6 +153,9 @@ const writeSupportTicketsCache = (tickets) => {
   }
 };
 
+const isSameGuid = (a, b) =>
+  String(a || '').toLowerCase() === String(b || '').toLowerCase();
+
 const TechnicalSupport = () => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -343,7 +346,7 @@ const TechnicalSupport = () => {
       if (response.data) {
         const usersMap = {};
         response.data.forEach(user => {
-          usersMap[user.guid] = {
+          usersMap[String(user.guid || '').toLowerCase()] = {
             fullName: user.fullName || user.userName,
             userName: user.userName
           };
@@ -441,8 +444,52 @@ const TechnicalSupport = () => {
   };
 
   // الحصول على اسم المستخدم من GUID
+  // أسماء اللي مش موجودين في قائمة المستخدمين (حسابات الدعم بيتخفى الـ guid بتاعها):
+  // بنطلب أسماءهم بالـ guid اللي في التذاكر والردود نفسها.
+  const [guidNames, setGuidNames] = useState({});
+  const missingNameGuids = useMemo(() => {
+    const all = [
+      ...tickets.map((t) => t.user_guid), ...allUsersTickets.map((t) => t.user_guid),
+      ticketDetails?.user_guid,
+      ...(ticketDetails?.replies || []).map((reply) => reply.user_guid)
+    ];
+    const missing = new Set();
+    all.forEach((guid) => {
+      const key = String(guid || '').toLowerCase();
+      if (key && !usersData[key] && guidNames[key] === undefined) missing.add(key);
+    });
+    return Array.from(missing).sort().join(',');
+  }, [tickets, allUsersTickets, ticketDetails, usersData, guidNames]);
+
+  useEffect(() => {
+    if (!missingNameGuids) return;
+    let cancelled = false;
+    const requested = missingNameGuids.split(',');
+    axios.get(`${USER_API_URL}/names`, { params: { guids: missingNameGuids } })
+      .then((response) => {
+        if (cancelled) return;
+        const found = response.data || {};
+        // اللي ملوش اسم نحطه '' عشان ما نطلبوش تاني
+        setGuidNames((current) => {
+          const next = { ...current };
+          requested.forEach((key) => { next[key] = found[key] || ''; });
+          return next;
+        });
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [missingNameGuids]);
+
+  // حسابات الدعم (sa / admin / emadn ...) قائمة المستخدمين مش بترجع الـ guid بتاعها،
+  // فكان الاسم بيقع على اسم اللي فاتح الشاشة. دلوقتي: مقارنة بدون حالة الأحرف،
+  // والاسم من guidNames لو مش في القائمة، ولو مش معروف خالص يظهر "الدعم الفني".
   const getUserNameFromGuid = (guid) => {
-    return usersData[guid]?.fullName || fullName || 'مستخدم غير معروف';
+    const known = usersData[String(guid || '').toLowerCase()];
+    if (known?.fullName) return known.fullName;
+    const named = guidNames[String(guid || '').toLowerCase()];
+    if (named) return named;
+    if (isSameGuid(guid, userGuid)) return fullName || userName || 'أنت';
+    return 'الدعم الفني';
   };
 
   // الحصول على اسم الفرع من GUID
@@ -2422,7 +2469,7 @@ const TechnicalSupport = () => {
                                 flexWrap: 'wrap'
                               }}
                             >
-                              {(isSupportStaff || (ticket.user_guid === userGuid && ticket.status !== 'closed')) && (
+                              {(isSupportStaff || (isSameGuid(ticket.user_guid, userGuid) && ticket.status !== 'closed')) && (
                                 <Button
                                   size="small"
                                   variant="text"
@@ -2817,7 +2864,7 @@ const TechnicalSupport = () => {
                                   )}
 
                                   {/* إظهار زر الرد للمستخدمين العاديين فقط إذا كانوا هم منشئي التذكرة */}
-                                  {!isSupportStaff && ticket.user_guid === userGuid && (
+                                  {!isSupportStaff && isSameGuid(ticket.user_guid, userGuid) && (
                                     <Tooltip
                                       title={
                                         ticket.status === 'closed'
@@ -3181,16 +3228,16 @@ const TechnicalSupport = () => {
                           >
                             <ListItemAvatar>
                               <Avatar sx={{
-                                bgcolor: reply.user_guid === userGuid
+                                bgcolor: isSameGuid(reply.user_guid, userGuid)
                                   ? '#2196f3'
                                   : isSupportStaff
                                     ? '#4caf50'
                                     : '#ff9800'
                               }}>
-                                {reply.user_guid === userGuid
+                                {isSameGuid(reply.user_guid, userGuid)
                                   ? 'أنت'
-                                  : usersData[reply.user_guid]
-                                    ? usersData[reply.user_guid].userName.substring(0, 2)
+                                  : usersData[String(reply.user_guid || '').toLowerCase()]
+                                    ? usersData[String(reply.user_guid || '').toLowerCase()].userName.substring(0, 2)
                                     : 'دعم'}
                               </Avatar>
                             </ListItemAvatar>
@@ -3198,7 +3245,7 @@ const TechnicalSupport = () => {
                               primary={
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 0.5, minWidth: 0 }}>
                                   <Typography variant="body2" sx={{ fontWeight: 'medium', color: isDark ? theme.palette.text.primary : 'inherit' }}>
-                                    {reply.user_guid === userGuid
+                                    {isSameGuid(reply.user_guid, userGuid)
                                       ? 'أنت'
                                       : getUserNameFromGuid(reply.user_guid)}
                                   </Typography>
@@ -3255,7 +3302,7 @@ const TechnicalSupport = () => {
                 >
                   إغلاق
                 </Button>
-                {(isSupportStaff || ticketDetails.user_guid === userGuid) && (
+                {(isSupportStaff || isSameGuid(ticketDetails.user_guid, userGuid)) && (
                   <Tooltip
                     title={
                       !isSupportStaff && ticketDetails.status === 'closed'

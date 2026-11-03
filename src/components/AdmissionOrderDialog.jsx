@@ -1127,6 +1127,7 @@ const AdmissionOrderDialog = ({
   const [contextData, setContextData] = useState(null);
 
   const [availableDiplomas, setAvailableDiplomas] = useState([]);
+  const [batchPayRules, setBatchPayRules] = useState({ batchMinPay: null, diplomaMinPays: {} });
   const [availableFees, setAvailableFees] = useState([]);
 
   const [selectedDiplomas, setSelectedDiplomas] = useState([]);
@@ -1226,10 +1227,43 @@ const AdmissionOrderDialog = ({
     return () => clearTimeout(timer);
   }, [currentStep, open]);
 
-  const minStartPay = toNumber(contextData?.payAmount);
+  // الحد الأدنى (صفحة "إعدادات التسجيل") — الأدق يكسب:
+  // مقدم التخصص في الدفعة ← مقدم الدفعة كلها ← (دبلوم) مقدم التخصص في الفرع ← مقدم الفرع.
+  // لو أكثر من تخصص: أكبر قيمة بينهم. السيرفر بيفحص نفس القاعدة وقت الحفظ.
+  const diplomaPayAmounts = useMemo(() => {
+    const map = {};
+    Object.entries(contextData?.diplomaPayAmounts || {}).forEach(([guid, value]) => {
+      map[String(guid).toLowerCase()] = toNumber(value);
+    });
+    return map;
+  }, [contextData]);
+
+  const isDiplomaReg = Number(regType) === 0;
+
+  const ruleFor = (diplomGuid) => {
+    const key = String(diplomGuid || "").toLowerCase();
+    if (batchPayRules.diplomaMinPays[key] !== undefined) return batchPayRules.diplomaMinPays[key];
+    if (batchPayRules.batchMinPay !== null) return batchPayRules.batchMinPay;
+    if (isDiplomaReg && diplomaPayAmounts[key] !== undefined) return diplomaPayAmounts[key];
+    return undefined;
+  };
+
+  const hasDiplomaMinPay = selectedDiplomas.some((x) => ruleFor(x?.diplomGuid) !== undefined);
+
+  const minStartPay = selectedDiplomas.length
+    ? Math.max(
+        ...selectedDiplomas.map((x) => {
+          const special = ruleFor(x?.diplomGuid);
+          if (special !== undefined) return special;
+          return isDiplomaReg ? toNumber(contextData?.payAmount) : 0;
+        })
+      )
+    : isDiplomaReg
+      ? toNumber(contextData?.payAmount)
+      : 0;
 
 const minimumPayDisplay =
-  Number(regType) === 0 && minStartPay > 0
+  (Number(regType) === 0 || hasDiplomaMinPay) && minStartPay > 0
     ? money(minStartPay)
     : "غير محدد";
   const attachIdRequired = true;
@@ -1626,9 +1660,24 @@ setAmount(
           id: item.id || item.diplomGuid || `${item.code}-${index}`
         }))
       );
+
+      // مقدم الدفعة / التخصص في الدفعة (صفحة "إعدادات التسجيل")
+      setBatchPayRules({
+        batchMinPay:
+          result?.batchMinPay === null || result?.batchMinPay === undefined
+            ? null
+            : toNumber(result.batchMinPay),
+        diplomaMinPays: Object.fromEntries(
+          Object.entries(result?.batchDiplomaMinPays || {}).map(([guid, value]) => [
+            String(guid).toLowerCase(),
+            toNumber(value)
+          ])
+        )
+      });
     } catch (err) {
       setError(err.message || "حدث خطأ أثناء تحميل الدبلومات / الدورات");
       setAvailableDiplomas([]);
+      setBatchPayRules({ batchMinPay: null, diplomaMinPays: {} });
     } finally {
       setDiplomasLoading(false);
     }
@@ -2016,10 +2065,9 @@ if (payAmountNumber <= 0) {
   );
 }
 
-// تطبيق الحد الأدنى المحدد على الدبلومات فقط
+// الحد الأدنى: الدبلوم (مقدم الفرع المفعّل أو أي إعداد خاص)، والدورات لما يكون عليها إعداد دفعة
 if (
-  Number(regType) === 0 &&
-  contextData?.chkStartPay &&
+  ((Number(regType) === 0 && contextData?.chkStartPay) || hasDiplomaMinPay) &&
   minStartPay > 0 &&
   payAmountNumber < minStartPay
 ) {
@@ -4213,7 +4261,7 @@ ${PRINT_READY_SCRIPT}</head>
   , dir: "ltr" , style: { direction: "ltr", unicodeBidi: "isolate" } }}
   error={amount !== "" && toNumber(amount) <= 0}
   helperText={
-    Number(regType) === 0 && minStartPay > 0
+    (Number(regType) === 0 || hasDiplomaMinPay) && minStartPay > 0
       ? `الحد الأدنى: ${money(minStartPay)}`
       : "يجب إدخال قيمة أكبر من صفر"
   }

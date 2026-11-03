@@ -309,8 +309,9 @@ const PaymentRequestsDataGrid = React.memo(
     isPhone
   }) {
     return (
-<FilterableDataGrid 
-  autoHeight 
+<FilterableDataGrid
+  persistKey="paymentRequestsReport:grid"
+  autoHeight
   rows={rows} 
   columns={columns} 
   getRowId={getRowId} 
@@ -521,6 +522,19 @@ const PaymentRequestsDataGrid = React.memo(
   }
 );
 
+const FILTERS_STORAGE_KEY = "paymentRequestsReport:filters";
+
+const readSavedFilters = () => {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(FILTERS_STORAGE_KEY) || "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+};
+
+const savedList = (value) => (Array.isArray(value) ? value : []);
+
 export default function PaymentRequestsReport() {
   const theme = useTheme();
   const isDesktop = useMediaQuery(`(min-width:${DESKTOP_BREAKPOINT}px)`, { noSsr: true });
@@ -530,10 +544,13 @@ export default function PaymentRequestsReport() {
   const user = useMemo(() => currentUser(), []);
   const userGuid = useMemo(() => getUserGuid(user), [user]);
 
+  // الفلاتر محفوظة في الجلسة: تفضل بعد التأكيد / التعديل / الرجوع للشاشة.
+  const saved = useMemo(() => readSavedFilters(), []);
+
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [fromDate, setFromDate] = useState(today());
-  const [toDate, setToDate] = useState(today());
-  const [search, setSearch] = useState("");
+  const [fromDate, setFromDate] = useState(saved.fromDate || today());
+  const [toDate, setToDate] = useState(saved.toDate || today());
+  const [search, setSearch] = useState(saved.search || "");
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -548,13 +565,46 @@ export default function PaymentRequestsReport() {
   // الفلاتر المتقدمة
   // كل فلتر Multi Select ويمكن الجمع بين أكثر من فلتر في نفس الوقت.
   // =========================
-  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
-  const [branchFilter, setBranchFilter] = useState([]);
-  const [documentFilter, setDocumentFilter] = useState([]);
-  const [cashBoxFilter, setCashBoxFilter] = useState([]);
-  const [statusFilter, setStatusFilter] = useState([]);
-  const [createdByFilter, setCreatedByFilter] = useState([]);
-  const [accountantFilter, setAccountantFilter] = useState([]);
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(Boolean(saved.advancedFiltersOpen));
+  const [branchFilter, setBranchFilter] = useState(savedList(saved.branchFilter));
+  const [documentFilter, setDocumentFilter] = useState(savedList(saved.documentFilter));
+  const [cashBoxFilter, setCashBoxFilter] = useState(savedList(saved.cashBoxFilter));
+  const [statusFilter, setStatusFilter] = useState(savedList(saved.statusFilter));
+  const [createdByFilter, setCreatedByFilter] = useState(savedList(saved.createdByFilter));
+  const [accountantFilter, setAccountantFilter] = useState(savedList(saved.accountantFilter));
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        FILTERS_STORAGE_KEY,
+        JSON.stringify({
+          fromDate,
+          toDate,
+          search,
+          advancedFiltersOpen,
+          branchFilter,
+          documentFilter,
+          cashBoxFilter,
+          statusFilter,
+          createdByFilter,
+          accountantFilter
+        })
+      );
+    } catch {
+      // من غير تخزين: الشاشة بتشتغل عادي
+    }
+  }, [
+    fromDate,
+    toDate,
+    search,
+    advancedFiltersOpen,
+    branchFilter,
+    documentFilter,
+    cashBoxFilter,
+    statusFilter,
+    createdByFilter,
+    accountantFilter
+  ]);
 
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [menuRow, setMenuRow] = useState(null);
@@ -710,12 +760,9 @@ export default function PaymentRequestsReport() {
     };
   }, []);
 
+  // بعد التعديل الفلاتر تفضل زي ما هي (كان بيمسح البحث وفلتر البنك).
   const handlePaymentOrderUpdated =
     useCallback(async () => {
-      // لو فيه فلتر على البنك القديم أو بحث باسمه،
-      // الصف سيختفي من filteredRows بعد تغيير البنك.
-      setSearch("");
-      setCashBoxFilter([]);
       await loadData();
     }, [loadData]);
 

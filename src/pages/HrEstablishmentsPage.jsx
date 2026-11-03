@@ -29,6 +29,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import LinkOffRoundedIcon from "@mui/icons-material/LinkOffRounded";
 import { SSTLI_API_URL } from "../config/apiUrls";
+import { useNicknames, withNickname } from "../utils/nicknames";
 
 /*
   شاشة "المنشآت والسجلات التجارية":
@@ -44,7 +45,7 @@ const primaryColor = "#057546";
 const primaryDark = "#034d31";
 const accentColor = "#ae1e21";
 
-const emptyForm = { establishmentGuid: "", establishmentName: "", commercialRegNo: "", distinctiveNo: "", notes: "", isActive: true };
+const emptyForm = { establishmentGuid: "", establishmentName: "", commercialRegNo: "", distinctiveNo: "", gosiNo: "", laborOfficeNo: "", notes: "", isActive: true };
 
 const getCurrentActor = () => {
   try {
@@ -70,6 +71,7 @@ const showError = (text) =>
   Swal.fire({ icon: "error", title: "خطأ", text, confirmButtonText: "حسنًا", confirmButtonColor: accentColor });
 
 const HrEstablishmentsPage = () => {
+  useNicknames();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const accent = isDark ? theme.palette.success.light : primaryColor;
@@ -312,12 +314,22 @@ const HrEstablishmentsPage = () => {
                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: "text.secondary" }}>
                   الرقم المميز: <bdi dir="ltr">{est.distinctiveNo || "-"}</bdi>
                 </Typography>
+                {est.gosiNo ? (
+                  <Typography sx={{ fontSize: 12, fontWeight: 700, color: "text.secondary" }}>
+                    التأمينات: <bdi dir="ltr">{est.gosiNo}</bdi>
+                  </Typography>
+                ) : null}
+                {est.laborOfficeNo ? (
+                  <Typography sx={{ fontSize: 12, fontWeight: 700, color: "text.secondary" }}>
+                    مكتب العمل: <bdi dir="ltr">{est.laborOfficeNo}</bdi>
+                  </Typography>
+                ) : null}
               </Box>
               <Button
                 size="small"
                 onClick={(event) => {
                   event.stopPropagation();
-                  setForm({ ...emptyForm, ...est, commercialRegNo: est.commercialRegNo || "", distinctiveNo: est.distinctiveNo || "", notes: est.notes || "" });
+                  setForm({ ...emptyForm, ...est, commercialRegNo: est.commercialRegNo || "", distinctiveNo: est.distinctiveNo || "", gosiNo: est.gosiNo || "", laborOfficeNo: est.laborOfficeNo || "", notes: est.notes || "" });
                 }}
                 sx={{ minWidth: 0, color: accent }}
               >
@@ -454,7 +466,7 @@ const HrEstablishmentsPage = () => {
                     <tr key={e.employeeGuid} className={isSel ? "sel" : undefined} onClick={() => toggleOne(e.employeeGuid)}>
                       <td><Checkbox size="small" checked={isSel} /></td>
                       <td>{e.employeeCode}</td>
-                      <td className="r">{e.fullName}</td>
+                      <td className="r">{withNickname(e.fullName, e.employeeGuid)}</td>
                       <td className="ltr">{e.nationalId || "-"}</td>
                       <td>{e.branchName}</td>
                       <td>{e.jobTitle}</td>
@@ -494,6 +506,16 @@ const HrEstablishmentsPage = () => {
                 <Box sx={{ flex: 1 }}>
                   {fieldLabel("الرقم المميز")}
                   <TextField size="small" fullWidth value={form.distinctiveNo} onChange={(e) => setForm({ ...form, distinctiveNo: e.target.value })} inputProps={{ dir: "ltr" }} />
+                </Box>
+              </Stack>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                <Box sx={{ flex: 1 }}>
+                  {fieldLabel("رقم التأمينات الاجتماعية")}
+                  <TextField size="small" fullWidth value={form.gosiNo} onChange={(e) => setForm({ ...form, gosiNo: e.target.value })} inputProps={{ dir: "ltr" }} />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  {fieldLabel("رقم مكتب العمل")}
+                  <TextField size="small" fullWidth value={form.laborOfficeNo} onChange={(e) => setForm({ ...form, laborOfficeNo: e.target.value })} inputProps={{ dir: "ltr" }} />
                 </Box>
               </Stack>
               <Box>

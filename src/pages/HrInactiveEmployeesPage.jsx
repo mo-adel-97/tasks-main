@@ -17,6 +17,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import HowToRegRoundedIcon from "@mui/icons-material/HowToRegRounded";
 import { SSTLI_API_URL } from "../config/apiUrls";
+import { useNicknames, withNickname } from "../utils/nicknames";
 
 /*
   شاشة "الموظفون غير النشطين":
@@ -61,6 +62,7 @@ const readJson = async (response, fallback) => {
 const norm = (value) => String(value ?? "").trim().toLowerCase();
 
 const HrInactiveEmployeesPage = () => {
+  useNicknames();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const accent = isDark ? theme.palette.success.light : primaryColor;
@@ -237,7 +239,7 @@ const HrInactiveEmployeesPage = () => {
                 visible.map((r) => (
                   <tr key={r.employeeGuid}>
                     {COLUMNS.map((c) => (
-                      <td key={c.key} className={c.className}>{r[c.key] ?? ""}</td>
+                      <td key={c.key} className={c.className}>{c.key === "fullName" ? withNickname(r.fullName, r.employeeGuid) : r[c.key] ?? ""}</td>
                     ))}
                     <td>
                       <Button

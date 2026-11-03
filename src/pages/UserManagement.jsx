@@ -59,6 +59,7 @@ import UserDocumentsTab from "../components/userManagement/UserDocumentsTab";
 
 import Swal from "sweetalert2";
 import { SSTLI_API_URL } from "../config/apiUrls";
+import { getNickname, saveNickname, useNicknames, withNickname } from "../utils/nicknames";
 
 
 
@@ -475,7 +476,12 @@ const PermissionRow = React.memo(function PermissionRow({ p, index, onChange }) 
   );
 });
 
-function LookupDialog({
+function LookupDialog(props) {
+  useNicknames();
+  return <LookupDialogBody {...props} />;
+}
+
+function LookupDialogBody({
   open,
   title,
   rows,
@@ -619,7 +625,9 @@ function LookupDialog({
                         fontSize: { xs: 12, sm: 13 }
                       }}
                     >
-                      {row[columns[1]?.key] ?? "-"}
+                      {columns[1]?.label === "اسم المستخدم"
+                        ? withNickname(row[columns[1]?.key], row.guid) || "-"
+                        : row[columns[1]?.key] ?? "-"}
                     </Typography>
                   </Box>
 
@@ -668,6 +676,7 @@ function LookupDialog({
 }
 
 export default function UserManagement() {
+  const { version: nicknamesVersion } = useNicknames();
   const theme = useTheme();
   const isDesktop = useMediaQuery(
     `(min-width:${DESKTOP_BREAKPOINT}px)`,
@@ -716,6 +725,13 @@ export default function UserManagement() {
   });
 
   const isEdit = Boolean(model.guid);
+
+  // الاسم الحركي (HR_UserNickname) — بيتحفظ بعد حفظ المستخدم
+  const [nickname, setNickname] = useState("");
+  useEffect(() => {
+    setNickname(getNickname(model.guid, model.fullName));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model.guid, nicknamesVersion]);
 
   const setField = useCallback((field, value) => {
     setModel((current) => ({
@@ -1595,6 +1611,18 @@ export default function UserManagement() {
         })
       );
 
+      const savedGuid = saved.guid || model.guid;
+      if (savedGuid && nickname.trim() !== getNickname(savedGuid, model.fullName)) {
+        let actorGuid = null;
+        try {
+          const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+          actorGuid = currentUser?.guid || currentUser?.Guid || null;
+        } catch {
+          actorGuid = null;
+        }
+        await saveNickname(savedGuid, nickname.trim(), actorGuid);
+      }
+
       // الدفاتر اتغيّرت في تابة "الدفاتر"؟ نحفظها مع المستخدم
       const documentsResult =
         await documentsTabRef.current?.saveIfDirty?.();
@@ -1627,7 +1655,8 @@ export default function UserManagement() {
     model,
     menus,
     permissions,
-    selectedBranches
+    selectedBranches,
+    nickname
   ]);
 
   // ============================================================
@@ -1927,6 +1956,15 @@ export default function UserManagement() {
                     e.target.value
                   )
                 }
+              />
+
+              <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}
+                size="small"
+                label="الاسم الحركي"
+                placeholder="يظهر بين قوسين جنب الاسم"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                inputProps={{ maxLength: 100 }}
               />
 
               <TextField sx={uiLayout.formFieldSx} InputLabelProps={{ shrink: true }}

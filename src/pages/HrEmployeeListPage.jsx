@@ -36,6 +36,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
 import { SSTLI_API_URL } from "../config/apiUrls";
+import { useNicknames, withNickname } from "../utils/nicknames";
 
 /*
   شاشة "قائمة الموظفين" — نقل EmpHome من الديسكتوب (قائمة الموارد البشرية).
@@ -170,7 +171,7 @@ const EditEmployeeDialog = ({ employee, lookups, userGuid, onClose, onSaved }) =
   return (
     <Dialog open={open} onClose={() => !saving && onClose()} fullWidth maxWidth="md" disableEnforceFocus PaperProps={{ sx: { direction: "rtl" } }}>
       <DialogTitle sx={{ fontWeight: 900, color: "#fff", background: `linear-gradient(135deg, ${primaryColor}, ${primaryDark})`, display: "flex", alignItems: "center", gap: 1 }}>
-        <EditIcon /> تعديل بيانات الموظف {employee ? `— ${employee.fullName}` : ""}
+        <EditIcon /> تعديل بيانات الموظف {employee ? `— ${withNickname(employee.fullName, employee.guid)}` : ""}
       </DialogTitle>
       <DialogContent dividers>
         {loading || !form ? (
@@ -291,7 +292,7 @@ const AllowancesDialog = ({ employee, month, userGuid, onClose, onSaved }) => {
         <PaidIcon /> إدراج البدلات — شهر {String(mon).padStart(2, "0")}/{year}
       </DialogTitle>
       <DialogContent dividers>
-        <Typography sx={{ fontWeight: 900, mb: 1.5 }}>{employee?.fullName}</Typography>
+        <Typography sx={{ fontWeight: 900, mb: 1.5 }}>{withNickname(employee?.fullName, employee?.guid)}</Typography>
         <Grid container spacing={1.5}>
           {ALLOWANCES.map((a) => (
             <Grid item xs={12} sm={6} key={a.req}>
@@ -355,14 +356,17 @@ const COLUMNS = [
 const cellClass = (c) =>
   [c.align === "right" ? "r" : "", c.ltr || c.money ? "ltr" : "", c.wrap ? "wrap" : "", c.bold ? "b" : ""].filter(Boolean).join(" ");
 
-const cellValue = (row, col) => (col.money ? money(row[col.key]) : row[col.key] || "");
+const cellValue = (row, col) =>
+  col.money ? money(row[col.key]) : col.key === "fullName" ? withNickname(row.fullName, row.guid) : row[col.key] || "";
 
 // الصفوف بتترسم على دفعات وإنت بتعمل scroll بدل ما الجدول كله يترسم مرة واحدة.
 const PAGE_SIZE = 60;
 
 // صف خفيف (HTML عادي بدل Tooltip/IconButton/Chip لكل صف) ومتعمله memo،
 // علشان فتح قايمة الإجراءات أو أي تغيير في الشاشة ما يعيدش رسم كل الصفوف.
-const EmployeeRow = memo(({ row, onAction }) => (
+const EmployeeRow = memo(({ row, onAction }) => {
+  useNicknames();
+  return (
   <tr>
     <td className="act">
       <button type="button" className="act-btn" title="الإجراءات" aria-label="الإجراءات" onClick={(e) => onAction(e.currentTarget, row)}>
@@ -375,7 +379,8 @@ const EmployeeRow = memo(({ row, onAction }) => (
       </td>
     ))}
   </tr>
-));
+  );
+});
 
 const HrEmployeeListPage = () => {
   const theme = useTheme();
@@ -442,7 +447,7 @@ const HrEmployeeListPage = () => {
 
   // نص البحث متجهز مرة واحدة لكل صف بدل ما يتحسب مع كل حرف.
   const indexed = useMemo(
-    () => rows.map((r) => ({ row: r, text: norm([r.code, r.fullName, r.branch, r.department, r.job, r.mobile, r.workMobile, r.iban].join(" ")) })),
+    () => rows.map((r) => ({ row: r, text: norm([r.code, withNickname(r.fullName, r.guid), r.branch, r.department, r.job, r.mobile, r.workMobile, r.iban].join(" ")) })),
     [rows]
   );
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import useColumnValueFilters from "./useColumnValueFilters";
@@ -8,12 +8,14 @@ import useColumnValueFilters from "./useColumnValueFilters";
 //   filterAccessors        نص الخلية لأعمدة تعرض قيمة مختلفة عن الحقل
 //   filterExcludeFields    أعمدة بدون فلتر
 //   onFilteredRowsChange   الصفوف بعد الفلترة (للعدّاد / التصدير)
+//   persistKey             مفتاح sessionStorage: فلاتر الأعمدة والصفحة تفضل بعد التحديث أو الرجوع للشاشة
 export default function FilterableDataGrid({
   rows,
   columns,
   filterAccessors,
   filterExcludeFields,
   onFilteredRowsChange,
+  persistKey,
   ...gridProps
 }) {
   const filters = useColumnValueFilters({
@@ -21,6 +23,7 @@ export default function FilterableDataGrid({
     columns,
     accessors: filterAccessors,
     disableSorting: true, // بدون أسهم الترتيب: الفلتر الجديد فقط
+    persistKey: persistKey ? `${persistKey}:columns` : undefined,
     ...(filterExcludeFields ? { excludeFields: filterExcludeFields } : {})
   });
 
@@ -28,9 +31,36 @@ export default function FilterableDataGrid({
     if (onFilteredRowsChange) onFilteredRowsChange(filters.rows);
   }, [filters.rows, onFilteredRowsChange]);
 
+  // الصفحة وعدد الصفوف بيتحفظوا مع الفلاتر لو فيه persistKey
+  const pageKey = persistKey ? `${persistKey}:page` : null;
+  const [paginationModel, setPaginationModel] = useState(() => {
+    const fallback = gridProps.initialState?.pagination?.paginationModel || { page: 0, pageSize: 25 };
+    if (!pageKey) return fallback;
+    try {
+      const stored = JSON.parse(sessionStorage.getItem(pageKey) || "null");
+      return stored && Number.isInteger(stored.page) && Number.isInteger(stored.pageSize) ? stored : fallback;
+    } catch {
+      return fallback;
+    }
+  });
+
+  useEffect(() => {
+    if (!pageKey) return;
+    try {
+      sessionStorage.setItem(pageKey, JSON.stringify(paginationModel));
+    } catch {
+      // من غير تخزين: الصفحة بتشتغل عادي
+    }
+  }, [pageKey, paginationModel]);
+
+  const paginationProps = pageKey && !gridProps.paginationModel
+    ? { paginationModel, onPaginationModelChange: setPaginationModel }
+    : {};
+
   const grid = (
     <DataGrid
       {...gridProps}
+      {...paginationProps}
       rows={filters.rows}
       columns={filters.columns}
       disableColumnFilter
