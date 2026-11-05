@@ -310,6 +310,61 @@ const playBellChime = () => {
   }
 };
 
+// نغمة خدمة العملاء: ثلاث نغمات صاعدة أوضح من الجرس العادي (تذكرة محوّلة / شكوى / تصعيد).
+const playCrmChime = () => {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    [[659, 0], [880, 0.14], [1175, 0.28]].forEach(([freq, at]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + at);
+      gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + at + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + at + 0.5);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + at);
+      osc.stop(ctx.currentTime + at + 0.55);
+    });
+    window.setTimeout(() => ctx.close().catch(() => {}), 1500);
+  } catch {
+    // الصوت اختياري.
+  }
+};
+
+// إشعار المتصفح (يظهر حتى لو التبويب مش ظاهر) — بعد موافقة المستخدم من أول ضغطة على الجرس.
+const showBrowserNotification = (item, onOpen) => {
+  try {
+    if (!('Notification' in window) || window.Notification.permission !== 'granted') return;
+    const n = new window.Notification(item.title || 'إشعار جديد', {
+      body: item.message || '',
+      tag: item.notificationKey,
+      icon: '/favicon.ico',
+      dir: 'rtl',
+      lang: 'ar'
+    });
+    n.onclick = () => {
+      window.focus();
+      onOpen(item);
+      n.close();
+    };
+  } catch {
+    // بعض المتصفحات بتمنع new Notification (موبايل)؛ الجرس كفاية.
+  }
+};
+
+const requestBrowserNotifications = () => {
+  try {
+    if ('Notification' in window && window.Notification.permission === 'default') {
+      window.Notification.requestPermission().catch(() => {});
+    }
+  } catch {
+    // اختياري.
+  }
+};
+
 const organicRingMorph = keyframes`
   0%, 100% {
     border-radius: 18px 14px 19px 13px / 14px 19px 13px 18px;
@@ -408,6 +463,8 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
   const [bellRinging, setBellRinging] = useState(false);
   const [bellMuted, setBellMuted] = useState(readBellMuted);
   const previousUnreadRef = useRef(null);
+  // مفاتيح الإشعارات اللي اتعرضت قبل كده (عشان إشعار المتصفح يطلع للجديد بس)
+  const seenNotificationKeysRef = useRef(null);
   const bellMutedRef = useRef(bellMuted);
   bellMutedRef.current = bellMuted;
 
@@ -582,18 +639,24 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
         );
       }
 
-      setNotifications(
-        Array.isArray(result?.data)
-          ? result.data
-          : []
-      );
+      const items = Array.isArray(result?.data) ? result.data : [];
+      setNotifications(items);
       const unread = Number(result?.unreadCount || 0);
 
+      // الإشعارات غير المقروءة اللي ظهرت لأول مرة (مش أول تحميل للصفحة)
+      const firstLoad = seenNotificationKeysRef.current === null;
+      const seen = seenNotificationKeysRef.current || new Set();
+      const fresh = firstLoad ? [] : items.filter((i) => !i.isRead && !seen.has(i.notificationKey));
+      items.forEach((i) => seen.add(i.notificationKey));
+      seenNotificationKeysRef.current = seen;
+
       // إشعار جديد وصل من آخر تحديث: الجرس يهتز ويرن (مش أول تحميل للصفحة).
-      if (previousUnreadRef.current !== null && unread > previousUnreadRef.current) {
+      if (fresh.length || (previousUnreadRef.current !== null && unread > previousUnreadRef.current)) {
         setBellRinging(true);
         window.setTimeout(() => setBellRinging(false), 1600);
-        if (!bellMutedRef.current) playBellChime();
+        const hasCrm = fresh.some((i) => String(i.notificationType || '').startsWith('CRM_'));
+        if (!bellMutedRef.current) (hasCrm ? playCrmChime : playBellChime)();
+        fresh.slice(0, 3).forEach((item) => showBrowserNotification(item, markNotificationReadRef.current));
       }
       previousUnreadRef.current = unread;
 
@@ -652,6 +715,10 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
     loadHrNotifications();
   };
 
+  // loadHrNotifications متعرّفة قبل markNotificationRead، فإشعار المتصفح بيوصلها من ref
+  const markNotificationReadRef = useRef(() => {});
+  markNotificationReadRef.current = markNotificationRead;
+
   const markAllNotificationsRead = async () => {
     const userGuid = String(
       readCurrentUser()?.guid || readCurrentUser()?.Guid || ""
@@ -685,6 +752,7 @@ const StandardSidebar = ({ mobileOpen = false, onMobileClose = () => {} }) => {
         aria-label="الإشعارات"
         onClick={(event) => {
           setNotificationAnchor(event.currentTarget);
+          requestBrowserNotifications();
           loadHrNotifications();
         }}
         sx={{

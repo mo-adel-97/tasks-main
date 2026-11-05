@@ -54,9 +54,7 @@ import UploadUpdate from './components/UploadUpdate';
 import TrainerStudentGrid from './components/TrainerStudentGrid';
 import RegistrationCommissions from './components/RegistrationCommissions';
 import MyRequests from "./MyRequests";
-import StudentSearch from './components/StudentSearch';
 import InquiriesPage from './components/InquiriesPage';
-import ReportClients from './components/RportForClinets';
 import DailyFollowUpReport from './pages/DailyFollowUpReport';
 import EmployeeCVAdminPage from './components/EmployeeCVAdminPage';
 import BranchReport from './components/PastReports';
@@ -119,6 +117,10 @@ import BranchIncomeReport from "./pages/BranchIncomeReport";
 import IncomeLive from "./pages/IncomeLive";
 import CustomersHub from "./pages/CustomersHub";
 import MyRegistrationLeads from "./pages/MyRegistrationLeads";
+import CustomerServiceCenter from "./pages/customerService/CustomerServiceCenter";
+// خدمة العملاء (/dashboard/cleints) والتقرير (/dashboard/report) بقوا الشاشات الجديدة؛ القديمة (StudentSearch / RportForClinets) لسه في components
+import CustomerServiceDesk from "./pages/customerService/CustomerServiceDesk";
+import CsReports from "./pages/customerService/CsReports";
 import AnnouncementsAdmin from "./pages/AnnouncementsAdmin";
 import RewardsList from './pages/RewardsList';
 import BatchStatistics from './pages/BatchStatistics';
@@ -636,6 +638,17 @@ function App() {
               <PrivateRoute>
                 <LayoutWithoutHeader>
                   <MyRegistrationLeads />
+                </LayoutWithoutHeader>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/customer-service"
+            element={
+              <PrivateRoute>
+                <LayoutWithoutHeader>
+                  <CustomerServiceCenter />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1452,7 +1465,7 @@ function App() {
             element={
               <PrivateRoute>
                 <LayoutWithoutHeader>
-                  <StudentSearch />
+                  <CustomerServiceDesk />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }
@@ -1463,7 +1476,7 @@ function App() {
             element={
               <PrivateRoute>
                 <LayoutWithoutHeader>
-                  <ReportClients />
+                  <CsReports />
                 </LayoutWithoutHeader>
               </PrivateRoute>
             }

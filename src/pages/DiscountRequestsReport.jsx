@@ -382,6 +382,9 @@ const MultiValueFilter = ({
   );
 };
 
+// نوافذ بتفتح كشف الحساب: لازم تبقى تحته في الترتيب
+const STACKED_UNDER_STATEMENT_SX = (theme) => ({ zIndex: theme.zIndex.modal - 1 });
+
 const PromoStudentsDialog = ({
   open,
   onClose,
@@ -530,7 +533,8 @@ const PromoStudentsDialog = ({
   ];
 
   return (
-    <Dialog sx={uiLayout.dialogLayoutSx}
+    // تحت كشف الحساب (keepMounted) عشان الكشف يفتح فوقها والنافذة تفضل مفتوحة بعد قفله
+    <Dialog sx={uiLayout.withUiSx(STACKED_UNDER_STATEMENT_SX, uiLayout.dialogLayoutSx)}
       open={open}
       onClose={onClose}
       fullWidth
@@ -2388,7 +2392,7 @@ const DiscountRequestsReport = () => {
           />
         </Paper>
 
-        <Dialog sx={uiLayout.dialogLayoutSx}
+        <Dialog sx={uiLayout.withUiSx(STACKED_UNDER_STATEMENT_SX, uiLayout.dialogLayoutSx)}
           open={detailsOpen}
           onClose={closeDetails}
           fullWidth

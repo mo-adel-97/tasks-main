@@ -22,6 +22,10 @@ import HandshakeRoundedIcon from "@mui/icons-material/HandshakeRounded";
 import EventRoundedIcon from "@mui/icons-material/EventRounded";
 import PendingActionsRoundedIcon from "@mui/icons-material/PendingActionsRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
+import ReportProblemRoundedIcon from "@mui/icons-material/ReportProblemRounded";
+import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
+import TaskAltRoundedIcon from "@mui/icons-material/TaskAltRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 /*
@@ -43,8 +47,22 @@ const HR_STYLES = {
   PERMISSION_CHANGE: { icon: AdminPanelSettingsRoundedIcon, color: "#be185d", label: "الصلاحيات" }
 };
 
+// مركز خدمة العملاء (Crm_Notification.Type)
+const CRM_STYLES = {
+  assigned: { icon: SupportAgentRoundedIcon, color: "#7c3aed", label: "خدمة العملاء" },
+  reassigned: { icon: SupportAgentRoundedIcon, color: "#64748b", label: "خدمة العملاء" },
+  complaint: { icon: ReportProblemRoundedIcon, color: "#dc2626", label: "شكوى جديدة" },
+  overdue: { icon: TrendingUpRoundedIcon, color: "#dc2626", label: "تذكرة متأخرة" },
+  escalated: { icon: TrendingUpRoundedIcon, color: "#be123c", label: "تصعيد" },
+  urgent: { icon: ReportProblemRoundedIcon, color: "#dc2626", label: "تذكرة عاجلة" },
+  followup: { icon: SupportAgentRoundedIcon, color: "#0e7490", label: "خدمة العملاء" },
+  closed: { icon: TaskAltRoundedIcon, color: "#057546", label: "تذكرة محلولة" },
+  reopened: { icon: SupportAgentRoundedIcon, color: "#d97706", label: "إعادة فتح" }
+};
+
 const styleOf = (type = "") => {
   if (type.startsWith("HREV_")) return HR_STYLES[type.slice(5)] || HR_STYLES.DATA_UPDATE;
+  if (type.startsWith("CRM_")) return CRM_STYLES[type.slice(4)] || CRM_STYLES.assigned;
   if (type.startsWith("TASK_")) return { icon: AssignmentRoundedIcon, color: "#2563eb", label: "المهام" };
   if (type.startsWith("ASSET_")) return { icon: Inventory2RoundedIcon, color: "#b45309", label: "الأصول" };
   if (type === "P2P_appointment") return { icon: EventRoundedIcon, color: "#0e7490", label: "موعد" };
